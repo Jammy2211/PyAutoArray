@@ -1,9 +1,8 @@
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.two_d import array_2d_util
-from autoarray.structures.frames import abstract_frame
 from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.frames import frames as f
-from autoarray.structures import region as reg
+from autoarray.layout import layout as lo, layout_util
+from autoarray.layout import region as reg
 from autoarray import exc
 
 from astropy.io import fits
@@ -38,13 +37,9 @@ def array_eps_to_counts(array_eps, bscale, bzero):
     return (array_eps - bzero) / bscale
 
 
-class ArrayACS(array_2d.Array2D):
-
-    pass
-
-
-class FrameACS(f.Frame2D, ArrayACS):
-    """An ACS frame consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout:
+class Array2DACS(array_2d.Array2D):
+    """
+    An ACS array consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout:
 
        <--------S-----------   ---------S----------->
     [] [========= 2 =========] [========= 3 =========] []          /\
@@ -108,7 +103,9 @@ class FrameACS(f.Frame2D, ArrayACS):
             )
         elif quadrant_letter == "A" or quadrant_letter == "D":
             return cls.right(
-                array=array_electrons[0:parallel_size, serial_size : serial_size * 2],
+                array_electrons=array_electrons[
+                    0:parallel_size, serial_size : serial_size * 2
+                ],
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -148,12 +145,20 @@ class FrameACS(f.Frame2D, ArrayACS):
 
         serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
 
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(1, 0)
+        )
+
+        layout_2d = lo.Layout2D.rotated_from_roe_corner(
+            roe_corner=(1, 0),
+            shape_native=array_electrons.shape,
+            parallel_overscan=parallel_overscan,
+            serial_prescan=serial_prescan,
+        )
+
         return cls.manual(
             array=array_electrons,
-            roe_corner=(1, 0),
-            scans=abstract_frame.Scans(
-                parallel_overscan=parallel_overscan, serial_prescan=serial_prescan
-            ),
+            layout=layout_2d,
             exposure_info=exposure_info,
             pixel_scales=0.05,
         )
@@ -161,7 +166,7 @@ class FrameACS(f.Frame2D, ArrayACS):
     @classmethod
     def right(
         cls,
-        array,
+        array_electrons,
         parallel_size=2068,
         serial_size=2072,
         parallel_overscan_size=20,
@@ -188,18 +193,27 @@ class FrameACS(f.Frame2D, ArrayACS):
             (0, parallel_size, serial_size - serial_prescan_size, serial_size)
         )
 
-        return cls.manual(
-            array=array,
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(1, 1)
+        )
+
+        layout_2d = lo.Layout2D.rotated_from_roe_corner(
             roe_corner=(1, 1),
-            scans=abstract_frame.Scans(
-                parallel_overscan=parallel_overscan, serial_prescan=serial_prescan
-            ),
+            shape_native=array_electrons.shape,
+            parallel_overscan=parallel_overscan,
+            serial_prescan=serial_prescan,
+        )
+
+        return cls.manual(
+            array=array_electrons,
+            layout=layout_2d,
             exposure_info=exposure_info,
             pixel_scales=0.05,
         )
 
     def update_fits(self, original_file_path, new_file_path):
-        """Output the array to a .fits file.
+        """
+        Output the array to a .fits file.
 
         Parameters
         ----------
@@ -221,7 +235,9 @@ class FrameACS(f.Frame2D, ArrayACS):
 
         hdulist = fits.open(new_file_path)
 
-        hdulist[self.exposure_info.hdu].data = self.original_orientation
+        hdulist[self.exposure_info.hdu].data = self.layout.original_orientation_from(
+            array=self
+        )
 
         ext_header = hdulist[4].header
         bscale = ext_header["BSCALE"]
@@ -231,8 +247,9 @@ class FrameACS(f.Frame2D, ArrayACS):
         hdulist.writeto(new_file_path)
 
 
-class ImageACS(FrameACS, ArrayACS):
-    """The layout of an ACS frame and image is given in `FrameACS`.
+class ImageACS(Array2DACS):
+    """
+    The layout of an ACS array and image is given in `FrameACS`.
 
     This class handles specifically the image of an ACS observation, assuming that it contains specific
     header info.
@@ -317,7 +334,7 @@ class ExposureInfoACS(abstract_array.ExposureInfo):
         hdu=None,
     ):
 
-        super(ExposureInfoACS, self).__init__(
+        super().__init__(
             exposure_time=exposure_time,
             date_of_observation=date_of_observation,
             time_of_observation=time_of_observation,

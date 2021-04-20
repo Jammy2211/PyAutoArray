@@ -8,8 +8,7 @@ from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_iterate
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.structures.grids.two_d import grid_2d_pixelization
-from autoarray.structures.frames import abstract_frame
-from autoarray.structures.frames import frames
+from autoarray.layout import layout as lo
 from autoarray.structures import kernel_2d
 from autoarray.structures import visibilities as vis
 from autoarray.dataset import imaging
@@ -108,17 +107,19 @@ def make_array_2d_7x7():
     return array_2d.Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
-def make_scans_7x7():
-    return abstract_frame.Scans(
+def make_layout_2d_7x7():
+    return lo.Layout2D(
+        shape_2d=(7, 7),
+        original_roe_corner=(1, 0),
         serial_overscan=(0, 6, 6, 7),
         serial_prescan=(0, 7, 0, 1),
         parallel_overscan=(6, 7, 1, 6),
     )
 
 
-def make_frame_7x7():
-    return frames.Frame2D.ones(
-        shape_native=(7, 7), pixel_scales=(1.0, 1.0), scans=make_scans_7x7()
+def make_array_2d_layout_7x7():
+    return array_2d.Array2D.ones(
+        shape_native=(7, 7), pixel_scales=(1.0, 1.0), layout=make_layout_2d_7x7()
     )
 
 

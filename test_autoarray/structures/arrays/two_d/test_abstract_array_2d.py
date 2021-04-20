@@ -466,6 +466,78 @@ class TestNewArrays:
         assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
 
 
+class TestBinnedAcross:
+    def test__columns__different_arrays__gives_array_binned(self):
+
+        array = aa.Array2D.manual(array=np.ones((3, 3)), pixel_scales=1.0)
+
+        assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0])).all()
+
+        array = aa.Array2D.manual(array=np.ones((4, 3)), pixel_scales=1.0)
+
+        assert (array.binned_across_rows == np.array([1.0, 1.0, 1.0])).all()
+
+        array = aa.Array2D.manual(array=np.ones((3, 4)), pixel_scales=1.0)
+
+        assert (array.binned_across_rows == np.array([1.0, 1.0, 1.0, 1.0])).all()
+
+        array = aa.Array2D.manual(
+            array=np.array([[1.0, 6.0, 9.0], [2.0, 6.0, 9.0], [3.0, 6.0, 9.0]]),
+            pixel_scales=1.0,
+        )
+
+        assert (array.binned_across_rows == np.array([2.0, 6.0, 9.0])).all()
+
+    def test__columns__same_as_above_but_with_mask(self):
+
+        mask = aa.Mask2D.manual(
+            mask=[[False, False, False], [False, False, False], [True, False, False]],
+            pixel_scales=1.0,
+        )
+
+        array = aa.Array2D.manual_mask(
+            array=np.array([[1.0, 6.0, 9.0], [2.0, 6.0, 9.0], [3.0, 6.0, 9.0]]),
+            mask=mask,
+        )
+
+        assert (array.binned_across_rows == np.array([1.5, 6.0, 9.0])).all()
+
+    def test__rows__different_arrays__gives_array_binned(self):
+
+        array = aa.Array2D.manual(array=np.ones((3, 3)), pixel_scales=1.0)
+
+        assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0])).all()
+
+        array = aa.Array2D.manual(array=np.ones((4, 3)), pixel_scales=1.0)
+
+        assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0, 1.0])).all()
+
+        array = aa.Array2D.manual(array=np.ones((3, 4)), pixel_scales=1.0)
+
+        assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0])).all()
+
+        array = aa.Array2D.manual(
+            array=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
+            pixel_scales=1.0,
+        )
+
+        assert (array.binned_across_columns == np.array([2.0, 6.0, 9.0])).all()
+
+    def test__rows__same_as_above_but_with_mask(self):
+
+        mask = aa.Mask2D.manual(
+            mask=[[False, False, True], [False, False, False], [False, False, False]],
+            pixel_scales=1.0,
+        )
+
+        array = aa.Array2D.manual_mask(
+            array=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
+            mask=mask,
+        )
+
+        assert (array.binned_across_columns == np.array([1.5, 6.0, 9.0])).all()
+
+
 class TestOutputToFits:
     def test__output_to_fits(self):
 

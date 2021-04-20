@@ -148,3 +148,48 @@ class Region2D(object):
     @property
     def shape(self):
         return self.y1 - self.y0, self.x1 - self.x0
+
+    def x_limits_from(self, columns):
+
+        x_coord = self.x0
+        x_min = x_coord + columns[0]
+        x_max = x_coord + columns[1]
+
+        return x_min, x_max
+
+    def parallel_front_edge_region_from(self, rows):
+
+        y_coord = self.y0
+        y_min = y_coord + rows[0]
+        y_max = y_coord + rows[1]
+
+        return Region2D((y_min, y_max, self.x0, self.x1))
+
+    def parallel_trails_of_region_from(self, rows=(0, 1)):
+
+        y_coord = self.y1
+        y_min = y_coord + rows[0]
+        y_max = y_coord + rows[1]
+
+        return Region2D((y_min, y_max, self.x0, self.x1))
+
+    def parallel_side_nearest_read_out_region_from(self, shape_2d, columns=(0, 1)):
+
+        x_min, x_max = self.x_limits_from(columns)
+
+        return Region2D(region=(0, shape_2d[0], x_min, x_max))
+
+    def serial_front_edge_of_region_from(self, columns=(0, 1)):
+        x_min, x_max = self.x_limits_from(columns)
+        return Region2D(region=(self.y0, self.y1, x_min, x_max))
+
+    def serial_trails_of_region_from(self, columns=(0, 1)):
+
+        x_coord = self.x1
+        x_min = x_coord + columns[0]
+        x_max = x_coord + columns[1]
+
+        return Region2D(region=(self.y0, self.y1, x_min, x_max))
+
+    def serial_entire_rows_of_region_from(self, shape_2d):
+        return Region2D(region=(self.y0, self.y1, 0, shape_2d[1]))

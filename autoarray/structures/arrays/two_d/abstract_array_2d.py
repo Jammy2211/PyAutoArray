@@ -6,6 +6,7 @@ from autoarray import exc
 from autoarray.mask import mask_2d as msk
 from autoarray.structures import abstract_structure
 from autoarray.structures.arrays import abstract_array
+from autoarray.structures.arrays.one_d import array_1d
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.dataset import preprocess
 
@@ -151,6 +152,20 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
     def in_counts_per_second(self):
         return self.exposure_info.array_counts_to_counts_per_second(
             array_counts=self.in_counts
+        )
+
+    @property
+    def binned_across_rows(self):
+        binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=0)
+        return array_1d.Array1D.manual_native(
+            array=binned_array, pixel_scales=self.pixel_scale
+        )
+
+    @property
+    def binned_across_columns(self):
+        binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=1)
+        return array_1d.Array1D.manual_native(
+            array=binned_array, pixel_scales=self.pixel_scale
         )
 
     def new_with_array(self, array):
