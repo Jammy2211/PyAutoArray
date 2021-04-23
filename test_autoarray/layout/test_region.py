@@ -228,19 +228,19 @@ class TestRegion2D:
             region=(0, 3, 0, 3)
         )  # The trails are row 3 and above, so extract 3 -> 4
 
-        trails = region.parallel_trails_of_region_from(rows=(0, 1))
+        trails = region.parallel_trails_region_from(rows=(0, 1))
 
         assert trails == (3, 4, 0, 3)
 
         # The trails are row 3 and above, so extract 3 -> 5
 
-        trails = region.parallel_trails_of_region_from(rows=(0, 2))
+        trails = region.parallel_trails_region_from(rows=(0, 2))
 
         assert trails == (3, 5, 0, 3)
 
         # The trails are row 3 and above, so extract 4 -> 6
 
-        trails = region.parallel_trails_of_region_from(rows=(1, 3))
+        trails = region.parallel_trails_region_from(rows=(1, 3))
 
         assert trails == (4, 6, 0, 3)
 
@@ -282,19 +282,19 @@ class TestRegion2D:
             region=(0, 3, 0, 3)
         )  # Front edge is column 0, so for 1 column we extract 0 -> 1
 
-        front_edge = region.serial_front_edge_of_region_from(columns=(0, 1))
+        front_edge = region.serial_front_edge_region_from(columns=(0, 1))
 
         assert front_edge == (0, 3, 0, 1)
 
         # Front edge is column 0, so for 2 columns we extract 0 -> 2
 
-        front_edge = region.serial_front_edge_of_region_from(columns=(0, 2))
+        front_edge = region.serial_front_edge_region_from(columns=(0, 2))
 
         assert front_edge == (0, 3, 0, 2)
 
         # Front edge is column 0, so for these 2 columns we extract 1 ->2
 
-        front_edge = region.serial_front_edge_of_region_from(columns=(1, 3))
+        front_edge = region.serial_front_edge_region_from(columns=(1, 3))
 
         assert front_edge == (0, 3, 1, 3)
 
@@ -304,19 +304,19 @@ class TestRegion2D:
             region=(0, 3, 0, 3)
         )  # The trails are column 3 and above, so extract 3 -> 4
 
-        trails = region.serial_trails_of_region_from(columns=(0, 1))
+        trails = region.serial_trails_region_from(columns=(0, 1))
 
         assert trails == (0, 3, 3, 4)
 
         # The trails are column 3 and above, so extract 3 -> 5
 
-        trails = region.serial_trails_of_region_from(columns=(0, 2))
+        trails = region.serial_trails_region_from(columns=(0, 2))
 
         assert trails == (0, 3, 3, 5)
 
         # The trails are column 3 and above, so extract 4 -> 6
 
-        trails = region.serial_trails_of_region_from(columns=(1, 3))
+        trails = region.serial_trails_region_from(columns=(1, 3))
 
         assert trails == (0, 3, 4, 6)
 

@@ -165,7 +165,7 @@ class Region2D(object):
 
         return Region2D((y_min, y_max, self.x0, self.x1))
 
-    def parallel_trails_of_region_from(self, rows=(0, 1)):
+    def parallel_trails_region_from(self, rows=(0, 1)):
 
         y_coord = self.y1
         y_min = y_coord + rows[0]
@@ -179,11 +179,11 @@ class Region2D(object):
 
         return Region2D(region=(0, shape_2d[0], x_min, x_max))
 
-    def serial_front_edge_of_region_from(self, columns=(0, 1)):
+    def serial_front_edge_region_from(self, columns=(0, 1)):
         x_min, x_max = self.x_limits_from(columns)
         return Region2D(region=(self.y0, self.y1, x_min, x_max))
 
-    def serial_trails_of_region_from(self, columns=(0, 1)):
+    def serial_trails_region_from(self, columns=(0, 1)):
 
         x_coord = self.x1
         x_min = x_coord + columns[0]
