@@ -176,7 +176,9 @@ class Interferometer(abstract_dataset.AbstractDataset):
     @property
     def dirty_image(self):
         try:
-            return self.transformer.image_from_visibilities(visibilities=self.visibilities)
+            return self.transformer.image_from_visibilities(
+                visibilities=self.visibilities
+            )
         except AttributeError:
             pass
 
@@ -184,6 +186,24 @@ class Interferometer(abstract_dataset.AbstractDataset):
     def dirty_noise_map(self):
         try:
             return self.transformer.image_from_visibilities(visibilities=self.noise_map)
+        except AttributeError:
+            pass
+
+    @property
+    def dirty_signal_to_noise_map(self):
+        try:
+            return self.transformer.image_from_visibilities(
+                visibilities=self.signal_to_noise_map
+            )
+        except AttributeError:
+            pass
+
+    @property
+    def dirty_inverse_noise_map(self):
+        try:
+            return self.transformer.image_from_visibilities(
+                visibilities=self.inverse_noise_map
+            )
         except AttributeError:
             pass
 

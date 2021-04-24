@@ -152,6 +152,11 @@ def make_transformer_7x7_7():
     return fixtures.make_transformer_7x7_7()
 
 
+@pytest.fixture(name="transformer_7x7_7_nufft")
+def make_transformer_7x7_7_nufft():
+    return fixtures.make_transformer_7x7_7_nufft()
+
+
 @pytest.fixture(name="interferometer_7")
 def make_interferometer_7():
     return fixtures.make_interferometer_7()

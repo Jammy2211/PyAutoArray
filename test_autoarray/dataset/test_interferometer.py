@@ -14,8 +14,13 @@ test_data_dir = path.join(
 
 
 class TestInterferometer:
-
-    def test__dirty_properties(self, visibilities_7, visibilities_noise_map_7, uv_wavelengths_7x2, sub_mask_2d_7x7):
+    def test__dirty_properties(
+        self,
+        visibilities_7,
+        visibilities_noise_map_7,
+        uv_wavelengths_7x2,
+        sub_mask_2d_7x7,
+    ):
 
         interferometer = aa.Interferometer(
             visibilities=visibilities_7,
@@ -24,11 +29,33 @@ class TestInterferometer:
             real_space_mask=sub_mask_2d_7x7,
         )
 
-        assert interferometer.dirty_image.shape_native == (7,7)
-        assert (interferometer.transformer.image_from_visibilities(visibilities=interferometer.visibilities)).all()
+        assert interferometer.dirty_image.shape_native == (7, 7)
+        assert (
+            interferometer.transformer.image_from_visibilities(
+                visibilities=interferometer.visibilities
+            )
+        ).all()
 
-        assert interferometer.dirty_noise_map.shape_native == (7,7)
-        assert (interferometer.transformer.image_from_visibilities(visibilities=interferometer.noise_map)).all()
+        assert interferometer.dirty_noise_map.shape_native == (7, 7)
+        assert (
+            interferometer.transformer.image_from_visibilities(
+                visibilities=interferometer.noise_map
+            )
+        ).all()
+
+        assert interferometer.dirty_signal_to_noise_map.shape_native == (7, 7)
+        assert (
+            interferometer.transformer.image_from_visibilities(
+                visibilities=interferometer.signal_to_noise_map
+            )
+        ).all()
+
+        assert interferometer.dirty_inverse_noise_map.shape_native == (7, 7)
+        assert (
+            interferometer.transformer.image_from_visibilities(
+                visibilities=interferometer.inverse_noise_map
+            )
+        ).all()
 
     def test__new_interferometer_with_with_modified_visibilities(
         self, sub_mask_2d_7x7, uv_wavelengths_7x2

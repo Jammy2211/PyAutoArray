@@ -336,6 +336,10 @@ class FitInterferometer(FitDataset):
         return self.dataset
 
     @property
+    def transformer(self):
+        return self.interferometer.transformer
+
+    @property
     def visibilities(self) -> abstract_structure.AbstractStructure:
         return self.data
 
@@ -398,3 +402,55 @@ class FitInterferometer(FitDataset):
         return fit_util.noise_normalization_complex_with_mask_from(
             noise_map=self.noise_map, mask=self.mask
         )
+
+    @property
+    def dirty_image(self):
+        try:
+            return self.transformer.image_from_visibilities(
+                visibilities=self.visibilities
+            )
+        except AttributeError:
+            pass
+
+    @property
+    def dirty_noise_map(self):
+        try:
+            return self.transformer.image_from_visibilities(visibilities=self.noise_map)
+        except AttributeError:
+            pass
+
+    @property
+    def dirty_signal_to_noise_map(self):
+        try:
+            return self.transformer.image_from_visibilities(
+                visibilities=self.signal_to_noise_map
+            )
+        except AttributeError:
+            pass
+
+    @property
+    def dirty_residual_map(self):
+        try:
+            return self.transformer.image_from_visibilities(
+                visibilities=self.residual_map
+            )
+        except AttributeError:
+            pass
+
+    @property
+    def dirty_normalized_residual_map(self):
+        try:
+            return self.transformer.image_from_visibilities(
+                visibilities=self.normalized_residual_map
+            )
+        except AttributeError:
+            pass
+
+    @property
+    def dirty_chi_squared_map(self):
+        try:
+            return self.transformer.image_from_visibilities(
+                visibilities=self.chi_squared_map
+            )
+        except AttributeError:
+            pass

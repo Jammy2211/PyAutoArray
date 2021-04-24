@@ -317,3 +317,46 @@ class TestFitInterferometer:
             fit.chi_squared + 2.0 + 3.0 - 4.0 + fit.noise_normalization
         )
         assert fit.figure_of_merit == fit.log_evidence
+
+    def test__dirty_quantities(
+        self, transformer_7x7_7_nufft, interferometer_7_nufft, fit_interferometer_7
+    ):
+
+        fit_interferometer_7.dataset.transformer = transformer_7x7_7_nufft
+
+        dirty_image = transformer_7x7_7_nufft.image_from_visibilities(
+            visibilities=interferometer_7_nufft.visibilities
+        )
+        assert (fit_interferometer_7.dirty_image == dirty_image).all()
+
+        dirty_noise_map = transformer_7x7_7_nufft.image_from_visibilities(
+            visibilities=interferometer_7_nufft.noise_map
+        )
+        assert (fit_interferometer_7.dirty_noise_map == dirty_noise_map).all()
+
+        dirty_signal_to_noise_map = transformer_7x7_7_nufft.image_from_visibilities(
+            visibilities=interferometer_7_nufft.signal_to_noise_map
+        )
+        assert (
+            fit_interferometer_7.dirty_signal_to_noise_map == dirty_signal_to_noise_map
+        ).all()
+
+        dirty_residual_map = transformer_7x7_7_nufft.image_from_visibilities(
+            visibilities=fit_interferometer_7.residual_map
+        )
+        assert (fit_interferometer_7.dirty_residual_map == dirty_residual_map).all()
+
+        dirty_normalized_residual_map = transformer_7x7_7_nufft.image_from_visibilities(
+            visibilities=fit_interferometer_7.normalized_residual_map
+        )
+        assert (
+            fit_interferometer_7.dirty_normalized_residual_map
+            == dirty_normalized_residual_map
+        ).all()
+
+        dirty_chi_squared_map = transformer_7x7_7_nufft.image_from_visibilities(
+            visibilities=fit_interferometer_7.chi_squared_map
+        )
+        assert (
+            fit_interferometer_7.dirty_chi_squared_map == dirty_chi_squared_map
+        ).all()

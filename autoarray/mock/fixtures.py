@@ -284,6 +284,12 @@ def make_transformer_7x7_7():
     )
 
 
+def make_transformer_7x7_7_nufft():
+    return transformer.TransformerNUFFT(
+        uv_wavelengths=make_uv_wavelengths_7x2(), real_space_mask=make_mask_2d_7x7()
+    )
+
+
 ### MASKED DATA ###
 
 

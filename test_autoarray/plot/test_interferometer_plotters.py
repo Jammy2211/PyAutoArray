@@ -16,7 +16,9 @@ def make_plot_path_setup():
     )
 
 
-def test__individual_attributes_are_output(interferometer_7_nufft, plot_path, plot_patch):
+def test__individual_attributes_are_output(
+    interferometer_7_nufft, plot_path, plot_patch
+):
 
     interferometer_plotter = aplt.InterferometerPlotter(
         interferometer=interferometer_7_nufft,
@@ -33,7 +35,9 @@ def test__individual_attributes_are_output(interferometer_7_nufft, plot_path, pl
         amplitudes_vs_uv_distances=True,
         phases_vs_uv_distances=True,
         dirty_image=True,
-        dirty_noise_map=True
+        dirty_noise_map=True,
+        dirty_signal_to_noise_map=True,
+        dirty_inverse_noise_map=True,
     )
 
     assert path.join(plot_path, "visibilities.png") in plot_patch.paths
@@ -45,6 +49,8 @@ def test__individual_attributes_are_output(interferometer_7_nufft, plot_path, pl
     assert path.join(plot_path, "phases_vs_uv_distances.png") in plot_patch.paths
     assert path.join(plot_path, "dirty_image_2d.png") in plot_patch.paths
     assert path.join(plot_path, "dirty_noise_map_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_signal_to_noise_map_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_inverse_noise_map_2d.png") in plot_patch.paths
 
     plot_patch.paths = []
 
@@ -62,7 +68,7 @@ def test__individual_attributes_are_output(interferometer_7_nufft, plot_path, pl
     assert path.join(plot_path, "phases_vs_uv_distances.png") not in plot_patch.paths
 
 
-def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
+def test__subplots_are_output(interferometer_7, plot_path, plot_patch):
 
     interferometer_plotter = aplt.InterferometerPlotter(
         interferometer=interferometer_7,
@@ -73,3 +79,7 @@ def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
     interferometer_plotter.subplot_interferometer()
 
     assert path.join(plot_path, "subplot_interferometer.png") in plot_patch.paths
+
+    interferometer_plotter.subplot_dirty_images()
+
+    assert path.join(plot_path, "subplot_dirty_images.png") in plot_patch.paths

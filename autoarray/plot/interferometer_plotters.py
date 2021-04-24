@@ -45,6 +45,8 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         phases_vs_uv_distances=False,
         dirty_image=False,
         dirty_noise_map=False,
+        dirty_signal_to_noise_map=False,
+        dirty_inverse_noise_map=False,
     ):
         """
         Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
@@ -155,15 +157,41 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_image,
                 visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Image", filename="dirty_image_2d"
+                ),
             )
-            
+
         if dirty_noise_map:
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(title="Dirty Noise-Map", filename="dirty_noise_map_2d"),
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Noise Map", filename="dirty_noise_map_2d"
+                ),
+            )
+
+        if dirty_signal_to_noise_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.interferometer.dirty_noise_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Signal-To-Noise Map",
+                    filename="dirty_signal_to_noise_map_2d",
+                ),
+            )
+
+        if dirty_inverse_noise_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.interferometer.dirty_noise_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Inverse Noise Map",
+                    filename="dirty_inverse_noise_map_2d",
+                ),
             )
 
     def subplot(
@@ -175,6 +203,10 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         uv_wavelengths=False,
         amplitudes_vs_uv_distances=False,
         phases_vs_uv_distances=False,
+        dirty_image=False,
+        dirty_noise_map=False,
+        dirty_signal_to_noise_map=False,
+        dirty_inverse_noise_map=False,
         auto_filename="subplot_interferometer",
     ):
 
@@ -186,6 +218,10 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             uv_wavelengths=uv_wavelengths,
             amplitudes_vs_uv_distances=amplitudes_vs_uv_distances,
             phases_vs_uv_distances=phases_vs_uv_distances,
+            dirty_image=dirty_image,
+            dirty_noise_map=dirty_noise_map,
+            dirty_signal_to_noise_map=dirty_signal_to_noise_map,
+            dirty_inverse_noise_map=dirty_inverse_noise_map,
             auto_labels=mp.AutoLabels(filename=auto_filename),
         )
 
@@ -213,4 +249,32 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             uv_wavelengths=True,
             amplitudes_vs_uv_distances=True,
             phases_vs_uv_distances=True,
+            auto_filename="subplot_interferometer",
+        )
+
+    def subplot_dirty_images(self):
+        """Plot the interferometer data_type as a sub-mat_plot_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
+         etc).
+
+        Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
+
+        Parameters
+        -----------
+        interferometer : data_type.UVPlaneData
+            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
+        origin : True
+            If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+        image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
+            If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
+            over the immage.
+        ignore_config : bool
+            If `False`, the config file general.ini is used to determine whether the subpot is plotted. If `True`, the \
+            config file is ignored.
+        """
+        return self.subplot(
+            dirty_image=True,
+            dirty_noise_map=True,
+            dirty_signal_to_noise_map=True,
+            dirty_inverse_noise_map=True,
+            auto_filename="subplot_dirty_images",
         )
