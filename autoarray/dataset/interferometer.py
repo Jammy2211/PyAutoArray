@@ -173,6 +173,20 @@ class Interferometer(abstract_dataset.AbstractDataset):
             np.square(self.uv_wavelengths[:, 0]) + np.square(self.uv_wavelengths[:, 1])
         )
 
+    @property
+    def dirty_image(self):
+        try:
+            return self.transformer.image_from_visibilities(visibilities=self.visibilities)
+        except AttributeError:
+            pass
+
+    @property
+    def dirty_noise_map(self):
+        try:
+            return self.transformer.image_from_visibilities(visibilities=self.noise_map)
+        except AttributeError:
+            pass
+
     def modified_visibilities_from_visibilities(self, visibilities):
 
         interferometer = copy.deepcopy(self)

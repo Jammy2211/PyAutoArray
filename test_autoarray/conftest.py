@@ -157,6 +157,11 @@ def make_interferometer_7():
     return fixtures.make_interferometer_7()
 
 
+@pytest.fixture(name="interferometer_7_nufft")
+def make_interferometer_7_nufft():
+    return fixtures.make_interferometer_7_nufft()
+
+
 @pytest.fixture(name="fit_interferometer_7")
 def make_interferometer_fit_x1_plane_7():
     return fixtures.make_interferometer_fit_x1_plane_7()

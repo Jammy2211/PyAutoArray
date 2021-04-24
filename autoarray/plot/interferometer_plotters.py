@@ -43,6 +43,8 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         uv_wavelengths=False,
         amplitudes_vs_uv_distances=False,
         phases_vs_uv_distances=False,
+        dirty_image=False,
+        dirty_noise_map=False,
     ):
         """
         Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
@@ -146,6 +148,22 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
                 plot_axis_type_override="scatter",
+            )
+
+        if dirty_image:
+
+            self.mat_plot_2d.plot_array(
+                array=self.interferometer.dirty_image,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
+            )
+            
+        if dirty_noise_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.interferometer.dirty_noise_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(title="Dirty Noise-Map", filename="dirty_noise_map_2d"),
             )
 
     def subplot(

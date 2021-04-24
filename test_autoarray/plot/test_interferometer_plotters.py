@@ -16,10 +16,10 @@ def make_plot_path_setup():
     )
 
 
-def test__individual_attributes_are_output(interferometer_7, plot_path, plot_patch):
+def test__individual_attributes_are_output(interferometer_7_nufft, plot_path, plot_patch):
 
     interferometer_plotter = aplt.InterferometerPlotter(
-        interferometer=interferometer_7,
+        interferometer=interferometer_7_nufft,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -32,6 +32,8 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
         uv_wavelengths=True,
         amplitudes_vs_uv_distances=True,
         phases_vs_uv_distances=True,
+        dirty_image=True,
+        dirty_noise_map=True
     )
 
     assert path.join(plot_path, "visibilities.png") in plot_patch.paths
@@ -41,6 +43,8 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
     assert path.join(plot_path, "uv_wavelengths.png") in plot_patch.paths
     assert path.join(plot_path, "amplitudes_vs_uv_distances.png") in plot_patch.paths
     assert path.join(plot_path, "phases_vs_uv_distances.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_image_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_noise_map_2d.png") in plot_patch.paths
 
     plot_patch.paths = []
 
