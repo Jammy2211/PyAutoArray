@@ -429,6 +429,15 @@ class FitInterferometer(FitDataset):
             pass
 
     @property
+    def dirty_model_image(self):
+        try:
+            return self.transformer.image_from_visibilities(
+                visibilities=self.model_visibilities
+            )
+        except AttributeError:
+            pass
+
+    @property
     def dirty_residual_map(self):
         try:
             return self.transformer.image_from_visibilities(

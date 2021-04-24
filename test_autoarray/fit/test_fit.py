@@ -341,6 +341,11 @@ class TestFitInterferometer:
             fit_interferometer_7.dirty_signal_to_noise_map == dirty_signal_to_noise_map
         ).all()
 
+        dirty_model_image = transformer_7x7_7_nufft.image_from_visibilities(
+            visibilities=fit_interferometer_7.model_visibilities
+        )
+        assert (fit_interferometer_7.dirty_model_image == dirty_model_image).all()
+
         dirty_residual_map = transformer_7x7_7_nufft.image_from_visibilities(
             visibilities=fit_interferometer_7.residual_map
         )

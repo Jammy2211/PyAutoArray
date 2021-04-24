@@ -16,10 +16,10 @@ def make_plot_path_setup():
     )
 
 
-def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch):
+def test__fit_quantities_are_output(fit_interferometer_7_nufft, plot_path, plot_patch):
 
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(
-        fit=fit_interferometer_7,
+        fit=fit_interferometer_7_nufft,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -35,6 +35,13 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
         normalized_residual_map_imag=True,
         chi_squared_map_real=True,
         chi_squared_map_imag=True,
+        dirty_image=True,
+        dirty_noise_map=True,
+        dirty_signal_to_noise_map=True,
+        dirty_model_image=True,
+        dirty_residual_map=True,
+        dirty_normalized_residual_map=True,
+        dirty_chi_squared_map=True,
     )
 
     assert path.join(plot_path, "visibilities.png") in plot_patch.paths
@@ -65,6 +72,15 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
         path.join(plot_path, "imag_chi_squared_map_vs_uv_distances.png")
         in plot_patch.paths
     )
+    assert path.join(plot_path, "dirty_image_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_noise_map_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_signal_to_noise_map_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_model_image_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_residual_map_2d.png") in plot_patch.paths
+    assert (
+        path.join(plot_path, "dirty_normalized_residual_map_2d.png") in plot_patch.paths
+    )
+    assert path.join(plot_path, "dirty_chi_squared_map_2d.png") in plot_patch.paths
 
     plot_patch.paths = []
 
@@ -107,10 +123,10 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     )
 
 
-def test__fit_sub_plot(fit_interferometer_7, plot_path, plot_patch):
+def test__fit_sub_plots(fit_interferometer_7_nufft, plot_path, plot_patch):
 
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(
-        fit=fit_interferometer_7,
+        fit=fit_interferometer_7_nufft,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -118,3 +134,7 @@ def test__fit_sub_plot(fit_interferometer_7, plot_path, plot_patch):
     fit_interferometer_plotter.subplot_fit_interferometer()
 
     assert path.join(plot_path, "subplot_fit_interferometer.png") in plot_patch.paths
+
+    fit_interferometer_plotter.subplot_dirty_images()
+
+    assert path.join(plot_path, "subplot_dirty_images.png") in plot_patch.paths

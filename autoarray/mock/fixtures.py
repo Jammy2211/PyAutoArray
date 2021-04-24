@@ -315,9 +315,22 @@ def make_imaging_fit_x1_plane_7x7():
     )
 
 
-def make_interferometer_fit_x1_plane_7():
+def make_fit_interferometer_7():
 
     interferometer_7 = make_interferometer_7()
+
+    fit_interferometer = fit.FitInterferometer(
+        interferometer=interferometer_7,
+        model_visibilities=5.0 * interferometer_7.visibilities,
+        use_mask_in_fit=False,
+    )
+    fit_interferometer.dataset = interferometer_7
+    return fit_interferometer
+
+
+def make_fit_interferometer_7_nufft():
+
+    interferometer_7 = make_interferometer_7_nufft()
 
     fit_interferometer = fit.FitInterferometer(
         interferometer=interferometer_7,

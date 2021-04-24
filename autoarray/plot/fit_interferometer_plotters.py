@@ -45,6 +45,13 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         normalized_residual_map_imag=False,
         chi_squared_map_real=False,
         chi_squared_map_imag=False,
+        dirty_image=False,
+        dirty_noise_map=False,
+        dirty_signal_to_noise_map=False,
+        dirty_model_image=False,
+        dirty_residual_map=False,
+        dirty_normalized_residual_map=False,
+        dirty_chi_squared_map=False,
     ):
         """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -181,6 +188,78 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                 plot_axis_type_override="scatter",
             )
 
+        if dirty_image:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.dirty_image,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Image", filename="dirty_image_2d"
+                ),
+            )
+
+        if dirty_noise_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.dirty_noise_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Noise Map", filename="dirty_noise_map_2d"
+                ),
+            )
+
+        if dirty_signal_to_noise_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.dirty_signal_to_noise_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Signal-To-Noise Map",
+                    filename="dirty_signal_to_noise_map_2d",
+                ),
+            )
+
+        if dirty_model_image:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.dirty_model_image,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Model Image", filename="dirty_model_image_2d"
+                ),
+            )
+
+        if dirty_residual_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.dirty_residual_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Residual Map", filename="dirty_residual_map_2d"
+                ),
+            )
+
+        if dirty_normalized_residual_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.dirty_normalized_residual_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Normalized Residual Map",
+                    filename="dirty_normalized_residual_map_2d",
+                ),
+            )
+
+        if dirty_chi_squared_map:
+
+            self.mat_plot_2d.plot_array(
+                array=self.fit.dirty_chi_squared_map,
+                visuals_2d=self.visuals_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Dirty Chi-Squared Map", filename="dirty_chi_squared_map_2d"
+                ),
+            )
+
     def subplot(
         self,
         visibilities=False,
@@ -193,6 +272,13 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         normalized_residual_map_imag=False,
         chi_squared_map_real=False,
         chi_squared_map_imag=False,
+        dirty_image=False,
+        dirty_noise_map=False,
+        dirty_signal_to_noise_map=False,
+        dirty_model_image=False,
+        dirty_residual_map=False,
+        dirty_normalized_residual_map=False,
+        dirty_chi_squared_map=False,
         auto_filename="subplot_fit_interferometer",
     ):
 
@@ -207,6 +293,13 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             normalized_residual_map_imag=normalized_residual_map_imag,
             chi_squared_map_real=chi_squared_map_real,
             chi_squared_map_imag=chi_squared_map_imag,
+            dirty_image=dirty_image,
+            dirty_noise_map=dirty_noise_map,
+            dirty_signal_to_noise_map=dirty_signal_to_noise_map,
+            dirty_model_image=dirty_model_image,
+            dirty_residual_map=dirty_residual_map,
+            dirty_normalized_residual_map=dirty_normalized_residual_map,
+            dirty_chi_squared_map=dirty_chi_squared_map,
             auto_labels=mp.AutoLabels(filename=auto_filename),
         )
 
@@ -218,6 +311,19 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             residual_map_imag=True,
             normalized_residual_map_imag=True,
             chi_squared_map_imag=True,
+            auto_filename="subplot_fit_interferometer",
+        )
+
+    def subplot_dirty_images(self):
+
+        return self.subplot(
+            dirty_image=True,
+            dirty_signal_to_noise_map=True,
+            dirty_model_image=True,
+            dirty_residual_map=True,
+            dirty_normalized_residual_map=True,
+            dirty_chi_squared_map=True,
+            auto_filename="subplot_dirty_images",
         )
 
 

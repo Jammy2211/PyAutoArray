@@ -175,7 +175,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         if dirty_signal_to_noise_map:
 
             self.mat_plot_2d.plot_array(
-                array=self.interferometer.dirty_noise_map,
+                array=self.interferometer.dirty_signal_to_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Dirty Signal-To-Noise Map",
@@ -186,7 +186,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         if dirty_inverse_noise_map:
 
             self.mat_plot_2d.plot_array(
-                array=self.interferometer.dirty_noise_map,
+                array=self.interferometer.dirty_inverse_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Dirty Inverse Noise Map",
