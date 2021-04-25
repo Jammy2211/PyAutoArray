@@ -314,7 +314,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             auto_filename="subplot_fit_interferometer",
         )
 
-    def subplot_dirty_images(self):
+    def subplot_fit_dirty_images(self):
 
         return self.subplot(
             dirty_image=True,
@@ -323,7 +323,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             dirty_residual_map=True,
             dirty_normalized_residual_map=True,
             dirty_chi_squared_map=True,
-            auto_filename="subplot_dirty_images",
+            auto_filename="subplot_fit_dirty_images",
         )
 
 
