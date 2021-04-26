@@ -58,82 +58,32 @@ class TestArray2DACS:
         self, acs_quadrant
     ):
 
-        acs_array = aa.acs.Array2DACS.left(
-            array_electrons=acs_quadrant,
-            parallel_size=2068,
-            serial_size=2072,
-            serial_prescan_size=24,
-            parallel_overscan_size=20,
-        )
+        acs_array = aa.acs.Array2DACS.left(array_electrons=acs_quadrant)
 
-        assert acs_array.layout.original_roe_corner == (1, 0)
         assert acs_array.shape_native == (2068, 2072)
         assert (acs_array.native == np.zeros((2068, 2072))).all()
-        assert acs_array.layout.parallel_overscan == (2048, 2068, 24, 2072)
-        assert acs_array.layout.serial_prescan == (0, 2068, 0, 24)
 
-        acs_array = aa.acs.Array2DACS.left(
-            array_electrons=acs_quadrant,
-            parallel_size=2070,
-            serial_size=2072,
-            serial_prescan_size=28,
-            parallel_overscan_size=10,
-        )
+        acs_array = aa.acs.Array2DACS.right(array_electrons=acs_quadrant)
 
-        assert acs_array.layout.original_roe_corner == (1, 0)
         assert acs_array.shape_native == (2068, 2072)
         assert (acs_array.native == np.zeros((2068, 2072))).all()
-        assert acs_array.layout.parallel_overscan == (2060, 2070, 28, 2072)
-        assert acs_array.layout.serial_prescan == (0, 2070, 0, 28)
-
-        acs_array = aa.acs.Array2DACS.right(
-            array_electrons=acs_quadrant,
-            parallel_size=2068,
-            serial_size=2072,
-            serial_prescan_size=24,
-            parallel_overscan_size=20,
-        )
-
-        assert acs_array.layout.original_roe_corner == (1, 1)
-        assert acs_array.shape_native == (2068, 2072)
-        assert (acs_array.native == np.zeros((2068, 2072))).all()
-        assert acs_array.layout.parallel_overscan == (2048, 2068, 24, 2072)
-        assert acs_array.layout.serial_prescan == (0, 2068, 0, 24)
-
-        acs_array = aa.acs.Array2DACS.right(
-            array_electrons=acs_quadrant,
-            parallel_size=2070,
-            serial_size=2072,
-            serial_prescan_size=28,
-            parallel_overscan_size=10,
-        )
-
-        assert acs_array.layout.original_roe_corner == (1, 1)
-        assert acs_array.shape_native == (2068, 2072)
-        assert (acs_array.native == np.zeros((2068, 2072))).all()
-        assert acs_array.layout.parallel_overscan == (2060, 2070, 28, 2072)
-        assert acs_array.layout.serial_prescan == (0, 2070, 0, 28)
 
     def test__from_ccd__chooses_correct_array_given_quadrant_letter(self, acs_ccd):
 
         array = aa.acs.Array2DACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="B")
 
-        assert array.layout.original_roe_corner == (1, 0)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.Array2DACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="C")
 
-        assert array.layout.original_roe_corner == (1, 0)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.Array2DACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="A")
 
-        assert array.layout.original_roe_corner == (1, 1)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.Array2DACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="D")
 
-        assert array.layout.original_roe_corner == (1, 1)
         assert array.shape_native == (2068, 2072)
 
     def test__conversions_to_counts_and_counts_per_second_use_correct_values(self):
@@ -246,25 +196,21 @@ class TestImageACS:
 
         assert array.native[0, 0] == (10.0 * 2.0) + 10.0
         assert array.in_counts.native[0, 0] == 10.0
-        assert array.layout.original_roe_corner == (1, 0)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.Array2DACS.from_fits(file_path=file_path, quadrant_letter="A")
 
         assert array.native[0, 0] == (20.0 * 2.0) + 10.0
-        assert array.layout.original_roe_corner == (1, 1)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert array.native[0, 0] == (30.0 * 2.0) + 10.0
-        assert array.layout.original_roe_corner == (1, 0)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
         assert array.native[0, 0] == (40.0 * 2.0) + 10.0
-        assert array.layout.original_roe_corner == (1, 1)
         assert array.shape_native == (2068, 2072)
 
     def test__from_fits__in_counts_per_second__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
@@ -296,25 +242,21 @@ class TestImageACS:
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
 
         assert array.native[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
-        assert array.layout.original_roe_corner == (1, 0)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="A")
 
         assert array.native[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
-        assert array.layout.original_roe_corner == (1, 1)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert array.native[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
-        assert array.layout.original_roe_corner == (1, 0)
         assert array.shape_native == (2068, 2072)
 
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
         assert array.native[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
-        assert array.layout.original_roe_corner == (1, 1)
         assert array.shape_native == (2068, 2072)
 
     # def test__update_fits__if_new_file_is_not_presnet_copies_original_file_and_updates(
@@ -360,3 +302,79 @@ class TestImageACS:
     #     )
     #
     #     print(array)
+
+
+class TestLayout2DACS:
+    def test__acs_layout_for_left_and_right_quandrants__loads_data_and_dimensions(
+        self, acs_quadrant
+    ):
+
+        layout = aa.acs.Layout2DACS.left(
+            parallel_size=2068,
+            serial_size=2072,
+            serial_prescan_size=24,
+            parallel_overscan_size=20,
+        )
+
+        assert layout.original_roe_corner == (1, 0)
+        assert layout.shape_2d == (2068, 2072)
+        assert layout.parallel_overscan == (2048, 2068, 24, 2072)
+        assert layout.serial_prescan == (0, 2068, 0, 24)
+
+        layout = aa.acs.Layout2DACS.left(
+            parallel_size=2070,
+            serial_size=2072,
+            serial_prescan_size=28,
+            parallel_overscan_size=10,
+        )
+
+        assert layout.original_roe_corner == (1, 0)
+        assert layout.shape_2d == (2070, 2072)
+        assert layout.parallel_overscan == (2060, 2070, 28, 2072)
+        assert layout.serial_prescan == (0, 2070, 0, 28)
+
+        layout = aa.acs.Layout2DACS.right(
+            parallel_size=2068,
+            serial_size=2072,
+            serial_prescan_size=24,
+            parallel_overscan_size=20,
+        )
+
+        assert layout.original_roe_corner == (1, 1)
+        assert layout.shape_2d == (2068, 2072)
+        assert layout.parallel_overscan == (2048, 2068, 24, 2072)
+        assert layout.serial_prescan == (0, 2068, 0, 24)
+
+        layout = aa.acs.Layout2DACS.right(
+            parallel_size=2070,
+            serial_size=2072,
+            serial_prescan_size=28,
+            parallel_overscan_size=10,
+        )
+
+        assert layout.original_roe_corner == (1, 1)
+        assert layout.shape_2d == (2070, 2072)
+        assert layout.parallel_overscan == (2060, 2070, 28, 2072)
+        assert layout.serial_prescan == (0, 2070, 0, 28)
+
+    def test__from_ccd__chooses_correct_array_given_quadrant_letter(self, acs_ccd):
+
+        layout = aa.acs.Layout2DACS.from_ccd(quadrant_letter="B")
+
+        assert layout.original_roe_corner == (1, 0)
+        assert layout.shape_2d == (2068, 2072)
+
+        layout = aa.acs.Layout2DACS.from_ccd(quadrant_letter="C")
+
+        assert layout.original_roe_corner == (1, 0)
+        assert layout.shape_2d == (2068, 2072)
+
+        layout = aa.acs.Layout2DACS.from_ccd(quadrant_letter="A")
+
+        assert layout.original_roe_corner == (1, 1)
+        assert layout.shape_2d == (2068, 2072)
+
+        layout = aa.acs.Layout2DACS.from_ccd(quadrant_letter="D")
+
+        assert layout.original_roe_corner == (1, 1)
+        assert layout.shape_2d == (2068, 2072)

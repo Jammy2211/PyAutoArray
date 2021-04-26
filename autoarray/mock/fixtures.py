@@ -265,27 +265,8 @@ def make_interferometer_7_grid():
     )
 
 
-def make_interferometer_7_nufft():
-
-    return interferometer.Interferometer(
-        visibilities=make_visibilities_7(),
-        noise_map=make_visibilities_noise_map_7(),
-        uv_wavelengths=make_uv_wavelengths_7x2(),
-        real_space_mask=make_mask_2d_7x7(),
-        settings=interferometer.SettingsInterferometer(
-            sub_size_inversion=1, transformer_class=transformer.TransformerNUFFT
-        ),
-    )
-
-
 def make_transformer_7x7_7():
     return transformer.TransformerDFT(
-        uv_wavelengths=make_uv_wavelengths_7x2(), real_space_mask=make_mask_2d_7x7()
-    )
-
-
-def make_transformer_7x7_7_nufft():
-    return transformer.TransformerNUFFT(
         uv_wavelengths=make_uv_wavelengths_7x2(), real_space_mask=make_mask_2d_7x7()
     )
 
@@ -318,19 +299,6 @@ def make_imaging_fit_x1_plane_7x7():
 def make_fit_interferometer_7():
 
     interferometer_7 = make_interferometer_7()
-
-    fit_interferometer = fit.FitInterferometer(
-        interferometer=interferometer_7,
-        model_visibilities=5.0 * interferometer_7.visibilities,
-        use_mask_in_fit=False,
-    )
-    fit_interferometer.dataset = interferometer_7
-    return fit_interferometer
-
-
-def make_fit_interferometer_7_nufft():
-
-    interferometer_7 = make_interferometer_7_nufft()
 
     fit_interferometer = fit.FitInterferometer(
         interferometer=interferometer_7,

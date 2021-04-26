@@ -80,8 +80,6 @@ class Array2DACS(array_2d.Array2D):
         quadrant_letter,
         parallel_size=2068,
         serial_size=2072,
-        serial_prescan_size=24,
-        parallel_overscan_size=20,
         exposure_info=None,
     ):
         """
@@ -95,10 +93,6 @@ class Array2DACS(array_2d.Array2D):
 
             return cls.left(
                 array_electrons=array_electrons[0:parallel_size, 0:serial_size],
-                parallel_size=parallel_size,
-                serial_size=serial_size,
-                serial_prescan_size=serial_prescan_size,
-                parallel_overscan_size=parallel_overscan_size,
                 exposure_info=exposure_info,
             )
         elif quadrant_letter == "A" or quadrant_letter == "D":
@@ -106,10 +100,6 @@ class Array2DACS(array_2d.Array2D):
                 array_electrons=array_electrons[
                     0:parallel_size, serial_size : serial_size * 2
                 ],
-                parallel_size=parallel_size,
-                serial_size=serial_size,
-                serial_prescan_size=serial_prescan_size,
-                parallel_overscan_size=parallel_overscan_size,
                 exposure_info=exposure_info,
             )
         else:
@@ -118,15 +108,7 @@ class Array2DACS(array_2d.Array2D):
             )
 
     @classmethod
-    def left(
-        cls,
-        array_electrons,
-        parallel_size=2068,
-        serial_size=2072,
-        serial_prescan_size=24,
-        parallel_overscan_size=20,
-        exposure_info=None,
-    ):
+    def left(cls, array_electrons, exposure_info=None):
         """
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
@@ -134,45 +116,17 @@ class Array2DACS(array_2d.Array2D):
         See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
-        parallel_overscan = reg.Region2D(
-            (
-                parallel_size - parallel_overscan_size,
-                parallel_size,
-                serial_prescan_size,
-                serial_size,
-            )
-        )
-
-        serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(1, 0)
         )
 
-        layout_2d = lo.Layout2D.rotated_from_roe_corner(
-            roe_corner=(1, 0),
-            shape_native=array_electrons.shape,
-            parallel_overscan=parallel_overscan,
-            serial_prescan=serial_prescan,
-        )
-
         return cls.manual(
-            array=array_electrons,
-            layout=layout_2d,
-            exposure_info=exposure_info,
-            pixel_scales=0.05,
+            array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
         )
 
     @classmethod
-    def right(
-        cls,
-        array_electrons,
-        parallel_size=2068,
-        serial_size=2072,
-        parallel_overscan_size=20,
-        serial_prescan_size=51,
-        exposure_info=None,
-    ):
+    def right(cls, array_electrons, exposure_info=None):
         """
         Use an input array of the right quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
@@ -180,35 +134,13 @@ class Array2DACS(array_2d.Array2D):
         See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
-        parallel_overscan = reg.Region2D(
-            (
-                parallel_size - parallel_overscan_size,
-                parallel_size,
-                0,
-                serial_size - serial_prescan_size,
-            )
-        )
-
-        serial_prescan = reg.Region2D(
-            (0, parallel_size, serial_size - serial_prescan_size, serial_size)
-        )
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(1, 1)
         )
 
-        layout_2d = lo.Layout2D.rotated_from_roe_corner(
-            roe_corner=(1, 1),
-            shape_native=array_electrons.shape,
-            parallel_overscan=parallel_overscan,
-            serial_prescan=serial_prescan,
-        )
-
         return cls.manual(
-            array=array_electrons,
-            layout=layout_2d,
-            exposure_info=exposure_info,
-            pixel_scales=0.05,
+            array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
         )
 
     def update_fits(self, original_file_path, new_file_path):
@@ -320,6 +252,112 @@ class ImageACS(Array2DACS):
             return (
                 array * exposure_info.exposure_time * exposure_info.bscale
             ) + exposure_info.bzero
+
+
+class Layout2DACS(lo.Layout2D):
+    @classmethod
+    def from_ccd(
+        cls,
+        quadrant_letter,
+        parallel_size=2068,
+        serial_size=2072,
+        serial_prescan_size=24,
+        parallel_overscan_size=20,
+    ):
+        """
+        Using an input array of both quadrants in electrons, use the quadrant letter to extract the quadrant from the
+        full CCD and perform the rotations required to give correct arctic.
+
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+        if quadrant_letter == "B" or quadrant_letter == "C":
+
+            return cls.left(
+                parallel_size=parallel_size,
+                serial_size=serial_size,
+                serial_prescan_size=serial_prescan_size,
+                parallel_overscan_size=parallel_overscan_size,
+            )
+        elif quadrant_letter == "A" or quadrant_letter == "D":
+            return cls.right(
+                parallel_size=parallel_size,
+                serial_size=serial_size,
+                serial_prescan_size=serial_prescan_size,
+                parallel_overscan_size=parallel_overscan_size,
+            )
+        else:
+            raise exc.FrameException(
+                "Quadrant letter for FrameACS must be A, B, C or D."
+            )
+
+    @classmethod
+    def left(
+        cls,
+        parallel_size=2068,
+        serial_size=2072,
+        serial_prescan_size=24,
+        parallel_overscan_size=20,
+    ):
+        """
+        Use an input array of the left quadrant in electrons and perform the rotations required to give correct
+        arctic clocking.
+
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+        parallel_overscan = reg.Region2D(
+            (
+                parallel_size - parallel_overscan_size,
+                parallel_size,
+                serial_prescan_size,
+                serial_size,
+            )
+        )
+
+        serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
+
+        return lo.Layout2D.rotated_from_roe_corner(
+            roe_corner=(1, 0),
+            shape_native=(parallel_size, serial_size),
+            parallel_overscan=parallel_overscan,
+            serial_prescan=serial_prescan,
+        )
+
+    @classmethod
+    def right(
+        cls,
+        parallel_size=2068,
+        serial_size=2072,
+        parallel_overscan_size=20,
+        serial_prescan_size=51,
+    ):
+        """
+        Use an input array of the right quadrant in electrons and perform the rotations required to give correct
+        arctic clocking.
+
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+        parallel_overscan = reg.Region2D(
+            (
+                parallel_size - parallel_overscan_size,
+                parallel_size,
+                0,
+                serial_size - serial_prescan_size,
+            )
+        )
+
+        serial_prescan = reg.Region2D(
+            (0, parallel_size, serial_size - serial_prescan_size, serial_size)
+        )
+
+        return lo.Layout2D.rotated_from_roe_corner(
+            roe_corner=(1, 1),
+            shape_native=(parallel_size, serial_size),
+            parallel_overscan=parallel_overscan,
+            serial_prescan=serial_prescan,
+        )
 
 
 class ExposureInfoACS(abstract_array.ExposureInfo):

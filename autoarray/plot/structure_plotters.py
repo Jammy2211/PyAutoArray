@@ -54,15 +54,6 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.array.mask),
             border=self.extract_2d("border", self.array.mask.border_grid_sub_1.binned),
-            parallel_overscan=self.extract_2d(
-                "parallel_overscan", self.array.layout.parallel_overscan
-            ),
-            serial_prescan=self.extract_2d(
-                "serial_prescan", self.array.layout.serial_prescan
-            ),
-            serial_overscan=self.extract_2d(
-                "serial_overscan", self.array.layout.serial_overscan
-            ),
         )
 
     def figure_2d(self):

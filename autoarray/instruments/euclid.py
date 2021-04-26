@@ -109,9 +109,103 @@ class Array2DEuclid(array_2d.Array2D):
         )
 
     @classmethod
+    def from_ccd_and_quadrant_id(cls, array, ccd_id, quadrant_id):
+        """
+        Use an input array of a Euclid quadrant, its ccd_id and quadrant_id  to rotate the quadrant to
+        the correct orientation for arCTIc clocking.
+
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+
+        row_index = ccd_id[-1]
+
+        if (row_index in "123") and (quadrant_id == "E"):
+            return Array2DEuclid.bottom_left(array_electrons=array)
+        elif (row_index in "123") and (quadrant_id == "F"):
+            return Array2DEuclid.bottom_right(array_electrons=array)
+        elif (row_index in "123") and (quadrant_id == "G"):
+            return Array2DEuclid.top_right(array_electrons=array)
+        elif (row_index in "123") and (quadrant_id == "H"):
+            return Array2DEuclid.top_left(array_electrons=array)
+        elif (row_index in "456") and (quadrant_id == "E"):
+            return Array2DEuclid.top_right(array_electrons=array)
+        elif (row_index in "456") and (quadrant_id == "F"):
+            return Array2DEuclid.top_left(array_electrons=array)
+        elif (row_index in "456") and (quadrant_id == "G"):
+            return Array2DEuclid.bottom_left(array_electrons=array)
+        elif (row_index in "456") and (quadrant_id == "H"):
+            return Array2DEuclid.bottom_right(array_electrons=array)
+
+    @classmethod
+    def top_left(cls, array_electrons):
+        """
+        Use an input array of a Euclid quadrant corresponding to the top-left of a Euclid CCD and rotate the quadrant
+        to the correct orientation for arCTIc clocking.
+
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(0, 0)
+        )
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1)
+
+    @classmethod
+    def top_right(cls, array_electrons):
+        """
+        Use an input array of a Euclid quadrant corresponding the top-left of a Euclid CCD and rotate the  quadrant to
+        the correct orientation for arCTIc clocking.
+
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(0, 1)
+        )
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1)
+
+    @classmethod
+    def bottom_left(cls, array_electrons):
+        """
+        Use an input array of a Euclid quadrant corresponding to the bottom-left of a Euclid CCD and rotate the
+        quadrant to the correct orientation for arCTIc clocking.
+
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(1, 0)
+        )
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1)
+
+    @classmethod
+    def bottom_right(cls, array_electrons):
+        """
+        Use an input array of a Euclid quadrant corresponding to the bottom-right of a Euclid CCD and rotate the
+        quadrant to the correct orientation for arCTIc clocking.
+
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(1, 1)
+        )
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1)
+
+
+class Layout2DEuclid(lo.Layout2D):
+    @classmethod
     def from_ccd_and_quadrant_id(
         cls,
-        array,
         ccd_id,
         quadrant_id,
         parallel_size=2086,
@@ -131,8 +225,7 @@ class Array2DEuclid(array_2d.Array2D):
         row_index = ccd_id[-1]
 
         if (row_index in "123") and (quadrant_id == "E"):
-            return Array2DEuclid.bottom_left(
-                array_electrons=array,
+            return Layout2DEuclid.bottom_left(
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -140,8 +233,7 @@ class Array2DEuclid(array_2d.Array2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "F"):
-            return Array2DEuclid.bottom_right(
-                array_electrons=array,
+            return Layout2DEuclid.bottom_right(
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -149,8 +241,7 @@ class Array2DEuclid(array_2d.Array2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "G"):
-            return Array2DEuclid.top_right(
-                array_electrons=array,
+            return Layout2DEuclid.top_right(
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -158,8 +249,7 @@ class Array2DEuclid(array_2d.Array2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "H"):
-            return Array2DEuclid.top_left(
-                array_electrons=array,
+            return Layout2DEuclid.top_left(
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -167,8 +257,7 @@ class Array2DEuclid(array_2d.Array2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "E"):
-            return Array2DEuclid.top_right(
-                array_electrons=array,
+            return Layout2DEuclid.top_right(
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -176,8 +265,7 @@ class Array2DEuclid(array_2d.Array2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "F"):
-            return Array2DEuclid.top_left(
-                array_electrons=array,
+            return Layout2DEuclid.top_left(
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -185,8 +273,7 @@ class Array2DEuclid(array_2d.Array2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "G"):
-            return Array2DEuclid.bottom_left(
-                array_electrons=array,
+            return Layout2DEuclid.bottom_left(
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -194,8 +281,7 @@ class Array2DEuclid(array_2d.Array2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "H"):
-            return Array2DEuclid.bottom_right(
-                array_electrons=array,
+            return Layout2DEuclid.bottom_right(
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -206,144 +292,6 @@ class Array2DEuclid(array_2d.Array2D):
     @classmethod
     def top_left(
         cls,
-        array_electrons,
-        parallel_size=2086,
-        serial_size=2128,
-        serial_prescan_size=51,
-        serial_overscan_size=29,
-        parallel_overscan_size=20,
-    ):
-        """
-        Use an input array of a Euclid quadrant corresponding to the top-left of a Euclid CCD and rotate the quadrant
-        to the correct orientation for arCTIc clocking.
-
-        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
-        rotations.
-        """
-
-        layout_2d = Layout2DEuclid.top_left(
-            parallel_size=parallel_size,
-            serial_size=serial_size,
-            serial_prescan_size=serial_prescan_size,
-            serial_overscan_size=serial_overscan_size,
-            parallel_overscan_size=parallel_overscan_size,
-        )
-
-        layout_2d = layout_2d.new_rotated_from_roe_corner(roe_corner=(0, 0))
-
-        array_electrons = layout_util.rotate_array_from_roe_corner(
-            array=array_electrons, roe_corner=(0, 0)
-        )
-
-        return cls.manual(array=array_electrons, pixel_scales=0.1, layout=layout_2d)
-
-    @classmethod
-    def top_right(
-        cls,
-        array_electrons,
-        parallel_size=2086,
-        serial_size=2128,
-        parallel_overscan_size=20,
-        serial_prescan_size=51,
-        serial_overscan_size=29,
-    ):
-        """
-        Use an input array of a Euclid quadrant corresponding the top-left of a Euclid CCD and rotate the  quadrant to
-        the correct orientation for arCTIc clocking.
-
-        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
-        rotations.
-        """
-
-        layout_2d = Layout2DEuclid.top_right(
-            parallel_size=parallel_size,
-            serial_size=serial_size,
-            serial_prescan_size=serial_prescan_size,
-            serial_overscan_size=serial_overscan_size,
-            parallel_overscan_size=parallel_overscan_size,
-        )
-
-        layout_2d = layout_2d.new_rotated_from_roe_corner(roe_corner=(0, 1))
-
-        array_electrons = layout_util.rotate_array_from_roe_corner(
-            array=array_electrons, roe_corner=(0, 1)
-        )
-
-        return cls.manual(array=array_electrons, pixel_scales=0.1, layout=layout_2d)
-
-    @classmethod
-    def bottom_left(
-        cls,
-        array_electrons,
-        parallel_size=2086,
-        serial_size=2128,
-        serial_prescan_size=51,
-        serial_overscan_size=29,
-        parallel_overscan_size=20,
-    ):
-        """
-        Use an input array of a Euclid quadrant corresponding to the bottom-left of a Euclid CCD and rotate the
-        quadrant to the correct orientation for arCTIc clocking.
-
-        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
-        rotations.
-        """
-
-        layout_2d = Layout2DEuclid.bottom_left(
-            parallel_size=parallel_size,
-            serial_size=serial_size,
-            serial_prescan_size=serial_prescan_size,
-            serial_overscan_size=serial_overscan_size,
-            parallel_overscan_size=parallel_overscan_size,
-        )
-
-        layout_2d = layout_2d.new_rotated_from_roe_corner(roe_corner=(1, 0))
-
-        array_electrons = layout_util.rotate_array_from_roe_corner(
-            array=array_electrons, roe_corner=(1, 0)
-        )
-
-        return cls.manual(array=array_electrons, pixel_scales=0.1, layout=layout_2d)
-
-    @classmethod
-    def bottom_right(
-        cls,
-        array_electrons,
-        parallel_size=2086,
-        serial_size=2128,
-        serial_prescan_size=51,
-        serial_overscan_size=29,
-        parallel_overscan_size=20,
-    ):
-        """
-        Use an input array of a Euclid quadrant corresponding to the bottom-right of a Euclid CCD and rotate the
-        quadrant to the correct orientation for arCTIc clocking.
-
-        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
-        rotations.
-        """
-
-        layout_2d = Layout2DEuclid.bottom_right(
-            parallel_size=parallel_size,
-            serial_size=serial_size,
-            serial_prescan_size=serial_prescan_size,
-            serial_overscan_size=serial_overscan_size,
-            parallel_overscan_size=parallel_overscan_size,
-        )
-
-        layout_2d = layout_2d.new_rotated_from_roe_corner(roe_corner=(1, 1))
-
-        array_electrons = layout_util.rotate_array_from_roe_corner(
-            array=array_electrons, roe_corner=(1, 1)
-        )
-
-        return cls.manual(array=array_electrons, pixel_scales=0.1, layout=layout_2d)
-
-
-class Layout2DEuclid(lo.Layout2D):
-    @classmethod
-    def top_left(
-        cls,
         parallel_size=2086,
         serial_size=2128,
         serial_prescan_size=51,
@@ -376,7 +324,7 @@ class Layout2DEuclid(lo.Layout2D):
             )
         )
 
-        return Layout2DEuclid(
+        layout_2d = Layout2DEuclid(
             shape_2d=(parallel_size, serial_size),
             original_roe_corner=(0, 0),
             parallel_overscan=parallel_overscan,
@@ -384,6 +332,8 @@ class Layout2DEuclid(lo.Layout2D):
             serial_overscan=serial_overscan,
         )
 
+        return layout_2d.new_rotated_from_roe_corner(roe_corner=(0, 0))
+
     @classmethod
     def top_right(
         cls,
@@ -416,13 +366,15 @@ class Layout2DEuclid(lo.Layout2D):
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 
-        return Layout2DEuclid(
+        layout_2d = Layout2DEuclid(
             shape_2d=(parallel_size, serial_size),
             original_roe_corner=(0, 1),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,
         )
+
+        return layout_2d.new_rotated_from_roe_corner(roe_corner=(0, 1))
 
     @classmethod
     def bottom_left(
@@ -459,13 +411,15 @@ class Layout2DEuclid(lo.Layout2D):
             )
         )
 
-        return Layout2DEuclid(
+        layout_2d = Layout2DEuclid(
             shape_2d=(parallel_size, serial_size),
             original_roe_corner=(1, 0),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,
         )
+
+        return layout_2d.new_rotated_from_roe_corner(roe_corner=(1, 0))
 
     @classmethod
     def bottom_right(
@@ -499,10 +453,12 @@ class Layout2DEuclid(lo.Layout2D):
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 
-        return Layout2DEuclid(
+        layout_2d = Layout2DEuclid(
             shape_2d=(parallel_size, serial_size),
             original_roe_corner=(1, 1),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,
         )
+
+        return layout_2d.new_rotated_from_roe_corner(roe_corner=(1, 1))

@@ -405,61 +405,36 @@ class FitInterferometer(FitDataset):
 
     @property
     def dirty_image(self):
-        try:
-            return self.transformer.image_from_visibilities(
-                visibilities=self.visibilities
-            )
-        except AttributeError:
-            pass
+        return self.transformer.image_from_visibilities(visibilities=self.visibilities)
 
     @property
     def dirty_noise_map(self):
-        try:
-            return self.transformer.image_from_visibilities(visibilities=self.noise_map)
-        except AttributeError:
-            pass
+        return self.transformer.image_from_visibilities(visibilities=self.noise_map)
 
     @property
     def dirty_signal_to_noise_map(self):
-        try:
-            return self.transformer.image_from_visibilities(
-                visibilities=self.signal_to_noise_map
-            )
-        except AttributeError:
-            pass
+        return self.transformer.image_from_visibilities(
+            visibilities=self.signal_to_noise_map
+        )
 
     @property
     def dirty_model_image(self):
-        try:
-            return self.transformer.image_from_visibilities(
-                visibilities=self.model_visibilities
-            )
-        except AttributeError:
-            pass
+        return self.transformer.image_from_visibilities(
+            visibilities=self.model_visibilities
+        )
 
     @property
     def dirty_residual_map(self):
-        try:
-            return self.transformer.image_from_visibilities(
-                visibilities=self.residual_map
-            )
-        except AttributeError:
-            pass
+        return self.transformer.image_from_visibilities(visibilities=self.residual_map)
 
     @property
     def dirty_normalized_residual_map(self):
-        try:
-            return self.transformer.image_from_visibilities(
-                visibilities=self.normalized_residual_map
-            )
-        except AttributeError:
-            pass
+        return self.transformer.image_from_visibilities(
+            visibilities=self.normalized_residual_map
+        )
 
     @property
     def dirty_chi_squared_map(self):
-        try:
-            return self.transformer.image_from_visibilities(
-                visibilities=self.chi_squared_map
-            )
-        except AttributeError:
-            pass
+        return self.transformer.image_from_visibilities(
+            visibilities=self.chi_squared_map
+        )

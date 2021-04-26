@@ -168,12 +168,9 @@ class Layout2D:
                <---------S----------
         """
 
-        layout = array.layout.after_extraction(extraction_region=self.parallel_overscan)
-
         return array_2d.Array2D.manual(
             array=array.native[self.parallel_overscan.slice],
             exposure_info=array.exposure_info,
-            layout=layout,
             pixel_scales=array.pixel_scales,
         )
 
@@ -225,12 +222,9 @@ class Layout2D:
                <---------S----------
         """
 
-        layout = array.layout.after_extraction(extraction_region=self.serial_overscan)
-
         return array_2d.Array2D.manual(
             array=array.native[self.serial_overscan.slice],
             exposure_info=array.exposure_info,
-            layout=layout,
             pixel_scales=array.pixel_scales,
         )
 

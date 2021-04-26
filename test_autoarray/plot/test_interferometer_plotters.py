@@ -16,12 +16,10 @@ def make_plot_path_setup():
     )
 
 
-def test__individual_attributes_are_output(
-    interferometer_7_nufft, plot_path, plot_patch
-):
+def test__individual_attributes_are_output(interferometer_7, plot_path, plot_patch):
 
     interferometer_plotter = aplt.InterferometerPlotter(
-        interferometer=interferometer_7_nufft,
+        interferometer=interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )

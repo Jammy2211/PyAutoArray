@@ -9,9 +9,6 @@ class AbstractStructure(np.ndarray):
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 
-        if hasattr(obj, "layout"):
-            self.layout = obj.layout
-
         if hasattr(obj, "exposure_info"):
             self.exposure_info = obj.exposure_info
 

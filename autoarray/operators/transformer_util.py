@@ -119,6 +119,35 @@ def visibilities_jit(image_1d, grid_radians, uv_wavelengths):
 
 
 @decorator_util.jit()
+def image_from_visibilities_jit(n_pixels, grid_radians, uv_wavelengths, visibilities):
+
+    image_1d = np.zeros(n_pixels)
+
+    for image_1d_index in range(image_1d.shape[0]):
+        for vis_1d_index in range(uv_wavelengths.shape[0]):
+
+            image_1d[image_1d_index] += visibilities[vis_1d_index, 0] * np.cos(
+                2.0
+                * np.pi
+                * (
+                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
+                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
+                )
+            )
+
+            image_1d[image_1d_index] -= visibilities[vis_1d_index, 1] * np.sin(
+                2.0
+                * np.pi
+                * (
+                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
+                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
+                )
+            )
+
+    return image_1d
+
+
+@decorator_util.jit()
 def transformed_mapping_matrix_via_preload_jit_from(
     mapping_matrix, preloaded_reals, preloaded_imags
 ):

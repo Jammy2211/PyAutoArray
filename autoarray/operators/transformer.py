@@ -65,6 +65,25 @@ class TransformerDFT(pylops.LinearOperator):
 
         return vis.Visibilities(visibilities=visibilities)
 
+    def image_from_visibilities(self, visibilities):
+
+        image_slim = transformer_util.image_from_visibilities_jit(
+            n_pixels=self.grid.shape[0],
+            grid_radians=self.grid,
+            uv_wavelengths=self.uv_wavelengths,
+            visibilities=visibilities.in_array,
+        )
+
+        image_native = array_2d_util.array_2d_native_from(
+            array_2d_slim=image_slim,
+            mask_2d=self.real_space_mask,
+            sub_size=self.real_space_mask.sub_size,
+        )
+
+        return array_2d.Array2D.manual_native(
+            array=image_native, pixel_scales=self.real_space_mask.pixel_scales
+        )
+
     def transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
 
         if self.preload_transform:
