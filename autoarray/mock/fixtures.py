@@ -264,6 +264,18 @@ def make_interferometer_7_grid():
         ),
     )
 
+def make_interferometer_7_lop():
+
+    return interferometer.Interferometer(
+        visibilities=make_visibilities_7(),
+        noise_map=make_visibilities_noise_map_7(),
+        uv_wavelengths=make_uv_wavelengths_7x2(),
+        real_space_mask=make_mask_2d_7x7(),
+        settings=interferometer.SettingsInterferometer(
+            sub_size_inversion=1, transformer_class=transformer.TransformerNUFFT
+        ),
+    )
+
 
 def make_transformer_7x7_7():
     return transformer.TransformerDFT(

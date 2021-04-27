@@ -73,7 +73,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
     exposure_info = None
 
     def _new_structure(self, array, mask):
-        return self.__class__(array=array, mask=mask)
+        return self.__class__(array=array, mask=mask, exposure_info=self.exposure_info)
 
     @property
     def readout_offsets(self):
