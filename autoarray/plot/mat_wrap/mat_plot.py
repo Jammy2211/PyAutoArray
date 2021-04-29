@@ -648,8 +648,9 @@ class MatPlot2D(AbstractMatPlot):
             self.grid_scatter.scatter_grid_colored(
                 grid=grid, color_array=color_array, cmap=self.cmap.config_dict["cmap"]
             )
-            cb = self.colorbar.set()
-            self.colorbar_tickparams.set(cb=cb)
+            if self.colorbar is not None:
+                cb = self.colorbar.set()
+                self.colorbar_tickparams.set(cb=cb)
 
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)

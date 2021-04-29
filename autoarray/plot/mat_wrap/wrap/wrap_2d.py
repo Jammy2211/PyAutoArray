@@ -424,11 +424,15 @@ class VoronoiDrawer(AbstractMatWrap2D):
                 color_array = np.ones(color_values.shape[0])
 
             cmap = plt.get_cmap(cmap.config_dict["cmap"])
-            colorbar = colorbar.set_with_color_values(
-                cmap=cmap, color_values=color_values
-            )
-            if colorbar is not None and colorbar_tickparams is not None:
-                colorbar_tickparams.set(cb=colorbar)
+
+            if colorbar is not None:
+
+                colorbar = colorbar.set_with_color_values(
+                    cmap=cmap, color_values=color_values
+                )
+                if colorbar is not None and colorbar_tickparams is not None:
+                    colorbar_tickparams.set(cb=colorbar)
+
         else:
             cmap = plt.get_cmap("Greys")
             color_array = np.zeros(shape=mapper.pixels)
