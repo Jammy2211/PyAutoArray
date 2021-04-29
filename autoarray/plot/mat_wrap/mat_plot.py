@@ -609,8 +609,9 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        cb = self.colorbar.set()
-        self.colorbar_tickparams.set(cb=cb)
+        if self.colorbar is not None:
+            cb = self.colorbar.set()
+            self.colorbar_tickparams.set(cb=cb)
 
         visuals_2d.plot_via_plotter(plotter=self, grid_indexes=array.mask.masked_grid)
 
