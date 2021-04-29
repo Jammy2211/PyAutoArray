@@ -33,6 +33,7 @@ class FitData:
 
         Residuals = (Data - Model_Data).
         """
+
         if self.use_mask_in_fit:
             return fit_util.residual_map_with_mask_from(
                 data=self.data, model_data=self.model_data, mask=self.mask

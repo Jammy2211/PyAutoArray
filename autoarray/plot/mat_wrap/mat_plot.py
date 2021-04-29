@@ -323,7 +323,6 @@ class MatPlot1D(AbstractMatPlot):
         if x is None:
             x = np.arange(len(y))
 
-
         if self.yx_plot.plot_axis_type is None:
             plot_axis_type = "linear"
         else:
@@ -333,10 +332,7 @@ class MatPlot1D(AbstractMatPlot):
             plot_axis_type = plot_axis_type_override
 
         self.yx_plot.plot_y_vs_x(
-            y=y,
-            x=x,
-            label=auto_labels.legend,
-            plot_axis_type=plot_axis_type,
+            y=y, x=x, label=auto_labels.legend, plot_axis_type=plot_axis_type
         )
 
         self.ylabel.set(units=self.units, include_brackets=False)
@@ -345,7 +341,7 @@ class MatPlot1D(AbstractMatPlot):
         self.tickparams.set()
 
         if plot_axis_type == "symlog":
-            plt.yscale('symlog')
+            plt.yscale("symlog")
 
         self.xticks.set(
             array=None, min_value=np.min(x), max_value=np.max(x), units=self.units
