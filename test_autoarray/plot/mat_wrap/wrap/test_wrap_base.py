@@ -519,7 +519,7 @@ class TestLegend:
         line.plot_y_vs_x(
             y=[1.0, 2.0, 3.0],
             x=[1.0, 2.0, 3.0],
-            plot_axis_type_override="linear",
+            plot_axis_type="linear",
             label="hi",
         )
 
