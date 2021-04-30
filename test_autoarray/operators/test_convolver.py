@@ -1079,7 +1079,7 @@ def test__convolution__cross_mask_with_blurring_entries__returns_array():
 
 
 def test__compare_to_full_2d_convolution():
-    # Setup a blurred datas_, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
+    # Setup a blurred data, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
 
     import scipy.signal
 
@@ -1103,7 +1103,7 @@ def test__compare_to_full_2d_convolution():
         array=blurred_image_via_scipy.native, mask=mask
     )
 
-    # Now reproduce this datas_ using the frame convolver_image
+    # Now reproduce this data using the frame convolver_image
 
     masked_image = aa.Array2D.manual_mask(array=image.native, mask=mask)
 

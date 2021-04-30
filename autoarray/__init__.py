@@ -22,7 +22,6 @@ from .inversion.mappers import mapper as Mapper
 from .inversion.pixelizations import SettingsPixelization
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
-from .mock import mock
 from .mock import fixtures
 from .operators.convolver import Convolver
 from .operators.convolver import Convolver

@@ -45,7 +45,7 @@ class Units:
 
         1) Species the units of the plot (e.g. meters, kilometers) and contains a conversion factor which converts
            the plotted data from its current units (e.g. meters) to the units plotted (e.g. kilometeters). Pixel units
-            can be used if `use_scaled=False`.
+           can be used if `use_scaled=False`.
 
         2) Uses the conversion above to manually override the yticks and xticks of the figure, so it appears in the
            converted units.
@@ -852,6 +852,10 @@ class Output:
                 plt.savefig(
                     path.join(self.path, f"{filename}.png"), bbox_inches="tight"
                 )
+            elif self.format == "pdf":
+                plt.savefig(
+                    path.join(self.path, f"{filename}.pdf"), bbox_inches="tight"
+                )
             elif self.format == "fits":
                 if structure is not None:
                     structure.output_to_fits(
@@ -868,7 +872,8 @@ class Output:
             plt.show()
         elif self.format == "png":
             plt.savefig(path.join(self.path, f"{filename}.png"), bbox_inches="tight")
-
+        elif self.format == "pdf":
+            plt.savefig(path.join(self.path, f"{filename}.pdf"), bbox_inches="tight")
 
 def remove_spaces_and_commas_from_colors(colors):
 
