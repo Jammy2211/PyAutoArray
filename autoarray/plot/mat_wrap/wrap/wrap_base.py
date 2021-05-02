@@ -875,6 +875,7 @@ class Output:
         elif self.format == "pdf":
             plt.savefig(path.join(self.path, f"{filename}.pdf"), bbox_inches="tight")
 
+
 def remove_spaces_and_commas_from_colors(colors):
 
     colors = [color.strip(",") for color in colors]
