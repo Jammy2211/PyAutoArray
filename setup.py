@@ -12,11 +12,12 @@ with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
 version = environ.get("VERSION", "1.0.dev0")
-requirements.extend([f"autoconf=={version}"])
+#requirements.extend([f"autoconf=={version}"])
+requirements.extend([f"autoconf-tmp=={version}"])
 
 setup(
     name="autoarray",
-    version=,
+    version=version,
     description="PyAuto Data Structures",
     long_description=long_description,
     long_description_content_type="text/markdown",
