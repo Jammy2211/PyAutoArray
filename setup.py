@@ -15,7 +15,7 @@ requirements.extend(["autoconf==0.9.0"])
 
 setup(
     name="autoarray",
-    version=environ.get("VERSION", "1.0.dev0"),
+    version=environ.get("VERSION", "0.21.1"),
     description="PyAuto Data Structures",
     long_description=long_description,
     long_description_content_type="text/markdown",
