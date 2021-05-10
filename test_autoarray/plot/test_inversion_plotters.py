@@ -37,7 +37,7 @@ def test__individual_attributes_are_output_for_all_mappers(
         residual_map=True,
         normalized_residual_map=True,
         chi_squared_map=True,
-        regularization_weights=True,
+        regularization_weight_list=True,
         interpolated_reconstruction=True,
         interpolated_errors=True,
     )
@@ -48,7 +48,7 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
-    assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
+    assert path.join(plot_path, "regularization_weight_list.png") in plot_patch.paths
     assert path.join(plot_path, "interpolated_reconstruction.png") in plot_patch.paths
     assert path.join(plot_path, "interpolated_errors.png") in plot_patch.paths
 
@@ -67,7 +67,7 @@ def test__individual_attributes_are_output_for_all_mappers(
         residual_map=True,
         normalized_residual_map=True,
         chi_squared_map=True,
-        regularization_weights=True,
+        regularization_weight_list=True,
         interpolated_reconstruction=True,
         interpolated_errors=True,
     )
@@ -78,7 +78,7 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
-    assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
+    assert path.join(plot_path, "regularization_weight_list.png") in plot_patch.paths
     assert path.join(plot_path, "interpolated_reconstruction.png") in plot_patch.paths
     assert path.join(plot_path, "interpolated_errors.png") in plot_patch.paths
 

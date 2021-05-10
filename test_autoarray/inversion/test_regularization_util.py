@@ -5,7 +5,7 @@ import pytest
 
 
 class TestRegularizationinstanceMatrix:
-    def test__1_b_matrix_size_3x3__weights_all_1s__makes_correct_regularization_matrix(
+    def test__1_b_matrix_size_3x3__weight_list_all_1s__makes_correct_regularization_matrix(
         self,
     ):
         # Here, we define the pixel_neighbors first here and make the B matrices based on them.
@@ -35,7 +35,7 @@ class TestRegularizationinstanceMatrix:
         assert (regularization_matrix == test_regularization_matrix).all()
         assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
-    def test__1_b_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(
+    def test__1_b_matrix_size_4x4__weight_list_all_1s__makes_correct_regularization_matrix(
         self,
     ):
 
@@ -156,54 +156,54 @@ class TestRegularizationinstanceMatrix:
         assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
-class TestRegularizationWeightedRegularizationWeights:
-    def test__pixel_signals_all_1s__coefficients_all_1s__weights_all_1s(self):
+class TestRegularizationWeightedRegularizationweight_list:
+    def test__pixel_signals_all_1s__coefficients_all_1s__weight_list_all_1s(self):
 
         pixel_signals = np.array([1.0, 1.0, 1.0])
 
-        weights = aa.util.regularization.adaptive_regularization_weights_from(
+        weight_list = aa.util.regularization.adaptive_regularization_weight_list_from(
             inner_coefficient=1.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
-        assert (weights == np.array([1.0, 1.0, 1.0])).all()
+        assert (weight_list == np.array([1.0, 1.0, 1.0])).all()
 
-    def test__pixel_signals_vary__coefficents_all_1s__weights_still_all_1s(self):
+    def test__pixel_signals_vary__coefficents_all_1s__weight_list_still_all_1s(self):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = aa.util.regularization.adaptive_regularization_weights_from(
+        weight_list = aa.util.regularization.adaptive_regularization_weight_list_from(
             inner_coefficient=1.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
-        assert (weights == np.array([1.0, 1.0, 1.0])).all()
+        assert (weight_list == np.array([1.0, 1.0, 1.0])).all()
 
-    def test__pixel_signals_vary__coefficents_1_and_0__weights_are_pixel_signals_squared(
+    def test__pixel_signals_vary__coefficents_1_and_0__weight_list_are_pixel_signals_squared(
         self,
     ):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = aa.util.regularization.adaptive_regularization_weights_from(
+        weight_list = aa.util.regularization.adaptive_regularization_weight_list_from(
             inner_coefficient=1.0, outer_coefficient=0.0, pixel_signals=pixel_signals
         )
 
-        assert (weights == np.array([0.25 ** 2.0, 0.5 ** 2.0, 0.75 ** 2.0])).all()
+        assert (weight_list == np.array([0.25 ** 2.0, 0.5 ** 2.0, 0.75 ** 2.0])).all()
 
-    def test__pixel_signals_vary__coefficents_0_and_1__weights_are_1_minus_pixel_signals_squared(
+    def test__pixel_signals_vary__coefficents_0_and_1__weight_list_are_1_minus_pixel_signals_squared(
         self,
     ):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = aa.util.regularization.adaptive_regularization_weights_from(
+        weight_list = aa.util.regularization.adaptive_regularization_weight_list_from(
             inner_coefficient=0.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
-        assert (weights == np.array([0.75 ** 2.0, 0.5 ** 2.0, 0.25 ** 2.0])).all()
+        assert (weight_list == np.array([0.75 ** 2.0, 0.5 ** 2.0, 0.25 ** 2.0])).all()
 
 
 class TestRegularizationWeightedMatrix:
-    def test__1_b_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(
+    def test__1_b_matrix_size_4x4__weight_list_all_1s__makes_correct_regularization_matrix(
         self,
     ):
 
@@ -217,10 +217,10 @@ class TestRegularizationWeightedMatrix:
 
         test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix)
 
-        regularization_weights = np.ones((4,))
+        regularization_weight_list = np.ones((4,))
 
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
+            regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )
@@ -229,7 +229,7 @@ class TestRegularizationWeightedMatrix:
             test_regularization_matrix, 1.0e-4
         )
 
-    def test__2_b_matrices_size_3x3__weights_all_1s__makes_correct_regularization_matrix(
+    def test__2_b_matrices_size_3x3__weight_list_all_1s__makes_correct_regularization_matrix(
         self,
     ):
         # Here, we define the pixel_neighbors first here and make the B matrices based on them.
@@ -256,10 +256,10 @@ class TestRegularizationWeightedMatrix:
             test_regularization_matrix_1 + test_regularization_matrix_2
         )
 
-        regularization_weights = np.ones((3))
+        regularization_weight_list = np.ones((3))
 
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
+            regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )
@@ -268,7 +268,7 @@ class TestRegularizationWeightedMatrix:
             test_regularization_matrix, 1.0e-4
         )
 
-    def test__2_b_matrices_size_4x4__weights_all_1s__makes_correct_regularization_matrix(
+    def test__2_b_matrices_size_4x4__weight_list_all_1s__makes_correct_regularization_matrix(
         self,
     ):
 
@@ -292,10 +292,10 @@ class TestRegularizationWeightedMatrix:
 
         pixel_neighbors_size = np.array([2, 2, 2, 2])
 
-        regularization_weights = np.ones((4,))
+        regularization_weight_list = np.ones((4,))
 
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
+            regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )
@@ -304,7 +304,7 @@ class TestRegularizationWeightedMatrix:
             test_regularization_matrix, 1.0e-4
         )
 
-    def test__4_b_matrices_size_6x6__weights_all_1s__makes_correct_regularization_matrix(
+    def test__4_b_matrices_size_6x6__weight_list_all_1s__makes_correct_regularization_matrix(
         self,
     ):
         # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a
@@ -382,10 +382,10 @@ class TestRegularizationWeightedMatrix:
             + +test_regularization_matrix_4
         )
 
-        regularization_weights = np.ones((6))
+        regularization_weight_list = np.ones((6))
 
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
+            regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )
@@ -394,7 +394,7 @@ class TestRegularizationWeightedMatrix:
             test_regularization_matrix, 1.0e-4
         )
 
-    def test__2_b_matrices_size_4x4_models_regularization_weights__makes_correct_regularization_matrix(
+    def test__2_b_matrices_size_4x4_models_regularization_weight_list__makes_correct_regularization_matrix(
         self,
     ):
         # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
@@ -407,7 +407,7 @@ class TestRegularizationWeightedMatrix:
 
         # Regularization Matrix, H = B * B.T.I can
 
-        regularization_weights = np.array([2.0, 4.0, 1.0, 8.0])
+        regularization_weight_list = np.array([2.0, 4.0, 1.0, 8.0])
 
         test_b_matrix_1 = np.array(
             [[-2, 2, 0, 0], [-2, 0, 2, 0], [0, -4, 4, 0], [0, -4, 0, 4]]
@@ -431,7 +431,7 @@ class TestRegularizationWeightedMatrix:
         pixel_neighbors_size = np.array([2, 3, 2, 1])
 
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
+            regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )
@@ -440,7 +440,7 @@ class TestRegularizationWeightedMatrix:
             test_regularization_matrix, 1.0e-4
         )
 
-    def test__4_b_matrices_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(
+    def test__4_b_matrices_size_6x6_with_regularization_weight_list__makes_correct_regularization_matrix(
         self,
     ):
 
@@ -456,9 +456,9 @@ class TestRegularizationWeightedMatrix:
         )
 
         pixel_neighbors_size = np.array([2, 3, 4, 2, 4, 3])
-        regularization_weights = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+        regularization_weight_list = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
-        # I'm inputting the regularization weights directly thiss time, as it'd be a pain to multiply with a
+        # I'm inputting the regularization weight_list directly thiss time, as it'd be a pain to multiply with a
         # loop.
 
         test_b_matrix_1 = np.array(
@@ -483,7 +483,7 @@ class TestRegularizationWeightedMatrix:
             ]
         )
 
-        # Now do the same pairs but with the regularization direction and weights swapped.
+        # Now do the same pairs but with the regularization direction and weight_list swapped.
 
         test_b_matrix_3 = np.array(
             [
@@ -520,7 +520,7 @@ class TestRegularizationWeightedMatrix:
         )
 
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
+            regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )

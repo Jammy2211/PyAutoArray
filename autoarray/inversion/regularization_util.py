@@ -46,11 +46,11 @@ def constant_regularization_matrix_from(
     return regularization_matrix
 
 
-def adaptive_regularization_weights_from(
+def adaptive_regularization_weight_list_from(
     inner_coefficient: float, outer_coefficient: float, pixel_signals: np.ndarray
 ) -> np.ndarray:
     """
-    Returns the regularization weights (the effective regularization coefficient of every pixel). They are computed
+    Returns the regularization weight_list (the effective regularization coefficient of every pixel). They are computed
     using the pixel-signal of each pixel.
 
     Two regularization coefficients are used, corresponding to the:
@@ -70,7 +70,7 @@ def adaptive_regularization_weights_from(
     Returns
     -------
     np.ndarray
-        The weights of the adaptive regularization scheme which act as the effective regularization coefficients of
+        The weight_list of the adaptive regularization scheme which act as the effective regularization coefficients of
         every source pixel.
     """
     return (
@@ -80,7 +80,7 @@ def adaptive_regularization_weights_from(
 
 @decorator_util.jit()
 def weighted_regularization_matrix_from(
-    regularization_weights: np.ndarray,
+    regularization_weight_list: np.ndarray,
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
 ) -> np.ndarray:
@@ -89,7 +89,7 @@ def weighted_regularization_matrix_from(
 
     Parameters
     ----------
-    regularization_weights : np.ndarray
+    regularization_weight_list : np.ndarray
         The regularization_ weight of each pixel, which governs how much smoothing is applied to that individual pixel.
     pixel_neighbors : np.ndarray
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
@@ -105,11 +105,11 @@ def weighted_regularization_matrix_from(
         coefficient of every source pixel is different.
     """
 
-    pixels = len(regularization_weights)
+    pixels = len(regularization_weight_list)
 
     regularization_matrix = np.zeros(shape=(pixels, pixels))
 
-    regularization_weight = regularization_weights ** 2.0
+    regularization_weight = regularization_weight_list ** 2.0
 
     for i in range(pixels):
         regularization_matrix[i, i] += 1e-8

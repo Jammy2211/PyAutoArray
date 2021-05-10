@@ -70,7 +70,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
         obj.grid_interp = grid_2d.Grid2D.manual_mask(grid=grid_interp, mask=mask_interp)
 
-        obj.vtx, obj.wts = obj.interp_weights
+        obj.vtx, obj.wts = obj.interp_weight_list
 
         return obj
 
@@ -322,8 +322,8 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         )
 
     @property
-    def interp_weights(self):
-        """The weights of the interpolation scheme between the interpolation grid and grid at native resolution."""
+    def interp_weight_list(self):
+        """The weight_list of the interpolation scheme between the interpolation grid and grid at native resolution."""
         tri = qhull.Delaunay(self.grid_interp.slim)
         simplex = tri.find_simplex(self.slim)
         # noinspection PyUnresolvedReferences
@@ -383,12 +383,12 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             return self.structure_2d_from_result(result=result)
 
     def interpolated_array_from_array_interp(self, array_interp):
-        """Use the precomputed vertexes and weights of a Delaunay gridding to interpolate a set of values computed on
+        """Use the precomputed vertexes and weight_list of a Delaunay gridding to interpolate a set of values computed on
         the interpolation grid to the Grid2DInterpolate's full grid.
 
         This function is taken from the SciPy interpolation method griddata
         (see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.griddata.html). It is adapted here
-        to reuse pre-computed interpolation vertexes and weights for efficiency.
+        to reuse pre-computed interpolation vertexes and weight_list for efficiency.
 
         Parameters
         ----------
@@ -403,12 +403,12 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         return array_2d.Array2D(array=interpolated_array, mask=self.mask)
 
     def interpolated_grid_from_grid_interp(self, grid_interp) -> grid_2d.Grid2D:
-        """Use the precomputed vertexes and weights of a Delaunay gridding to interpolate a grid of (y,x) values values
+        """Use the precomputed vertexes and weight_list of a Delaunay gridding to interpolate a grid of (y,x) values values
         computed on  the interpolation grid to the Grid2DInterpolate's full grid.
 
         This function is taken from the SciPy interpolation method griddata
         (see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.griddata.html). It is adapted here
-        to reuse pre-computed interpolation vertexes and weights for efficiency.
+        to reuse pre-computed interpolation vertexes and weight_list for efficiency.
 
         Parameters
         ----------

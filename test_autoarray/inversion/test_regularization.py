@@ -42,7 +42,7 @@ class TestRegularizationinstance:
 
 
 class TestRegularizationWeighted:
-    def test__weights__compare_to_regularization_util(self):
+    def test__weight_list__compare_to_regularization_util(self):
 
         reg = aa.reg.AdaptiveBrightness(inner_coefficient=10.0, outer_coefficient=15.0)
 
@@ -50,13 +50,13 @@ class TestRegularizationWeighted:
 
         mapper = MockRegMapper(pixel_signals=pixel_signals)
 
-        weights = reg.regularization_weights_from_mapper(mapper=mapper)
+        weight_list = reg.regularization_weight_list_from_mapper(mapper=mapper)
 
-        weights_util = aa.util.regularization.adaptive_regularization_weights_from(
+        weight_list_util = aa.util.regularization.adaptive_regularization_weight_list_from(
             inner_coefficient=10.0, outer_coefficient=15.0, pixel_signals=pixel_signals
         )
 
-        assert (weights == weights_util).all()
+        assert (weight_list == weight_list_util).all()
 
     def test__regularization_matrix__compare_to_regularization_util(self):
 
@@ -88,12 +88,12 @@ class TestRegularizationWeighted:
 
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
-        regularization_weights = aa.util.regularization.adaptive_regularization_weights_from(
+        regularization_weight_list = aa.util.regularization.adaptive_regularization_weight_list_from(
             pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
         )
 
         regularization_matrix_util = aa.util.regularization.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
+            regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
         )

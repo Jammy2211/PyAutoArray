@@ -165,7 +165,7 @@ def adaptive_pixel_signals_from(
     'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
 
     2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
-    regularization weights are defined identically for any data quantity or signal-to-noise_map ratio.
+    regularization weight_list are defined identically for any data quantity or signal-to-noise_map ratio.
 
     3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative
     contribution regularization in different regions of pixelization.

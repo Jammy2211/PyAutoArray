@@ -280,9 +280,9 @@ class VisibilitiesNoiseMap(Visibilities):
             (np.real(visibilities), np.imag(visibilities)), axis=0
         )
 
-        weights = 1.0 / obj.in_array ** 2.0
+        weight_list = 1.0 / obj.in_array ** 2.0
 
-        obj.weights_ordered_1d = np.concatenate((weights[:, 0], weights[:, 1]), axis=0)
+        obj.weight_list_ordered_1d = np.concatenate((weight_list[:, 0], weight_list[:, 1]), axis=0)
 
         return obj
 
@@ -291,5 +291,5 @@ class VisibilitiesNoiseMap(Visibilities):
         if hasattr(obj, "ordered_1d"):
             self.ordered_1d = obj.ordered_1d
 
-        if hasattr(obj, "weights_ordered_1d"):
-            self.weights_ordered_1d = obj.weights_ordered_1d
+        if hasattr(obj, "weight_list_ordered_1d"):
+            self.weight_list_ordered_1d = obj.weight_list_ordered_1d

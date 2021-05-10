@@ -149,5 +149,5 @@ class TestVisibilitiesNoiseMap:
         )
         assert (noise_map.ordered_1d == np.array([1.0, 3.0, 2.0, 4.0])).all()
         assert (
-            noise_map.weights_ordered_1d == np.array([1.0, 1.0 / 9.0, 0.25, 0.0625])
+            noise_map.weight_list_ordered_1d == np.array([1.0, 1.0 / 9.0, 0.25, 0.0625])
         ).all()

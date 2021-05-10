@@ -215,8 +215,8 @@ class AbstractInversion:
         raise NotImplementedError()
 
     @property
-    def regularization_weights(self):
-        return self.regularization.regularization_weights_from_mapper(
+    def regularization_weight_list(self):
+        return self.regularization.regularization_weight_list_from_mapper(
             mapper=self.mapper
         )
 
@@ -763,7 +763,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         Op = Fop * Aop
 
         curvature_matrix_approx = np.multiply(
-            np.sum(noise_map.weights_ordered_1d),
+            np.sum(noise_map.weight_list_ordered_1d),
             mapper.mapping_matrix.T @ mapper.mapping_matrix,
         )
 
@@ -782,7 +782,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             Regs=None,
             epsNRs=[1.0],
             data=visibilities.ordered_1d,
-            Weight=pylops.Diagonal(diag=noise_map.weights_ordered_1d),
+            Weight=pylops.Diagonal(diag=noise_map.weight_list_ordered_1d),
             NRegs=[pylops.MatrixMult(sparse.bsr_matrix(regularization_matrix))],
             M=MOp,
             tol=settings.tolerance,

@@ -36,7 +36,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
         residual_map=False,
         normalized_residual_map=False,
         chi_squared_map=False,
-        regularization_weights=False,
+        regularization_weight_list=False,
         interpolated_reconstruction=False,
         interpolated_errors=False,
     ):
@@ -142,16 +142,16 @@ class InversionPlotter(structure_plotters.MapperPlotter):
                 ),
             )
 
-        if regularization_weights:
+        if regularization_weight_list:
 
             self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
                 auto_labels=mp.AutoLabels(
-                    title="Regularization Weights", filename="regularization_weights"
+                    title="Regularization weight_list", filename="regularization_weight_list"
                 ),
                 source_pixelilzation_values=self.as_mapper(
-                    self.inversion.regularization_weights
+                    self.inversion.regularization_weight_list
                 ),
             )
 
@@ -183,7 +183,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
         residual_map=False,
         normalized_residual_map=False,
         chi_squared_map=False,
-        regularization_weights=False,
+        regularization_weight_list=False,
         interpolated_reconstruction=False,
         interpolated_errors=False,
         auto_filename="subplot_inversion",
@@ -196,7 +196,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             residual_map=residual_map,
             normalized_residual_map=normalized_residual_map,
             chi_squared_map=chi_squared_map,
-            regularization_weights=regularization_weights,
+            regularization_weight_list=regularization_weight_list,
             interpolated_reconstruction=interpolated_reconstruction,
             interpolated_errors=interpolated_errors,
             auto_labels=mp.AutoLabels(filename=auto_filename),
@@ -209,5 +209,5 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             errors=True,
             residual_map=True,
             chi_squared_map=True,
-            regularization_weights=True,
+            regularization_weight_list=True,
         )
