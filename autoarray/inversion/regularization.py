@@ -227,7 +227,9 @@ class AdaptiveBrightness(Regularization):
 
     def regularization_matrix_from_mapper(self, mapper):
 
-        regularization_weight_list = self.regularization_weight_list_from_mapper(mapper=mapper)
+        regularization_weight_list = self.regularization_weight_list_from_mapper(
+            mapper=mapper
+        )
 
         return regularization_util.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,

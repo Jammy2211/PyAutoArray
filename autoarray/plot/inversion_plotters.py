@@ -148,7 +148,8 @@ class InversionPlotter(structure_plotters.MapperPlotter):
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
                 auto_labels=mp.AutoLabels(
-                    title="Regularization weight_list", filename="regularization_weight_list"
+                    title="Regularization weight_list",
+                    filename="regularization_weight_list",
                 ),
                 source_pixelilzation_values=self.as_mapper(
                     self.inversion.regularization_weight_list

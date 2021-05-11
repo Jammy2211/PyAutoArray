@@ -282,7 +282,9 @@ class VisibilitiesNoiseMap(Visibilities):
 
         weight_list = 1.0 / obj.in_array ** 2.0
 
-        obj.weight_list_ordered_1d = np.concatenate((weight_list[:, 0], weight_list[:, 1]), axis=0)
+        obj.weight_list_ordered_1d = np.concatenate(
+            (weight_list[:, 0], weight_list[:, 1]), axis=0
+        )
 
         return obj
 
