@@ -5,7 +5,7 @@ from autoarray import exc
 from typing import Tuple
 
 
-class Region1D(object):
+class Region1D:
     def __init__(self, region: Tuple[int, int]):
         """
         Setup a region of an `Structure1D` object (e.g. `Array1D`, `Grid1D`, etc.), which could be where the parallel
@@ -69,8 +69,16 @@ class Region1D(object):
     def shape(self):
         return self.x1 - self.x0
 
+    def front_edge_region_from(self, pixels):
 
-class Region2D(object):
+        x_coord = self.x0
+        x_min = x_coord + pixels[0]
+        x_max = x_coord + pixels[1]
+
+        return Region1D((x_min, x_max))
+
+
+class Region2D:
     def __init__(self, region):
         """Setup a region of an image, which could be where the parallel overscan, serial overscan, etc. are.
 
