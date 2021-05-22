@@ -238,7 +238,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
         sub_size : int
             The size of the sub-grid that each pixel of the 2D mask array is divided into.
-        angle : float
+        angle
             The angle with which the radial coordinates are rotated clockwise.
 
         Returns

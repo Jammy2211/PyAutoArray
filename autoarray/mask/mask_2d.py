@@ -829,7 +829,7 @@ class Mask2D(AbstractMask2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        centre: (float, float)
+        centre
             The (y,x) scaled units centre of the circle used to mask pixels.
         invert : bool
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
@@ -888,7 +888,7 @@ class Mask2D(AbstractMask2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        centre: (float, float)
+        centre
             The (y,x) scaled units centre of the annulus used to mask pixels.
         invert : bool
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
@@ -952,7 +952,7 @@ class Mask2D(AbstractMask2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        centre: (float, float)
+        centre
             The (y,x) scaled units centre of the anti-annulus used to mask pixels.
         invert : bool
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
@@ -1004,9 +1004,9 @@ class Mask2D(AbstractMask2D):
             The (y,x) shape of the mask in units of pixels.
         major_axis_radius : float
             The major-axis in scaled units of the ellipse within which pixels are unmasked.
-        axis_ratio : float
+        axis_ratio
             The axis-ratio of the ellipse within which pixels are unmasked.
-        angle : float
+        angle
             The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive \
              x-axis).
         pixel_scales: (float, float) or float
@@ -1016,7 +1016,7 @@ class Mask2D(AbstractMask2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        centre: (float, float)
+        centre
             The (y,x) scaled units centred of the ellipse used to mask pixels.
         invert : bool
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
@@ -1073,14 +1073,14 @@ class Mask2D(AbstractMask2D):
             The scaled units to pixel units conversion factor of each pixel.
         inner_major_axis_radius : float
             The major-axis in scaled units of the inner ellipse within which pixels are masked.
-        inner_axis_ratio : float
+        inner_axis_ratio
             The axis-ratio of the inner ellipse within which pixels are masked.
         inner_phi : float
             The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the \
             positive x-axis).
         outer_major_axis_radius : float
             The major-axis in scaled units of the outer ellipse within which pixels are unmasked.
-        outer_axis_ratio : float
+        outer_axis_ratio
             The axis-ratio of the outer ellipse within which pixels are unmasked.
         outer_phi : float
             The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the \
@@ -1089,7 +1089,7 @@ class Mask2D(AbstractMask2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        centre: (float, float)
+        centre
             The (y,x) scaled units centre of the elliptical annuli used to mask pixels.
         invert : bool
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
