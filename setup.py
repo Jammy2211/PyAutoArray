@@ -11,7 +11,7 @@ with open(join(this_dir, "README.rst"), encoding="utf-8") as file:
 with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
-requirements.extend(["autoconf==0.9.0"])
+requirements.extend(["autoconf==0.10.0"])
 
 setup(
     name="autoarray",
