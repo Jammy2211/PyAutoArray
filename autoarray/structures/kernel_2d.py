@@ -290,11 +290,11 @@ class Kernel2D(array_2d.Array2D):
             it is converted to a (float, float) structure.
         sigma : float
             The value of sigma in the equation, describing the size and full-width half maximum of the Gaussian.
-        centre : (float, float)
+        centre
             The (y,x) central coordinates of the Gaussian.
-        axis_ratio : float
+        axis_ratio
             The axis-ratio of the elliptical Gaussian.
-        angle : float
+        angle
             The rotational angle of the Gaussian's ellipse defined counter clockwise from the positive x-axis.
         normalize : bool
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.

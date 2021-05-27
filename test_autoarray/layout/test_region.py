@@ -90,6 +90,28 @@ class TestRegion1D:
 
         assert (arr_1d == np.array([1.0, 2.0, 0.0, 0.0])).all()
 
+    def test__front_edge_region_from__extracts_rows_within_bottom_of_region(self,):
+
+        region = aa.Region1D(region=(0, 3))
+
+        # Front edge is row 0, so for 1 row we extract 0 -> 1
+
+        front_edge = region.front_edge_region_from(pixels=(0, 1))
+
+        assert front_edge == (0, 1)
+
+        # Front edge is row 0, so for 2 pixels we extract 0 -> 2
+
+        front_edge = region.front_edge_region_from(pixels=(0, 2))
+
+        assert front_edge == (0, 2)
+
+        # Front edge is row 0, so for these 2 pixels we extract 1 ->2
+
+        front_edge = region.front_edge_region_from(pixels=(1, 3))
+
+        assert front_edge == (1, 3)
+
 
 class TestRegion2D:
     def test__sanity_check__first_row_or_column_equal_too_or_bigger_than_second__raise_errors(

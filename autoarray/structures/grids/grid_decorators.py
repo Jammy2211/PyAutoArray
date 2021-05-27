@@ -358,7 +358,7 @@ def transform(func):
         ----------
         cls : Profile
             The class that owns the function.
-        grid : grid_like
+        grid
             The (y, x) coordinates in the original reference frame of the grid.
 
         Returns
@@ -412,7 +412,7 @@ def relocate_to_radial_minimum(func):
         ----------
         cls : Profile
             The class that owns the function.
-        grid : grid_like
+        grid
             The (y, x) coordinates which are to be radially moved from (0.0, 0.0).
 
         Returns

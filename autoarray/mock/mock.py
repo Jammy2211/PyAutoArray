@@ -48,7 +48,7 @@ def grid_to_grid_cartesian(grid, radius):
 
     Parameters
     ----------
-    grid : grid_like
+    grid
         The (y, x) coordinates in the reference frame of the profile.
     radius : np.ndarray
         The circular radius of each coordinate from the profile center.
@@ -97,7 +97,7 @@ class MockGridLikeIteratorObj:
 
         Parameters
         ----------
-        grid : grid_like
+        grid
             The (y, x) coordinates in the reference frame of the profile.
         radius : np.ndarray
             The circular radius of each coordinate from the profile center.

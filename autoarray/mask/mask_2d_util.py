@@ -158,8 +158,8 @@ def mask_2d_circular_from(
         The scaled units to pixel units conversion factor of each pixel.
     radius : float
         The radius (in scaled units) of the circle within which pixels unmasked.
-    centre: (float, float)
-        The centre of the circle used to mask pixels.
+    centre
+            The centre of the circle used to mask pixels.
 
     Returns
     -------
@@ -215,8 +215,8 @@ def mask_2d_circular_annular_from(
         The radius (in scaled units) of the inner circle outside of which pixels are unmasked.
     outer_radius : float
         The radius (in scaled units) of the outer circle within which pixels are unmasked.
-    centre: (float, float)
-        The centre of the annulus used to mask pixels.
+    centre
+            The centre of the annulus used to mask pixels.
 
     Returns
     -------
@@ -277,8 +277,8 @@ def mask_2d_circular_anti_annular_from(
     outer_radius_2 : float
         The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
         outside of which all entries are `True` and masked.
-    centre: (float, float)
-        The centre of the annulus used to mask pixels.
+    centre
+            The centre of the annulus used to mask pixels.
 
     Returns
     -------
@@ -364,10 +364,10 @@ def elliptical_radius_from(
         The scaled y coordinate in Cartesian coordinates which is converted to elliptical coordinates.
     x_scaled : float
         The scaled x coordinate in Cartesian coordinates which is converted to elliptical coordinates.
-    angle : float
-        The rotation angle in degrees counter-clockwise from the positive x-axis
-    axis_ratio : float
-        The axis-ratio of the ellipse (minor axis / major axis).
+    angle
+            The rotation angle in degrees counter-clockwise from the positive x-axis
+    axis_ratio
+            The axis-ratio of the ellipse (minor axis / major axis).
 
     Returns
     -------
@@ -409,13 +409,13 @@ def mask_2d_elliptical_from(
         The scaled units to pixel units conversion factor of each pixel.
     major_axis_radius : float
         The major-axis (in scaled units) of the ellipse within which pixels are unmasked.
-    axis_ratio : float
-        The axis-ratio of the ellipse within which pixels are unmasked.
-    angle : float
-        The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
+    axis_ratio
+            The axis-ratio of the ellipse within which pixels are unmasked.
+    angle
+            The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
          x-axis).
-    centre: (float, float)
-        The centre of the ellipse used to mask pixels.
+    centre
+            The centre of the ellipse used to mask pixels.
 
     Returns
     -------
@@ -476,20 +476,20 @@ def mask_2d_elliptical_annular_from(
         The scaled units to pixel units conversion factor of each pixel.
     inner_major_axis_radius : float
         The major-axis (in scaled units) of the inner ellipse within which pixels are masked.
-    inner_axis_ratio : float
-        The axis-ratio of the inner ellipse within which pixels are masked.
+    inner_axis_ratio
+            The axis-ratio of the inner ellipse within which pixels are masked.
     inner_phi : float
         The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the
         positive x-axis).
     outer_major_axis_radius : float
         The major-axis (in scaled units) of the outer ellipse within which pixels are unmasked.
-    outer_axis_ratio : float
-        The axis-ratio of the outer ellipse within which pixels are unmasked.
+    outer_axis_ratio
+            The axis-ratio of the outer ellipse within which pixels are unmasked.
     outer_phi : float
         The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
         positive x-axis).
-    centre: (float, float)
-        The centre of the elliptical annuli used to mask pixels.
+    centre
+            The centre of the elliptical annuli used to mask pixels.
 
     Returns
     -------

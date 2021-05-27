@@ -82,7 +82,7 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
 
         Parameters
         ----------
-        angle : float
+        angle
             The angle with which the project 2D grid of coordinates is rotated clockwise.
 
         Returns

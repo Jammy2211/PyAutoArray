@@ -3,13 +3,11 @@ import logging
 import numpy as np
 import copy
 
-from autoconf import conf
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.mask import mask_2d as msk
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.structures import kernel_2d
 from autoarray.operators import convolver
 
