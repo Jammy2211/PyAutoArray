@@ -11,11 +11,12 @@ with open(join(this_dir, "README.rst"), encoding="utf-8") as file:
 with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
-requirements.extend(["autoconf==0.10.0"])
+version = environ.get("VERSION", "1.0.dev0")
+requirements.extend([f"autoconf=={version}"])
 
 setup(
     name="autoarray",
-    version=environ.get("VERSION", "1.0.dev0"),
+    version=version,
     description="PyAuto Data Structures",
     long_description=long_description,
     long_description_content_type="text/markdown",
