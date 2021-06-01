@@ -10,6 +10,7 @@ from astropy.io import fits
 import numpy as np
 import shutil
 import os
+from os import path
 
 import logging
 
@@ -313,9 +314,7 @@ class Array2DACS(array_2d.Array2D):
         file_path : str
             The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
-        overwrite : bool
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
-            """
+        """
 
         new_file_dir = os.path.split(new_file_path)[0]
 
@@ -364,11 +363,20 @@ class ImageACS(Array2DACS):
 
         hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
 
-        header = cls.header_from_fits(file_path=file_path, hdu=hdu)
-
-        array = cls.array_converted_to_electrons_from_fits(
-            file_path=file_path, hdu=hdu, header=header
+        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
+        header_hdu_obj = array_2d_util.header_obj_from_fits(
+            file_path=file_path, hdu=hdu
         )
+
+        header = HeaderACS(
+            header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj, hdu=hdu
+        )
+
+        array = array_2d_util.numpy_array_2d_from_fits(
+            file_path=file_path, hdu=hdu, do_not_scale_image_data=True
+        )
+
+        array = header.array_from_original_to_electrons(array=array)
 
         if bias_path is not None:
 
@@ -387,32 +395,6 @@ class ImageACS(Array2DACS):
             bias_subtract_via_prescan=bias_subtract_via_prescan,
             bias=bias,
         )
-
-    @staticmethod
-    def header_from_fits(file_path, hdu):
-
-        hdulist = fits.open(file_path)
-
-        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from_fits(
-            file_path=file_path, hdu=hdu
-        )
-
-        return HeaderACS(
-            header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj, hdu=hdu
-        )
-
-    @staticmethod
-    def array_converted_to_electrons_from_fits(file_path, hdu, header):
-
-        array = array_2d_util.numpy_array_2d_from_fits(
-            file_path=file_path, hdu=hdu, do_not_scale_image_data=True
-        )
-
-        if header.original_units in "COUNTS":
-            return (array * header.bscale) + header.bzero
-        elif header.original_units in "CPS":
-            return (array * header.exposure_time * header.bscale) + header.bzero
 
 
 class Layout2DACS(lo.Layout2D):
@@ -485,6 +467,20 @@ class HeaderACS(abstract_array.Header):
             array_eps=array_eps, bscale=self.bscale, bzero=self.bzero
         )
 
+    def array_from_original_to_electrons(self, array):
+
+        if self.original_units in "COUNTS":
+            return (array * self.bscale) + self.bzero
+        elif self.original_units in "CPS":
+            return (array * self.exposure_time * self.bscale) + self.bzero
+
+    def array_from_electrons_to_original(self, array):
+
+        if self.original_units in "COUNTS":
+            return (array - self.bzero) / self.bscale
+        elif self.original_units in "CPS":
+            return (array - self.bzero) / (self.exposure_time * self.bscale)
+
 
 def prescan_fitted_bias_column(prescan, n_rows=2048, n_rows_ov=20):
     """
@@ -538,3 +534,59 @@ def prescan_fitted_bias_column(prescan, n_rows=2048, n_rows_ov=20):
     # plt.show()
 
     return np.transpose([bias_column])
+
+
+def output_quadrants_to_fits(
+    quadrant_a,
+    quadrant_b,
+    quadrant_c,
+    quadrant_d,
+    file_path: str,
+    overwrite: bool = False,
+    parallel_size=2068,
+    serial_size=2072,
+):
+
+    if path.exists(file_path):
+        shutil.rmtree(file_path)
+
+    os.makedirs(file_path)
+
+    array_hdu_1 = np.zeros((2068, 4144))
+    array_hdu_1[0:parallel_size, 0:serial_size] = quadrant_a
+    array_hdu_1[0:parallel_size, serial_size : serial_size * 2] = quadrant_d
+
+    array_hdu_4 = np.zeros((2068, 4144))
+    array_hdu_4[0:parallel_size, 0:serial_size] = quadrant_c
+    array_hdu_4[0:parallel_size, serial_size : serial_size * 2] = quadrant_b
+
+    hdul = fits.HDUList()
+
+    hdul.append(fits.ImageHDU(acs_ccd))
+    hdul.append(fits.ImageHDU(acs_ccd_0))
+    hdul.append(fits.ImageHDU(acs_ccd))
+    hdul.append(fits.ImageHDU(acs_ccd))
+    hdul.append(fits.ImageHDU(acs_ccd_1))
+    hdul.append(fits.ImageHDU(acs_ccd))
+
+    hdul[0].header.set("EXPTIME", 1000.0, "exposure duration (seconds)--calculated")
+    hdul[0].header.set(
+        "DATE-OBS", "2000-01-01", "UT date of start of observation (yyyy-mm-dd)"
+    )
+    hdul[0].header.set(
+        "TIME-OBS", "00:00:00", "UT time of start of observation (hh:mm:ss)"
+    )
+
+    if units in "COUNTS":
+        hdul[1].header.set("BUNIT", "COUNTS", "brightness units")
+        hdul[4].header.set("BUNIT", "COUNTS", "brightness units")
+    elif units in "CPS":
+        hdul[1].header.set("BUNIT", "CPS", "brightness units")
+        hdul[4].header.set("BUNIT", "CPS", "brightness units")
+
+    hdul[1].header.set("BSCALE", 2.0, "scale factor for array value to physical value")
+    hdul[1].header.set("BZERO", 10.0, "physical value for an array value of zero")
+    hdul[4].header.set("BSCALE", 2.0, "scale factor for array value to physical value")
+    hdul[4].header.set("BZERO", 10.0, "physical value for an array value of zero")
+
+    hdul.writeto(path.join(fits_path, "acs_ccd.fits"))

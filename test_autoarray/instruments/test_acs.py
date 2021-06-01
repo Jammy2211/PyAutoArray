@@ -225,20 +225,36 @@ class TestImageACS:
         assert array.in_counts.native[0, 0] == 30.0
         assert array.shape_native == (2068, 2072)
 
+        array_original = array.header.array_from_electrons_to_original(array=array)
+
+        assert array_original.native[0, 0] == 30.0
+
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
 
         assert array.native[0, 0] == (40.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
+
+        array_original = array.header.array_from_electrons_to_original(array=array)
+
+        assert array_original.native[0, 0] == 40.0
 
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert array.native[0, 0] == (10.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
+        array_original = array.header.array_from_electrons_to_original(array=array)
+
+        assert array_original.native[0, 0] == 10.0
+
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
         assert array.native[0, 0] == (20.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
+
+        array_original = array.header.array_from_electrons_to_original(array=array)
+
+        assert array_original.native[0, 0] == 20.0
 
     def test__from_fits__in_counts_per_second__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
         self, acs_ccd
@@ -271,20 +287,36 @@ class TestImageACS:
         assert array.native[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
+        array_original = array.header.array_from_electrons_to_original(array=array)
+
+        assert array_original.native[0, 0] == 30.0
+
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
 
         assert array.native[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
+
+        array_original = array.header.array_from_electrons_to_original(array=array)
+
+        assert array_original.native[0, 0] == 40.0
 
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert array.native[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
+        array_original = array.header.array_from_electrons_to_original(array=array)
+
+        assert array_original.native[0, 0] == 10.0
+
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
         assert array.native[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
+
+        array_original = array.header.array_from_electrons_to_original(array=array)
+
+        assert array_original.native[0, 0] == 20.0
 
     def test__from_fits__in_counts__uses_bias_prescan_correctly(self, acs_ccd):
 
