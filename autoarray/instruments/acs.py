@@ -168,7 +168,12 @@ class Array2DACS(array_2d.Array2D):
         array_electrons = np.flipud(array_electrons)
 
         if bias_subtract_via_prescan:
-            array_electrons -= prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+            bias_serial_prescan_value = prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+            array_electrons -= bias_serial_prescan_value
+
+            exposure_info.bias_serial_prescan_column = bias_serial_prescan_value
 
         if bias is not None:
 
@@ -179,6 +184,8 @@ class Array2DACS(array_2d.Array2D):
             bias = np.flipud(bias)
 
             array_electrons -= bias
+
+            exposure_info.bias = bias
 
         return cls.manual(
             array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
@@ -207,7 +214,12 @@ class Array2DACS(array_2d.Array2D):
         array_electrons = np.flipud(array_electrons)
 
         if bias_subtract_via_prescan:
-            array_electrons -= prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+            bias_serial_prescan_value = prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+            array_electrons -= bias_serial_prescan_value
+
+            exposure_info.bias_serial_prescan_column = bias_serial_prescan_value
 
         if bias is not None:
 
@@ -218,6 +230,8 @@ class Array2DACS(array_2d.Array2D):
             bias = np.flipud(bias)
 
             array_electrons -= bias
+
+            exposure_info.bias = bias
 
         return cls.manual(
             array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
@@ -244,7 +258,12 @@ class Array2DACS(array_2d.Array2D):
         )
 
         if bias_subtract_via_prescan:
-            array_electrons -= prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+            bias_serial_prescan_value = prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+            array_electrons -= bias_serial_prescan_value
+
+            exposure_info.bias_serial_prescan_column = bias_serial_prescan_value
 
         if bias is not None:
 
@@ -253,6 +272,8 @@ class Array2DACS(array_2d.Array2D):
             )
 
             array_electrons -= bias
+
+            exposure_info.bias = bias
 
         return cls.manual(
             array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
@@ -279,7 +300,11 @@ class Array2DACS(array_2d.Array2D):
         )
 
         if bias_subtract_via_prescan:
-            array_electrons -= prescan_fitted_bias_column(array_electrons[:, 18:24])
+            bias_serial_prescan_value = prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+            array_electrons -= bias_serial_prescan_value
+
+            exposure_info.bias_serial_prescan_column = bias_serial_prescan_value
 
         if bias is not None:
 
@@ -288,6 +313,8 @@ class Array2DACS(array_2d.Array2D):
             )
 
             array_electrons -= bias
+
+            exposure_info.bias = bias
 
         return cls.manual(
             array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
@@ -465,6 +492,8 @@ class ExposureInfoACS(abstract_array.ExposureInfo):
         date_of_observation=None,
         time_of_observation=None,
         hdu=None,
+        bias=None,
+        bias_serial_prescan_column=None,
     ):
 
         super().__init__(
@@ -476,6 +505,8 @@ class ExposureInfoACS(abstract_array.ExposureInfo):
         self.original_units = original_units
         self.bscale = bscale
         self.bzero = bzero
+        self.bias = bias
+        self.bias_serial_prescan_column = bias_serial_prescan_column
         self.hdu = hdu
 
     def array_eps_to_counts(self, array_eps):
