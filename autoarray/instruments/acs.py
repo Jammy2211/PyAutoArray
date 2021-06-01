@@ -7,6 +7,7 @@ from autoarray import exc
 
 from astropy.io import fits
 
+import numpy as np
 import shutil
 import os
 
@@ -19,9 +20,9 @@ logger.setLevel("INFO")
 
 def fits_hdu_from_quadrant_letter(quadrant_letter):
 
-    if quadrant_letter == "A" or quadrant_letter == "B":
+    if quadrant_letter == "D" or quadrant_letter == "C":
         return 1
-    elif quadrant_letter == "C" or quadrant_letter == "D":
+    elif quadrant_letter == "B" or quadrant_letter == "A":
         return 4
     else:
         raise exc.FrameException("Quadrant letter for FrameACS must be A, B, C or D.")
@@ -81,6 +82,8 @@ class Array2DACS(array_2d.Array2D):
         parallel_size=2068,
         serial_size=2072,
         exposure_info=None,
+        bias_subtract_via_prescan=False,
+        bias=None,
     ):
         """
         Using an input array of both quadrants in electrons, use the quadrant letter to extract the quadrant from the
@@ -89,18 +92,53 @@ class Array2DACS(array_2d.Array2D):
         See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
-        if quadrant_letter == "B" or quadrant_letter == "C":
+        if quadrant_letter == "A":
 
-            return cls.left(
+            if bias is not None:
+                bias = bias[0:parallel_size, 0:serial_size]
+
+            return cls.quadrant_a(
                 array_electrons=array_electrons[0:parallel_size, 0:serial_size],
                 exposure_info=exposure_info,
+                bias_subtract_via_prescan=bias_subtract_via_prescan,
+                bias=bias,
             )
-        elif quadrant_letter == "A" or quadrant_letter == "D":
-            return cls.right(
+        elif quadrant_letter == "B":
+
+            if bias is not None:
+                bias = bias[0:parallel_size, serial_size : serial_size * 2]
+
+            return cls.quadrant_b(
                 array_electrons=array_electrons[
                     0:parallel_size, serial_size : serial_size * 2
                 ],
                 exposure_info=exposure_info,
+                bias_subtract_via_prescan=bias_subtract_via_prescan,
+                bias=bias,
+            )
+        elif quadrant_letter == "C":
+
+            if bias is not None:
+                bias = bias[0:parallel_size, 0:serial_size]
+
+            return cls.quadrant_c(
+                array_electrons=array_electrons[0:parallel_size, 0:serial_size],
+                exposure_info=exposure_info,
+                bias_subtract_via_prescan=bias_subtract_via_prescan,
+                bias=bias,
+            )
+        elif quadrant_letter == "D":
+
+            if bias is not None:
+                bias = bias[0:parallel_size, serial_size : serial_size * 2]
+
+            return cls.quadrant_d(
+                array_electrons=array_electrons[
+                    0:parallel_size, serial_size : serial_size * 2
+                ],
+                exposure_info=exposure_info,
+                bias_subtract_via_prescan=bias_subtract_via_prescan,
+                bias=bias,
             )
         else:
             raise exc.FrameException(
@@ -108,7 +146,13 @@ class Array2DACS(array_2d.Array2D):
             )
 
     @classmethod
-    def left(cls, array_electrons, exposure_info=None):
+    def quadrant_a(
+        cls,
+        array_electrons,
+        exposure_info=None,
+        bias_subtract_via_prescan=False,
+        bias=None,
+    ):
         """
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
@@ -121,12 +165,33 @@ class Array2DACS(array_2d.Array2D):
             array=array_electrons, roe_corner=(1, 0)
         )
 
+        array_electrons = np.flipud(array_electrons)
+
+        if bias_subtract_via_prescan:
+            array_electrons -= prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+        if bias is not None:
+
+            bias = layout_util.rotate_array_from_roe_corner(
+                array=bias, roe_corner=(1, 0)
+            )
+
+            bias = np.flipud(bias)
+
+            array_electrons -= bias
+
         return cls.manual(
             array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
         )
 
     @classmethod
-    def right(cls, array_electrons, exposure_info=None):
+    def quadrant_b(
+        cls,
+        array_electrons,
+        exposure_info=None,
+        bias_subtract_via_prescan=False,
+        bias=None,
+    ):
         """
         Use an input array of the right quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
@@ -138,6 +203,91 @@ class Array2DACS(array_2d.Array2D):
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(1, 1)
         )
+
+        array_electrons = np.flipud(array_electrons)
+
+        if bias_subtract_via_prescan:
+            array_electrons -= prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+        if bias is not None:
+
+            bias = layout_util.rotate_array_from_roe_corner(
+                array=bias, roe_corner=(1, 1)
+            )
+
+            bias = np.flipud(bias)
+
+            array_electrons -= bias
+
+        return cls.manual(
+            array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
+        )
+
+    @classmethod
+    def quadrant_c(
+        cls,
+        array_electrons,
+        exposure_info=None,
+        bias_subtract_via_prescan=False,
+        bias=None,
+    ):
+        """
+        Use an input array of the left quadrant in electrons and perform the rotations required to give correct
+        arctic clocking.
+
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(1, 0)
+        )
+
+        if bias_subtract_via_prescan:
+            array_electrons -= prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+        if bias is not None:
+
+            bias = layout_util.rotate_array_from_roe_corner(
+                array=bias, roe_corner=(1, 0)
+            )
+
+            array_electrons -= bias
+
+        return cls.manual(
+            array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
+        )
+
+    @classmethod
+    def quadrant_d(
+        cls,
+        array_electrons,
+        exposure_info=None,
+        bias_subtract_via_prescan=False,
+        bias=None,
+    ):
+        """
+        Use an input array of the right quadrant in electrons and perform the rotations required to give correct
+        arctic clocking.
+
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(1, 1)
+        )
+
+        if bias_subtract_via_prescan:
+            array_electrons -= prescan_fitted_bias_column(array_electrons[:, 18:24])
+
+        if bias is not None:
+
+            bias = layout_util.rotate_array_from_roe_corner(
+                array=bias, roe_corner=(1, 1)
+            )
+
+            array_electrons -= bias
 
         return cls.manual(
             array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
@@ -188,7 +338,9 @@ class ImageACS(Array2DACS):
     """
 
     @classmethod
-    def from_fits(cls, file_path, quadrant_letter):
+    def from_fits(
+        cls, file_path, quadrant_letter, bias_subtract_via_prescan=False, bias_path=None
+    ):
         """
         Use the input .fits file and quadrant letter to extract the quadrant from the full CCD, perform
         the rotations required to give correct arctic clocking and convert the image from units of COUNTS / CPS to
@@ -206,10 +358,22 @@ class ImageACS(Array2DACS):
             file_path=file_path, hdu=hdu, exposure_info=exposure_info
         )
 
+        if bias_path is not None:
+
+            bias = array_2d_util.numpy_array_2d_from_fits(
+                file_path=bias_path, hdu=hdu, do_not_scale_image_data=True
+            )
+
+        else:
+
+            bias = None
+
         return cls.from_ccd(
             array_electrons=array,
             quadrant_letter=quadrant_letter,
             exposure_info=exposure_info,
+            bias_subtract_via_prescan=bias_subtract_via_prescan,
+            bias=bias,
         )
 
     @staticmethod
@@ -256,44 +420,9 @@ class ImageACS(Array2DACS):
 
 class Layout2DACS(lo.Layout2D):
     @classmethod
-    def from_ccd(
+    def from_sizes(
         cls,
-        quadrant_letter,
-        parallel_size=2068,
-        serial_size=2072,
-        serial_prescan_size=24,
-        parallel_overscan_size=20,
-    ):
-        """
-        Using an input array of both quadrants in electrons, use the quadrant letter to extract the quadrant from the
-        full CCD and perform the rotations required to give correct arctic.
-
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
-        rotations.
-        """
-        if quadrant_letter == "B" or quadrant_letter == "C":
-
-            return cls.left(
-                parallel_size=parallel_size,
-                serial_size=serial_size,
-                serial_prescan_size=serial_prescan_size,
-                parallel_overscan_size=parallel_overscan_size,
-            )
-        elif quadrant_letter == "A" or quadrant_letter == "D":
-            return cls.right(
-                parallel_size=parallel_size,
-                serial_size=serial_size,
-                serial_prescan_size=serial_prescan_size,
-                parallel_overscan_size=parallel_overscan_size,
-            )
-        else:
-            raise exc.FrameException(
-                "Quadrant letter for FrameACS must be A, B, C or D."
-            )
-
-    @classmethod
-    def left(
-        cls,
+        roe_corner,
         parallel_size=2068,
         serial_size=2072,
         serial_prescan_size=24,
@@ -306,6 +435,7 @@ class Layout2DACS(lo.Layout2D):
         See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
+
         parallel_overscan = reg.Region2D(
             (
                 parallel_size - parallel_overscan_size,
@@ -318,42 +448,7 @@ class Layout2DACS(lo.Layout2D):
         serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
 
         return lo.Layout2D.rotated_from_roe_corner(
-            roe_corner=(1, 0),
-            shape_native=(parallel_size, serial_size),
-            parallel_overscan=parallel_overscan,
-            serial_prescan=serial_prescan,
-        )
-
-    @classmethod
-    def right(
-        cls,
-        parallel_size=2068,
-        serial_size=2072,
-        parallel_overscan_size=20,
-        serial_prescan_size=51,
-    ):
-        """
-        Use an input array of the right quadrant in electrons and perform the rotations required to give correct
-        arctic clocking.
-
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
-        rotations.
-        """
-        parallel_overscan = reg.Region2D(
-            (
-                parallel_size - parallel_overscan_size,
-                parallel_size,
-                0,
-                serial_size - serial_prescan_size,
-            )
-        )
-
-        serial_prescan = reg.Region2D(
-            (0, parallel_size, serial_size - serial_prescan_size, serial_size)
-        )
-
-        return lo.Layout2D.rotated_from_roe_corner(
-            roe_corner=(1, 1),
+            roe_corner=roe_corner,
             shape_native=(parallel_size, serial_size),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
@@ -387,3 +482,57 @@ class ExposureInfoACS(abstract_array.ExposureInfo):
         return array_eps_to_counts(
             array_eps=array_eps, bscale=self.bscale, bzero=self.bzero
         )
+
+
+def prescan_fitted_bias_column(prescan, n_rows=2048, n_rows_ov=20):
+    """
+    Generate a bias column to be subtracted from the main image by doing a
+    least squares fit to the serial prescan region.
+
+    e.g. image -= prescan_fitted_bias_column(image[18:24])
+
+    See Anton & Rorres (2013), S9.3, p460.
+
+    Parameters
+    ----------
+    prescan : [[float]]
+        The serial prescan part of the image. Should usually cover the full
+        number of rows but may skip the first few columns of the prescan to
+        avoid trails.
+
+    n_rows : int
+        The number of rows in the image, exculding overscan.
+
+    n_rows_ov : int, int
+        The number of overscan rows in the image.
+
+    Returns
+    -------
+    bias_column : [float]
+        The fitted bias to be subtracted from all image columns.
+    """
+    n_columns_fit = prescan.shape[1]
+
+    # Flatten the multiple fitting columns to a long 1D array
+    # y = [y_1_1, y_2_1, ..., y_nrow_1, y_1_2, y_2_2, ..., y_nrow_ncolfit]
+    y = prescan[:-n_rows_ov].T.flatten()
+    # x = [1, 2, ..., nrow, 1, ..., nrow, 1, ..., nrow, ...]
+    x = np.tile(np.arange(n_rows), n_columns_fit)
+
+    # M = [[1, 1, ..., 1], [x_1, x_2, ..., x_n]].T
+    M = np.array([np.ones(n_rows * n_columns_fit), x]).T
+
+    # Best-fit values for y = M v
+    v = np.dot(np.linalg.inv(np.dot(M.T, M)), np.dot(M.T, y))
+
+    # Map to full image size for easy subtraction
+    bias_column = v[0] + v[1] * np.arange(n_rows + n_rows_ov)
+
+    # plt.figure()
+    # pixels = np.arange(n_rows + n_rows_ov)
+    # for i in range(n_columns_fit):
+    #     plt.scatter(pixels, prescan[:, i])
+    # plt.plot(pixels, bias_column)
+    # plt.show()
+
+    return np.transpose([bias_column])

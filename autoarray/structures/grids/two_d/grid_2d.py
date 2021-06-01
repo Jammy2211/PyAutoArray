@@ -918,7 +918,8 @@ class Grid2DSparse(abstract_grid_2d.AbstractGrid2D):
         seed=None,
         stochastic=False,
     ):
-        """Calculate a Grid2DSparse from a Grid2D and weight map.
+        """
+        Calculate a Grid2DSparse from a Grid2D and weight map.
 
         This is performed by running a KMeans clustering algorithm on the weight map, such that Grid2DSparse (y,x)
         coordinates cluster around the weight map values with higher values.

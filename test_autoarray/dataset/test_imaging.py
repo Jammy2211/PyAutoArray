@@ -81,7 +81,7 @@ class TestImaging:
         imaging_capped = imaging.signal_to_noise_limited_from(signal_to_noise_limit=2.0)
 
         assert (
-                imaging_capped.image.native == np.array([[20.0, 20.0], [20.0, 5.0]])
+            imaging_capped.image.native == np.array([[20.0, 20.0], [20.0, 5.0]])
         ).all()
 
         assert (
@@ -119,7 +119,7 @@ class TestImaging:
         )
 
         assert (
-                imaging_capped.image.native == np.array([[20.0, 20.0], [5.0, 5.0]])
+            imaging_capped.image.native == np.array([[20.0, 20.0], [5.0, 5.0]])
         ).all()
 
         assert (
@@ -307,8 +307,8 @@ class TestImagingApplyMask:
         )
 
         assert (
-                masked_imaging_7x7.image.native
-                == imaging_snr_limit.image.native * np.invert(mask_2d_7x7)
+            masked_imaging_7x7.image.native
+            == imaging_snr_limit.image.native * np.invert(mask_2d_7x7)
         ).all()
         assert (
             masked_imaging_7x7.noise_map.native
