@@ -81,7 +81,7 @@ class Array2DACS(array_2d.Array2D):
         quadrant_letter,
         parallel_size=2068,
         serial_size=2072,
-        exposure_info=None,
+        header=None,
         bias_subtract_via_prescan=False,
         bias=None,
     ):
@@ -99,7 +99,7 @@ class Array2DACS(array_2d.Array2D):
 
             return cls.quadrant_a(
                 array_electrons=array_electrons[0:parallel_size, 0:serial_size],
-                exposure_info=exposure_info,
+                header=header,
                 bias_subtract_via_prescan=bias_subtract_via_prescan,
                 bias=bias,
             )
@@ -112,7 +112,7 @@ class Array2DACS(array_2d.Array2D):
                 array_electrons=array_electrons[
                     0:parallel_size, serial_size : serial_size * 2
                 ],
-                exposure_info=exposure_info,
+                header=header,
                 bias_subtract_via_prescan=bias_subtract_via_prescan,
                 bias=bias,
             )
@@ -123,7 +123,7 @@ class Array2DACS(array_2d.Array2D):
 
             return cls.quadrant_c(
                 array_electrons=array_electrons[0:parallel_size, 0:serial_size],
-                exposure_info=exposure_info,
+                header=header,
                 bias_subtract_via_prescan=bias_subtract_via_prescan,
                 bias=bias,
             )
@@ -136,7 +136,7 @@ class Array2DACS(array_2d.Array2D):
                 array_electrons=array_electrons[
                     0:parallel_size, serial_size : serial_size * 2
                 ],
-                exposure_info=exposure_info,
+                header=header,
                 bias_subtract_via_prescan=bias_subtract_via_prescan,
                 bias=bias,
             )
@@ -147,11 +147,7 @@ class Array2DACS(array_2d.Array2D):
 
     @classmethod
     def quadrant_a(
-        cls,
-        array_electrons,
-        exposure_info=None,
-        bias_subtract_via_prescan=False,
-        bias=None,
+        cls, array_electrons, header=None, bias_subtract_via_prescan=False, bias=None
     ):
         """
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
@@ -169,11 +165,13 @@ class Array2DACS(array_2d.Array2D):
 
         if bias_subtract_via_prescan:
 
-            bias_serial_prescan_value = prescan_fitted_bias_column(array_electrons[:, 18:24])
+            bias_serial_prescan_value = prescan_fitted_bias_column(
+                array_electrons[:, 18:24]
+            )
 
             array_electrons -= bias_serial_prescan_value
 
-            exposure_info.bias_serial_prescan_column = bias_serial_prescan_value
+            header.bias_serial_prescan_column = bias_serial_prescan_value
 
         if bias is not None:
 
@@ -185,19 +183,13 @@ class Array2DACS(array_2d.Array2D):
 
             array_electrons -= bias
 
-            exposure_info.bias = bias
+            header.bias = bias
 
-        return cls.manual(
-            array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
-        )
+        return cls.manual(array=array_electrons, header=header, pixel_scales=0.05)
 
     @classmethod
     def quadrant_b(
-        cls,
-        array_electrons,
-        exposure_info=None,
-        bias_subtract_via_prescan=False,
-        bias=None,
+        cls, array_electrons, header=None, bias_subtract_via_prescan=False, bias=None
     ):
         """
         Use an input array of the right quadrant in electrons and perform the rotations required to give correct
@@ -215,11 +207,13 @@ class Array2DACS(array_2d.Array2D):
 
         if bias_subtract_via_prescan:
 
-            bias_serial_prescan_value = prescan_fitted_bias_column(array_electrons[:, 18:24])
+            bias_serial_prescan_value = prescan_fitted_bias_column(
+                array_electrons[:, 18:24]
+            )
 
             array_electrons -= bias_serial_prescan_value
 
-            exposure_info.bias_serial_prescan_column = bias_serial_prescan_value
+            header.bias_serial_prescan_column = bias_serial_prescan_value
 
         if bias is not None:
 
@@ -231,19 +225,13 @@ class Array2DACS(array_2d.Array2D):
 
             array_electrons -= bias
 
-            exposure_info.bias = bias
+            header.bias = bias
 
-        return cls.manual(
-            array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
-        )
+        return cls.manual(array=array_electrons, header=header, pixel_scales=0.05)
 
     @classmethod
     def quadrant_c(
-        cls,
-        array_electrons,
-        exposure_info=None,
-        bias_subtract_via_prescan=False,
-        bias=None,
+        cls, array_electrons, header=None, bias_subtract_via_prescan=False, bias=None
     ):
         """
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
@@ -259,11 +247,13 @@ class Array2DACS(array_2d.Array2D):
 
         if bias_subtract_via_prescan:
 
-            bias_serial_prescan_value = prescan_fitted_bias_column(array_electrons[:, 18:24])
+            bias_serial_prescan_value = prescan_fitted_bias_column(
+                array_electrons[:, 18:24]
+            )
 
             array_electrons -= bias_serial_prescan_value
 
-            exposure_info.bias_serial_prescan_column = bias_serial_prescan_value
+            header.bias_serial_prescan_column = bias_serial_prescan_value
 
         if bias is not None:
 
@@ -273,19 +263,13 @@ class Array2DACS(array_2d.Array2D):
 
             array_electrons -= bias
 
-            exposure_info.bias = bias
+            header.bias = bias
 
-        return cls.manual(
-            array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
-        )
+        return cls.manual(array=array_electrons, header=header, pixel_scales=0.05)
 
     @classmethod
     def quadrant_d(
-        cls,
-        array_electrons,
-        exposure_info=None,
-        bias_subtract_via_prescan=False,
-        bias=None,
+        cls, array_electrons, header=None, bias_subtract_via_prescan=False, bias=None
     ):
         """
         Use an input array of the right quadrant in electrons and perform the rotations required to give correct
@@ -300,11 +284,13 @@ class Array2DACS(array_2d.Array2D):
         )
 
         if bias_subtract_via_prescan:
-            bias_serial_prescan_value = prescan_fitted_bias_column(array_electrons[:, 18:24])
+            bias_serial_prescan_value = prescan_fitted_bias_column(
+                array_electrons[:, 18:24]
+            )
 
             array_electrons -= bias_serial_prescan_value
 
-            exposure_info.bias_serial_prescan_column = bias_serial_prescan_value
+            header.bias_serial_prescan_column = bias_serial_prescan_value
 
         if bias is not None:
 
@@ -314,11 +300,9 @@ class Array2DACS(array_2d.Array2D):
 
             array_electrons -= bias
 
-            exposure_info.bias = bias
+            header.bias = bias
 
-        return cls.manual(
-            array=array_electrons, exposure_info=exposure_info, pixel_scales=0.05
-        )
+        return cls.manual(array=array_electrons, header=header, pixel_scales=0.05)
 
     def update_fits(self, original_file_path, new_file_path):
         """
@@ -330,7 +314,8 @@ class Array2DACS(array_2d.Array2D):
             The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         overwrite : bool
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""
+            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
+            """
 
         new_file_dir = os.path.split(new_file_path)[0]
 
@@ -344,7 +329,7 @@ class Array2DACS(array_2d.Array2D):
 
         hdulist = fits.open(new_file_path)
 
-        hdulist[self.exposure_info.hdu].data = self.layout.original_orientation_from(
+        hdulist[self.header.hdu].data = self.layout_2d.original_orientation_from(
             array=self
         )
 
@@ -379,10 +364,10 @@ class ImageACS(Array2DACS):
 
         hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
 
-        exposure_info = cls.exposure_info_from_fits(file_path=file_path, hdu=hdu)
+        header = cls.header_from_fits(file_path=file_path, hdu=hdu)
 
         array = cls.array_converted_to_electrons_from_fits(
-            file_path=file_path, hdu=hdu, exposure_info=exposure_info
+            file_path=file_path, hdu=hdu, header=header
         )
 
         if bias_path is not None:
@@ -398,51 +383,36 @@ class ImageACS(Array2DACS):
         return cls.from_ccd(
             array_electrons=array,
             quadrant_letter=quadrant_letter,
-            exposure_info=exposure_info,
+            header=header,
             bias_subtract_via_prescan=bias_subtract_via_prescan,
             bias=bias,
         )
 
     @staticmethod
-    def exposure_info_from_fits(file_path, hdu):
+    def header_from_fits(file_path, hdu):
 
         hdulist = fits.open(file_path)
 
-        sci_header = hdulist[0].header
+        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
+        header_hdu_obj = array_2d_util.header_obj_from_fits(
+            file_path=file_path, hdu=hdu
+        )
 
-        exposure_time = sci_header["EXPTIME"]
-        date_of_observation = sci_header["DATE-OBS"]
-        time_of_observation = sci_header["TIME-OBS"]
-
-        ext_header = hdulist[hdu].header
-
-        units = ext_header["BUNIT"]
-        bscale = ext_header["BSCALE"]
-        bzero = ext_header["BZERO"]
-
-        return ExposureInfoACS(
-            exposure_time=exposure_time,
-            date_of_observation=date_of_observation,
-            time_of_observation=time_of_observation,
-            original_units=units,
-            bscale=bscale,
-            bzero=bzero,
-            hdu=hdu,
+        return HeaderACS(
+            header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj, hdu=hdu
         )
 
     @staticmethod
-    def array_converted_to_electrons_from_fits(file_path, hdu, exposure_info):
+    def array_converted_to_electrons_from_fits(file_path, hdu, header):
 
         array = array_2d_util.numpy_array_2d_from_fits(
             file_path=file_path, hdu=hdu, do_not_scale_image_data=True
         )
 
-        if exposure_info.original_units in "COUNTS":
-            return (array * exposure_info.bscale) + exposure_info.bzero
-        elif exposure_info.original_units in "CPS":
-            return (
-                array * exposure_info.exposure_time * exposure_info.bscale
-            ) + exposure_info.bzero
+        if header.original_units in "COUNTS":
+            return (array * header.bscale) + header.bzero
+        elif header.original_units in "CPS":
+            return (array * header.exposure_time * header.bscale) + header.bzero
 
 
 class Layout2DACS(lo.Layout2D):
@@ -482,32 +452,33 @@ class Layout2DACS(lo.Layout2D):
         )
 
 
-class ExposureInfoACS(abstract_array.ExposureInfo):
+class HeaderACS(abstract_array.Header):
     def __init__(
         self,
-        original_units=None,
-        bscale=None,
-        bzero=0.0,
-        exposure_time=None,
-        date_of_observation=None,
-        time_of_observation=None,
+        header_sci_obj,
+        header_hdu_obj,
         hdu=None,
         bias=None,
         bias_serial_prescan_column=None,
     ):
 
-        super().__init__(
-            exposure_time=exposure_time,
-            date_of_observation=date_of_observation,
-            time_of_observation=time_of_observation,
-        )
+        super().__init__(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj)
 
-        self.original_units = original_units
-        self.bscale = bscale
-        self.bzero = bzero
         self.bias = bias
         self.bias_serial_prescan_column = bias_serial_prescan_column
         self.hdu = hdu
+
+    @property
+    def bscale(self):
+        return self.header_hdu_obj["BSCALE"]
+
+    @property
+    def bzero(self):
+        return self.header_hdu_obj["BZERO"]
+
+    @property
+    def original_units(self):
+        return self.header_hdu_obj["BUNIT"]
 
     def array_eps_to_counts(self, array_eps):
         return array_eps_to_counts(

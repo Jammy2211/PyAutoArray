@@ -273,6 +273,22 @@ class TestAPI:
         assert (arr.native == np.ones((4, 3))).all()
         assert (arr.slim == np.ones((12,))).all()
 
+    def test__from_fits__loads_and_stores_header_info(self):
+
+        arr = aa.Array2D.from_fits(
+            file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
+        )
+
+        assert arr.header.header_sci_obj["BITPIX"] == -64
+        assert arr.header.header_hdu_obj["BITPIX"] == -64
+
+        arr = aa.Array2D.from_fits(
+            file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
+        )
+
+        assert arr.header.header_sci_obj["BITPIX"] == -64
+        assert arr.header.header_hdu_obj["BITPIX"] == -64
+
     def test__from_fits__makes_scaled_array_with_pixel_scale(self):
 
         arr = aa.Array2D.from_fits(

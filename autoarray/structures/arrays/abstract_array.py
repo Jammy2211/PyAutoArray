@@ -24,19 +24,26 @@ def convert_array(array):
     return array
 
 
-class ExposureInfo:
+class Header:
     def __init__(
-        self,
-        date_of_observation=None,
-        time_of_observation=None,
-        exposure_time=None,
-        readout_offsets: (int, int) = (0, 0),
+        self, header_sci_obj, header_hdu_obj, readout_offsets: (int, int) = (0, 0)
     ):
 
-        self.date_of_observation = date_of_observation
-        self.time_of_observation = time_of_observation
-        self.exposure_time = exposure_time
+        self.header_sci_obj = header_sci_obj
+        self.header_hdu_obj = header_hdu_obj
         self.readout_offsets = readout_offsets
+
+    @property
+    def date_of_observation(self):
+        return self.header_sci_obj["DATE-OBS"]
+
+    @property
+    def time_of_observation(self):
+        return self.header_sci_obj["TIME-OBS"]
+
+    @property
+    def exposure_time(self):
+        return self.header_sci_obj["EXPTIME"]
 
     @property
     def modified_julian_date(self):

@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pytest
 
+from astropy.io import fits
 
 test_data_path = os.path.join(
     "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
@@ -413,6 +414,15 @@ class TestFits:
         array_load = util.array_2d.numpy_array_2d_from_fits(file_path=file_path, hdu=0)
 
         assert (arr == array_load).all()
+
+    def test__header_obj_from_fits(self):
+
+        header_obj = util.array_2d.header_obj_from_fits(
+            file_path=os.path.join(test_data_path, "3x3_ones.fits"), hdu=0
+        )
+
+        assert isinstance(header_obj, fits.header.Header)
+        assert header_obj["BITPIX"] == -64
 
 
 class TestReplaceNegativeNoise:

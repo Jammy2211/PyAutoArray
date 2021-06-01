@@ -70,15 +70,15 @@ def convert_array_2d(array_2d, mask_2d):
 
 class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
-    exposure_info = None
+    header = None
 
     def _new_structure(self, array, mask):
-        return self.__class__(array=array, mask=mask, exposure_info=self.exposure_info)
+        return self.__class__(array=array, mask=mask, header=self.header)
 
     @property
     def readout_offsets(self):
-        if self.exposure_info is not None:
-            return self.exposure_info.readout_offsets
+        if self.header is not None:
+            return self.header.readout_offsets
         return (0, 0)
 
     @property
@@ -146,11 +146,11 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
     @property
     def in_counts(self):
-        return self.exposure_info.array_eps_to_counts(array_eps=self)
+        return self.header.array_eps_to_counts(array_eps=self)
 
     @property
     def in_counts_per_second(self):
-        return self.exposure_info.array_counts_to_counts_per_second(
+        return self.header.array_counts_to_counts_per_second(
             array_counts=self.in_counts
         )
 

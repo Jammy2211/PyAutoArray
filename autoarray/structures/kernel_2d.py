@@ -4,6 +4,7 @@ from skimage.transform import resize, rescale
 
 import numpy as np
 
+from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.arrays.two_d import array_2d_util
@@ -13,7 +14,7 @@ from autoarray import exc
 class Kernel2D(array_2d.Array2D):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, array, mask, normalize=False, *args, **kwargs):
+    def __new__(cls, array, mask, header=None, normalize=False, *args, **kwargs):
         """An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel. See the *Array2D* class
         for a full description of how Arrays work.
@@ -30,7 +31,7 @@ class Kernel2D(array_2d.Array2D):
         normalize : bool
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        obj = super().__new__(cls=cls, array=array, mask=mask)
+        obj = super().__new__(cls=cls, array=array, mask=mask, header=header)
 
         if normalize:
             obj[:] = np.divide(obj, np.sum(obj))
@@ -392,7 +393,19 @@ class Kernel2D(array_2d.Array2D):
             file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
         )
 
-        return cls(array=array[:], mask=array.mask, normalize=normalize)
+        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
+        header_hdu_obj = array_2d_util.header_obj_from_fits(
+            file_path=file_path, hdu=hdu
+        )
+
+        return cls(
+            array=array[:],
+            mask=array.mask,
+            normalize=normalize,
+            header=abstract_array.Header(
+                header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj
+            ),
+        )
 
     def rescaled_with_odd_dimensions_from_rescale_factor(
         self, rescale_factor, normalize=False

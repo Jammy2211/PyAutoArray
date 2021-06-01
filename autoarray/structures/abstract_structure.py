@@ -9,8 +9,8 @@ class AbstractStructure(np.ndarray):
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 
-        if hasattr(obj, "exposure_info"):
-            self.exposure_info = obj.exposure_info
+        if hasattr(obj, "header"):
+            self.header = obj.header
 
     def __reduce__(self):
 
