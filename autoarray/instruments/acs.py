@@ -553,40 +553,24 @@ def output_quadrants_to_fits(
     os.makedirs(file_path)
 
     array_hdu_1 = np.zeros((2068, 4144))
-    array_hdu_1[0:parallel_size, 0:serial_size] = quadrant_a
+    array_hdu_1[0:parallel_size, 0:serial_size] = quadrant_c
     array_hdu_1[0:parallel_size, serial_size : serial_size * 2] = quadrant_d
 
     array_hdu_4 = np.zeros((2068, 4144))
-    array_hdu_4[0:parallel_size, 0:serial_size] = quadrant_c
-    array_hdu_4[0:parallel_size, serial_size : serial_size * 2] = quadrant_b
+    array_hdu_4[0:parallel_size, 0:serial_size] = np.flipud(quadrant_a)
+    array_hdu_4[0:parallel_size, serial_size : serial_size * 2] = np.flipud(quadrant_b)
 
     hdul = fits.HDUList()
 
-    hdul.append(fits.ImageHDU(acs_ccd))
-    hdul.append(fits.ImageHDU(acs_ccd_0))
-    hdul.append(fits.ImageHDU(acs_ccd))
-    hdul.append(fits.ImageHDU(acs_ccd))
-    hdul.append(fits.ImageHDU(acs_ccd_1))
-    hdul.append(fits.ImageHDU(acs_ccd))
+    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdul.append(fits.ImageHDU(array_hdu_1))
+    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdul.append(fits.ImageHDU(array_hdu_4))
+    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
 
-    hdul[0].header.set("EXPTIME", 1000.0, "exposure duration (seconds)--calculated")
-    hdul[0].header.set(
-        "DATE-OBS", "2000-01-01", "UT date of start of observation (yyyy-mm-dd)"
-    )
-    hdul[0].header.set(
-        "TIME-OBS", "00:00:00", "UT time of start of observation (hh:mm:ss)"
-    )
+    hdul[0].header = quadrant_a.header.header_sci_obj
+    hdul[1].header = quadrant_c.header.header_hdu_obj
+    hdul[4].header = quadrant_a.header.header_hdu_obj
 
-    if units in "COUNTS":
-        hdul[1].header.set("BUNIT", "COUNTS", "brightness units")
-        hdul[4].header.set("BUNIT", "COUNTS", "brightness units")
-    elif units in "CPS":
-        hdul[1].header.set("BUNIT", "CPS", "brightness units")
-        hdul[4].header.set("BUNIT", "CPS", "brightness units")
-
-    hdul[1].header.set("BSCALE", 2.0, "scale factor for array value to physical value")
-    hdul[1].header.set("BZERO", 10.0, "physical value for an array value of zero")
-    hdul[4].header.set("BSCALE", 2.0, "scale factor for array value to physical value")
-    hdul[4].header.set("BZERO", 10.0, "physical value for an array value of zero")
-
-    hdul.writeto(path.join(fits_path, "acs_ccd.fits"))
+    hdul.writeto(file_path)

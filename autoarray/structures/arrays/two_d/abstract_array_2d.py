@@ -8,6 +8,7 @@ from autoarray.structures import abstract_structure
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.one_d import array_1d
 from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.layout import layout_util
 from autoarray.dataset import preprocess
 
 logging.basicConfig()
@@ -152,6 +153,12 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
     def in_counts_per_second(self):
         return self.header.array_counts_to_counts_per_second(
             array_counts=self.in_counts
+        )
+
+    @property
+    def original_orientation(self):
+        return layout_util.rotate_array_from_roe_corner(
+            array=self, roe_corner=self.header.original_roe_corner
         )
 
     @property
