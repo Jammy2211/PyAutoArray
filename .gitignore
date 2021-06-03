@@ -1,3 +1,5 @@
+test_autoarray/instruments/files/
+
 .envr
 __pycache__
 *.swp
