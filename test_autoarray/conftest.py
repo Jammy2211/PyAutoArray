@@ -1,8 +1,8 @@
-from matplotlib import pyplot
-
+import os
 from os import path
 
 import pytest
+from matplotlib import pyplot
 
 from autoarray.mock import fixtures
 from autoconf import conf
@@ -26,9 +26,20 @@ def make_plot_patch(monkeypatch):
 directory = path.dirname(path.realpath(__file__))
 
 
+@pytest.fixture(
+    autouse=True,
+    scope="session"
+)
+def remove_logs():
+    yield
+    for d, _, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".log"):
+                os.remove(path.join(d, file))
+
+
 @pytest.fixture(autouse=True)
 def set_config_path(request):
-
     # if dirname(realpath(__file__)) in str(request.module):
 
     conf.instance.push(
