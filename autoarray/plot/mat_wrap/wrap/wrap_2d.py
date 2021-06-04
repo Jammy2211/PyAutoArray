@@ -7,8 +7,7 @@ from matplotlib import patches as ptch
 from matplotlib.collections import PatchCollection
 import numpy as np
 import itertools
-import typing
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from autoarray.inversion import mappers
 from autoarray.structures.grids.two_d import grid_2d
@@ -77,7 +76,7 @@ class GridScatter(AbstractMatWrap2D):
         list of colors can be specified which the plot cycles through.
     """
 
-    def scatter_grid(self, grid: typing.Union[np.ndarray, grid_2d.Grid2D]):
+    def scatter_grid(self, grid: Union[np.ndarray, grid_2d.Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -85,6 +84,8 @@ class GridScatter(AbstractMatWrap2D):
         ----------
         grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
+        errors
+            The error on every point of the grid that is plotted.
         """
 
         config_dict = self.config_dict
@@ -128,7 +129,7 @@ class GridScatter(AbstractMatWrap2D):
 
     def scatter_grid_colored(
         self,
-        grid: typing.Union[np.ndarray, grid_2d.Grid2D],
+        grid: Union[np.ndarray, grid_2d.Grid2D],
         color_array: np.ndarray,
         cmap: str,
     ):
@@ -153,7 +154,7 @@ class GridScatter(AbstractMatWrap2D):
         plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap, **config_dict)
 
     def scatter_grid_indexes(
-        self, grid: typing.Union[np.ndarray, grid_2d.Grid2D], indexes: np.ndarray
+        self, grid: Union[np.ndarray, grid_2d.Grid2D], indexes: np.ndarray
     ):
         """
         Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
@@ -240,9 +241,7 @@ class GridPlot(AbstractMatWrap2D):
     """
 
     def plot_rectangular_grid_lines(
-        self,
-        extent: typing.Tuple[float, float, float, float],
-        shape_native: typing.Tuple[int, int],
+        self, extent: Tuple[float, float, float, float], shape_native: Tuple[int, int]
     ):
         """
         Plots a rectangular grid of lines on a plot, using the coordinate system of the figure.
@@ -267,7 +266,7 @@ class GridPlot(AbstractMatWrap2D):
         for y in ys:
             plt.plot([xs[0], xs[-1]], [y, y], **self.config_dict)
 
-    def plot_grid(self, grid: typing.Union[np.ndarray, grid_2d.Grid2D]):
+    def plot_grid(self, grid: Union[np.ndarray, grid_2d.Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -358,7 +357,7 @@ class PatchOverlay(AbstractMatWrap2D):
     https://matplotlib.org/3.3.2/api/collections_api.html
     """
 
-    def overlay_patches(self, patches: typing.Union[ptch.Patch]):
+    def overlay_patches(self, patches: Union[ptch.Patch]):
         """
         Overlay a list of patches on a figure, for example an `Ellipse`.
         `

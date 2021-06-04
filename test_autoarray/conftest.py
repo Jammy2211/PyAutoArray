@@ -26,10 +26,7 @@ def make_plot_patch(monkeypatch):
 directory = path.dirname(path.realpath(__file__))
 
 
-@pytest.fixture(
-    autouse=True,
-    scope="session"
-)
+@pytest.fixture(autouse=True, scope="session")
 def remove_logs():
     yield
     for d, _, files in os.walk(directory):

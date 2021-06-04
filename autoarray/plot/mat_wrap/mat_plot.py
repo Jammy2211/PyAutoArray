@@ -616,7 +616,12 @@ class MatPlot2D(AbstractMatPlot):
             self.figure.close()
 
     def plot_grid(
-        self, grid, visuals_2d: vis.Visuals2D, auto_labels: AutoLabels, color_array=None
+        self,
+        grid,
+        visuals_2d: vis.Visuals2D,
+        auto_labels: AutoLabels,
+        color_array=None,
+        errors=None,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
 
@@ -636,7 +641,7 @@ class MatPlot2D(AbstractMatPlot):
 
         if color_array is None:
 
-            self.grid_scatter.scatter_grid(grid=grid)
+            self.grid_scatter.scatter_grid(grid=grid, errors=errors)
 
         elif color_array is not None:
 
