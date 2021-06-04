@@ -547,18 +547,44 @@ def output_quadrants_to_fits(
     serial_size=2072,
 ):
 
-    if path.exists(file_path):
-        shutil.rmtree(file_path)
+    file_dir = os.path.split(file_path)[0]
 
-    os.makedirs(file_path)
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+
+    if overwrite and os.path.exists(file_path):
+        os.remove(file_path)
+
+    quadrant_a = quadrant_a.header.array_from_electrons_to_original(array=quadrant_a)
+    quadrant_b = quadrant_b.header.array_from_electrons_to_original(array=quadrant_b)
+    quadrant_c = quadrant_c.header.array_from_electrons_to_original(array=quadrant_c)
+    quadrant_d = quadrant_d.header.array_from_electrons_to_original(array=quadrant_d)
+
+    quadrant_a = np.flipud(quadrant_a.native)
+    quadrant_a = layout_util.rotate_array_from_roe_corner(
+        array=quadrant_a.native, roe_corner=(1, 0)
+    )
+
+    quadrant_b = np.flipud(quadrant_b.native)
+    quadrant_b = layout_util.rotate_array_from_roe_corner(
+        array=quadrant_b.native, roe_corner=(1, 1)
+    )
+
+    quadrant_c = layout_util.rotate_array_from_roe_corner(
+        array=quadrant_c.native, roe_corner=(1, 0)
+    )
+
+    quadrant_d = layout_util.rotate_array_from_roe_corner(
+        array=quadrant_d.native, roe_corner=(1, 1)
+    )
 
     array_hdu_1 = np.zeros((2068, 4144))
-    array_hdu_1[0:parallel_size, 0:serial_size] = quadrant_c
-    array_hdu_1[0:parallel_size, serial_size : serial_size * 2] = quadrant_d
+    array_hdu_1[0:parallel_size, 0:serial_size] = quadrant_c.native
+    array_hdu_1[0:parallel_size, serial_size : serial_size * 2] = quadrant_d.native
 
     array_hdu_4 = np.zeros((2068, 4144))
-    array_hdu_4[0:parallel_size, 0:serial_size] = np.flipud(quadrant_a)
-    array_hdu_4[0:parallel_size, serial_size : serial_size * 2] = np.flipud(quadrant_b)
+    array_hdu_4[0:parallel_size, 0:serial_size] = quadrant_a.native
+    array_hdu_4[0:parallel_size, serial_size : serial_size * 2] = quadrant_b.native
 
     hdul = fits.HDUList()
 
@@ -573,4 +599,5 @@ def output_quadrants_to_fits(
     hdul[1].header = quadrant_c.header.header_hdu_obj
     hdul[4].header = quadrant_a.header.header_hdu_obj
 
+    print(hdul[1].data)
     hdul.writeto(file_path)

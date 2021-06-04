@@ -516,3 +516,61 @@ class TestLayout2DACS:
         assert layout.shape_2d == (2068, 2072)
         assert layout.parallel_overscan == (2048, 2068, 24, 2072)
         assert layout.serial_prescan == (0, 2068, 0, 24)
+
+
+class TestOutputQuadrants:
+
+    def test__output_quadrants_to_fits(self, acs_ccd):
+
+        fits_path = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))), "files", "acs"
+        )
+
+        file_path = path.join(fits_path, "acs_ccd.fits")
+
+        acs_ccd_0 = copy.copy(acs_ccd)
+        acs_ccd_0[0, 0] = 10.0
+        acs_ccd_0[0, -1] = 20.0
+
+        acs_ccd_1 = copy.copy(acs_ccd)
+        acs_ccd_1[-1, 0] = 30.0
+        acs_ccd_1[-1, -1] = 40.0
+
+        create_acs_fits(
+            fits_path=fits_path,
+            acs_ccd=acs_ccd,
+            acs_ccd_0=acs_ccd_0,
+            acs_ccd_1=acs_ccd_1,
+            units="COUNTS",
+        )
+
+        quadrant_a = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="A")
+        quadrant_b = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
+        quadrant_c = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
+        quadrant_d = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
+
+        file_path = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))), "files", "output.fits"
+        )
+
+        aa.acs.output_quadrants_to_fits(
+            quadrant_a=quadrant_a,
+            quadrant_b=quadrant_b,
+            quadrant_c=quadrant_c,
+            quadrant_d=quadrant_d,
+            file_path=file_path,
+            overwrite=True
+        )
+
+        print(aa.util.array_2d.numpy_array_2d_from_fits(file_path=file_path, hdu=1, do_not_scale_image_data=True))
+        stop
+
+        acs_ccd_output = aa.Array2D.from_fits(file_path=file_path, hdu=1, pixel_scales=0.05)
+
+        print(np.max(acs_ccd_output))
+
+        acs_ccd_output = aa.Array2D.from_fits(file_path=file_path, hdu=4, pixel_scales=0.05)
+
+        print(np.max(acs_ccd_output))
+
+        assert (acs_ccd_0 == acs_ccd_output.native).all()
