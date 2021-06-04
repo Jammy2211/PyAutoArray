@@ -80,8 +80,6 @@ class Array2DACS(array_2d.Array2D):
         cls,
         array_electrons,
         quadrant_letter,
-        parallel_size=2068,
-        serial_size=2072,
         header=None,
         bias_subtract_via_prescan=False,
         bias=None,
@@ -95,60 +93,66 @@ class Array2DACS(array_2d.Array2D):
         """
         if quadrant_letter == "A":
 
-            if bias is not None:
-                bias = bias[0:parallel_size, 0:serial_size]
+            array_electrons = array_electrons[0:2068, 0:2072]
+            roe_corner = (1, 0)
+            use_flipud = True
 
-            return cls.quadrant_a(
-                array_electrons=array_electrons[0:parallel_size, 0:serial_size],
-                header=header,
-                bias_subtract_via_prescan=bias_subtract_via_prescan,
-                bias=bias,
-            )
+            if bias is not None:
+                bias = bias[0:2068, 0:2072]
+
         elif quadrant_letter == "B":
 
-            if bias is not None:
-                bias = bias[0:parallel_size, serial_size : serial_size * 2]
+            array_electrons = array_electrons[0:2068, 2072:4144]
 
-            return cls.quadrant_b(
-                array_electrons=array_electrons[
-                    0:parallel_size, serial_size : serial_size * 2
-                ],
-                header=header,
-                bias_subtract_via_prescan=bias_subtract_via_prescan,
-                bias=bias,
-            )
+            roe_corner = (1, 1)
+            use_flipud = True
+
+            if bias is not None:
+                bias = bias[0:2068, 2072:4144]
+
         elif quadrant_letter == "C":
 
-            if bias is not None:
-                bias = bias[0:parallel_size, 0:serial_size]
+            array_electrons = array_electrons[0:2068, 0:2072]
 
-            return cls.quadrant_c(
-                array_electrons=array_electrons[0:parallel_size, 0:serial_size],
-                header=header,
-                bias_subtract_via_prescan=bias_subtract_via_prescan,
-                bias=bias,
-            )
+            roe_corner = (1, 0)
+            use_flipud = False
+
+            if bias is not None:
+                bias = bias[0:2068, 0:2072]
+
         elif quadrant_letter == "D":
 
-            if bias is not None:
-                bias = bias[0:parallel_size, serial_size : serial_size * 2]
+            array_electrons = array_electrons[0:2068, 2072:4144]
 
-            return cls.quadrant_d(
-                array_electrons=array_electrons[
-                    0:parallel_size, serial_size : serial_size * 2
-                ],
-                header=header,
-                bias_subtract_via_prescan=bias_subtract_via_prescan,
-                bias=bias,
-            )
+            roe_corner = (1, 1)
+            use_flipud = False
+
+            if bias is not None:
+                bias = bias[0:2068, 2072:4144]
+
         else:
             raise exc.FrameException(
                 "Quadrant letter for FrameACS must be A, B, C or D."
             )
 
+        return cls.quadrant(
+            array_electrons=array_electrons,
+            header=header,
+            roe_corner=roe_corner,
+            use_flipud=use_flipud,
+            bias_subtract_via_prescan=bias_subtract_via_prescan,
+            bias=bias,
+        )
+
     @classmethod
-    def quadrant_a(
-        cls, array_electrons, header=None, bias_subtract_via_prescan=False, bias=None
+    def quadrant(
+        cls,
+        array_electrons,
+        roe_corner,
+        use_flipud,
+        header=None,
+        bias_subtract_via_prescan=False,
+        bias=None,
     ):
         """
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
@@ -159,10 +163,11 @@ class Array2DACS(array_2d.Array2D):
         """
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
-            array=array_electrons, roe_corner=(1, 0)
+            array=array_electrons, roe_corner=roe_corner
         )
 
-        array_electrons = np.flipud(array_electrons)
+        if use_flipud:
+            array_electrons = np.flipud(array_electrons)
 
         if bias_subtract_via_prescan:
 
@@ -180,11 +185,12 @@ class Array2DACS(array_2d.Array2D):
                 array=bias, roe_corner=(1, 0)
             )
 
-            bias = np.flipud(bias)
+            if use_flipud:
+                bias = np.flipud(bias)
 
             array_electrons -= bias
 
-            header.bias = bias
+            header.bias = Array2DACS.manual_native(array=bias, pixel_scales=0.05)
 
         return cls.manual(array=array_electrons, header=header, pixel_scales=0.05)
 
@@ -226,7 +232,7 @@ class Array2DACS(array_2d.Array2D):
 
             array_electrons -= bias
 
-            header.bias = bias
+            header.bias = Array2DACS.manual_native(array=bias, pixel_scales=0.05)
 
         return cls.manual(array=array_electrons, header=header, pixel_scales=0.05)
 
@@ -264,7 +270,7 @@ class Array2DACS(array_2d.Array2D):
 
             array_electrons -= bias
 
-            header.bias = bias
+            header.bias = Array2DACS.manual_native(array=bias, pixel_scales=0.05)
 
         return cls.manual(array=array_electrons, header=header, pixel_scales=0.05)
 
@@ -301,7 +307,7 @@ class Array2DACS(array_2d.Array2D):
 
             array_electrons -= bias
 
-            header.bias = bias
+            header.bias = Array2DACS.manual_native(array=bias, pixel_scales=0.05)
 
         return cls.manual(array=array_electrons, header=header, pixel_scales=0.05)
 
@@ -350,7 +356,12 @@ class ImageACS(Array2DACS):
 
     @classmethod
     def from_fits(
-        cls, file_path, quadrant_letter, bias_subtract_via_prescan=False, bias_path=None
+        cls,
+        file_path,
+        quadrant_letter,
+        bias_subtract_via_prescan=False,
+        bias_path=None,
+        use_calibrated_gain=True,
     ):
         """
         Use the input .fits file and quadrant letter to extract the quadrant from the full CCD, perform
@@ -369,8 +380,21 @@ class ImageACS(Array2DACS):
         )
 
         header = HeaderACS(
-            header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj, hdu=hdu
+            header_sci_obj=header_sci_obj,
+            header_hdu_obj=header_hdu_obj,
+            hdu=hdu,
+            quadrant_letter=quadrant_letter,
         )
+
+        if header.header_sci_obj["TELESCOP"] != "HST":
+            raise exc.ArrayException(
+                f"The file {file_path} does not point to a valid HST ACS dataset."
+            )
+
+        if header.header_sci_obj["INSTRUME"] != "ACS":
+            raise exc.ArrayException(
+                f"The file {file_path} does not point to a valid HST ACS dataset."
+            )
 
         array = array_2d_util.numpy_array_2d_from_fits(
             file_path=file_path, hdu=hdu, do_not_scale_image_data=True
@@ -378,11 +402,36 @@ class ImageACS(Array2DACS):
 
         array = header.array_from_original_to_electrons(array=array)
 
+        if use_calibrated_gain:
+            array = array * header.calibrated_gain
+        else:
+            array = array * header.gain
+
         if bias_path is not None:
 
             bias = array_2d_util.numpy_array_2d_from_fits(
                 file_path=bias_path, hdu=hdu, do_not_scale_image_data=True
             )
+
+            header_sci_obj = array_2d_util.header_obj_from_fits(
+                file_path=bias_path, hdu=0
+            )
+            header_hdu_obj = array_2d_util.header_obj_from_fits(
+                file_path=bias_path, hdu=hdu
+            )
+
+            bias_header = HeaderACS(
+                header_sci_obj=header_sci_obj,
+                header_hdu_obj=header_hdu_obj,
+                hdu=hdu,
+                quadrant_letter=quadrant_letter,
+            )
+
+            if bias_header.original_units != "COUNTS":
+
+                raise exc.ArrayException("Cannot use bias frame not in counts.")
+
+            bias = bias * bias_header.calibrated_gain
 
         else:
 
@@ -399,14 +448,7 @@ class ImageACS(Array2DACS):
 
 class Layout2DACS(lo.Layout2D):
     @classmethod
-    def from_sizes(
-        cls,
-        roe_corner,
-        parallel_size=2068,
-        serial_size=2072,
-        serial_prescan_size=24,
-        parallel_overscan_size=20,
-    ):
+    def from_sizes(cls, roe_corner, serial_prescan_size=24, parallel_overscan_size=20):
         """
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
@@ -416,19 +458,14 @@ class Layout2DACS(lo.Layout2D):
         """
 
         parallel_overscan = reg.Region2D(
-            (
-                parallel_size - parallel_overscan_size,
-                parallel_size,
-                serial_prescan_size,
-                serial_size,
-            )
+            (2068 - parallel_overscan_size, 2068, serial_prescan_size, 2072)
         )
 
-        serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
+        serial_prescan = reg.Region2D((0, 2068, 0, serial_prescan_size))
 
         return lo.Layout2D.rotated_from_roe_corner(
             roe_corner=roe_corner,
-            shape_native=(parallel_size, serial_size),
+            shape_native=(2068, 2072),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
         )
@@ -439,6 +476,7 @@ class HeaderACS(abstract_array.Header):
         self,
         header_sci_obj,
         header_hdu_obj,
+        quadrant_letter=None,
         hdu=None,
         bias=None,
         bias_serial_prescan_column=None,
@@ -448,6 +486,7 @@ class HeaderACS(abstract_array.Header):
 
         self.bias = bias
         self.bias_serial_prescan_column = bias_serial_prescan_column
+        self.quadrant_letter = quadrant_letter
         self.hdu = hdu
 
     @property
@@ -457,6 +496,33 @@ class HeaderACS(abstract_array.Header):
     @property
     def bzero(self):
         return self.header_hdu_obj["BZERO"]
+
+    @property
+    def gain(self):
+        return self.header_sci_obj["CCDGAIN"]
+
+    @property
+    def calibrated_gain(self):
+
+        if round(self.gain) == 1:
+            calibrated_gain = [0.99989998, 0.97210002, 1.01070000, 1.01800000]
+        elif round(self.gain) == 2:
+            calibrated_gain = [0.99989998, 0.97210002, 1.01070000, 1.01800000]
+        elif round(self.gain) == 4:
+            calibrated_gain = [4.011, 3.902, 4.074, 3.996]
+        else:
+            raise exc.ArrayException(
+                "Calibrated gain of ACS file does not round to 1, 2 or 4."
+            )
+
+        if self.quadrant_letter == "A":
+            return calibrated_gain[0]
+        elif self.quadrant_letter == "B":
+            return calibrated_gain[1]
+        elif self.quadrant_letter == "C":
+            return calibrated_gain[2]
+        elif self.quadrant_letter == "D":
+            return calibrated_gain[3]
 
     @property
     def original_units(self):
@@ -543,8 +609,6 @@ def output_quadrants_to_fits(
     quadrant_d,
     file_path: str,
     overwrite: bool = False,
-    parallel_size=2068,
-    serial_size=2072,
 ):
 
     file_dir = os.path.split(file_path)[0]
@@ -555,36 +619,26 @@ def output_quadrants_to_fits(
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
-    quadrant_a = quadrant_a.header.array_from_electrons_to_original(array=quadrant_a)
-    quadrant_b = quadrant_b.header.array_from_electrons_to_original(array=quadrant_b)
-    quadrant_c = quadrant_c.header.array_from_electrons_to_original(array=quadrant_c)
-    quadrant_d = quadrant_d.header.array_from_electrons_to_original(array=quadrant_d)
-
-    quadrant_a = np.flipud(quadrant_a.native)
-    quadrant_a = layout_util.rotate_array_from_roe_corner(
-        array=quadrant_a.native, roe_corner=(1, 0)
+    quadrant_a = quadrant_convert_to_original(
+        quadrant=quadrant_a, roe_corner=(1, 0), use_flipud=True
     )
-
-    quadrant_b = np.flipud(quadrant_b.native)
-    quadrant_b = layout_util.rotate_array_from_roe_corner(
-        array=quadrant_b.native, roe_corner=(1, 1)
+    quadrant_b = quadrant_convert_to_original(
+        quadrant=quadrant_b, roe_corner=(1, 1), use_flipud=True
     )
-
-    quadrant_c = layout_util.rotate_array_from_roe_corner(
-        array=quadrant_c.native, roe_corner=(1, 0)
+    quadrant_c = quadrant_convert_to_original(
+        quadrant=quadrant_c, roe_corner=(1, 0), use_flipud=False
     )
-
-    quadrant_d = layout_util.rotate_array_from_roe_corner(
-        array=quadrant_d.native, roe_corner=(1, 1)
+    quadrant_d = quadrant_convert_to_original(
+        quadrant=quadrant_d, roe_corner=(1, 1), use_flipud=False
     )
 
     array_hdu_1 = np.zeros((2068, 4144))
-    array_hdu_1[0:parallel_size, 0:serial_size] = quadrant_c.native
-    array_hdu_1[0:parallel_size, serial_size : serial_size * 2] = quadrant_d.native
+    array_hdu_1[0:2068, 0:2072] = quadrant_c.native
+    array_hdu_1[0:2068, 2072:4144] = quadrant_d.native
 
     array_hdu_4 = np.zeros((2068, 4144))
-    array_hdu_4[0:parallel_size, 0:serial_size] = quadrant_a.native
-    array_hdu_4[0:parallel_size, serial_size : serial_size * 2] = quadrant_b.native
+    array_hdu_4[0:2068, 0:2072] = quadrant_a.native
+    array_hdu_4[0:2068, 2072:4144] = quadrant_b.native
 
     hdul = fits.HDUList()
 
@@ -599,5 +653,29 @@ def output_quadrants_to_fits(
     hdul[1].header = quadrant_c.header.header_hdu_obj
     hdul[4].header = quadrant_a.header.header_hdu_obj
 
-    print(hdul[1].data)
     hdul.writeto(file_path)
+
+
+def quadrant_convert_to_original(
+    quadrant, roe_corner, use_flipud=False, use_calibrated_gain=True
+):
+
+    if quadrant.header.bias is not None:
+        quadrant += quadrant.header.bias
+
+    if quadrant.header.bias_serial_prescan_column is not None:
+        quadrant += quadrant.bias_serial_prescan_column
+
+    if use_calibrated_gain:
+        quadrant /= quadrant.header.calibrated_gain
+    else:
+        quadrant /= quadrant.header.gain
+
+    quadrant = quadrant.header.array_from_electrons_to_original(array=quadrant)
+
+    if use_flipud:
+        quadrant = np.flipud(quadrant.native)
+
+    return layout_util.rotate_array_from_roe_corner(
+        array=quadrant.native, roe_corner=roe_corner
+    )

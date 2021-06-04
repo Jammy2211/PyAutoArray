@@ -26,7 +26,11 @@ def convert_array(array):
 
 class Header:
     def __init__(
-        self, header_sci_obj, header_hdu_obj, original_roe_corner=None, readout_offsets: (int, int) = (0, 0)
+        self,
+        header_sci_obj,
+        header_hdu_obj,
+        original_roe_corner=None,
+        readout_offsets: (int, int) = (0, 0),
     ):
 
         self.header_sci_obj = header_sci_obj

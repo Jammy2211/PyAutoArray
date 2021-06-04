@@ -27,6 +27,9 @@ def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
     new_hdul.append(fits.ImageHDU(acs_ccd_1))
     new_hdul.append(fits.ImageHDU(acs_ccd))
 
+    new_hdul[0].header.set("CCDGAIN", 1.0, "Instrument GAIN")
+    new_hdul[0].header.set("TELESCOP", "HST", "Telescope Name")
+    new_hdul[0].header.set("INSTRUME", "ACS", "Instrument Name")
     new_hdul[0].header.set("EXPTIME", 1000.0, "exposure duration (seconds)--calculated")
     new_hdul[0].header.set(
         "DATE-OBS", "2000-01-01", "UT date of start of observation (yyyy-mm-dd)"
@@ -46,6 +49,7 @@ def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
         "BSCALE", 2.0, "scale factor for array value to physical value"
     )
     new_hdul[1].header.set("BZERO", 10.0, "physical value for an array value of zero")
+
     new_hdul[4].header.set(
         "BSCALE", 2.0, "scale factor for array value to physical value"
     )
@@ -65,24 +69,14 @@ def create_acs_bias_fits(fits_path, bias_ccd, bias_ccd_0, bias_ccd_1):
     new_hdul.append(fits.ImageHDU(bias_ccd_1))
     new_hdul.append(fits.ImageHDU(bias_ccd))
 
+    new_hdul[0].header.set("CCDGAIN", 1.0, "Instrument GAIN")
+    new_hdul[1].header.set("BUNIT", "COUNTS", "brightness units")
+    new_hdul[4].header.set("BUNIT", "COUNTS", "brightness units")
+
     new_hdul.writeto(path.join(fits_path, "acs_bias_ccd.fits"))
 
 
 class TestArray2DACS:
-    def test__acs_array_for_left_and_right_quandrants__loads_data_and_dimensions(
-        self, acs_quadrant
-    ):
-
-        acs_array = aa.acs.Array2DACS.quadrant_a(array_electrons=acs_quadrant)
-
-        assert acs_array.shape_native == (2068, 2072)
-        assert (acs_array.native == np.zeros((2068, 2072))).all()
-
-        acs_array = aa.acs.Array2DACS.quadrant_d(array_electrons=acs_quadrant)
-
-        assert acs_array.shape_native == (2068, 2072)
-        assert (acs_array.native == np.zeros((2068, 2072))).all()
-
     def test__from_ccd__chooses_correct_array_given_quadrant_letter(self, acs_ccd):
 
         array = aa.acs.Array2DACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="B")
@@ -219,7 +213,9 @@ class TestImageACS:
             units="COUNTS",
         )
 
-        array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="A")
+        array = aa.acs.ImageACS.from_fits(
+            file_path=file_path, quadrant_letter="A", use_calibrated_gain=False
+        )
 
         assert array.native[0, 0] == (30.0 * 2.0) + 10.0
         assert array.in_counts.native[0, 0] == 30.0
@@ -229,7 +225,9 @@ class TestImageACS:
 
         assert array_original.native[0, 0] == 30.0
 
-        array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
+        array = aa.acs.ImageACS.from_fits(
+            file_path=file_path, quadrant_letter="B", use_calibrated_gain=False
+        )
 
         assert array.native[0, 0] == (40.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
@@ -238,7 +236,9 @@ class TestImageACS:
 
         assert array_original.native[0, 0] == 40.0
 
-        array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
+        array = aa.acs.ImageACS.from_fits(
+            file_path=file_path, quadrant_letter="C", use_calibrated_gain=False
+        )
 
         assert array.native[0, 0] == (10.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
@@ -247,7 +247,9 @@ class TestImageACS:
 
         assert array_original.native[0, 0] == 10.0
 
-        array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
+        array = aa.acs.ImageACS.from_fits(
+            file_path=file_path, quadrant_letter="D", use_calibrated_gain=False
+        )
 
         assert array.native[0, 0] == (20.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
@@ -282,7 +284,9 @@ class TestImageACS:
             units="CPS",
         )
 
-        array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="A")
+        array = aa.acs.ImageACS.from_fits(
+            file_path=file_path, quadrant_letter="A", use_calibrated_gain=False
+        )
 
         assert array.native[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
@@ -291,7 +295,9 @@ class TestImageACS:
 
         assert array_original.native[0, 0] == 30.0
 
-        array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
+        array = aa.acs.ImageACS.from_fits(
+            file_path=file_path, quadrant_letter="B", use_calibrated_gain=False
+        )
 
         assert array.native[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
@@ -300,7 +306,9 @@ class TestImageACS:
 
         assert array_original.native[0, 0] == 40.0
 
-        array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
+        array = aa.acs.ImageACS.from_fits(
+            file_path=file_path, quadrant_letter="C", use_calibrated_gain=False
+        )
 
         assert array.native[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
@@ -309,7 +317,9 @@ class TestImageACS:
 
         assert array_original.native[0, 0] == 10.0
 
-        array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
+        array = aa.acs.ImageACS.from_fits(
+            file_path=file_path, quadrant_letter="D", use_calibrated_gain=False
+        )
 
         assert array.native[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
@@ -343,7 +353,10 @@ class TestImageACS:
         )
 
         array = aa.acs.ImageACS.from_fits(
-            file_path=file_path, quadrant_letter="A", bias_subtract_via_prescan=True
+            file_path=file_path,
+            quadrant_letter="A",
+            bias_subtract_via_prescan=True,
+            use_calibrated_gain=False,
         )
 
         assert array.native[0, 0] == pytest.approx(
@@ -354,7 +367,10 @@ class TestImageACS:
         )
 
         array = aa.acs.ImageACS.from_fits(
-            file_path=file_path, quadrant_letter="B", bias_subtract_via_prescan=True
+            file_path=file_path,
+            quadrant_letter="B",
+            bias_subtract_via_prescan=True,
+            use_calibrated_gain=False,
         )
 
         assert array.native[0, 0] == pytest.approx(
@@ -365,7 +381,10 @@ class TestImageACS:
         )
 
         array = aa.acs.ImageACS.from_fits(
-            file_path=file_path, quadrant_letter="C", bias_subtract_via_prescan=True
+            file_path=file_path,
+            quadrant_letter="C",
+            bias_subtract_via_prescan=True,
+            use_calibrated_gain=False,
         )
 
         assert array.native[0, 0] == pytest.approx(
@@ -376,7 +395,10 @@ class TestImageACS:
         )
 
         array = aa.acs.ImageACS.from_fits(
-            file_path=file_path, quadrant_letter="D", bias_subtract_via_prescan=True
+            file_path=file_path,
+            quadrant_letter="D",
+            bias_subtract_via_prescan=True,
+            use_calibrated_gain=False,
         )
 
         assert array.native[0, 0] == pytest.approx(
@@ -419,40 +441,52 @@ class TestImageACS:
         bias_path = path.join(fits_path, "acs_bias_ccd.fits")
 
         array = aa.acs.ImageACS.from_fits(
-            file_path=file_path, quadrant_letter="A", bias_path=bias_path
+            file_path=file_path,
+            quadrant_letter="A",
+            bias_path=bias_path,
+            use_calibrated_gain=False,
         )
 
         assert array.native[0, 0] == pytest.approx(
             10.0, (30.0 * 2.0) + 10.0 - 2.0, 1.0e-4
         )
-        assert array.header.bias[0][0] == pytest.approx(2.0, 1.0e-4)
+        assert array.header.bias[0] == pytest.approx(2.0, 1.0e-1)
 
         array = aa.acs.ImageACS.from_fits(
-            file_path=file_path, quadrant_letter="B", bias_path=bias_path
+            file_path=file_path,
+            quadrant_letter="B",
+            bias_path=bias_path,
+            use_calibrated_gain=False,
         )
 
         assert array.native[0, 0] == pytest.approx(
             10.0, (40.0 * 2.0) + 10.0 - 2.0, 1.0e-4
         )
-        assert array.header.bias[0][0] == pytest.approx(2.0, 1.0e-4)
+        assert array.header.bias[0] == pytest.approx(2.0, 1.0e-1)
 
         array = aa.acs.ImageACS.from_fits(
-            file_path=file_path, quadrant_letter="C", bias_path=bias_path
+            file_path=file_path,
+            quadrant_letter="C",
+            bias_path=bias_path,
+            use_calibrated_gain=False,
         )
 
         assert array.native[0, 0] == pytest.approx(
             10.0, (10.0 * 2.0) + 10.0 - 1.0, 1.0e-4
         )
-        assert array.header.bias[0][0] == pytest.approx(1.0, 1.0e-4)
+        assert array.header.bias[0] == pytest.approx(1.0, 1.0e-1)
 
         array = aa.acs.ImageACS.from_fits(
-            file_path=file_path, quadrant_letter="D", bias_path=bias_path
+            file_path=file_path,
+            quadrant_letter="D",
+            bias_path=bias_path,
+            use_calibrated_gain=False,
         )
 
         assert array.native[0, 0] == pytest.approx(
             10.0, (20.0 * 2.0) + 10.0 - 1.0, 1.0e-4
         )
-        assert array.header.bias[0][0] == pytest.approx(1.0, 1.0e-4)
+        assert array.header.bias[0] == pytest.approx(1.0, 1.0e-1)
 
     # def test__update_fits__if_new_file_is_not_presnet_copies_original_file_and_updates(
     #     self, acs_ccd
@@ -505,11 +539,7 @@ class TestLayout2DACS:
     ):
 
         layout = aa.acs.Layout2DACS.from_sizes(
-            roe_corner=(1, 0),
-            parallel_size=2068,
-            serial_size=2072,
-            serial_prescan_size=24,
-            parallel_overscan_size=20,
+            roe_corner=(1, 0), serial_prescan_size=24, parallel_overscan_size=20
         )
 
         assert layout.original_roe_corner == (1, 0)
@@ -519,7 +549,6 @@ class TestLayout2DACS:
 
 
 class TestOutputQuadrants:
-
     def test__output_quadrants_to_fits(self, acs_ccd):
 
         fits_path = path.join(
@@ -559,18 +588,19 @@ class TestOutputQuadrants:
             quadrant_c=quadrant_c,
             quadrant_d=quadrant_d,
             file_path=file_path,
-            overwrite=True
+            overwrite=True,
         )
 
-        print(aa.util.array_2d.numpy_array_2d_from_fits(file_path=file_path, hdu=1, do_not_scale_image_data=True))
-        stop
+        acs_ccd_output = aa.util.array_2d.numpy_array_2d_from_fits(
+            file_path=file_path, hdu=1, do_not_scale_image_data=True
+        )
 
-        acs_ccd_output = aa.Array2D.from_fits(file_path=file_path, hdu=1, pixel_scales=0.05)
+        assert acs_ccd_output[0, 0] == 10.0
+        assert acs_ccd_output[0, -1] == 20.0
 
-        print(np.max(acs_ccd_output))
+        acs_ccd_output = aa.util.array_2d.numpy_array_2d_from_fits(
+            file_path=file_path, hdu=4, do_not_scale_image_data=True
+        )
 
-        acs_ccd_output = aa.Array2D.from_fits(file_path=file_path, hdu=4, pixel_scales=0.05)
-
-        print(np.max(acs_ccd_output))
-
-        assert (acs_ccd_0 == acs_ccd_output.native).all()
+        assert acs_ccd_output[-1, 0] == 30.0
+        assert acs_ccd_output[-1, -1] == 40.0
