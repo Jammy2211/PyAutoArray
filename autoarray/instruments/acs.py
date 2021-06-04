@@ -103,7 +103,6 @@ class Array2DACS(array_2d.Array2D):
         elif quadrant_letter == "B":
 
             array_electrons = array_electrons[0:2068, 2072:4144]
-
             roe_corner = (1, 1)
             use_flipud = True
 
@@ -182,7 +181,7 @@ class Array2DACS(array_2d.Array2D):
         if bias is not None:
 
             bias = layout_util.rotate_array_from_roe_corner(
-                array=bias, roe_corner=(1, 0)
+                array=bias, roe_corner=roe_corner
             )
 
             if use_flipud:
