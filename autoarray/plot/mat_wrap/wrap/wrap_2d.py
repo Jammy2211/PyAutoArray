@@ -7,8 +7,7 @@ from matplotlib import patches as ptch
 from matplotlib.collections import PatchCollection
 import numpy as np
 import itertools
-import typing
-from typing import List, Union
+from typing import List, Union, Optional, Tuple
 
 from autoarray.inversion import mappers
 from autoarray.structures.grids.two_d import grid_2d
@@ -77,7 +76,7 @@ class GridScatter(AbstractMatWrap2D):
         list of colors can be specified which the plot cycles through.
     """
 
-    def scatter_grid(self, grid: typing.Union[np.ndarray, grid_2d.Grid2D]):
+    def scatter_grid(self, grid: Union[np.ndarray, grid_2d.Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -85,6 +84,8 @@ class GridScatter(AbstractMatWrap2D):
         ----------
         grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
+        errors
+            The error on every point of the grid that is plotted.
         """
 
         config_dict = self.config_dict
@@ -109,7 +110,7 @@ class GridScatter(AbstractMatWrap2D):
 
          Parameters
          ----------
-         grid_list : [Grid2DIrregular]
+         grid_list
              The list of grids of (y,x) coordinates that are plotted.
          """
         if len(grid_list) == 0:
@@ -128,7 +129,7 @@ class GridScatter(AbstractMatWrap2D):
 
     def scatter_grid_colored(
         self,
-        grid: typing.Union[np.ndarray, grid_2d.Grid2D],
+        grid: Union[np.ndarray, grid_2d.Grid2D],
         color_array: np.ndarray,
         cmap: str,
     ):
@@ -153,7 +154,7 @@ class GridScatter(AbstractMatWrap2D):
         plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap, **config_dict)
 
     def scatter_grid_indexes(
-        self, grid: typing.Union[np.ndarray, grid_2d.Grid2D], indexes: np.ndarray
+        self, grid: Union[np.ndarray, grid_2d.Grid2D], indexes: np.ndarray
     ):
         """
         Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
@@ -240,9 +241,7 @@ class GridPlot(AbstractMatWrap2D):
     """
 
     def plot_rectangular_grid_lines(
-        self,
-        extent: typing.Tuple[float, float, float, float],
-        shape_native: typing.Tuple[int, int],
+        self, extent: Tuple[float, float, float, float], shape_native: Tuple[int, int]
     ):
         """
         Plots a rectangular grid of lines on a plot, using the coordinate system of the figure.
@@ -267,7 +266,7 @@ class GridPlot(AbstractMatWrap2D):
         for y in ys:
             plt.plot([xs[0], xs[-1]], [y, y], **self.config_dict)
 
-    def plot_grid(self, grid: typing.Union[np.ndarray, grid_2d.Grid2D]):
+    def plot_grid(self, grid: Union[np.ndarray, grid_2d.Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -310,6 +309,96 @@ class GridPlot(AbstractMatWrap2D):
             for grid in grid_list:
 
                 plt.plot(grid[:, 1], grid[:, 0], c=next(color), **config_dict)
+        except IndexError:
+            return None
+
+
+class GridErrorbar(AbstractMatWrap2D):
+    """
+    Plots an input set of grid points with 2D errors, for example (y,x) coordinates or data structures representing 2D
+    (y,x) coordinates like a `Grid2D` or `Grid2DIrregular`. Multiple lists of (y,x) coordinates are plotted with
+    varying colors.
+
+    This object wraps the following Matplotlib methods:
+
+    - plt.errorbar: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.errorbar.html
+
+    Parameters
+    ----------
+    colors : [str]
+        The color or list of colors that the grid is plotted using. For plotting indexes or a grid list, a
+        list of colors can be specified which the plot cycles through.
+    """
+
+    def errorbar_grid(
+        self,
+        grid: Union[np.ndarray, grid_2d.Grid2D],
+        y_errors: Optional[Union[np.ndarray, List]] = None,
+        x_errors: Optional[Union[np.ndarray, List]] = None,
+    ):
+        """
+        Plot an input grid of (y,x) coordinates using the matplotlib method `plt.errorbar`.
+
+        The (y,x) coordinates are plotted as dots, with a line / cross for its errors.
+
+        Parameters
+        ----------
+        grid : Grid2D
+            The grid of (y,x) coordinates that is plotted.
+        y_errors
+            The y values of the error on every point of the grid that is plotted (e.g. vertically).
+        x_errors
+            The x values of the error on every point of the grid that is plotted (e.g. horizontally).
+        """
+
+        config_dict = self.config_dict
+
+        if len(config_dict["c"]) > 1:
+            config_dict["c"] = config_dict["c"][0]
+
+        try:
+            plt.errorbar(
+                y=grid[:, 0], x=grid[:, 1], yerr=y_errors, xerr=x_errors, **config_dict
+            )
+        except (IndexError, TypeError):
+            return self.errorbar_grid_list(grid_list=grid)
+
+    def errorbar_grid_list(
+        self,
+        grid_list: Union[List[grid_2d.Grid2D], List[grid_2d_irregular.Grid2DIrregular]],
+        y_errors: Optional[Union[np.ndarray, List]] = None,
+        x_errors: Optional[Union[np.ndarray, List]] = None,
+    ):
+        """
+        Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.errorbar`.
+
+        The (y,x) coordinates are plotted as dots, with a line / cross for its errors.
+
+        This method colors each grid in each entry of the list the same, so that the different grids are visible in
+        the plot.
+
+        Parameters
+        ----------
+        grid_list
+            The list of grids of (y,x) coordinates that are plotted.
+         """
+        if len(grid_list) == 0:
+            return
+
+        color = itertools.cycle(self.config_dict["c"])
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
+        try:
+            for grid in grid_list:
+                plt.errorbar(
+                    y=grid[:, 0],
+                    x=grid[:, 1],
+                    yerr=y_errors,
+                    xerr=x_errors,
+                    c=next(color),
+                    **config_dict,
+                )
         except IndexError:
             return None
 
@@ -358,7 +447,7 @@ class PatchOverlay(AbstractMatWrap2D):
     https://matplotlib.org/3.3.2/api/collections_api.html
     """
 
-    def overlay_patches(self, patches: typing.Union[ptch.Patch]):
+    def overlay_patches(self, patches: Union[ptch.Patch]):
         """
         Overlay a list of patches on a figure, for example an `Ellipse`.
         `
