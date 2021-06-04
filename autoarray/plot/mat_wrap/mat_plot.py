@@ -381,6 +381,7 @@ class MatPlot2D(AbstractMatPlot):
         array_overlay: wrap_2d.ArrayOverlay = wrap_2d.ArrayOverlay(),
         grid_scatter: wrap_2d.GridScatter = wrap_2d.GridScatter(),
         grid_plot: wrap_2d.GridPlot = wrap_2d.GridPlot(),
+        grid_errorbar: wrap_2d.GridErrorbar = wrap_2d.GridErrorbar(),
         vector_field_quiver: wrap_2d.VectorFieldQuiver = wrap_2d.VectorFieldQuiver(),
         patch_overlay: wrap_2d.PatchOverlay = wrap_2d.PatchOverlay(),
         voronoi_drawer: wrap_2d.VoronoiDrawer = wrap_2d.VoronoiDrawer(),
@@ -498,10 +499,11 @@ class MatPlot2D(AbstractMatPlot):
         self.mask_scatter = mask_scatter
         self.border_scatter = border_scatter
         self.grid_scatter = grid_scatter
+        self.grid_plot = grid_plot
+        self.grid_errorbar = grid_errorbar
         self.positions_scatter = positions_scatter
         self.index_scatter = index_scatter
         self.pixelization_grid_scatter = pixelization_grid_scatter
-        self.grid_plot = grid_plot
         self.vector_field_quiver = vector_field_quiver
         self.patch_overlay = patch_overlay
         self.array_overlay = array_overlay
@@ -616,7 +618,14 @@ class MatPlot2D(AbstractMatPlot):
             self.figure.close()
 
     def plot_grid(
-        self, grid, visuals_2d: vis.Visuals2D, auto_labels: AutoLabels, color_array=None
+        self,
+        grid,
+        visuals_2d: vis.Visuals2D,
+        auto_labels: AutoLabels,
+        color_array=None,
+        y_errors=None,
+        x_errors=None,
+        buffer=1.0,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
 
@@ -636,24 +645,47 @@ class MatPlot2D(AbstractMatPlot):
 
         if color_array is None:
 
-            self.grid_scatter.scatter_grid(grid=grid)
+            if y_errors is None and x_errors is None:
+                self.grid_scatter.scatter_grid(grid=grid)
+            else:
+                self.grid_errorbar.errorbar_grid(
+                    grid=grid, y_errors=y_errors, x_errors=x_errors
+                )
 
         elif color_array is not None:
 
-            plt.cm.get_cmap(self.cmap.config_dict["cmap"])
-            self.grid_scatter.scatter_grid_colored(
-                grid=grid, color_array=color_array, cmap=self.cmap.config_dict["cmap"]
-            )
+            cmap = plt.get_cmap(self.cmap.config_dict["cmap"])
+
+            if y_errors is None and x_errors is None:
+                self.grid_scatter.scatter_grid_colored(
+                    grid=grid, color_array=color_array, cmap=cmap
+                )
+            else:
+                self.grid_errorbar.errorbar_grid_colored(
+                    grid=grid,
+                    cmap=cmap,
+                    color_array=color_array,
+                    y_errors=y_errors,
+                    x_errors=x_errors,
+                )
+
             if self.colorbar is not None:
-                cb = self.colorbar.set()
-                self.colorbar_tickparams.set(cb=cb)
+
+                colorbar = self.colorbar.set_with_color_values(
+                    cmap=self.cmap.config_dict["cmap"], color_values=color_array
+                )
+                if colorbar is not None and self.colorbar_tickparams is not None:
+                    self.colorbar_tickparams.set(cb=colorbar)
 
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
         extent_axis = self.axis.config_dict.get("extent")
-        extent_axis = extent_axis if extent_axis is not None else grid.extent
+
+        if extent_axis is None:
+
+            extent_axis = grid.extent + (buffer * grid.extent)
 
         self.axis.set(extent=extent_axis, grid=grid)
 

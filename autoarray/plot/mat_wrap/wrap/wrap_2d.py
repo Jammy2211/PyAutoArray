@@ -307,7 +307,6 @@ class GridPlot(AbstractMatWrap2D):
 
         try:
             for grid in grid_list:
-
                 plt.plot(grid[:, 1], grid[:, 0], c=next(color), **config_dict)
         except IndexError:
             return None
@@ -401,6 +400,43 @@ class GridErrorbar(AbstractMatWrap2D):
                 )
         except IndexError:
             return None
+
+    def errorbar_grid_colored(
+        self,
+        grid: Union[np.ndarray, grid_2d.Grid2D],
+        color_array: np.ndarray,
+        cmap: str,
+        y_errors: Optional[Union[np.ndarray, List]] = None,
+        x_errors: Optional[Union[np.ndarray, List]] = None,
+    ):
+        """
+        Plot an input grid of (y,x) coordinates using the matplotlib method `plt.errorbar`.
+
+        The method colors the errorbared grid according to an input ndarray of color values, using an input colormap.
+
+        Parameters
+        ----------
+        grid : Grid2D
+            The grid of (y,x) coordinates that is plotted.
+        color_array : ndarray
+            The array of RGB color values used to color the grid.
+        cmap : str
+            The Matplotlib colormap used for the grid point coloring.
+        """
+
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
+        plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap)
+
+        plt.errorbar(
+            y=grid[:, 0],
+            x=grid[:, 1],
+            yerr=y_errors,
+            xerr=x_errors,
+            zorder=0.0,
+            **self.config_dict,
+        )
 
 
 class VectorFieldQuiver(AbstractMatWrap2D):
