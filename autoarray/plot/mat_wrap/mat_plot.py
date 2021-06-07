@@ -641,7 +641,7 @@ class MatPlot2D(AbstractMatPlot):
 
         if color_array is None:
 
-            self.grid_scatter.scatter_grid(grid=grid, errors=errors)
+            self.grid_scatter.scatter_grid(grid=grid)
 
         elif color_array is not None:
 
