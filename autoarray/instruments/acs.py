@@ -660,10 +660,10 @@ def quadrant_convert_to_original(
 ):
 
     if quadrant.header.bias is not None:
-        quadrant += quadrant.header.bias
+        quadrant += quadrant.header.bias.native
 
     if quadrant.header.bias_serial_prescan_column is not None:
-        quadrant += quadrant.bias_serial_prescan_column
+        quadrant += quadrant.header.bias_serial_prescan_column
 
     if use_calibrated_gain:
         quadrant /= quadrant.header.calibrated_gain
