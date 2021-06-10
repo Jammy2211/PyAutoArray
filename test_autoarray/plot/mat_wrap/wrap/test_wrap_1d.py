@@ -44,6 +44,25 @@ class TestLinePlot:
 
         line.plot_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="scatter")
 
+        line.plot_y_vs_x(
+            y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="errorbar"
+        )
+
+        line.plot_y_vs_x(
+            y=[1.0, 2.0, 3.0],
+            x=[1.0, 2.0, 3.0],
+            plot_axis_type="errorbar",
+            y_errors=[1.0, 1.0, 1.0],
+        )
+
+        line.plot_y_vs_x(
+            y=[1.0, 2.0, 3.0],
+            x=[1.0, 2.0, 3.0],
+            plot_axis_type="errorbar",
+            y_errors=[1.0, 1.0, 1.0],
+            x_errors=[1.0, 1.0, 1.0],
+        )
+
 
 class TestAVXLine:
     def test___from_config_or_via_manual_input(self):

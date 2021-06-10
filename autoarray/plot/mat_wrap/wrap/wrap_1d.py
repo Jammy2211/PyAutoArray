@@ -44,6 +44,8 @@ class YXPlot(AbstractMatWrap1D):
         x: typing.Union[np.ndarray, array_1d.Array1D],
         label: str = None,
         plot_axis_type=None,
+        y_errors=None,
+        x_errors=None,
     ):
         """
         Plots 1D y-data against 1D x-data using the matplotlib method `plt.plot`, `plt.semilogy`, `plt.loglog`,
@@ -70,6 +72,8 @@ class YXPlot(AbstractMatWrap1D):
             plt.loglog(x, y, label=label, **self.config_dict)
         elif plot_axis_type == "scatter":
             plt.scatter(x, y, label=label, **self.config_dict)
+        elif plot_axis_type == "errorbar":
+            plt.errorbar(x, y, yerr=y_errors, xerr=x_errors)
         else:
             raise exc.PlottingException(
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "

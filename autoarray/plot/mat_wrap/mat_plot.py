@@ -305,6 +305,8 @@ class MatPlot1D(AbstractMatPlot):
         visuals_1d: vis.Visuals1D,
         auto_labels: AutoLabels,
         plot_axis_type_override: Optional[str] = None,
+        y_errors=None,
+        x_errors=None,
         bypass: bool = False,
     ):
 
@@ -332,7 +334,12 @@ class MatPlot1D(AbstractMatPlot):
             plot_axis_type = plot_axis_type_override
 
         self.yx_plot.plot_y_vs_x(
-            y=y, x=x, label=auto_labels.legend, plot_axis_type=plot_axis_type
+            y=y,
+            x=x,
+            label=auto_labels.legend,
+            plot_axis_type=plot_axis_type,
+            y_errors=y_errors,
+            x_errors=x_errors,
         )
 
         self.ylabel.set(units=self.units, include_brackets=False)
