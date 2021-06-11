@@ -6,24 +6,26 @@ from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.arrays.one_d import array_1d_util
 from autoarray.geometry import geometry_util
 
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 
 class Array1D(abstract_array_1d.AbstractArray1D):
-    def __new__(cls, array: np.ndarray, mask: np.ndarray, *args, **kwargs):
+    def __new__(cls, array: np.ndarray, mask: np.ndarray, header=None, *args, **kwargs):
 
         obj = array.view(cls)
         obj.mask = mask
+        obj.header = header
 
         return obj
 
     @classmethod
     def manual_slim(
         cls,
-        array: np.ndarray,
+        array: Union[np.ndarray, Tuple[float], List[float]],
         pixel_scales: Union[float, Tuple[float]],
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
+        header=None,
     ) -> "Array1D":
         """
         Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:
@@ -55,15 +57,16 @@ class Array1D(abstract_array_1d.AbstractArray1D):
             origin=origin,
         )
 
-        return Array1D(array=array, mask=mask)
+        return Array1D(array=array, mask=mask, header=header)
 
     @classmethod
     def manual_native(
         cls,
-        array: np.ndarray,
+        array: Union[np.ndarray, Tuple[float], List[float]],
         pixel_scales: Union[float, Tuple[float]],
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
+        header=None,
     ) -> "Array1D":
         """
         Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:
@@ -84,11 +87,20 @@ class Array1D(abstract_array_1d.AbstractArray1D):
             The origin of the line's mask.
         """
         return cls.manual_slim(
-            array=array, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+            array=array,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            header=header,
         )
 
     @classmethod
-    def manual_mask(cls, array: np.ndarray, mask: np.ndarray) -> "Array1D":
+    def manual_mask(
+        cls,
+        array: Union[np.ndarray, Tuple[float], List[float]],
+        mask: np.ndarray,
+        header=None,
+    ) -> "Array1D":
         """
         Create a Line (see `Line.__new__`) by inputting the native line values in 1D and including the mask that is
         applied to them, for example:
@@ -116,7 +128,7 @@ class Array1D(abstract_array_1d.AbstractArray1D):
             array_1d_native=array, mask_1d=mask, sub_size=mask.sub_size
         )
 
-        return Array1D(array=array, mask=mask)
+        return Array1D(array=array, mask=mask, header=header)
 
     @classmethod
     def full(
@@ -126,6 +138,7 @@ class Array1D(abstract_array_1d.AbstractArray1D):
         pixel_scales: Union[float, Tuple[float]],
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
+        header=None,
     ) -> "Array1D":
         """
         Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with an input fill value,
@@ -158,6 +171,7 @@ class Array1D(abstract_array_1d.AbstractArray1D):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            header=header,
         )
 
     @property

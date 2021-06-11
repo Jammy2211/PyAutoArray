@@ -1,6 +1,33 @@
+from autoarray.structures.arrays.one_d import array_1d
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.layout import region as reg
 from autoarray.layout import layout_util
+
+
+class Layout1D:
+    def __init__(self, shape_1d, prescan=None, overscan=None):
+        """
+        Abstract base class for a layout, which defines the regions a signal, its input normalization and other
+        properties.
+        """
+
+        self.shape_1d = shape_1d
+
+        if isinstance(prescan, tuple):
+            prescan = reg.Region1D(region=prescan)
+
+        if isinstance(overscan, tuple):
+            overscan = reg.Region1D(region=overscan)
+
+        self.prescan = prescan
+        self.overscan = overscan
+
+    def extract_overscan_array_1d_from(self, array):
+        return array_1d.Array1D.manual_native(
+            array=array.native[self.overscan.slice],
+            header=array.header,
+            pixel_scales=array.pixel_scales,
+        )
 
 
 class Layout2D:

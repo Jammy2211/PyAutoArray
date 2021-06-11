@@ -27,6 +27,7 @@ from .operators.convolver import Convolver
 from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
+from .layout.layout import Layout1D
 from .layout.layout import Layout2D
 from .structures.arrays.one_d.array_1d import Array1D
 from .structures.arrays.two_d.array_2d import Array2D
