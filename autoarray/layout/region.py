@@ -71,9 +71,15 @@ class Region1D:
 
     def front_edge_region_from(self, pixels):
 
-        x_coord = self.x0
-        x_min = x_coord + pixels[0]
-        x_max = x_coord + pixels[1]
+        x_min = self.x0 + pixels[0]
+        x_max = self.x0 + pixels[1]
+
+        return Region1D((x_min, x_max))
+
+    def trails_region_from(self, pixels):
+
+        x_min = self.x1 + pixels[0]
+        x_max = self.x1 + pixels[1]
 
         return Region1D((x_min, x_max))
 
