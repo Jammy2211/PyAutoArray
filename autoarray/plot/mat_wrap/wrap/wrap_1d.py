@@ -73,7 +73,7 @@ class YXPlot(AbstractMatWrap1D):
         elif plot_axis_type == "scatter":
             plt.scatter(x, y, label=label, **self.config_dict)
         elif plot_axis_type == "errorbar":
-            plt.errorbar(x, y, yerr=y_errors, xerr=x_errors)
+            plt.errorbar(x, y, yerr=y_errors, xerr=x_errors, marker="o", fmt="o", **self.config_dict)
         else:
             raise exc.PlottingException(
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "

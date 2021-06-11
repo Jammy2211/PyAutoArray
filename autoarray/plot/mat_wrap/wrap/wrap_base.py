@@ -581,6 +581,7 @@ class XTicks(AbstractTicks):
         min_value: float,
         max_value: float,
         units: Units,
+        use_integers=False
     ):
         """
         Set the x ticks of a figure using the shape of an input `Array2D` object and input units.
@@ -597,10 +598,16 @@ class XTicks(AbstractTicks):
             The units of the figure.
         """
 
-        ticks = self.tick_values_from(min_value=min_value, max_value=max_value)
-        labels = self.tick_values_in_units_from(
-            array=array, min_value=min_value, max_value=max_value, units=units
-        )
+        if use_integers:
+            ticks = np.arange(int(max_value - min_value))
+            labels = ticks
+
+        else:
+
+            ticks = self.tick_values_from(min_value=min_value, max_value=max_value)
+            labels = self.tick_values_in_units_from(
+                array=array, min_value=min_value, max_value=max_value, units=units
+            )
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
 
 

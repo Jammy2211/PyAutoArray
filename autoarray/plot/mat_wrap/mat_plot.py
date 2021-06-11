@@ -301,9 +301,9 @@ class MatPlot1D(AbstractMatPlot):
     def plot_yx(
         self,
         y,
-        x,
         visuals_1d: vis.Visuals1D,
         auto_labels: AutoLabels,
+        x=None,
         plot_axis_type_override: Optional[str] = None,
         y_errors=None,
         x_errors=None,
@@ -322,8 +322,11 @@ class MatPlot1D(AbstractMatPlot):
 
         self.title.set(auto_title=auto_labels.title)
 
+        use_integers = False
+
         if x is None:
             x = np.arange(len(y))
+            use_integers = True
 
         if self.yx_plot.plot_axis_type is None:
             plot_axis_type = "linear"
@@ -351,7 +354,7 @@ class MatPlot1D(AbstractMatPlot):
             plt.yscale("symlog")
 
         self.xticks.set(
-            array=None, min_value=np.min(x), max_value=np.max(x), units=self.units
+            array=None, min_value=np.min(x), max_value=np.max(x), units=self.units, use_integers=use_integers
         )
 
         self.title.set(auto_title=auto_labels.title)

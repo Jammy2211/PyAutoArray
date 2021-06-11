@@ -205,6 +205,7 @@ class AbstractPlotter:
         self.open_subplot_figure(number_subplots=len(figures_dict))
 
         for index, (key, value) in enumerate(figures_dict.items()):
+
             if value:
                 self.figures_2d(**{key: True})
 
