@@ -14,6 +14,7 @@ from autoarray.plot.mat_wrap.wrap.wrap_base import Legend
 from autoarray.plot.mat_wrap.wrap.wrap_base import Output
 
 from autoarray.plot.mat_wrap.wrap.wrap_1d import YXPlot
+from autoarray.plot.mat_wrap.wrap.wrap_1d import YXScatter
 from autoarray.plot.mat_wrap.wrap.wrap_1d import AXVLine
 
 from autoarray.plot.mat_wrap.wrap.wrap_2d import ArrayOverlay

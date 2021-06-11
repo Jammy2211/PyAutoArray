@@ -581,7 +581,7 @@ class XTicks(AbstractTicks):
         min_value: float,
         max_value: float,
         units: Units,
-        use_integers=False
+        use_integers=False,
     ):
         """
         Set the x ticks of a figure using the shape of an input `Array2D` object and input units.

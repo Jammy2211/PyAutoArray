@@ -354,7 +354,11 @@ class MatPlot1D(AbstractMatPlot):
             plt.yscale("symlog")
 
         self.xticks.set(
-            array=None, min_value=np.min(x), max_value=np.max(x), units=self.units, use_integers=use_integers
+            array=None,
+            min_value=np.min(x),
+            max_value=np.max(x),
+            units=self.units,
+            use_integers=use_integers,
         )
 
         self.title.set(auto_title=auto_labels.title)

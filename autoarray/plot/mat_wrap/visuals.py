@@ -1,5 +1,6 @@
 from autoarray.mask import mask_1d
 from autoarray.structures.arrays.one_d import array_1d
+from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_irregular
@@ -69,12 +70,14 @@ class Visuals1D(AbstractVisuals):
     def __init__(
         self,
         mask: Optional[mask_1d.Mask1D] = None,
-        origin: Optional[grid_2d.Grid2D] = None,
+        origin: Optional[grid_1d.Grid1D] = None,
+        points: Optional[grid_1d.Grid1D] = None,
         vertical_line: Optional[float] = None,
     ):
 
         self.mask = mask
         self.origin = origin
+        self.points = points
         self.vertical_line = vertical_line
 
     @property
@@ -86,6 +89,12 @@ class Visuals1D(AbstractVisuals):
         return inc.Include1D()
 
     def plot_via_plotter(self, plotter):
+
+        if self.points is not None:
+
+            plotter.vertical_line_axvline.axvline_vertical_line(
+                vertical_line=self.vertical_line
+            )
 
         if self.vertical_line is not None:
 
