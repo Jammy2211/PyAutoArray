@@ -34,6 +34,28 @@ jobs:
         pip3 install pytest
         pip3 install -r PyAutoConf/requirements.txt
         pip3 install -r PyAutoArray/requirements.txt
+    - name: Extract branch name
+      shell: bash
+      run: |
+        cd PyAutoArray
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    - name: Change to same branch if exists in deps
+      shell: bash
+      run: |
+        export PACKAGES=("PyAutoConf")
+        export BRANCH="${{ steps.extract_branch.outputs.branch }}"
+        for PACKAGE in ${PACKAGES[@]}; do
+          pushd $PACKAGE
+          export existed_in_remote=$(git ls-remote --heads origin ${BRANCH})
+          if [[ -z ${existed_in_remote} ]]; then
+            echo "Branch $BRANCH did not exist in $PACKAGE"
+          else
+            echo "Branch $BRANCH did exist in $PACKAGE"
+            git checkout $BRANCH
+          fi
+          popd
+        done
     - name: Run tests
       run: |
         export ROOT_DIR=`pwd`
