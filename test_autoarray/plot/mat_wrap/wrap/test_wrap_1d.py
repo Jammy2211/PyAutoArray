@@ -40,7 +40,7 @@ class TestYXPlot:
         )
         line.plot_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="loglog")
 
-        line = aplt.YXPlot(c="k", s=2)
+        line = aplt.YXPlot(c="k")
 
         line.plot_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="scatter")
 
