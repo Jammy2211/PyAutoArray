@@ -952,7 +952,10 @@ class Grid2DSparse(abstract_grid_2d.AbstractGrid2D):
             raise exc.GridException
 
         kmeans = KMeans(
-            n_clusters=int(total_pixels), random_state=seed, n_init=n_iter, max_iter=max_iter
+            n_clusters=int(total_pixels),
+            random_state=seed,
+            n_init=n_iter,
+            max_iter=max_iter,
         )
 
         try:

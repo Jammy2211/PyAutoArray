@@ -40,16 +40,16 @@ class Mapper:
         hyper_image=None,
     ):
         """
-        Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
+        Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of
         a grid, see the *hyper_galaxies.array.grid* module) to discretized pixels in a pixelization.
 
-        1D structures are used to represent these mappings, for example between the different grid in a grid \
-        (e.g. the / sub grid). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
+        1D structures are used to represent these mappings, for example between the different grid in a grid
+        (e.g. the / sub grid). This follows the syntax grid_to_grid, whereby the index of a value on one grid
         equals that of another grid, for example:
 
         - data_to_pix[2] = 1  tells us that the 3rd pixel on a grid maps to the 2nd pixel of a pixelization.
         - sub_to_pix4] = 2  tells us that the 5th sub-pixel of a sub-grid maps to the 3rd pixel of a pixelization.
-        - pix_to_data[2] = 5 tells us that the 3rd pixel of a pixelization maps to the 6th (unmasked) pixel of a \
+        - pix_to_data[2] = 5 tells us that the 3rd pixel of a pixelization maps to the 6th (unmasked) pixel of a
                             grid.
 
         Mapping Matrix:
@@ -74,10 +74,10 @@ class Mapper:
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        The mapping matrix is in fact built using the sub-grid of the grid, whereby each pixel is \
-        divided into a grid of sub-pixels which are all paired to pixels in the pixelization. The entires \
-        in the mapping matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2 \
-        sub-grid in each pixel (which means the fraction value is 1.0/(2.0^2) = 0.25, if we have the following mappings:
+        The mapping matrix is in fact built using the sub-grid of the grid, whereby each pixel is
+        divided into a grid of sub-pixels which are all paired to pixels in the pixelization. The entries
+        in the mapping matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2
+        sub-grid in each pixel which means the fraction value is 1.0/(2.0^2) = 0.25, if we have the following mappings:
 
         pixel 0 -> sub pixel 0 -> pixelization pixel 0
         pixel 0 -> sub pixel 1 -> pixelization pixel 1
@@ -139,10 +139,10 @@ class Mapper:
     @property
     def all_sub_slim_indexes_for_pixelization_index(self):
         """
-        Returns the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
+        Returns the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings
         are determined after the grid is used to determine the pixelization.
 
-        The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
+        The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to
         represent these mappings"""
         all_sub_slim_indexes_for_pixelization_index = [[] for _ in range(self.pixels)]
 
@@ -189,7 +189,7 @@ class Mapper:
             return indexes
 
     def reconstruction_from(self, solution_vector):
-        """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
+        """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed
         pixelization of the rectangular pixelization by using the mapper."""
         raise NotImplementedError()
 
@@ -202,7 +202,7 @@ class MapperRectangular(Mapper):
         data_pixelization_grid=None,
         hyper_image=None,
     ):
-        """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
+        """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of
         a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a rectangular grid.
 
         The and uniform geometry of the rectangular grid is used to perform efficient pixel pairings.
@@ -240,7 +240,7 @@ class MapperRectangular(Mapper):
         ).astype("int")
 
     def reconstruction_from(self, solution_vector):
-        """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
+        """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed
         pixelization of the rectangular pixelization by using the mapper."""
         recon = array_2d_util.array_2d_native_from(
             array_2d_slim=solution_vector,
@@ -265,10 +265,10 @@ class MapperVoronoi(Mapper):
         data_pixelization_grid=None,
         hyper_image=None,
     ):
-        """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
+        """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of
         a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a Voronoi grid.
 
-        The irand non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge \
+        The irand non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge
         of how different grid map to one another.
 
         Parameters
