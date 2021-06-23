@@ -5,9 +5,10 @@ wrap_base.set_backend()
 import matplotlib.pyplot as plt
 import numpy as np
 import typing
-from typing import Optional
+from typing import Optional, Union
 
 from autoarray.structures.arrays.one_d import array_1d
+from autoarray.structures.grids.one_d import grid_1d
 from autoarray import exc
 
 
@@ -44,6 +45,8 @@ class YXPlot(AbstractMatWrap1D):
         x: typing.Union[np.ndarray, array_1d.Array1D],
         label: str = None,
         plot_axis_type=None,
+        y_errors=None,
+        x_errors=None,
     ):
         """
         Plots 1D y-data against 1D x-data using the matplotlib method `plt.plot`, `plt.semilogy`, `plt.loglog`,
@@ -70,11 +73,53 @@ class YXPlot(AbstractMatWrap1D):
             plt.loglog(x, y, label=label, **self.config_dict)
         elif plot_axis_type == "scatter":
             plt.scatter(x, y, label=label, **self.config_dict)
+        elif plot_axis_type == "errorbar":
+            plt.errorbar(
+                x,
+                y,
+                yerr=y_errors,
+                xerr=x_errors,
+                marker="o",
+                fmt="o",
+                **self.config_dict
+            )
         else:
             raise exc.PlottingException(
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
                 "{semilogy, loglog})"
             )
+
+
+class YXScatter(AbstractMatWrap1D):
+    def __init__(self, **kwargs):
+        """
+        Scatters a 1D set of points on a 1D plot. Unlike the `YXPlot` object these are scattered over an existing plot.
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.scatter: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
+        """
+
+        super().__init__(**kwargs)
+
+    def scatter_yx(self, y: Union[np.ndarray, grid_1d.Grid1D], x: list):
+        """
+        Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
+
+        Parameters
+        ----------
+        grid
+            The points that are
+        errors
+            The error on every point of the grid that is plotted.
+        """
+
+        config_dict = self.config_dict
+
+        if len(config_dict["c"]) > 1:
+            config_dict["c"] = config_dict["c"][0]
+
+        plt.scatter(y=y, x=x, **config_dict)
 
 
 class AXVLine(AbstractMatWrap1D):
