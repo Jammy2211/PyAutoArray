@@ -12,6 +12,7 @@ import typing
 from typing import Optional
 from abc import ABC
 from typing import List, Union
+import numpy as np
 
 
 class AbstractVisuals(ABC):
@@ -92,9 +93,7 @@ class Visuals1D(AbstractVisuals):
 
         if self.points is not None:
 
-            plotter.vertical_line_axvline.axvline_vertical_line(
-                vertical_line=self.vertical_line
-            )
+            plotter.yx_scatter.scatter_yx(y=self.points, x=np.arange(len(self.points)))
 
         if self.vertical_line is not None:
 

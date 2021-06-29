@@ -201,6 +201,7 @@ class MatPlot1D(AbstractMatPlot):
         output: wrap_base.Output = wrap_base.Output(),
         yx_plot: wrap_1d.YXPlot = wrap_1d.YXPlot(),
         vertical_line_axvline: wrap_1d.AXVLine = wrap_1d.AXVLine(),
+        yx_scatter: wrap_1d.YXPlot = wrap_1d.YXScatter(),
     ):
         """
         Visualizes 1D data structures (e.g a `Line`, etc.) using Matplotlib.
@@ -273,6 +274,7 @@ class MatPlot1D(AbstractMatPlot):
 
         self.yx_plot = yx_plot
         self.vertical_line_axvline = vertical_line_axvline
+        self.yx_scatter = yx_scatter
 
         self.is_for_multi_plot = False
         self.is_for_subplot = False

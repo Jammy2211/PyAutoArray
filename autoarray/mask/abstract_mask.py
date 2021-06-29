@@ -22,25 +22,26 @@ class AbstractMask(np.ndarray):
         *args,
         **kwargs
     ):
-        """An abstract class for a mask that represents data structure that can be in 1D, 2D or other shapes.
+        """
+        An abstract class for a mask that represents data structure that can be in 1D, 2D or other shapes.
 
-         When applied to data it extracts or masks the unmasked image pixels corresponding to mask entries that are
-        `False` or 0).
+        When applied to data it extracts or masks the unmasked image pixels corresponding to mask entries
+        that are (`False` or 0).
 
         The mask also defines the geometry of the data structure it is paired with, for example how its pixels convert
-        to physical units via the ``pixel_scales`` and ``origin`` parameters and a sub-grid which is used for
+        to physical units via the pixel_scales and origin parameters and a sub-grid which is used for
         perform calculations via super-sampling.
 
-         Parameters
-         ----------
-         mask : np.ndarray
-             The ``ndarray`` containing the ``bool``'s representing the ``mask``, where `False` signifies an entry is
-             unmasked and used in calculations.
-         pixel_scales : (float, float) or float
-             The scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``, it is
-             converted to a ``(float, float)`` structure.
-         origin : (float, float)
-             The origin of the ``mask``'s coordinate system in scaled units.
+        Parameters
+        ----------
+        mask
+            The ndarray containing the bool's representing the mask, where `False` signifies an entry is
+            unmasked and used in calculations.
+        pixel_scales
+            The scaled units to pixel units conversion factors of every pixel. If this is input as a float, it is
+            converted to a (float, float) structure.
+        origin
+            The origin of the mask's coordinate system in scaled units.
         """
 
         # noinspection PyArgumentList
@@ -62,13 +63,17 @@ class AbstractMask(np.ndarray):
             self.pixel_scales = None
 
     def __reduce__(self):
+
         # Get the parent's __reduce__ tuple
         pickled_state = super().__reduce__()
+
         # Create our own tuple to pass to __setstate__
+
         class_dict = {}
         for key, value in self.__dict__.items():
             class_dict[key] = value
         new_state = pickled_state[2] + (class_dict,)
+
         # Return a tuple that replaces the parent's __setstate__ tuple with our own
         return pickled_state[0], pickled_state[1], new_state
 
@@ -83,14 +88,13 @@ class AbstractMask(np.ndarray):
     def pixel_scale(self):
         """
         For a mask with dimensions two or above check that are pixel scales are the same, and if so return this
-        single value as a ``float``.
+        single value as a float.
         """
-
         for pixel_scale in self.pixel_scales:
             if pixel_scale != self.pixel_scales[0]:
                 raise exc.MaskException(
                     "Cannot return a pixel_scale for a grid where each dimension has a "
-                    "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1]"
+                    "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1])"
                 )
 
         return self.pixel_scales[0]
@@ -158,13 +162,13 @@ class AbstractMask(np.ndarray):
     @property
     def sub_shape_slim(self) -> int:
         """
-        The 1D shape of the masks's sub-grid, which is equivalent to the total number of unmasked pixels in the mask.
+        The 1D shape of the mask's sub-grid, which is equivalent to the total number of unmasked pixels in the mask.
         """
         return int(self.pixels_in_mask * self.sub_size ** self.dimensions)
 
     def mask_new_sub_size_from(self, mask, sub_size=1) -> "AbstractMask":
         """
-        Returns the mask on the same scaled coordinate system but with a sub-grid of an input``sub_size`` `.
+        Returns the mask on the same scaled coordinate system but with a sub-grid of an inputsub_size.
         """
         return self.__class__(
             mask=mask,

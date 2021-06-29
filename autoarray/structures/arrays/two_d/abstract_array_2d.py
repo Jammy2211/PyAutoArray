@@ -59,7 +59,7 @@ def convert_array_2d(array_2d, mask_2d):
     if array_2d.shape != mask_2d.sub_shape_native:
         raise exc.ArrayException(
             "The input array is 2D but not the same dimensions as the sub-mask "
-            "(e.g. the mask 2D shape multipled by its sub size."
+            "(e.g. the mask 2D shape multipled by its sub size.)"
         )
 
     sub_array_1d = array_2d_util.array_2d_slim_from(
@@ -309,7 +309,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         To ensure this signal is included the array can be padded, a padded array can be computed via the method
         *padded_from_kernel_shape*. This function trims the array back to its original shape, after the padded array
-        has been used for computationl.
+        has been used for computational.
 
         Parameters
         ----------

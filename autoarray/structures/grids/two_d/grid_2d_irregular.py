@@ -488,7 +488,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         else:
             raise exc.GridException(
                 "Cannot return a pixel_scale for a grid where each dimension has a "
-                "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1]"
+                "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1])"
             )
 
     @classmethod

@@ -12,6 +12,8 @@ from autoarray.mask import mask_2d as msk
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.structures.arrays.two_d import array_2d_util
 
+from typing import List, Tuple, Union
+
 
 def check_grid_2d(grid_2d):
 
@@ -39,25 +41,25 @@ def check_grid_2d_and_mask_2d(grid_2d, mask_2d):
         if (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.sub_shape_native:
             raise exc.GridException(
                 "The input grid is 2D but not the same dimensions as the sub-mask "
-                "(e.g. the mask 2D shape multipled by its sub size."
+                "(e.g. the mask 2D shape multipled by its sub size.)"
             )
 
 
-def convert_grid_2d(grid_2d, mask_2d):
+def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d):
     """
     Manual Grid2D functions take as input a list or ndarray which is to be returned as an Grid2D. This function
     performs the following and checks and conversions on the input:
 
-    1) If the input is a list, convert it to an ndarray.
-    2) Check that the number of sub-pixels in the array is identical to that of the mask.
-    3)  Map the input ndarray to its `slim` representation.
+    1: If the input is a list, convert it to an ndarray.
+    2: Check that the number of sub-pixels in the array is identical to that of the mask.
+    3: Map the input ndarray to its `slim` representation.
 
     For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2] and `native` a 3D NumPy array of
     shape [total_y_coordinates, total_x_coordinates, 2]
 
     Parameters
     ----------
-    array : np.ndarray or list
+    array
         The input structure which is converted to an ndarray if it is a list.
     mask_2d : Mask2D
         The mask of the output Array2D.
@@ -150,27 +152,33 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
     @property
     def flipped(self) -> np.ndarray:
-        """Return the grid as an ndarray of shape [total_unmasked_pixels, 2] with flipped values such that coordinates
+        """
+        Return the grid as an ndarray of shape [total_unmasked_pixels, 2] with flipped values such that coordinates
         are given as (x,y) values.
 
-        This is used to interface with Python libraries that require the grid in (x,y) format."""
+        This is used to interface with Python libraries that require the grid in (x,y) format.
+        """
         return np.fliplr(self)
 
     @property
     @array_2d_util.Memoizer()
     def in_radians(self):
-        """Return the grid as an ndarray where all (y,x) values are converted to Radians.
+        """
+        Return the grid as an ndarray where all (y,x) values are converted to Radians.
 
-        This grid is used by the interferometer module."""
+        This grid is used by the interferometer module.
+        """
         return (self * np.pi) / 648000.0
 
-    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+    def squared_distances_from_coordinate(
+        self, coordinate: Tuple[float, float] = (0.0, 0.0)
+    ):
         """
         Returns the squared distance of every coordinate on the grid from an input coordinate.
 
         Parameters
         ----------
-        coordinate : (float, float)
+        coordinate
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
@@ -178,13 +186,13 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
         return array_2d.Array2D.manual_mask(array=squared_distances, mask=self.mask)
 
-    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+    def distances_from_coordinate(self, coordinate: Tuple[float, float] = (0.0, 0.0)):
         """
         Returns the distance of every coordinate on the grid from an input (y,x) coordinate.
 
         Parameters
         ----------
-        coordinate : (float, float)
+        coordinate
             The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
         distances = np.sqrt(
@@ -193,26 +201,26 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         return array_2d.Array2D.manual_mask(array=distances, mask=self.mask)
 
     def grid_2d_radial_projected_from(
-        self, centre=(0.0, 0.0), angle: float = 0.0
+        self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0
     ) -> grid_2d_irregular.Grid2DIrregular:
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
         extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:
 
-        1) Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance
-        of the 4 paths from the (y,x) centre to the edge of the region (e.g. following the positive / negative y and
-        x axes).
+        1 Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance
+        of the 4 paths from the (y,x) centre to the edge of the region e.g. following the positive / negative y and
+        x axes.
 
-        2) Use the pixel-scale corresponding to the direction chosen (e.g. if the positive x-axis was the longest, the
-        pixel_scale in the x dimension is used).
+        2: Use the pixel-scale corresponding to the direction chosen e.g. if the positive x-axis was the longest, the
+        pixel_scale in the x dimension is used.
 
-        3) Determine the number of pixels between the centre and the edge of the region using the longest path between
+        3: Determine the number of pixels between the centre and the edge of the region using the longest path between
         the two chosen above.
 
-        4) Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values
+        4: Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values
         iterate from the centre in increasing steps of the pixel-scale.
 
-        5) Rotate these radial coordinates by the input `angle` clockwise.
+        5: Rotate these radial coordinates by the input `angle` clockwise.
 
         A schematic is shown below:
 
@@ -223,21 +231,15 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         |                 |
         -------------------
 
-        4) Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values
+        4: Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values
         iterate from the centre in increasing steps of the pixel-scale.
 
-        5) Rotate these radial coordinates by the input `angle` clockwise.
+        5: Rotate these radial coordinates by the input `angle` clockwise.
 
         Parameters
         ----------
-        extent : np.ndarray
-            The extent of the grid the radii grid is computed using, with format [xmin, xmax, ymin, ymax]
-        centre : (float, flloat)
+        centre
             The (y,x) central coordinate which the radial grid is traced outwards from.
-        pixel_scales : (float, float)
-            The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-        sub_size : int
-            The size of the sub-grid that each pixel of the 2D mask array is divided into.
         angle
             The angle with which the radial coordinates are rotated clockwise.
 
@@ -327,16 +329,17 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             self.scaled_maxima[0] + buffer,
         ]
 
-    def padded_grid_from_kernel_shape(self, kernel_shape_native):
-        """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
-        'missing' if the grid is used to evaluate the signal via an analytic function.
+    def padded_grid_from_kernel_shape(self, kernel_shape_native: Tuple[float, float]):
+        """
+        When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will
+        be 'missing' if the grid is used to evaluate the signal via an analytic function.
 
         To ensure this signal is included the padded grid is used, which is 'buffed' such that it includes all pixels
         whose signal will be convolved into the unmasked pixels given the 2D kernel shape.
 
         Parameters
         ----------
-        kernel_shape_native : (float, float)
+        kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
         shape = self.mask.shape
@@ -371,13 +374,13 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
         This is performed as follows:
 
-        1) Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
-        2) Compute the radial distance of every grid coordinate from the origin.
-        3) For every coordinate, find its nearest pixel in the border.
-        4) Determine if it is outside the border, by comparing its radial distance from the origin to its paired \
-           border pixel's radial distance.
-        5) If its radial distance is larger, use the ratio of radial distances to move the coordinate to the border \
-           (if its inside the border, do nothing).
+        1: Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
+        2: Compute the radial distance of every grid coordinate from the origin.
+        3: For every coordinate, find its nearest pixel in the border.
+        4: Determine if it is outside the border, by comparing its radial distance from the origin to its paired
+        border pixel's radial distance.
+        5: If its radial distance is larger, use the ratio of radial distances to move the coordinate to the
+        border (if its inside the border, do nothing).
 
         The method can be used on uniform or irregular grids, however for irregular grids the border of the
         'image-plane' mask is used to define border pixels.
@@ -432,13 +435,13 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
         This is performed as follows:
 
-        1) Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
-        2) Compute the radial distance of every grid coordinate from the origin.
-        3) For every coordinate, find its nearest pixel in the border.
-        4) Determine if it is outside the border, by comparing its radial distance from the origin to its paired \
-           border pixel's radial distance.
-        5) If its radial distance is larger, use the ratio of radial distances to move the coordinate to the border \
-           (if its inside the border, do nothing).
+        1: Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
+        2: Compute the radial distance of every grid coordinate from the origin.
+        3: For every coordinate, find its nearest pixel in the border.
+        4: Determine if it is outside the border, by comparing its radial distance from the origin to its paired
+        border pixel's radial distance.
+        5: If its radial distance is larger, use the ratio of radial distances to move the coordinate to the
+        border (if its inside the border, do nothing).
 
         The method can be used on uniform or irregular grids, however for irregular grids the border of the
         'image-plane' mask is used to define border pixels.
@@ -494,17 +497,17 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
         return grid_relocated
 
-    def output_to_fits(self, file_path, overwrite=False):
+    def output_to_fits(self, file_path: str, overwrite: bool = False):
         """
         Output the grid to a .fits file.
 
         Parameters
         ----------
-        file_path : str
-            The path the file is output to, including the filename and the ``.fits`` extension,
-            e.g. '/path/to/filename.fits'
-        overwrite : bool
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""
+        file_path
+            The path the file is output to, including the filename and the .fits extension, e.g. '/path/to/filename.fits'
+        overwrite
+            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
+        """
         array_2d_util.numpy_array_2d_to_fits(
             array_2d=self.native, file_path=file_path, overwrite=overwrite
         )

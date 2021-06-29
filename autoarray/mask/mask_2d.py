@@ -115,7 +115,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         )
 
     def resized_mask_from_new_shape(self, new_shape, pad_value: int = 0.0):
-        """resized the array to a new shape and at a new origin.
+        """
+        Resized the array to a new shape and at a new origin.
 
         Parameters
         -----------
@@ -298,7 +299,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         The scaled-grid of (y,x) coordinates of every pixel.
 
-        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
+        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
         value y value in scaled units.
         """
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
@@ -332,8 +333,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def edge_grid_sub_1(self):
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         edge_grid_1d = self.masked_grid_sub_1[self._edge_1d_indexes]
         return grid_2d.Grid2D(grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1)
@@ -342,8 +343,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def border_grid_1d(self):
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         return self.masked_grid[self._sub_border_flat_indexes]
 
@@ -351,21 +352,21 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def border_grid_sub_1(self):
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         border_grid_1d = self.masked_grid_sub_1[self._border_1d_indexes]
         return grid_2d.Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
     def grid_pixels_from_grid_scaled_1d(self, grid_scaled_1d):
         """
-        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
+        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
         returned as floats such that they include the decimal offset from each pixel's top-left corner.
 
-        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
+        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
         highest y scaled coordinate value and lowest x scaled coordinate.
 
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
         origin before computing their 1D grid pixel indexes.
 
         Parameters
@@ -383,13 +384,13 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
         """
-        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
+        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
         returned as integers such that they map directly to the pixel they are contained within.
 
-        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
+        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
         higher y scaled coordinate value and lowest x scaled coordinate.
 
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
         origin before computing their 1D grid pixel indexes.
 
         Parameters
@@ -410,8 +411,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     def grid_pixel_indexes_from_grid_scaled_1d(self, grid_scaled_1d):
         """
-        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
-        returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
+        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are
+        returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then
         downwards.
 
         For example:
@@ -420,7 +421,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         - The fifth pixel on the top row, whose 2D index is [0,5], corresponds to 1D index 4.
         - The first pixel on the second row, whose 2D index is [0,1], has 1D index 10 if a row has 10 pixels.
 
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
         origin before computing their 1D grid pixel indexes.
 
         Parameters
@@ -443,10 +444,10 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         Convert a grid of (y,x) pixel coordinates to a grid of (y,x) scaled values.
 
-        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
+        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
         higher y scaled coordinate value and lowest x scaled coordinate.
 
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
         origin before computing their 1D grid pixel indexes.
 
         Parameters
@@ -483,7 +484,9 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     @property
     def _sub_native_index_for_sub_slim_index(self):
-        """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
+        """
+        A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates.
+        """
         return mask_2d_util.native_index_for_slim_index_2d_from(
             mask_2d=self, sub_size=1
         ).astype("int")
@@ -491,7 +494,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     @property
     def _edge_1d_indexes(self):
         """
-        The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
+        The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
         (next to at least one pixel with a `True` value).
         """
         return mask_2d_util.edge_1d_indexes_from(mask_2d=self).astype("int")
@@ -499,7 +502,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     @property
     def _edge_2d_indexes(self):
         """
-        The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
+        The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
         (next to at least one pixel with a `True` value).
         """
         return self._sub_native_index_for_sub_slim_index[self._edge_1d_indexes].astype(
@@ -510,16 +513,16 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def _border_1d_indexes(self):
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         return mask_2d_util.border_slim_indexes_from(mask_2d=self).astype("int")
 
     @property
     def _border_2d_indexes(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         return self._sub_native_index_for_sub_slim_index[
             self._border_1d_indexes
@@ -528,8 +531,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     @property
     def _sub_border_flat_indexes(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         return mask_2d_util.sub_border_pixel_slim_indexes_from(
             mask_2d=self, sub_size=self.sub_size
@@ -565,8 +568,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def unmasked_mask(self):
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         return Mask2D.unmasked(
             shape_native=self.shape_native,
@@ -579,8 +582,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def edge_mask(self):
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         mask = np.full(fill_value=True, shape=self.shape)
         mask[self._edge_2d_indexes[:, 0], self._edge_2d_indexes[:, 1]] = False
@@ -595,8 +598,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def border_mask(self):
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
-        an annulus mask).
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
         """
         mask = np.full(fill_value=True, shape=self.shape)
         mask[self._border_2d_indexes[:, 0], self._border_2d_indexes[:, 1]] = False
@@ -624,8 +627,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         For example:
 
-        - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd pixel.
-        - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th pixel.
+        sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd pixel.
+        sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th pixel.
         """
         return mask_2d_util.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask_2d=self, sub_size=self.sub_size
@@ -701,9 +704,10 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     @property
     def zoom_mask_unmasked(self):
-        """ The scaled-grid of (y,x) coordinates of every pixel.
+        """
+        The scaled-grid of (y,x) coordinates of every pixel.
 
-        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
+        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
         value y value in scaled units.
         """
 
@@ -1007,7 +1011,7 @@ class Mask2D(AbstractMask2D):
         axis_ratio
             The axis-ratio of the ellipse within which pixels are unmasked.
         angle
-            The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive \
+            The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
              x-axis).
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
@@ -1061,7 +1065,7 @@ class Mask2D(AbstractMask2D):
     ) -> "Mask2D":
         """
         Returns a Mask2D (see *Mask2D.__new__*) where all `False` entries are within an elliptical annulus of input
-       inner and outer scaled major-axis and centre.
+        inner and outer scaled major-axis and centre.
 
         The `outer_major_axis_radius`, `inner_major_axis_radius` and `centre` are all input in scaled units.
 
@@ -1076,14 +1080,14 @@ class Mask2D(AbstractMask2D):
         inner_axis_ratio
             The axis-ratio of the inner ellipse within which pixels are masked.
         inner_phi : float
-            The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the \
+            The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the
             positive x-axis).
         outer_major_axis_radius : float
             The major-axis in scaled units of the outer ellipse within which pixels are unmasked.
         outer_axis_ratio
             The axis-ratio of the outer ellipse within which pixels are unmasked.
         outer_phi : float
-            The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the \
+            The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
             positive x-axis).
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
