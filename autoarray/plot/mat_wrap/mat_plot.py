@@ -144,7 +144,7 @@ class AbstractMatPlot:
 
         Parameters
         -----------
-        number_subplots : int
+        number_subplots
             The number of subplots that are to be plotted in the figure.
         """
         if number_subplots <= 2:

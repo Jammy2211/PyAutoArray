@@ -71,7 +71,7 @@ class ValuesIrregular(np.ndarray):
 
         Parameters
         ----------
-        array_slim : np.ndarray
+        array_slim
             The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregular* object."""
         return ValuesIrregular(values=array_slim)
 
@@ -82,7 +82,7 @@ class ValuesIrregular(np.ndarray):
 
         Parameters
         ----------
-        grid_slim : np.ndarray
+        grid_slim
             The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregular`
             object."""
         return grid_2d_irregular.Grid2DIrregular(grid=grid_slim)

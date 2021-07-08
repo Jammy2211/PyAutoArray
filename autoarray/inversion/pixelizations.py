@@ -60,7 +60,7 @@ class Rectangular(Pixelization):
 
         Parameters
         -----------
-        shape : (int, int)
+        shape
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
         """
 
@@ -94,7 +94,7 @@ class Rectangular(Pixelization):
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         border : aa.GridBorder I None
             The border of the grid's grid.
-        hyper_image : np.ndarray
+        hyper_image
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
@@ -158,7 +158,7 @@ class Voronoi(Pixelization):
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : aa.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
-        hyper_image : np.ndarray
+        hyper_image
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
@@ -199,7 +199,7 @@ class VoronoiMagnification(Voronoi):
 
         Parameters
         ----------
-        shape : (int, int)
+        shape
             The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
             adaptive-magnification pixelization (see *ImagePlanePixelization*)
         """

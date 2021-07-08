@@ -33,11 +33,11 @@ def array_1d_slim_from(
 
     Parameters
     ----------
-    array_1d_native : np.ndarray
+    array_1d_native
         A 1D array of values on the dimensions of the native array.
-    mask_1d : np.ndarray
+    mask_1d
         A 1D array of bools, where `False` values mean unmasked and are included in the mapping.
-    sub_size : int
+    sub_size
         The sub-grid size of the array.
 
     Returns
@@ -118,9 +118,9 @@ def array_1d_via_indexes_1d_from(
 
     Parameters
     ----------
-    array_1d_slim : np.ndarray
+    array_1d_slim
         The slimmed array of shape [total_x_pixels*sub_size] which are mapped to the native array.
-    sub_shape : int
+    sub_shape
         The 1D dimensions of the native 1D sub line.
     native_index_for_slim_index_1d : np.narray
         An array of shape [total_x_pixels*sub_size] that maps from the slimmed array to the native array.
@@ -149,7 +149,7 @@ def numpy_array_1d_to_fits(
 
     Parameters
     ----------
-    array_2d : np.ndarray
+    array_2d
         The 2D array that is written to fits.
     file_path : str
         The full path of the file that is output, including the file name and ``.fits`` extension.
@@ -191,7 +191,7 @@ def numpy_array_1d_from_fits(file_path: str, hdu: int):
     ----------
     file_path : str
         The full path of the file that is loaded, including the file name and ``.fits`` extension.
-    hdu : int
+    hdu
         The HDU extension of the array that is loaded from the .fits file.
 
     Returns

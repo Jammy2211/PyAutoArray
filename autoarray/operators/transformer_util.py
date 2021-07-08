@@ -19,10 +19,10 @@ def preload_real_transforms(
 
     Parameters
     ----------
-    grid_radians : np.ndarray
+    grid_radians
         The grid in radians corresponding to real-space mask within which the image that is Fourier transformed is
         computed.
-    uv_wavelengths : np.ndarray
+    uv_wavelengths
         The wavelengths of the coordinates in the uv-plane for the interferometer dataset that is to be Fourier
         transformed.
 

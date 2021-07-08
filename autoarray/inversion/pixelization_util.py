@@ -1,9 +1,13 @@
 import numpy as np
 from autoarray import decorator_util
 
+from typing import Tuple
+
 
 @decorator_util.jit()
-def rectangular_neighbors_from(shape_native: (int, int)) -> (np.ndarray, np.ndarray):
+def rectangular_neighbors_from(
+    shape_native: Tuple[int, int]
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Returns the 4 adjacent neighbors of every pixel on a rectangular array or grid as an ndarray of shape
     [total_pixels, 4], using the uniformity of the rectangular grid's geometry to speed up the computation.
@@ -27,7 +31,7 @@ def rectangular_neighbors_from(shape_native: (int, int)) -> (np.ndarray, np.ndar
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The shape of the rectangular 2D array or grid which the pixels are defined on.
 
     Returns
@@ -85,24 +89,24 @@ def rectangular_neighbors_from(shape_native: (int, int)) -> (np.ndarray, np.ndar
 def rectangular_corner_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
-    shape_native: (int, int),
+    shape_native: Tuple[int, int],
     pixels: int,
-) -> (np.ndarray, np.ndarray):
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the rectangular array or grid that are on the corners.
 
     Parameters
     ----------
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : np.ndarray
+    pixel_neighbors_size
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
-    shape_native : (int, int)
+    shape_native
         The shape of the rectangular 2D array or grid which the pixels are defined on.
-    pixels : int
+    pixels
         The number of pixels on the rectangular grid (e.g. shape_native[0] * shape_native[1]).
     Returns
     -------
@@ -135,24 +139,24 @@ def rectangular_corner_neighbors(
 def rectangular_top_edge_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
-    shape_native: (int, int),
+    shape_native: Tuple[int, int],
     pixels: int,
-) -> (np.ndarray, np.ndarray):
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the top edge of the rectangular array or grid.
 
     Parameters
     ----------
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : np.ndarray
+    pixel_neighbors_size
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
-    shape_native : (int, int)
+    shape_native
         The shape of the rectangular 2D array or grid which the pixels are defined on.
-    pixels : int
+    pixels
         The number of pixels on the rectangular grid (e.g. shape_native[0] * shape_native[1]).
     Returns
     -------
@@ -173,24 +177,24 @@ def rectangular_top_edge_neighbors(
 def rectangular_left_edge_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
-    shape_native: (int, int),
+    shape_native: Tuple[int, int],
     pixels: int,
-) -> (np.ndarray, np.ndarray):
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the left edge of the rectangular array or grid.
 
     Parameters
     ----------
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : np.ndarray
+    pixel_neighbors_size
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
-    shape_native : (int, int)
+    shape_native
         The shape of the rectangular 2D array or grid which the pixels are defined on.
-    pixels : int
+    pixels
         The number of pixels on the rectangular grid (e.g. shape_native[0] * shape_native[1]).
     Returns
     -------
@@ -215,24 +219,24 @@ def rectangular_left_edge_neighbors(
 def rectangular_right_edge_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
-    shape_native: (int, int),
+    shape_native: Tuple[int, int],
     pixels: int,
-) -> (np.ndarray, np.ndarray):
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the right edge of the rectangular array or grid.
 
     Parameters
     ----------
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : np.ndarray
+    pixel_neighbors_size
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
-    shape_native : (int, int)
+    shape_native
         The shape of the rectangular 2D array or grid which the pixels are defined on.
-    pixels : int
+    pixels
         The number of pixels on the rectangular grid (e.g. shape_native[0] * shape_native[1]).
     Returns
     -------
@@ -257,24 +261,24 @@ def rectangular_right_edge_neighbors(
 def rectangular_bottom_edge_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
-    shape_native: (int, int),
+    shape_native: Tuple[int, int],
     pixels: int,
-) -> (np.ndarray, np.ndarray):
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the bottom edge of the rectangular array or grid.
 
     Parameters
     ----------
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : np.ndarray
+    pixel_neighbors_size
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
-    shape_native : (int, int)
+    shape_native
         The shape of the rectangular 2D array or grid which the pixels are defined on.
-    pixels : int
+    pixels
         The number of pixels on the rectangular grid (e.g. shape_native[0] * shape_native[1]).
     Returns
     -------
@@ -295,24 +299,24 @@ def rectangular_bottom_edge_neighbors(
 def rectangular_central_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
-    shape_native: (int, int),
+    shape_native: Tuple[int, int],
     pixels: int,
-) -> (np.ndarray, np.ndarray):
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels in the central pixels of the rectangular array or grid.
 
     Parameters
     ----------
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : np.ndarray
+    pixel_neighbors_size
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
-    shape_native : (int, int)
+    shape_native
         The shape of the rectangular 2D array or grid which the pixels are defined on.
-    pixels : int
+    pixels
         The number of pixels on the rectangular grid (e.g. shape_native[0] * shape_native[1]).
     Returns
     -------
@@ -338,7 +342,7 @@ def rectangular_central_neighbors(
 @decorator_util.jit()
 def voronoi_neighbors_from(
     pixels: int, ridge_points: np.ndarray
-) -> (np.ndarray, np.ndarray):
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Returns the adjacent neighbors of every pixel on a Voronoi array or grid as an ndarray of shape
     [total_pixels, voronoi_pixel_with_max_neighbors], using the ridge_points output from the ``scipy.spatial.Voronoi()
@@ -351,9 +355,9 @@ def voronoi_neighbors_from(
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The shape of the rectangular 2D array or grid which the pixels are defined on.
-    ridge_points : np.ndarray
+    ridge_points
         Contains the information on every Voronoi source pixel and its neighbors.
 
     Returns

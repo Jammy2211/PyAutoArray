@@ -18,7 +18,7 @@ def array_with_new_shape(array, new_shape):
     -----------
     array : aa.Array2D
         The array which is trimmed / padded to a new 2D shape.
-    new_shape : (int, int)
+    new_shape
         The new 2D shape of the array.
     """
 
@@ -166,7 +166,7 @@ def noise_map_from_weight_map(weight_map):
     -----------
     pixel_scales : float
         The size of each pixel in scaled units.
-    weight_map : np.ndarray
+    weight_map
         The weight-value of each pixel which is converted to a variance.
     """
     np.seterr(divide="ignore")
@@ -184,7 +184,7 @@ def noise_map_from_inverse_noise_map(inverse_noise_map):
 
     Parameters
     -----------
-    inverse_noise_map : np.ndarray
+    inverse_noise_map
         The inverse noise_map value of each pixel which is converted to a variance.
     """
     return 1.0 / inverse_noise_map
@@ -231,7 +231,7 @@ def background_noise_map_from_edges_of_image(image, no_edges):
     ----------
     image : aa.Array2D
         The image whose edge values are used to estimate the background noise.
-    no_edges : int
+    no_edges
         Number of edges used to estimate the background level.
     """
 
@@ -310,7 +310,7 @@ def setup_random_seed(seed):
 
     Parameters
     ----------
-    seed : int
+    seed
         The seed of the random number generator.
     """
     if seed == -1:
@@ -328,11 +328,11 @@ def poisson_noise_from_data_eps(data_eps, exposure_time_map, seed=-1):
 
     Parameters
     ----------
-    data_eps : np.ndarray
+    data_eps
         The 2D image, whose values in counts are used to draw Poisson noise_maps values.
     exposure_time_map : Union(ndarray, int)
         2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
-    seed : int
+    seed
         The seed of the random number generator, used for the random noise_maps maps.
 
     Returns
@@ -355,11 +355,11 @@ def data_eps_with_poisson_noise_added(data_eps, exposure_time_map, seed=-1):
 
     Parameters
     ----------
-    data_eps : np.ndarray
+    data_eps
         The 2D image, whose values in counts are used to draw Poisson noise_maps values.
     exposure_time_map : Union(ndarray, int)
         2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
-    seed : int
+    seed
         The seed of the random number generator, used for the random noise_maps maps.
 
     Returns
@@ -377,11 +377,11 @@ def gaussian_noise_from_shape_and_sigma(shape, sigma, seed=-1):
 
     Params
     ----------
-    shape : (int, int)
+    shape
         The (x,y) image_shape of the generated Gaussian noises map.
     read_noise : float
         Standard deviation of the 1D Gaussian that each noises value is drawn from
-    seed : int
+    seed
         The seed of the random number generator, used for the random noises maps.
     """
     if seed == -1:

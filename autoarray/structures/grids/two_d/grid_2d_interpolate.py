@@ -37,7 +37,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray
+        grid
             The (y,x) coordinates of the grid.
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -99,7 +99,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -132,18 +132,18 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        pixel_scales_interp : (float, float) or float
+        pixel_scales_interp or float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
         grid = abstract_grid.convert_grid(grid=grid)
@@ -178,15 +178,15 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         pixel_scales_interp : float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
 
@@ -214,8 +214,8 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
     @classmethod
     def from_mask(cls, mask, pixel_scales_interp):
         """
-        Create a Grid2DInterpolate (see `Grid2DInterpolate.__new__`) from a mask, where only unmasked pixels are included in
-        the grid (if the grid is represented in 2D masked values are (0.0, 0.0)).
+        Create a Grid2DInterpolate (see `Grid2DInterpolate.__new__`) from a mask, where only unmasked pixels are
+        included in the grid if the grid is represented in 2D masked values are (0.0, 0.0).
 
         The mask's pixel_scales and origin properties are used to compute the grid (y,x) coordinates.
 
@@ -247,8 +247,9 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
     def blurring_grid_from_mask_and_kernel_shape(
         cls, mask, kernel_shape_native, pixel_scales_interp
     ):
-        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
-        therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
+        """
+        Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked and
+        therefore have their values set to (0.0, 0.0), but are close enough to the unmasked pixels that their values
         will be convolved into the unmasked those pixels. This occurs in *PyAutoGalaxy* when computing images from
         light profile objects.
 
@@ -259,7 +260,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         ----------
         mask : Mask2D
             The mask whose masked pixels are used to setup the blurring grid.
-        kernel_shape_native : (float, float)
+        kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         pixel_scales_interp : float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
@@ -278,12 +279,12 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         """
         Returns the blurring grid from a grid and create it as a GridItnterpolate, via an input 2D kernel shape.
 
-            For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
+        For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
 
-            Parameters
-            ----------
-            kernel_shape_native : (float, float)
-                The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
+        Parameters
+        ----------
+        kernel_shape_native
+            The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
         return Grid2DInterpolate.blurring_grid_from_mask_and_kernel_shape(
@@ -293,7 +294,8 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         )
 
     def padded_grid_from_kernel_shape(self, kernel_shape_native):
-        """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
+        """
+        When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
         To ensure this signal is included the padded grid is used, which is 'buffed' such that it includes all pixels
@@ -301,7 +303,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        kernel_shape_native : (float, float)
+        kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
         shape = self.mask.shape
@@ -323,7 +325,10 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
     @property
     def interp_weight_list(self):
-        """The weight_list of the interpolation scheme between the interpolation grid and grid at native resolution."""
+        """
+        The weight_list of the interpolation scheme between the interpolation grid and grid at native resolution.
+        """
+
         tri = qhull.Delaunay(self.grid_interp.slim)
         simplex = tri.find_simplex(self.slim)
         # noinspection PyUnresolvedReferences
@@ -331,16 +336,18 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         temp = np.take(tri.transform, simplex, axis=0)
         delta = self.slim - temp[:, 2]
         bary = np.einsum("njk,nk->nj", temp[:, :2, :], delta)
+
         return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
 
     def result_from_func(self, func, cls):
-        """Return the result of a function evaluation for a function which uses the grid to return either an
+        """
+        Return the result of a function evaluation for a function which uses the grid to return either an
         Array2D or a Grid2D. The function uses the input Grid2DInterpolate as follows:
 
-        1) If the function's entry in the 'interpolate.ini' config file is False, the function will not be evaluated
+        1. If the function's entry in the 'interpolate.ini' config file is False, the function will not be evaluated
         using the interpolation grid and simply use the Grid2D at native resolution.
 
-        2) If the function's entry in the 'interpolate.ini' config file is True, the function will be evaluated using
+        2. If the function's entry in the 'interpolate.ini' config file is True, the function will be evaluated using
         the interpolation grid, with this result then interpolated to the Grid2D at native resolution.
 
         The function may return either an Array2D or Grid2D object, in both cases the interpolation may be used, where
@@ -383,7 +390,8 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             return self.structure_2d_from_result(result=result)
 
     def interpolated_array_from_array_interp(self, array_interp):
-        """Use the precomputed vertexes and weight_list of a Delaunay gridding to interpolate a set of values computed on
+        """
+        Use the precomputed vertexes and weight_list of a Delaunay gridding to interpolate a set of values computed on
         the interpolation grid to the Grid2DInterpolate's full grid.
 
         This function is taken from the SciPy interpolation method griddata
@@ -403,7 +411,8 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         return array_2d.Array2D(array=interpolated_array, mask=self.mask)
 
     def interpolated_grid_from_grid_interp(self, grid_interp) -> grid_2d.Grid2D:
-        """Use the precomputed vertexes and weight_list of a Delaunay gridding to interpolate a grid of (y,x) values values
+        """
+        Use the precomputed vertexes and weight_list of a Delaunay gridding to interpolate a grid of (y,x) values values
         computed on  the interpolation grid to the Grid2DInterpolate's full grid.
 
         This function is taken from the SciPy interpolation method griddata
@@ -426,7 +435,8 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         return grid_2d.Grid2D(grid=grid, mask=self.mask)
 
     def structure_2d_from_result(self, result: np.ndarray):
-        """Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
+        """
+        Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
 
         - 1D np.ndarray   -> aa.Array2D
@@ -437,7 +447,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        result : np.ndarray or [np.ndarray]
+        result
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
 
@@ -449,7 +459,8 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             return grid_2d.Grid2D(grid=result, mask=self.mask)
 
     def structure_2d_list_from_result_list(self, result_list: list):
-        """Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
+        """
+        Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
 
         - [1D np.ndarray] -> [aa.Array2D]
@@ -460,7 +471,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        result_list : np.ndarray or [np.ndarray]
+        result_list or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         return [self.structure_2d_from_result(result=result) for result in result_list]

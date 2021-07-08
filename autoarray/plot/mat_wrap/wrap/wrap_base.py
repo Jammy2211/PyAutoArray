@@ -3,6 +3,8 @@ import matplotlib
 
 from autoarray.structures.arrays.two_d import array_2d
 
+from typing import Union, List
+
 
 def set_backend():
 
@@ -211,7 +213,7 @@ class Figure(AbstractMatWrap):
 
         Parameters
         ----------
-        shape_native : (int, int)
+        shape_native
             The two dimensional shape of an `Array2D` that is to be plotted.
         """
         if isinstance(self.config_dict["aspect"], str):
@@ -328,7 +330,7 @@ class Cmap(AbstractMatWrap):
 
         Parameters
         -----------
-        array : np.ndarray
+        array
             The array of data which is to be plotted.
         """
 
@@ -416,7 +418,7 @@ class Colorbar(AbstractMatWrap):
         cmap : str
             The colormap used to map normalized data values to RGBA colors (see
             https://matplotlib.org/3.3.2/api/cm_api.html).
-        color_values : np.ndarray
+        color_values
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
 
@@ -792,7 +794,7 @@ class Output:
         self,
         path: str = None,
         filename: str = None,
-        format: str = None,
+        format: Union[str, List[str]] = None,
         bypass: bool = False,
     ):
         """
@@ -837,6 +839,13 @@ class Output:
         else:
             return self._format
 
+    @property
+    def format_list(self):
+        if not isinstance(self.format, list):
+            return [self.format]
+        else:
+            return self.format
+
     def to_figure(
         self,
         structure: typing.Optional[abstract_structure.AbstractStructure],
@@ -852,35 +861,43 @@ class Output:
 
         filename = auto_filename if self.filename is None else self.filename
 
-        if not self.bypass:
-            if self.format == "show":
-                plt.show()
-            elif self.format == "png":
-                plt.savefig(
-                    path.join(self.path, f"{filename}.png"), bbox_inches="tight"
-                )
-            elif self.format == "pdf":
-                plt.savefig(
-                    path.join(self.path, f"{filename}.pdf"), bbox_inches="tight"
-                )
-            elif self.format == "fits":
-                if structure is not None:
-                    structure.output_to_fits(
-                        file_path=path.join(self.path, f"{filename}.fits"),
-                        overwrite=True,
+        for format in self.format_list:
+
+            if not self.bypass:
+                if format == "show":
+                    plt.show()
+                elif format == "png":
+                    plt.savefig(
+                        path.join(self.path, f"{filename}.png"), bbox_inches="tight"
                     )
+                elif format == "pdf":
+                    plt.savefig(
+                        path.join(self.path, f"{filename}.pdf"), bbox_inches="tight"
+                    )
+                elif format == "fits":
+                    if structure is not None:
+                        structure.output_to_fits(
+                            file_path=path.join(self.path, f"{filename}.fits"),
+                            overwrite=True,
+                        )
 
     def subplot_to_figure(self, auto_filename=None):
         """Output a subhplot figure, either as an image on the screen or to the hard-disk as a .png or .fits file."""
 
         filename = auto_filename if self.filename is None else self.filename
 
-        if self.format == "show":
-            plt.show()
-        elif self.format == "png":
-            plt.savefig(path.join(self.path, f"{filename}.png"), bbox_inches="tight")
-        elif self.format == "pdf":
-            plt.savefig(path.join(self.path, f"{filename}.pdf"), bbox_inches="tight")
+        for format in self.format_list:
+
+            if format == "show":
+                plt.show()
+            elif format == "png":
+                plt.savefig(
+                    path.join(self.path, f"{filename}.png"), bbox_inches="tight"
+                )
+            elif format == "pdf":
+                plt.savefig(
+                    path.join(self.path, f"{filename}.pdf"), bbox_inches="tight"
+                )
 
 
 def remove_spaces_and_commas_from_colors(colors):

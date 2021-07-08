@@ -41,7 +41,9 @@ def array_eps_to_counts(array_eps, bscale, bzero):
 
 class Array2DACS(array_2d.Array2D):
     """
-    An ACS array consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout:
+    An ACS array consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout (which are described
+    at the following STScI 
+    link https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418).
 
        <--------S-----------   ---------S----------->
     [] [========= 2 =========] [========= 3 =========] []          /\
@@ -65,8 +67,10 @@ class Array2DACS(array_2d.Array2D):
         the rotations required to give correct arctic clocking and convert the image from units of COUNTS / CPS to
         ELECTRONS.
 
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
+        
+        Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
         hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
@@ -88,8 +92,10 @@ class Array2DACS(array_2d.Array2D):
         Using an input array of both quadrants in electrons, use the quadrant letter to extract the quadrant from the
         full CCD and perform the rotations required to give correct arctic.
 
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
+        
+        Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
         if quadrant_letter == "A":
 
@@ -157,8 +163,10 @@ class Array2DACS(array_2d.Array2D):
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
+        
+        Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
@@ -201,8 +209,10 @@ class Array2DACS(array_2d.Array2D):
         Use an input array of the right quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
+
+        Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
@@ -243,8 +253,10 @@ class Array2DACS(array_2d.Array2D):
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
+
+        Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
@@ -281,8 +293,10 @@ class Array2DACS(array_2d.Array2D):
         Use an input array of the right quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
+
+        Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
@@ -367,8 +381,10 @@ class ImageACS(Array2DACS):
         the rotations required to give correct arctic clocking and convert the image from units of COUNTS / CPS to
         ELECTRONS.
 
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
+
+        Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
         hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
@@ -452,7 +468,7 @@ class Layout2DACS(lo.Layout2D):
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
         """
 
@@ -563,10 +579,10 @@ def prescan_fitted_bias_column(prescan, n_rows=2048, n_rows_ov=20):
         number of rows but may skip the first few columns of the prescan to
         avoid trails.
 
-    n_rows : int
+    n_rows
         The number of rows in the image, exculding overscan.
 
-    n_rows_ov : int, int
+    n_rows_ov, int
         The number of overscan rows in the image.
 
     Returns

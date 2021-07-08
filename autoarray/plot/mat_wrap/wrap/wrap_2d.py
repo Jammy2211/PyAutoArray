@@ -166,7 +166,7 @@ class GridScatter(AbstractMatWrap2D):
         ----------
         grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
-        indexes : np.ndarray
+        indexes
             The 1D indexes of the grid that are colored in when plotted.
         """
         if not isinstance(grid, np.ndarray):
@@ -253,7 +253,7 @@ class GridPlot(AbstractMatWrap2D):
         ----------
         extent : (float, float, float, float)
             The extent of the rectangualr grid, with format [xmin, xmax, ymin, ymax]
-        shape_native : (int, int)
+        shape_native
             The 2D shape of the mask the array is paired with.
         """
 
@@ -526,7 +526,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         ----------
         mapper : MapperVoronoi
             An object which contains the (y,x) grid of Voronoi cell centres.
-        values : np.ndarray
+        values
             An array used to compute the color values that every Voronoi cell is plotted using.
         cmap : str
             The colormap used to plot each Voronoi cell.

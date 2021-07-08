@@ -74,7 +74,7 @@ class AbstractSettingsDataset:
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a
             description of these options).
-        sub_size : int
+        sub_size
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy : float
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it

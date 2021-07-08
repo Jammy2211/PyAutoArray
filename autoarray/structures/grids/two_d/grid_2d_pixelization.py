@@ -8,6 +8,8 @@ from autoarray.structures import abstract_structure
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.inversion import pixelization_util
 
+from typing import Tuple
+
 
 class Grid2DRectangular(abstract_structure.AbstractStructure2D):
     def __new__(
@@ -26,10 +28,10 @@ class Grid2DRectangular(abstract_structure.AbstractStructure2D):
 
         Parameters
         -----------
-        pix_grid : np.ndarray
+        pix_grid
             The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_pixelization_index_for_slim_index : np.ndarray
+        nearest_pixelization_index_for_slim_index
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
@@ -59,16 +61,16 @@ class Grid2DRectangular(abstract_structure.AbstractStructure2D):
 
         Parameters
         -----------
-        shape_native : (int, int)
+        shape_native
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
-        pixel_scales : (float, float)
+        pixel_scales
             The pixel conversion scale of a pixel in the y and x directions.
-        origin : (float, float)
+        origin
             The scaled origin of the rectangular pixelization's coordinate system.
-        pixel_neighbors : np.ndarray
+        pixel_neighbors
             An array of length (y_pixels*x_pixels) which provides the index of all neighbors of every pixel in \
             the rectangular grid (entries of -1 correspond to no neighbor).
-        pixel_neighbors_size : ndarrayy
+        pixel_neighbors_size
             An array of length (y_pixels*x_pixels) which gives the number of neighbors of every pixel in the \
             rectangular grid.
         """
@@ -111,7 +113,7 @@ class Grid2DRectangular(abstract_structure.AbstractStructure2D):
         )
 
     @property
-    def scaled_maxima(self) -> (float, float):
+    def scaled_maxima(self) -> Tuple[float, float]:
         """
         The maximum values of the grid in scaled coordinates returned as a tuple (y_max, x_max).
         """
@@ -121,7 +123,7 @@ class Grid2DRectangular(abstract_structure.AbstractStructure2D):
         )
 
     @property
-    def scaled_minima(self) -> (float, float):
+    def scaled_minima(self) -> Tuple[float, float]:
         """
         The minium values of the grid in scaled coordinates returned as a tuple (y_min, x_min).
         """
@@ -155,16 +157,16 @@ class Grid2DVoronoi(abstract_structure.AbstractStructure2D):
 
     Parameters
     -----------
-    grid : np.ndarray
+    grid
         The (y,x) grid of coordinates which determine the Voronoi pixelization's
-    pixelization_grid : np.ndarray
+    pixelization_grid
         The (y,x) centre of every Voronoi pixel in scaleds.
-    origin : (float, float)
+    origin
         The scaled origin of the Voronoi pixelization's coordinate system.
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : ndarrayy
+    pixel_neighbors_size
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
         Voronoi grid.
     """
@@ -185,10 +187,10 @@ class Grid2DVoronoi(abstract_structure.AbstractStructure2D):
 
         Parameters
         -----------
-        pix_grid : np.ndarray
+        pix_grid
             The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_pixelization_index_for_slim_index : np.ndarray
+        nearest_pixelization_index_for_slim_index
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 

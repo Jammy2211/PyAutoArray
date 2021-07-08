@@ -40,8 +40,8 @@ class Mapper:
         hyper_image=None,
     ):
         """
-        Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of
-        a grid, see the *hyper_galaxies.array.grid* module) to discretized pixels in a pixelization.
+        Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array in the form of
+        a grid, see the *hyper_galaxies.array.grid* module to discretized pixels in a pixelization.
 
         1D structures are used to represent these mappings, for example between the different grid in a grid
         (e.g. the / sub grid). This follows the syntax grid_to_grid, whereby the index of a value on one grid
@@ -100,11 +100,11 @@ class Mapper:
 
         Parameters
         ----------
-        pixels : int
+        pixels
             The number of pixels in the mapper's pixelization.
         source_grid_slim: gridStack
             A stack of grid's which are mapped to the pixelization (includes an and sub grid).
-        hyper_image : np.ndarray
+        hyper_image
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
@@ -189,8 +189,10 @@ class Mapper:
             return indexes
 
     def reconstruction_from(self, solution_vector):
-        """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed
-        pixelization of the rectangular pixelization by using the mapper."""
+        """
+        Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed
+        pixelization of the rectangular pixelization by using the mapper.
+        """
         raise NotImplementedError()
 
 
@@ -202,20 +204,21 @@ class MapperRectangular(Mapper):
         data_pixelization_grid=None,
         hyper_image=None,
     ):
-        """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of
-        a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a rectangular grid.
+        """
+        Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array in the form of
+        a grid, see the *hyper_galaxies.array.grid* module to pixels discretized on a rectangular grid.
 
         The and uniform geometry of the rectangular grid is used to perform efficient pixel pairings.
 
         Parameters
         ----------
-        pixels : int
+        pixels
             The number of pixels in the rectangular pixelization (y_pixels*x_pixels).
         source_grid_slim : gridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        shape_native : (int, int)
+        shape_native
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
-        geometry : pixelization.Rectangular.Geometry
+        geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the rectangular pixelization.
         """
         super(MapperRectangular, self).__init__(
@@ -231,7 +234,9 @@ class MapperRectangular(Mapper):
 
     @property
     def pixelization_index_for_sub_slim_index(self):
-        """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
+        """
+        The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels.
+        """
         return grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=self.source_grid_slim,
             shape_native=self.source_pixelization_grid.shape_native,
@@ -240,8 +245,10 @@ class MapperRectangular(Mapper):
         ).astype("int")
 
     def reconstruction_from(self, solution_vector):
-        """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed
-        pixelization of the rectangular pixelization by using the mapper."""
+        """
+        Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed
+        pixelization of the rectangular pixelization by using the mapper.
+        """
         recon = array_2d_util.array_2d_native_from(
             array_2d_slim=solution_vector,
             mask_2d=np.full(
@@ -265,15 +272,16 @@ class MapperVoronoi(Mapper):
         data_pixelization_grid=None,
         hyper_image=None,
     ):
-        """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of
-        a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a Voronoi grid.
+        """
+        Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array in the form of
+        a grid, see the *hyper_galaxies.array.grid* module to pixels discretized on a Voronoi grid.
 
         The irand non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge
         of how different grid map to one another.
 
         Parameters
         ----------
-        pixels : int
+        pixels
             The number of pixels in the Voronoi pixelization.
         source_grid_slim : gridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
@@ -281,7 +289,7 @@ class MapperVoronoi(Mapper):
             Class storing the Voronoi grid's 
         geometry : pixelization.Voronoi.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the Vornoi pixelization.
-        hyper_image : np.ndarray
+        hyper_image
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         super().__init__(

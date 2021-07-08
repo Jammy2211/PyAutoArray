@@ -253,7 +253,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
         origin : True
             If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-        image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
+        image_plane_pix_grid or data_type.array.grid_stacks.PixGrid
             If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
             over the immage.
         ignore_config : bool
@@ -280,7 +280,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
         origin : True
             If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-        image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
+        image_plane_pix_grid or data_type.array.grid_stacks.PixGrid
             If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
             over the immage.
         ignore_config : bool

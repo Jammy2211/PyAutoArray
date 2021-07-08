@@ -109,6 +109,14 @@ class AbstractPlotter:
         if self.mat_plot_2d is not None:
             self.mat_plot_2d.output.filename = filename
 
+    def set_format(self, format):
+
+        if self.mat_plot_1d is not None:
+            self.mat_plot_1d.output._format = format
+
+        if self.mat_plot_2d is not None:
+            self.mat_plot_2d.output._format = format
+
     def set_mat_plot_1d_for_multi_plot(self, is_for_multi_plot, color: str):
 
         self.mat_plot_1d.set_for_multi_plot(
@@ -143,7 +151,7 @@ class AbstractPlotter:
 
         Parameters
         -----------
-        figsize : (int, int)
+        figsize
             The size of the figure in (total_y_pixels, total_x_pixels).
         as_subplot : bool
             If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
@@ -167,7 +175,7 @@ class AbstractPlotter:
 
         Parameters
         -----------
-        number_subplots : int
+        number_subplots
             The number of subplots that are to be plotted in the figure.
         """
 

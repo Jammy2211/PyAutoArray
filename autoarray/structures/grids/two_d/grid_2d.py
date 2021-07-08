@@ -195,7 +195,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray
+        grid
             The (y,x) coordinates of the grid.
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -217,7 +217,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -240,17 +240,17 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
 
@@ -282,15 +282,15 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape
             [total_y_coordinates*sub_size, total_x_pixel*sub_size, 2] or a list of lists.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
 
@@ -322,17 +322,17 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
         if len(grid.shape) == 2:
@@ -357,7 +357,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -387,18 +387,18 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        y : np.ndarray or list
+        y or list
             The y coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
-        x : np.ndarray or list
+        x or list
             The x coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
         if type(y) is list:
@@ -433,16 +433,16 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        y : np.ndarray or list
+        y or list
             The y coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
-        x : np.ndarray or list
+        x or list
             The x coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
         if type(y) is list:
@@ -513,14 +513,14 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         buffer_around_corners : bool
             Whether the grid is buffered such that the (y,x) values in the centre of its masks' edge pixels align
@@ -665,7 +665,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         ----------
         mask : Mask2D
             The mask whose masked pixels are used to setup the blurring grid.
-        kernel_shape_native : (float, float)
+        kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
@@ -684,7 +684,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
             Parameters
             ----------
-            deflection_grid : np.ndarray
+            deflection_grid
                 The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid2D(grid=self - deflection_grid, mask=self.mask)
@@ -697,7 +697,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
             Parameters
             ----------
-            kernel_shape_native : (float, float)
+            kernel_shape_native
                 The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
@@ -754,7 +754,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        result : np.ndarray or [np.ndarray]
+        result or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result.shape) == 1:
@@ -777,7 +777,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        result_list : np.ndarray or [np.ndarray]
+        result_list or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         return [self.structure_2d_from_result(result=result) for result in result_list]
@@ -808,9 +808,9 @@ class Grid2DSparse(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        sparse_grid : np.ndarray or Grid2D
+        sparse_grid or Grid2D
             The (y,x) grid of sparse coordinates.
-        sparse_index_for_slim_index : np.ndarray
+        sparse_index_for_slim_index
             An array whose indexes map pixels from a Grid2D's mask to the closest (y,x) coordinate on the sparse_grid.
         """
 
@@ -837,7 +837,7 @@ class Grid2DSparse(abstract_grid_2d.AbstractGrid2D):
         -----------
         grid : Grid2D
             The grid of (y,x) scaled coordinates at the centre of every image value (e.g. image-pixels).
-        unmasked_sparse_shape : (int, int)
+        unmasked_sparse_shape
             The 2D shape of the sparse grid which is overlaid over the grid.
         """
 
@@ -928,17 +928,17 @@ class Grid2DSparse(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         -----------
-        total_pixels : int
+        total_pixels
             The total number of pixels in the Grid2DSparse and input into the KMeans algortihm.
         grid : Grid2D
             The grid of (y,x) coordinates corresponding to the weight map.
-        weight_map : np.ndarray
+        weight_map
             The 2D array of weight values that the KMeans clustering algorithm adapts to to determine the Grid2DSparse.
-        n_iter : int
+        n_iter
             The number of times the KMeans algorithm is repeated.
-        max_iter : int
+        max_iter
             The maximum number of iterations in one run of the KMeans algorithm.
-        seed : int or None
+        seed or None
             The random number seed, which can be used to reproduce Grid2DSparse's for the same inputs.
         stochastic : bool
             If True, the random number seed is randommly chosen every time the function is called, ensuring every

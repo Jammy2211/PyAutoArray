@@ -36,11 +36,11 @@ class Array1D(abstract_array_1d.AbstractArray1D):
 
         Parameters
         ----------
-        array : np.ndarray or list
+        array or list
             The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales: float
             The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
-        sub_size : int
+        sub_size
             The size of each unmasked pixels sub-gridded line.
         origin : (float, )
             The origin of the line's mask.
@@ -77,11 +77,11 @@ class Array1D(abstract_array_1d.AbstractArray1D):
 
         Parameters
         ----------
-        array : np.ndarray or list
+        array or list
             The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales
             The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
-        sub_size : int
+        sub_size
             The size of each unmasked pixels sub-gridded line.
         origin : (float, )
             The origin of the line's mask.
@@ -112,13 +112,13 @@ class Array1D(abstract_array_1d.AbstractArray1D):
 
         Parameters
         ----------
-        array : np.ndarray or list
+        array or list
             The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales: float
             The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
-        sub_size : int
+        sub_size
             The size of each unmasked pixels sub-gridded line.
-        origin : (float, float)
+        origin
             The origin of the line's mask.
         """
 
@@ -151,12 +151,12 @@ class Array1D(abstract_array_1d.AbstractArray1D):
         ----------
         fill_value : float
             The value all array elements are filled with.
-        shape_native : (int,)
+        shape_native : Tuple[int]
             The `D shape of the mask the array is paired with.
         pixel_scales: (float, ) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float,) structure.
-        sub_size : int
+        sub_size
             The size (sub_size) of each unmasked pixels sub-array.
         origin : (float,)
             The (x) scaled units origin of the mask's coordinate system.

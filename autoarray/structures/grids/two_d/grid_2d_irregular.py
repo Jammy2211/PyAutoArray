@@ -162,7 +162,7 @@ class Grid2DIrregular(np.ndarray):
 
             Parameters
             ----------
-            deflection_grid : np.ndarray
+            deflection_grid
                 The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid2DIrregular(grid=self - deflection_grid)
@@ -197,7 +197,7 @@ class Grid2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        result : np.ndarray or [np.ndarray]
+        result or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
 
@@ -229,7 +229,7 @@ class Grid2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        result_list : np.ndarray or [np.ndarray]
+        result_list or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result_list[0].shape) == 1:
@@ -246,7 +246,7 @@ class Grid2DIrregular(np.ndarray):
 
             Parameters
             ----------
-            coordinate : (float, float)
+            coordinate
                 The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
         """
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
@@ -260,7 +260,7 @@ class Grid2DIrregular(np.ndarray):
 
             Parameters
             ----------
-            coordinate : (float, float)
+            coordinate
                 The (y,x) coordinate from which the distance of every *Coordinate* is computed.
         """
         distances = np.sqrt(
@@ -306,7 +306,7 @@ class Grid2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        grid_pair : np.ndarray
+        grid_pair
             The grid of coordinates the closest coordinate of each (y,x) location is paired with.
 
         Returns
@@ -532,7 +532,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
 
             Parameters
             ----------
-            deflection_grid : np.ndarray
+            deflection_grid
                 The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid2DIrregularUniform(

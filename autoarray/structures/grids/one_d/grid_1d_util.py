@@ -9,7 +9,7 @@ from typing import Tuple
 
 
 def grid_1d_slim_via_shape_slim_from(
-    shape_slim: (int,),
+    shape_slim: Tuple[int],
     pixel_scales: Tuple[float],
     sub_size: int,
     origin: Tuple[float] = (0.0,),
@@ -74,14 +74,14 @@ def grid_1d_slim_via_mask_from(
 
     Parameters
     ----------
-    mask_1d : np.ndarray
+    mask_1d
         A 1D array of bools, where `False` values are unmasked and therefore included as part of the calculated
         sub-grid.
-    pixel_scales : (float, float)
+    pixel_scales
         The (x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
-    origin : (float, float)
+    origin
         The (x) origin of the 2D array, which the sub-grid is shifted around.
 
     Returns
@@ -143,9 +143,9 @@ def grid_1d_slim_from(
     ----------
     grid_1d_native : ndarray
         The native grid of (x) values which are mapped to the slimmed grid.
-    mask_1d : np.ndarray
+    mask_1d
         A 1D array of bools, where `False` values mean unmasked and are included in the mapping.
-    sub_size : int
+    sub_size
         The size (sub_size x sub_size) of each unmasked pixels sub-array.
 
     Returns
@@ -176,11 +176,11 @@ def grid_1d_native_from(
 
     Parameters
     ----------
-    grid_1d_slim : np.ndarray
+    grid_1d_slim
         The (x) values of the slimmed 1D grid which are mapped to the native 1D grid.
-    mask_1d : np.ndarray
+    mask_1d
         A 1D array of bools, where `False` values means unmasked and are included in the mapping.
-    sub_size : int
+    sub_size
         The size of each unmasked pixels sub-grid.
 
     Returns

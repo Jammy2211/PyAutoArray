@@ -56,3 +56,4 @@ class MultiYX1DPlotter:
         self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
             auto_filename=f"multi_{figure_name}"
         )
+        self.plotter_list[0].mat_plot_1d.figure.close()

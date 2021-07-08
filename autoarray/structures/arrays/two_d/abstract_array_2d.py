@@ -36,7 +36,7 @@ def convert_array_2d(array_2d, mask_2d):
 
     Parameters
     ----------
-    array_2d : np.ndarray or list
+    array_2d or list
         The input structure which is converted to an ndarray if it is a list.
     mask_2d : Mask2D
         The mask of the output Array2D.
@@ -203,7 +203,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         Parameters
         ----------
-        buffer : int
+        buffer
             The number pixels around the extracted array used as a buffer.
         """
 
@@ -236,7 +236,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         Parameters
         ----------
-        buffer : int
+        buffer
             The number pixels around the extracted array used as a buffer.
         """
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
@@ -268,7 +268,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         Parameters
         -----------
-        new_shape : (int, int)
+        new_shape
             The new 2D shape of the array.
         """
 
@@ -294,7 +294,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         Parameters
         ----------
-        kernel_shape : (float, float)
+        kernel_shape
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
         new_shape = (
@@ -313,7 +313,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         Parameters
         ----------
-        kernel_shape : (float, float)
+        kernel_shape
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
         psf_cut_y = int(np.ceil(kernel_shape[0] / 2)) - 1

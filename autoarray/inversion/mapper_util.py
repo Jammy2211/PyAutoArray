@@ -17,13 +17,13 @@ def mapping_matrix_from(
 
     Parameters
     -----------
-    pixelization_index_for_sub_slim_index : np.ndarray
+    pixelization_index_for_sub_slim_index
         The mappings between the pixelization grid's pixels and the data's slimmed pixels.
-    pixels : int
+    pixels
         The number of pixels in the pixelization.
-    total_mask_pixels : int
+    total_mask_pixels
         The number of datas pixels in the observed datas and thus on the grid.
-    slim_index_for_sub_slim_index : np.ndarray
+    slim_index_for_sub_slim_index
         The mappings between the data's sub slimmed indexes and the slimmed indexes on the non sub-sized indexes.
     sub_fraction : float
         The fractional area each sub-pixel takes up in an pixel.
@@ -63,16 +63,16 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
     grid : Grid2D
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pixelization_index_for_slim_index : np.ndarray
+    nearest_pixelization_index_for_slim_index
         A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
-    slim_index_for_sub_slim_index : np.ndarray
+    slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
-    pixelization_grid : np.ndarray
+    pixelization_grid
         The (y,x) centre of every Voronoi pixel in arc-seconds.
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : np.ndarray
+    pixel_neighbors_size
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     """
@@ -172,14 +172,14 @@ def adaptive_pixel_signals_from(
 
     Parameters
     -----------
-    pixels : int
+    pixels
         The total number of pixels in the pixelization the regularization scheme is applied to.
     signal_scale : float
         A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
         low signal regions.
-    regular_to_pix : np.ndarray
+    regular_to_pix
         A 1D array util every pixel on the grid to a pixel on the pixelization.
-    hyper_image : np.ndarray
+    hyper_image
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 

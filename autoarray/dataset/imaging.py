@@ -29,10 +29,10 @@ class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
         use_normalized_psf=True,
     ):
         """
-        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each
         for lens calculations.
 
         Parameters
@@ -42,9 +42,9 @@ class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
             `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a description of these options).
         grid_inversion_class : ag.Grid2D
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a
-            description of these options).
-        sub_size : int
+            The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` 
+            (see the `Grid2D` documentation for a description of these options).
+        sub_size
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy : float
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
@@ -58,8 +58,8 @@ class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
         signal_to_noise_limit : float
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
             signa to noise limit.
-        psf_shape_2d : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+        psf_shape_2d
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         """
 
@@ -179,11 +179,12 @@ class Imaging(abstract_dataset.AbstractDataset):
         psf_hdu=0,
         name=None,
     ):
-        """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
+        """
+        Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the imaging-data.
 
-        This factory also includes a number of routines for converting the imaging-data from unit_label not supported by PyAutoLens \
-        (e.g. adus, electrons) to electrons per second.
+        This factory also includes a number of routines for converting the imaging-data from unit_label not
+        supported by PyAutoLens (e.g. adus, electrons) to electrons per second.
 
         Parameters
         ----------
@@ -193,15 +194,15 @@ class Imaging(abstract_dataset.AbstractDataset):
             The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
         pixel_scales : float
             The size of each pixel in scaled units.
-        image_hdu : int
+        image_hdu
             The hdu the image is contained in the .fits file specified by *image_path*.
         psf_path : str
             The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
-        psf_hdu : int
+        psf_hdu
             The hdu the psf is contained in the .fits file specified by *psf_path*.
         noise_map_path : str
             The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
-        noise_map_hdu : int
+        noise_map_hdu
             The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
         """
 
@@ -333,7 +334,8 @@ class AbstractSimulatorImaging:
         noise_if_add_noise_false: float = 0.1,
         noise_seed: int = -1,
     ):
-        """A class representing a Imaging observation, using the shape of the image, the pixel scale,
+        """
+        A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
 
         Parameters
@@ -354,7 +356,7 @@ class AbstractSimulatorImaging:
         noise_if_add_noise_false : float
             If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
             the value of noise assigned to every pixel in the noise-map.
-        noise_seed : int
+        noise_seed
             The random seed used to add random noise, where -1 corresponds to a random seed every run.
         """
 

@@ -43,7 +43,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray
+        grid
             The (y,x) coordinates of the grid.
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -87,7 +87,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -122,12 +122,12 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         fractional_accuracy : float
@@ -136,7 +136,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
         grid = abstract_grid.convert_grid(grid=grid)
@@ -171,9 +171,9 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         fractional_accuracy : float
@@ -182,7 +182,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
 
@@ -252,7 +252,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         ----------
         mask : Mask2D
             The mask whose masked pixels are used to setup the blurring grid.
-        kernel_shape_native : (float, float)
+        kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         fractional_accuracy : float
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
@@ -281,7 +281,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        deflection_grid : np.ndarray
+        deflection_grid
             The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid2DIterate(
@@ -299,7 +299,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
             Parameters
             ----------
-            kernel_shape_native : (float, float)
+            kernel_shape_native
                 The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
@@ -320,7 +320,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        kernel_shape_native : (float, float)
+        kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
         shape = self.mask.shape
@@ -532,7 +532,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         Parameters
         ----------
-        iterated_array : np.ndarray
+        iterated_array
 
         Returns
         -------

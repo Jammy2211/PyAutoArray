@@ -16,10 +16,10 @@ def constant_regularization_matrix_from(
     ----------
     coefficients : float
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : ndarrayy
+    pixel_neighbors_size
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
 
@@ -61,9 +61,9 @@ def adaptive_regularization_weight_list_from(
 
     Parameters
     ----------
-    coefficients : (float, float)
+    coefficients
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
-    pixel_signals : np.ndarray
+    pixel_signals
         The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal
         and low signal pixelizations.
 
@@ -89,12 +89,12 @@ def weighted_regularization_matrix_from(
 
     Parameters
     ----------
-    regularization_weight_list : np.ndarray
+    regularization_weight_list
         The regularization_ weight of each pixel, which governs how much smoothing is applied to that individual pixel.
-    pixel_neighbors : np.ndarray
+    pixel_neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : ndarrayy
+    pixel_neighbors_size
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
 

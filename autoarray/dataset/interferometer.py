@@ -45,7 +45,7 @@ class SettingsInterferometer(abstract_dataset.AbstractSettingsDataset):
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a
             description of these options).
-        sub_size : int
+        sub_size
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy : float
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
@@ -283,7 +283,7 @@ class AbstractSimulatorInterferometer:
 
         Parameters
         ----------
-        real_space_shape_native : (int, int)
+        real_space_shape_native
             The shape of the observation. Note that we do not simulator a full Imaging array (e.g. 2000 x 2000 pixels for \
             Hubble imaging), but instead just a cut-out around the strong lens.
         real_space_pixel_scales : float
@@ -311,15 +311,15 @@ class AbstractSimulatorInterferometer:
         Parameters
         ----------
         name
-        real_space_image : np.ndarray
+        real_space_image
             The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
         real_space_pixel_scales: float
             The scale of each pixel in scaled units
-        exposure_time_map : np.ndarray
+        exposure_time_map
             An array representing the effective exposure time of each pixel.
         psf: PSF
             An array describing the PSF the simulated image is blurred with.
-        background_sky_map : np.ndarray
+        background_sky_map
             The value of background sky in every image pixel (electrons per second).
         add_poisson_noise: Bool
             If `True` poisson noise_maps is simulated and added to the image, based on the total counts in each image

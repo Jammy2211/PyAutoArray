@@ -9,7 +9,7 @@ def total_pixels_1d_from(mask_1d: np.ndarray) -> int:
 
     Parameters
     ----------
-    mask_1d : np.ndarray
+    mask_1d
         A 2D array of bools, where `False` values are unmasked and included when counting pixels.
 
     Returns
@@ -43,9 +43,9 @@ def total_sub_pixels_1d_from(mask_1d: np.ndarray, sub_size: int) -> int:
 
     Parameters
     ----------
-    mask_1d : np.ndarray
+    mask_1d
         A 2D array of bools, where `False` values are unmasked and included when counting sub pixels.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
 
     Returns
@@ -81,9 +81,9 @@ def native_index_for_slim_index_1d_from(
 
     Parameters
     -----------
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values are unmasked.
-    sub_size : int
+    sub_size
         The size of the sub-grid in each mask pixel.
 
     Returns

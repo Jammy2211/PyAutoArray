@@ -188,7 +188,7 @@ class FitDataset(FitData):
         -----------
         dataset : MaskedDataset
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
-        model_data : np.ndarray
+        model_data
             The model data the masked dataset is fitted with.
         inversion : Inversion
             If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
@@ -199,9 +199,9 @@ class FitDataset(FitData):
 
         Attributes
         -----------
-        residual_map : np.ndarray
+        residual_map
             The residual-map of the fit (data - model_data).
-        chi_squared_map : np.ndarray
+        chi_squared_map
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
@@ -250,9 +250,9 @@ class FitImaging(FitDataset):
 
         Attributes
         -----------
-        residual_map : np.ndarray
+        residual_map
             The residual-map of the fit (data - model_data).
-        chi_squared_map : np.ndarray
+        chi_squared_map
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
@@ -306,9 +306,9 @@ class FitInterferometer(FitDataset):
 
         Attributes
         -----------
-        residual_map : np.ndarray
+        residual_map
             The residual-map of the fit (data - model_data).
-        chi_squared_map : np.ndarray
+        chi_squared_map
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.

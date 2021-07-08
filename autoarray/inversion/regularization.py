@@ -116,7 +116,7 @@ class Regularization:
 
         Parameters
         -----------
-        shape : (int, int)
+        shape
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
         coefficients : (float,)
             The regularization_matrix coefficients used to smooth the pix reconstructed_inversion_image.
@@ -201,7 +201,7 @@ class AdaptiveBrightness(Regularization):
 
         Parameters
         -----------
-        coefficients : (float, float)
+        coefficients
             The regularization coefficients which controls the degree of smoothing of the inversion reconstruction in \
             high and low signal regions of the reconstruction.
         signal_scale : float

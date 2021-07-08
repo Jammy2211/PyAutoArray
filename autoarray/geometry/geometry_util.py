@@ -97,16 +97,16 @@ def central_scaled_coordinate_1d_from(
 
     Parameters
     ----------
-    shape_slim : (int, int)
+    shape_slim
         The 1d shape of the data structure whose central scaled coordinates are computed.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 1d data structure.
-    origin : (float, float)
+    origin
         The (y,x) scaled units origin of the coordinate system the central scaled coordinate is computed on.
 
     Returns
     -------
-    central_scaled_coordinates_1d : (float, float)
+    central_scaled_coordinates_1d
         The central coordinates of the 1d data structure in scaled units.
     """
 
@@ -225,16 +225,16 @@ def central_scaled_coordinate_2d_from(
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The 2D shape of the data structure whose central scaled coordinates are computed.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D data structure.
-    origin : (float, float)
+    origin
         The (y,x) scaled units origin of the coordinate system the central scaled coordinate is computed on.
 
     Returns
     -------
-    central_scaled_coordinates_2d : (float, float)
+    central_scaled_coordinates_2d
         The central coordinates of the 2D data structure in scaled units.
     """
 

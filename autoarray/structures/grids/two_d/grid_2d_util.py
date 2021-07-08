@@ -5,15 +5,17 @@ from autoarray.mask import mask_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.arrays.two_d import array_2d_util
 
+from typing import Tuple
+
 
 @decorator_util.jit()
-def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> (float, float):
+def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
     """
     Returns the centre of a grid from a 1D grid.
 
     Parameters
     ----------
-    grid_2d_slim :  np.ndarray
+    grid_2d_slim
         The 1D grid of values which are mapped to a 2D array.
 
     Returns
@@ -29,9 +31,9 @@ def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> (float, float):
 @decorator_util.jit()
 def grid_2d_slim_via_mask_from(
     mask_2d: np.ndarray,
-    pixel_scales: (float, float),
+    pixel_scales: Tuple[float, float],
     sub_size: int,
-    origin: (float, float) = (0.0, 0.0),
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
@@ -48,12 +50,12 @@ def grid_2d_slim_via_mask_from(
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
         sub-grid.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
@@ -112,9 +114,9 @@ def grid_2d_slim_via_mask_from(
 
 def grid_2d_via_mask_from(
     mask_2d: np.ndarray,
-    pixel_scales: (float, float),
+    pixel_scales: Tuple[float, float],
     sub_size: int,
-    origin: (float, float) = (0.0, 0.0),
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into a
@@ -131,12 +133,12 @@ def grid_2d_via_mask_from(
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
         sub-grid.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
@@ -165,10 +167,10 @@ def grid_2d_via_mask_from(
 
 
 def grid_2d_slim_via_shape_native_from(
-    shape_native: (int, int),
-    pixel_scales: (float, float),
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     sub_size: int,
-    origin: (float, float) = (0.0, 0.0),
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into a
@@ -184,13 +186,13 @@ def grid_2d_slim_via_shape_native_from(
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
-    origin : (float, float)
+    origin
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
 
     Returns
@@ -215,10 +217,10 @@ def grid_2d_slim_via_shape_native_from(
 
 
 def grid_2d_via_shape_native_from(
-    shape_native: (int, int),
-    pixel_scales: (float, float),
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     sub_size: int,
-    origin: (float, float) = (0.0, 0.0),
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided
@@ -234,11 +236,11 @@ def grid_2d_via_shape_native_from(
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
@@ -264,8 +266,8 @@ def grid_2d_via_shape_native_from(
 @decorator_util.jit()
 def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
-    centre: (float, float),
-    pixel_scales: (float, float),
+    centre: Tuple[float, float],
+    pixel_scales: Tuple[float, float],
     sub_size: int,
 ) -> np.ndarray:
     """
@@ -303,13 +305,13 @@ def grid_scaled_2d_slim_radial_projected_from(
 
     Parameters
     ----------
-    extent : np.ndarray
+    extent
         The extent of the grid the radii grid is computed using, with format [xmin, xmax, ymin, ymax]
     centre : (float, flloat)
         The (y,x) central coordinate which the radial grid is traced outwards from.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
 
     Returns
@@ -359,9 +361,9 @@ def grid_scaled_2d_slim_radial_projected_from(
 @decorator_util.jit()
 def grid_pixels_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
-    shape_native: (int, int),
-    pixel_scales: (float, float),
-    origin: (float, float) = (0.0, 0.0),
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Convert a slimmed grid of 2d (y,x) scaled coordinates to a slimmed grid of 2d (y,x) pixel coordinate values. Pixel
@@ -380,9 +382,9 @@ def grid_pixels_2d_slim_from(
     ----------
     grid_scaled_2d_slim: np.ndarray
         The slimmed grid of 2D (y,x) coordinates in scaled units which are converted to pixel value coordinates.
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted to.
@@ -424,9 +426,9 @@ def grid_pixels_2d_slim_from(
 @decorator_util.jit()
 def grid_pixel_centres_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
-    shape_native: (int, int),
-    pixel_scales: (float, float),
-    origin: (float, float) = (0.0, 0.0),
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Convert a slimmed grid of 2D (y,x) scaled coordinates to a slimmed grid of 2D (y,x) pixel values. Pixel coordinates
@@ -444,9 +446,9 @@ def grid_pixel_centres_2d_slim_from(
     ----------
     grid_scaled_2d_slim: np.ndarray
         The slimmed grid of 2D (y,x) coordinates in scaled units which is converted to pixel indexes.
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted
@@ -488,9 +490,9 @@ def grid_pixel_centres_2d_slim_from(
 @decorator_util.jit()
 def grid_pixel_indexes_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
-    shape_native: (int, int),
-    pixel_scales: (float, float),
-    origin: (float, float) = (0.0, 0.0),
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Convert a slimmed grid of 2D (y,x) scaled coordinates to a slimmed grid of pixel indexes. Pixel coordinates are
@@ -513,9 +515,9 @@ def grid_pixel_indexes_2d_slim_from(
     ----------
     grid_scaled_2d_slim: np.ndarray
         The slimmed grid of 2D (y,x) coordinates in scaled units which is converted to slimmed pixel indexes.
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted.
@@ -554,9 +556,9 @@ def grid_pixel_indexes_2d_slim_from(
 @decorator_util.jit()
 def grid_scaled_2d_slim_from(
     grid_pixels_2d_slim: np.ndarray,
-    shape_native: (int, int),
-    pixel_scales: (float, float),
-    origin: (float, float) = (0.0, 0.0),
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Convert a slimmed grid of 2D (y,x) pixel coordinates to a slimmed grid of 2D (y,x) scaled values.
@@ -573,9 +575,9 @@ def grid_scaled_2d_slim_from(
     ----------
     grid_pixels_2d_slim: np.ndarray
         The slimmed grid of (y,x) coordinates in pixel values which is converted to scaled coordinates.
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted.
@@ -614,9 +616,9 @@ def grid_scaled_2d_slim_from(
 @decorator_util.jit()
 def grid_pixel_centres_2d_from(
     grid_scaled_2d: np.ndarray,
-    shape_native: (int, int),
-    pixel_scales: (float, float),
-    origin: (float, float) = (0.0, 0.0),
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
+    origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Convert a native grid of 2D (y,x) scaled coordinates to a native grid of 2D (y,x) pixel values. Pixel coordinates
@@ -634,9 +636,9 @@ def grid_pixel_centres_2d_from(
     ----------
     grid_scaled_2d: np.ndarray
         The native grid of 2D (y,x) coordinates in scaled units which is converted to pixel indexes.
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted
@@ -673,7 +675,7 @@ def grid_pixel_centres_2d_from(
 
 @decorator_util.jit()
 def furthest_grid_2d_slim_index_from(
-    grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: (float, float)
+    grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
 ) -> int:
 
     distance_from_centre = 0.0
@@ -709,9 +711,9 @@ def grid_2d_slim_from(
     ----------
     grid_2d_native : ndarray
         The native grid of (y,x) values which are mapped to the slimmed grid.
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    sub_size : int
+    sub_size
         The size (sub_size x sub_size) of each unmasked pixels sub-array.
 
     Returns
@@ -748,11 +750,11 @@ def grid_2d_native_from(
 
     Parameters
     ----------
-    grid_2d_slim : np.ndarray
+    grid_2d_slim
         The (y,x) values of the slimmed 2D grid which are mapped to the native 2D grid.
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    sub_size : int
+    sub_size
         The size (sub_size x sub_size) of each unmasked pixels sub-array.
 
     Returns
@@ -775,7 +777,7 @@ def grid_2d_native_from(
 
 @decorator_util.jit()
 def grid_2d_slim_upscaled_from(
-    grid_slim: np.ndarray, upscale_factor: int, pixel_scales: (float, float)
+    grid_slim: np.ndarray, upscale_factor: int, pixel_scales: Tuple[float, float]
 ) -> np.ndarray:
     """
     From an input slimmed 2D grid, return an upscaled slimmed 2D grid where (y,x) coordinates are added at an
@@ -783,11 +785,11 @@ def grid_2d_slim_upscaled_from(
 
     Parameters
     ----------
-    grid_slim : np.ndarray
+    grid_slim
         The slimmed grid of (y,x) coordinates over which a square uniform grid is overlaid.
-    upscale_factor : int
+    upscale_factor
         The upscaled resolution at which the new grid coordinates are computed.
-    pixel_scales : (float, float)
+    pixel_scales
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
 
@@ -830,7 +832,7 @@ def grid_2d_slim_upscaled_from(
 
 
 def grid_2d_of_points_within_radius(
-    radius: float, centre: (float, float), grid_2d: np.ndarray
+    radius: float, centre: Tuple[float, float], grid_2d: np.ndarray
 ):
     y_inside = []
     x_inside = []

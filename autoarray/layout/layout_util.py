@@ -7,7 +7,7 @@ from typing import Union, Tuple
 
 
 def rotate_array_from_roe_corner(
-    array: np.ndarray, roe_corner: (int, int)
+    array: np.ndarray, roe_corner: Tuple[int, int]
 ) -> np.ndarray:
     """
     Rotates an input array such that its read-out electronics corner (``roe_corner``) are positioned at the
@@ -18,9 +18,9 @@ def rotate_array_from_roe_corner(
 
     Parameters
     ----------
-    array : np.ndarray
+    array
         The array which is rotated.
-    roe_corner : (int, int)
+    roe_corner
         The corner of the array at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
         The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
 
@@ -99,7 +99,7 @@ def rotate_region_from_roe_corner(
 
 
 def rotate_pattern_ci_from_roe_corner(
-    pattern_ci, shape_native: (int, int), roe_corner: (int, int)
+    pattern_ci, shape_native: Tuple[int, int], roe_corner: Tuple[int, int]
 ):
     """
     Rotates a ``ChargeInjectionPattern` such that its read-out electronics corner (``roe_corner``) are positioned at
@@ -109,9 +109,9 @@ def rotate_pattern_ci_from_roe_corner(
     ----------
     pattern_ci : ac.CIPaattern
         The charge-injection pattern of the ``Array2D`` that is rotated.
-    shape_native : (int, int)
+    shape_native
         The 2D shape of the ``Array2D`` the regions are located on, required to determine the rotated ``region``.
-    roe_corner : (int, int)
+    roe_corner
         The corner of the ``Array2D``at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
         The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
 

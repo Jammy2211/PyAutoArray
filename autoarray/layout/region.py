@@ -92,7 +92,7 @@ class Region2D:
 
         Parameters
         -----------
-        region : (int,)
+        region : Tuple[int]
             The coordinates on the image of the region (y0, y1, x0, y1).
         """
 

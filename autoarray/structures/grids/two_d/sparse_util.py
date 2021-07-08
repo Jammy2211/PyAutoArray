@@ -20,11 +20,11 @@ def unmasked_sparse_for_sparse_from(
 
     Parameters
     -----------
-    total_sparse_pixels : int
+    total_sparse_pixels
         The total number of pixels in the sparse grid which fall within the masks.
-    mask : np.ndarray
+    mask
         The masks within which spare pixels must be inside
-    unmasked_sparse_grid_pixel_centres : np.ndarray
+    unmasked_sparse_grid_pixel_centres
         The centres of the unmasked sparse grid pixels.
     """
 
@@ -60,11 +60,11 @@ def sparse_for_unmasked_sparse_from(
 
     Parameters
     -----------
-    mask : np.ndarray
+    mask
         The masks within which pixelization pixels must be inside
-    unmasked_sparse_grid_pixel_centres : np.ndarray
+    unmasked_sparse_grid_pixel_centres
         The centres of the unmasked pixelization grid pixels.
-    total_sparse_pixels : int
+    total_sparse_pixels
         The total number of pixels in the pixelization grid which fall within the masks.
     """
 
@@ -97,9 +97,9 @@ def sparse_slim_index_for_mask_slim_index_from(
 
     Parameters
     ----------
-    regular_to_unmasked_sparse : np.ndarray
+    regular_to_unmasked_sparse
         The index mapping between every unmasked pixel in the mask and masked sparse-grid pixel.
-    sparse_for_unmasked_sparse : np.ndarray
+    sparse_for_unmasked_sparse
         The index mapping between every masked sparse-grid pixel and unmasked sparse-grid pixel.
 
     Returns
@@ -130,9 +130,9 @@ def sparse_grid_via_unmasked_from(
 
     Parameters
     -----------
-    unmasked_sparse_grid : np.ndarray
+    unmasked_sparse_grid
         The (y,x) coordinate grid of every unmasked sparse grid pixel.
-    unmasked_sparse_for_sparse : np.ndarray
+    unmasked_sparse_for_sparse
         The index mapping between every unmasked sparse 1D index and masked sparse 1D index.
 
     Returns

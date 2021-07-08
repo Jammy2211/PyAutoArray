@@ -74,7 +74,7 @@ def log_determinant_of_matrix_cholesky(matrix):
 
     Parameters
     -----------
-    matrix : np.ndarray
+    matrix
         The positive-definite matrix the log determinant is computed for.
     """
     try:
@@ -270,9 +270,9 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
 
         Parameters
         -----------
-        image_1d : np.ndarray
+        image_1d
             Flattened 1D array of the observed image the inversion is fitting.
-        noise_map : np.ndarray
+        noise_map
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
@@ -284,16 +284,16 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
 
         Attributes
         -----------
-        blurred_mapping_matrix : np.ndarray
+        blurred_mapping_matrix
             The matrix representing the blurred mappings between the image's sub-grid of pixels and the pixelization \
             pixels.
-        regularization_matrix : np.ndarray
+        regularization_matrix
             The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-        curvature_matrix : np.ndarray
+        curvature_matrix
             The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
-        curvature_reg_matrix : np.ndarray
+        curvature_reg_matrix
             The curvature_matrix + regularization matrix.
-        solution_vector : np.ndarray
+        solution_vector
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
@@ -560,9 +560,9 @@ class InversionInterferometerMatrix(
 
         Parameters
         -----------
-        image_1d : np.ndarray
+        image_1d
             Flattened 1D array of the observed image the inversion is fitting.
-        noise_map : np.ndarray
+        noise_map
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
@@ -574,16 +574,16 @@ class InversionInterferometerMatrix(
 
         Attributes
         -----------
-        blurred_mapping_matrix : np.ndarray
+        blurred_mapping_matrix
             The matrix representing the blurred mappings between the image's sub-grid of pixels and the pixelization \
             pixels.
-        regularization_matrix : np.ndarray
+        regularization_matrix
             The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-        curvature_matrix : np.ndarray
+        curvature_matrix
             The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
-        curvature_reg_matrix : np.ndarray
+        curvature_reg_matrix
             The curvature_matrix + regularization matrix.
-        solution_vector : np.ndarray
+        solution_vector
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
@@ -701,9 +701,9 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
 
         Parameters
         -----------
-        image_1d : np.ndarray
+        image_1d
             Flattened 1D array of the observed image the inversion is fitting.
-        noise_map : np.ndarray
+        noise_map
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
@@ -715,16 +715,16 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
 
         Attributes
         -----------
-        blurred_mapping_matrix : np.ndarray
+        blurred_mapping_matrix
             The matrix representing the blurred mappings between the image's sub-grid of pixels and the pixelization \
             pixels.
-        regularization_matrix : np.ndarray
+        regularization_matrix
             The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-        curvature_matrix : np.ndarray
+        curvature_matrix
             The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
-        curvature_reg_matrix : np.ndarray
+        curvature_reg_matrix
             The curvature_matrix + regularization matrix.
-        solution_vector : np.ndarray
+        solution_vector
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 

@@ -154,7 +154,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         Parameters
         ----------
-        grid : np.ndarray
+        grid
             The (y,x) coordinates of the grid.
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -213,15 +213,15 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
         return cls.manual_slim(
@@ -237,7 +237,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid or list
             The (x) coordinates of the grid input as an ndarray of shape [total_coordinates*sub_size] or a list of lists.
         mask : msk.Mask1D
             The 1D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -367,7 +367,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         Parameters
         ----------
-        result : np.ndarray or [np.ndarray]
+        result or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result.shape) == 1:
@@ -390,7 +390,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         Parameters
         ----------
-        result_list : np.ndarray or [np.ndarray]
+        result_list or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         return [self.structure_2d_from_result(result=result) for result in result_list]

@@ -37,7 +37,7 @@ class VectorField2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        vectors : np.ndarray or [(float, float)]
+        vectors or [(float, float)]
             The 2D (y,x) vectors on an irregular grid that represent the vector-field.
         grid : grid_2d_irregular.Grid2DIrregular
             The irregular grid of (y,x) coordinates where each vector is located.

@@ -12,8 +12,8 @@ from autoarray.structures.grids.two_d import grid_2d_util
 def mask_2d_centres_from(
     shape_native: Tuple[int, int],
     pixel_scales: Tuple[float, float],
-    centre: (float, float),
-) -> (float, float):
+    centre: Tuple[float, float],
+) -> Tuple[float, float]:
     """
     Returns the (y,x) scaled central coordinates of a mask from its shape, pixel-scales and centre.
 
@@ -21,9 +21,9 @@ def mask_2d_centres_from(
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the 2D array the scaled centre is computed for.
-    pixel_scales : (float, float)
+    pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D array.
     centre : (float, flloat)
         The (y,x) centre of the 2D mask.
@@ -50,7 +50,7 @@ def total_pixels_2d_from(mask_2d: np.ndarray) -> int:
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values are unmasked and included when counting pixels.
 
     Returns
@@ -85,9 +85,9 @@ def total_sub_pixels_2d_from(mask_2d: np.ndarray, sub_size: int) -> int:
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values are unmasked and included when counting sub pixels.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
 
     Returns
@@ -117,9 +117,9 @@ def total_sparse_pixels_2d_from(
 
     Parameters
     -----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask within which pixelization pixels must be inside
-    unmasked_sparse_grid_pixel_centres : np.ndarray
+    unmasked_sparse_grid_pixel_centres
         The centres of the unmasked pixelization grid pixels.
     """
 
@@ -152,7 +152,7 @@ def mask_2d_circular_from(
 
     Parameters
     ----------
-    shape_native: (int, int)
+    shape_native: Tuple[int, int]
         The (y,x) shape of the mask in units of pixels.
     pixel_scales: float
         The scaled units to pixel units conversion factor of each pixel.
@@ -207,9 +207,9 @@ def mask_2d_circular_annular_from(
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the mask in units of pixels.
-    pixel_scales : (float, float)
+    pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
     inner_radius : float
         The radius (in scaled units) of the inner circle outside of which pixels are unmasked.
@@ -266,9 +266,9 @@ def mask_2d_circular_anti_annular_from(
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The (y,x) shape of the mask in units of pixels.
-    pixel_scales : (float, float)
+    pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
     inner_radius : float
         The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
@@ -330,7 +330,7 @@ def mask_2d_via_pixel_coordinates_from(
         The (y,x) shape of the mask in units of pixels.
     pixel_coordinates : [[int, int]]
         The input lists of 2D pixel coordinates where `False` entries are created.
-    buffer : int
+    buffer
         All input ``pixel_coordinates`` are buffed with `False` entries in all 8 neighboring directions by this
         amount.
     """
@@ -403,9 +403,9 @@ def mask_2d_elliptical_from(
 
     Parameters
     ----------
-    shape_native: (int, int)
+    shape_native: Tuple[int, int]
         The (y,x) shape of the mask in units of pixels.
-    pixel_scales : (float, float)
+    pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
     major_axis_radius : float
         The major-axis (in scaled units) of the ellipse within which pixels are unmasked.
@@ -470,9 +470,9 @@ def mask_2d_elliptical_annular_from(
 
     Parameters
     ----------
-    shape_native: (int, int)
+    shape_native: Tuple[int, int]
         The (y,x) shape of the mask in units of pixels.
-    pixel_scales : (float, float)
+    pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
     inner_major_axis_radius : float
         The major-axis (in scaled units) of the inner ellipse within which pixels are masked.
@@ -549,9 +549,9 @@ def blurring_mask_2d_from(
 
     Parameters
     -----------
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values are unmasked.
-    kernel_shape_native : (int, int)
+    kernel_shape_native
         The 2D shape of the PSF which is used to compute the blurring mask.
 
     Returns
@@ -616,9 +616,9 @@ def mask_2d_via_shape_native_and_native_for_slim(
 
     Parameters
     ----------
-    shape_native : (int, int)
+    shape_native
         The shape of the 2D array which the pixels are defined on.
-    native_for_slim : np.ndarray
+    native_for_slim
         An array describing the native 2D array index that every slimmed array index maps too.
 
     Returns
@@ -651,11 +651,11 @@ def check_if_edge_pixel(mask_2d: np.ndarray, y: int, x: int) -> bool:
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask for which the input pixel is checked if it is an edge pixel.
-    y : int
+    y
         The y pixel coordinate on the mask that is checked for if it is an edge pixel.
-    x : int
+    x
         The x pixel coordinate on the mask that is checked for if it is an edge pixel.
 
     Returns
@@ -689,7 +689,7 @@ def total_edge_pixels_from(mask_2d: np.ndarray) -> int:
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask for which the total number of edge pixels is computed.
 
     Returns
@@ -719,7 +719,7 @@ def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask for which the 1D edge pixel indexes are computed.
 
     Returns
@@ -773,12 +773,12 @@ def check_if_border_pixel(
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask for which the input pixel is checked if it is a border pixel.
-    edge_pixel_slim : int
+    edge_pixel_slim
         The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
         array `sub_native_index_for_sub_slim_index_2d`).
-    native_to_slim : np.ndarray
+    native_to_slim
         An array describing the native 2D array index that every slimmed array index maps too.
 
     Returns
@@ -818,12 +818,12 @@ def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask for which the total number of border pixels is computed.
-    edge_pixel_1d : int
+    edge_pixel_1d
         The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
         array `sub_native_index_for_sub_slim_index_2d`).
-    native_to_slim : np.ndarray
+    native_to_slim
         An array describing the 2D array index that every 1D array index maps too.
 
     Returns
@@ -858,7 +858,7 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask for which the slimmed border pixel indexes are calculated.
 
     Returns
@@ -917,9 +917,9 @@ def sub_border_pixel_slim_indexes_from(
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask for which the 1D border pixel indexes are calculated.
-    sub_size : int
+    sub_size
         The size of the sub-grid in each mask pixel.
 
     Returns
@@ -965,9 +965,9 @@ def buffed_mask_2d_from(mask_2d: np.ndarray, buffer: int = 1) -> np.ndarray:
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask whose `False` entries are buffed.
-    buffer : int
+    buffer
         The number of pixels around each `False` entry that pixel are buffed in all 8 directions.
 
     Returns
@@ -1008,7 +1008,7 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask that is increased or decreased in size via rescaling.
     rescale_factor : float
         The factor by which the mask is increased in size or decreased in size.
@@ -1052,9 +1052,9 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask whose indexes are mapped.
-    sub_size : int
+    sub_size
         The sub-size of the grid on the mask, so that the sub-mask indexes can be computed correctly.
 
     Returns
@@ -1102,9 +1102,9 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
 
     Parameters
     ----------
-    mask_2d : np.ndarray
+    mask_2d
         The mask whose indexes are mapped.
-    sub_size : int
+    sub_size
         The sub-size of the grid on the mask, so that the sub-mask indexes can be computed correctly.
 
     Returns
@@ -1156,7 +1156,7 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
 
     Parameters
     ----------
-    sub_mask_2d : np.ndarray
+    sub_mask_2d
         The 2D mask that the util array is created for.
 
     Returns
@@ -1203,9 +1203,9 @@ def native_index_for_slim_index_2d_from(
 
     Parameters
     -----------
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values are unmasked.
-    sub_size : int
+    sub_size
         The size of the sub-grid in each mask pixel.
 
     Returns
@@ -1252,7 +1252,7 @@ def mask_2d_neighbors_from(mask_2d: np.ndarray) -> np.ndarray:
 
     Parameters
     -----------
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values are unmasked.
 
     Returns

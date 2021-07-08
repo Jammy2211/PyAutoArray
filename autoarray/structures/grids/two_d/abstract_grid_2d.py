@@ -267,7 +267,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         return grid_2d_irregular.Grid2DIrregular(grid=grid_radial_projected_2d)
 
     @property
-    def shape_native_scaled(self) -> (float, float):
+    def shape_native_scaled(self) -> Tuple[float, float]:
         """
         The two dimensional shape of the grid in scaled units, computed by taking the minimum and maximum values of
         the grid.
@@ -278,7 +278,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
 
     @property
-    def scaled_maxima(self) -> (float, float):
+    def scaled_maxima(self) -> Tuple[float, float]:
         """
         The maximum values of the grid in scaled coordinates returned as a tuple (y_max, x_max).
         """
@@ -288,7 +288,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
 
     @property
-    def scaled_minima(self) -> (float, float):
+    def scaled_minima(self) -> Tuple[float, float]:
         """
         The minium values of the grid in scaled coordinates returned as a tuple (y_min, x_min).
         """
@@ -314,7 +314,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             ]
         )
 
-    def extent_with_buffer(self, buffer=1.0e-8) -> [float, float, float, float]:
+    def extent_with_buffer(self, buffer=1.0e-8) -> List[float]:
         """
         The extent of the grid in scaled units returned as a list [x_min, x_max, y_min, y_max], where all values are
         buffed such that their extent is further than the grid's extent..

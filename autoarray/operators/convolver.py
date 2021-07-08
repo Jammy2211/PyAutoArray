@@ -274,9 +274,9 @@ class Convolver:
 
         Parameters
         ----------
-        coordinates: (int, int)
+        coordinates: Tuple[int, int]
             The coordinates of mask_index_array on which the frame should be centred
-        kernel_shape_native: (int, int)
+        kernel_shape_native: Tuple[int, int]
             The shape of the kernel for which this frame will be used
         """
 
@@ -311,9 +311,9 @@ class Convolver:
 
         Parameters
         -----------
-        image : np.ndarray
+        image
             1D array of the values which are to be blurred with the convolver's PSF.
-        blurring_image : np.ndarray
+        blurring_image
             1D array of the blurring values which blur into the array after PSF convolution.
         """
 
@@ -446,7 +446,7 @@ class Convolver:
 
         Parameters
         -----------
-        mapping_matrix : np.ndarray
+        mapping_matrix
             The 2D mapping matrix describing how every inversion pixel maps to a pixel on the data pixel.
         """
         return self.convolve_matrix_jit(

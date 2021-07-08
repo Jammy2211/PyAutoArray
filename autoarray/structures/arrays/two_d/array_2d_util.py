@@ -8,6 +8,8 @@ import numpy as np
 from astropy.io import fits
 from functools import wraps
 
+from typing import Tuple
+
 
 class Memoizer:
     def __init__(self):
@@ -77,15 +79,15 @@ def extracted_array_2d_from(
 
     Parameters
     ----------
-    array_2d : np.ndarray
+    array_2d
         The 2D array that an array is extracted from.
-    y0 : int
+    y0
         The top row number (e.g. the higher y-coodinate) of the array that is extracted for the resize.
-    y1 : int
+    y1
         The bottom row number (e.g. the lower y-coodinate) of the array that is extracted for the resize.
-    x0 : int
+    x0
         The left column number (e.g. the lower x-coodinate) of the array that is extracted for the resize.
-    x1 : int
+    x1
         The right column number (e.g. the higher x-coodinate) of the array that is extracted for the resize.
 
     Returns
@@ -119,8 +121,8 @@ def extracted_array_2d_from(
 @decorator_util.jit()
 def resized_array_2d_from_array_2d(
     array_2d: np.ndarray,
-    resized_shape: (int, int),
-    origin: (int, int) = (-1, -1),
+    resized_shape: Tuple[int, int],
+    origin: Tuple[int, int] = (-1, -1),
     pad_value: int = 0.0,
 ) -> np.ndarray:
     """
@@ -135,11 +137,11 @@ def resized_array_2d_from_array_2d(
 
     Parameters
     ----------
-    array_2d : np.ndarray
+    array_2d
         The 2D array that is resized.
-    resized_shape : (int, int)
+    resized_shape
         The (y,x) new pixel dimension of the trimmed array.
-    origin : (int, int)
+    origin
         The oigin of the resized array, e.g. the central pixel around which the array is extracted.
     pad_value : float
         If the reszied array is bigger in size than the input array, the value the padded edge values are filled in
@@ -225,9 +227,9 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(
 
     Parameters
     ----------
-    image_2d : np.ndarray
+    image_2d
         The 2D image array used to locate the pixel indexes in the noise-map which are replaced.
-    noise_map_2d : np.ndarray
+    noise_map_2d
         The 2D noise-map array whose values are replaced.
     target_signal_to_noise : float
         The target signal-to-noise the noise-map valueus are changed to.
@@ -274,9 +276,9 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.n
 
     Parameters
     ----------
-    indexes_slim : np.ndarray
+    indexes_slim
         The slim 1D pixel indexes which are mapped to 2D indexes.
-    shape_native : (int, int)
+    shape_native
         The shape of the 2D array which the pixels are natively defined on.
 
     Returns
@@ -317,9 +319,9 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
 
     Parameters
     ----------
-    indexes_2d : np.ndarray
+    indexes_2d
         The native 2D pixel indexes which are mapped to slimmed 1D indexes.
-    shape_native : (int, int)
+    shape_native
         The shape of the 2D array which the pixels are defined on.
 
     Returns
@@ -365,11 +367,11 @@ def array_2d_slim_from(
 
     Parameters
     ----------
-    array_2d_native : np.ndarray
+    array_2d_native
         A 2D array of values on the dimensions of the sub-grid.
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    array_2d_native : np.ndarray
+    array_2d_native
         The 2D array of values which are mapped to a 1D array.
 
     Returns
@@ -429,11 +431,11 @@ def array_2d_native_from(
 
     Parameters
     ----------
-    array_2d_slim : np.ndarray
+    array_2d_slim
         The slimmed array of values which are mapped to a 2D array.
-    mask_2d : np.ndarray
+    mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    sub_size : int
+    sub_size
         The size (sub_size x sub_size) of each unmasked pixels sub-array.
 
     Returns
@@ -467,7 +469,7 @@ def array_2d_native_from(
 @decorator_util.jit()
 def array_2d_via_indexes_from(
     array_2d_slim: np.ndarray,
-    sub_shape: (int, int),
+    sub_shape: Tuple[int, int],
     native_index_for_slim_index_2d: np.ndarray,
 ) -> np.ndarray:
     """
@@ -490,9 +492,9 @@ def array_2d_via_indexes_from(
 
     Parameters
     ----------
-    array_2d_slim : np.ndarray
+    array_2d_slim
         The slimmed array of shape [total_values] which are mapped to the native array..
-    sub_shape : (int, int)
+    sub_shape
         The 2D dimensions of the native 2D sub-array.
     native_index_for_slim_index_2d : np.narray
         An array of shape [total_values] that maps from the slimmed array to the native array.
@@ -537,11 +539,11 @@ def array_2d_slim_complex_from(
 
     Parameters
     ----------
-    array_2d_native : np.ndarray
+    array_2d_native
         A 2D array of values on the dimensions of the sub-grid.
-    mask : np.ndarray
+    mask
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    array_2d : np.ndarray
+    array_2d
         The 2D array of values which are mapped to a 1D array.
 
     Returns
@@ -587,7 +589,7 @@ def array_2d_slim_complex_from(
 @decorator_util.jit()
 def array_2d_native_complex_via_indexes_from(
     array_2d_slim: np.ndarray,
-    sub_shape_native: (int, int),
+    sub_shape_native: Tuple[int, int],
     native_index_for_slim_index_2d: np.ndarray,
 ) -> np.ndarray:
 
@@ -614,7 +616,7 @@ def numpy_array_2d_to_fits(
 
     Parameters
     ----------
-    array_2d : np.ndarray
+    array_2d
         The 2D array that is written to fits.
     file_path : str
         The full path of the file that is output, including the file name and ``.fits`` extension.
@@ -664,7 +666,7 @@ def numpy_array_2d_from_fits(
     ----------
     file_path : str
         The full path of the file that is loaded, including the file name and ``.fits`` extension.
-    hdu : int
+    hdu
         The HDU extension of the array that is loaded from the .fits file.
     do_not_scale_image_data : bool
         If True, the .fits file is not rescaled automatically based on the .fits header info.
@@ -698,7 +700,7 @@ def header_obj_from_fits(file_path: str, hdu: int):
     ----------
     file_path : str
         The full path of the file that is loaded, including the file name and ``.fits`` extension.
-    hdu : int
+    hdu
         The HDU extension of the array that is loaded from the .fits file.
     do_not_scale_image_data : bool
         If True, the .fits file is not rescaled automatically based on the .fits header info.

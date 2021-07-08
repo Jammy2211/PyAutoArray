@@ -175,7 +175,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        array : np.ndarray
+        array
             The values of the array.
         mask : msk.Mask2D
             The 2D mask associated with the array, defining the pixels each array value is paired with and
@@ -213,17 +213,17 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        array : np.ndarray or list
+        array or list
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
-        shape_native : (int, int)
+        shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
 
@@ -260,15 +260,15 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        array : np.ndarray or list
+        array or list
             The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
              list of lists.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
 
@@ -306,17 +306,17 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        array : np.ndarray or list
+        array or list
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
-        shape_native : (int, int)
+        shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
         array = abstract_array.convert_array(array=array)
@@ -347,7 +347,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        array : np.ndarray or list
+        array or list
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
         mask : Mask2D
@@ -377,14 +377,14 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         ----------
         fill_value : float
             The value all array elements are filled with.
-        shape_native : (int, int)
+        shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
         if sub_size is not None:
@@ -410,14 +410,14 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        shape_native : (int, int)
+        shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
         return cls.full(
@@ -441,14 +441,14 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        shape_native : (int, int)
+        shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
         return cls.full(
@@ -470,14 +470,14 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         file_path : str
             The path the file is loaded from, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
-        hdu : int
+        hdu
             The Header-Data Unit of the .fits file the array data is loaded from.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
         array_2d = array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
@@ -513,20 +513,20 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        y : np.ndarray or list
+        y or list
             The y pixel indexes where value sare input, as an ndarray of shape [total_y_pixels*sub_size] or a list.
-        x : np.ndarray or list
+        x or list
             The x pixel indexes where value sare input, as an ndarray of shape [total_y_pixels*sub_size] or a list.
-        values : np.ndarray or list
+        values or list
             The values which are used too fill in the array.
-        shape_native : (int, int)
+        shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)

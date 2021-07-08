@@ -10,6 +10,7 @@ from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids.two_d import grid_2d
 
+from typing import Tuple
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -21,9 +22,9 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def __new__(
         cls,
         mask: np.ndarray,
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
         *args,
         **kwargs
     ):
@@ -46,10 +47,10 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         mask: np.ndarray
             The `ndarray` of shape [total_y_pixels, total_x_pixels] containing the `bool`'s representing the
             `mask`, where `False` signifies an entry is unmasked and used in calculations.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
 
@@ -120,7 +121,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         Parameters
         -----------
-        new_shape : (int, int)
+        new_shape
             The new two-dimensional shape of the array.
         """
 
@@ -145,7 +146,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         Parameters
         -----------
-        padded_array : np.ndarray
+        padded_array
             A 1D array of values which were computed using a padded grid
         """
 
@@ -175,7 +176,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ----------
         psf : aa.Kernel2D
             The PSF of the image used for convolution.
-        unmasked_image_1d : np.ndarray
+        unmasked_image_1d
             The 1D unmasked image which is blurred.
         """
 
@@ -452,7 +453,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         Parameters
         ----------
-        grid_pixels_1d : np.ndarray
+        grid_pixels_1d
             The grid of (y,x) coordinates in pixels.
         """
         grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
@@ -546,7 +547,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         Parameters
         ----------
-        kernel_shape_native : (int, int)
+        kernel_shape_native
            The shape of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
@@ -724,9 +725,9 @@ class Mask2D(AbstractMask2D):
     def manual(
         cls,
         mask: np.ndarray or list,
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
     ) -> "Mask2D":
         """
@@ -740,15 +741,15 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        mask : np.ndarray or list
+        mask or list
             The `bool` values of the mask input as an `np.ndarray` of shape [total_y_pixels, total_x_pixels] or a
             list of lists.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         invert : bool
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
@@ -772,10 +773,10 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def unmasked(
         cls,
-        shape_native: (int, int),
-        pixel_scales: (float, float),
+        shape_native: Tuple[int, int],
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
     ) -> "Mask2D":
         """
@@ -783,14 +784,14 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_native : (int, int)
+        shape_native
             The 2D shape of the mask that is created.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         invert : bool
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
@@ -807,12 +808,12 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def circular(
         cls,
-        shape_native: (int, int),
+        shape_native: Tuple[int, int],
         radius: float,
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
-        centre: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
+        centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
     ) -> "Mask2D":
         """
@@ -822,16 +823,16 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_native : (int, int)
+        shape_native
             The (y,x) shape of the mask in units of pixels.
         radius : float
             The radius in scaled units of the circle within which pixels are `False` and unmasked.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centre of the circle used to mask pixels.
@@ -862,13 +863,13 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def circular_annular(
         cls,
-        shape_native: (int, int),
+        shape_native: Tuple[int, int],
         inner_radius: float,
         outer_radius: float,
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
-        centre: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
+        centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
     ) -> "Mask2D":
         """
@@ -879,18 +880,18 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_native : (int, int)
+        shape_native
             The (y,x) shape of the mask in units of pixels.
         inner_radius : float
             The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
         outer_radius : float
             The outer radius in scaled units of the annulus within which pixels are `False` and unmasked.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centre of the annulus used to mask pixels.
@@ -922,14 +923,14 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def circular_anti_annular(
         cls,
-        shape_native: (int, int),
+        shape_native: Tuple[int, int],
         inner_radius: float,
         outer_radius: float,
         outer_radius_2: float,
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
-        centre: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
+        centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
     ) -> "Mask2D":
         """
@@ -940,7 +941,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_native : (int, int)
+        shape_native
             The (y,x) shape of the mask in units of pixels.
         inner_radius : float
             The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
@@ -949,12 +950,12 @@ class Mask2D(AbstractMask2D):
         outer_radius_2 : float
             The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
             outside of which all entries are `True` and masked.
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centre of the anti-annulus used to mask pixels.
@@ -987,14 +988,14 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def elliptical(
         cls,
-        shape_native: (int, int),
+        shape_native: Tuple[int, int],
         major_axis_radius: float,
         axis_ratio: float,
         angle: float,
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
-        centre: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
+        centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
     ) -> "Mask2D":
         """
@@ -1004,7 +1005,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_native : (int, int)
+        shape_native
             The (y,x) shape of the mask in units of pixels.
         major_axis_radius : float
             The major-axis in scaled units of the ellipse within which pixels are unmasked.
@@ -1013,12 +1014,12 @@ class Mask2D(AbstractMask2D):
         angle
             The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
              x-axis).
-        pixel_scales: (float, float) or float
+        pixel_scales: Tuple[float, float] or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centred of the ellipse used to mask pixels.
@@ -1050,17 +1051,17 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def elliptical_annular(
         cls,
-        shape_native: (int, int),
+        shape_native: Tuple[int, int],
         inner_major_axis_radius: float,
         inner_axis_ratio: float,
         inner_phi: float,
         outer_major_axis_radius: float,
         outer_axis_ratio: float,
         outer_phi: float,
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
-        centre: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
+        centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
     ) -> "Mask2D":
         """
@@ -1073,7 +1074,7 @@ class Mask2D(AbstractMask2D):
         ----------
         shape_native (int, int)
             The (y,x) shape of the mask in units of pixels.
-        pixel_scales : (float, float)
+        pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
         inner_major_axis_radius : float
             The major-axis in scaled units of the inner ellipse within which pixels are masked.
@@ -1089,9 +1090,9 @@ class Mask2D(AbstractMask2D):
         outer_phi : float
             The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
             positive x-axis).
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centre of the elliptical annuli used to mask pixels.
@@ -1127,11 +1128,11 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def from_pixel_coordinates(
         cls,
-        shape_native: (int, int),
+        shape_native: Tuple[int, int],
         pixel_coordinates: [[int, int]],
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
+        origin: Tuple[float, float] = (0.0, 0.0),
         buffer: int = 0,
         invert: bool = False,
     ) -> "Mask2D":
@@ -1148,13 +1149,13 @@ class Mask2D(AbstractMask2D):
             The (y,x) shape of the mask in units of pixels.
         pixel_coordinates : [[int, int]]
             The input lists of 2D pixel coordinates where `False` entries are created.
-        pixel_scales : (float, float)
+        pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        buffer : int
+        buffer
             All input `pixel_coordinates` are buffed with `False` entries in all 8 neighboring directions by this
             amount.
         invert : bool
@@ -1180,11 +1181,11 @@ class Mask2D(AbstractMask2D):
     def from_fits(
         cls,
         file_path: str,
-        pixel_scales: (float, float),
+        pixel_scales: Tuple[float, float],
         hdu: int = 0,
         sub_size: int = 1,
-        origin: (float, float) = (0.0, 0.0),
-        resized_mask_shape: (int, int) = None,
+        origin: Tuple[float, float] = (0.0, 0.0),
+        resized_mask_shape: Tuple[int, int] = None,
     ) -> "Mask2D":
         """
         Loads the image from a .fits file.
@@ -1193,13 +1194,13 @@ class Mask2D(AbstractMask2D):
         ----------
         file_path : str
             The full path of the fits file.
-        hdu : int
+        hdu
             The HDU number in the fits file containing the image image.
         pixel_scales : float or (float, float)
             The scaled units to pixel units conversion factor of each pixel.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin : (float, float)
+        origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
 

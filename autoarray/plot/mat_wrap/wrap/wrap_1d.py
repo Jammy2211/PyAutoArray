@@ -54,9 +54,9 @@ class YXPlot(AbstractMatWrap1D):
 
         Parameters
         ----------
-        y : np.ndarray or array_1d.Array1D
+        y or array_1d.Array1D
             The ydata that is plotted.
-        x : np.ndarray or lines.Line
+        x or lines.Line
             The xdata that is plotted.
         plot_axis_type : str
             The method used to make the plot that defines the scale of the axes {"linear", "semilogy", "loglog",

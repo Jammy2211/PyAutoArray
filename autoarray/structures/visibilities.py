@@ -30,7 +30,7 @@ class AbstractVisibilities(np.ndarray):
 
         Parameters
         ----------
-        visibilities : np.ndarray
+        visibilities
             The (real, imag) visibilities values.
         """
 
@@ -162,7 +162,7 @@ class Visibilities(AbstractVisibilities):
 
         Parameters
         ----------
-        visibilities : np.ndarray
+        visibilities
             The (real, imag) visibilities values.
         """
         return cls(visibilities=visibilities)
@@ -180,7 +180,7 @@ class Visibilities(AbstractVisibilities):
         ----------
         fill_value : float
             The value all real and imaginary array elements are filled with.
-        shape_slim : int
+        shape_slim
             The 1D shape of output visibilities.
         """
         return cls.manual_slim(
@@ -200,7 +200,7 @@ class Visibilities(AbstractVisibilities):
 
         Parameters
         ----------
-        shape_slim : int
+        shape_slim
             The 1D shape of output visibilities.
         """
         return cls.full(fill_value=1.0, shape_slim=shape_slim)
@@ -216,7 +216,7 @@ class Visibilities(AbstractVisibilities):
 
         Parameters
         ----------
-        shape_slim : int
+        shape_slim
             The 1D shape of output visibilities.
         """
         return cls.full(fill_value=0.0, shape_slim=shape_slim)
@@ -234,7 +234,7 @@ class Visibilities(AbstractVisibilities):
         file_path : str
             The path the file is loaded from, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
-        hdu : int
+        hdu
             The Header-Data Unit of the .fits file the visibilitiy data is loaded from.
         """
         visibilities_1d = array_2d_util.numpy_array_2d_from_fits(
@@ -257,7 +257,7 @@ class VisibilitiesNoiseMap(Visibilities):
 
         Parameters
         ----------
-        visibilities : np.ndarray
+        visibilities
             The (real, imag) visibilities values.
         """
 
