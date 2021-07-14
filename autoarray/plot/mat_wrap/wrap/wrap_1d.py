@@ -26,7 +26,7 @@ class AbstractMatWrap1D(wrap_base.AbstractMatWrap):
 
 
 class YXPlot(AbstractMatWrap1D):
-    def __init__(self, plot_axis_type=None, **kwargs):
+    def __init__(self, plot_axis_type=None, label=None, **kwargs):
         """
         Plots 1D data structures as a y vs x figure.
 
@@ -38,6 +38,7 @@ class YXPlot(AbstractMatWrap1D):
         super().__init__(**kwargs)
 
         self.plot_axis_type = plot_axis_type
+        self.label = label
 
     def plot_y_vs_x(
         self,
@@ -64,6 +65,9 @@ class YXPlot(AbstractMatWrap1D):
         label : str
             Optionally include a label on the plot for a `Legend` to display.
         """
+
+        if self.label is not None:
+            label = self.label
 
         if plot_axis_type == "linear" or plot_axis_type == "symlog":
             plt.plot(x, y, label=label, **self.config_dict)

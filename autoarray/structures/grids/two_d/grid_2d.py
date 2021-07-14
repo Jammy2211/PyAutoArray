@@ -245,7 +245,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             or a list of lists.
         shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -285,7 +285,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape
             [total_y_coordinates*sub_size, total_x_pixel*sub_size, 2] or a list of lists.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -327,7 +327,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             or a list of lists.
         shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -393,7 +393,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             The x coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
         shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -437,7 +437,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             The y coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
         x or list
             The x coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -515,7 +515,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         ----------
         shape_native
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size

@@ -10,7 +10,7 @@ from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids.two_d import grid_2d
 
-from typing import Tuple
+from typing import Tuple, Union
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def __new__(
         cls,
         mask: np.ndarray,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         *args,
@@ -47,7 +47,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         mask: np.ndarray
             The `ndarray` of shape [total_y_pixels, total_x_pixels] containing the `bool`'s representing the
             `mask`, where `False` signifies an entry is unmasked and used in calculations.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
         origin
@@ -725,7 +725,7 @@ class Mask2D(AbstractMask2D):
     def manual(
         cls,
         mask: np.ndarray or list,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -744,7 +744,7 @@ class Mask2D(AbstractMask2D):
         mask or list
             The `bool` values of the mask input as an `np.ndarray` of shape [total_y_pixels, total_x_pixels] or a
             list of lists.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
         sub_size
@@ -774,7 +774,7 @@ class Mask2D(AbstractMask2D):
     def unmasked(
         cls,
         shape_native: Tuple[int, int],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -786,7 +786,7 @@ class Mask2D(AbstractMask2D):
         ----------
         shape_native
             The 2D shape of the mask that is created.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
         sub_size
@@ -810,7 +810,7 @@ class Mask2D(AbstractMask2D):
         cls,
         shape_native: Tuple[int, int],
         radius: float,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -827,7 +827,7 @@ class Mask2D(AbstractMask2D):
             The (y,x) shape of the mask in units of pixels.
         radius : float
             The radius in scaled units of the circle within which pixels are `False` and unmasked.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
         sub_size
@@ -866,7 +866,7 @@ class Mask2D(AbstractMask2D):
         shape_native: Tuple[int, int],
         inner_radius: float,
         outer_radius: float,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -886,7 +886,7 @@ class Mask2D(AbstractMask2D):
             The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
         outer_radius : float
             The outer radius in scaled units of the annulus within which pixels are `False` and unmasked.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
         sub_size
@@ -927,7 +927,7 @@ class Mask2D(AbstractMask2D):
         inner_radius: float,
         outer_radius: float,
         outer_radius_2: float,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -950,7 +950,7 @@ class Mask2D(AbstractMask2D):
         outer_radius_2 : float
             The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
             outside of which all entries are `True` and masked.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
         sub_size
@@ -992,7 +992,7 @@ class Mask2D(AbstractMask2D):
         major_axis_radius: float,
         axis_ratio: float,
         angle: float,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -1014,7 +1014,7 @@ class Mask2D(AbstractMask2D):
         angle
             The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
              x-axis).
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
         sub_size
@@ -1058,7 +1058,7 @@ class Mask2D(AbstractMask2D):
         outer_major_axis_radius: float,
         outer_axis_ratio: float,
         outer_phi: float,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -1130,7 +1130,7 @@ class Mask2D(AbstractMask2D):
         cls,
         shape_native: Tuple[int, int],
         pixel_coordinates: [[int, int]],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         buffer: int = 0,
@@ -1181,7 +1181,7 @@ class Mask2D(AbstractMask2D):
     def from_fits(
         cls,
         file_path: str,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
         hdu: int = 0,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),

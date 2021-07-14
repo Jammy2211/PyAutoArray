@@ -77,12 +77,6 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         return self.__class__(array=array, mask=mask, header=self.header)
 
     @property
-    def readout_offsets(self):
-        if self.header is not None:
-            return self.header.readout_offsets
-        return (0, 0)
-
-    @property
     def slim(self):
         """
         Return an `Array2D` where the data is stored its `slim` representation, which is an ndarray of shape
@@ -160,6 +154,13 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         return layout_util.rotate_array_from_roe_corner(
             array=self, roe_corner=self.header.original_roe_corner
         )
+
+    @property
+    def readout_offsets(self):
+        if self.header is not None:
+            if self.header.readout_offsets is not None:
+                return self.header.readout_offsets
+        return (0,0)
 
     @property
     def binned_across_rows(self):

@@ -312,7 +312,7 @@ class MatPlot1D(AbstractMatPlot):
         bypass: bool = False,
     ):
 
-        if y is None:
+        if (y is None) or np.count_nonzero(y) == 0:
             return
 
         if (not self.is_for_subplot) and (not self.is_for_multi_plot):
@@ -346,6 +346,9 @@ class MatPlot1D(AbstractMatPlot):
             y_errors=y_errors,
             x_errors=x_errors,
         )
+
+        if "extent" in self.axis.config_dict:
+            self.axis.set()
 
         self.ylabel.set(units=self.units, include_brackets=False)
         self.xlabel.set(units=self.units, include_brackets=False)
@@ -570,12 +573,12 @@ class MatPlot2D(AbstractMatPlot):
 
         if array.zoom_for_plot:
 
-            extent_imshow = array.extent_of_zoomed_array(buffer=buffer)
+            extent = array.extent_of_zoomed_array(buffer=buffer)
             array = array.zoomed_around_mask(buffer=buffer)
 
         else:
 
-            extent_imshow = array.extent
+            extent = array.extent
 
         if not self.is_for_subplot:
             self.figure.open()
@@ -591,7 +594,7 @@ class MatPlot2D(AbstractMatPlot):
             aspect=aspect,
             cmap=self.cmap.config_dict["cmap"],
             norm=norm_scale,
-            extent=extent_imshow,
+            extent=extent,
         )
 
         if visuals_2d.array_overlay is not None:
@@ -600,7 +603,7 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         extent_axis = self.axis.config_dict.get("extent")
-        extent_axis = extent_axis if extent_axis is not None else extent_imshow
+        extent_axis = extent_axis if extent_axis is not None else extent
 
         self.axis.set(extent=extent_axis)
 
@@ -697,27 +700,27 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        extent_axis = self.axis.config_dict.get("extent")
+        extent = self.axis.config_dict.get("extent")
 
-        if extent_axis is None:
+        if extent is None:
 
-            extent_axis = grid.extent + (buffer * grid.extent)
+            extent = grid.extent + (buffer * grid.extent)
 
-        self.axis.set(extent=extent_axis, grid=grid)
+        self.axis.set(extent=extent, grid=grid)
 
         self.tickparams.set()
 
         if not self.axis.symmetric_around_centre:
             self.yticks.set(
                 array=None,
-                min_value=extent_axis[2],
-                max_value=extent_axis[3],
+                min_value=extent[2],
+                max_value=extent[3],
                 units=self.units,
             )
             self.xticks.set(
                 array=None,
-                min_value=extent_axis[0],
-                max_value=extent_axis[1],
+                min_value=extent[0],
+                max_value=extent[1],
                 units=self.units,
             )
 
@@ -761,14 +764,20 @@ class MatPlot2D(AbstractMatPlot):
         source_pixelilzation_values=None,
     ):
 
+        extent = self.axis.config_dict.get("extent")
+        extent = (
+            extent
+            if extent is not None
+            else mapper.source_pixelization_grid.extent
+        )
+
+        aspect_inv = self.figure.aspect_for_subplot_from_grid(
+            extent=extent
+        )
+
         if not self.is_for_subplot:
             self.figure.open()
         else:
-
-            aspect_inv = self.figure.aspect_for_subplot_from_grid(
-                grid=mapper.source_grid_slim
-            )
-
             self.setup_subplot(aspect=aspect_inv)
 
         if source_pixelilzation_values is not None:
@@ -779,25 +788,18 @@ class MatPlot2D(AbstractMatPlot):
                 bypass=True,
             )
 
-        extent_axis = self.axis.config_dict.get("extent")
-        extent_axis = (
-            extent_axis
-            if extent_axis is not None
-            else mapper.source_pixelization_grid.extent
-        )
-
-        self.axis.set(extent=extent_axis, grid=mapper.source_pixelization_grid)
+        self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
 
         self.yticks.set(
             array=None,
-            min_value=extent_axis[2],
-            max_value=extent_axis[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=self.units,
         )
         self.xticks.set(
             array=None,
-            min_value=extent_axis[0],
-            max_value=extent_axis[1],
+            min_value=extent[0],
+            max_value=extent[1],
             units=self.units,
         )
 
@@ -827,36 +829,37 @@ class MatPlot2D(AbstractMatPlot):
         source_pixelilzation_values=None,
     ):
 
-        if not self.is_for_subplot:
-            self.figure.open()
-        else:
-
-            aspect_inv = self.figure.aspect_for_subplot_from_grid(
-                grid=mapper.source_grid_slim
-            )
-
-            self.setup_subplot(aspect=aspect_inv)
-
-        extent_axis = self.axis.config_dict.get("extent")
-        extent_axis = (
-            extent_axis
-            if extent_axis is not None
+        extent = self.axis.config_dict.get("extent")
+        extent = (
+            extent
+            if extent is not None
             else mapper.source_pixelization_grid.extent
         )
 
-        self.axis.set(extent=extent_axis, grid=mapper.source_pixelization_grid)
+        aspect_inv = self.figure.aspect_for_subplot_from_grid(
+            extent=extent
+        )
+
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+            self.setup_subplot(aspect=aspect_inv)
+
+        self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
+
+        plt.gca().set_aspect(aspect_inv)
 
         self.tickparams.set()
         self.yticks.set(
             array=None,
-            min_value=extent_axis[2],
-            max_value=extent_axis[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=self.units,
         )
         self.xticks.set(
             array=None,
-            min_value=extent_axis[0],
-            max_value=extent_axis[1],
+            min_value=extent[0],
+            max_value=extent[1],
             units=self.units,
         )
 

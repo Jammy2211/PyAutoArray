@@ -137,7 +137,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             or a list of lists.
         shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         pixel_scales_interp or float
@@ -180,7 +180,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         ----------
         shape_native
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         pixel_scales_interp : float

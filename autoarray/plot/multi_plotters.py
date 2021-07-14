@@ -29,7 +29,7 @@ class MultiFigurePlotter:
 
 
 class MultiYX1DPlotter:
-    def __init__(self, plotter_list, color_list=None):
+    def __init__(self, plotter_list, color_list=None, legend_labels=None):
 
         self.plotter_list = plotter_list
 
@@ -37,6 +37,7 @@ class MultiYX1DPlotter:
             color_list = ["k", "r", "b", "g", "c", "m", "y"]
 
         self.color_list = color_list
+        self.legend_labels = legend_labels
 
     def figure_1d(self, func_name, figure_name, **kwargs):
 
@@ -47,6 +48,9 @@ class MultiYX1DPlotter:
             plotter.set_mat_plot_1d_for_multi_plot(
                 is_for_multi_plot=True, color=self.color_list[i]
             )
+
+            if self.legend_labels is not None:
+                plotter.mat_plot_1d.yx_plot.label = self.legend_labels[i]
 
             func = getattr(plotter, func_name)
             func(**{**{figure_name: True}, **kwargs})

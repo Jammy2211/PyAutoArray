@@ -883,6 +883,16 @@ class TestGridRadialProjected:
 
         grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 1.0, -1.0, 1.0]),
+            centre=(0.0, 0.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+            shape_slim=3
+        )
+
+        assert (grid_radii == np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])).all()
+
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
+            extent=np.array([-1.0, 1.0, -1.0, 1.0]),
             centre=(0.0, 1.0),
             pixel_scales=(0.1, 1.0),
             sub_size=2,

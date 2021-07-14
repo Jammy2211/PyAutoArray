@@ -619,7 +619,7 @@ class InversionInterferometerMatrix(
         settings=SettingsInversion(),
     ):
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix = transformer.transform_mapping_matrix(
             mapping_matrix=mapper.mapping_matrix
         )
 

@@ -22,7 +22,7 @@ class SettingsInterferometer(abstract_dataset.AbstractSettingsDataset):
         grid_class=grid_2d.Grid2D,
         grid_inversion_class=grid_2d.Grid2D,
         sub_size=1,
-        sub_size_inversion=4,
+        sub_size_inversion=1,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,

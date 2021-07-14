@@ -216,7 +216,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size

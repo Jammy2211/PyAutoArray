@@ -84,7 +84,7 @@ class TransformerDFT(pylops.LinearOperator):
             array=image_native, pixel_scales=self.real_space_mask.pixel_scales
         )
 
-    def transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
+    def transform_mapping_matrix(self, mapping_matrix):
 
         if self.preload_transform:
 
@@ -200,7 +200,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
             array=image, pixel_scales=self.real_space_mask.pixel_scales
         )
 
-    def transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
+    def transform_mapping_matrix(self, mapping_matrix):
 
         transformed_mapping_matrix = 0 + 0j * np.zeros(
             (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])

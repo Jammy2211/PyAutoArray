@@ -41,3 +41,10 @@ class AbstractArray1D(abstract_structure.AbstractStructure1D):
         )
 
         return array_1d.Array1D(array=array, mask=self.mask)
+
+    @property
+    def readout_offsets(self):
+        if self.header is not None:
+            if self.header.readout_offsets is not None:
+                return self.header.readout_offsets
+        return (0,)

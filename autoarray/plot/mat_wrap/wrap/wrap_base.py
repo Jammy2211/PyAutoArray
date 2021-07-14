@@ -189,11 +189,11 @@ class Figure(AbstractMatWrap):
 
         return config_dict
 
-    def aspect_for_subplot_from_grid(self, grid):
+    def aspect_for_subplot_from_grid(self, extent):
 
         ratio = float(
-            (grid.scaled_maxima[1] - grid.scaled_minima[1])
-            / (grid.scaled_maxima[0] - grid.scaled_minima[0])
+            (extent[1] - extent[0])
+            / (extent[3] - extent[2])
         )
 
         if self.config_dict["aspect"] in "square":
@@ -254,7 +254,7 @@ class Axis(AbstractMatWrap):
 
         self.symmetric_around_centre = symmetric_source_centre
 
-    def set(self, extent, grid=None):
+    def set(self, extent=None, grid=None):
         """
         Set the axis limits of the figure the grid is plotted on.
 
@@ -868,11 +868,11 @@ class Output:
                     plt.show()
                 elif format == "png":
                     plt.savefig(
-                        path.join(self.path, f"{filename}.png"), bbox_inches="tight"
+                        path.join(self.path, f"{filename}.png"),
                     )
                 elif format == "pdf":
                     plt.savefig(
-                        path.join(self.path, f"{filename}.pdf"), bbox_inches="tight"
+                        path.join(self.path, f"{filename}.pdf"),
                     )
                 elif format == "fits":
                     if structure is not None:
@@ -882,7 +882,9 @@ class Output:
                         )
 
     def subplot_to_figure(self, auto_filename=None):
-        """Output a subhplot figure, either as an image on the screen or to the hard-disk as a .png or .fits file."""
+        """
+        Output a subhplot figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
+        """
 
         filename = auto_filename if self.filename is None else self.filename
 
@@ -892,11 +894,11 @@ class Output:
                 plt.show()
             elif format == "png":
                 plt.savefig(
-                    path.join(self.path, f"{filename}.png"), bbox_inches="tight"
+                    path.join(self.path, f"{filename}.png"),
                 )
             elif format == "pdf":
                 plt.savefig(
-                    path.join(self.path, f"{filename}.pdf"), bbox_inches="tight"
+                    path.join(self.path, f"{filename}.pdf"),
                 )
 
 

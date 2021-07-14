@@ -184,7 +184,7 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(1, 1))
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix = transformer.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
@@ -207,7 +207,7 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(2, 1))
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix = transformer.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
@@ -224,7 +224,7 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(2, 2))
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix = transformer.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
@@ -256,7 +256,7 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[1.0], [0.0], [0.0]])
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix = transformer.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
@@ -266,7 +266,7 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[0.0], [1.0], [0.0]])
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix = transformer.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
@@ -276,7 +276,7 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[0.0, 0.5], [0.0, 0.2], [1.0, 0.0]])
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix = transformer.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
@@ -314,11 +314,11 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[3.0, 5.0], [1.0, 2.0]])
 
-        transformed_mapping_matrix_preload = transformer_preload.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix_preload = transformer_preload.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix = transformer.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
@@ -376,7 +376,7 @@ class TestTransformerNUFFT:
             preload_transform=False,
         )
 
-        transformed_mapping_matrix_dft = transformer_dft.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix_dft = transformer_dft.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 
@@ -386,7 +386,7 @@ class TestTransformerNUFFT:
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
-        transformed_mapping_matrix_nufft = transformer_nufft.transformed_mapping_matrix_from_mapping_matrix(
+        transformed_mapping_matrix_nufft = transformer_nufft.transform_mapping_matrix(
             mapping_matrix=mapping_matrix
         )
 

@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from autoconf import conf
 import autoarray as aa
 
 from autoarray.mock.mock import MockGridRadialMinimum
@@ -117,6 +118,19 @@ class TestGrid:
         )
 
         assert (grid_radii == grid_radii_util_angle).all()
+
+        conf.instance["general"]["grid"]["remove_projected_centre"] = True
+
+        grid_radii = grid.grid_2d_radial_projected_from(centre=(0.0, 0.0))
+
+        grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
+            extent=grid.extent,
+            centre=(0.0, 0.0),
+            pixel_scales=grid.pixel_scales,
+            sub_size=grid.sub_size,
+        )
+
+        assert (grid_radii == grid_radii_util[1:, :]).all()
 
     def test__in_radians(self):
         mask = np.array(

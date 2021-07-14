@@ -4,7 +4,7 @@ import numpy as np
 
 from autoarray.dataset import preprocess
 
-from typing import Tuple
+from typing import Tuple, Optional
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class Header:
         header_sci_obj,
         header_hdu_obj,
         original_roe_corner=None,
-        readout_offsets: Tuple[int, int] = (0, 0),
+        readout_offsets: Optional[Tuple]= None,
     ):
 
         self.header_sci_obj = header_sci_obj

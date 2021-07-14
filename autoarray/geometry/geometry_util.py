@@ -212,7 +212,7 @@ def central_pixel_coordinates_2d_from(
 @decorator_util.jit()
 def central_scaled_coordinate_2d_from(
     shape_native: Tuple[float, float],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     origin: Tuple[float, float] = (0.0, 0.0),
 ):
     """
@@ -252,7 +252,7 @@ def central_scaled_coordinate_2d_from(
 def pixel_coordinates_2d_from(
     scaled_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     origins: Tuple[float, float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float, float]]:
 
@@ -278,7 +278,7 @@ def pixel_coordinates_2d_from(
 def scaled_coordinates_2d_from(
     pixel_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     origins: Tuple[float, float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float, float]]:
 

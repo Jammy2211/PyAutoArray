@@ -1,5 +1,7 @@
 import numpy as np
 
+from autoconf import conf
+
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.geometry import geometry_util
@@ -263,6 +265,10 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         grid_radial_projected_2d = geometry_util.transform_grid_2d_from_reference_frame(
             grid_2d=grid_radial_projected_2d, centre=centre, angle=0.0
         )
+
+        if conf.instance["general"]["grid"]["remove_projected_centre"]:
+
+            grid_radial_projected_2d = grid_radial_projected_2d[1:,:]
 
         return grid_2d_irregular.Grid2DIrregular(grid=grid_radial_projected_2d)
 

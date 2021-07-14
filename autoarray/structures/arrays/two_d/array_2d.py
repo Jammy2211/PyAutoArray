@@ -218,7 +218,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             lists.
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -263,7 +263,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         array or list
             The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
              list of lists.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -311,7 +311,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             lists.
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -379,7 +379,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The value all array elements are filled with.
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -412,7 +412,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         ----------
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -443,7 +443,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         ----------
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -472,7 +472,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             e.g. '/path/to/filename.fits'
         hdu
             The Header-Data Unit of the .fits file the array data is loaded from.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -521,7 +521,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The values which are used too fill in the array.
         shape_native
             The 2D shape of the mask the grid is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size

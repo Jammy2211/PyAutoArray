@@ -1,6 +1,6 @@
 import numpy as np
 from skimage.transform import rescale
-from typing import Tuple
+from typing import Tuple, Union
 import warnings
 
 from autoarray import decorator_util
@@ -11,7 +11,7 @@ from autoarray.structures.grids.two_d import grid_2d_util
 @decorator_util.jit()
 def mask_2d_centres_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     centre: Tuple[float, float],
 ) -> Tuple[float, float]:
     """
@@ -141,7 +141,7 @@ def total_sparse_pixels_2d_from(
 @decorator_util.jit()
 def mask_2d_circular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     radius: float,
     centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
@@ -195,7 +195,7 @@ def mask_2d_circular_from(
 @decorator_util.jit()
 def mask_2d_circular_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     inner_radius: float,
     outer_radius: float,
     centre: Tuple[float, float] = (0.0, 0.0),
@@ -252,7 +252,7 @@ def mask_2d_circular_annular_from(
 @decorator_util.jit()
 def mask_2d_circular_anti_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     inner_radius: float,
     outer_radius: float,
     outer_radius_2_scaled: float,
@@ -389,7 +389,7 @@ def elliptical_radius_from(
 @decorator_util.jit()
 def mask_2d_elliptical_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     major_axis_radius: float,
     axis_ratio: float,
     angle: float,
@@ -453,7 +453,7 @@ def mask_2d_elliptical_from(
 @decorator_util.jit()
 def mask_2d_elliptical_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Tuple[float, float],
+    pixel_scales: Union[float, Tuple[float, float]],
     inner_major_axis_radius: float,
     inner_axis_ratio: float,
     inner_phi: float,

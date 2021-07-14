@@ -60,7 +60,7 @@ class Kernel2D(array_2d.Array2D):
             lists.
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -97,7 +97,7 @@ class Kernel2D(array_2d.Array2D):
         array or list
             The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
              list of lists.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -128,7 +128,7 @@ class Kernel2D(array_2d.Array2D):
             lists.
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -173,7 +173,7 @@ class Kernel2D(array_2d.Array2D):
             The value all array elements are filled with.
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -206,7 +206,7 @@ class Kernel2D(array_2d.Array2D):
         ----------
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -237,7 +237,7 @@ class Kernel2D(array_2d.Array2D):
         ----------
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sub_size
@@ -263,7 +263,7 @@ class Kernel2D(array_2d.Array2D):
 
         Parameters
         ----------
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         """
@@ -293,7 +293,7 @@ class Kernel2D(array_2d.Array2D):
         ----------
         shape_native
             The 2D shape of the mask the array is paired with.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         sigma : float
@@ -387,7 +387,7 @@ class Kernel2D(array_2d.Array2D):
             e.g. '/path/to/filename.fits'
         hdu
             The Header-Data Unit of the .fits file the array data is loaded from.
-        pixel_scales: Tuple[float, float] or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
         origin
