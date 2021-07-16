@@ -884,6 +884,59 @@ class TestRegions:
             sub_mask_index_for_sub_mask_1d_index, 1e-4
         )
 
+    def test__shape_masked_pixels(self):
+
+        mask = aa.Mask2D.manual(
+            mask=[
+                [True, True, True, True, True, True, True, True, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, False, True, False, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ],
+            pixel_scales=1.0,
+        )
+
+        assert mask.shape_masked_pixels == (7, 7)
+
+        mask = aa.Mask2D.manual(
+            mask=[
+                [True, True, True, True, True, True, True, True, False],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, False, True, False, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ],
+            pixel_scales=1.0,
+        )
+
+        assert mask.shape_masked_pixels == (8, 8)
+
+        mask = aa.Mask2D.manual(
+            mask=[
+                [True, True, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, False, True, False, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ],
+            pixel_scales=1.0,
+        )
+
+        assert mask.shape_masked_pixels == (8, 7)
+
 
 class TestZoom:
     def test__odd_sized_false_mask__centre_is_0_0__pixels_from_centre_are_0_0(self):

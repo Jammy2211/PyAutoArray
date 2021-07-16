@@ -269,7 +269,7 @@ def grid_scaled_2d_slim_radial_projected_from(
     centre: Tuple[float, float],
     pixel_scales: Union[float, Tuple[float, float]],
     sub_size: int,
-    shape_slim : Optional[int] = 0
+    shape_slim: Optional[int] = 0,
 ) -> np.ndarray:
     """
     Determine a projected radial grid of points from a 2D region of coordinates defined by an
@@ -315,8 +315,8 @@ def grid_scaled_2d_slim_radial_projected_from(
     sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     shape_slim
-        Manually choose the shape of the 1D projected grid that is returned. If None the border based on the 2D grid is
-        used.
+        Manually choose the shape of the 1D projected grid that is returned. If 0, the border based on the 2D grid is
+        used (due to numba None cannot be used as a default value).
 
     Returns
     -------
@@ -782,7 +782,9 @@ def grid_2d_native_from(
 
 @decorator_util.jit()
 def grid_2d_slim_upscaled_from(
-    grid_slim: np.ndarray, upscale_factor: int, pixel_scales: Union[float, Tuple[float, float]]
+    grid_slim: np.ndarray,
+    upscale_factor: int,
+    pixel_scales: Union[float, Tuple[float, float]],
 ) -> np.ndarray:
     """
     From an input slimmed 2D grid, return an upscaled slimmed 2D grid where (y,x) coordinates are added at an

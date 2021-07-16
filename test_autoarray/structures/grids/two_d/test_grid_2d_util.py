@@ -886,7 +886,7 @@ class TestGridRadialProjected:
             centre=(0.0, 0.0),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
-            shape_slim=3
+            shape_slim=3,
         )
 
         assert (grid_radii == np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])).all()

@@ -251,11 +251,18 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             A radial set of points sampling the longest distance from the centre to the edge of the extent in along the
             positive x-axis.
         """
+
+        if hasattr(self, "radial_projected_shape_slim"):
+            shape_slim = self.radial_projected_shape_slim
+        else:
+            shape_slim = 0
+
         grid_radial_projected_2d = grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
             extent=self.extent,
             centre=centre,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
+            shape_slim=shape_slim,
         )
 
         grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(
@@ -268,7 +275,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
         if conf.instance["general"]["grid"]["remove_projected_centre"]:
 
-            grid_radial_projected_2d = grid_radial_projected_2d[1:,:]
+            grid_radial_projected_2d = grid_radial_projected_2d[1:, :]
 
         return grid_2d_irregular.Grid2DIrregular(grid=grid_radial_projected_2d)
 

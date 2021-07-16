@@ -160,7 +160,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         if self.header is not None:
             if self.header.readout_offsets is not None:
                 return self.header.readout_offsets
-        return (0,0)
+        return (0, 0)
 
     @property
     def binned_across_rows(self):

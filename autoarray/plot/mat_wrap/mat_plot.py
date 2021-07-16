@@ -712,16 +712,10 @@ class MatPlot2D(AbstractMatPlot):
 
         if not self.axis.symmetric_around_centre:
             self.yticks.set(
-                array=None,
-                min_value=extent[2],
-                max_value=extent[3],
-                units=self.units,
+                array=None, min_value=extent[2], max_value=extent[3], units=self.units
             )
             self.xticks.set(
-                array=None,
-                min_value=extent[0],
-                max_value=extent[1],
-                units=self.units,
+                array=None, min_value=extent[0], max_value=extent[1], units=self.units
             )
 
         visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid)
@@ -766,14 +760,10 @@ class MatPlot2D(AbstractMatPlot):
 
         extent = self.axis.config_dict.get("extent")
         extent = (
-            extent
-            if extent is not None
-            else mapper.source_pixelization_grid.extent
+            extent if extent is not None else mapper.source_pixelization_grid.extent
         )
 
-        aspect_inv = self.figure.aspect_for_subplot_from_grid(
-            extent=extent
-        )
+        aspect_inv = self.figure.aspect_for_subplot_from_grid(extent=extent)
 
         if not self.is_for_subplot:
             self.figure.open()
@@ -791,16 +781,10 @@ class MatPlot2D(AbstractMatPlot):
         self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
 
         self.yticks.set(
-            array=None,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=self.units,
+            array=None, min_value=extent[2], max_value=extent[3], units=self.units
         )
         self.xticks.set(
-            array=None,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=self.units,
+            array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
         self.grid_plot.plot_rectangular_grid_lines(
@@ -831,14 +815,10 @@ class MatPlot2D(AbstractMatPlot):
 
         extent = self.axis.config_dict.get("extent")
         extent = (
-            extent
-            if extent is not None
-            else mapper.source_pixelization_grid.extent
+            extent if extent is not None else mapper.source_pixelization_grid.extent
         )
 
-        aspect_inv = self.figure.aspect_for_subplot_from_grid(
-            extent=extent
-        )
+        aspect_inv = self.figure.aspect_for_subplot_from_grid(extent=extent)
 
         if not self.is_for_subplot:
             self.figure.open()
@@ -851,16 +831,10 @@ class MatPlot2D(AbstractMatPlot):
 
         self.tickparams.set()
         self.yticks.set(
-            array=None,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=self.units,
+            array=None, min_value=extent[2], max_value=extent[3], units=self.units
         )
         self.xticks.set(
-            array=None,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=self.units,
+            array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
         self.voronoi_drawer.draw_voronoi_pixels(

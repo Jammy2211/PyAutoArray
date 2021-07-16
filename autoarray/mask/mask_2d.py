@@ -636,6 +636,22 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("int")
 
     @property
+    def shape_masked_pixels(self):
+        """
+        The (y,x) shape corresponding to the extent of unmasked pixels that go vertically and horizontally across the
+        mask.
+
+        For example, if a mask is primarily surrounded by True entries, and there are 15 False entries going vertically
+        and 12 False entries going horizontally in the central regions of the mask, then shape_masked_pixels=(15,12).
+        """
+
+        where = np.array(np.where(np.invert(self.astype("bool"))))
+        y0, x0 = np.amin(where, axis=1)
+        y1, x1 = np.amax(where, axis=1)
+
+        return (y1 - y0 + 1, x1 - x0 + 1)
+
+    @property
     def zoom_centre(self):
 
         extraction_grid_1d = self.grid_pixels_from_grid_scaled_1d(
@@ -680,12 +696,9 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
 
         # Have to convert mask to bool for invert function to work.
-        where = np.array(np.where(np.invert(self.astype("bool"))))
-        y0, x0 = np.amin(where, axis=1)
-        y1, x1 = np.amax(where, axis=1)
 
-        ylength = y1 - y0
-        xlength = x1 - x0
+        ylength = self.shape_masked_pixels[0] - 1
+        xlength = self.shape_masked_pixels[1] - 1
 
         if ylength > xlength:
             length_difference = ylength - xlength

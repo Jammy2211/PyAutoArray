@@ -32,7 +32,7 @@ class Header:
         header_sci_obj,
         header_hdu_obj,
         original_roe_corner=None,
-        readout_offsets: Optional[Tuple]= None,
+        readout_offsets: Optional[Tuple] = None,
     ):
 
         self.header_sci_obj = header_sci_obj

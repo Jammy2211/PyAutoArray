@@ -191,10 +191,7 @@ class Figure(AbstractMatWrap):
 
     def aspect_for_subplot_from_grid(self, extent):
 
-        ratio = float(
-            (extent[1] - extent[0])
-            / (extent[3] - extent[2])
-        )
+        ratio = float((extent[1] - extent[0]) / (extent[3] - extent[2]))
 
         if self.config_dict["aspect"] in "square":
             return ratio
@@ -867,13 +864,9 @@ class Output:
                 if format == "show":
                     plt.show()
                 elif format == "png":
-                    plt.savefig(
-                        path.join(self.path, f"{filename}.png"),
-                    )
+                    plt.savefig(path.join(self.path, f"{filename}.png"))
                 elif format == "pdf":
-                    plt.savefig(
-                        path.join(self.path, f"{filename}.pdf"),
-                    )
+                    plt.savefig(path.join(self.path, f"{filename}.pdf"))
                 elif format == "fits":
                     if structure is not None:
                         structure.output_to_fits(
@@ -893,13 +886,9 @@ class Output:
             if format == "show":
                 plt.show()
             elif format == "png":
-                plt.savefig(
-                    path.join(self.path, f"{filename}.png"),
-                )
+                plt.savefig(path.join(self.path, f"{filename}.png"))
             elif format == "pdf":
-                plt.savefig(
-                    path.join(self.path, f"{filename}.pdf"),
-                )
+                plt.savefig(path.join(self.path, f"{filename}.pdf"))
 
 
 def remove_spaces_and_commas_from_colors(colors):
