@@ -901,7 +901,7 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        assert mask.shape_masked_pixels == (7, 7)
+        assert mask.shape_native_masked_pixels == (7, 7)
 
         mask = aa.Mask2D.manual(
             mask=[
@@ -918,7 +918,7 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        assert mask.shape_masked_pixels == (8, 8)
+        assert mask.shape_native_masked_pixels == (8, 8)
 
         mask = aa.Mask2D.manual(
             mask=[
@@ -935,7 +935,7 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        assert mask.shape_masked_pixels == (8, 7)
+        assert mask.shape_native_masked_pixels == (8, 7)
 
 
 class TestZoom:

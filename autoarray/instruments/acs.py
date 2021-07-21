@@ -372,8 +372,9 @@ class ImageACS(Array2DACS):
         cls,
         file_path,
         quadrant_letter,
+        bias_subtract_via_bias_file=False,
         bias_subtract_via_prescan=False,
-        bias_path=None,
+        bias_file_path=None,
         use_calibrated_gain=True,
     ):
         """
@@ -385,6 +386,22 @@ class ImageACS(Array2DACS):
         rotations.
 
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
+
+        Parameters
+        ----------
+        file_path
+            The full path of the file that the image is loaded from, including the file name and ``.fits`` extension.
+        quadrant_letter
+            The letter of the ACS quadrant the image is extracted from and loaded.
+        bias_subtract_via_bias_file
+            If True, the corresponding bias file of the image is loaded (via the name of the file in the fits header).
+        bias_subtract_via_prescan
+            If True, the prescan on the image is used to estimate a component of bias that is subtracted from the image.
+        bias_file_path
+            If `bias_subtract_via_bias_file=True`, this overwrites the path to the bias file instead of the default
+            behaviour of using the .fits header.
+        use_calibrated_gain
+            If True, the calibrated gain values are used to convert from COUNTS to ELECTRONS.
         """
 
         hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
@@ -415,24 +432,27 @@ class ImageACS(Array2DACS):
             file_path=file_path, hdu=hdu, do_not_scale_image_data=True
         )
 
-        array = header.array_from_original_to_electrons(array=array)
+        array = header.array_from_original_to_electrons(
+            array=array,
+            use_calibrated_gain=use_calibrated_gain
+        )
 
-        if use_calibrated_gain:
-            array = array * header.calibrated_gain
-        else:
-            array = array * header.gain
+        if bias_subtract_via_bias_file:
 
-        if bias_path is not None:
+            if bias_file_path is None:
+
+                file_dir = os.path.split(file_path)[0]
+                bias_file_path = path.join(file_dir, header.bias_file)
 
             bias = array_2d_util.numpy_array_2d_from_fits(
-                file_path=bias_path, hdu=hdu, do_not_scale_image_data=True
+                file_path=bias_file_path, hdu=hdu, do_not_scale_image_data=True
             )
 
             header_sci_obj = array_2d_util.header_obj_from_fits(
-                file_path=bias_path, hdu=0
+                file_path=bias_file_path, hdu=0
             )
             header_hdu_obj = array_2d_util.header_obj_from_fits(
-                file_path=bias_path, hdu=hdu
+                file_path=bias_file_path, hdu=hdu
             )
 
             bias_header = HeaderACS(
@@ -522,7 +542,7 @@ class HeaderACS(abstract_array.Header):
         if round(self.gain) == 1:
             calibrated_gain = [0.99989998, 0.97210002, 1.01070000, 1.01800000]
         elif round(self.gain) == 2:
-            calibrated_gain = [0.99989998, 0.97210002, 1.01070000, 1.01800000]
+            calibrated_gain = [2.002,1.945,2.028,1.994]
         elif round(self.gain) == 4:
             calibrated_gain = [4.011, 3.902, 4.074, 3.996]
         else:
@@ -543,19 +563,33 @@ class HeaderACS(abstract_array.Header):
     def original_units(self):
         return self.header_hdu_obj["BUNIT"]
 
+    @property
+    def bias_file(self):
+        return self.header_sci_obj["BIASFILE"]
+
     def array_eps_to_counts(self, array_eps):
         return array_eps_to_counts(
             array_eps=array_eps, bscale=self.bscale, bzero=self.bzero
         )
 
-    def array_from_original_to_electrons(self, array):
+    def array_from_original_to_electrons(self, array, use_calibrated_gain):
 
         if self.original_units in "COUNTS":
-            return (array * self.bscale) + self.bzero
+            array = (array * self.bscale) + self.bzero
         elif self.original_units in "CPS":
-            return (array * self.exposure_time * self.bscale) + self.bzero
+            array = (array * self.exposure_time * self.bscale) + self.bzero
 
-    def array_from_electrons_to_original(self, array):
+        if use_calibrated_gain:
+            return array * self.calibrated_gain
+        else:
+            return array * self.gain
+
+    def array_from_electrons_to_original(self, array, use_calibrated_gain):
+
+        if use_calibrated_gain:
+            array /= self.calibrated_gain
+        else:
+            array /= self.gain
 
         if self.original_units in "COUNTS":
             return (array - self.bzero) / self.bscale
@@ -681,12 +715,10 @@ def quadrant_convert_to_original(
     if quadrant.header.bias_serial_prescan_column is not None:
         quadrant += quadrant.header.bias_serial_prescan_column
 
-    if use_calibrated_gain:
-        quadrant /= quadrant.header.calibrated_gain
-    else:
-        quadrant /= quadrant.header.gain
-
-    quadrant = quadrant.header.array_from_electrons_to_original(array=quadrant)
+    quadrant = quadrant.header.array_from_electrons_to_original(
+        array=quadrant,
+        use_calibrated_gain=use_calibrated_gain
+    )
 
     if use_flipud:
         quadrant = np.flipud(quadrant.native)

@@ -636,7 +636,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("int")
 
     @property
-    def shape_masked_pixels(self):
+    def shape_native_masked_pixels(self):
         """
         The (y,x) shape corresponding to the extent of unmasked pixels that go vertically and horizontally across the
         mask.
@@ -695,10 +695,14 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         This is used to zoom in on the region of an image that is used in an analysis for visualization.
         """
 
+        where = np.array(np.where(np.invert(self.astype("bool"))))
+        y0, x0 = np.amin(where, axis=1)
+        y1, x1 = np.amax(where, axis=1)
+
         # Have to convert mask to bool for invert function to work.
 
-        ylength = self.shape_masked_pixels[0] - 1
-        xlength = self.shape_masked_pixels[1] - 1
+        ylength = y1 - y0
+        xlength = x1 - x0
 
         if ylength > xlength:
             length_difference = ylength - xlength

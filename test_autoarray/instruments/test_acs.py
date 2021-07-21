@@ -11,7 +11,7 @@ import pytest
 acs_path = "{}".format(path.dirname(path.realpath(__file__)))
 
 
-def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
+def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units, bias_file_path=None):
 
     if path.exists(fits_path):
         shutil.rmtree(fits_path)
@@ -37,6 +37,7 @@ def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
     new_hdul[0].header.set(
         "TIME-OBS", "00:00:00", "UT time of start of observation (hh:mm:ss)"
     )
+    new_hdul[0].header.set("BIASFILE", bias_file_path, "Bias file name")
 
     if units in "COUNTS":
         new_hdul[1].header.set("BUNIT", "COUNTS", "brightness units")
@@ -221,7 +222,7 @@ class TestImageACS:
         assert array.in_counts.native[0, 0] == 30.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array)
+        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
 
         assert array_original.native[0, 0] == 30.0
 
@@ -232,7 +233,7 @@ class TestImageACS:
         assert array.native[0, 0] == (40.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array)
+        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
 
         assert array_original.native[0, 0] == 40.0
 
@@ -243,7 +244,7 @@ class TestImageACS:
         assert array.native[0, 0] == (10.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array)
+        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
 
         assert array_original.native[0, 0] == 10.0
 
@@ -254,7 +255,7 @@ class TestImageACS:
         assert array.native[0, 0] == (20.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array)
+        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
 
         assert array_original.native[0, 0] == 20.0
 
@@ -291,7 +292,7 @@ class TestImageACS:
         assert array.native[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array)
+        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
 
         assert array_original.native[0, 0] == 30.0
 
@@ -302,7 +303,7 @@ class TestImageACS:
         assert array.native[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array)
+        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
 
         assert array_original.native[0, 0] == 40.0
 
@@ -313,7 +314,7 @@ class TestImageACS:
         assert array.native[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array)
+        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
 
         assert array_original.native[0, 0] == 10.0
 
@@ -324,7 +325,7 @@ class TestImageACS:
         assert array.native[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array)
+        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
 
         assert array_original.native[0, 0] == 20.0
 
@@ -428,6 +429,7 @@ class TestImageACS:
             acs_ccd_0=acs_ccd_0,
             acs_ccd_1=acs_ccd_1,
             units="COUNTS",
+            bias_file_path=path.join(fits_path, "acs_bias_ccd.fits"),
         )
 
         create_acs_bias_fits(
@@ -438,12 +440,11 @@ class TestImageACS:
         )
 
         file_path = path.join(fits_path, "acs_ccd.fits")
-        bias_path = path.join(fits_path, "acs_bias_ccd.fits")
 
         array = aa.acs.ImageACS.from_fits(
             file_path=file_path,
             quadrant_letter="A",
-            bias_path=bias_path,
+            bias_subtract_via_bias_file=True,
             use_calibrated_gain=False,
         )
 
@@ -455,7 +456,7 @@ class TestImageACS:
         array = aa.acs.ImageACS.from_fits(
             file_path=file_path,
             quadrant_letter="B",
-            bias_path=bias_path,
+            bias_subtract_via_bias_file=True,
             use_calibrated_gain=False,
         )
 
@@ -467,7 +468,7 @@ class TestImageACS:
         array = aa.acs.ImageACS.from_fits(
             file_path=file_path,
             quadrant_letter="C",
-            bias_path=bias_path,
+            bias_subtract_via_bias_file=True,
             use_calibrated_gain=False,
         )
 
@@ -479,8 +480,9 @@ class TestImageACS:
         array = aa.acs.ImageACS.from_fits(
             file_path=file_path,
             quadrant_letter="D",
-            bias_path=bias_path,
+            bias_subtract_via_bias_file=True,
             use_calibrated_gain=False,
+            bias_file_path=path.join(fits_path, "acs_bias_ccd.fits"),
         )
 
         assert array.native[0, 0] == pytest.approx(
