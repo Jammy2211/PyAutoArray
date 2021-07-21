@@ -565,7 +565,7 @@ class HeaderACS(abstract_array.Header):
 
     @property
     def bias_file(self):
-        return self.header_sci_obj["BIASFILE"]
+        return self.header_sci_obj["BIASFILE"].replace("jref$", "")
 
     def array_eps_to_counts(self, array_eps):
         return array_eps_to_counts(

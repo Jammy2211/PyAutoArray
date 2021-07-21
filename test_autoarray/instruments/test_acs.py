@@ -37,7 +37,7 @@ def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units, bias_file_p
     new_hdul[0].header.set(
         "TIME-OBS", "00:00:00", "UT time of start of observation (hh:mm:ss)"
     )
-    new_hdul[0].header.set("BIASFILE", bias_file_path, "Bias file name")
+    new_hdul[0].header.set("BIASFILE", f"jref${bias_file_path}", "Bias file name")
 
     if units in "COUNTS":
         new_hdul[1].header.set("BUNIT", "COUNTS", "brightness units")

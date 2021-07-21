@@ -272,7 +272,6 @@ class AbstractSimulatorInterferometer:
         self,
         uv_wavelengths,
         exposure_time: float,
-        background_sky_level: float = 0.0,
         transformer_class=trans.TransformerDFT,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
@@ -292,13 +291,10 @@ class AbstractSimulatorInterferometer:
             An arrays describing the PSF kernel of the image.
         exposure_time_map : float
             The exposure time of an observation using this data_type.
-        background_sky_map : float
-            The level of the background sky of an observationg using this data_type.
         """
 
         self.uv_wavelengths = uv_wavelengths
         self.exposure_time = exposure_time
-        self.background_sky_level = background_sky_level
         self.transformer_class = transformer_class
         self.noise_sigma = noise_sigma
         self.noise_if_add_noise_false = noise_if_add_noise_false
@@ -319,8 +315,6 @@ class AbstractSimulatorInterferometer:
             An array representing the effective exposure time of each pixel.
         psf: PSF
             An array describing the PSF the simulated image is blurred with.
-        background_sky_map
-            The value of background sky in every image pixel (electrons per second).
         add_poisson_noise: Bool
             If `True` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
@@ -331,14 +325,6 @@ class AbstractSimulatorInterferometer:
         transformer = self.transformer_class(
             uv_wavelengths=self.uv_wavelengths, real_space_mask=image.mask
         )
-
-        background_sky_map = array_2d.Array2D.full(
-            fill_value=self.background_sky_level,
-            shape_native=image.shape_native,
-            pixel_scales=image.pixel_scales,
-        )
-
-        image = image + background_sky_map
 
         visibilities = transformer.visibilities_from_image(image=image)
 

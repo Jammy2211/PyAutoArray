@@ -279,46 +279,6 @@ class TestSimulatorInterferometer:
 
         assert interferometer.visibilities == pytest.approx(visibilities, 1.0e-4)
 
-    def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(
-        self, uv_wavelengths_7x2, transformer_7x7_7
-    ):
-        image = aa.Array2D.manual_native(
-            array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
-            pixel_scales=transformer_7x7_7.grid.pixel_scales,
-        )
-
-        simulator = aa.SimulatorInterferometer(
-            exposure_time=1.0,
-            background_sky_level=2.0,
-            transformer_class=type(transformer_7x7_7),
-            uv_wavelengths=uv_wavelengths_7x2,
-            noise_sigma=None,
-            noise_if_add_noise_false=0.2,
-        )
-
-        interferometer = simulator.from_image(image=image)
-
-        transformer = simulator.transformer_class(
-            uv_wavelengths=uv_wavelengths_7x2,
-            real_space_mask=aa.Mask2D.unmasked(
-                shape_native=(3, 3), pixel_scales=image.pixel_scales
-            ),
-        )
-
-        background_sky_map = aa.Array2D.full(
-            fill_value=2.0,
-            pixel_scales=transformer_7x7_7.grid.pixel_scales,
-            shape_native=image.shape_native,
-        )
-
-        visibilities = transformer.visibilities_from_image(
-            image=image + background_sky_map
-        )
-
-        assert interferometer.visibilities == pytest.approx(visibilities, 1.0e-4)
-
-        assert (interferometer.noise_map == 0.2 + 0.2j * np.ones((7,))).all()
-
     def test__setup_with_noise(self, uv_wavelengths_7x2, transformer_7x7_7):
 
         image = aa.Array2D.manual_native(
