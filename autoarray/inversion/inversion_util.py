@@ -3,6 +3,101 @@ import numpy as np
 
 
 @decorator_util.jit()
+def curvature_matrix_via_w_tilde_from(
+    w_tilde: np.ndarray, mapping_matrix: np.ndarray
+) -> np.ndarray:
+    """
+    Returns the curvature matrix `F` (see Warren & Dye 2003) from `w_tilde`.
+
+    The dimensions of `w_tilde` are [image_pixels, image_pixels], meaning that for datasets with many image pixels
+    this matrix can take up 10's of GB of memory. The calculation of the `curvature_matrix` via this function will
+    therefore be very slow, and the method `curvature_matrix_via_w_tilde_preload_interferometer_from` should be used
+    instead.
+
+    Parameters
+    ----------
+    w_tilde
+        A matrix of dimensions [image_pixels, image_pixels] that encodes the convolution or NUFFT of every image pixel
+        pair on the noise map.
+    mapping_matrix
+        The matrix representing the mappings between sub-grid pixels and pixelization pixels.
+
+    Returns
+    -------
+    ndarray
+        The curvature matrix `F` (see Warren & Dye 2003).
+    """
+
+    return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
+
+
+@decorator_util.jit()
+def w_tilde_imaging_from(
+    noise_map_2d: np.ndarray,
+    kernel_2d: np.ndarray,
+    mask_2d: np.ndarray,
+    native_index_for_slim_index,
+) -> np.ndarray:
+
+    image_pixels = len(native_index_for_slim_index)
+
+    w_tilde = np.zeros((image_pixels, image_pixels))
+
+    kernel_shift_y = -(kernel_2d.shape[1] // 2)
+    kernel_shift_x = -(kernel_2d.shape[0] // 2)
+
+    for ip0 in range(w_tilde.shape[0]):
+
+        ip0_y, ip0_x = native_index_for_slim_index[ip0]
+
+        for ip1 in range(ip0, w_tilde.shape[1]):
+
+            ip1_y, ip1_x = native_index_for_slim_index[ip1]
+
+            ip_y_offset = ip0_y - ip1_y
+            ip_x_offset = ip0_x - ip1_x
+
+            value = 0.0
+
+            for k0_y in range(kernel_2d.shape[0]):
+                for k0_x in range(kernel_2d.shape[1]):
+
+                    noise_value = noise_map_2d[
+                        ip0_y + k0_y + kernel_shift_y, ip0_x + k0_x + kernel_shift_x
+                    ]
+
+                    k1_y = k0_y + ip_y_offset
+                    k1_x = k0_x + ip_x_offset
+
+                    if noise_value > 0.0:
+
+                        if (
+                            k1_y >= 0
+                            and k1_x >= 0
+                            and k1_y < kernel_2d.shape[0]
+                            and k1_x < kernel_2d.shape[1]
+                        ):
+
+                            kernel_value_0 = kernel_2d[k0_y, k0_x]
+                            kernel_value_1 = kernel_2d[k1_y, k1_x]
+
+                            value += (
+                                kernel_value_0
+                                * (1.0 / noise_value)
+                                * kernel_value_1
+                                * (1.0 / noise_value)
+                            )
+
+            w_tilde[ip0, ip1] += value
+
+    for ip0 in range(w_tilde.shape[0]):
+        for ip1 in range(ip0, w_tilde.shape[1]):
+            w_tilde[ip1, ip0] = w_tilde[ip0, ip1]
+
+    return w_tilde
+
+
+@decorator_util.jit()
 def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:

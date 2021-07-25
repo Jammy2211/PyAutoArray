@@ -1,5 +1,121 @@
 import autoarray as aa
 import numpy as np
+import pytest
+
+
+class TestWTilde:
+    def test__curvature_matrix_from_w_tilde(self):
+
+        w_tilde = np.array(
+            [
+                [1.0, 2.0, 3.0, 4.0],
+                [2.0, 1.0, 2.0, 3.0],
+                [3.0, 2.0, 1.0, 2.0],
+                [4.0, 3.0, 2.0, 1.0],
+            ]
+        )
+
+        mapping_matrix = np.array(
+            [[1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
+        )
+
+        curvature_matrix = aa.util.inversion.curvature_matrix_via_w_tilde_from(
+            w_tilde=w_tilde, mapping_matrix=mapping_matrix
+        )
+
+        assert (
+            curvature_matrix
+            == np.array([[6.0, 8.0, 0.0], [8.0, 8.0, 0.0], [0.0, 0.0, 0.0]])
+        ).all()
+
+    def test__w_tilde_imaging_from(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        noise_map_2d = np.array(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 2.0, 0.0],
+                [0.0, 2.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ]
+        )
+
+        kernel = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 2.0], [0.0, 1.0, 2.0]])
+
+        native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
+
+        w_tilde = aa.util.inversion.w_tilde_imaging_from(
+            noise_map_2d=noise_map_2d,
+            kernel_2d=kernel,
+            mask_2d=mask,
+            native_index_for_slim_index=native_index_for_slim_index,
+        )
+
+        assert w_tilde == pytest.approx(
+            np.array(
+                [
+                    [2.5, 1.625, 0.5, 0.375],
+                    [1.625, 1.3125, 0.125, 0.0625],
+                    [0.5, 0.125, 0.5, 0.375],
+                    [0.375, 0.0625, 0.375, 0.3125],
+                ]
+            ),
+            1.0e-4,
+        )
+
+    def test__curvature_matrix_via_two_methods_agree(self):
+
+        mask = aa.Mask2D.circular(
+            shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
+        )
+
+        noise_map = np.random.uniform(size=mask.shape_native)
+        noise_map = aa.Array2D.manual_mask(array=noise_map, mask=mask)
+
+        kernel = aa.Kernel2D.from_gaussian(
+            shape_native=(7, 7),
+            pixel_scales=mask.pixel_scales,
+            sigma=1.0,
+            normalize=True,
+        )
+
+        convolver = aa.Convolver(mask=mask, kernel=kernel)
+
+        pixelization = aa.pix.Rectangular(shape=(20, 20))
+
+        mapper = pixelization.mapper_from_grid_and_sparse_grid(
+            grid=mask.masked_grid_sub_1
+        )
+
+        mapping_matrix = mapper.mapping_matrix
+
+        w_tilde = aa.util.inversion.w_tilde_imaging_from(
+            noise_map_2d=noise_map.native,
+            kernel_2d=kernel.native,
+            mask_2d=mask,
+            native_index_for_slim_index=mask._native_index_for_slim_index,
+        )
+
+        curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_from(
+            w_tilde=w_tilde, mapping_matrix=mapping_matrix
+        )
+
+        blurred_mapping_matrix = convolver.convolve_mapping_matrix(
+            mapping_matrix=mapping_matrix
+        )
+
+        curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+        )
+        assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, 1.0e-4)
 
 
 class TestDataVectorFromData:

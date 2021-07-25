@@ -11,7 +11,9 @@ import pytest
 acs_path = "{}".format(path.dirname(path.realpath(__file__)))
 
 
-def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units, bias_file_path=None):
+def create_acs_fits(
+    fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units, bias_file_path=None
+):
 
     if path.exists(fits_path):
         shutil.rmtree(fits_path)
@@ -222,7 +224,9 @@ class TestImageACS:
         assert array.in_counts.native[0, 0] == 30.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
+        array_original = array.header.array_from_electrons_to_original(
+            array=array, use_calibrated_gain=False
+        )
 
         assert array_original.native[0, 0] == 30.0
 
@@ -233,7 +237,9 @@ class TestImageACS:
         assert array.native[0, 0] == (40.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
+        array_original = array.header.array_from_electrons_to_original(
+            array=array, use_calibrated_gain=False
+        )
 
         assert array_original.native[0, 0] == 40.0
 
@@ -244,7 +250,9 @@ class TestImageACS:
         assert array.native[0, 0] == (10.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
+        array_original = array.header.array_from_electrons_to_original(
+            array=array, use_calibrated_gain=False
+        )
 
         assert array_original.native[0, 0] == 10.0
 
@@ -255,7 +263,9 @@ class TestImageACS:
         assert array.native[0, 0] == (20.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
+        array_original = array.header.array_from_electrons_to_original(
+            array=array, use_calibrated_gain=False
+        )
 
         assert array_original.native[0, 0] == 20.0
 
@@ -292,7 +302,9 @@ class TestImageACS:
         assert array.native[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
+        array_original = array.header.array_from_electrons_to_original(
+            array=array, use_calibrated_gain=False
+        )
 
         assert array_original.native[0, 0] == 30.0
 
@@ -303,7 +315,9 @@ class TestImageACS:
         assert array.native[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
+        array_original = array.header.array_from_electrons_to_original(
+            array=array, use_calibrated_gain=False
+        )
 
         assert array_original.native[0, 0] == 40.0
 
@@ -314,7 +328,9 @@ class TestImageACS:
         assert array.native[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
+        array_original = array.header.array_from_electrons_to_original(
+            array=array, use_calibrated_gain=False
+        )
 
         assert array_original.native[0, 0] == 10.0
 
@@ -325,7 +341,9 @@ class TestImageACS:
         assert array.native[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(array=array, use_calibrated_gain=False)
+        array_original = array.header.array_from_electrons_to_original(
+            array=array, use_calibrated_gain=False
+        )
 
         assert array_original.native[0, 0] == 20.0
 

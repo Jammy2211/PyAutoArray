@@ -112,8 +112,8 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         self.real_space_mask = real_space_mask.mask_sub_1
         #        self.grid = self.real_space_mask.unmasked_grid.in_radians
         self.grid = grid_2d.Grid2D.from_mask(mask=self.real_space_mask).in_radians
-        self._sub_native_index_for_sub_slim_index = copy.copy(
-            real_space_mask._sub_native_index_for_sub_slim_index.astype("int")
+        self._native_index_for_slim_index = copy.copy(
+            real_space_mask._native_index_for_slim_index.astype("int")
         )
 
         # NOTE: The plan need only be initialized once
@@ -236,7 +236,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         x2d = array_2d_util.array_2d_native_complex_via_indexes_from(
             array_2d_slim=x,
             sub_shape_native=self.real_space_mask.shape_native,
-            native_index_for_slim_index_2d=self._sub_native_index_for_sub_slim_index,
+            native_index_for_slim_index_2d=self._native_index_for_slim_index,
         )[::-1, :]
 
         y = self.k2y(self.xx2k(self.x2xx(x2d)))

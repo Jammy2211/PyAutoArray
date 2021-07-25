@@ -652,7 +652,7 @@ class TestRegions:
             mask_2d=mask, sub_size=1
         )
 
-        assert mask._sub_native_index_for_sub_slim_index == pytest.approx(
+        assert mask._native_index_for_slim_index == pytest.approx(
             sub_native_index_for_sub_slim_index_2d, 1e-4
         )
 

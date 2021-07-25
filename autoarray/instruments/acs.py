@@ -433,8 +433,7 @@ class ImageACS(Array2DACS):
         )
 
         array = header.array_from_original_to_electrons(
-            array=array,
-            use_calibrated_gain=use_calibrated_gain
+            array=array, use_calibrated_gain=use_calibrated_gain
         )
 
         if bias_subtract_via_bias_file:
@@ -542,7 +541,7 @@ class HeaderACS(abstract_array.Header):
         if round(self.gain) == 1:
             calibrated_gain = [0.99989998, 0.97210002, 1.01070000, 1.01800000]
         elif round(self.gain) == 2:
-            calibrated_gain = [2.002,1.945,2.028,1.994]
+            calibrated_gain = [2.002, 1.945, 2.028, 1.994]
         elif round(self.gain) == 4:
             calibrated_gain = [4.011, 3.902, 4.074, 3.996]
         else:
@@ -716,8 +715,7 @@ def quadrant_convert_to_original(
         quadrant += quadrant.header.bias_serial_prescan_column
 
     quadrant = quadrant.header.array_from_electrons_to_original(
-        array=quadrant,
-        use_calibrated_gain=use_calibrated_gain
+        array=quadrant, use_calibrated_gain=use_calibrated_gain
     )
 
     if use_flipud:

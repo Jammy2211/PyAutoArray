@@ -484,7 +484,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         return grid_2d.Grid2D(grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1)
 
     @property
-    def _sub_native_index_for_sub_slim_index(self):
+    def _native_index_for_slim_index(self):
         """
         A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates.
         """
@@ -506,9 +506,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
         (next to at least one pixel with a `True` value).
         """
-        return self._sub_native_index_for_sub_slim_index[self._edge_1d_indexes].astype(
-            "int"
-        )
+        return self._native_index_for_slim_index[self._edge_1d_indexes].astype("int")
 
     @property
     def _border_1d_indexes(self):
@@ -525,9 +523,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
-        return self._sub_native_index_for_sub_slim_index[
-            self._border_1d_indexes
-        ].astype("int")
+        return self._native_index_for_slim_index[self._border_1d_indexes].astype("int")
 
     @property
     def _sub_border_flat_indexes(self):
