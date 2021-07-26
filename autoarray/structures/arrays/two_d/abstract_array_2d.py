@@ -17,7 +17,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-def check_array_2d(array_2d: Union[List, np.ndarray]):
+def check_array_2d(array_2d: Union[np.ndarray, List]):
     if len(array_2d.shape) != 1:
         raise exc.ArrayException(
             "An array input into the array_2d.Array2D.__new__ method is not of shape 1."
@@ -25,10 +25,10 @@ def check_array_2d(array_2d: Union[List, np.ndarray]):
 
 
 def convert_array_2d(
-    array_2d: Union[List, np.ndarray], mask_2d: msk.Mask2D
+    array_2d: Union[np.ndarray, List], mask_2d: msk.Mask2D
 ) -> np.ndarray:
     """
-    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is to be returned as an
+    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
 
     This function performs the following and checks and conversions on the input:
@@ -58,7 +58,7 @@ def convert_array_2d(
 
 def convert_array_2d_to_slim(array_2d, mask_2d) -> np.ndarray:
     """
-    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is to be returned as an
+    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
 
     This function checks the dimensions of the input `array_2d` and maps it to its `slim` representation.
@@ -97,10 +97,10 @@ def convert_array_2d_to_slim(array_2d, mask_2d) -> np.ndarray:
 
 
 def convert_array_2d_to_native(
-    array_2d: Union[List, np.ndarray], mask_2d
+    array_2d: Union[np.ndarray, List], mask_2d
 ) -> np.ndarray:
     """
-    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is to be returned as an
+    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
 
     This function checks the dimensions of the input `array_2d` and maps it to its `native` representation.

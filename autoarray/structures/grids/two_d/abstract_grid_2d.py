@@ -47,32 +47,76 @@ def check_grid_2d_and_mask_2d(grid_2d, mask_2d):
             )
 
 
-def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d):
+def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d) -> np.ndarray:
     """
-    Manual Grid2D functions take as input a list or ndarray which is to be returned as an Grid2D. This function
-    performs the following and checks and conversions on the input:
+    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
+    
+    This function performs the following and checks and conversions on the input:
 
     1: If the input is a list, convert it to an ndarray.
     2: Check that the number of sub-pixels in the array is identical to that of the mask.
-    3: Map the input ndarray to its `slim` representation.
+    3) Map the input ndarray to its `slim` or `native` representation, depending on the `general.ini` config file
+    entry `store_slim`.
 
     For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2] and `native` a 3D NumPy array of
     shape [total_y_coordinates, total_x_coordinates, 2]
 
     Parameters
     ----------
-    array
-        The input structure which is converted to an ndarray if it is a list.
+    grid_2d
+        The input (y,x) grid of coordinates which is converted to an ndarray if it is a list.
     mask_2d : Mask2D
         The mask of the output Array2D.
     """
 
     grid_2d = abstract_grid.convert_grid(grid=grid_2d)
 
+    if conf.instance["general"]["structures"]["store_slim"]:
+        return convert_grid_2d_to_slim(grid_2d=grid_2d, mask_2d=mask_2d)
+    return convert_grid_2d_to_native(grid_2d=grid_2d, mask_2d=mask_2d)
+
+
+def convert_grid_2d_to_slim(grid_2d: Union[np.ndarray, List], mask_2d) -> np.ndarray:
+    """
+    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
+
+    This function checks the dimensions of the input `grid_2d` and maps it to its `slim` representation.
+
+    For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2].
+
+    Parameters
+    ----------
+    grid_2d
+        The input (y,x) grid of coordinates which is converted to its silm representation.
+    mask_2d : Mask2D
+        The mask of the output Array2D.
+    """
     if len(grid_2d.shape) == 2:
-        return abstract_grid.convert_grid(grid=grid_2d)
+        return grid_2d
     return grid_2d_util.grid_2d_slim_from(
         grid_2d_native=grid_2d, mask=mask_2d, sub_size=mask_2d.sub_size
+    )
+
+
+def convert_grid_2d_to_native(grid_2d: Union[np.ndarray, List], mask_2d) -> np.ndarray:
+    """
+    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
+
+    This function checks the dimensions of the input `grid_2d` and maps it to its `native` representation.
+
+    For a Grid2D, `native` refers to a 2D NumPy array of shape [total_y_coordinates, total_x_coordinates, 2].
+
+    Parameters
+    ----------
+    grid_2d
+        The input (y,x) grid of coordinates which is converted to its native representation.
+    mask_2d : Mask2D
+        The mask of the output Array2D.
+    """
+    if len(grid_2d.shape) == 3:
+        return grid_2d
+    return grid_2d_util.grid_2d_native_from(
+        grid_2d_slim=grid_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
     )
 
 
