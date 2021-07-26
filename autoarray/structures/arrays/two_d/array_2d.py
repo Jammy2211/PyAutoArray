@@ -241,6 +241,8 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             origin=origin,
         )
 
+        array = abstract_array_2d.convert_array_2d(array_2d=array, mask_2d=mask)
+
         return cls(array=array, mask=mask, header=header)
 
     @classmethod
