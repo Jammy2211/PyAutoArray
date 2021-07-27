@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import copy
 
+from autoconf import conf
 from autoarray.structures import abstract_structure
 from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.grids.two_d import grid_2d
@@ -176,16 +177,20 @@ class AbstractDataset:
 
             noise_map = noise_map._new_structure(noise_map_limit, mask=mask).slim
 
-        mask_grid = mask.mask_new_sub_size_from(mask=mask, sub_size=settings.sub_size)
-        self.grid = settings.grid_from_mask(mask=mask_grid)
-
         self.noise_map = noise_map
 
-        mask_inversion = mask.mask_new_sub_size_from(
-            mask=mask, sub_size=settings.sub_size_inversion
-        )
+        if conf.instance["general"]["structures"]["use_dataset_grids"]:
 
-        self.grid_inversion = settings.grid_inversion_from_mask(mask=mask_inversion)
+            mask_grid = mask.mask_new_sub_size_from(
+                mask=mask, sub_size=settings.sub_size
+            )
+            self.grid = settings.grid_from_mask(mask=mask_grid)
+
+            mask_inversion = mask.mask_new_sub_size_from(
+                mask=mask, sub_size=settings.sub_size_inversion
+            )
+
+            self.grid_inversion = settings.grid_inversion_from_mask(mask=mask_inversion)
 
     @property
     def mask(self):

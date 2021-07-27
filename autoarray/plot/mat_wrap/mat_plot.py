@@ -630,7 +630,15 @@ class MatPlot2D(AbstractMatPlot):
             cb = self.colorbar.set()
             self.colorbar_tickparams.set(cb=cb)
 
-        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=array.mask.masked_grid)
+        grid_indexes = None
+
+        if (
+            visuals_2d.indexes is not None
+            or visuals_2d.pixelization_indexes is not None
+        ):
+            grid_indexes = array.mask.masked_grid
+
+        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid_indexes)
 
         if not self.is_for_subplot and not bypass:
             self.output.to_figure(structure=array, auto_filename=auto_labels.filename)
