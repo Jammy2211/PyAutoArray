@@ -147,7 +147,12 @@ class AXVLine(AbstractMatWrap1D):
 
         self.no_label = no_label
 
-    def axvline_vertical_line(self, vertical_line: float, label: Optional[str] = None):
+    def axvline_vertical_line(
+        self,
+        vertical_line: float,
+        vertical_errors: Optional[List[float]] = None,
+        label: Optional[str] = None,
+    ):
         """
         Plot an input vertical line given by its x coordinate as a float using the method `plt.axvline`.
 
@@ -166,6 +171,16 @@ class AXVLine(AbstractMatWrap1D):
             label = None
 
         plt.axvline(x=vertical_line, label=label, **self.config_dict)
+
+        if vertical_errors is not None:
+
+            config_dict = self.config_dict
+
+            if "linestyle" in config_dict:
+                config_dict.pop("linestyle")
+
+            plt.axvline(x=vertical_errors[0], linestyle="--", **config_dict)
+            plt.axvline(x=vertical_errors[1], linestyle="--", **config_dict)
 
 
 class FillBetween(AbstractMatWrap1D):
