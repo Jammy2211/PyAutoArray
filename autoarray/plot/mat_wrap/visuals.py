@@ -74,12 +74,16 @@ class Visuals1D(AbstractVisuals):
         origin: Optional[grid_1d.Grid1D] = None,
         points: Optional[grid_1d.Grid1D] = None,
         vertical_line: Optional[float] = None,
+        shaded_region: Optional[
+            Union[List[List], List[array_1d.Array1D], List[np.ndarray]]
+        ] = None,
     ):
 
         self.mask = mask
         self.origin = origin
         self.points = points
         self.vertical_line = vertical_line
+        self.shaded_region = shaded_region
 
     @property
     def plotter(self):

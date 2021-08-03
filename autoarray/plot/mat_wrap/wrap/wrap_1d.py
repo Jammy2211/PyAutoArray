@@ -4,8 +4,7 @@ wrap_base.set_backend()
 
 import matplotlib.pyplot as plt
 import numpy as np
-import typing
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from autoarray.structures.arrays.one_d import array_1d
 from autoarray.structures.grids.one_d import grid_1d
@@ -42,8 +41,8 @@ class YXPlot(AbstractMatWrap1D):
 
     def plot_y_vs_x(
         self,
-        y: typing.Union[np.ndarray, array_1d.Array1D],
-        x: typing.Union[np.ndarray, array_1d.Array1D],
+        y: Union[np.ndarray, array_1d.Array1D],
+        x: Union[np.ndarray, array_1d.Array1D],
         label: str = None,
         plot_axis_type=None,
         y_errors=None,
@@ -55,14 +54,14 @@ class YXPlot(AbstractMatWrap1D):
 
         Parameters
         ----------
-        y or array_1d.Array1D
+        y
             The ydata that is plotted.
-        x or lines.Line
+        x
             The xdata that is plotted.
-        plot_axis_type : str
+        plot_axis_type
             The method used to make the plot that defines the scale of the axes {"linear", "semilogy", "loglog",
             "scatter"}.
-        label : str
+        label
             Optionally include a label on the plot for a `Legend` to display.
         """
 
@@ -128,14 +127,6 @@ class YXScatter(AbstractMatWrap1D):
 
 class AXVLine(AbstractMatWrap1D):
     def __init__(self, no_label=False, **kwargs):
-
-        super().__init__(**kwargs)
-
-        self.no_label = no_label
-
-    def axvline_vertical_line(
-        self, vertical_line: float, label: typing.Optional[str] = None
-    ):
         """
         Plots vertical lines on 1D plot of y versus x using the method `plt.axvline`.
 
@@ -147,9 +138,24 @@ class AXVLine(AbstractMatWrap1D):
 
         Parameters
         ----------
-        vertical_line : [np.ndarray]
+        vertical_line
             The vertical lines of data that are plotted on the figure.
-        label : [str]
+        label
+            Labels for each vertical line used by a `Legend`.
+        """
+        super().__init__(**kwargs)
+
+        self.no_label = no_label
+
+    def axvline_vertical_line(self, vertical_line: float, label: Optional[str] = None):
+        """
+        Plot an input vertical line given by its x coordinate as a float using the method `plt.axvline`.
+
+        Parameters
+        ----------
+        vertical_line
+            The vertical lines of data that are plotted on the figure.
+        label
             Labels for each vertical line used by a `Legend`.
         """
 
@@ -160,3 +166,52 @@ class AXVLine(AbstractMatWrap1D):
             label = None
 
         plt.axvline(x=vertical_line, label=label, **self.config_dict)
+
+
+class FillBetween(AbstractMatWrap1D):
+    def __init__(self, match_color_to_yx: bool = True, **kwargs):
+        """
+        Fills between two lines on a 1D plot of y versus x using the method `plt.fill_between`.
+
+        This method is typically called after `plot_y_vs_x` to add a shaded region to the figure.
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.fill_between: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill_between.html
+
+        Parameters
+        ----------
+        match_color_to_yx
+            If True, the color of the shaded region is automatically matched to that of the yx line that is plotted,
+            irrespective of the user inputs.
+        """
+        super().__init__(**kwargs)
+        self.match_color_to_yx = match_color_to_yx
+
+    def fill_between_shaded_regions(
+        self,
+        x: Union[np.ndarray, array_1d.Array1D, List],
+        y1: Union[np.ndarray, array_1d.Array1D, List],
+        y2: Union[np.ndarray, array_1d.Array1D, List],
+        color: Optional[str] = None,
+    ):
+        """
+        Fill in between two lines `y1` and `y2` on a plot of y vs x. 
+        
+        Parameters
+        ----------
+        x
+            The xdata that is plotted.
+        y1
+            The first line of ydata that defines the region that is filled in.
+        y1
+            The second line of ydata that defines the region that is filled in.
+        """
+
+        config_dict = self.config_dict
+
+        if self.match_color_to_yx and color is not None:
+
+            config_dict["color"] = color
+
+        plt.fill_between(x=x, y1=y1, y2=y2, **config_dict)
