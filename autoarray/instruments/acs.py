@@ -697,9 +697,13 @@ def output_quadrants_to_fits(
     hdul.append(fits.ImageHDU(array_hdu_4))
     hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
 
-    hdul[0].header = quadrant_a.header.header_sci_obj
-    hdul[1].header = quadrant_c.header.header_hdu_obj
-    hdul[4].header = quadrant_a.header.header_hdu_obj
+    def set_header(header):
+        header.set("cticor", "ARCTIC", "CTI CORRECTION PERFORMED USING ARCTIC")
+        return header
+
+    hdul[0].header = set_header(quadrant_a.header.header_sci_obj)
+    hdul[1].header = set_header(quadrant_c.header.header_hdu_obj)
+    hdul[4].header = set_header(quadrant_a.header.header_hdu_obj)
 
     hdul.writeto(file_path)
 
@@ -754,9 +758,13 @@ def output_quadrants_to_fits_with_headers(
     hdul.append(fits.ImageHDU(array_hdu_4))
     hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
 
-    hdul[0].header = sci_header
-    hdul[1].header = header_hdu_1
-    hdul[4].header = header_hdu_4
+    def set_header(header):
+        header.set("cticor", "ARCTIC", "CTI CORRECTION PERFORMED USING ARCTIC")
+        return header
+
+    hdul[0].header = set_header(sci_header)
+    hdul[1].header = set_header(header_hdu_1)
+    hdul[4].header = set_header(header_hdu_4)
 
     hdul.writeto(file_path)
 
