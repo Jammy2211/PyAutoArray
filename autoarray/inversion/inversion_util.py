@@ -275,7 +275,8 @@ def curvature_matrix_via_w_tilde_imaging_sparse_from(
     w_tilde_indexes: np.ndarray,
     w_tilde_lengths: np.ndarray,
     pixelization_index_for_sub_slim_index: np.ndarray,
-    native_index_for_slim_index: np.ndarray,
+    slim_index_for_sub_slim_index: np.ndarray,
+    sub_size: int,
     pixelization_pixels: int,
 ) -> np.ndarray:
     """
@@ -315,13 +316,17 @@ def curvature_matrix_via_w_tilde_imaging_sparse_from(
         The curvature matrix `F` (see Warren & Dye 2003).
     """
 
-    image_pixels = len(native_index_for_slim_index)
+    sub_fraction = 1.0 / (sub_size ** 2.0)
+
+    sub_image_pixels = len(slim_index_for_sub_slim_index)
 
     curvature_matrix = np.zeros((pixelization_pixels, pixelization_pixels))
 
-    for ip0 in range(image_pixels):
+    for ip0_sub in range(sub_image_pixels):
 
-        sp0 = pixelization_index_for_sub_slim_index[ip0]
+        ip0 = slim_index_for_sub_slim_index[ip0_sub]
+
+        sp0 = pixelization_index_for_sub_slim_index[ip0_sub]
 
         for ip1_index in range(w_tilde_lengths[ip0]):
 
@@ -329,7 +334,7 @@ def curvature_matrix_via_w_tilde_imaging_sparse_from(
 
             sp1 = pixelization_index_for_sub_slim_index[ip1]
 
-            curvature_matrix[sp0, sp1] += w_tilde_preload[ip0, ip1_index]
+            curvature_matrix[sp0, sp1] += sub_fraction * w_tilde_preload[ip0, ip1_index]
 
     for i in range(pixelization_pixels):
         for j in range(i, pixelization_pixels):

@@ -155,7 +155,13 @@ class AbstractMatWrap:
                 colors=config_dict["c"]
             )
 
-        return {**config_dict, **self.kwargs}
+        config_dict = {**config_dict, **self.kwargs}
+
+        if "c" in config_dict:
+            if config_dict["c"] is None:
+                config_dict.pop("c")
+
+        return config_dict
 
     @property
     def config_folder(self):

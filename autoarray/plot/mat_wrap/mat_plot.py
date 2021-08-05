@@ -351,17 +351,8 @@ class MatPlot1D(AbstractMatPlot):
 
         if visuals_1d.shaded_region is not None:
 
-            color = (
-                self.yx_plot.config_dict["c"]
-                if "c" in self.yx_plot.config_dict
-                else None
-            )
-
             self.fill_between.fill_between_shaded_regions(
-                x=x,
-                y1=visuals_1d.shaded_region[0],
-                y2=visuals_1d.shaded_region[1],
-                color=color,
+                x=x, y1=visuals_1d.shaded_region[0], y2=visuals_1d.shaded_region[1]
             )
 
         if "extent" in self.axis.config_dict:

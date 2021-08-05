@@ -632,6 +632,21 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("int")
 
     @property
+    @array_2d_util.Memoizer()
+    def _slim_index_for_sub_slim_index(self):
+        """
+        The util between every sub-pixel and its host pixel.
+
+        For example:
+
+        sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd pixel.
+        sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th pixel.
+        """
+        return mask_2d_util.slim_index_for_sub_slim_index_via_mask_2d_from(
+            mask_2d=self, sub_size=self.sub_size
+        ).astype("int")
+
+    @property
     def shape_native_masked_pixels(self):
         """
         The (y,x) shape corresponding to the extent of unmasked pixels that go vertically and horizontally across the

@@ -704,6 +704,63 @@ def output_quadrants_to_fits(
     hdul.writeto(file_path)
 
 
+def output_quadrants_to_fits_with_headers(
+    quadrant_a,
+    quadrant_b,
+    quadrant_c,
+    quadrant_d,
+    sci_header,
+    header_hdu_1,
+    header_hdu_4,
+    file_path: str,
+    overwrite: bool = False,
+):
+
+    file_dir = os.path.split(file_path)[0]
+
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+
+    if overwrite and os.path.exists(file_path):
+        os.remove(file_path)
+
+    quadrant_a = quadrant_convert_to_original(
+        quadrant=quadrant_a, roe_corner=(1, 0), use_flipud=True
+    )
+    quadrant_b = quadrant_convert_to_original(
+        quadrant=quadrant_b, roe_corner=(1, 1), use_flipud=True
+    )
+    quadrant_c = quadrant_convert_to_original(
+        quadrant=quadrant_c, roe_corner=(1, 0), use_flipud=False
+    )
+    quadrant_d = quadrant_convert_to_original(
+        quadrant=quadrant_d, roe_corner=(1, 1), use_flipud=False
+    )
+
+    array_hdu_1 = np.zeros((2068, 4144))
+    array_hdu_1[0:2068, 0:2072] = quadrant_c
+    array_hdu_1[0:2068, 2072:4144] = quadrant_d
+
+    array_hdu_4 = np.zeros((2068, 4144))
+    array_hdu_4[0:2068, 0:2072] = quadrant_a
+    array_hdu_4[0:2068, 2072:4144] = quadrant_b
+
+    hdul = fits.HDUList()
+
+    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdul.append(fits.ImageHDU(array_hdu_1))
+    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdul.append(fits.ImageHDU(array_hdu_4))
+    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+
+    hdul[0].header = sci_header
+    hdul[1].header = header_hdu_1
+    hdul[4].header = header_hdu_4
+
+    hdul.writeto(file_path)
+
+
 def quadrant_convert_to_original(
     quadrant, roe_corner, use_flipud=False, use_calibrated_gain=True
 ):

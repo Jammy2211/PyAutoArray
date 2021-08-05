@@ -208,7 +208,6 @@ class FillBetween(AbstractMatWrap1D):
         x: Union[np.ndarray, array_1d.Array1D, List],
         y1: Union[np.ndarray, array_1d.Array1D, List],
         y2: Union[np.ndarray, array_1d.Array1D, List],
-        color: Optional[str] = None,
     ):
         """
         Fill in between two lines `y1` and `y2` on a plot of y vs x. 
@@ -225,8 +224,8 @@ class FillBetween(AbstractMatWrap1D):
 
         config_dict = self.config_dict
 
-        if self.match_color_to_yx and color is not None:
+        if self.match_color_to_yx:
 
-            config_dict["color"] = color
+            config_dict["color"] = plt.gca().lines[-1].get_color()
 
         plt.fill_between(x=x, y1=y1, y2=y2, **config_dict)
