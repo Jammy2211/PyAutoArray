@@ -5,6 +5,7 @@ import copy
 
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
+from autoarray.inversion import inversion_util
 from autoarray.mask import mask_2d as msk
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids.two_d import grid_2d
@@ -12,6 +13,14 @@ from autoarray.structures import kernel_2d
 from autoarray.operators import convolver
 
 logger = logging.getLogger(__name__)
+
+
+class WTilde:
+    def __init__(self, preload, indexes, lengths):
+
+        self.preload = preload
+        self.indexes = indexes
+        self.lengths = lengths
 
 
 class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
@@ -145,11 +154,21 @@ class Imaging(abstract_dataset.AbstractDataset):
             self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
                 kernel_shape_native=self.psf.shape_native
             )
+            preload, indexes, lengths = inversion_util.w_tilde_preload_imaging_from(
+                noise_map_native=self.noise_map.native,
+                kernel_native=self.psf.native,
+                native_index_for_slim_index=self.mask._native_index_for_slim_index,
+            )
+
+            self.w_tilde = WTilde(preload=preload, indexes=indexes, lengths=lengths)
 
         else:
 
             self.convolver = None
             self.blurring_grid = None
+            self.w_tilde_preload = None
+            self.w_tilde_indexes = None
+            self.w_tilde_lengths = None
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Imaging):

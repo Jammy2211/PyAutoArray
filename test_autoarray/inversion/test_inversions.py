@@ -42,7 +42,7 @@ class TestAbstractInversion:
 
         matrix_shape = (9, 3)
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
@@ -79,7 +79,7 @@ class TestAbstractInversion:
 
         matrix_shape = (9, 3)
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
@@ -114,7 +114,7 @@ class TestAbstractInversion:
 
         matrix_shape = (9, 3)
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
@@ -164,7 +164,7 @@ class TestAbstractInversion:
             shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(25),
             noise_map=np.ones(25),
             convolver=mock.MockConvolver(matrix_shape),
@@ -226,7 +226,7 @@ class TestAbstractInversion:
             shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(25),
             noise_map=np.ones(25),
             convolver=mock.MockConvolver(matrix_shape),
@@ -285,7 +285,7 @@ class TestAbstractInversion:
             shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(25),
             noise_map=np.ones(25),
             convolver=mock.MockConvolver(matrix_shape),
@@ -372,7 +372,7 @@ class TestAbstractInversion:
             shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(25),
             noise_map=np.ones(25),
             convolver=mock.MockConvolver(matrix_shape),
@@ -437,7 +437,7 @@ class TestInversionImagingMatrix:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
@@ -491,7 +491,7 @@ class TestInversionImagingMatrix:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
@@ -548,7 +548,7 @@ class TestInversionImagingMatrix:
 
         with pytest.raises(exc.InversionException):
 
-            inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+            inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
                 image=np.ones(9),
                 noise_map=np.ones(9),
                 convolver=mock.MockConvolver(matrix_shape),
@@ -580,7 +580,7 @@ class TestInversionImagingMatrix:
             mapping_matrix=blurred_mapping_matrix
         )
 
-        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+        inversion = inversions.InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),

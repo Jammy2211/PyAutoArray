@@ -65,6 +65,10 @@ class TestAPI:
         assert grid.origin == (0.0, 1.0)
         assert grid.sub_size == 2
 
+        grid = aa.Grid2D.uniform(
+            shape_native=(2, 2), pixel_scales=1.0, sub_size=2, origin=(0.0, 1.0)
+        )
+
     def test__manual_mask(self):
 
         mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0)

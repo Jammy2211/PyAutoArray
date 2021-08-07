@@ -1088,47 +1088,6 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
     return slim_index_for_sub_slim_index
 
 
-def sub_slim_index_for_slim_index_via_mask_2d_from(
-    mask_2d: np.ndarray, sub_size: int
-) -> [list]:
-    """ "
-    For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), compute the sub slim index of a pixel
-    given its slim index, where the centre of the sub-grid over each pixel is used to ensure alignment (meaning that
-    only an odd sized `sub_size` is valid.
-
-    For example, for a 3x3 square mask sub-grid size of 3, the following mappings from a slim index to 2D array
-    sub-slim index are:
-
-    - sub_slim_index_for_slim_index[0] = 10 -> The first pixel maps to the 10th sub-slim pixel index, which corresponds
-    to the second row and second column of the mask in 2D.
-    - sub_slim_index_for_slim_index[1] = 13 -> The first pixel maps to the 10th sub-slim pixel index, which corresponds
-    to the second row and fith column of the mask in 2D.
-    - sub_slim_index_for_slim_index[3] = 37 -> The first pixel maps to the 10th sub-slim pixel index, which corresponds
-    to the fifth row and second column of the mask in 2D.
-
-    Parameters
-    ----------
-    mask_2d
-        The mask whose indexes are mapped.
-    sub_size
-        The sub-size of the grid on the mask, so that the sub-mask indexes can be computed correctly.
-
-    Returns
-    -------
-    [list]
-        The lists of the 1D sub-pixel indexes in every unmasked pixel in the mask.
-    The term 'grid' is used because the grid is defined as the grid of coordinates on the centre of every
-    pixel on the 2D array. Thus, this array maps sub-pixels on a sub-grid to pixels on a grid.
-
-    Examples
-    --------
-    mask = ([[True, False, True]])
-    sub_mask_1d_indexes_for_mask_1d_index = sub_mask_1d_indexes_for_mask_1d_index_from(mask=mask, sub_size=2)
-    """
-
-    pass
-
-
 def sub_slim_indexes_for_slim_index_via_mask_2d_from(
     mask_2d: np.ndarray, sub_size: int
 ) -> [list]:

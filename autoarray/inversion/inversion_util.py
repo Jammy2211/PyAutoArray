@@ -13,7 +13,7 @@ def curvature_matrix_via_w_tilde_from(
 
     The dimensions of `w_tilde` are [image_pixels, image_pixels], meaning that for datasets with many image pixels
     this matrix can take up 10's of GB of memory. The calculation of the `curvature_matrix` via this function will
-    therefore be very slow, and the method `curvature_matrix_via_w_tilde_imaging_sparse_from` should be used
+    therefore be very slow, and the method `curvature_matrix_via_w_tilde_preload_imaging_from` should be used
     instead.
 
     Parameters
@@ -45,7 +45,7 @@ def w_tilde_imaging_from(
 
     The limitation of this matrix is that the dimensions of [image_pixels, image_pixels] can exceed many 10s of GB's,
     making it impossible to store in memory and its use in linear algebra calculations extremely. The method
-    `w_tilde_imaging_sparse_from` describes a compressed representation that overcomes this hurdles. It is
+    `w_tilde_preload_imaging_from` describes a compressed representation that overcomes this hurdles. It is
     advised `w_tilde` and this method are only used for testing.
 
     Parameters
@@ -92,7 +92,7 @@ def w_tilde_imaging_from(
 
 
 @decorator_util.jit()
-def w_tilde_imaging_sparse_from(
+def w_tilde_preload_imaging_from(
     noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -270,15 +270,9 @@ def w_tilde_value_from(
 
 
 @decorator_util.jit()
-def curvature_matrix_via_w_tilde_imaging_sparse_from(
-    w_tilde_preload: np.ndarray,
-    w_tilde_indexes: np.ndarray,
-    w_tilde_lengths: np.ndarray,
-    pixelization_index_for_sub_slim_index: np.ndarray,
-    slim_index_for_sub_slim_index: np.ndarray,
-    sub_size: int,
-    pixelization_pixels: int,
-) -> np.ndarray:
+def data_slim_to_pixelization_unique_from(
+    data_pixels, pixelization_index_for_sub_slim_index: np.ndarray, sub_size: int
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Returns the curvature matrix `F` (see Warren & Dye 2003) by computing it using `w_tilde_preload`
     (see `w_tilde_preload_interferometer_from`) for an imaging inversion.
@@ -318,30 +312,121 @@ def curvature_matrix_via_w_tilde_imaging_sparse_from(
 
     sub_fraction = 1.0 / (sub_size ** 2.0)
 
-    sub_image_pixels = len(slim_index_for_sub_slim_index)
+    data_to_pix_unique = -1 * np.ones((data_pixels, sub_size ** 2))
+    data_weights = np.zeros((data_pixels, sub_size ** 2))
+    pix_lengths = np.zeros(data_pixels)
 
-    curvature_matrix = np.zeros((pixelization_pixels, pixelization_pixels))
+    for ip in range(data_pixels):
 
-    for ip0_sub in range(sub_image_pixels):
+        pix_size = 0
 
-        ip0 = slim_index_for_sub_slim_index[ip0_sub]
+        ip_sub_start = ip * sub_size ** 2
+        ip_sub_end = ip_sub_start + sub_size ** 2
 
-        sp0 = pixelization_index_for_sub_slim_index[ip0_sub]
+        for ip_sub in range(ip_sub_start, ip_sub_end):
 
-        for ip1_index in range(w_tilde_lengths[ip0]):
+            pix = pixelization_index_for_sub_slim_index[ip_sub]
 
-            ip1 = w_tilde_indexes[ip0, ip1_index]
+            stored_already = False
 
-            sp1 = pixelization_index_for_sub_slim_index[ip1]
+            for i in range(pix_size):
 
-            curvature_matrix[sp0, sp1] += sub_fraction * w_tilde_preload[ip0, ip1_index]
+                if data_to_pix_unique[ip, i] == pix:
 
-    for i in range(pixelization_pixels):
-        for j in range(i, pixelization_pixels):
+                    data_weights[ip, i] += sub_fraction
+                    stored_already = True
+
+            if not stored_already:
+
+                data_to_pix_unique[ip, pix_size] = pix
+                data_weights[ip, pix_size] += sub_fraction
+
+                pix_size += 1
+
+        pix_lengths[ip] = pix_size
+
+    return data_to_pix_unique, data_weights, pix_lengths
+
+
+@decorator_util.jit()
+def curvature_matrix_via_w_tilde_preload_imaging_from(
+    w_tilde_preload: np.ndarray,
+    w_tilde_indexes: np.ndarray,
+    w_tilde_lengths: np.ndarray,
+    data_to_pix_unique: np.ndarray,
+    data_weights: np.ndarray,
+    pix_lengths: np.ndarray,
+    pix_pixels: int,
+) -> np.ndarray:
+    """
+    Returns the curvature matrix `F` (see Warren & Dye 2003) by computing it using `w_tilde_preload`
+    (see `w_tilde_preload_interferometer_from`) for an imaging inversion.
+
+    To compute the curvature matrix via w_tilde the following matrix multiplication is normally performed:
+
+    curvature_matrix = mapping_matrix.T * w_tilde * mapping matrix
+
+    This function speeds this calculation up in two ways:
+
+    1) Instead of using `w_tilde` (dimensions [image_pixels, image_pixels] it uses `w_tilde_preload` (dimensions
+    [image_pixels, kernel_overlap]). The massive reduction in the size of this matrix in memory allows for much fast
+    computation.
+
+    2) It omits the `mapping_matrix` and instead uses directly the 1D vector that maps every image pixel to a source
+    pixel `native_index_for_slim_index`. This exploits the sparsity in the `mapping_matrix` to directly
+    compute the `curvature_matrix` (e.g. it condenses the triple matrix multiplication into a double for loop!).
+
+    Parameters
+    ----------
+    w_tilde_preload
+        A matrix that precomputes the values for fast computation of w_tilde, which in this function is used to bypass
+        the creation of w_tilde altogether and go directly to the `curvature_matrix`.
+    pixelization_index_for_sub_slim_index
+        The mappings between the pixelization grid's pixels and the data's slimmed pixels.
+    native_index_for_slim_index
+        An array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its corresponding
+        native 2D pixel using its (y,x) pixel indexes.
+    pix_pixels
+        The total number of pixels in the pixelization that reconstructs the data.
+
+    Returns
+    -------
+    ndarray
+        The curvature matrix `F` (see Warren & Dye 2003).
+    """
+
+    data_pixels = w_tilde_preload.shape[0]
+
+    curvature_matrix = np.zeros((pix_pixels, pix_pixels))
+
+    for data_0 in range(data_pixels):
+
+        for pix_0_index in range(pix_lengths[data_0]):
+
+            data_0_weight = data_weights[data_0, pix_0_index]
+            pix_0 = data_to_pix_unique[data_0, pix_0_index]
+
+            for data_1_index in range(w_tilde_lengths[data_0]):
+
+                data_1 = w_tilde_indexes[data_0, data_1_index]
+
+                for pix_1_index in range(pix_lengths[data_1]):
+
+                    data_1_weight = data_weights[data_1, pix_1_index]
+                    pix_1 = data_to_pix_unique[data_1, pix_1_index]
+
+                    curvature_matrix[pix_0, pix_1] += (
+                        data_0_weight
+                        * data_1_weight
+                        * w_tilde_preload[data_0, data_1_index]
+                    )
+
+    for i in range(pix_pixels):
+        for j in range(i, pix_pixels):
             curvature_matrix[i, j] += curvature_matrix[j, i]
 
-    for i in range(pixelization_pixels):
-        for j in range(i, pixelization_pixels):
+    for i in range(pix_pixels):
+        for j in range(i, pix_pixels):
             curvature_matrix[j, i] = curvature_matrix[i, j]
 
     return curvature_matrix
@@ -495,7 +580,61 @@ def curvature_matrix_via_sparse_preload_from(
 
 
 @decorator_util.jit()
-def mapped_reconstructed_data_from(
+def mapped_reconstructed_data_via_mapping_matrix_from(
+    mapping_matrix: np.ndarray, reconstruction: np.ndarray
+) -> np.ndarray:
+    """
+    Returns the reconstructed data vector from the blurred mapping matrix `f` and solution vector *S*.
+
+    Parameters
+    -----------
+    mapping_matrix
+        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
+
+    """
+    mapped_reconstructed_data = np.zeros(mapping_matrix.shape[0])
+    for i in range(mapping_matrix.shape[0]):
+        for j in range(reconstruction.shape[0]):
+            mapped_reconstructed_data[i] += reconstruction[j] * mapping_matrix[i, j]
+
+    return mapped_reconstructed_data
+
+
+# @decorator_util.jit()
+def mapped_reconstructed_data_via_image_to_pix_unique_from(
+    data_to_pix_unique: np.ndarray,
+    data_weights: np.ndarray,
+    pix_lengths: np.ndarray,
+    reconstruction: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the reconstructed data vector from the blurred mapping matrix `f` and solution vector *S*.
+
+    Parameters
+    -----------
+    mapping_matrix
+        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
+
+    """
+
+    data_pixels = data_to_pix_unique.shape[0]
+
+    mapped_reconstructed_data = np.zeros(data_pixels)
+
+    for data_0 in range(data_pixels):
+        for pix_0 in range(pix_lengths[data_0]):
+
+            pix_for_data = data_to_pix_unique[data_0, pix_0]
+
+            mapped_reconstructed_data[data_0] += (
+                data_weights[data_0, pix_0] * reconstruction[pix_for_data]
+            )
+
+    return mapped_reconstructed_data
+
+
+@decorator_util.jit()
+def mapped_reconstructed_data_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
     """

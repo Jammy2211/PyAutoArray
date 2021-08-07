@@ -8,6 +8,8 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 
+from typing import Optional, Tuple
+
 
 class AbstractPlotter:
     def __init__(
@@ -26,6 +28,7 @@ class AbstractPlotter:
         self.visuals_2d = visuals_2d
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
+        self.subplot_figsize = None
 
     def extract_1d(self, name, value, include_name=None):
         """
@@ -123,14 +126,18 @@ class AbstractPlotter:
             is_for_multi_plot=is_for_multi_plot, color=color
         )
 
-    def set_mat_plots_for_subplot(self, is_for_subplot, number_subplots=None):
+    def set_mat_plots_for_subplot(
+        self, is_for_subplot, number_subplots=None, subplot_shape=None
+    ):
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.set_for_subplot(is_for_subplot=is_for_subplot)
             self.mat_plot_1d.number_subplots = number_subplots
+            self.mat_plot_1d.subplot_shape = subplot_shape
             self.mat_plot_1d.subplot_index = 1
         if self.mat_plot_2d is not None:
             self.mat_plot_2d.set_for_subplot(is_for_subplot=is_for_subplot)
             self.mat_plot_2d.number_subplots = number_subplots
+            self.mat_plot_2d.subplot_shape = subplot_shape
             self.mat_plot_2d.subplot_index = 1
 
     @property
@@ -146,7 +153,12 @@ class AbstractPlotter:
 
         return False
 
-    def open_subplot_figure(self, number_subplots):
+    def open_subplot_figure(
+        self,
+        number_subplots: int,
+        subplot_shape: Optional[Tuple[int, int]] = None,
+        subplot_figsize: Optional[Tuple[int, int]] = None,
+    ):
         """Setup a figure for plotting an image.
 
         Parameters
@@ -159,8 +171,12 @@ class AbstractPlotter:
         """
 
         self.set_mat_plots_for_subplot(
-            is_for_subplot=True, number_subplots=number_subplots
+            is_for_subplot=True,
+            number_subplots=number_subplots,
+            subplot_shape=subplot_shape,
         )
+
+        self.subplot_figsize = subplot_figsize
 
         figsize = self.get_subplot_figsize(number_subplots=number_subplots)
         plt.figure(figsize=figsize)
@@ -169,6 +185,7 @@ class AbstractPlotter:
 
         self.mat_plot_2d.figure.close()
         self.set_mat_plots_for_subplot(is_for_subplot=False)
+        self.subplot_figsize = None
 
     def get_subplot_figsize(self, number_subplots):
         """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
@@ -178,6 +195,9 @@ class AbstractPlotter:
         number_subplots
             The number of subplots that are to be plotted in the figure.
         """
+
+        if self.subplot_figsize is not None:
+            return self.subplot_figsize
 
         if self.mat_plot_1d is not None:
             if self.mat_plot_1d.figure.config_dict["figsize"] is not None:

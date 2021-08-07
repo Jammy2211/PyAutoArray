@@ -1,5 +1,4 @@
 import autoarray as aa
-from autoarray.inversion import inversion_util_sub
 import numpy as np
 import pytest
 
@@ -62,7 +61,7 @@ class TestWTilde:
             1.0e-4,
         )
 
-    def test__w_tilde_imaging_sparse_from(self):
+    def test__w_tilde_preload_imaging_from(self):
 
         noise_map_2d = np.array(
             [
@@ -77,7 +76,7 @@ class TestWTilde:
 
         native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-        w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion.w_tilde_imaging_sparse_from(
+        w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion.w_tilde_preload_imaging_from(
             noise_map_native=noise_map_2d,
             kernel_native=kernel,
             native_index_for_slim_index=native_index_for_slim_index,
@@ -195,13 +194,30 @@ class TestWTilde:
         )
         assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, 1.0e-4)
 
+    def test__data_to_pix_unique_from(self):
+
+        image_pixels = 2
+        pixelization_index_for_sub_slim_index = np.array([0, 0, 0, 1, 2, 1, 0, 2])
+        sub_size = 2
+
+        data_to_pix_unique, data_weights, pix_lengths = aa.util.inversion.data_slim_to_pixelization_unique_from(
+            data_pixels=image_pixels,
+            pixelization_index_for_sub_slim_index=pixelization_index_for_sub_slim_index,
+            sub_size=sub_size,
+        )
+
+        assert (data_to_pix_unique[0, :] == np.array([0, 1, -1, -1])).all()
+        assert (data_weights[0, :] == np.array([0.75, 0.25, 0.0, 0.0])).all()
+        assert (data_to_pix_unique[1, :] == np.array([2, 1, 0, -1])).all()
+        assert (data_weights[1, :] == np.array([0.5, 0.25, 0.25, 0.0])).all()
+        assert (pix_lengths == np.array([2, 3])).all()
+
     def test__curvature_matrix_via_w_tilde_preload_two_methods_agree(self):
 
         mask = aa.Mask2D.circular(
             shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
         )
 
-        np.random.seed(1)
         noise_map = np.random.uniform(size=mask.shape_native)
         noise_map = aa.Array2D.manual_mask(array=noise_map, mask=mask)
 
@@ -216,164 +232,49 @@ class TestWTilde:
 
         pixelization = aa.pix.Rectangular(shape=(20, 20))
 
-        mapper = pixelization.mapper_from_grid_and_sparse_grid(
-            grid=mask.masked_grid_sub_1
-        )
+        for sub_size in range(1, 5):
 
-        mapping_matrix = mapper.mapping_matrix
+            mask_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
-        w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion.w_tilde_imaging_sparse_from(
-            noise_map_native=noise_map.native,
-            kernel_native=kernel.native,
-            native_index_for_slim_index=mask._native_index_for_slim_index,
-        )
+            grid = aa.Grid2D.from_mask(mask=mask_sub)
 
-        curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_imaging_sparse_from(
-            w_tilde_preload=w_tilde_preload,
-            w_tilde_indexes=w_tilde_indexes.astype("int"),
-            w_tilde_lengths=w_tilde_lengths.astype("int"),
-            pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
-            slim_index_for_sub_slim_index=mask._slim_index_for_sub_slim_index,
-            sub_size=mask.sub_size,
-            pixelization_pixels=pixelization.pixels,
-        )
+            mapper = pixelization.mapper_from_grid_and_sparse_grid(grid=grid)
 
-        blurred_mapping_matrix = convolver.convolve_mapping_matrix(
-            mapping_matrix=mapping_matrix
-        )
+            mapping_matrix = mapper.mapping_matrix
 
-        curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
-        )
+            w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion.w_tilde_preload_imaging_from(
+                noise_map_native=noise_map.native,
+                kernel_native=kernel.native,
+                native_index_for_slim_index=mask._native_index_for_slim_index,
+            )
 
-        assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, 1.0e-4)
+            data_to_pix_unique, data_weights, pix_lengths = aa.util.inversion.data_slim_to_pixelization_unique_from(
+                data_pixels=w_tilde_preload.shape[0],
+                pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
+                sub_size=sub_size,
+            )
 
-    # def test__curvature_matrix_via_w_tilde_preload_two_methods_agree__sub_size_1(self):
-    #
-    #     mask = aa.Mask2D.circular(
-    #         shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
-    #     )
-    #
-    #     np.random.seed(1)
-    #     noise_map = np.random.uniform(size=mask.shape_native)
-    #     noise_map = aa.Array2D.manual_mask(array=noise_map, mask=mask)
-    #
-    #     kernel = aa.Kernel2D.from_gaussian(
-    #         shape_native=(7, 7),
-    #         pixel_scales=mask.pixel_scales,
-    #         sigma=1.0,
-    #         normalize=True,
-    #     )
-    #
-    #     convolver = aa.Convolver(mask=mask, kernel=kernel)
-    #
-    #     pixelization = aa.pix.Rectangular(shape=(20, 20))
-    #
-    #     mapper = pixelization.mapper_from_grid_and_sparse_grid(
-    #         grid=mask.masked_grid_sub_1
-    #     )
-    #
-    #     mapping_matrix = mapper.mapping_matrix
-    #
-    #     w_tilde_preload, w_tilde_indexes, w_tilde_lengths = inversion_util_sub.w_tilde_imaging_sparse_from(
-    #         noise_map_native=noise_map.native,
-    #         kernel_native=kernel.native,
-    #         native_index_for_slim_index=mask._native_index_for_slim_index,
-    #     )
-    #
-    #     curvature_matrix_via_w_tilde = inversion_util_sub.curvature_matrix_via_w_tilde_imaging_sparse_from(
-    #         w_tilde_preload=w_tilde_preload,
-    #         w_tilde_indexes=w_tilde_indexes.astype("int"),
-    #         w_tilde_lengths=w_tilde_lengths.astype("int"),
-    #         pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
-    #         slim_index_for_sub_slim_index=mask._slim_index_for_sub_slim_index,
-    #         sub_size=mask.sub_size,
-    #         pixelization_pixels=pixelization.pixels,
-    #     )
-    #
-    #     blurred_mapping_matrix = convolver.convolve_mapping_matrix(
-    #         mapping_matrix=mapping_matrix
-    #     )
-    #
-    #     curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
-    #         mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
-    #     )
-    #
-    #     assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, 1.0e-4)
-    #
-    # def test__curvature_matrix_via_w_tilde_preload_two_methods_agree__sub_size_3(self):
-    #
-    #     mask = aa.Mask2D.circular(
-    #         shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
-    #     )
-    #
-    #     noise_map = np.random.uniform(size=mask.shape_native)
-    #     noise_map = aa.Array2D.manual_mask(array=noise_map, mask=mask)
-    #
-    #     kernel = aa.Kernel2D.from_gaussian(
-    #         shape_native=(7, 7),
-    #         pixel_scales=mask.pixel_scales,
-    #         sigma=1.0,
-    #         normalize=True,
-    #     )
-    #
-    #     convolver = aa.Convolver(mask=mask, kernel=kernel)
-    #
-    #     pixelization = aa.pix.Rectangular(shape=(20, 20))
-    #
-    #     mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
-    #
-    #     grid = aa.Grid2D.from_mask(mask=mask_sub_3)
-    #
-    #     grid = aa.Grid2D.uniform(shape_native=(25, 25), pixel_scales=0.1)
-    #
-    #     print(grid.slim[0:20])
-    #     print(grid.native[0, 0:20])
-    #     print(grid.mask._native_index_for_slim_index[0])
-    #     print(grid.mask._native_index_for_slim_index[4])
-    #     print(grid.mask._sub_mask_index_for_sub_mask_1d_index[4])
-    #     stop
-    #
-    #     mapper = pixelization.mapper_from_grid_and_sparse_grid(grid=grid)
-    #
-    #     mapping_matrix = mapper.mapping_matrix
-    #
-    #     w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion.w_tilde_imaging_sparse_from(
-    #         noise_map_native=noise_map.native,
-    #         kernel_native=kernel.native,
-    #         native_index_for_slim_index=mask._native_index_for_slim_index,
-    #     )
-    #
-    #     curvature_matrix_via_w_tilde = inversion_util_sub.curvature_matrix_via_w_tilde_imaging_sparse_from(
-    #         w_tilde_preload=w_tilde_preload,
-    #         w_tilde_indexes=w_tilde_indexes.astype("int"),
-    #         w_tilde_lengths=w_tilde_lengths.astype("int"),
-    #         pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
-    #         slim_index_for_sub_slim_index=mask._slim_index_for_sub_slim_index,
-    #         sub_size=mask_sub_3.sub_size,
-    #         pixelization_pixels=pixelization.pixels,
-    #     )
-    #
-    #     blurred_mapping_matrix = convolver.convolve_mapping_matrix(
-    #         mapping_matrix=mapping_matrix
-    #     )
-    #
-    #     curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
-    #         mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
-    #     )
-    #
-    #     for i in range(curvature_matrix.shape[0]):
-    #
-    #         print(
-    #             i,
-    #             i + 1,
-    #             curvature_matrix[i, i + 1],
-    #             curvature_matrix_via_w_tilde[i, i + 1],
-    #         )
-    #         print(i, i, curvature_matrix[i, i], curvature_matrix_via_w_tilde[i, i])
-    #     stop
-    #
-    #     assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, 1.0e-4)
+            curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_preload_imaging_from(
+                w_tilde_preload=w_tilde_preload,
+                w_tilde_indexes=w_tilde_indexes.astype("int"),
+                w_tilde_lengths=w_tilde_lengths.astype("int"),
+                data_to_pix_unique=data_to_pix_unique.astype("int"),
+                data_weights=data_weights,
+                pix_lengths=pix_lengths.astype("int"),
+                pix_pixels=pixelization.pixels,
+            )
+
+            blurred_mapping_matrix = convolver.convolve_mapping_matrix(
+                mapping_matrix=mapping_matrix
+            )
+
+            curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+            )
+
+            assert curvature_matrix_via_w_tilde == pytest.approx(
+                curvature_matrix, 1.0e-4
+            )
 
 
 class TestDataVectorFromData:
@@ -636,8 +537,76 @@ class TestCurvatureMatrixFromBlurred:
         assert (curvature_matrix_via_mapping_matrix == curvature_matrix).all()
 
 
-class TestPixelizationResiduals:
-    def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
+class TestMappedReconstructedDataFrom:
+    def test__mapped_reconstructed_data_via_mapping_matrix_from(self):
+
+        mapping_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
+
+        reconstruction = np.array([1.0, 1.0, 2.0])
+
+        mapped_reconstructed_data = aa.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapping_matrix=mapping_matrix, reconstruction=reconstruction
+        )
+
+        assert (mapped_reconstructed_data == np.array([1.0, 1.0, 2.0])).all()
+
+        mapping_matrix = np.array(
+            [[0.25, 0.50, 0.25], [0.0, 1.0, 0.0], [0.0, 0.25, 0.75]]
+        )
+
+        reconstruction = np.array([1.0, 1.0, 2.0])
+
+        mapped_reconstructed_data = aa.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapping_matrix=mapping_matrix, reconstruction=reconstruction
+        )
+
+        assert (mapped_reconstructed_data == np.array([1.25, 1.0, 1.75])).all()
+
+    def test__mapped_reconstructed_data_via_image_to_pix_unique_from(self):
+
+        pixelization_index_for_sub_slim_index = np.array([0, 1, 2])
+
+        data_to_pix_unique, data_weights, pix_lengths = aa.util.inversion.data_slim_to_pixelization_unique_from(
+            data_pixels=3,
+            pixelization_index_for_sub_slim_index=pixelization_index_for_sub_slim_index,
+            sub_size=1,
+        )
+
+        reconstruction = np.array([1.0, 1.0, 2.0])
+
+        mapped_reconstructed_data = aa.util.inversion.mapped_reconstructed_data_via_image_to_pix_unique_from(
+            data_to_pix_unique=data_to_pix_unique.astype("int"),
+            data_weights=data_weights,
+            pix_lengths=pix_lengths.astype("int"),
+            reconstruction=reconstruction,
+        )
+
+        assert (mapped_reconstructed_data == np.array([1.0, 1.0, 2.0])).all()
+
+        pixelization_index_for_sub_slim_index = np.array(
+            [0, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2]
+        )
+
+        data_to_pix_unique, data_weights, pix_lengths = aa.util.inversion.data_slim_to_pixelization_unique_from(
+            data_pixels=3,
+            pixelization_index_for_sub_slim_index=pixelization_index_for_sub_slim_index,
+            sub_size=2,
+        )
+
+        reconstruction = np.array([1.0, 1.0, 2.0])
+
+        mapped_reconstructed_data = aa.util.inversion.mapped_reconstructed_data_via_image_to_pix_unique_from(
+            data_to_pix_unique=data_to_pix_unique.astype("int"),
+            data_weights=data_weights,
+            pix_lengths=pix_lengths.astype("int"),
+            reconstruction=reconstruction,
+        )
+
+        assert (mapped_reconstructed_data == np.array([1.25, 1.0, 1.75])).all()
+
+
+class TestPixelizationQuantity:
+    def test__residuals__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self,
     ):
 
@@ -655,7 +624,9 @@ class TestPixelizationResiduals:
 
         assert (pixelization_residuals == np.zeros(3)).all()
 
-    def test__pixelization_not_perfect_fit__quantities_like_residuals_non_zero(self):
+    def test__residuals__pixelization_not_perfect_fit__quantities_like_residuals_non_zero(
+        self
+    ):
 
         pixelization_values = np.ones(3)
         reconstructed_data_1d = 2.0 * np.ones(9)
@@ -685,9 +656,7 @@ class TestPixelizationResiduals:
 
         assert (pixelization_residuals == np.array([0.0, 1.0, 2.0])).all()
 
-
-class TestPixelizationNormalizedResiduals:
-    def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
+    def test__normalized_residuals__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self,
     ):
 
@@ -707,7 +676,9 @@ class TestPixelizationNormalizedResiduals:
 
         assert (pixelization_normalized_residuals == np.zeros(3)).all()
 
-    def test__pixelization_not_perfect_fit__quantities_like_residuals_non_zero(self):
+    def test__normalized_residuals__pixelization_not_perfect_fit__quantities_like_residuals_non_zero(
+        self
+    ):
 
         pixelization_values = np.ones(3)
         reconstructed_data_1d = 2.0 * np.ones(9)
@@ -741,9 +712,7 @@ class TestPixelizationNormalizedResiduals:
 
         assert (pixelization_normalized_residuals == np.array([0.0, 1.0, 1.0])).all()
 
-
-class TestPixelizationChiSquareds:
-    def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
+    def test__chi_squared__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self,
     ):
 
@@ -763,7 +732,7 @@ class TestPixelizationChiSquareds:
 
         assert (pixelization_chi_squareds == np.zeros(3)).all()
 
-    def test__pixelization_not_perfect_fit__quantities_like_residuals_non_zero(self):
+    def test__chi_squared__not_perfect_fit__quantities_like_residuals_non_zero(self):
 
         pixelization_values = np.ones(3)
         reconstructed_data_1d = 2.0 * np.ones(9)

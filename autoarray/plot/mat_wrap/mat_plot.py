@@ -115,6 +115,7 @@ class AbstractMatPlot:
         self.output = output
 
         self.number_subplots = None
+        self.subplot_shape = None
         self.subplot_index = None
 
     def set_for_subplot(self, is_for_subplot: bool):
@@ -147,6 +148,10 @@ class AbstractMatPlot:
         number_subplots
             The number of subplots that are to be plotted in the figure.
         """
+
+        if self.subplot_shape is not None:
+            return self.subplot_shape
+
         if number_subplots <= 2:
             return 1, 2
         elif number_subplots <= 4:

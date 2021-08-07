@@ -40,7 +40,7 @@ def inversion(
 
     if isinstance(dataset, imaging.Imaging):
 
-        return InversionImagingMatrix.from_data_mapper_and_regularization(
+        return InversionImagingMatrix.from_data_via_pixelization_convolution(
             image=dataset.image,
             noise_map=dataset.noise_map,
             convolver=dataset.convolver,
@@ -253,8 +253,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         noise_map: array_2d.Array2D,
         convolver: conv.Convolver,
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
+        blurred_mapping_matrix,
         regularization: reg.Regularization,
-        blurred_mapping_matrix: np.ndarray,
         curvature_matrix: np.ndarray,
         regularization_matrix: np.ndarray,
         curvature_reg_matrix: np.ndarray,
@@ -297,7 +297,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
-        super(InversionImagingMatrix, self).__init__(
+        super().__init__(
             noise_map=noise_map,
             mapper=mapper,
             regularization=regularization,
@@ -318,7 +318,57 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         self.blurred_mapping_matrix = blurred_mapping_matrix
 
     @classmethod
-    def from_data_mapper_and_regularization(
+    def from_data_via_w_tilde(
+        cls,
+        image: array_2d.Array2D,
+        noise_map: array_2d.Array2D,
+        convolver: conv.Convolver,
+        w_tilde: imaging.WTilde,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
+        regularization: reg.Regularization,
+        settings=SettingsInversion(),
+        preloads=pload.Preloads(),
+    ):
+
+        blurred_mapping_matrix = convolver.convolve_mapping_matrix(
+            mapping_matrix=mapper.mapping_matrix
+        )
+
+        data_vector = inversion_util.data_vector_via_blurred_mapping_matrix_from(
+            blurred_mapping_matrix=blurred_mapping_matrix,
+            image=image,
+            noise_map=noise_map,
+        )
+
+        ip_to_sp_unique, ip_weights, sp_lengths = inversion_util.data_slim_to_pixelization_unique_from(
+            data_pixels=w_tilde.preload.shape[0],
+            pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
+            sub_size=image.sub_size,
+        )
+
+        curvature_matrix = inversion_util.curvature_matrix_via_w_tilde_preload_imaging_from(
+            w_tilde_preload=w_tilde.preload,
+            w_tilde_indexes=w_tilde.indexes,
+            w_tilde_lengths=w_tilde.lengths,
+            data_to_pix_unique=ip_to_sp_unique.astype("int"),
+            data_weights=ip_weights,
+            pix_lengths=sp_lengths.astype("int"),
+            pix_pixels=mapper.pixels,
+        )
+
+        return cls.from_data_vector_and_curvature_matrix(
+            image=image,
+            noise_map=noise_map,
+            convolver=convolver,
+            data_vector=data_vector,
+            curvature_matrix=curvature_matrix,
+            mapper=mapper,
+            regularization=regularization,
+            settings=settings,
+        )
+
+    @classmethod
+    def from_data_via_pixelization_convolution(
         cls,
         image: array_2d.Array2D,
         noise_map: array_2d.Array2D,
@@ -364,6 +414,32 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
                 ),
             )
 
+        return cls.from_data_vector_and_curvature_matrix(
+            image=image,
+            noise_map=noise_map,
+            convolver=convolver,
+            data_vector=data_vector,
+            curvature_matrix=curvature_matrix,
+            blurred_mapping_matrix=blurred_mapping_matrix,
+            mapper=mapper,
+            regularization=regularization,
+            settings=settings,
+        )
+
+    @classmethod
+    def from_data_vector_and_curvature_matrix(
+        cls,
+        image: array_2d.Array2D,
+        noise_map: array_2d.Array2D,
+        convolver: conv.Convolver,
+        data_vector: np.ndarray,
+        curvature_matrix: np.ndarray,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
+        blurred_mapping_matrix,
+        regularization: reg.Regularization,
+        settings=SettingsInversion(),
+    ):
+
         regularization_matrix = regularization.regularization_matrix_from_mapper(
             mapper=mapper
         )
@@ -386,9 +462,9 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             convolver=convolver,
             mapper=mapper,
             regularization=regularization,
-            blurred_mapping_matrix=blurred_mapping_matrix,
             curvature_matrix=curvature_matrix,
             regularization_matrix=regularization_matrix,
+            blurred_mapping_matrix=blurred_mapping_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
             reconstruction=values,
             settings=settings,
@@ -396,7 +472,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
 
     @property
     def mapped_reconstructed_image(self):
-        reconstructed_image = inversion_util.mapped_reconstructed_data_from(
+
+        reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=self.blurred_mapping_matrix,
             reconstruction=self.reconstruction,
         )
@@ -511,7 +588,7 @@ class AbstractInversionInterferometer(AbstractInversion):
     @property
     def mapped_reconstructed_image(self):
 
-        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_from(
+        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=self.mapper.mapping_matrix,
             reconstruction=self.reconstruction,
         )

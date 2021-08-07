@@ -286,12 +286,15 @@ class TestImagingApplyMask:
         assert (masked_imaging_7x7.blurring_grid.vtx == blurring_grid.vtx).all()
         assert (masked_imaging_7x7.blurring_grid.wts == blurring_grid.wts).all()
 
-    def test__psf_and_convolvers(self, imaging_7x7, sub_mask_2d_7x7):
+    def test__psf_convolvers_and_w_tilde_native(self, imaging_7x7, sub_mask_2d_7x7):
 
         masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
 
         assert type(masked_imaging_7x7.psf) == aa.Kernel2D
         assert type(masked_imaging_7x7.convolver) == aa.Convolver
+        assert masked_imaging_7x7.w_tilde.preload.shape == (9, 25)
+        assert masked_imaging_7x7.w_tilde.indexes.shape == (9, 25)
+        assert masked_imaging_7x7.w_tilde.lengths.shape == (9,)
 
     def test__masked_imaging__uses_signal_to_noise_limit_and_radii(
         self, imaging_7x7, mask_2d_7x7
