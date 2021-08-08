@@ -378,6 +378,52 @@ class Convolver:
 
         return blurred_image_1d
 
+    def convolve_image_no_blurring(self, image):
+        """For a given 1D array and blurring array, convolve the two using this convolver.
+
+        Parameters
+        -----------
+        image
+            1D array of the values which are to be blurred with the convolver's PSF.
+        blurring_image
+            1D array of the blurring values which blur into the array after PSF convolution.
+        """
+
+        convolved_image = self.convolve_no_blurring_jit(
+            image_1d_array=image.binned.slim,
+            image_frame_1d_indexes=self.image_frame_1d_indexes,
+            image_frame_1d_kernels=self.image_frame_1d_kernels,
+            image_frame_1d_lengths=self.image_frame_1d_lengths,
+        )
+
+        return array_2d.Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
+
+    @staticmethod
+    @decorator_util.jit()
+    def convolve_no_blurring_jit(
+        image_1d_array,
+        image_frame_1d_indexes,
+        image_frame_1d_kernels,
+        image_frame_1d_lengths,
+    ):
+
+        blurred_image_1d = np.zeros(image_1d_array.shape)
+
+        for image_1d_index in range(len(image_1d_array)):
+
+            frame_1d_indexes = image_frame_1d_indexes[image_1d_index]
+            frame_1d_kernel = image_frame_1d_kernels[image_1d_index]
+            frame_1d_length = image_frame_1d_lengths[image_1d_index]
+            image_value = image_1d_array[image_1d_index]
+
+            for kernel_1d_index in range(frame_1d_length):
+
+                vector_index = frame_1d_indexes[kernel_1d_index]
+                kernel_value = frame_1d_kernel[kernel_1d_index]
+                blurred_image_1d[vector_index] += image_value * kernel_value
+
+        return blurred_image_1d
+
     def convolve_mapping_matrix(self, mapping_matrix):
         """For a given inversion mapping matrix, convolve every pixel's mapped with the PSF kernel.
 

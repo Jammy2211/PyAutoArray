@@ -10,40 +10,45 @@ def data_slim_to_pixelization_unique_from(
     data_pixels, pixelization_index_for_sub_slim_index: np.ndarray, sub_size: int
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Returns the curvature matrix `F` (see Warren & Dye 2003) by computing it using `w_tilde_preload`
-    (see `w_tilde_preload_interferometer_from`) for an imaging inversion.
+    Create an array describing the unique mappings between the sub-pixels of every slim data pixel and the pixelization
+    pixels, which is used to perform efficiently linear algebra calculations.
 
-    To compute the curvature matrix via w_tilde the following matrix multiplication is normally performed:
+    For example, assuming `sub_size=2`:
 
-    curvature_matrix = mapping_matrix.T * w_tilde * mapping matrix
+    - If 3 sub-pixels in image pixel 0 map to pixelization pixel 2 then `data_pix_to_unique[0, 0] = 2`.
+    - If the fourth sub-pixel maps to pixelizaiton pixel 4, then `data_to_pix_unique[0, 1] = 4`.
 
-    This function speeds this calculation up in two ways:
+    The size of the second index depends on the number of unique sub-pixel to pixelization pixels mappings in a given
+    data pixel. In the example above, there were only two unique sets of mapping, but for high levels of sub-gridding
+    there could be many more unique mappings all of which must be stored.
 
-    1) Instead of using `w_tilde` (dimensions [image_pixels, image_pixels] it uses `w_tilde_preload` (dimensions
-    [image_pixels, kernel_overlap]). The massive reduction in the size of this matrix in memory allows for much fast
-    computation.
+    The array `data_to_pix_unique` does not describe how many sub-pixels uniquely map to each pixelization pixel for
+    a given data pixel. This information is contained in the array `data_weights`. For the example above,
+    where `sub_size=2` and therefore `sub_fraction=0.25`:
 
-    2) It omits the `mapping_matrix` and instead uses directly the 1D vector that maps every image pixel to a source
-    pixel `native_index_for_slim_index`. This exploits the sparsity in the `mapping_matrix` to directly
-    compute the `curvature_matrix` (e.g. it condenses the triple matrix multiplication into a double for loop!).
+    - `data_weights[0, 0] = 0.75` (because 3 sub-pixels mapped to this pixelization pixel).
+    - `data_weights[0, 1] = 0.25` (because 1 sub-pixel mapped to this pixelization pixel).
+
+    The `sub_fractions` are stored as opposed to the number of sub-pixels, because these values are used directly
+    when performing the linear algebra calculation.
+
+    The array `pix_lengths` in a 1D array of dimensions [data_pixels] describing how many unique pixelization pixels
+    each data pixel's set of sub-pixels maps too.
 
     Parameters
     ----------
-    w_tilde_preload
-        A matrix that precomputes the values for fast computation of w_tilde, which in this function is used to bypass
-        the creation of w_tilde altogether and go directly to the `curvature_matrix`.
+    data_pixels
+        The total number of data pixels in the dataset.
     pixelization_index_for_sub_slim_index
         The mappings between the pixelization grid's pixels and the data's slimmed pixels.
-    native_index_for_slim_index
-        An array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its corresponding
-        native 2D pixel using its (y,x) pixel indexes.
-    pixelization_pixels
-        The total number of pixels in the pixelization that reconstructs the data.
+    sub_size
+        The size of the sub-grid defining the number of sub-pixels in every data pixel.
 
     Returns
     -------
     ndarray
-        The curvature matrix `F` (see Warren & Dye 2003).
+        The unique mappings between the sub-pixels of every data pixel and the pixelization pixels, alongside arrays
+        that give the weights and total number of mappings.
     """
 
     sub_fraction = 1.0 / (sub_size ** 2.0)

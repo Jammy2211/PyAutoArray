@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class WTilde:
-    def __init__(self, preload, indexes, lengths):
+    def __init__(self, curvature_preload, indexes, lengths):
 
-        self.preload = preload
+        self.curvature_preload = curvature_preload
         self.indexes = indexes
         self.lengths = lengths
 
@@ -160,7 +160,11 @@ class Imaging(abstract_dataset.AbstractDataset):
                 native_index_for_slim_index=self.mask._native_index_for_slim_index,
             )
 
-            self.w_tilde = WTilde(preload=preload, indexes=indexes, lengths=lengths)
+            self.w_tilde = WTilde(
+                curvature_preload=preload,
+                indexes=indexes.astype("int"),
+                lengths=lengths.astype("int"),
+            )
 
         else:
 

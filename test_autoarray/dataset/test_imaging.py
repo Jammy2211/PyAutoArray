@@ -292,7 +292,7 @@ class TestImagingApplyMask:
 
         assert type(masked_imaging_7x7.psf) == aa.Kernel2D
         assert type(masked_imaging_7x7.convolver) == aa.Convolver
-        assert masked_imaging_7x7.w_tilde.preload.shape == (9, 25)
+        assert masked_imaging_7x7.w_tilde.curvature_preload.shape == (9, 25)
         assert masked_imaging_7x7.w_tilde.indexes.shape == (9, 25)
         assert masked_imaging_7x7.w_tilde.lengths.shape == (9,)
 

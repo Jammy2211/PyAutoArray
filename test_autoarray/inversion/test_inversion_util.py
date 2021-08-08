@@ -19,7 +19,7 @@ class TestWTilde:
 
         native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-        w_tilde = aa.util.inversion.w_tilde_imaging_from(
+        w_tilde = aa.util.inversion.w_tilde_curvature_imaging_from(
             noise_map_native=noise_map_2d,
             kernel_native=kernel,
             native_index_for_slim_index=native_index_for_slim_index,
@@ -37,7 +37,7 @@ class TestWTilde:
             1.0e-4,
         )
 
-    def test__w_tilde_data_preload_imaging_from(self):
+    def test__w_tilde_data_imaging_from(self):
 
         image_2d = np.array(
             [
@@ -61,14 +61,14 @@ class TestWTilde:
 
         native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-        w_tilde_data_preload = aa.util.inversion.w_tilde_data_preload_imaging_from(
+        w_tilde_data = aa.util.inversion.w_tilde_data_imaging_from(
             image_native=image_2d,
             noise_map_native=noise_map_2d,
             kernel_native=kernel,
             native_index_for_slim_index=native_index_for_slim_index,
         )
 
-        assert (w_tilde_data_preload == np.array([5.0, 5.0, 1.5, 1.5])).all()
+        assert (w_tilde_data == np.array([5.0, 5.0, 1.5, 1.5])).all()
 
     def test__w_tilde_curvature_preload_imaging_from(self):
 
@@ -299,7 +299,7 @@ class TestDataVectorFromData:
 
         assert (data_vector_complex_via_blurred == data_vector_via_transformed).all()
 
-    def test__data_vector_via_w_tilde_data_preload_two_methods_agree(self):
+    def test__data_vector_via_w_tilde_data_two_methods_agree(self):
 
         mask = aa.Mask2D.circular(
             shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
@@ -342,7 +342,7 @@ class TestDataVectorFromData:
                 noise_map=noise_map,
             )
 
-            w_tilde_data_preload = aa.util.inversion.w_tilde_data_preload_imaging_from(
+            w_tilde_data = aa.util.inversion.w_tilde_data_imaging_from(
                 image_native=image.native,
                 noise_map_native=noise_map.native,
                 kernel_native=kernel.native,
@@ -350,13 +350,13 @@ class TestDataVectorFromData:
             )
 
             data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
-                data_pixels=w_tilde_data_preload.shape[0],
+                data_pixels=w_tilde_data.shape[0],
                 pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
                 sub_size=sub_size,
             )
 
-            data_vector_via_w_tilde = aa.util.inversion.data_vector_via_w_tilde_data_preload_imaging_from(
-                w_tilde_data_preload=w_tilde_data_preload,
+            data_vector_via_w_tilde = aa.util.inversion.data_vector_via_w_tilde_data_imaging_from(
+                w_tilde_data=w_tilde_data,
                 data_to_pix_unique=data_to_pix_unique.astype("int"),
                 data_weights=data_weights,
                 pix_lengths=pix_lengths.astype("int"),
@@ -534,7 +534,7 @@ class TestCurvatureMatrixFromBlurred:
 
         mapping_matrix = mapper.mapping_matrix
 
-        w_tilde = aa.util.inversion.w_tilde_imaging_from(
+        w_tilde = aa.util.inversion.w_tilde_curvature_imaging_from(
             noise_map_native=noise_map.native,
             kernel_native=kernel.native,
             native_index_for_slim_index=mask._native_index_for_slim_index,
@@ -596,7 +596,7 @@ class TestCurvatureMatrixFromBlurred:
             )
 
             curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-                w_tilde_preload=w_tilde_preload,
+                w_tilde_curvature_preload=w_tilde_preload,
                 w_tilde_indexes=w_tilde_indexes.astype("int"),
                 w_tilde_lengths=w_tilde_lengths.astype("int"),
                 data_to_pix_unique=data_to_pix_unique.astype("int"),

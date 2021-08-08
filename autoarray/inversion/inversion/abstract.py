@@ -149,10 +149,6 @@ class AbstractInversion:
         )
 
     @property
-    def mapped_reconstructed_image(self):
-        raise NotImplementedError()
-
-    @property
     def residual_map(self):
         raise NotImplementedError()
 
