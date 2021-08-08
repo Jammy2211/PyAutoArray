@@ -308,6 +308,31 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         )
 
     @property
+    def blurred_mapping_matrix(self) -> np.ndarray:
+
+        return self.convolver.convolve_mapping_matrix(
+            mapping_matrix=self.mapper.mapping_matrix
+        )
+
+    @property
+    def curvature_matrix_sparse_preload(self) -> np.ndarray:
+
+        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = inversion_util.curvature_matrix_sparse_preload_via_mapping_matrix_from(
+            mapping_matrix=self.blurred_mapping_matrix
+        )
+
+        return curvature_matrix_sparse_preload
+
+    @property
+    def curvature_matrix_preload_counts(self) -> np.ndarray:
+
+        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = inversion_util.curvature_matrix_sparse_preload_via_mapping_matrix_from(
+            mapping_matrix=self.blurred_mapping_matrix
+        )
+
+        return curvature_matrix_preload_counts
+
+    @property
     def residual_map(self):
         return inversion_util.inversion_residual_map_from(
             pixelization_values=self.reconstruction,

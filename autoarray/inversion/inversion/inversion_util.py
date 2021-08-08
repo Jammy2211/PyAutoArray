@@ -68,7 +68,7 @@ def w_tilde_data_imaging_from(
                     ip0_y + k0_y + kernel_shift_y, ip0_x + k0_x + kernel_shift_x
                 ]
 
-                if weight_value > 0.0:
+                if not np.isnan(weight_value):
                     value += kernel_native[k0_y, k0_x] * weight_value
 
         w_tilde_data[ip0] = value

@@ -170,9 +170,7 @@ class Imaging(abstract_dataset.AbstractDataset):
 
             self.convolver = None
             self.blurring_grid = None
-            self.w_tilde_preload = None
-            self.w_tilde_indexes = None
-            self.w_tilde_lengths = None
+            self.w_tilde = WTilde(curvature_preload=None, indexes=None, lengths=None)
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Imaging):

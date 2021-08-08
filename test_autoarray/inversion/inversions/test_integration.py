@@ -96,6 +96,7 @@ class TestImagingRectangular:
             settings=aa.SettingsInversion(check_solution=False),
         )
 
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
         assert (inversion.regularization_matrix == regularization_matrix).all()
         assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
