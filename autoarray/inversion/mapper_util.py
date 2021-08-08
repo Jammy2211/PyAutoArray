@@ -1,7 +1,87 @@
 import numpy as np
+from typing import Tuple
 from autoarray import decorator_util
 
 from autoarray import exc
+
+
+@decorator_util.jit()
+def data_slim_to_pixelization_unique_from(
+    data_pixels, pixelization_index_for_sub_slim_index: np.ndarray, sub_size: int
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Returns the curvature matrix `F` (see Warren & Dye 2003) by computing it using `w_tilde_preload`
+    (see `w_tilde_preload_interferometer_from`) for an imaging inversion.
+
+    To compute the curvature matrix via w_tilde the following matrix multiplication is normally performed:
+
+    curvature_matrix = mapping_matrix.T * w_tilde * mapping matrix
+
+    This function speeds this calculation up in two ways:
+
+    1) Instead of using `w_tilde` (dimensions [image_pixels, image_pixels] it uses `w_tilde_preload` (dimensions
+    [image_pixels, kernel_overlap]). The massive reduction in the size of this matrix in memory allows for much fast
+    computation.
+
+    2) It omits the `mapping_matrix` and instead uses directly the 1D vector that maps every image pixel to a source
+    pixel `native_index_for_slim_index`. This exploits the sparsity in the `mapping_matrix` to directly
+    compute the `curvature_matrix` (e.g. it condenses the triple matrix multiplication into a double for loop!).
+
+    Parameters
+    ----------
+    w_tilde_preload
+        A matrix that precomputes the values for fast computation of w_tilde, which in this function is used to bypass
+        the creation of w_tilde altogether and go directly to the `curvature_matrix`.
+    pixelization_index_for_sub_slim_index
+        The mappings between the pixelization grid's pixels and the data's slimmed pixels.
+    native_index_for_slim_index
+        An array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its corresponding
+        native 2D pixel using its (y,x) pixel indexes.
+    pixelization_pixels
+        The total number of pixels in the pixelization that reconstructs the data.
+
+    Returns
+    -------
+    ndarray
+        The curvature matrix `F` (see Warren & Dye 2003).
+    """
+
+    sub_fraction = 1.0 / (sub_size ** 2.0)
+
+    data_to_pix_unique = -1 * np.ones((data_pixels, sub_size ** 2))
+    data_weights = np.zeros((data_pixels, sub_size ** 2))
+    pix_lengths = np.zeros(data_pixels)
+
+    for ip in range(data_pixels):
+
+        pix_size = 0
+
+        ip_sub_start = ip * sub_size ** 2
+        ip_sub_end = ip_sub_start + sub_size ** 2
+
+        for ip_sub in range(ip_sub_start, ip_sub_end):
+
+            pix = pixelization_index_for_sub_slim_index[ip_sub]
+
+            stored_already = False
+
+            for i in range(pix_size):
+
+                if data_to_pix_unique[ip, i] == pix:
+
+                    data_weights[ip, i] += sub_fraction
+                    stored_already = True
+
+            if not stored_already:
+
+                data_to_pix_unique[ip, pix_size] = pix
+                data_weights[ip, pix_size] += sub_fraction
+
+                pix_size += 1
+
+        pix_lengths[ip] = pix_size
+
+    return data_to_pix_unique, data_weights, pix_lengths
 
 
 @decorator_util.jit()

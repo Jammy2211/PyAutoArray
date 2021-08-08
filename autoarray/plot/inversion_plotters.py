@@ -3,7 +3,7 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.plot import structure_plotters
-from autoarray.inversion import inversions as inv
+from autoarray.inversion.inversion.abstract import AbstractInversion
 
 import numpy as np
 
@@ -11,7 +11,7 @@ import numpy as np
 class InversionPlotter(structure_plotters.MapperPlotter):
     def __init__(
         self,
-        inversion: inv.AbstractInversion,
+        inversion: AbstractInversion,
         mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),

@@ -18,7 +18,8 @@ from autoarray.operators import transformer
 from autoarray.fit import fit
 from autoarray.inversion import regularization as reg
 from autoarray.inversion import mappers
-from autoarray.inversion import inversions
+from autoarray.inversion.inversion.imaging import inversion_imaging_from
+from autoarray.inversion.inversion.interferometer import inversion_interferometer_from
 
 
 def make_mask_1d_7():
@@ -374,7 +375,7 @@ def make_voronoi_mapper_9_3x3():
 def make_rectangular_inversion_7x7_3x3():
     regularization = reg.Constant(coefficient=1.0)
 
-    return inversions.inversion(
+    return inversion_imaging_from(
         dataset=make_masked_imaging_7x7(),
         mapper=make_rectangular_mapper_7x7_3x3(),
         regularization=regularization,
@@ -385,7 +386,7 @@ def make_voronoi_inversion_9_3x3():
 
     regularization = reg.Constant(coefficient=1.0)
 
-    return inversions.inversion(
+    return inversion_imaging_from(
         dataset=make_masked_imaging_7x7(),
         mapper=make_voronoi_mapper_9_3x3(),
         regularization=regularization,

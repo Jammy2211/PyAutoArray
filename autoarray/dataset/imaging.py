@@ -5,7 +5,7 @@ import copy
 
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
-from autoarray.inversion import inversion_util
+from autoarray.inversion.inversion import inversion_util
 from autoarray.mask import mask_2d as msk
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids.two_d import grid_2d
@@ -154,7 +154,7 @@ class Imaging(abstract_dataset.AbstractDataset):
             self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
                 kernel_shape_native=self.psf.shape_native
             )
-            preload, indexes, lengths = inversion_util.w_tilde_preload_imaging_from(
+            preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=self.noise_map.native,
                 kernel_native=self.psf.native,
                 native_index_for_slim_index=self.mask._native_index_for_slim_index,
