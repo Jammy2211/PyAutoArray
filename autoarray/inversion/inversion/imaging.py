@@ -17,26 +17,51 @@ from typing import Union
 def inversion_imaging_from(
     dataset,
     mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-    regularization,
-    use_w_tilde: bool = True,
-    settings=SettingsInversion(),
+    regularization: reg.Regularization,
+    settings: SettingsInversion = SettingsInversion(),
+    preloads: pload.Preloads = pload.Preloads(),
 ):
 
-    if use_w_tilde:
-        return InversionImagingMatrix.from_data_via_w_tilde(
-            image=dataset.image,
-            noise_map=dataset.noise_map,
-            convolver=dataset.convolver,
-            w_tilde=dataset.w_tilde,
-            mapper=mapper,
-            regularization=regularization,
-            settings=settings,
-        )
-
-    return InversionImagingMatrix.from_data_via_pixelization_convolution(
+    return inversion_imaging_unpacked_from(
         image=dataset.image,
         noise_map=dataset.noise_map,
         convolver=dataset.convolver,
+        w_tilde=dataset.w_tilde,
+        mapper=mapper,
+        regularization=regularization,
+        settings=settings,
+        preloads=preloads,
+    )
+
+
+def inversion_imaging_unpacked_from(
+    image: array_2d.Array2D,
+    noise_map: array_2d.Array2D,
+    convolver: conv.Convolver,
+    w_tilde,
+    mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
+    regularization: reg.Regularization,
+    settings: SettingsInversion = SettingsInversion(),
+    preloads: pload.Preloads = pload.Preloads(),
+):
+
+    if settings.use_w_tilde:
+
+        return InversionImagingMatrix.from_data_via_w_tilde(
+            image=image,
+            noise_map=noise_map,
+            convolver=convolver,
+            w_tilde=w_tilde,
+            mapper=mapper,
+            regularization=regularization,
+            settings=settings,
+            preloads=preloads,
+        )
+
+    return InversionImagingMatrix.from_data_via_pixelization_convolution(
+        image=image,
+        noise_map=noise_map,
+        convolver=convolver,
         mapper=mapper,
         regularization=regularization,
         settings=settings,

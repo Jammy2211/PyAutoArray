@@ -12,6 +12,7 @@ from autoarray.inversion import regularization as reg, mappers
 from scipy import sparse
 import pylops
 import typing
+from typing import Union
 
 
 def inversion_interferometer_from(
@@ -21,10 +22,28 @@ def inversion_interferometer_from(
     settings=SettingsInversion(),
 ):
 
-    return AbstractInversionInterferometer.from_data_mapper_and_regularization(
+    return inversion_interferometer_unpacked_from(
         visibilities=dataset.visibilities,
         noise_map=dataset.noise_map,
         transformer=dataset.transformer,
+        mapper=mapper,
+        regularization=regularization,
+        settings=settings,
+    )
+
+
+def inversion_interferometer_unpacked_from(
+    visibilities: vis.Visibilities,
+    noise_map: vis.VisibilitiesNoiseMap,
+    transformer: Union[trans.TransformerDFT, trans.TransformerNUFFT],
+    mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
+    regularization: reg.Regularization,
+    settings: SettingsInversion = SettingsInversion(),
+):
+    return AbstractInversionInterferometer.from_data_mapper_and_regularization(
+        visibilities=visibilities,
+        noise_map=noise_map,
+        transformer=transformer,
         mapper=mapper,
         regularization=regularization,
         settings=settings,

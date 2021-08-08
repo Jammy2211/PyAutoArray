@@ -863,16 +863,14 @@ class TestImagingWTildeMappingComparison:
             dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
-            use_w_tilde=True,
-            settings=aa.SettingsInversion(check_solution=False),
+            settings=aa.SettingsInversion(use_w_tilde=True),
         )
 
         inversion_mapping_matrices = aa.InversionImaging(
             dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
-            use_w_tilde=False,
-            settings=aa.SettingsInversion(check_solution=False),
+            settings=aa.SettingsInversion(use_w_tilde=False),
         )
 
         assert (inversion_w_tilde.image == inversion_mapping_matrices.image).all()
