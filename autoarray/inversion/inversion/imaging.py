@@ -152,7 +152,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
             data_pixels=w_tilde.curvature_preload.shape[0],
             pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
-            sub_size=image.sub_size,
+            sub_size=mapper.source_grid_slim.sub_size,
         )
 
         data_to_pix_unique = data_to_pix_unique.astype("int")

@@ -19,7 +19,6 @@ from autoarray.fit import fit
 from autoarray.inversion import regularization as reg
 from autoarray.inversion import mappers
 from autoarray.inversion.inversion.imaging import inversion_imaging_from
-from autoarray.inversion.inversion.interferometer import inversion_interferometer_from
 
 
 def make_mask_1d_7():
