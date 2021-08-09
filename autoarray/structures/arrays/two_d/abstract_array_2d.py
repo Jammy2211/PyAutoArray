@@ -402,16 +402,15 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         return self.__class__(array=array, mask=resized_mask)
 
-    def output_to_fits(self, file_path, overwrite=False):
+    def output_to_fits(self, file_path: str, overwrite: bool = False):
         """
         Output the array to a .fits file.
 
         Parameters
         ----------
-        file_path : str
-            The path the file is output to, including the filename and the ``.fits`` extension,
-            e.g. '/path/to/filename.fits'
-        overwrite : bool
+        file_path
+            The output path of the file, including the filename and the `.fits` extension e.g. '/path/to/filename.fits'
+        overwrite
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         array_2d_util.numpy_array_2d_to_fits(

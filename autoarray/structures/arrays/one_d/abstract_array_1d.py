@@ -42,6 +42,21 @@ class AbstractArray1D(abstract_structure.AbstractStructure1D):
 
         return array_1d.Array1D(array=array, mask=self.mask)
 
+    def output_to_fits(self, file_path: str, overwrite: bool = False):
+        """
+        Output the array to a .fits file.
+
+        Parameters
+        ----------
+        file_path
+            The output path of the file, including the filename and the `.fits` extension e.g. '/path/to/filename.fits'
+        overwrite
+            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
+        """
+        array_1d_util.numpy_array_1d_to_fits(
+            array_1d=self.native, file_path=file_path, overwrite=overwrite
+        )
+
     @property
     def readout_offsets(self):
         if self.header is not None:
