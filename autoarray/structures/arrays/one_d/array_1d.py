@@ -4,6 +4,7 @@ from autoarray.structures.arrays.one_d import abstract_array_1d
 from autoarray.mask import mask_1d as msk
 from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.arrays.one_d import array_1d_util
+from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.geometry import geometry_util
 
 from typing import Union, Tuple, List
@@ -152,7 +153,7 @@ class Array1D(abstract_array_1d.AbstractArray1D):
         fill_value : float
             The value all array elements are filled with.
         shape_native : Tuple[int]
-            The `D shape of the mask the array is paired with.
+            The 1D shape of the mask the array is paired with.
         pixel_scales: (float, ) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float,) structure.
@@ -172,6 +173,119 @@ class Array1D(abstract_array_1d.AbstractArray1D):
             sub_size=sub_size,
             origin=origin,
             header=header,
+        )
+
+    @classmethod
+    def zeros(
+        cls,
+        shape_native: Union[int, Tuple[int]],
+        pixel_scales: Union[float, Tuple[float]],
+        sub_size: int = 1,
+        origin: Tuple[float] = (0.0,),
+        header=None,
+    ) -> "Array1D":
+        """
+        Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with zeros, analogous to the
+        method np.zeros().
+
+        From 1D input the method cannot determine the 1D shape of the array and its mask, thus the `shape_native` must
+        be input into this method. The mask is setup as a unmasked `Mask1D` of size `shape_native`.
+
+        Parameters
+        ----------
+        shape_native : Tuple[int]
+            The 1D shape of the mask the array is paired with.
+        pixel_scales: (float, ) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
+            it is converted to a (float,) structure.
+        sub_size
+            The size (sub_size) of each unmasked pixels sub-array.
+        origin : (float,)
+            The (x) scaled units origin of the mask's coordinate system.
+        """
+        return cls.full(
+            fill_value=0.0,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            header=header,
+        )
+
+    @classmethod
+    def ones(
+        cls,
+        shape_native: Union[int, Tuple[int]],
+        pixel_scales: Union[float, Tuple[float]],
+        sub_size: int = 1,
+        origin: Tuple[float] = (0.0,),
+        header=None,
+    ) -> "Array1D":
+        """
+        Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with ones, analogous to the
+        method np.ones().
+
+        From 1D input the method cannot determine the 1D shape of the array and its mask, thus the `shape_native` must
+        be input into this method. The mask is setup as a unmasked `Mask1D` of size `shape_native`.
+
+        Parameters
+        ----------
+        shape_native : Tuple[int]
+            The 1D shape of the mask the array is paired with.
+        pixel_scales: (float, ) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
+            it is converted to a (float,) structure.
+        sub_size
+            The size (sub_size) of each unmasked pixels sub-array.
+        origin : (float,)
+            The (x) scaled units origin of the mask's coordinate system.
+        """
+        return cls.full(
+            fill_value=1.0,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            header=header,
+        )
+
+    @classmethod
+    def from_fits(cls, file_path, pixel_scales, hdu=0, sub_size=1, origin=(0.0, 0.0)):
+        """
+        Create an Array1D (see `AbstractArray1D.__new__`) by loading the array values from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The path the file is loaded from, including the filename and the `.fits` extension,
+            e.g. '/path/to/filename.fits'
+        hdu
+            The Header-Data Unit of the .fits file the array data is loaded from.
+        pixel_scales
+            The (x,) scaled units to pixel units conversion factors of every pixel. If this is input as a float,
+            it is converted to a (float,) structure.
+        sub_size
+            The sub-size of each unmasked pixels sub-array.
+        origin
+            The (x,) scaled units origin of the coordinate system.
+        """
+        array_1d = array_1d_util.numpy_array_1d_from_fits(file_path=file_path, hdu=hdu)
+
+        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
+        header_hdu_obj = array_2d_util.header_obj_from_fits(
+            file_path=file_path, hdu=hdu
+        )
+
+        return cls.manual_native(
+            array=array_1d.astype(
+                "float64"
+            ),  # Have to do this due to typing issues in 1D with astorpy fits.
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            header=abstract_array.Header(
+                header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj
+            ),
         )
 
     @property

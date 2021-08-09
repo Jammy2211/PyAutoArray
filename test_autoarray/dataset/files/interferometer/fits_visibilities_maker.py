@@ -40,10 +40,10 @@ fits.writeto(
     data=array56, filename=path.join(file_path, "3x2_fives_sixes.fits"), overwrite=True
 )
 
-new_hdul = fits.HDUList()
-new_hdul.append(fits.ImageHDU(array1))
-new_hdul.append(fits.ImageHDU(array2))
-new_hdul.append(fits.ImageHDU(array3))
-new_hdul.append(fits.ImageHDU(array4))
+hdu_list = fits.HDUList()
+hdu_list.append(fits.ImageHDU(array1))
+hdu_list.append(fits.ImageHDU(array2))
+hdu_list.append(fits.ImageHDU(array3))
+hdu_list.append(fits.ImageHDU(array4))
 
-new_hdul.writeto(path.join(file_path, "3x2_multiple_hdu.fits"), overwrite=True)
+hdu_list.writeto(path.join(file_path, "3x2_multiple_hdu.fits"), overwrite=True)

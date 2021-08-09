@@ -1,11 +1,38 @@
+from astropy.io import fits
 from os import path
+import os
 import numpy as np
+import shutil
 
 import autoarray as aa
 
-test_array_1d_dir = path.join(
+fits_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "array_1d"
 )
+
+
+def create_fits(fits_path,):
+
+    if path.exists(fits_path):
+        shutil.rmtree(fits_path)
+
+    os.makedirs(fits_path)
+
+    hdu_list = fits.HDUList()
+    hdu_list.append(fits.ImageHDU(np.ones(3)))
+    hdu_list[0].header.set("BITPIX", -64, "")
+    hdu_list.writeto(path.join(fits_path, "3_ones.fits"))
+
+    hdu_list = fits.HDUList()
+    hdu_list.append(fits.ImageHDU(np.ones(4)))
+    hdu_list[0].header.set("BITPIX", -64, "")
+    hdu_list.writeto(path.join(fits_path, "4_ones.fits"))
+
+
+def clean_fits(fits_path):
+
+    if path.exists(fits_path):
+        shutil.rmtree(fits_path)
 
 
 class TestAPI:
@@ -72,6 +99,75 @@ class TestAPI:
         assert array_1d.pixel_scale == 3.0
         assert array_1d.pixel_scales == (3.0,)
         assert array_1d.origin == (4.0,)
+
+    def test__ones_zeros__makes_array_1d_with_pixel_scale__filled_with_input_value(
+        self
+    ):
+
+        array_1d = aa.Array1D.ones(
+            shape_native=3, pixel_scales=3.0, sub_size=2, origin=(4.0,)
+        )
+
+        assert type(array_1d) == aa.Array1D
+        assert (array_1d.native == np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])).all()
+        assert (array_1d.slim == np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])).all()
+        assert array_1d.pixel_scale == 3.0
+        assert array_1d.pixel_scales == (3.0,)
+        assert array_1d.origin == (4.0,)
+
+        array_1d = aa.Array1D.zeros(
+            shape_native=3, pixel_scales=3.0, sub_size=2, origin=(4.0,)
+        )
+
+        assert type(array_1d) == aa.Array1D
+        assert (array_1d.native == np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])).all()
+        assert (array_1d.slim == np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])).all()
+        assert array_1d.pixel_scale == 3.0
+        assert array_1d.pixel_scales == (3.0,)
+        assert array_1d.origin == (4.0,)
+
+    def test__from_fits__makes_array_without_other_inputs(self):
+
+        create_fits(fits_path=fits_path)
+
+        arr = aa.Array1D.from_fits(
+            file_path=path.join(fits_path, "3_ones.fits"), hdu=0, pixel_scales=1.0
+        )
+
+        assert type(arr) == aa.Array1D
+        assert (arr.native == np.ones((3,))).all()
+        assert (arr.slim == np.ones(3)).all()
+
+        arr = aa.Array1D.from_fits(
+            file_path=path.join(fits_path, "4_ones.fits"), hdu=0, pixel_scales=1.0
+        )
+
+        assert type(arr) == aa.Array1D
+        assert (arr == np.ones((4,))).all()
+        assert (arr.native == np.ones((4,))).all()
+        assert (arr.slim == np.ones((4,))).all()
+
+        clean_fits(fits_path=fits_path)
+
+    def test__from_fits__loads_and_stores_header_info(self):
+
+        create_fits(fits_path=fits_path)
+
+        arr = aa.Array1D.from_fits(
+            file_path=path.join(fits_path, "3_ones.fits"), hdu=0, pixel_scales=1.0
+        )
+
+        assert arr.header.header_sci_obj["BITPIX"] == -64
+        assert arr.header.header_hdu_obj["BITPIX"] == -64
+
+        arr = aa.Array1D.from_fits(
+            file_path=path.join(fits_path, "4_ones.fits"), hdu=0, pixel_scales=1.0
+        )
+
+        assert arr.header.header_sci_obj["BITPIX"] == -64
+        assert arr.header.header_hdu_obj["BITPIX"] == -64
+
+        clean_fits(fits_path=fits_path)
 
     def test__recursive_shape_storage(self):
 

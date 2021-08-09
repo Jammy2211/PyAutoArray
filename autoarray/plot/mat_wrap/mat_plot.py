@@ -616,7 +616,10 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         extent_axis = self.axis.config_dict.get("extent")
-        extent_axis = extent_axis if extent_axis is not None else extent
+
+        if extent_axis is None:
+
+            extent_axis = extent
 
         self.axis.set(extent=extent_axis)
 

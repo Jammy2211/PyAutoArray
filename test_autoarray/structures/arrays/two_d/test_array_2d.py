@@ -291,62 +291,6 @@ class TestAPI:
         assert arr.header.header_sci_obj["BITPIX"] == -64
         assert arr.header.header_hdu_obj["BITPIX"] == -64
 
-    def test__from_fits__makes_scaled_array_with_pixel_scale(self):
-
-        arr = aa.Array2D.from_fits(
-            file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
-        )
-
-        assert type(arr) == aa.Array2D
-        assert (arr.native == np.ones((3, 3))).all()
-        assert (arr.slim == np.ones(9)).all()
-        assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.origin == (0.0, 0.0)
-
-        arr = aa.Array2D.from_fits(
-            file_path=path.join(test_data_dir, "4x3_ones.fits"),
-            hdu=0,
-            pixel_scales=1.0,
-            origin=(0.0, 1.0),
-        )
-
-        assert type(arr) == aa.Array2D
-        assert (arr.native == np.ones((4, 3))).all()
-        assert (arr.slim == np.ones((12,))).all()
-        assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.origin == (0.0, 1.0)
-
-    def test__from_fits__makes_scaled_sub_array_with_pixel_scale_and_sub_size(self):
-
-        arr = aa.Array2D.from_fits(
-            file_path=path.join(test_data_dir, "3x3_ones.fits"),
-            hdu=0,
-            pixel_scales=1.0,
-            sub_size=1,
-        )
-
-        assert type(arr) == aa.Array2D
-        assert (arr.native == np.ones((3, 3))).all()
-        assert (arr.slim == np.ones(9)).all()
-        assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.origin == (0.0, 0.0)
-        assert arr.mask.sub_size == 1
-
-        arr = aa.Array2D.from_fits(
-            file_path=path.join(test_data_dir, "4x3_ones.fits"),
-            hdu=0,
-            pixel_scales=1.0,
-            sub_size=1,
-            origin=(0.0, 1.0),
-        )
-
-        assert type(arr) == aa.Array2D
-        assert (arr.native == np.ones((4, 3))).all()
-        assert (arr.slim == np.ones(12)).all()
-        assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.origin == (0.0, 1.0)
-        assert arr.mask.sub_size == 1
-
     def test__from_yx_values__use_manual_array_values__returns_input_array(self):
 
         arr = aa.Array2D.manual_native(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)

@@ -20,63 +20,63 @@ def create_acs_fits(
 
     os.makedirs(fits_path)
 
-    new_hdul = fits.HDUList()
+    hdu_list = fits.HDUList()
 
-    new_hdul.append(fits.ImageHDU(acs_ccd))
-    new_hdul.append(fits.ImageHDU(acs_ccd_0))
-    new_hdul.append(fits.ImageHDU(acs_ccd))
-    new_hdul.append(fits.ImageHDU(acs_ccd))
-    new_hdul.append(fits.ImageHDU(acs_ccd_1))
-    new_hdul.append(fits.ImageHDU(acs_ccd))
+    hdu_list.append(fits.ImageHDU(acs_ccd))
+    hdu_list.append(fits.ImageHDU(acs_ccd_0))
+    hdu_list.append(fits.ImageHDU(acs_ccd))
+    hdu_list.append(fits.ImageHDU(acs_ccd))
+    hdu_list.append(fits.ImageHDU(acs_ccd_1))
+    hdu_list.append(fits.ImageHDU(acs_ccd))
 
-    new_hdul[0].header.set("CCDGAIN", 1.0, "Instrument GAIN")
-    new_hdul[0].header.set("TELESCOP", "HST", "Telescope Name")
-    new_hdul[0].header.set("INSTRUME", "ACS", "Instrument Name")
-    new_hdul[0].header.set("EXPTIME", 1000.0, "exposure duration (seconds)--calculated")
-    new_hdul[0].header.set(
+    hdu_list[0].header.set("CCDGAIN", 1.0, "Instrument GAIN")
+    hdu_list[0].header.set("TELESCOP", "HST", "Telescope Name")
+    hdu_list[0].header.set("INSTRUME", "ACS", "Instrument Name")
+    hdu_list[0].header.set("EXPTIME", 1000.0, "exposure duration (seconds)--calculated")
+    hdu_list[0].header.set(
         "DATE-OBS", "2000-01-01", "UT date of start of observation (yyyy-mm-dd)"
     )
-    new_hdul[0].header.set(
+    hdu_list[0].header.set(
         "TIME-OBS", "00:00:00", "UT time of start of observation (hh:mm:ss)"
     )
-    new_hdul[0].header.set("BIASFILE", f"jref${bias_file_path}", "Bias file name")
+    hdu_list[0].header.set("BIASFILE", f"jref${bias_file_path}", "Bias file name")
 
     if units in "COUNTS":
-        new_hdul[1].header.set("BUNIT", "COUNTS", "brightness units")
-        new_hdul[4].header.set("BUNIT", "COUNTS", "brightness units")
+        hdu_list[1].header.set("BUNIT", "COUNTS", "brightness units")
+        hdu_list[4].header.set("BUNIT", "COUNTS", "brightness units")
     elif units in "CPS":
-        new_hdul[1].header.set("BUNIT", "CPS", "brightness units")
-        new_hdul[4].header.set("BUNIT", "CPS", "brightness units")
+        hdu_list[1].header.set("BUNIT", "CPS", "brightness units")
+        hdu_list[4].header.set("BUNIT", "CPS", "brightness units")
 
-    new_hdul[1].header.set(
+    hdu_list[1].header.set(
         "BSCALE", 2.0, "scale factor for array value to physical value"
     )
-    new_hdul[1].header.set("BZERO", 10.0, "physical value for an array value of zero")
+    hdu_list[1].header.set("BZERO", 10.0, "physical value for an array value of zero")
 
-    new_hdul[4].header.set(
+    hdu_list[4].header.set(
         "BSCALE", 2.0, "scale factor for array value to physical value"
     )
-    new_hdul[4].header.set("BZERO", 10.0, "physical value for an array value of zero")
+    hdu_list[4].header.set("BZERO", 10.0, "physical value for an array value of zero")
 
-    new_hdul.writeto(path.join(fits_path, "acs_ccd.fits"))
+    hdu_list.writeto(path.join(fits_path, "acs_ccd.fits"))
 
 
 def create_acs_bias_fits(fits_path, bias_ccd, bias_ccd_0, bias_ccd_1):
 
-    new_hdul = fits.HDUList()
+    hdu_list = fits.HDUList()
 
-    new_hdul.append(fits.ImageHDU(bias_ccd))
-    new_hdul.append(fits.ImageHDU(bias_ccd_0))
-    new_hdul.append(fits.ImageHDU(bias_ccd))
-    new_hdul.append(fits.ImageHDU(bias_ccd))
-    new_hdul.append(fits.ImageHDU(bias_ccd_1))
-    new_hdul.append(fits.ImageHDU(bias_ccd))
+    hdu_list.append(fits.ImageHDU(bias_ccd))
+    hdu_list.append(fits.ImageHDU(bias_ccd_0))
+    hdu_list.append(fits.ImageHDU(bias_ccd))
+    hdu_list.append(fits.ImageHDU(bias_ccd))
+    hdu_list.append(fits.ImageHDU(bias_ccd_1))
+    hdu_list.append(fits.ImageHDU(bias_ccd))
 
-    new_hdul[0].header.set("CCDGAIN", 1.0, "Instrument GAIN")
-    new_hdul[1].header.set("BUNIT", "COUNTS", "brightness units")
-    new_hdul[4].header.set("BUNIT", "COUNTS", "brightness units")
+    hdu_list[0].header.set("CCDGAIN", 1.0, "Instrument GAIN")
+    hdu_list[1].header.set("BUNIT", "COUNTS", "brightness units")
+    hdu_list[4].header.set("BUNIT", "COUNTS", "brightness units")
 
-    new_hdul.writeto(path.join(fits_path, "acs_bias_ccd.fits"))
+    hdu_list.writeto(path.join(fits_path, "acs_bias_ccd.fits"))
 
 
 class TestArray2DACS:
@@ -166,8 +166,6 @@ class TestImageACS:
             "{}".format(path.dirname(path.realpath(__file__))), "files", "acs"
         )
 
-        file_path = path.join(fits_path, "acs_ccd.fits")
-
         create_acs_fits(
             fits_path=fits_path,
             acs_ccd=acs_ccd,
@@ -175,6 +173,8 @@ class TestImageACS:
             acs_ccd_1=acs_ccd,
             units="COUNTS",
         )
+
+        file_path = path.join(fits_path, "acs_ccd.fits")
 
         array = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
 
