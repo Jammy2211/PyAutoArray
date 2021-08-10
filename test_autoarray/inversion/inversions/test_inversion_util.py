@@ -91,69 +91,14 @@ class TestWTilde:
             native_index_for_slim_index=native_index_for_slim_index,
         )
 
-        assert w_tilde_preload[0, :] == pytest.approx(
+        assert w_tilde_preload == pytest.approx(
             np.array(
-                [
-                    1.25,
-                    1.625,
-                    0.5,
-                    0.375,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                ]
+                [1.25, 1.625, 0.5, 0.375, 0.65625, 0.125, 0.0625, 0.25, 0.375, 0.15625]
             ),
             1.0e-4,
         )
-        assert w_tilde_indexes[0, :] == pytest.approx(
-            np.array(
-                [
-                    0,
-                    1,
-                    2,
-                    3,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                ]
-            ),
-            1.0e-4,
+        assert w_tilde_indexes == pytest.approx(
+            np.array([0, 1, 2, 3, 1, 2, 3, 2, 3, 3]), 1.0e-4
         )
 
         assert w_tilde_lengths == pytest.approx(np.array([4, 3, 2, 1]), 1.0e-4)
@@ -573,7 +518,7 @@ class TestCurvatureMatrixFromBlurred:
 
         pixelization = aa.pix.Rectangular(shape=(20, 20))
 
-        for sub_size in range(1, 3):
+        for sub_size in range(1, 2, 3):
 
             mask_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
@@ -590,15 +535,15 @@ class TestCurvatureMatrixFromBlurred:
             )
 
             data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
-                data_pixels=w_tilde_preload.shape[0],
+                data_pixels=w_tilde_lengths.shape[0],
                 pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
                 sub_size=sub_size,
             )
 
             curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                 w_tilde_curvature_preload=w_tilde_preload,
-                w_tilde_indexes=w_tilde_indexes.astype("int"),
-                w_tilde_lengths=w_tilde_lengths.astype("int"),
+                w_tilde_curvature_indexes=w_tilde_indexes.astype("int"),
+                w_tilde_curvature_lengths=w_tilde_lengths.astype("int"),
                 data_to_pix_unique=data_to_pix_unique.astype("int"),
                 data_weights=data_weights,
                 pix_lengths=pix_lengths.astype("int"),

@@ -190,8 +190,8 @@ def w_tilde_curvature_preload_imaging_from(
         2 * kernel_native.shape[1] - 1
     )
 
-    w_tilde_curvature_preload = np.zeros((image_pixels, kernel_overlap_size))
-    w_tilde_curvature_indexes = np.zeros((image_pixels, kernel_overlap_size))
+    w_tilde_curvature_preload_tmp = np.zeros((image_pixels, kernel_overlap_size))
+    w_tilde_curvature_indexes_tmp = np.zeros((image_pixels, kernel_overlap_size))
     w_tilde_curvature_lengths = np.zeros(image_pixels)
 
     for ip0 in range(image_pixels):
@@ -200,7 +200,7 @@ def w_tilde_curvature_preload_imaging_from(
 
         kernel_index = 0
 
-        for ip1 in range(ip0, w_tilde_curvature_preload.shape[0]):
+        for ip1 in range(ip0, w_tilde_curvature_preload_tmp.shape[0]):
 
             ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
@@ -216,14 +216,34 @@ def w_tilde_curvature_preload_imaging_from(
             if ip0 == ip1:
                 value /= 2.0
 
-            w_tilde_curvature_preload[ip0, kernel_index] = value
+            w_tilde_curvature_preload_tmp[ip0, kernel_index] = value
 
             if value > 0.0:
 
-                w_tilde_curvature_indexes[ip0, kernel_index] = ip1
+                w_tilde_curvature_indexes_tmp[ip0, kernel_index] = ip1
                 kernel_index += 1
 
         w_tilde_curvature_lengths[ip0] = kernel_index
+
+    w_tilde_curvature_total_pairs = int(np.sum(w_tilde_curvature_lengths))
+
+    w_tilde_curvature_preload = np.zeros((w_tilde_curvature_total_pairs))
+    w_tilde_curvature_indexes = np.zeros((w_tilde_curvature_total_pairs))
+
+    index = 0
+
+    for i in range(image_pixels):
+
+        for data_index in range(int(w_tilde_curvature_lengths[i])):
+
+            w_tilde_curvature_preload[index] = w_tilde_curvature_preload_tmp[
+                i, data_index
+            ]
+            w_tilde_curvature_indexes[index] = w_tilde_curvature_indexes_tmp[
+                i, data_index
+            ]
+
+            index += 1
 
     return (
         w_tilde_curvature_preload,
@@ -478,8 +498,8 @@ def curvature_matrix_via_w_tilde_from(
 @decorator_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     w_tilde_curvature_preload: np.ndarray,
-    w_tilde_indexes: np.ndarray,
-    w_tilde_lengths: np.ndarray,
+    w_tilde_curvature_indexes: np.ndarray,
+    w_tilde_curvature_lengths: np.ndarray,
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
     pix_lengths: np.ndarray,
@@ -507,10 +527,10 @@ def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     ----------
     w_tilde_curvature_preload
         A matrix that precomputes the values for fast computation of the curvature matrix in a memory efficient way.
-    w_tilde_indexes
+    w_tilde_curvature_indexes
         The image-pixel indexes of the values stored in the w tilde preload matrix, which are used to compute
         the weights of the data values when computing the curvature matrix.
-    w_tilde_lengths
+    w_tilde_curvature_lengths
         The number of image pixels in every row of `w_tilde_curvature`, which is iterated over when computing the
         curvature matrix.
     data_to_pix_unique
@@ -531,20 +551,23 @@ def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
         The curvature matrix `F` (see Warren & Dye 2003).
     """
 
-    data_pixels = w_tilde_curvature_preload.shape[0]
+    data_pixels = w_tilde_curvature_lengths.shape[0]
 
     curvature_matrix = np.zeros((pix_pixels, pix_pixels))
 
+    curvature_index = 0
+
     for data_0 in range(data_pixels):
 
-        for pix_0_index in range(pix_lengths[data_0]):
+        for data_1_index in range(w_tilde_curvature_lengths[data_0]):
 
-            data_0_weight = data_weights[data_0, pix_0_index]
-            pix_0 = data_to_pix_unique[data_0, pix_0_index]
+            data_1 = w_tilde_curvature_indexes[curvature_index]
+            w_tilde_value = w_tilde_curvature_preload[curvature_index]
 
-            for data_1_index in range(w_tilde_lengths[data_0]):
+            for pix_0_index in range(pix_lengths[data_0]):
 
-                data_1 = w_tilde_indexes[data_0, data_1_index]
+                data_0_weight = data_weights[data_0, pix_0_index]
+                pix_0 = data_to_pix_unique[data_0, pix_0_index]
 
                 for pix_1_index in range(pix_lengths[data_1]):
 
@@ -552,10 +575,10 @@ def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                     pix_1 = data_to_pix_unique[data_1, pix_1_index]
 
                     curvature_matrix[pix_0, pix_1] += (
-                        data_0_weight
-                        * data_1_weight
-                        * w_tilde_curvature_preload[data_0, data_1_index]
+                        data_0_weight * data_1_weight * w_tilde_value
                     )
+
+            curvature_index += 1
 
     for i in range(pix_pixels):
         for j in range(i, pix_pixels):
