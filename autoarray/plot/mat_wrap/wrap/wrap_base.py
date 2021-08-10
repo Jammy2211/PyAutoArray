@@ -353,6 +353,8 @@ class Cmap(AbstractMatWrap):
                 linthresh=self.config_dict["linthresh"],
                 linscale=self.config_dict["linscale"],
             )
+        elif self.config_dict["norm"] in "diverge":
+            return colors.TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
         else:
             raise exc.PlottingException(
                 "The normalization (norm) supplied to the plotter is not a valid string (must be "
@@ -642,6 +644,23 @@ class Title(AbstractMatWrap):
             config_dict.pop("label")
 
         plt.title(label=label, **config_dict)
+
+
+class Text(AbstractMatWrap):
+    """
+    The settings used to customize text on the figure.
+
+    This object wraps the following Matplotlib methods:
+
+    - plt.text: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.text.html
+    """
+
+    def set(self):
+
+        if "x" not in self.kwargs and "y" not in self.kwargs and "s" not in self.kwargs:
+            return
+
+        plt.text(**self.config_dict)
 
 
 class AbstractLabel(AbstractMatWrap):

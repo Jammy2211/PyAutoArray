@@ -242,7 +242,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
         therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
-        will be convolved into the unmasked those pixels. This occurs in *PyAutoGalaxy* when computing images from
+        will be convolved into the unmasked those pixels. This when computing images from
         light profile objects.
 
         See *grid_2d.Grid2D.blurring_grid_from_mask_and_kernel_shape* for a full description of a blurring grid. This

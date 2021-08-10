@@ -20,14 +20,14 @@ class TestImaging:
         psf = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
         imaging = aa.Imaging(
-            image=image, noise_map=noise_map, psf=psf, setup_convolver=False
+            image=image, noise_map=noise_map, psf=psf, pad_for_convolver=False
         )
 
         assert imaging.image.shape_native == (3, 3)
         assert imaging.noise_map.shape_native == (3, 3)
 
         imaging = aa.Imaging(
-            image=image, noise_map=noise_map, psf=psf, setup_convolver=True
+            image=image, noise_map=noise_map, psf=psf, pad_for_convolver=True
         )
 
         assert imaging.image.shape_native == (5, 5)

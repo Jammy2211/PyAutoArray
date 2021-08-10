@@ -269,7 +269,7 @@ class Convolver:
     @decorator_util.jit()
     def frame_at_coordinates_jit(coordinates, mask, mask_index_array, kernel_2d):
         """
-    Returns the frame (indexes of pixels light is blurred into) and kernel_frame (kernel kernel values of those \
+        Returns the frame (indexes of pixels light is blurred into) and kernel_frame (kernel kernel values of those \
         pixels) for a given coordinate in a masks and its PSF.
 
         Parameters

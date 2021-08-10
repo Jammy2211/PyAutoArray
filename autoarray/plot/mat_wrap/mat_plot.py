@@ -43,6 +43,7 @@ class AbstractMatPlot:
         title: wrap_base.Title = wrap_base.Title(),
         ylabel: wrap_base.YLabel = wrap_base.YLabel(),
         xlabel: wrap_base.XLabel = wrap_base.XLabel(),
+        text: wrap_base.Text = wrap_base.Text(),
         legend: wrap_base.Legend = wrap_base.Legend(),
         output: wrap_base.Output = wrap_base.Output(),
     ):
@@ -111,6 +112,7 @@ class AbstractMatPlot:
         self.xticks = xticks
         self.ylabel = ylabel
         self.xlabel = xlabel
+        self.text = text
         self.legend = legend
         self.output = output
 
@@ -202,6 +204,7 @@ class MatPlot1D(AbstractMatPlot):
         title: wrap_base.Title = wrap_base.Title(),
         ylabel: wrap_base.YLabel = wrap_base.YLabel(),
         xlabel: wrap_base.XLabel = wrap_base.XLabel(),
+        text: wrap_base.Text = wrap_base.Text(),
         legend: wrap_base.Legend = wrap_base.Legend(),
         output: wrap_base.Output = wrap_base.Output(),
         yx_plot: wrap_1d.YXPlot = wrap_1d.YXPlot(),
@@ -274,6 +277,7 @@ class MatPlot1D(AbstractMatPlot):
             title=title,
             ylabel=ylabel,
             xlabel=xlabel,
+            text=text,
             legend=legend,
             output=output,
         )
@@ -383,6 +387,8 @@ class MatPlot1D(AbstractMatPlot):
         self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
         self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
 
+        self.text.set()
+
         visuals_1d.plot_via_plotter(plotter=self)
 
         if auto_labels.legend is not None:  # or vertical_line_labels is not None:
@@ -409,6 +415,7 @@ class MatPlot2D(AbstractMatPlot):
         ylabel: wrap_base.YLabel = wrap_base.YLabel(),
         xlabel: wrap_base.XLabel = wrap_base.XLabel(),
         legend: wrap_base.Legend = wrap_base.Legend(),
+        text: wrap_base.Text = wrap_base.Text(),
         output: wrap_base.Output = wrap_base.Output(),
         array_overlay: wrap_2d.ArrayOverlay = wrap_2d.ArrayOverlay(),
         grid_scatter: wrap_2d.GridScatter = wrap_2d.GridScatter(),
@@ -523,6 +530,7 @@ class MatPlot2D(AbstractMatPlot):
             title=title,
             ylabel=ylabel,
             xlabel=xlabel,
+            text=text,
             legend=legend,
             output=output,
         )
@@ -642,6 +650,8 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
+        self.text.set()
+
         if self.colorbar is not None:
             cb = self.colorbar.set()
             self.colorbar_tickparams.set(cb=cb)
@@ -723,6 +733,8 @@ class MatPlot2D(AbstractMatPlot):
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
+
+        self.text.set()
 
         extent = self.axis.config_dict.get("extent")
 
@@ -811,6 +823,8 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
+        self.text.set()
+
         self.grid_plot.plot_rectangular_grid_lines(
             extent=mapper.source_pixelization_grid.extent,
             shape_native=mapper.shape_native,
@@ -860,6 +874,8 @@ class MatPlot2D(AbstractMatPlot):
         self.xticks.set(
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
+
+        self.text.set()
 
         self.voronoi_drawer.draw_voronoi_pixels(
             mapper=mapper,

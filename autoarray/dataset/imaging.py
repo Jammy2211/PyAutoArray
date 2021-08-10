@@ -95,7 +95,7 @@ class Imaging(abstract_dataset.AbstractDataset):
         psf: kernel_2d.Kernel2D = None,
         settings=SettingsImaging(),
         name: str = None,
-        setup_convolver=False,
+        pad_for_convolver=False,
     ):
         """
         A class containing the data, noise-map and point spread function of a 2D imaging dataset.
@@ -114,9 +114,9 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         self.unmasked = None
 
-        self.setup_convolver = setup_convolver
+        self.pad_for_convolver = pad_for_convolver
 
-        if setup_convolver and psf is not None:
+        if pad_for_convolver and psf is not None:
 
             try:
                 image.mask.blurring_mask_from_kernel_shape(
@@ -148,29 +148,9 @@ class Imaging(abstract_dataset.AbstractDataset):
                 array=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
 
-        if setup_convolver and psf is not None:
-
-            self.convolver = convolver.Convolver(mask=self.mask, kernel=self.psf)
-            self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
-                kernel_shape_native=self.psf.shape_native
-            )
-            preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
-                noise_map_native=self.noise_map.native,
-                kernel_native=self.psf.native,
-                native_index_for_slim_index=self.mask._native_index_for_slim_index,
-            )
-
-            self.w_tilde = WTilde(
-                curvature_preload=preload,
-                indexes=indexes.astype("int"),
-                lengths=lengths.astype("int"),
-            )
-
-        else:
-
-            self.convolver = None
-            self.blurring_grid = None
-            self.w_tilde = WTilde(curvature_preload=None, indexes=None, lengths=None)
+        self._convolver = None
+        self._blurring_grid = None
+        self._w_tilde = None
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Imaging):
@@ -187,6 +167,88 @@ class Imaging(abstract_dataset.AbstractDataset):
         if self.settings.use_normalized_psf:
             return self.psf_normalized
         return self.psf_unormalized
+
+    @property
+    def blurring_grid(self):
+        """
+        Returns a blurring-grid from a mask and the 2D shape of the PSF kernel.
+
+        A blurring grid consists of all pixels that are masked (and therefore have their values set to (0.0, 0.0)),
+        but are close enough to the unmasked pixels that their values will be convolved into the unmasked those pixels.
+        This when computing images from light profile objects.
+
+        This uses lazy allocation such that the calculation is only performed when the blurring grid is used, ensuring
+        efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        np.ndarray
+            The blurring grid given the mask of the imaging data.
+        """
+
+        if self._blurring_grid is None:
+
+            self._blurring_grid = self.grid.blurring_grid_from_kernel_shape(
+                kernel_shape_native=self.psf.shape_native
+            )
+
+        return self._blurring_grid
+
+    @property
+    def convolver(self):
+        """
+        Returns a `Convolver` from a mask and 2D PSF kernel.
+
+        The `Convolver` stores in memory the array indexing between the mask and PSF, enabling efficient 2D PSF
+        convolution of images and matrices used for linear algebra calculations (see `operators.convolver`).
+
+        This uses lazy allocation such that the calculation is only performed when the convolver is used, ensuring
+        efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        Convolver
+            The convolver given the masked imaging data's mask and PSF.
+        """
+        if self._convolver is None:
+
+            self._convolver = convolver.Convolver(mask=self.mask, kernel=self.psf)
+
+        return self._convolver
+
+    @property
+    def w_tilde(self):
+        """
+        The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
+        noise-map values given the PSF (see `inversion.inversion_util`).
+
+        The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
+        per analysis.
+
+        This uses lazy allocation such that the calculation is only performed when the wtilde matrices are used,
+        ensuring efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        WTilde
+            Precomputed values used for the w tilde formalism of linear algebra calculations.
+        """
+
+        if self._w_tilde is None:
+
+            preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
+                noise_map_native=self.noise_map.native,
+                kernel_native=self.psf.native,
+                native_index_for_slim_index=self.mask._native_index_for_slim_index,
+            )
+
+            self._w_tilde = WTilde(
+                curvature_preload=preload,
+                indexes=indexes.astype("int"),
+                lengths=lengths.astype("int"),
+            )
+
+        return self._w_tilde
 
     @classmethod
     def from_fits(
@@ -271,7 +333,7 @@ class Imaging(abstract_dataset.AbstractDataset):
             psf=self.psf_unormalized,
             settings=self.settings,
             name=self.name,
-            setup_convolver=True,
+            pad_for_convolver=True,
         )
 
         imaging.unmasked = unmasked_imaging
@@ -286,7 +348,7 @@ class Imaging(abstract_dataset.AbstractDataset):
             psf=self.psf_unormalized,
             settings=settings,
             name=self.name,
-            setup_convolver=self.setup_convolver,
+            pad_for_convolver=self.pad_for_convolver,
         )
 
     @property

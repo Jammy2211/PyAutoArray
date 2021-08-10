@@ -10,6 +10,7 @@ from autoarray.plot.mat_wrap.wrap.wrap_base import XTicks
 from autoarray.plot.mat_wrap.wrap.wrap_base import Title
 from autoarray.plot.mat_wrap.wrap.wrap_base import YLabel
 from autoarray.plot.mat_wrap.wrap.wrap_base import XLabel
+from autoarray.plot.mat_wrap.wrap.wrap_base import Text
 from autoarray.plot.mat_wrap.wrap.wrap_base import Legend
 from autoarray.plot.mat_wrap.wrap.wrap_base import Output
 

@@ -112,14 +112,7 @@ class Mapper:
         self.source_pixelization_grid = source_pixelization_grid
         self.data_pixelization_grid = data_pixelization_grid
 
-        self.mapping_matrix = mapper_util.mapping_matrix_from(
-            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
-            pixels=self.pixels,
-            total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
-            slim_index_for_sub_slim_index=self._slim_index_for_sub_slim_index,
-            sub_fraction=self.source_grid_slim.mask.sub_fraction,
-        )
-
+        self._mapping_matrix = None
         self.hyper_image = hyper_image
 
     @property
@@ -152,6 +145,21 @@ class Mapper:
             all_sub_slim_indexes_for_pixelization_index[pix_index].append(slim_index)
 
         return all_sub_slim_indexes_for_pixelization_index
+
+    @property
+    def mapping_matrix(self):
+
+        if self._mapping_matrix is None:
+
+            self._mapping_matrix = mapper_util.mapping_matrix_from(
+                pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+                pixels=self.pixels,
+                total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
+                slim_index_for_sub_slim_index=self._slim_index_for_sub_slim_index,
+                sub_fraction=self.source_grid_slim.mask.sub_fraction,
+            )
+
+        return self._mapping_matrix
 
     def pixel_signals_from_signal_scale(self, signal_scale):
 

@@ -11,6 +11,7 @@ from .wrap_base import (
     Title,
     YLabel,
     XLabel,
+    Text,
     Legend,
     Output,
 )
