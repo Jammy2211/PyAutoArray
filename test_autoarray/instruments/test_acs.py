@@ -654,6 +654,16 @@ class TestOutputQuadrants:
         quadrant_c = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
         quadrant_d = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
+        header_a = copy.copy(quadrant_a.header)
+        header_b = copy.copy(quadrant_b.header)
+        header_c = copy.copy(quadrant_c.header)
+        header_d = copy.copy(quadrant_d.header)
+
+        quadrant_a.header = None
+        quadrant_b.header = None
+        quadrant_c.header = None
+        quadrant_d.header = None
+
         file_path = path.join(
             "{}".format(path.dirname(path.realpath(__file__))), "files", "output.fits"
         )
@@ -663,9 +673,10 @@ class TestOutputQuadrants:
             quadrant_b=quadrant_b.native,
             quadrant_c=quadrant_c.native,
             quadrant_d=quadrant_d.native,
-            sci_header=quadrant_a.header.header_sci_obj,
-            header_hdu_1=quadrant_c.header.header_hdu_obj,
-            header_hdu_4=quadrant_a.header.header_hdu_obj,
+            header_a=header_a,
+            header_b=header_b,
+            header_c=header_c,
+            header_d=header_d,
             file_path=file_path,
             overwrite=True,
         )

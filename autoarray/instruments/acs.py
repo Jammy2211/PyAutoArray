@@ -713,9 +713,10 @@ def output_quadrants_to_fits_with_headers(
     quadrant_b,
     quadrant_c,
     quadrant_d,
-    sci_header,
-    header_hdu_1,
-    header_hdu_4,
+    header_a,
+    header_b,
+    header_c,
+    header_d,
     file_path: str,
     overwrite: bool = False,
 ):
@@ -728,17 +729,17 @@ def output_quadrants_to_fits_with_headers(
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
-    quadrant_a = quadrant_convert_to_original(
-        quadrant=quadrant_a, roe_corner=(1, 0), use_flipud=True
+    quadrant_a = quadrant_convert_to_original_manual_header(
+        quadrant=quadrant_a, roe_corner=(1, 0), header=header_a, use_flipud=True
     )
-    quadrant_b = quadrant_convert_to_original(
-        quadrant=quadrant_b, roe_corner=(1, 1), use_flipud=True
+    quadrant_b = quadrant_convert_to_original_manual_header(
+        quadrant=quadrant_b, roe_corner=(1, 1), header=header_b, use_flipud=True
     )
-    quadrant_c = quadrant_convert_to_original(
-        quadrant=quadrant_c, roe_corner=(1, 0), use_flipud=False
+    quadrant_c = quadrant_convert_to_original_manual_header(
+        quadrant=quadrant_c, roe_corner=(1, 0), header=header_c, use_flipud=False
     )
-    quadrant_d = quadrant_convert_to_original(
-        quadrant=quadrant_d, roe_corner=(1, 1), use_flipud=False
+    quadrant_d = quadrant_convert_to_original_manual_header(
+        quadrant=quadrant_d, roe_corner=(1, 1), header=header_d, use_flipud=False
     )
 
     array_hdu_1 = np.zeros((2068, 4144))
@@ -762,9 +763,9 @@ def output_quadrants_to_fits_with_headers(
         header.set("cticor", "ARCTIC", "CTI CORRECTION PERFORMED USING ARCTIC")
         return header
 
-    hdul[0].header = set_header(sci_header)
-    hdul[1].header = set_header(header_hdu_1)
-    hdul[4].header = set_header(header_hdu_4)
+    hdul[0].header = set_header(header_a.header_sci_obj)
+    hdul[1].header = set_header(header_c.header_hdu_obj)
+    hdul[4].header = set_header(header_a.header_hdu_obj)
 
     hdul.writeto(file_path)
 
@@ -788,4 +789,26 @@ def quadrant_convert_to_original(
 
     return layout_util.rotate_array_from_roe_corner(
         array=quadrant.native, roe_corner=roe_corner
+    )
+
+
+def quadrant_convert_to_original_manual_header(
+    quadrant, roe_corner, header, use_flipud=False, use_calibrated_gain=True
+):
+
+    if header.bias is not None:
+        quadrant += header.bias.native
+
+    if header.bias_serial_prescan_column is not None:
+        quadrant += header.bias_serial_prescan_column
+
+    quadrant = header.array_from_electrons_to_original(
+        array=quadrant, use_calibrated_gain=use_calibrated_gain
+    )
+
+    if use_flipud:
+        quadrant = np.flipud(quadrant)
+
+    return layout_util.rotate_array_from_roe_corner(
+        array=quadrant, roe_corner=roe_corner
     )
