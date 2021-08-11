@@ -183,7 +183,10 @@ class AbstractPlotter:
 
     def close_subplot_figure(self):
 
-        self.mat_plot_2d.figure.close()
+        try:
+            self.mat_plot_2d.figure.close()
+        except AttributeError:
+            self.mat_plot_1d.figure.close()
         self.set_mat_plots_for_subplot(is_for_subplot=False)
         self.subplot_figsize = None
 
@@ -235,11 +238,19 @@ class AbstractPlotter:
         for index, (key, value) in enumerate(figures_dict.items()):
 
             if value:
-                self.figures_2d(**{key: True})
+                try:
+                    self.figures_2d(**{key: True})
+                except AttributeError:
+                    self.figures_1d(**{key: True})
 
-        self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename=kwargs["auto_labels"].filename
-        )
+        try:
+            self.mat_plot_2d.output.subplot_to_figure(
+                auto_filename=kwargs["auto_labels"].filename
+            )
+        except AttributeError:
+            self.mat_plot_1d.output.subplot_to_figure(
+                auto_filename=kwargs["auto_labels"].filename
+            )
 
         self.close_subplot_figure()
 
