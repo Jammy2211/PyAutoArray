@@ -7,6 +7,7 @@ from autoarray import exc
 
 from astropy.io import fits
 
+import copy
 import numpy as np
 import shutil
 import os
@@ -140,7 +141,7 @@ class Array2DACS(array_2d.Array2D):
                 "Quadrant letter for FrameACS must be A, B, C or D."
             )
 
-        return cls.quadrant(
+        return cls.quadrant_a(
             array_electrons=array_electrons,
             header=header,
             roe_corner=roe_corner,
@@ -150,7 +151,7 @@ class Array2DACS(array_2d.Array2D):
         )
 
     @classmethod
-    def quadrant(
+    def quadrant_a(
         cls,
         array_electrons,
         roe_corner,
@@ -651,11 +652,15 @@ def prescan_fitted_bias_column(prescan, n_rows=2048, n_rows_ov=20):
 
 
 def output_quadrants_to_fits(
+    file_path: str,
     quadrant_a,
     quadrant_b,
     quadrant_c,
     quadrant_d,
-    file_path: str,
+    header_a=None,
+    header_b=None,
+    header_c=None,
+    header_d=None,
     overwrite: bool = False,
 ):
 
@@ -666,133 +671,67 @@ def output_quadrants_to_fits(
 
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
-
-    quadrant_a = quadrant_convert_to_original(
-        quadrant=quadrant_a, roe_corner=(1, 0), use_flipud=True
-    )
-    quadrant_b = quadrant_convert_to_original(
-        quadrant=quadrant_b, roe_corner=(1, 1), use_flipud=True
-    )
-    quadrant_c = quadrant_convert_to_original(
-        quadrant=quadrant_c, roe_corner=(1, 0), use_flipud=False
-    )
-    quadrant_d = quadrant_convert_to_original(
-        quadrant=quadrant_d, roe_corner=(1, 1), use_flipud=False
-    )
 
     array_hdu_1 = np.zeros((2068, 4144))
-    array_hdu_1[0:2068, 0:2072] = quadrant_c.native
-    array_hdu_1[0:2068, 2072:4144] = quadrant_d.native
-
     array_hdu_4 = np.zeros((2068, 4144))
-    array_hdu_4[0:2068, 0:2072] = quadrant_a.native
-    array_hdu_4[0:2068, 2072:4144] = quadrant_b.native
 
-    hdul = fits.HDUList()
+    def get_header(quadrant):
+        try:
+            return quadrant.header
+        except AttributeError:
+            raise (
+                "You must pass in the header of the quadrants to output them to an ACS fits file."
+            )
 
-    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
-    hdul.append(fits.ImageHDU(array_hdu_1))
-    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
-    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
-    hdul.append(fits.ImageHDU(array_hdu_4))
-    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
-
-    def set_header(header):
-        header.set("cticor", "ARCTIC", "CTI CORRECTION PERFORMED USING ARCTIC")
-        return header
-
-    hdul[0].header = set_header(quadrant_a.header.header_sci_obj)
-    hdul[1].header = set_header(quadrant_c.header.header_hdu_obj)
-    hdul[4].header = set_header(quadrant_a.header.header_hdu_obj)
-
-    hdul.writeto(file_path)
-
-
-def output_quadrants_to_fits_with_headers(
-    quadrant_a,
-    quadrant_b,
-    quadrant_c,
-    quadrant_d,
-    header_a,
-    header_b,
-    header_c,
-    header_d,
-    file_path: str,
-    overwrite: bool = False,
-):
-
-    file_dir = os.path.split(file_path)[0]
-
-    if not os.path.exists(file_dir):
-        os.makedirs(file_dir)
-
-    if overwrite and os.path.exists(file_path):
-        os.remove(file_path)
-
-    quadrant_a = quadrant_convert_to_original_manual_header(
+    header_a = get_header(quadrant_a) if header_a is None else header_a
+    quadrant_a = copy.copy(np.asarray(quadrant_a.native))
+    quadrant_a = quadrant_convert_to_original(
         quadrant=quadrant_a, roe_corner=(1, 0), header=header_a, use_flipud=True
     )
-    quadrant_b = quadrant_convert_to_original_manual_header(
+    array_hdu_4[0:2068, 0:2072] = quadrant_a
+
+    header_b = get_header(quadrant_b) if header_b is None else header_b
+
+    quadrant_b = copy.copy(np.asarray(quadrant_b.native))
+    quadrant_b = quadrant_convert_to_original(
         quadrant=quadrant_b, roe_corner=(1, 1), header=header_b, use_flipud=True
     )
-    quadrant_c = quadrant_convert_to_original_manual_header(
-        quadrant=quadrant_c, roe_corner=(1, 0), header=header_c, use_flipud=False
-    )
-    quadrant_d = quadrant_convert_to_original_manual_header(
-        quadrant=quadrant_d, roe_corner=(1, 1), header=header_d, use_flipud=False
-    )
-
-    array_hdu_1 = np.zeros((2068, 4144))
-    array_hdu_1[0:2068, 0:2072] = quadrant_c
-    array_hdu_1[0:2068, 2072:4144] = quadrant_d
-
-    array_hdu_4 = np.zeros((2068, 4144))
-    array_hdu_4[0:2068, 0:2072] = quadrant_a
     array_hdu_4[0:2068, 2072:4144] = quadrant_b
 
-    hdul = fits.HDUList()
+    header_c = get_header(quadrant_c) if header_c is None else header_c
+    quadrant_c = copy.copy(np.asarray(quadrant_c.native))
+    quadrant_c = quadrant_convert_to_original(
+        quadrant=quadrant_c, roe_corner=(1, 0), header=header_c, use_flipud=False
+    )
+    array_hdu_1[0:2068, 0:2072] = quadrant_c
 
-    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
-    hdul.append(fits.ImageHDU(array_hdu_1))
-    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
-    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
-    hdul.append(fits.ImageHDU(array_hdu_4))
-    hdul.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    header_d = get_header(quadrant_d) if header_d is None else header_d
+    quadrant_d = copy.copy(np.asarray(quadrant_d.native))
+    quadrant_d = quadrant_convert_to_original(
+        quadrant=quadrant_d, roe_corner=(1, 1), header=header_d, use_flipud=False
+    )
+    array_hdu_1[0:2068, 2072:4144] = quadrant_d
+
+    hdu_list = fits.HDUList()
+
+    hdu_list.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdu_list.append(fits.ImageHDU(array_hdu_1))
+    hdu_list.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdu_list.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdu_list.append(fits.ImageHDU(array_hdu_4))
+    hdu_list.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
 
     def set_header(header):
         header.set("cticor", "ARCTIC", "CTI CORRECTION PERFORMED USING ARCTIC")
         return header
 
-    hdul[0].header = set_header(header_a.header_sci_obj)
-    hdul[1].header = set_header(header_c.header_hdu_obj)
-    hdul[4].header = set_header(header_a.header_hdu_obj)
-
-    hdul.writeto(file_path)
+    hdu_list[0].header = set_header(header_a.header_sci_obj)
+    hdu_list[1].header = set_header(header_c.header_hdu_obj)
+    hdu_list[4].header = set_header(header_a.header_hdu_obj)
+    hdu_list.writeto(file_path)
 
 
 def quadrant_convert_to_original(
-    quadrant, roe_corner, use_flipud=False, use_calibrated_gain=True
-):
-
-    if quadrant.header.bias is not None:
-        quadrant += quadrant.header.bias.native
-
-    if quadrant.header.bias_serial_prescan_column is not None:
-        quadrant += quadrant.header.bias_serial_prescan_column
-
-    quadrant = quadrant.header.array_from_electrons_to_original(
-        array=quadrant, use_calibrated_gain=use_calibrated_gain
-    )
-
-    if use_flipud:
-        quadrant = np.flipud(quadrant.native)
-
-    return layout_util.rotate_array_from_roe_corner(
-        array=quadrant.native, roe_corner=roe_corner
-    )
-
-
-def quadrant_convert_to_original_manual_header(
     quadrant, roe_corner, header, use_flipud=False, use_calibrated_gain=True
 ):
 
