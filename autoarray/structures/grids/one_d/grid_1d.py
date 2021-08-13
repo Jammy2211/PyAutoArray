@@ -1,9 +1,13 @@
 import numpy as np
 from typing import Union, Tuple
 
-from autoarray.structures.grids.one_d import abstract_grid_1d as abs_g1d
+from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
+
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformed
+from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformedNumpy
+
 from autoarray.structures.arrays.one_d import array_1d as a1d
-from autoarray.structures.grids.two_d import grid_2d as g2d
 from autoarray.mask import mask_1d as m1d
 
 from autoarray import exc
@@ -12,7 +16,7 @@ from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.geometry import geometry_util
 
 
-class Grid1D(abs_g1d.AbstractGrid1D):
+class Grid1D(AbstractGrid1D):
     def __new__(cls, grid, mask, *args, **kwargs):
         """
         A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
@@ -370,9 +374,9 @@ class Grid1D(abs_g1d.AbstractGrid1D):
         if len(result.shape) == 1:
             return a1d.Array1D(array=result, mask=self.mask)
         else:
-            if isinstance(result, g2d.Grid2DTransformedNumpy):
-                return  g2d.Grid2DTransformed(grid=result, mask=self.mask)
-            return  g2d.Grid2D(grid=result, mask=self.mask.to_mask_2d)
+            if isinstance(result, Grid2DTransformedNumpy):
+                return Grid2DTransformed(grid=result, mask=self.mask)
+            return Grid2D(grid=result, mask=self.mask.to_mask_2d)
 
     def structure_2d_list_from_result_list(self, result_list: list):
         """

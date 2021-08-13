@@ -5,16 +5,17 @@ from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include1D
 from autoarray.plot.mat_wrap.include import Include2D
+from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
-from autoarray.fit import fit as f
+from autoarray.fit.fit import FitInterferometer
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 
 class AbstractFitInterferometerPlotter(AbstractPlotter):
     def __init__(
         self,
-        fit: f.FitInterferometer,
+        fit: FitInterferometer,
         mat_plot_1d,
         visuals_1d,
         include_1d,
@@ -346,7 +347,7 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 class FitInterferometerPlotter(AbstractFitInterferometerPlotter):
     def __init__(
         self,
-        fit: f.FitInterferometer,
+        fit: FitInterferometer,
         mat_plot_1d: MatPlot1D = MatPlot1D(),
         visuals_1d: Visuals1D = Visuals1D(),
         include_1d: Include1D = Include1D(),

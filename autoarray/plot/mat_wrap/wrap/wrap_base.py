@@ -869,9 +869,7 @@ class Output:
             return self.format
 
     def to_figure(
-        self,
-        structure: typing.Optional[abstract_structure.AbstractStructure],
-        auto_filename=None,
+        self, structure: typing.Optional[AbstractStructure], auto_filename=None
     ):
         """Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.
 

@@ -1,6 +1,6 @@
 import numpy as np
 from autoarray.structures.arrays.abstract_array import Header
-from autoarray.structures.arrays.one_d import abstract_array_1d as abs_a1d
+from autoarray.structures.arrays.one_d.abstract_array_1d import AbstractArray1D
 
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.mask.mask_1d import Mask1D
@@ -13,7 +13,7 @@ from autoarray.geometry import geometry_util
 from typing import Union, Tuple, List
 
 
-class Array1D(abs_a1d.AbstractArray1D):
+class Array1D(AbstractArray1D):
     def __new__(cls, array: np.ndarray, mask: np.ndarray, header=None, *args, **kwargs):
 
         obj = array.view(cls)

@@ -9,14 +9,20 @@ import numpy as np
 import itertools
 from typing import List, Union, Optional, Tuple
 
-from autoarray.inversion import mappers
+from autoarray.plot.mat_wrap.wrap import wrap_base as wb
+
+from autoarray.plot.mat_wrap.wrap.wrap_base import AbstractMatWrap
+from autoarray.inversion.mappers import MapperVoronoi
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.structures.vector_fields import vector_field_irregular
+from autoarray.structures.vector_fields.vector_field_irregular import (
+    VectorField2DIrregular,
+)
+
 from autoarray import exc
 
 
-class AbstractMatWrap2D(wrap_base.AbstractMatWrap):
+class AbstractMatWrap2D(AbstractMatWrap):
     """
     An abstract base class for wrapping matplotlib plotting methods which take as input and plot data structures. For
     example, the `ArrayOverlay` object specifically plots `Array2D` data structures.
@@ -441,9 +447,7 @@ class VectorFieldQuiver(AbstractMatWrap2D):
     https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.quiver.html
     """
 
-    def quiver_vector_field(
-        self, vector_field: vector_field_irregular.VectorField2DIrregular
-    ):
+    def quiver_vector_field(self, vector_field: VectorField2DIrregular):
         """
          Plot a vector field using the matplotlib method `plt.quiver` such that each vector appears as an arrow whose
          direction depends on the y and x magnitudes of the vector.
@@ -503,11 +507,11 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
     def draw_voronoi_pixels(
         self,
-        mapper: mappers.MapperVoronoi,
+        mapper: MapperVoronoi,
         values: np.ndarray,
-        cmap: wrap_base.Cmap,
-        colorbar: wrap_base.Colorbar,
-        colorbar_tickparams: wrap_base.ColorbarTickParams = None,
+        cmap: wb.Cmap,
+        colorbar: wb.Colorbar,
+        colorbar_tickparams: wb.ColorbarTickParams = None,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 

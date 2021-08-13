@@ -13,7 +13,6 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.vector_fields.vector_field_irregular import (
     VectorField2DIrregular,
 )
-from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
 from autoarray.plot.mat_wrap.include import Include1D
 
 
@@ -86,10 +85,6 @@ class Visuals1D(AbstractVisuals):
         self.points = points
         self.vertical_line = vertical_line
         self.shaded_region = shaded_region
-
-    @property
-    def plotter(self):
-        return MatPlot1D()
 
     @property
     def include(self):

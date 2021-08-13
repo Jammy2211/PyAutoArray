@@ -6,12 +6,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import List, Optional, Union
 
+from autoarray.plot.mat_wrap.wrap.wrap_base import AbstractMatWrap
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray import exc
 
 
-class AbstractMatWrap1D(wrap_base.AbstractMatWrap):
+class AbstractMatWrap1D(AbstractMatWrap):
     """
     An abstract base class for wrapping matplotlib plotting methods which take as input and plot data structures. For
     example, the `ArrayOverlay` object specifically plots `Array2D` data structures.
