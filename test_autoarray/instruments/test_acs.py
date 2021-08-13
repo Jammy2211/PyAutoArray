@@ -624,4 +624,3 @@ class TestOutputQuadrants:
 
         assert acs_ccd_output[-1, 0] == 30.0
         assert acs_ccd_output[-1, -1] == 40.0
-

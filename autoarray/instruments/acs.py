@@ -685,6 +685,7 @@ def output_quadrants_to_fits(
 
     header_a = get_header(quadrant_a) if header_a is None else header_a
     quadrant_a = copy.copy(np.asarray(quadrant_a.native))
+
     quadrant_a = quadrant_convert_to_original(
         quadrant=quadrant_a, roe_corner=(1, 0), header=header_a, use_flipud=True
     )
