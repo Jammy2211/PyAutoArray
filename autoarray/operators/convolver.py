@@ -1,7 +1,9 @@
 from autoarray import decorator_util
 import numpy as np
+
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+
 from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d
 from autoarray.mask import mask_2d_util
 
 
@@ -334,7 +336,7 @@ class Convolver:
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return array_2d.Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
+        return Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
 
     @staticmethod
     @decorator_util.jit()
@@ -396,7 +398,7 @@ class Convolver:
             image_frame_1d_lengths=self.image_frame_1d_lengths,
         )
 
-        return array_2d.Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
+        return Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
 
     @staticmethod
     @decorator_util.jit()

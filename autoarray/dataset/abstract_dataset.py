@@ -1,16 +1,15 @@
+import copy
+import numpy as np
 import pickle
 
-import numpy as np
-import copy
-
 from autoconf import conf
-from autoarray.structures import abstract_structure
-from autoarray.structures.grids.one_d import grid_1d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_interpolate
-from autoarray.structures.grids.two_d import grid_2d_iterate
-from autoarray.mask import mask_1d
-from autoarray.mask import mask_2d
+from autoarray.structures.abstract_structure import AbstractStructure
+from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d_interpolate import Grid2DInterpolate
+from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
+from autoarray.mask.mask_1d import Mask1D
+from autoarray.mask.mask_2d import Mask2D
 
 
 def grid_from_mask_and_grid_class(
@@ -20,28 +19,28 @@ def grid_from_mask_and_grid_class(
         return None
 
     if grid_class is None:
-        if isinstance(mask, mask_1d.AbstractMask1d):
-            grid_class = grid_1d.Grid1D
-        elif isinstance(mask, mask_2d.AbstractMask2D):
-            grid_class = grid_2d.Grid2D
+        if isinstance(mask, Mask1D):
+            grid_class = Grid1D
+        elif isinstance(mask, Mask2D):
+            grid_class = Grid2D
 
-    if grid_class is grid_1d.Grid1D:
+    if grid_class is Grid1D:
 
-        return grid_1d.Grid1D.from_mask(mask=mask)
+        return Grid1D.from_mask(mask=mask)
 
-    if grid_class is grid_2d.Grid2D:
+    if grid_class is Grid2D:
 
-        return grid_2d.Grid2D.from_mask(mask=mask)
+        return Grid2D.from_mask(mask=mask)
 
-    elif grid_class is grid_2d_iterate.Grid2DIterate:
+    elif grid_class is Grid2DIterate:
 
-        return grid_2d_iterate.Grid2DIterate.from_mask(
+        return Grid2DIterate.from_mask(
             mask=mask, fractional_accuracy=fractional_accuracy, sub_steps=sub_steps
         )
 
-    elif grid_class is grid_2d_interpolate.Grid2DInterpolate:
+    elif grid_class is Grid2DInterpolate:
 
-        return grid_2d_interpolate.Grid2DInterpolate.from_mask(
+        return Grid2DInterpolate.from_mask(
             mask=mask, pixel_scales_interp=pixel_scales_interp
         )
 
@@ -129,8 +128,8 @@ class AbstractSettingsDataset:
 class AbstractDataset:
     def __init__(
         self,
-        data: abstract_structure.AbstractStructure,
-        noise_map: abstract_structure.AbstractStructure,
+        data: AbstractStructure,
+        noise_map: AbstractStructure,
         settings=AbstractSettingsDataset(),
         name: str = None,
     ):
@@ -138,9 +137,9 @@ class AbstractDataset:
 
         Parameters
         ----------
-        data : abstract_structure.AbstractStructure
+        data : AbstractStructure
             The array of the image data, in units of electrons per second.
-        noise_map : abstract_structure.AbstractStructure
+        noise_map : AbstractStructure
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """
@@ -156,7 +155,7 @@ class AbstractDataset:
 
             if settings.signal_to_noise_limit_radii is not None:
 
-                signal_to_noise_mask = mask_2d.Mask2D.circular(
+                signal_to_noise_mask = Mask2D.circular(
                     shape_native=mask.shape_native,
                     radius=settings.signal_to_noise_limit_radii,
                     pixel_scales=mask.pixel_scales,
@@ -164,7 +163,7 @@ class AbstractDataset:
 
             else:
 
-                signal_to_noise_mask = mask_2d.Mask2D.unmasked(
+                signal_to_noise_mask = Mask2D.unmasked(
                     shape_native=data.shape_native, pixel_scales=mask.pixel_scales
                 )
 

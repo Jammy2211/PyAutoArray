@@ -1,6 +1,6 @@
-from autoarray.plot.mat_wrap.wrap import wrap_base
+from autoarray.plot.mat_wrap.wrap.wrap_base import set_backend
 
-wrap_base.set_backend()
+set_backend()
 
 import matplotlib.pyplot as plt
 from matplotlib import patches as ptch
@@ -10,8 +10,8 @@ import itertools
 from typing import List, Union, Optional, Tuple
 
 from autoarray.inversion import mappers
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.vector_fields import vector_field_irregular
 from autoarray import exc
 
@@ -76,7 +76,7 @@ class GridScatter(AbstractMatWrap2D):
         list of colors can be specified which the plot cycles through.
     """
 
-    def scatter_grid(self, grid: Union[np.ndarray, grid_2d.Grid2D]):
+    def scatter_grid(self, grid: Union[np.ndarray, Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -98,10 +98,7 @@ class GridScatter(AbstractMatWrap2D):
         except (IndexError, TypeError):
             return self.scatter_grid_list(grid_list=grid)
 
-    def scatter_grid_list(
-        self,
-        grid_list: Union[List[grid_2d.Grid2D], List[grid_2d_irregular.Grid2DIrregular]],
-    ):
+    def scatter_grid_list(self, grid_list: Union[List[Grid2D], List[Grid2DIrregular]]):
         """
          Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -128,10 +125,7 @@ class GridScatter(AbstractMatWrap2D):
             return None
 
     def scatter_grid_colored(
-        self,
-        grid: Union[np.ndarray, grid_2d.Grid2D],
-        color_array: np.ndarray,
-        cmap: str,
+        self, grid: Union[np.ndarray, Grid2D], color_array: np.ndarray, cmap: str
     ):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
@@ -154,7 +148,7 @@ class GridScatter(AbstractMatWrap2D):
         plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap, **config_dict)
 
     def scatter_grid_indexes(
-        self, grid: Union[np.ndarray, grid_2d.Grid2D], indexes: np.ndarray
+        self, grid: Union[np.ndarray, Grid2D], indexes: np.ndarray
     ):
         """
         Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
@@ -266,7 +260,7 @@ class GridPlot(AbstractMatWrap2D):
         for y in ys:
             plt.plot([xs[0], xs[-1]], [y, y], **self.config_dict)
 
-    def plot_grid(self, grid: Union[np.ndarray, grid_2d.Grid2D]):
+    def plot_grid(self, grid: Union[np.ndarray, Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -280,10 +274,7 @@ class GridPlot(AbstractMatWrap2D):
         except (IndexError, TypeError):
             return self.plot_grid_list(grid_list=grid)
 
-    def plot_grid_list(
-        self,
-        grid_list: Union[List[grid_2d.Grid2D], List[grid_2d_irregular.Grid2DIrregular]],
-    ):
+    def plot_grid_list(self, grid_list: Union[List[Grid2D], List[Grid2DIrregular]]):
         """
          Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.line`.
 
@@ -331,7 +322,7 @@ class GridErrorbar(AbstractMatWrap2D):
 
     def errorbar_grid(
         self,
-        grid: Union[np.ndarray, grid_2d.Grid2D],
+        grid: Union[np.ndarray, Grid2D],
         y_errors: Optional[Union[np.ndarray, List]] = None,
         x_errors: Optional[Union[np.ndarray, List]] = None,
     ):
@@ -364,7 +355,7 @@ class GridErrorbar(AbstractMatWrap2D):
 
     def errorbar_grid_list(
         self,
-        grid_list: Union[List[grid_2d.Grid2D], List[grid_2d_irregular.Grid2DIrregular]],
+        grid_list: Union[List[Grid2D], List[Grid2DIrregular]],
         y_errors: Optional[Union[np.ndarray, List]] = None,
         x_errors: Optional[Union[np.ndarray, List]] = None,
     ):
@@ -403,7 +394,7 @@ class GridErrorbar(AbstractMatWrap2D):
 
     def errorbar_grid_colored(
         self,
-        grid: Union[np.ndarray, grid_2d.Grid2D],
+        grid: Union[np.ndarray, Grid2D],
         color_array: np.ndarray,
         cmap: str,
         y_errors: Optional[Union[np.ndarray, List]] = None,

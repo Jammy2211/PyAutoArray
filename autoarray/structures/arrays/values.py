@@ -1,11 +1,10 @@
+import json
 import logging
-
 import numpy as np
 import os
-import json
 from os import path
 
-from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -85,7 +84,7 @@ class ValuesIrregular(np.ndarray):
         grid_slim
             The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregular`
             object."""
-        return grid_2d_irregular.Grid2DIrregular(grid=grid_slim)
+        return Grid2DIrregular(grid=grid_slim)
 
     @classmethod
     def from_file(cls, file_path):

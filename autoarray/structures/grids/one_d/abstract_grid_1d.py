@@ -1,13 +1,14 @@
-from autoarray.structures import abstract_structure
-from autoarray.structures.grids.one_d import grid_1d
-from autoarray.structures.grids.one_d import grid_1d_util
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.geometry import geometry_util
-
 import numpy as np
 
+from autoarray.structures.abstract_structure import AbstractStructure1D
+from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
-class AbstractGrid1D(abstract_structure.AbstractStructure1D):
+from autoarray.geometry import geometry_util
+from autoarray.structures.grids.one_d import grid_1d_util
+
+
+class AbstractGrid1D(AbstractStructure1D):
     @property
     def slim(self):
         """
@@ -25,7 +26,7 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
             grid_1d_native=self, mask_1d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return grid_1d.Grid1D(grid=grid, mask=self.mask)
+        return Grid1D(grid=grid, mask=self.mask)
 
     @property
     def native(self):
@@ -44,7 +45,7 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
             grid_1d_slim=self, mask_1d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return grid_1d.Grid1D(grid=grid, mask=self.mask)
+        return Grid1D(grid=grid, mask=self.mask)
 
     @property
     def binned(self):
@@ -66,11 +67,9 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
             grid_1d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        return grid_1d.Grid1D(grid=binned_grid_1d_slim, mask=self.mask.mask_sub_1)
+        return Grid1D(grid=binned_grid_1d_slim, mask=self.mask.mask_sub_1)
 
-    def project_to_radial_grid_2d(
-        self, angle: float = 0.0
-    ) -> grid_2d_irregular.Grid2DIrregular:
+    def project_to_radial_grid_2d(self, angle: float = 0.0) -> Grid2DIrregular:
         """
         Project the 1D grid of (y,x) coordinates to an irregular 2d grid of (y,x) coordinates. The projection works
         as follows:
@@ -87,7 +86,7 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
 
         Returns
         -------
-        grid_2d_irregular.Grid2DIrregular
+        Grid2DIrregular
             The projected and rotated 2D grid of (y,x) coordinates.
         """
         grid = np.zeros((self.sub_shape_slim, 2))
@@ -98,4 +97,4 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
             grid_2d=grid, centre=(0.0, 0.0), angle=angle
         )
 
-        return grid_2d_irregular.Grid2DIrregular(grid=grid)
+        return Grid2DIrregular(grid=grid)

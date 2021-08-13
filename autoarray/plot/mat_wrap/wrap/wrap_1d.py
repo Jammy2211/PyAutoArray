@@ -1,13 +1,13 @@
-from autoarray.plot.mat_wrap.wrap import wrap_base
+from autoarray.plot.mat_wrap.wrap.wrap_base import set_backend
 
-wrap_base.set_backend()
+set_backend()
 
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import List, Optional, Union
 
-from autoarray.structures.arrays.one_d import array_1d
-from autoarray.structures.grids.one_d import grid_1d
+from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray import exc
 
 
@@ -41,8 +41,8 @@ class YXPlot(AbstractMatWrap1D):
 
     def plot_y_vs_x(
         self,
-        y: Union[np.ndarray, array_1d.Array1D],
-        x: Union[np.ndarray, array_1d.Array1D],
+        y: Union[np.ndarray, Array1D],
+        x: Union[np.ndarray, Array1D],
         label: str = None,
         plot_axis_type=None,
         y_errors=None,
@@ -105,7 +105,7 @@ class YXScatter(AbstractMatWrap1D):
 
         super().__init__(**kwargs)
 
-    def scatter_yx(self, y: Union[np.ndarray, grid_1d.Grid1D], x: list):
+    def scatter_yx(self, y: Union[np.ndarray, Grid1D], x: list):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -205,9 +205,9 @@ class FillBetween(AbstractMatWrap1D):
 
     def fill_between_shaded_regions(
         self,
-        x: Union[np.ndarray, array_1d.Array1D, List],
-        y1: Union[np.ndarray, array_1d.Array1D, List],
-        y2: Union[np.ndarray, array_1d.Array1D, List],
+        x: Union[np.ndarray, Array1D, List],
+        y1: Union[np.ndarray, Array1D, List],
+        y2: Union[np.ndarray, Array1D, List],
     ):
         """
         Fill in between two lines `y1` and `y2` on a plot of y vs x. 

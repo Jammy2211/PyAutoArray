@@ -1,6 +1,5 @@
 import os
 from os import path
-
 import pytest
 from matplotlib import pyplot
 

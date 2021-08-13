@@ -1,21 +1,26 @@
-from autoarray.plot import abstract_plotters
-from autoarray.plot.mat_wrap import visuals as vis
-from autoarray.plot.mat_wrap import include as inc
-from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.inversion import mappers
+from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.mat_wrap.visuals import Visuals1D
+from autoarray.plot.mat_wrap.visuals import Visuals2D
+from autoarray.plot.mat_wrap.include import Include1D
+from autoarray.plot.mat_wrap.include import Include2D
+from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
+from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
+from autoarray.plot.mat_wrap.mat_plot import AutoLabels
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.inversion.mappers import MapperRectangular
+from autoarray.inversion.mappers import MapperVoronoi
 import typing
 
 
-class Array2DPlotter(abstract_plotters.AbstractPlotter):
+class Array2DPlotter(AbstractPlotter):
     def __init__(
         self,
-        array: array_2d.Array2D,
-        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
-        include_2d: inc.Include2D = inc.Include2D(),
+        array: Array2D,
+        mat_plot_2d: MatPlot2D = MatPlot2D(),
+        visuals_2d: Visuals2D = Visuals2D(),
+        include_2d: Include2D = Include2D(),
     ):
 
         super().__init__(
@@ -40,18 +45,16 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
 
         Parameters
         ----------
-        array : array_2d.Array2D
+        array : Array2D
             The array whose attributes are extracted for plotting.
 
         Returns
         -------
-        vis.Visuals2D
+        Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
         return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.array.origin])
-            ),
+            origin=self.extract_2d("origin", Grid2DIrregular(grid=[self.array.origin])),
             mask=self.extract_2d("mask", self.array.mask),
             border=self.extract_2d("border", self.array.mask.border_grid_sub_1.binned),
         )
@@ -61,17 +64,17 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_2d.plot_array(
             array=self.array,
             visuals_2d=self.visuals_with_include_2d,
-            auto_labels=mp.AutoLabels(title="Array2D", filename="array"),
+            auto_labels=AutoLabels(title="Array2D", filename="array"),
         )
 
 
-class Grid2DPlotter(abstract_plotters.AbstractPlotter):
+class Grid2DPlotter(AbstractPlotter):
     def __init__(
         self,
-        grid: grid_2d.Grid2D,
-        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
-        include_2d: inc.Include2D = inc.Include2D(),
+        grid: Grid2D,
+        mat_plot_2d: MatPlot2D = MatPlot2D(),
+        visuals_2d: Visuals2D = Visuals2D(),
+        include_2d: Include2D = Include2D(),
     ):
         super().__init__(
             visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
@@ -99,16 +102,14 @@ class Grid2DPlotter(abstract_plotters.AbstractPlotter):
 
         Returns
         -------
-        vis.Visuals2D
+        Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        if not isinstance(self.grid, grid_2d.Grid2D):
+        if not isinstance(self.grid, Grid2D):
             return self.visuals_2d
 
         return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.grid.origin])
-            )
+            origin=self.extract_2d("origin", Grid2DIrregular(grid=[self.grid.origin]))
         )
 
     def figure_2d(self, color_array=None):
@@ -116,18 +117,18 @@ class Grid2DPlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
             visuals_2d=self.visuals_with_include_2d,
-            auto_labels=mp.AutoLabels(title="Grid2D", filename="grid"),
+            auto_labels=AutoLabels(title="Grid2D", filename="grid"),
             color_array=color_array,
         )
 
 
-class MapperPlotter(abstract_plotters.AbstractPlotter):
+class MapperPlotter(AbstractPlotter):
     def __init__(
         self,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
-        include_2d: inc.Include2D = inc.Include2D(),
+        mapper: typing.Union[MapperRectangular, MapperVoronoi],
+        mat_plot_2d: MatPlot2D = MatPlot2D(),
+        visuals_2d: Visuals2D = Visuals2D(),
+        include_2d: Include2D = Include2D(),
     ):
         super().__init__(
             visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
@@ -152,20 +153,18 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         Parameters
         ----------
-        mapper : mappers.Mapper
+        mapper : Mapper
             The mapper whose data-plane attributes are extracted for plotting.
 
         Returns
         -------
-        vis.Visuals2D
+        Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
-                grid_2d_irregular.Grid2DIrregular(
-                    grid=[self.mapper.source_grid_slim.mask.origin]
-                ),
+                Grid2DIrregular(grid=[self.mapper.source_grid_slim.mask.origin]),
             ),
             mask=self.extract_2d("mask", self.mapper.source_grid_slim.mask),
             border=self.extract_2d(
@@ -195,21 +194,19 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         Parameters
         ----------
-        mapper : mappers.Mapper
+        mapper : Mapper
             The mapper whose source-plane attributes are extracted for plotting.
 
         Returns
         -------
-        vis.Visuals2D
+        Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
-                grid_2d_irregular.Grid2DIrregular(
-                    grid=[self.mapper.source_pixelization_grid.origin]
-                ),
+                Grid2DIrregular(grid=[self.mapper.source_pixelization_grid.origin]),
             ),
             grid=self.extract_2d(
                 "grid", self.mapper.source_grid_slim, "mapper_source_grid_slim"
@@ -230,7 +227,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             mapper=self.mapper,
             visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
-            auto_labels=mp.AutoLabels(title="Mapper", filename="mapper"),
+            auto_labels=AutoLabels(title="Mapper", filename="mapper"),
         )
 
     def subplot_image_and_mapper(self, image):
@@ -240,7 +237,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_2d.plot_array(
             array=image,
             visuals_2d=self.visuals_data_with_include_2d,
-            auto_labels=mp.AutoLabels(title="Image"),
+            auto_labels=AutoLabels(title="Image"),
         )
 
         if self.visuals_2d.pixelization_indexes is not None:
@@ -261,14 +258,14 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         self.close_subplot_figure()
 
 
-class YX1DPlotter(abstract_plotters.AbstractPlotter):
+class YX1DPlotter(AbstractPlotter):
     def __init__(
         self,
         y,
         x,
-        mat_plot_1d: mp.MatPlot1D = mp.MatPlot1D(),
-        visuals_1d: vis.Visuals1D = vis.Visuals1D(),
-        include_1d: inc.Include1D = inc.Include1D(),
+        mat_plot_1d: MatPlot1D = MatPlot1D(),
+        visuals_1d: Visuals1D = Visuals1D(),
+        include_1d: Include1D = Include1D(),
     ):
 
         super().__init__(
@@ -279,7 +276,7 @@ class YX1DPlotter(abstract_plotters.AbstractPlotter):
         self.x = x
 
     @property
-    def visuals_with_include_1d(self) -> vis.Visuals1D:
+    def visuals_with_include_1d(self) -> Visuals1D:
 
         return self.visuals_1d + self.visuals_1d.__class__(
             origin=self.extract_1d("origin", self.x.origin),
@@ -289,5 +286,5 @@ class YX1DPlotter(abstract_plotters.AbstractPlotter):
     def figure_1d(self):
 
         self.mat_plot_1d.plot_yx(
-            y=self.y, x=self.x, visuals_1d=self.visuals_1d, auto_labels=mp.AutoLabels()
+            y=self.y, x=self.x, visuals_1d=self.visuals_1d, auto_labels=AutoLabels()
         )

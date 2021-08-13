@@ -1,11 +1,10 @@
-from autoarray import decorator_util
 import numpy as np
-
-from autoarray.mask import mask_2d_util
-from autoarray.geometry import geometry_util
-from autoarray.structures.arrays.two_d import array_2d_util
-
 from typing import Tuple, Union, Optional
+
+from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.geometry import geometry_util
+from autoarray import decorator_util
+from autoarray.mask import mask_2d_util
 
 
 @decorator_util.jit()

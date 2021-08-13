@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Tuple
-from autoarray import decorator_util
 
+from autoarray import decorator_util
 from autoarray import exc
 
 

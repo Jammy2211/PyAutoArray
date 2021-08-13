@@ -1,16 +1,18 @@
-import logging
-
-import numpy as np
 import copy
+import logging
+import numpy as np
+
+from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
+from autoarray.dataset.abstract_dataset import AbstractDataset
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.operators.convolver import Convolver
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.kernel_2d import Kernel2D
+from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
-from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.inversion.inversion import inversion_util
-from autoarray.mask import mask_2d as msk
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures import kernel_2d
-from autoarray.operators import convolver
+from autoarray.dataset import preprocess
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +25,11 @@ class WTilde:
         self.lengths = lengths
 
 
-class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
+class SettingsImaging(AbstractSettingsDataset):
     def __init__(
         self,
-        grid_class=grid_2d.Grid2D,
-        grid_inversion_class=grid_2d.Grid2D,
+        grid_class=Grid2D,
+        grid_inversion_class=Grid2D,
         sub_size=1,
         sub_size_inversion=4,
         fractional_accuracy=0.9999,
@@ -87,12 +89,12 @@ class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
         self.use_normalized_psf = use_normalized_psf
 
 
-class Imaging(abstract_dataset.AbstractDataset):
+class Imaging(AbstractDataset):
     def __init__(
         self,
-        image: array_2d.Array2D,
-        noise_map: array_2d.Array2D,
-        psf: kernel_2d.Kernel2D = None,
+        image: Array2D,
+        noise_map: Array2D,
+        psf: Kernel2D = None,
         settings=SettingsImaging(),
         name: str = None,
         pad_for_convolver=False,
@@ -102,13 +104,13 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         Parameters
         ----------
-        image : aa.Array2D
+        image
             The array of the image data, in units of electrons per second.
         noise_map : Array2D
             An array describing the RMS standard deviation error in each pixel in units of electrons per second.
-        psf : aa.Array2D
+        psf
             An array describing the Point Spread Function kernel of the image.
-        mask: msk.Mask2D
+        mask:Mask2D
             The 2D mask that is applied to the image.
         """
 
@@ -144,7 +146,7 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         if psf is not None:
 
-            self.psf_normalized = kernel_2d.Kernel2D.manual_native(
+            self.psf_normalized = Kernel2D.manual_native(
                 array=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
 
@@ -212,7 +214,7 @@ class Imaging(abstract_dataset.AbstractDataset):
         """
         if self._convolver is None:
 
-            self._convolver = convolver.Convolver(mask=self.mask, kernel=self.psf)
+            self._convolver = Convolver(mask=self.mask, kernel=self.psf)
 
         return self._convolver
 
@@ -289,17 +291,17 @@ class Imaging(abstract_dataset.AbstractDataset):
             The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
         """
 
-        image = array_2d.Array2D.from_fits(
+        image = Array2D.from_fits(
             file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
         )
 
-        noise_map = array_2d.Array2D.from_fits(
+        noise_map = Array2D.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
         )
 
         if psf_path is not None:
 
-            psf = kernel_2d.Kernel2D.from_fits(
+            psf = Kernel2D.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,
@@ -319,11 +321,11 @@ class Imaging(abstract_dataset.AbstractDataset):
         else:
             unmasked_imaging = self.unmasked
 
-        image = array_2d.Array2D.manual_mask(
+        image = Array2D.manual_mask(
             array=unmasked_imaging.image.native, mask=mask.mask_sub_1
         )
 
-        noise_map = array_2d.Array2D.manual_mask(
+        noise_map = Array2D.manual_mask(
             array=unmasked_imaging.noise_map.native, mask=mask.mask_sub_1
         )
 
@@ -368,7 +370,7 @@ class Imaging(abstract_dataset.AbstractDataset):
         imaging = copy.deepcopy(self)
 
         if mask is None:
-            mask = msk.Mask2D.unmasked(
+            mask = Mask2D.unmasked(
                 shape_native=self.shape_native, pixel_scales=self.pixel_scales
             )
 
@@ -378,7 +380,7 @@ class Imaging(abstract_dataset.AbstractDataset):
             self.noise_map.native,
         )
 
-        imaging.noise_map = array_2d.Array2D.manual_mask(
+        imaging.noise_map = Array2D.manual_mask(
             array=noise_map_limit, mask=self.image.mask
         )
 
@@ -410,7 +412,7 @@ class AbstractSimulatorImaging:
         self,
         exposure_time: float,
         background_sky_level: float = 0.0,
-        psf: kernel_2d.Kernel2D = None,
+        psf: Kernel2D = None,
         normalize_psf: bool = True,
         read_noise: float = None,
         add_poisson_noise: bool = True,
@@ -458,23 +460,23 @@ class AbstractSimulatorImaging:
 
 
 class SimulatorImaging(AbstractSimulatorImaging):
-    def from_image(self, image: array_2d.Array2D, name: str = None):
+    def from_image(self, image: Array2D, name: str = None):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        image : array_2d.Array2D
+        image : Array2D
             The image before simulating which has noise added, PSF convolution, etc performed to it.
         """
 
-        exposure_time_map = array_2d.Array2D.full(
+        exposure_time_map = Array2D.full(
             fill_value=self.exposure_time,
             shape_native=image.shape_native,
             pixel_scales=image.pixel_scales,
         )
 
-        background_sky_map = array_2d.Array2D.full(
+        background_sky_map = Array2D.full(
             fill_value=self.background_sky_level,
             shape_native=image.shape_native,
             pixel_scales=image.pixel_scales,
@@ -483,7 +485,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
         if self.psf is not None:
             psf = self.psf
         else:
-            psf = kernel_2d.Kernel2D.no_blur(pixel_scales=image.pixel_scales)
+            psf = Kernel2D.no_blur(pixel_scales=image.pixel_scales)
 
         image = psf.convolved_array_from_array(array=image)
 
@@ -501,7 +503,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
             )
 
         else:
-            noise_map = array_2d.Array2D.full(
+            noise_map = Array2D.full(
                 fill_value=self.noise_if_add_noise_false,
                 shape_native=image.shape_native,
                 pixel_scales=image.pixel_scales,
@@ -515,10 +517,10 @@ class SimulatorImaging(AbstractSimulatorImaging):
 
         image = image - background_sky_map
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=image.shape_native, pixel_scales=image.pixel_scales
         )
 
-        image = array_2d.Array2D.manual_mask(array=image, mask=mask)
+        image = Array2D.manual_mask(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)

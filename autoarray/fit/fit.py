@@ -1,6 +1,9 @@
 import numpy as np
+from typing import Union
 
-from autoarray.structures import abstract_structure
+from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+
 from autoarray.fit import fit_util
 
 
@@ -27,7 +30,7 @@ class FitData:
         return self._mask
 
     @property
-    def residual_map(self) -> abstract_structure.AbstractStructure:
+    def residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the residual-map between the masked dataset and model data, where:
 
@@ -41,7 +44,7 @@ class FitData:
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
-    def normalized_residual_map(self) -> abstract_structure.AbstractStructure:
+    def normalized_residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -56,7 +59,7 @@ class FitData:
         )
 
     @property
-    def chi_squared_map(self) -> abstract_structure.AbstractStructure:
+    def chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
@@ -71,7 +74,7 @@ class FitData:
         )
 
     @property
-    def signal_to_noise_map(self) -> abstract_structure.AbstractStructure:
+    def signal_to_noise_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
@@ -277,11 +280,11 @@ class FitImaging(FitDataset):
         return self.dataset
 
     @property
-    def image(self) -> abstract_structure.AbstractStructure:
+    def image(self) -> Union[np.ndarray, Array1D, Array2D]:
         return self.data
 
     @property
-    def model_image(self) -> abstract_structure.AbstractStructure:
+    def model_image(self) -> Union[np.ndarray, Array1D, Array2D]:
         return self.model_data
 
 
@@ -341,11 +344,11 @@ class FitInterferometer(FitDataset):
         return self.interferometer.transformer
 
     @property
-    def visibilities(self) -> abstract_structure.AbstractStructure:
+    def visibilities(self) -> Union[np.ndarray, Array1D, Array2D]:
         return self.data
 
     @property
-    def signal_to_noise_map(self) -> abstract_structure.AbstractStructure:
+    def signal_to_noise_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map_real = np.divide(
             np.real(self.data), np.real(self.noise_map)
@@ -359,11 +362,11 @@ class FitInterferometer(FitDataset):
         return signal_to_noise_map_real + 1.0j * signal_to_noise_map_imag
 
     @property
-    def model_visibilities(self) -> abstract_structure.AbstractStructure:
+    def model_visibilities(self) -> Union[np.ndarray, Array1D, Array2D]:
         return self.model_data
 
     @property
-    def normalized_residual_map(self) -> abstract_structure.AbstractStructure:
+    def normalized_residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -374,7 +377,7 @@ class FitInterferometer(FitDataset):
         )
 
     @property
-    def chi_squared_map(self) -> abstract_structure.AbstractStructure:
+    def chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 

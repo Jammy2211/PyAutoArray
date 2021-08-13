@@ -1,17 +1,17 @@
 import numpy as np
 import scipy.spatial
 import scipy.spatial.qhull as qhull
+from typing import Tuple
+
+from autoarray.structures.abstract_structure import AbstractStructure2D
+from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
-from autoarray.mask import mask_2d as msk
-from autoarray.structures import abstract_structure
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.inversion import pixelization_util
 
-from typing import Tuple
 
-
-class Grid2DRectangular(abstract_structure.AbstractStructure2D):
+class Grid2DRectangular(AbstractStructure2D):
     def __new__(
         cls, grid, shape_native, pixel_scales, origin=(0.0, 0.0), *args, **kwargs
     ):
@@ -35,7 +35,7 @@ class Grid2DRectangular(abstract_structure.AbstractStructure2D):
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=1,

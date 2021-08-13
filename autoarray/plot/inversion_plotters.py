@@ -1,20 +1,23 @@
-from autoconf import conf
-from autoarray.plot.mat_wrap import visuals as vis
-from autoarray.plot.mat_wrap import include as inc
-from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.plot import structure_plotters
-from autoarray.inversion.inversion.abstract import AbstractInversion
-
 import numpy as np
+from typing import Union
+
+from autoconf import conf
+from autoarray.plot.mat_wrap.visuals import Visuals2D
+from autoarray.plot.mat_wrap.include import Include2D
+from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
+from autoarray.plot.mat_wrap.mat_plot import AutoLabels
+from autoarray.plot.structure_plotters import MapperPlotter
+from autoarray.inversion.inversion.imaging import InversionImagingMatrix
+from autoarray.inversion.inversion.interferometer import InversionInterferometerMatrix
 
 
-class InversionPlotter(structure_plotters.MapperPlotter):
+class InversionPlotter(MapperPlotter):
     def __init__(
         self,
-        inversion: AbstractInversion,
-        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
-        include_2d: inc.Include2D = inc.Include2D(),
+        inversion: Union[InversionImagingMatrix, InversionInterferometerMatrix],
+        mat_plot_2d: MatPlot2D = MatPlot2D(),
+        visuals_2d: Visuals2D = Visuals2D(),
+        include_2d: Include2D = Include2D(),
     ):
         super().__init__(
             mapper=inversion.mapper,
@@ -60,7 +63,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.inversion.mapped_reconstructed_image,
                 visuals_2d=self.visuals_data_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
             )
@@ -85,7 +88,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Source Reconstruction", filename="reconstruction"
                 ),
                 source_pixelilzation_values=self.as_mapper(
@@ -101,7 +104,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
-                auto_labels=mp.AutoLabels(title="Errors", filename="errors"),
+                auto_labels=AutoLabels(title="Errors", filename="errors"),
                 source_pixelilzation_values=self.as_mapper(self.inversion.errors),
             )
 
@@ -110,9 +113,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
-                auto_labels=mp.AutoLabels(
-                    title="Residual Map", filename="residual_map"
-                ),
+                auto_labels=AutoLabels(title="Residual Map", filename="residual_map"),
                 source_pixelilzation_values=self.as_mapper(self.inversion.residual_map),
             )
 
@@ -121,7 +122,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Normalized Residual Map", filename="normalized_residual_map"
                 ),
                 source_pixelilzation_values=self.as_mapper(
@@ -134,7 +135,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Chi-Squared Map", filename="chi_squared_map"
                 ),
                 source_pixelilzation_values=self.as_mapper(
@@ -147,7 +148,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Regularization weight_list",
                     filename="regularization_weight_list",
                 ),
@@ -161,7 +162,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.inversion.interpolated_reconstructed_data_from_shape_native(),
                 visuals_2d=self.visuals_data_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Interpolated Reconstruction",
                     filename="interpolated_reconstruction",
                 ),
@@ -171,7 +172,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.inversion.interpolated_errors_from_shape_native(),
                 visuals_2d=self.visuals_data_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Interpolated Errors", filename="interpolated_errors"
                 ),
             )
@@ -200,7 +201,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             regularization_weight_list=regularization_weight_list,
             interpolated_reconstruction=interpolated_reconstruction,
             interpolated_errors=interpolated_errors,
-            auto_labels=mp.AutoLabels(filename=auto_filename),
+            auto_labels=AutoLabels(filename=auto_filename),
         )
 
     def subplot_inversion(self):

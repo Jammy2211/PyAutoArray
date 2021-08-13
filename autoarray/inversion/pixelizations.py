@@ -1,11 +1,13 @@
-import numpy as np
-from autoconf import conf
-from autoarray import exc
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_pixelization
-from autoarray.inversion import mappers
-
 import copy
+import numpy as np
+
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.inversion.mappers import MapperRectangular
+from autoarray.inversion.mappers import MapperVoronoi
+
+from autoarray import exc
 
 
 class SettingsPixelization:
@@ -33,9 +35,7 @@ class Pixelization:
         """ Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
         """
 
-    def mapper_from_grid_and_sparse_grid(
-        self, grid: grid_2d.Grid2D, border: np.ndarray
-    ):
+    def mapper_from_grid_and_sparse_grid(self, grid: Grid2D, border: np.ndarray):
         raise NotImplementedError(
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
@@ -75,9 +75,9 @@ class Rectangular(Pixelization):
 
     def mapper_from_grid_and_sparse_grid(
         self,
-        grid: grid_2d.Grid2D,
-        sparse_grid: grid_2d.Grid2D = None,
-        sparse_image_plane_grid: grid_2d.Grid2D = None,
+        grid: Grid2D,
+        sparse_grid: Grid2D = None,
+        sparse_image_plane_grid: Grid2D = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -103,11 +103,11 @@ class Rectangular(Pixelization):
         else:
             relocated_grid = grid
 
-        pixelization_grid = grid_2d_pixelization.Grid2DRectangular.overlay_grid(
+        pixelization_grid = Grid2DRectangular.overlay_grid(
             shape_native=self.shape, grid=relocated_grid
         )
 
-        return mappers.MapperRectangular(
+        return MapperRectangular(
             source_grid_slim=relocated_grid,
             source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
@@ -115,7 +115,7 @@ class Rectangular(Pixelization):
 
     def sparse_grid_from_grid(
         self,
-        grid: grid_2d.Grid2D,
+        grid: Grid2D,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -134,9 +134,9 @@ class Voronoi(Pixelization):
 
     def mapper_from_grid_and_sparse_grid(
         self,
-        grid: grid_2d.Grid2D,
-        sparse_grid: grid_2d.Grid2DSparse = None,
-        sparse_image_plane_grid: grid_2d.Grid2DSparse = None,
+        grid: Grid2D,
+        sparse_grid: Grid2DSparse = None,
+        sparse_image_plane_grid: Grid2DSparse = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -176,12 +176,12 @@ class Voronoi(Pixelization):
 
         try:
 
-            pixelization_grid = grid_2d_pixelization.Grid2DVoronoi(
+            pixelization_grid = Grid2DVoronoi(
                 grid=relocated_pixelization_grid,
                 nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
             )
 
-            return mappers.MapperVoronoi(
+            return MapperVoronoi(
                 source_grid_slim=relocated_grid,
                 source_pixelization_grid=pixelization_grid,
                 data_pixelization_grid=sparse_image_plane_grid,
@@ -209,12 +209,12 @@ class VoronoiMagnification(Voronoi):
 
     def sparse_grid_from_grid(
         self,
-        grid: grid_2d.Grid2D,
+        grid: Grid2D,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
 
-        return grid_2d.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+        return Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
@@ -242,15 +242,12 @@ class VoronoiBrightnessImage(Voronoi):
         return np.power(weight_map, self.weight_power)
 
     def sparse_grid_from_grid(
-        self,
-        grid: grid_2d.Grid2D,
-        hyper_image: np.ndarray,
-        settings=SettingsPixelization(),
+        self, grid: Grid2D, hyper_image: np.ndarray, settings=SettingsPixelization()
     ):
 
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        return grid_2d.Grid2DSparse.from_total_pixels_grid_and_weight_map(
+        return Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,
             grid=grid,
             weight_map=weight_map,

@@ -1,17 +1,18 @@
 from astropy import units
+import numpy as np
 import scipy.signal
 from skimage.transform import resize, rescale
 
-import numpy as np
+from autoarray.structures.arrays.two_d.abstract_array_2d import AbstractArray2D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.arrays.abstract_array import Header
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
-from autoarray.structures.arrays import abstract_array
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray import exc
+from autoarray.structures.arrays.two_d import array_2d_util
 
 
-class Kernel2D(array_2d.Array2D):
+class Kernel2D(AbstractArray2D):
 
     # noinspection PyUnusedLocal
     def __new__(cls, array, mask, header=None, normalize=False, *args, **kwargs):
@@ -26,7 +27,7 @@ class Kernel2D(array_2d.Array2D):
         ----------
         array
             The values of the array.
-        mask : msk.Mask2D
+        mask :Mask2D
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
         normalize : bool
@@ -70,7 +71,7 @@ class Kernel2D(array_2d.Array2D):
         normalize : bool
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        array = array_2d.Array2D.manual_slim(
+        array = Array2D.manual_slim(
             array=array,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -107,7 +108,7 @@ class Kernel2D(array_2d.Array2D):
         normalize : bool
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        array = array_2d.Array2D.manual_native(
+        array = Array2D.manual_native(
             array=array, pixel_scales=pixel_scales, origin=origin
         )
 
@@ -308,9 +309,7 @@ class Kernel2D(array_2d.Array2D):
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
 
-        grid = grid_2d.Grid2D.uniform(
-            shape_native=shape_native, pixel_scales=pixel_scales
-        )
+        grid = Grid2D.uniform(shape_native=shape_native, pixel_scales=pixel_scales)
         grid_shifted = np.subtract(grid, centre)
         grid_radius = np.sqrt(np.sum(grid_shifted ** 2.0, 1))
         theta_coordinate_to_profile = np.arctan2(
@@ -396,7 +395,7 @@ class Kernel2D(array_2d.Array2D):
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
 
-        array = array_2d.Array2D.from_fits(
+        array = Array2D.from_fits(
             file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
         )
 
@@ -409,9 +408,7 @@ class Kernel2D(array_2d.Array2D):
             array=array[:],
             mask=array.mask,
             normalize=normalize,
-            header=abstract_array.Header(
-                header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj
-            ),
+            header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
 
     def rescaled_with_odd_dimensions_from_rescale_factor(
@@ -533,7 +530,7 @@ class Kernel2D(array_2d.Array2D):
             mask_2d=array_binned_2d.mask, array_2d_native=convolved_array_2d, sub_size=1
         )
 
-        return array_2d.Array2D(array=convolved_array_1d, mask=array_binned_2d.mask)
+        return Array2D(array=convolved_array_1d, mask=array_binned_2d.mask)
 
     def convolved_array_from_array_and_mask(self, array, mask):
         """
@@ -563,4 +560,4 @@ class Kernel2D(array_2d.Array2D):
             mask_2d=mask, array_2d_native=convolved_array_2d, sub_size=1
         )
 
-        return array_2d.Array2D(array=convolved_array_1d, mask=mask.mask_sub_1)
+        return Array2D(array=convolved_array_1d, mask=mask.mask_sub_1)

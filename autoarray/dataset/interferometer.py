@@ -2,32 +2,34 @@ import logging
 import numpy as np
 import copy
 
-from autoconf import conf
+from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
+from autoarray.dataset.abstract_dataset import AbstractDataset
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.operators.transformer import TransformerDFT
+from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.visibilities import VisibilitiesNoiseMap
+
 from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.arrays.two_d import array_2d_util
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.structures import visibilities as vis
-from autoarray.dataset import abstract_dataset, preprocess
-from autoarray.operators import transformer as trans
+from autoarray.dataset import preprocess
 
 
 logger = logging.getLogger(__name__)
 
 
-class SettingsInterferometer(abstract_dataset.AbstractSettingsDataset):
+class SettingsInterferometer(AbstractSettingsDataset):
     def __init__(
         self,
-        grid_class=grid_2d.Grid2D,
-        grid_inversion_class=grid_2d.Grid2D,
+        grid_class=Grid2D,
+        grid_inversion_class=Grid2D,
         sub_size=1,
         sub_size_inversion=1,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
         signal_to_noise_limit=None,
-        transformer_class=trans.TransformerNUFFT,
+        transformer_class=TransformerNUFFT,
     ):
         """
           The lens dataset is the collection of data_type (image, noise-map), a mask, grid, convolver \
@@ -75,7 +77,7 @@ class SettingsInterferometer(abstract_dataset.AbstractSettingsDataset):
         self.transformer_class = transformer_class
 
 
-class Interferometer(abstract_dataset.AbstractDataset):
+class Interferometer(AbstractDataset):
     def __init__(
         self,
         visibilities,
@@ -120,11 +122,11 @@ class Interferometer(abstract_dataset.AbstractDataset):
         ----------
         """
 
-        visibilities = vis.Visibilities.from_fits(
+        visibilities = Visibilities.from_fits(
             file_path=visibilities_path, hdu=visibilities_hdu
         )
 
-        noise_map = vis.VisibilitiesNoiseMap.from_fits(
+        noise_map = VisibilitiesNoiseMap.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu
         )
 
@@ -196,7 +198,7 @@ class Interferometer(abstract_dataset.AbstractDataset):
     def modified_visibilities_from_visibilities(self, visibilities):
 
         interferometer = copy.deepcopy(self)
-        interferometer.data = vis.Visibilities(visibilities=visibilities)
+        interferometer.data = Visibilities(visibilities=visibilities)
         return interferometer
 
     @property
@@ -229,7 +231,7 @@ class Interferometer(abstract_dataset.AbstractDataset):
             np.imag(self.noise_map),
         )
 
-        interferometer.noise_map = vis.VisibilitiesNoiseMap(
+        interferometer.noise_map = VisibilitiesNoiseMap(
             visibilities=noise_map_limit_real + 1j * noise_map_limit_imag
         )
 
@@ -272,7 +274,7 @@ class AbstractSimulatorInterferometer:
         self,
         uv_wavelengths,
         exposure_time: float,
-        transformer_class=trans.TransformerDFT,
+        transformer_class=TransformerDFT,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -332,11 +334,11 @@ class AbstractSimulatorInterferometer:
             visibilities = preprocess.data_with_complex_gaussian_noise_added(
                 data=visibilities, sigma=self.noise_sigma, seed=self.noise_seed
             )
-            noise_map = vis.VisibilitiesNoiseMap.full(
+            noise_map = VisibilitiesNoiseMap.full(
                 fill_value=self.noise_sigma, shape_slim=(visibilities.shape[0],)
             )
         else:
-            noise_map = vis.VisibilitiesNoiseMap.full(
+            noise_map = VisibilitiesNoiseMap.full(
                 fill_value=self.noise_if_add_noise_false,
                 shape_slim=(visibilities.shape[0],),
             )

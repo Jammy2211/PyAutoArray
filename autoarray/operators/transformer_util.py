@@ -1,6 +1,6 @@
-from autoarray import decorator_util
-
 import numpy as np
+
+from autoarray import decorator_util
 
 
 @decorator_util.jit()

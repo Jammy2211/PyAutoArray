@@ -1,7 +1,7 @@
 import numpy as np
-from autoarray import decorator_util
-
 from typing import Tuple
+
+from autoarray import decorator_util
 
 
 @decorator_util.jit()

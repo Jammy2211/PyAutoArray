@@ -1,6 +1,7 @@
-from autoarray import decorator_util
 from typing import Tuple, Union
 import numpy as np
+
+from autoarray import decorator_util
 
 
 def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:

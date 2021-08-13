@@ -1,11 +1,10 @@
-from autoarray import decorator_util
 import numpy as np
-
-from autoarray.mask import mask_1d_util
-from autoarray.structures.arrays.one_d import array_1d_util
-from autoarray.geometry import geometry_util
-
 from typing import Tuple
+
+from autoarray.structures.arrays.one_d import array_1d_util
+from autoarray import decorator_util
+from autoarray.geometry import geometry_util
+from autoarray.mask import mask_1d_util
 
 
 def grid_1d_slim_via_shape_slim_from(

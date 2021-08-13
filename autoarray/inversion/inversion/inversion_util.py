@@ -1,9 +1,10 @@
-from autoarray import exc
-from autoarray import decorator_util
-from autoarray.inversion.inversion.settings import SettingsInversion
 import numpy as np
-
 from typing import Tuple
+
+from autoarray.inversion.inversion.settings import SettingsInversion
+
+from autoarray import decorator_util
+from autoarray import exc
 
 
 @decorator_util.jit()

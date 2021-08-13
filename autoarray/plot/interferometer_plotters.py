@@ -1,22 +1,26 @@
-from autoarray.plot import abstract_plotters
-from autoarray.plot.mat_wrap import visuals as vis
-from autoarray.plot.mat_wrap import include as inc
-from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.dataset import interferometer as inter
-from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.mat_wrap.visuals import Visuals1D
+from autoarray.plot.mat_wrap.visuals import Visuals2D
+from autoarray.plot.mat_wrap.include import Include1D
+from autoarray.plot.mat_wrap.include import Include2D
+from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
+from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
+from autoarray.plot.mat_wrap.mat_plot import AutoLabels
+from autoarray.dataset.interferometer import Interferometer
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 import numpy as np
 
 
-class InterferometerPlotter(abstract_plotters.AbstractPlotter):
+class InterferometerPlotter(AbstractPlotter):
     def __init__(
         self,
-        interferometer: inter.Interferometer,
-        mat_plot_1d: mp.MatPlot1D = mp.MatPlot1D(),
-        visuals_1d: vis.Visuals1D = vis.Visuals1D(),
-        include_1d: inc.Include1D = inc.Include1D(),
-        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
-        include_2d: inc.Include2D = inc.Include2D(),
+        interferometer: Interferometer,
+        mat_plot_1d: MatPlot1D = MatPlot1D(),
+        visuals_1d: Visuals1D = Visuals1D(),
+        include_1d: Include1D = Include1D(),
+        mat_plot_2d: MatPlot2D = MatPlot2D(),
+        visuals_2d: Visuals2D = Visuals2D(),
+        include_2d: Include2D = Include2D(),
     ):
 
         self.interferometer = interferometer
@@ -40,9 +44,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
-                grid_2d_irregular.Grid2DIrregular(
-                    grid=[self.interferometer.real_space_mask.origin]
-                ),
+                Grid2DIrregular(grid=[self.interferometer.real_space_mask.origin]),
             ),
             mask=self.extract_2d("mask", self.interferometer.real_space_mask),
             border=self.extract_2d(
@@ -83,9 +85,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             self.mat_plot_2d.plot_grid(
                 grid=self.interferometer.visibilities.in_grid,
                 visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(
-                    title="Visibilities", filename="visibilities"
-                ),
+                auto_labels=AutoLabels(title="Visibilities", filename="visibilities"),
             )
 
         if noise_map:
@@ -94,7 +94,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                 grid=self.interferometer.visibilities.in_grid,
                 visuals_2d=self.visuals_with_include_2d,
                 color_array=self.interferometer.noise_map.real,
-                auto_labels=mp.AutoLabels(title="Noise-Map", filename="noise_map"),
+                auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
             )
 
         if u_wavelengths:
@@ -103,7 +103,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                 y=self.interferometer.uv_wavelengths[:, 0],
                 x=None,
                 visuals_1d=self.visuals_1d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="U-Wavelengths",
                     filename="u_wavelengths",
                     ylabel="Wavelengths",
@@ -117,7 +117,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                 y=self.interferometer.uv_wavelengths[:, 1],
                 x=None,
                 visuals_1d=self.visuals_1d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="V-Wavelengths",
                     filename="v_wavelengths",
                     ylabel="Wavelengths",
@@ -128,12 +128,12 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         if uv_wavelengths:
 
             self.mat_plot_2d.plot_grid(
-                grid=grid_2d_irregular.Grid2DIrregular.from_yx_1d(
+                grid=Grid2DIrregular.from_yx_1d(
                     y=self.interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
                     x=self.interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
                 ),
                 visuals_2d=self.visuals_with_include_2d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="UV-Wavelengths", filename="uv_wavelengths"
                 ),
             )
@@ -144,7 +144,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                 y=self.interferometer.amplitudes,
                 x=self.interferometer.uv_distances / 10 ** 3.0,
                 visuals_1d=self.visuals_1d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Amplitudes vs UV-distances",
                     filename="amplitudes_vs_uv_distances",
                     ylabel="amplitude (Jy)",
@@ -159,7 +159,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                 y=self.interferometer.phases,
                 x=self.interferometer.uv_distances / 10 ** 3.0,
                 visuals_1d=self.visuals_1d,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Phases vs UV-distances",
                     filename="phases_vs_uv_distances",
                     ylabel="phase (deg)",
@@ -173,9 +173,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_image,
                 visuals_2d=self.visuals_with_include_2d_real_space,
-                auto_labels=mp.AutoLabels(
-                    title="Dirty Image", filename="dirty_image_2d"
-                ),
+                auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
             )
 
         if dirty_noise_map:
@@ -183,7 +181,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_noise_map,
                 visuals_2d=self.visuals_with_include_2d_real_space,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map_2d"
                 ),
             )
@@ -193,7 +191,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_signal_to_noise_map,
                 visuals_2d=self.visuals_with_include_2d_real_space,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map_2d",
                 ),
@@ -204,7 +202,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_inverse_noise_map,
                 visuals_2d=self.visuals_with_include_2d_real_space,
-                auto_labels=mp.AutoLabels(
+                auto_labels=AutoLabels(
                     title="Dirty Inverse Noise Map",
                     filename="dirty_inverse_noise_map_2d",
                 ),
@@ -238,7 +236,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             dirty_noise_map=dirty_noise_map,
             dirty_signal_to_noise_map=dirty_signal_to_noise_map,
             dirty_inverse_noise_map=dirty_inverse_noise_map,
-            auto_labels=mp.AutoLabels(filename=auto_filename),
+            auto_labels=AutoLabels(filename=auto_filename),
         )
 
     def subplot_interferometer(self):

@@ -1,14 +1,13 @@
+from astropy.io import fits
+from functools import wraps
 import inspect
+import numpy as np
 import os
+from typing import Tuple
 
 from autoconf import conf
 from autoarray import decorator_util
 from autoarray.mask import mask_2d_util
-import numpy as np
-from astropy.io import fits
-from functools import wraps
-
-from typing import Tuple
 
 
 class Memoizer:

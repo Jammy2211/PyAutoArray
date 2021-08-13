@@ -1,8 +1,10 @@
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import grid_2d_pixelization
-from autoarray.inversion import mapper_util
-from autoarray.structures.grids.two_d import grid_2d_util
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
+
 from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.structures.grids.two_d import grid_2d_util
+from autoarray.inversion import mapper_util
 
 import itertools
 import numpy as np
@@ -15,14 +17,14 @@ def mapper(
     hyper_data=None,
 ):
 
-    if isinstance(source_pixelization_grid, grid_2d_pixelization.Grid2DRectangular):
+    if isinstance(source_pixelization_grid, Grid2DRectangular):
         return MapperRectangular(
             source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
             hyper_image=hyper_data,
         )
-    elif isinstance(source_pixelization_grid, grid_2d_pixelization.Grid2DVoronoi):
+    elif isinstance(source_pixelization_grid, Grid2DVoronoi):
         return MapperVoronoi(
             source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
@@ -264,7 +266,7 @@ class MapperRectangular(Mapper):
             ),
             sub_size=1,
         )
-        return array_2d.Array2D.manual(
+        return Array2D.manual(
             array=recon,
             sub_size=1,
             pixel_scales=self.source_pixelization_grid.pixel_scales,

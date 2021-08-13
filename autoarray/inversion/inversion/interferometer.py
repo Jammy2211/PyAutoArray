@@ -1,23 +1,27 @@
 import numpy as np
-
-from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures import visibilities as vis
-from autoarray.operators import transformer as trans
-from autoarray.inversion.inversion import inversion_util
-from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.inversion.inversion.abstract import AbstractInversionMatrix
-from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.inversion import regularization as reg, mappers
 from scipy import sparse
 import pylops
-import typing
 from typing import Union
+
+from autoarray.inversion.inversion.abstract import AbstractInversion
+from autoarray.inversion.inversion.abstract import AbstractInversionMatrix
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.inversion.mappers import MapperRectangular
+from autoarray.inversion.mappers import MapperVoronoi
+from autoarray.inversion.regularization import Regularization
+from autoarray.operators.transformer import TransformerDFT
+from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.visibilities import VisibilitiesNoiseMap
+
+from autoarray import exc
+from autoarray.inversion.inversion import inversion_util
 
 
 def inversion_interferometer_from(
     dataset,
-    mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
+    mapper: Union[MapperRectangular, MapperVoronoi],
     regularization,
     settings=SettingsInversion(),
 ):
@@ -33,11 +37,11 @@ def inversion_interferometer_from(
 
 
 def inversion_interferometer_unpacked_from(
-    visibilities: vis.Visibilities,
-    noise_map: vis.VisibilitiesNoiseMap,
-    transformer: Union[trans.TransformerDFT, trans.TransformerNUFFT],
-    mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-    regularization: reg.Regularization,
+    visibilities: Visibilities,
+    noise_map: VisibilitiesNoiseMap,
+    transformer: Union[TransformerDFT, TransformerNUFFT],
+    mapper: Union[MapperRectangular, MapperVoronoi],
+    regularization: Regularization,
     settings: SettingsInversion = SettingsInversion(),
 ):
     return AbstractInversionInterferometer.from_data_mapper_and_regularization(
@@ -53,11 +57,11 @@ def inversion_interferometer_unpacked_from(
 class AbstractInversionInterferometer(AbstractInversion):
     def __init__(
         self,
-        visibilities: vis.Visibilities,
-        noise_map: vis.VisibilitiesNoiseMap,
-        transformer: trans.TransformerNUFFT,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        visibilities: Visibilities,
+        noise_map: VisibilitiesNoiseMap,
+        transformer: TransformerNUFFT,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
         settings: SettingsInversion,
@@ -78,11 +82,11 @@ class AbstractInversionInterferometer(AbstractInversion):
     @classmethod
     def from_data_mapper_and_regularization(
         cls,
-        visibilities: vis.Visibilities,
-        noise_map: vis.VisibilitiesNoiseMap,
-        transformer: trans.TransformerNUFFT,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        visibilities: Visibilities,
+        noise_map: VisibilitiesNoiseMap,
+        transformer: TransformerNUFFT,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         settings=SettingsInversion(use_linear_operators=True),
     ):
 
@@ -113,7 +117,7 @@ class AbstractInversionInterferometer(AbstractInversion):
             reconstruction=self.reconstruction,
         )
 
-        return array_2d.Array2D(
+        return Array2D(
             array=mapped_reconstructed_image,
             mask=self.mapper.source_grid_slim.mask.mask_sub_1,
         )
@@ -136,11 +140,11 @@ class InversionInterferometerMatrix(
 ):
     def __init__(
         self,
-        visibilities: vis.Visibilities,
-        noise_map: vis.VisibilitiesNoiseMap,
-        transformer: trans.TransformerNUFFT,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        visibilities: Visibilities,
+        noise_map: VisibilitiesNoiseMap,
+        transformer: TransformerNUFFT,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
         transformed_mapping_matrix: np.ndarray,
@@ -163,7 +167,7 @@ class InversionInterferometerMatrix(
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper : inversion.mappers.Mapper
+        mapper : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -208,11 +212,11 @@ class InversionInterferometerMatrix(
     @classmethod
     def from_data_mapper_and_regularization(
         cls,
-        visibilities: vis.Visibilities,
-        noise_map: vis.VisibilitiesNoiseMap,
-        transformer: trans.TransformerNUFFT,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        visibilities: Visibilities,
+        noise_map: VisibilitiesNoiseMap,
+        transformer: TransformerNUFFT,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         settings=SettingsInversion(),
     ):
 
@@ -273,17 +277,17 @@ class InversionInterferometerMatrix(
             reconstruction=self.reconstruction,
         )
 
-        return vis.Visibilities(visibilities=visibilities)
+        return Visibilities(visibilities=visibilities)
 
 
 class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
     def __init__(
         self,
-        visibilities: vis.Visibilities,
-        noise_map: vis.VisibilitiesNoiseMap,
-        transformer: trans.TransformerNUFFT,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        visibilities: Visibilities,
+        noise_map: VisibilitiesNoiseMap,
+        transformer: TransformerNUFFT,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
         log_det_curvature_reg_matrix_term: float,
@@ -304,7 +308,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper : inversion.mappers.Mapper
+        mapper : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -341,11 +345,11 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
     @classmethod
     def from_data_mapper_and_regularization(
         cls,
-        visibilities: vis.Visibilities,
-        noise_map: vis.VisibilitiesNoiseMap,
-        transformer: trans.TransformerNUFFT,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        visibilities: Visibilities,
+        noise_map: VisibilitiesNoiseMap,
+        transformer: TransformerNUFFT,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         settings=SettingsInversion(),
     ):
 

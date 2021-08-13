@@ -4,10 +4,10 @@ import numpy as np
 from autoconf import conf
 
 from autoarray import exc
-from autoarray.mask import mask_2d as msk
-from autoarray.structures import abstract_structure
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.abstract_structure import AbstractStructure2D
 from autoarray.structures.arrays import abstract_array
-from autoarray.structures.arrays.one_d import array_1d
+from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.layout import layout_util
 
@@ -20,13 +20,11 @@ logger = logging.getLogger(__name__)
 def check_array_2d(array_2d: Union[np.ndarray, List]):
     if len(array_2d.shape) != 1:
         raise exc.ArrayException(
-            "An array input into the array_2d.Array2D.__new__ method is not of shape 1."
+            "An array input into the Array2D.__new__ method is not of shape 1."
         )
 
 
-def convert_array_2d(
-    array_2d: Union[np.ndarray, List], mask_2d: msk.Mask2D
-) -> np.ndarray:
+def convert_array_2d(array_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
@@ -234,16 +232,12 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
     @property
     def binned_across_rows(self):
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=0)
-        return array_1d.Array1D.manual_native(
-            array=binned_array, pixel_scales=self.pixel_scale
-        )
+        return Array1D.manual_native(array=binned_array, pixel_scales=self.pixel_scale)
 
     @property
     def binned_across_columns(self):
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=1)
-        return array_1d.Array1D.manual_native(
-            array=binned_array, pixel_scales=self.pixel_scale
-        )
+        return Array1D.manual_native(array=binned_array, pixel_scales=self.pixel_scale)
 
     def new_with_array(self, array):
         """
@@ -285,7 +279,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             x1=self.mask.zoom_region[3] + buffer,
         )
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -317,7 +311,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             x1=self.mask.zoom_region[3] + buffer,
         )
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,

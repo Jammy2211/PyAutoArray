@@ -1,14 +1,18 @@
 import numpy as np
+from scipy.interpolate import griddata
+from typing import Union
 
 from autoconf import conf
-from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
+
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.inversion.mappers import MapperRectangular
+from autoarray.inversion.mappers import MapperVoronoi
+from autoarray.inversion.regularization import Regularization
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.inversion import regularization as reg, mappers
-from scipy.interpolate import griddata
-import typing
+
+from autoarray import exc
 
 
 def log_determinant_of_matrix_cholesky(matrix):
@@ -37,8 +41,8 @@ class AbstractInversion:
     def __init__(
         self,
         noise_map: np.ndarray,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
         settings: SettingsInversion,
@@ -65,7 +69,7 @@ class AbstractInversion:
 
         if shape_native is not None:
 
-            grid = grid_2d.Grid2D.bounding_box(
+            grid = Grid2D.bounding_box(
                 bounding_box=self.mapper.source_pixelization_grid.extent,
                 shape_native=shape_native,
                 buffer_around_corners=False,
@@ -86,7 +90,7 @@ class AbstractInversion:
             dimension = int(np.sqrt(self.mapper.pixels))
             shape_native = (dimension, dimension)
 
-            grid = grid_2d.Grid2D.bounding_box(
+            grid = Grid2D.bounding_box(
                 bounding_box=self.mapper.source_pixelization_grid.extent,
                 shape_native=shape_native,
                 buffer_around_corners=False,
@@ -108,7 +112,7 @@ class AbstractInversion:
 
         interpolated_reconstruction[np.isnan(interpolated_reconstruction)] = 0.0
 
-        return array_2d.Array2D.manual(
+        return Array2D.manual(
             array=interpolated_reconstruction, pixel_scales=grid.pixel_scales
         )
 
@@ -140,7 +144,7 @@ class AbstractInversion:
 
     @property
     def brightest_reconstruction_pixel_centre(self):
-        return grid_2d_irregular.Grid2DIrregular(
+        return Grid2DIrregular(
             grid=[
                 self.mapper.source_pixelization_grid[
                     self.brightest_reconstruction_pixel

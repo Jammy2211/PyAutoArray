@@ -1,15 +1,16 @@
-from autoarray.operators import transformer_util
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures import visibilities as vis
-from autoarray.structures.arrays.two_d import array_2d_util
 from astropy import units
-from pynufft.linalg.nufft_cpu import NUFFT_cpu
-import pylops
-import warnings
-
 import copy
 import numpy as np
+import pylops
+from pynufft.linalg.nufft_cpu import NUFFT_cpu
+import warnings
+
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.visibilities import Visibilities
+
+from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.operators import transformer_util
 
 
 class TransformerDFT(pylops.LinearOperator):
@@ -63,7 +64,7 @@ class TransformerDFT(pylops.LinearOperator):
                 uv_wavelengths=self.uv_wavelengths,
             )
 
-        return vis.Visibilities(visibilities=visibilities)
+        return Visibilities(visibilities=visibilities)
 
     def image_from_visibilities(self, visibilities):
 
@@ -80,7 +81,7 @@ class TransformerDFT(pylops.LinearOperator):
             sub_size=self.real_space_mask.sub_size,
         )
 
-        return array_2d.Array2D.manual_native(
+        return Array2D.manual_native(
             array=image_native, pixel_scales=self.real_space_mask.pixel_scales
         )
 
@@ -111,7 +112,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         self.uv_wavelengths = uv_wavelengths
         self.real_space_mask = real_space_mask.mask_sub_1
         #        self.grid = self.real_space_mask.unmasked_grid.in_radians
-        self.grid = grid_2d.Grid2D.from_mask(mask=self.real_space_mask).in_radians
+        self.grid = Grid2D.from_mask(mask=self.real_space_mask).in_radians
         self._native_index_for_slim_index = copy.copy(
             real_space_mask._native_index_for_slim_index.astype("int")
         )
@@ -188,7 +189,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         warnings.filterwarnings("ignore")
 
-        return vis.Visibilities(
+        return Visibilities(
             visibilities=self.forward(
                 image.binned.native[::-1, :]
             )  # flip due to PyNUFFT internal flip
@@ -196,7 +197,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
     def image_from_visibilities(self, visibilities):
         image = np.real(self.adjoint(visibilities))
-        return array_2d.Array2D.manual_native(
+        return Array2D.manual_native(
             array=image, pixel_scales=self.real_space_mask.pixel_scales
         )
 
@@ -214,7 +215,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
                 sub_size=1,
             )
 
-            image = array_2d.Array2D(array=image_2d, mask=self.grid.mask)
+            image = Array2D(array=image_2d, mask=self.grid.mask)
 
             visibilities = self.visibilities_from_image(image=image)
 

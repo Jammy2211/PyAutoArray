@@ -1,9 +1,9 @@
-from autoarray.mask import mask_1d_util
-
 import os
-from autoarray import decorator_util
 import numpy as np
 from astropy.io import fits
+
+from autoarray import decorator_util
+from autoarray.mask import mask_1d_util
 
 
 @decorator_util.jit()

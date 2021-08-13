@@ -1,10 +1,10 @@
 import logging
 from astropy import time
 import numpy as np
+from typing import Tuple, Optional
 
 from autoarray.dataset import preprocess
 
-from typing import Tuple, Optional
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

@@ -1,11 +1,10 @@
+from typing import Optional
+
 from autoconf import conf
-import typing
 
 
 class AbstractInclude:
-    def __init__(
-        self, origin: typing.Optional[bool] = None, mask: typing.Optional[bool] = None
-    ):
+    def __init__(self, origin: Optional[bool] = None, mask: Optional[bool] = None):
         """
         Sets which `Visuals` are included on a figure that is plotted using a `Plotter`.
 
@@ -50,9 +49,7 @@ class AbstractInclude:
 
 
 class Include1D(AbstractInclude):
-    def __init__(
-        self, origin: typing.Optional[bool] = None, mask: typing.Optional[bool] = None
-    ):
+    def __init__(self, origin: Optional[bool] = None, mask: Optional[bool] = None):
         """
         Sets which `Visuals1D` are included on a figure plotting 1D data that is plotted using a `Plotter1D`.
 
@@ -80,16 +77,16 @@ class Include1D(AbstractInclude):
 class Include2D(AbstractInclude):
     def __init__(
         self,
-        origin: typing.Optional[bool] = None,
-        mask: typing.Optional[bool] = None,
-        border: typing.Optional[bool] = None,
-        grid: typing.Optional[bool] = None,
-        mapper_data_pixelization_grid: typing.Optional[bool] = None,
-        mapper_source_pixelization_grid: typing.Optional[bool] = None,
-        mapper_source_grid_slim: typing.Optional[bool] = None,
-        parallel_overscan: typing.Optional[bool] = None,
-        serial_prescan: typing.Optional[bool] = None,
-        serial_overscan: typing.Optional[bool] = None,
+        origin: Optional[bool] = None,
+        mask: Optional[bool] = None,
+        border: Optional[bool] = None,
+        grid: Optional[bool] = None,
+        mapper_data_pixelization_grid: Optional[bool] = None,
+        mapper_source_pixelization_grid: Optional[bool] = None,
+        mapper_source_grid_slim: Optional[bool] = None,
+        parallel_overscan: Optional[bool] = None,
+        serial_prescan: Optional[bool] = None,
+        serial_overscan: Optional[bool] = None,
     ):
         """
         Sets which `Visuals2D` are included on a figure plotting 2D data that is plotted using a `Plotter2D`.

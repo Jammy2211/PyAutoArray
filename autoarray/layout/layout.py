@@ -1,6 +1,8 @@
-from autoarray.structures.arrays.one_d import array_1d
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.layout import region as reg
+from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.layout.region import Region1D
+from autoarray.layout.region import Region2D
+
 from autoarray.layout import layout_util
 
 
@@ -14,16 +16,16 @@ class Layout1D:
         self.shape_1d = shape_1d
 
         if isinstance(prescan, tuple):
-            prescan = reg.Region1D(region=prescan)
+            prescan = Region1D(region=prescan)
 
         if isinstance(overscan, tuple):
-            overscan = reg.Region1D(region=overscan)
+            overscan = Region1D(region=overscan)
 
         self.prescan = prescan
         self.overscan = overscan
 
     def extract_overscan_array_1d_from(self, array):
-        return array_1d.Array1D.manual_native(
+        return Array1D.manual_native(
             array=array.native[self.overscan.slice],
             header=array.header,
             pixel_scales=array.pixel_scales,
@@ -56,13 +58,13 @@ class Layout2D:
         self.original_roe_corner = original_roe_corner
 
         if isinstance(parallel_overscan, tuple):
-            parallel_overscan = reg.Region2D(region=parallel_overscan)
+            parallel_overscan = Region2D(region=parallel_overscan)
 
         if isinstance(serial_prescan, tuple):
-            serial_prescan = reg.Region2D(region=serial_prescan)
+            serial_prescan = Region2D(region=serial_prescan)
 
         if isinstance(serial_overscan, tuple):
-            serial_overscan = reg.Region2D(region=serial_overscan)
+            serial_overscan = Region2D(region=serial_overscan)
 
         self.parallel_overscan = parallel_overscan
         self.serial_prescan = serial_prescan
@@ -195,7 +197,7 @@ class Layout2D:
                <---------S----------
         """
 
-        return array_2d.Array2D.manual(
+        return Array2D.manual(
             array=array.native[self.parallel_overscan.slice],
             header=array.header,
             pixel_scales=array.pixel_scales,
@@ -249,7 +251,7 @@ class Layout2D:
                <---------S----------
         """
 
-        return array_2d.Array2D.manual(
+        return Array2D.manual(
             array=array.native[self.serial_overscan.slice],
             header=array.header,
             pixel_scales=array.pixel_scales,

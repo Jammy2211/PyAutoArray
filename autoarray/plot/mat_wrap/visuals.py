@@ -1,18 +1,20 @@
-from autoarray.mask import mask_1d
-from autoarray.structures.arrays.one_d import array_1d
-from autoarray.structures.grids.one_d import grid_1d
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.structures.vector_fields import vector_field_irregular
-from autoarray.plot.mat_wrap import mat_plot, include as inc
-from autoarray.mask import mask_2d
-from matplotlib import patches as ptch
-import typing
-from typing import Optional
 from abc import ABC
-from typing import List, Union
+from matplotlib import patches as ptch
 import numpy as np
+from typing import List, Optional, Union
+
+from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.mask.mask_1d import Mask1D
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.vector_fields.vector_field_irregular import (
+    VectorField2DIrregular,
+)
+from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
+from autoarray.plot.mat_wrap.include import Include1D
 
 
 class AbstractVisuals(ABC):
@@ -70,12 +72,12 @@ class AbstractVisuals(ABC):
 class Visuals1D(AbstractVisuals):
     def __init__(
         self,
-        mask: Optional[mask_1d.Mask1D] = None,
-        origin: Optional[grid_1d.Grid1D] = None,
-        points: Optional[grid_1d.Grid1D] = None,
+        mask: Optional[Mask1D] = None,
+        origin: Optional[Grid1D] = None,
+        points: Optional[Grid1D] = None,
         vertical_line: Optional[float] = None,
         shaded_region: Optional[
-            Union[List[List], List[array_1d.Array1D], List[np.ndarray]]
+            Union[List[List], List[Array1D], List[np.ndarray]]
         ] = None,
     ):
 
@@ -87,11 +89,11 @@ class Visuals1D(AbstractVisuals):
 
     @property
     def plotter(self):
-        return mat_plot.MatPlot1D()
+        return MatPlot1D()
 
     @property
     def include(self):
-        return inc.Include1D()
+        return Include1D()
 
     def plot_via_plotter(self, plotter):
 
@@ -109,18 +111,16 @@ class Visuals1D(AbstractVisuals):
 class Visuals2D(AbstractVisuals):
     def __init__(
         self,
-        origin: grid_2d.Grid2D = None,
-        mask: mask_2d.Mask2D = None,
-        border: grid_2d.Grid2D = None,
-        lines: List[array_1d.Array1D] = None,
-        positions: Union[
-            grid_2d_irregular.Grid2DIrregular, List[grid_2d_irregular.Grid2DIrregular]
-        ] = None,
-        grid: grid_2d.Grid2D = None,
-        pixelization_grid: grid_2d.Grid2D = None,
-        vector_field: vector_field_irregular.VectorField2DIrregular = None,
+        origin: Grid2D = None,
+        mask: Mask2D = None,
+        border: Grid2D = None,
+        lines: List[Array1D] = None,
+        positions: Union[Grid2DIrregular, List[Grid2DIrregular]] = None,
+        grid: Grid2D = None,
+        pixelization_grid: Grid2D = None,
+        vector_field: VectorField2DIrregular = None,
         patches: List[ptch.Patch] = None,
-        array_overlay: array_2d.Array2D = None,
+        array_overlay: Array2D = None,
         parallel_overscan=None,
         serial_prescan=None,
         serial_overscan=None,
@@ -147,9 +147,7 @@ class Visuals2D(AbstractVisuals):
     def plot_via_plotter(self, plotter, grid_indexes=None, mapper=None):
 
         if self.origin is not None:
-            plotter.origin_scatter.scatter_grid(
-                grid=grid_2d_irregular.Grid2DIrregular(grid=self.origin)
-            )
+            plotter.origin_scatter.scatter_grid(grid=Grid2DIrregular(grid=self.origin))
 
         if self.mask is not None:
             plotter.mask_scatter.scatter_grid(grid=self.mask.edge_grid_sub_1.binned)

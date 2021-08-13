@@ -1,9 +1,8 @@
 from copy import deepcopy
 import numpy as np
-
-from autoarray.layout import region as reg
-
 from typing import Union, Tuple
+
+from autoarray.layout.region import Region2D
 
 
 def rotate_array_from_roe_corner(
@@ -41,10 +40,10 @@ def rotate_array_from_roe_corner(
 
 
 def rotate_region_from_roe_corner(
-    region: Union[Tuple, reg.Region2D],
+    region: Union[Tuple, Region2D],
     shape_native: Tuple[int, int],
     roe_corner: Tuple[int, int],
-) -> reg.Region2D:
+) -> Region2D:
     """
     Rotates a (y0, y1, x0, x1) region such that its read-out electronics corner (``roe_corner``) are positioned at
     the 'bottom-left' (e.g. [1,0]).
@@ -68,9 +67,9 @@ def rotate_region_from_roe_corner(
         return None
 
     if roe_corner == (1, 0):
-        return reg.Region2D(region=region)
+        return Region2D(region=region)
     elif roe_corner == (0, 0):
-        return reg.Region2D(
+        return Region2D(
             region=(
                 shape_native[0] - region[1],
                 shape_native[0] - region[0],
@@ -79,7 +78,7 @@ def rotate_region_from_roe_corner(
             )
         )
     elif roe_corner == (1, 1):
-        return reg.Region2D(
+        return Region2D(
             region=(
                 region[0],
                 region[1],
@@ -88,7 +87,7 @@ def rotate_region_from_roe_corner(
             )
         )
     elif roe_corner == (0, 1):
-        return reg.Region2D(
+        return Region2D(
             region=(
                 shape_native[0] - region[1],
                 shape_native[0] - region[0],
@@ -133,8 +132,8 @@ def rotate_pattern_ci_from_roe_corner(
 
 
 def region_after_extraction(
-    original_region: reg.Region2D, extraction_region: reg.Region2D
-) -> reg.Region2D or None:
+    original_region: Region2D, extraction_region: Region2D
+) -> Region2D or None:
 
     if original_region is None:
         return None
@@ -155,7 +154,7 @@ def region_after_extraction(
     if None in [y0, y1, x0, x1]:
         return None
     else:
-        return reg.Region2D((y0, y1, x0, x1))
+        return Region2D((y0, y1, x0, x1))
 
 
 def x0x1_after_extraction(x0o: int, x1o: int, x0e: int, x1e: int):

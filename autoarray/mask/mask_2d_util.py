@@ -3,8 +3,8 @@ from skimage.transform import rescale
 from typing import Tuple, Union
 import warnings
 
-from autoarray import decorator_util
 from autoarray import exc
+from autoarray import decorator_util
 from autoarray.structures.grids.two_d import grid_2d_util
 
 

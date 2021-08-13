@@ -1,5 +1,5 @@
-from os import path
 import numpy as np
+from os import path
 import pickle
 
 
@@ -46,7 +46,7 @@ class AbstractStructure(np.ndarray):
         ----------
         data_structure : AbstractStructure
             The structure which is to be turned into a new structure.
-        mask : msk.Mask2D
+        mask :Mask2D
             The mask associated with this structure.
         """
         raise NotImplementedError()
