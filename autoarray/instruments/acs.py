@@ -714,12 +714,12 @@ def output_quadrants_to_fits(
 
     hdu_list = fits.HDUList()
 
-    hdu_list.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdu_list.append(fits.ImageHDU())
     hdu_list.append(fits.ImageHDU(array_hdu_1))
-    hdu_list.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
-    hdu_list.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdu_list.append(fits.ImageHDU())
+    hdu_list.append(fits.ImageHDU())
     hdu_list.append(fits.ImageHDU(array_hdu_4))
-    hdu_list.append(fits.ImageHDU(np.zeros(array_hdu_1.shape)))
+    hdu_list.append(fits.ImageHDU())
 
     def set_header(header):
         header.set("cticor", "ARCTIC", "CTI CORRECTION PERFORMED USING ARCTIC")
