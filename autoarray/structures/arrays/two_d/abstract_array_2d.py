@@ -3,11 +3,13 @@ import numpy as np
 
 from autoconf import conf
 
-from autoarray import exc
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import AbstractStructure2D
-from autoarray.structures.arrays import abstract_array
+
 from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.mask.mask_2d import Mask2D
+
+from autoarray import exc
+from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.layout import layout_util
 
@@ -43,7 +45,7 @@ def convert_array_2d(array_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.n
     ----------
     array_2d
         The input structure which is converted to an ndarray if it is a list.
-    mask_2d : Mask2D
+    mask_2d
         The mask of the output Array2D.
     """
 
@@ -67,7 +69,7 @@ def convert_array_2d_to_slim(array_2d, mask_2d) -> np.ndarray:
     ----------
     array_2d
         The input structure which is converted to its slim representation.
-    mask_2d : Mask2D
+    mask_2d
         The mask of the output Array2D.
     """
 
@@ -136,7 +138,7 @@ def convert_array_2d_to_native(
     )
 
 
-class AbstractArray2D(abstract_structure.AbstractStructure2D):
+class AbstractArray2D(AbstractStructure2D):
 
     header = None
 

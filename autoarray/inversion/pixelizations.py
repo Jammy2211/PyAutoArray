@@ -2,6 +2,7 @@ import copy
 import numpy as np
 
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from autoarray.inversion.mappers import MapperRectangular

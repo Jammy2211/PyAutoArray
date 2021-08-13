@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray.structures.abstract_structure import AbstractStructure1D
-from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.structures.grids.one_d import grid_1d as g1d
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 from autoarray.geometry import geometry_util
@@ -26,7 +26,7 @@ class AbstractGrid1D(AbstractStructure1D):
             grid_1d_native=self, mask_1d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return Grid1D(grid=grid, mask=self.mask)
+        return g1d.Grid1D(grid=grid, mask=self.mask)
 
     @property
     def native(self):
@@ -45,7 +45,7 @@ class AbstractGrid1D(AbstractStructure1D):
             grid_1d_slim=self, mask_1d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return Grid1D(grid=grid, mask=self.mask)
+        return g1d.Grid1D(grid=grid, mask=self.mask)
 
     @property
     def binned(self):
@@ -67,7 +67,7 @@ class AbstractGrid1D(AbstractStructure1D):
             grid_1d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        return Grid1D(grid=binned_grid_1d_slim, mask=self.mask.mask_sub_1)
+        return g1d.Grid1D(grid=binned_grid_1d_slim, mask=self.mask.mask_sub_1)
 
     def project_to_radial_grid_2d(self, angle: float = 0.0) -> Grid2DIrregular:
         """

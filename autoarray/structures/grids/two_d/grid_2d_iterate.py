@@ -1,9 +1,11 @@
 import numpy as np
 
 from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
-from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.mask.mask_2d import Mask2D
+
+from autoarray.structures.arrays.two_d import array_2d as a2d
+from autoarray.structures.grids.two_d import grid_2d as g2d
+from autoarray.mask import mask_2d as m2d
+
 
 from autoarray.structures.grids import abstract_grid
 from autoarray.structures.arrays.two_d import array_2d_util
@@ -60,14 +62,14 @@ class Grid2DIterate(AbstractGrid2D):
 
         obj = grid.view(cls)
         obj.mask = mask
-        obj.grid = Grid2D.manual_mask(grid=np.asarray(obj), mask=mask)
+        obj.grid = g2d.Grid2D.manual_mask(grid=np.asarray(obj), mask=mask)
         obj.fractional_accuracy = fractional_accuracy
         obj.sub_steps = sub_steps
         return obj
 
     def __array_finalize__(self, obj):
 
-        super(Grid2DIterate, self).__array_finalize__(obj)
+        super().__array_finalize__(obj)
 
         if hasattr(obj, "grid"):
             self.grid = obj.grid
@@ -142,7 +144,7 @@ class Grid2DIterate(AbstractGrid2D):
         grid = abstract_grid.convert_grid(grid=grid)
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        mask = Mask2D.unmasked(
+        mask = m2d.Mask2D.unmasked(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=1,
@@ -330,7 +332,7 @@ class Grid2DIterate(AbstractGrid2D):
             shape[1] + kernel_shape_native[1] - 1,
         )
 
-        padded_mask = Mask2D.unmasked(
+        padded_mask = m2d.Mask2D.unmasked(
             shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
@@ -347,7 +349,7 @@ class Grid2DIterate(AbstractGrid2D):
 
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
-        grid_compute = Grid2D.from_mask(mask=mask_higher_sub)
+        grid_compute = g2d.Grid2D.from_mask(mask=mask_higher_sub)
         array_higher_sub = func(cls, grid_compute)
         return grid_compute.structure_2d_from_result(
             result=array_higher_sub
@@ -358,7 +360,7 @@ class Grid2DIterate(AbstractGrid2D):
 
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
-        grid_compute = Grid2D.from_mask(mask=mask_higher_sub)
+        grid_compute = g2d.Grid2D.from_mask(mask=mask_higher_sub)
         grid_higher_sub = func(cls, grid_compute)
         return grid_compute.structure_2d_from_result(
             result=grid_higher_sub
@@ -366,7 +368,7 @@ class Grid2DIterate(AbstractGrid2D):
 
     def fractional_mask_from_arrays(
         self, array_lower_sub_2d, array_higher_sub_2d
-    ) -> Mask2D:
+    ) -> m2d.Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the `Grid2DIterate`'s specified fractional accuracy. The fractional mask thus
@@ -385,7 +387,7 @@ class Grid2DIterate(AbstractGrid2D):
             The results computed by a function using a higher sub-grid size.
         """
 
-        fractional_mask = Mask2D.unmasked(
+        fractional_mask = m2d.Mask2D.unmasked(
             shape_native=array_lower_sub_2d.shape_native,
             pixel_scales=array_lower_sub_2d.pixel_scales,
             invert=True,
@@ -399,7 +401,7 @@ class Grid2DIterate(AbstractGrid2D):
             array_higher_mask=array_higher_sub_2d.mask,
         )
 
-        return Mask2D(
+        return m2d.Mask2D(
             mask=fractional_mask,
             pixel_scales=array_higher_sub_2d.pixel_scales,
             origin=array_higher_sub_2d.origin,
@@ -524,7 +526,7 @@ class Grid2DIterate(AbstractGrid2D):
 
         return self.return_iterated_array_result(iterated_array=iterated_array_2d)
 
-    def return_iterated_array_result(self, iterated_array: np.ndarray) -> Array2D:
+    def return_iterated_array_result(self, iterated_array: np.ndarray) -> a2d.Array2D:
         """
         Returns the resulting iterated array, by mapping it to 1D and then passing it back as an `Array2D` structure.
 
@@ -542,7 +544,7 @@ class Grid2DIterate(AbstractGrid2D):
             mask_2d=self.mask, array_2d_native=iterated_array, sub_size=1
         )
 
-        return Array2D(array=iterated_array_1d, mask=self.mask.mask_sub_1)
+        return a2d.Array2D(array=iterated_array_1d, mask=self.mask.mask_sub_1)
 
     @staticmethod
     @decorator_util.jit()
@@ -570,7 +572,7 @@ class Grid2DIterate(AbstractGrid2D):
 
     def fractional_mask_from_grids(
         self, grid_lower_sub_2d, grid_higher_sub_2d
-    ) -> Mask2D:
+    ) -> m2d.Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the `Grid2DIterate`'s specified fractional accuracy. The fractional mask thus
@@ -589,7 +591,7 @@ class Grid2DIterate(AbstractGrid2D):
             The results computed by a function using a higher sub-grid size.
         """
 
-        fractional_mask = Mask2D.unmasked(
+        fractional_mask = m2d.Mask2D.unmasked(
             shape_native=grid_lower_sub_2d.shape_native,
             pixel_scales=grid_lower_sub_2d.pixel_scales,
             invert=True,
@@ -603,7 +605,7 @@ class Grid2DIterate(AbstractGrid2D):
             grid_higher_mask=grid_higher_sub_2d.mask,
         )
 
-        return Mask2D(
+        return m2d.Mask2D(
             mask=fractional_mask,
             pixel_scales=grid_higher_sub_2d.pixel_scales,
             origin=grid_higher_sub_2d.origin,
@@ -725,7 +727,7 @@ class Grid2DIterate(AbstractGrid2D):
                     mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
                 )
 
-                return Grid2D(grid=iterated_grid_1d, mask=self.mask.mask_sub_1)
+                return g2d.Grid2D(grid=iterated_grid_1d, mask=self.mask.mask_sub_1)
 
             grid_lower_sub_2d = grid_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
@@ -743,7 +745,7 @@ class Grid2DIterate(AbstractGrid2D):
             mask=self.mask, grid_2d_native=iterated_grid_2d, sub_size=1
         )
 
-        return Grid2D(grid=iterated_grid_1d, mask=self.mask.mask_sub_1)
+        return g2d.Grid2D(grid=iterated_grid_1d, mask=self.mask.mask_sub_1)
 
     @staticmethod
     @decorator_util.jit()

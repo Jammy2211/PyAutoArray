@@ -4,7 +4,7 @@ import numpy as np
 import os
 from os import path
 
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.grids.two_d import grid_2d_irregular as g2d_irr
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ class ValuesIrregular(np.ndarray):
         grid_slim
             The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregular`
             object."""
-        return Grid2DIrregular(grid=grid_slim)
+        return g2d_irr.Grid2DIrregular(grid=grid_slim)
 
     @classmethod
     def from_file(cls, file_path):

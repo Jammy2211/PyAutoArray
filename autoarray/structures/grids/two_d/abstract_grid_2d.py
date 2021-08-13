@@ -2,12 +2,12 @@ import numpy as np
 from typing import List, Tuple, Union
 
 from autoconf import conf
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import AbstractStructure2D
-from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+
+from autoarray.structures.arrays.two_d import array_2d as a2d
+from autoarray.structures.grids.two_d import grid_2d as g2d
+from autoarray.structures.grids.two_d import grid_2d_irregular as g2d_irr
+from autoarray.mask import mask_2d as m2d
 
 from autoarray import exc
 from autoarray.structures.grids import abstract_grid
@@ -230,7 +230,7 @@ class AbstractGrid2D(AbstractStructure2D):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return Array2D.manual_mask(array=squared_distances, mask=self.mask)
+        return a2d.Array2D.manual_mask(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate: Tuple[float, float] = (0.0, 0.0)):
         """
@@ -244,11 +244,11 @@ class AbstractGrid2D(AbstractStructure2D):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return Array2D.manual_mask(array=distances, mask=self.mask)
+        return a2d.Array2D.manual_mask(array=distances, mask=self.mask)
 
     def grid_2d_radial_projected_from(
         self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0
-    ) -> Grid2DIrregular:
+    ) -> "g2d_irr.Grid2DIrregular":
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
         extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:
@@ -321,7 +321,7 @@ class AbstractGrid2D(AbstractStructure2D):
 
             grid_radial_projected_2d = grid_radial_projected_2d[1:, :]
 
-        return Grid2DIrregular(grid=grid_radial_projected_2d)
+        return g2d_irr.Grid2DIrregular(grid=grid_radial_projected_2d)
 
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
@@ -406,13 +406,13 @@ class AbstractGrid2D(AbstractStructure2D):
             shape[1] + kernel_shape_native[1] - 1,
         )
 
-        padded_mask = Mask2D.unmasked(
+        padded_mask = m2d.Mask2D.unmasked(
             shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
         )
 
-        return Grid2D.from_mask(mask=padded_mask)
+        return g2d.Grid2D.from_mask(mask=padded_mask)
 
     @property
     def sub_border_grid(self):
@@ -451,7 +451,7 @@ class AbstractGrid2D(AbstractStructure2D):
         if len(self.sub_border_grid) == 0:
             return grid
 
-        return Grid2D(
+        return g2d.Grid2D(
             grid=self.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.sub_border_grid
             ),
@@ -476,7 +476,7 @@ class AbstractGrid2D(AbstractStructure2D):
         if len(self.sub_border_grid) == 0:
             return pixelization_grid
 
-        return Grid2DSparse(
+        return g2d.Grid2DSparse(
             grid=self.relocated_grid_from_grid_jit(
                 grid=pixelization_grid, border_grid=self.sub_border_grid
             ),

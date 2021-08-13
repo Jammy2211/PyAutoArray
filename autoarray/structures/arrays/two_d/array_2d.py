@@ -178,7 +178,7 @@ class Array2D(AbstractArray2D):
         ----------
         array
             The values of the array.
-        mask :Mask2D
+        mask
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
         """
@@ -350,10 +350,10 @@ class Array2D(AbstractArray2D):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
-        mask : Mask2D
+        mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
         array = abstract_array_2d.convert_array_2d(array_2d=array, mask_2d=mask)

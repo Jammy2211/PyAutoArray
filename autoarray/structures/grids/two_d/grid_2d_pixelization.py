@@ -4,7 +4,10 @@ import scipy.spatial.qhull as qhull
 from typing import Tuple
 
 from autoarray.structures.abstract_structure import AbstractStructure2D
-from autoarray.mask.mask_2d import Mask2D
+
+from autoarray.structures.arrays.two_d import array_2d as a2d
+from autoarray.structures.grids.two_d import grid_2d as g2d
+from autoarray.mask import mask_2d as m2d
 
 from autoarray import exc
 from autoarray.structures.grids.two_d import grid_2d_util
@@ -35,7 +38,7 @@ class Grid2DRectangular(AbstractStructure2D):
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
-        mask = Mask2D.unmasked(
+        mask = m2d.Mask2D.unmasked(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=1,
@@ -150,7 +153,7 @@ class Grid2DRectangular(AbstractStructure2D):
         )
 
 
-class Grid2DVoronoi(abstract_structure.AbstractStructure2D):
+class Grid2DVoronoi(AbstractStructure2D):
     """
     Returns the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
     grid plus a small buffer.
