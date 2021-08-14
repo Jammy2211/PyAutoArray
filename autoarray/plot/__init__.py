@@ -42,6 +42,7 @@ from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
+from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 
 from autoarray.plot.structure_plotters import Array2DPlotter
 from autoarray.plot.structure_plotters import Grid2DPlotter

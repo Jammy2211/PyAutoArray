@@ -1,13 +1,13 @@
 import logging
 import numpy as np
 
-from autoarray import decorator_util
+from autoarray import numba_util
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def unmasked_sparse_for_sparse_from(
     total_sparse_pixels: int,
     mask: np.ndarray,
@@ -43,7 +43,7 @@ def unmasked_sparse_for_sparse_from(
     return unmasked_sparse_for_sparse
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def sparse_for_unmasked_sparse_from(
     mask: np.ndarray,
     unmasked_sparse_grid_pixel_centres: np.ndarray,
@@ -86,7 +86,7 @@ def sparse_for_unmasked_sparse_from(
     return sparse_for_unmasked_sparse
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def sparse_slim_index_for_mask_slim_index_from(
     regular_to_unmasked_sparse: np.ndarray, sparse_for_unmasked_sparse: np.ndarray
 ) -> np.ndarray:
@@ -119,7 +119,7 @@ def sparse_slim_index_for_mask_slim_index_from(
     return sparse_slim_index_for_mask_slim_index
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def sparse_grid_via_unmasked_from(
     unmasked_sparse_grid: np.ndarray, unmasked_sparse_for_sparse: np.ndarray
 ) -> np.ndarray:

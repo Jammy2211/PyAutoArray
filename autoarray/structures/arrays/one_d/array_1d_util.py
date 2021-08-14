@@ -2,11 +2,11 @@ import os
 import numpy as np
 from astropy.io import fits
 
-from autoarray import decorator_util
+from autoarray import numba_util
 from autoarray.mask import mask_1d_util
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def array_1d_slim_from(
     array_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int
 ) -> np.ndarray:
@@ -89,7 +89,7 @@ def array_1d_native_from(
     )
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def array_1d_via_indexes_1d_from(
     array_1d_slim: np.ndarray,
     sub_shape: int,

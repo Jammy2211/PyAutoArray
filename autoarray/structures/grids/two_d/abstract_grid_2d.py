@@ -13,7 +13,7 @@ from autoarray import exc
 from autoarray.structures.grids import abstract_grid
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
-from autoarray import decorator_util
+from autoarray import numba_util
 from autoarray.geometry import geometry_util
 
 
@@ -484,7 +484,7 @@ class AbstractGrid2D(AbstractStructure2D):
         )
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def relocated_grid_from_grid_jit(grid, border_grid):
         """
         Relocate the coordinates of a grid to its border if they are outside the border, where the border is

@@ -9,7 +9,7 @@ from autoarray.structures.arrays.two_d import array_2d as a2d
 
 from autoarray.structures.grids import abstract_grid
 from autoarray.structures.arrays.two_d import array_2d_util
-from autoarray import decorator_util
+from autoarray import numba_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids.two_d import grid_2d_util
 
@@ -408,7 +408,7 @@ class Grid2DIterate(AbstractGrid2D):
         )
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def fractional_mask_jit_from_array(
         fractional_accuracy_threshold,
         fractional_mask,
@@ -547,7 +547,7 @@ class Grid2DIterate(AbstractGrid2D):
         return a2d.Array2D(array=iterated_array_1d, mask=self.mask.mask_sub_1)
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def iterated_array_jit_from(
         iterated_array,
         fractional_mask_higher_sub,
@@ -612,7 +612,7 @@ class Grid2DIterate(AbstractGrid2D):
         )
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def fractional_mask_jit_from_grid(
         fractional_accuracy_threshold,
         fractional_mask,
@@ -748,7 +748,7 @@ class Grid2DIterate(AbstractGrid2D):
         return Grid2D(grid=iterated_grid_1d, mask=self.mask.mask_sub_1)
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def iterated_grid_jit_from(
         iterated_grid,
         fractional_mask_higher_sub,
