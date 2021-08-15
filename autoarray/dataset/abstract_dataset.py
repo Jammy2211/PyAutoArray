@@ -1,9 +1,12 @@
 import copy
 import numpy as np
 import pickle
+from typing import List, Optional, Tuple, Type, Union
 
 from autoconf import conf
 from autoarray.structures.abstract_structure import AbstractStructure
+from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_interpolate import Grid2DInterpolate
@@ -13,8 +16,13 @@ from autoarray.mask.mask_2d import Mask2D
 
 
 def grid_from_mask_and_grid_class(
-    mask, grid_class, fractional_accuracy, sub_steps, pixel_scales_interp
-):
+    mask: Union[Mask1D, Mask2D],
+    grid_class: Union[Type[Grid1D], Type[Grid2D]],
+    fractional_accuracy: float,
+    sub_steps: List[int],
+    pixel_scales_interp: Union[float, Tuple[float, float]],
+) -> Optional[Union[Grid1D, Grid2D]]:
+
     if mask.pixel_scales is None:
         return None
 
@@ -48,15 +56,15 @@ def grid_from_mask_and_grid_class(
 class AbstractSettingsDataset:
     def __init__(
         self,
-        grid_class=None,
-        grid_inversion_class=None,
-        sub_size=2,
-        sub_size_inversion=2,
-        fractional_accuracy=0.9999,
-        sub_steps=None,
-        pixel_scales_interp=None,
-        signal_to_noise_limit=None,
-        signal_to_noise_limit_radii=None,
+        grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
+        grid_inversion_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
+        sub_size: int = 2,
+        sub_size_inversion: int = 2,
+        fractional_accuracy: float = 0.9999,
+        sub_steps: Optional[List[int]] = None,
+        pixel_scales_interp: Optional[Union[float, Tuple[float, float]]] = None,
+        signal_to_noise_limit: Optional[float] = None,
+        signal_to_noise_limit_radii: Optional[float] = None,
     ):
         """
         A dataset is a collection of data structures (e.g. the data, noise-map, PSF), a mask, grid, convolver
@@ -104,7 +112,7 @@ class AbstractSettingsDataset:
         self.signal_to_noise_limit = signal_to_noise_limit
         self.signal_to_noise_limit_radii = signal_to_noise_limit_radii
 
-    def grid_from_mask(self, mask):
+    def grid_from_mask(self, mask) -> Union[Grid1D, Grid2D]:
 
         return grid_from_mask_and_grid_class(
             mask=mask,
@@ -114,7 +122,7 @@ class AbstractSettingsDataset:
             pixel_scales_interp=self.pixel_scales_interp,
         )
 
-    def grid_inversion_from_mask(self, mask):
+    def grid_inversion_from_mask(self, mask) -> Union[Grid1D, Grid2D]:
 
         return grid_from_mask_and_grid_class(
             mask=mask,
@@ -192,7 +200,7 @@ class AbstractDataset:
             self.grid_inversion = settings.grid_inversion_from_mask(mask=mask_inversion)
 
     @property
-    def mask(self):
+    def mask(self) -> Union[Mask1D, Mask2D]:
         return self.data.mask
 
     @property
@@ -217,11 +225,11 @@ class AbstractDataset:
             return pickle.load(f)
 
     @property
-    def inverse_noise_map(self):
+    def inverse_noise_map(self) -> Union[Array1D, Array2D]:
         return 1.0 / self.noise_map
 
     @property
-    def signal_to_noise_map(self):
+    def signal_to_noise_map(self) -> Union[Array1D, Array2D]:
         """
         The estimated signal-to-noise_maps mappers of the image.
         """
@@ -230,14 +238,14 @@ class AbstractDataset:
         return signal_to_noise_map
 
     @property
-    def signal_to_noise_max(self):
+    def signal_to_noise_max(self) -> float:
         """
         The maximum value of signal-to-noise_maps in an image pixel in the image's signal-to-noise_maps mappers.
         """
         return np.max(self.signal_to_noise_map)
 
     @property
-    def absolute_signal_to_noise_map(self):
+    def absolute_signal_to_noise_map(self) -> Union[Array1D, Array2D]:
         """
         The estimated absolute_signal-to-noise_maps mappers of the image.
         """
@@ -246,14 +254,14 @@ class AbstractDataset:
         )
 
     @property
-    def absolute_signal_to_noise_max(self):
+    def absolute_signal_to_noise_max(self) -> float:
         """
         The maximum value of absolute signal-to-noise_map in an image pixel in the image's signal-to-noise_maps mappers.
         """
         return np.max(self.absolute_signal_to_noise_map)
 
     @property
-    def potential_chi_squared_map(self):
+    def potential_chi_squared_map(self) -> Union[Array1D, Array2D]:
         """
         The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to
         the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0).
@@ -263,13 +271,13 @@ class AbstractDataset:
         )
 
     @property
-    def potential_chi_squared_max(self):
+    def potential_chi_squared_max(self) -> float:
         """
         The maximum value of the potential chi-squared-map.
         """
         return np.max(self.potential_chi_squared_map)
 
-    def modify_noise_map(self, noise_map):
+    def modify_noise_map(self, noise_map) -> "AbstractDataset":
 
         imaging = copy.deepcopy(self)
 
@@ -277,7 +285,7 @@ class AbstractDataset:
 
         return imaging
 
-    def trimmed_after_convolution_from(self, kernel_shape):
+    def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
 
         imaging = copy.copy(self)
 

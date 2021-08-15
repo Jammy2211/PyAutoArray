@@ -32,11 +32,11 @@ class SettingsImaging(AbstractSettingsDataset):
         grid_inversion_class=Grid2D,
         sub_size=1,
         sub_size_inversion=4,
-        fractional_accuracy=0.9999,
-        sub_steps=None,
-        pixel_scales_interp=None,
-        signal_to_noise_limit=None,
-        signal_to_noise_limit_radii=None,
+        fractional_accuracy: float = 0.9999,
+        sub_steps: List[int] = None,
+        pixel_scales_interp: Optional[Union[float, Tuple[float, float]]] = None,
+        signal_to_noise_limit: Optional[float] = None,
+        signal_to_noise_limit_radii: Optional[float] = None,
         use_normalized_psf=True,
     ):
         """
