@@ -8,7 +8,13 @@ from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 
 class AbstractImagingPlotter(AbstractPlotter):
-    def __init__(self, imaging, mat_plot_2d, visuals_2d, include_2d):
+    def __init__(
+        self,
+        imaging: Imaging,
+        mat_plot_2d: MatPlot2D,
+        visuals_2d: Visuals2D,
+        include_2d: Include2D,
+    ):
 
         self.imaging = imaging
 
@@ -17,7 +23,7 @@ class AbstractImagingPlotter(AbstractPlotter):
         )
 
     @property
-    def visuals_with_include_2d(self):
+    def visuals_with_include_2d(self) -> Visuals2D:
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
@@ -31,13 +37,13 @@ class AbstractImagingPlotter(AbstractPlotter):
 
     def figures_2d(
         self,
-        image=False,
-        noise_map=False,
-        psf=False,
-        inverse_noise_map=False,
-        signal_to_noise_map=False,
-        absolute_signal_to_noise_map=False,
-        potential_chi_squared_map=False,
+        image: bool = False,
+        noise_map: bool = False,
+        psf: bool = False,
+        inverse_noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        absolute_signal_to_noise_map: bool = False,
+        potential_chi_squared_map: bool = False,
     ):
         """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
          Signal-to_noise-map, etc).
@@ -120,14 +126,14 @@ class AbstractImagingPlotter(AbstractPlotter):
 
     def subplot(
         self,
-        image=False,
-        noise_map=False,
-        psf=False,
-        signal_to_noise_map=False,
-        inverse_noise_map=False,
-        absolute_signal_to_noise_map=False,
-        potential_chi_squared_map=False,
-        auto_filename="subplot_imaging",
+        image: bool = False,
+        noise_map: bool = False,
+        psf: bool = False,
+        signal_to_noise_map: bool = False,
+        inverse_noise_map: bool = False,
+        absolute_signal_to_noise_map: bool = False,
+        potential_chi_squared_map: bool = False,
+        auto_filename: str = "subplot_imaging",
     ):
 
         self._subplot_custom_plot(

@@ -5,6 +5,7 @@ from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
@@ -25,7 +26,7 @@ class MapperPlotter(AbstractPlotter):
         self.mapper = mapper
 
     @property
-    def visuals_data_with_include_2d(self):
+    def visuals_data_with_include_2d(self) -> Include2D:
         """
         Extracts from a `Mapper` attributes that can be plotted for figures in its data-plane (e.g. the reconstructed
         data) and return them in a `Visuals` object.
@@ -66,7 +67,7 @@ class MapperPlotter(AbstractPlotter):
         )
 
     @property
-    def visuals_source_with_include_2d(self):
+    def visuals_source_with_include_2d(self) -> Include2D:
         """
         Extracts from a `Mapper` attributes that can be plotted for figures in its source-plane (e.g. the reconstruction
         and return them in a `Visuals` object.
@@ -109,7 +110,7 @@ class MapperPlotter(AbstractPlotter):
             ),
         )
 
-    def figure_2d(self, source_pixelilzation_values=None):
+    def figure_2d(self, source_pixelilzation_values: bool = None):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
@@ -118,7 +119,7 @@ class MapperPlotter(AbstractPlotter):
             auto_labels=AutoLabels(title="Mapper", filename="mapper"),
         )
 
-    def subplot_image_and_mapper(self, image):
+    def subplot_image_and_mapper(self, image: Array2D):
 
         self.open_subplot_figure(number_subplots=2)
 

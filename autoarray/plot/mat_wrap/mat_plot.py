@@ -4,12 +4,9 @@ set_backend()
 
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Optional, Union
+from typing import Optional, List, Union
 
-from autoarray.plot.wrap import wrap_base as wb
-from autoarray.plot.wrap import wrap_1d as w1d
-from autoarray.plot.wrap import wrap_2d as w2d
-
+from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
@@ -17,6 +14,9 @@ from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
 from autoarray import exc
+from autoarray.plot.wrap import wrap_base as wb
+from autoarray.plot.wrap import wrap_1d as w1d
+from autoarray.plot.wrap import wrap_2d as w2d
 
 
 class AutoLabels:
@@ -316,10 +316,10 @@ class MatPlot1D(AbstractMatPlot):
 
     def plot_yx(
         self,
-        y,
+        y: Union[np.ndarray, List, Array1D],
         visuals_1d: Visuals1D,
         auto_labels: AutoLabels,
-        x=None,
+        x: Optional[Union[np.ndarray, List, Array1D]] = None,
         plot_axis_type_override: Optional[str] = None,
         y_errors=None,
         x_errors=None,

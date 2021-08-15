@@ -35,11 +35,11 @@ class InterferometerPlotter(AbstractPlotter):
         )
 
     @property
-    def visuals_with_include_2d(self):
+    def visuals_with_include_2d(self) -> Visuals2D:
         return self.visuals_2d + self.visuals_2d.__class__()
 
     @property
-    def visuals_with_include_2d_real_space(self):
+    def visuals_with_include_2d_real_space(self) -> Visuals2D:
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
@@ -54,17 +54,17 @@ class InterferometerPlotter(AbstractPlotter):
 
     def figures_2d(
         self,
-        visibilities=False,
-        noise_map=False,
-        u_wavelengths=False,
-        v_wavelengths=False,
-        uv_wavelengths=False,
-        amplitudes_vs_uv_distances=False,
-        phases_vs_uv_distances=False,
-        dirty_image=False,
-        dirty_noise_map=False,
-        dirty_signal_to_noise_map=False,
-        dirty_inverse_noise_map=False,
+        visibilities: bool = False,
+        noise_map: bool = False,
+        u_wavelengths: bool = False,
+        v_wavelengths: bool = False,
+        uv_wavelengths: bool = False,
+        amplitudes_vs_uv_distances: bool = False,
+        phases_vs_uv_distances: bool = False,
+        dirty_image: bool = False,
+        dirty_noise_map: bool = False,
+        dirty_signal_to_noise_map: bool = False,
+        dirty_inverse_noise_map: bool = False,
     ):
         """
         Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
@@ -210,18 +210,18 @@ class InterferometerPlotter(AbstractPlotter):
 
     def subplot(
         self,
-        visibilities=False,
-        noise_map=False,
-        u_wavelengths=False,
-        v_wavelengths=False,
-        uv_wavelengths=False,
-        amplitudes_vs_uv_distances=False,
-        phases_vs_uv_distances=False,
-        dirty_image=False,
-        dirty_noise_map=False,
-        dirty_signal_to_noise_map=False,
-        dirty_inverse_noise_map=False,
-        auto_filename="subplot_interferometer",
+        visibilities: bool = False,
+        noise_map: bool = False,
+        u_wavelengths: bool = False,
+        v_wavelengths: bool = False,
+        uv_wavelengths: bool = False,
+        amplitudes_vs_uv_distances: bool = False,
+        phases_vs_uv_distances: bool = False,
+        dirty_image: bool = False,
+        dirty_noise_map: bool = False,
+        dirty_signal_to_noise_map: bool = False,
+        dirty_inverse_noise_map: bool = False,
+        auto_filename: str = "subplot_interferometer",
     ):
 
         self._subplot_custom_plot(

@@ -16,12 +16,12 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
     def __init__(
         self,
         fit: FitInterferometer,
-        mat_plot_1d,
-        visuals_1d,
-        include_1d,
-        mat_plot_2d,
-        visuals_2d,
-        include_2d,
+        mat_plot_1d: MatPlot1D,
+        visuals_1d: Visuals1D,
+        include_1d: Include1D,
+        mat_plot_2d: MatPlot2D,
+        visuals_2d: Visuals2D,
+        include_2d: Include2D,
     ):
 
         super().__init__(
@@ -36,11 +36,11 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
         self.fit = fit
 
     @property
-    def visuals_with_include_2d(self):
+    def visuals_with_include_2d(self) -> Visuals2D:
         return self.visuals_2d + self.visuals_2d.__class__()
 
     @property
-    def visuals_with_include_2d_real_space(self):
+    def visuals_with_include_2d_real_space(self) -> Visuals2D:
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
@@ -56,23 +56,23 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
     def figures_2d(
         self,
-        visibilities=False,
-        noise_map=False,
-        signal_to_noise_map=False,
-        model_visibilities=False,
-        residual_map_real=False,
-        residual_map_imag=False,
-        normalized_residual_map_real=False,
-        normalized_residual_map_imag=False,
-        chi_squared_map_real=False,
-        chi_squared_map_imag=False,
-        dirty_image=False,
-        dirty_noise_map=False,
-        dirty_signal_to_noise_map=False,
-        dirty_model_image=False,
-        dirty_residual_map=False,
-        dirty_normalized_residual_map=False,
-        dirty_chi_squared_map=False,
+        visibilities: bool = False,
+        noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        model_visibilities: bool = False,
+        residual_map_real: bool = False,
+        residual_map_imag: bool = False,
+        normalized_residual_map_real: bool = False,
+        normalized_residual_map_imag: bool = False,
+        chi_squared_map_real: bool = False,
+        chi_squared_map_imag: bool = False,
+        dirty_image: bool = False,
+        dirty_noise_map: bool = False,
+        dirty_signal_to_noise_map: bool = False,
+        dirty_model_image: bool = False,
+        dirty_residual_map: bool = False,
+        dirty_normalized_residual_map: bool = False,
+        dirty_chi_squared_map: bool = False,
     ):
         """Plot the model data of an analysis, using the *Fitter* class object.
 
@@ -279,24 +279,24 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
     def subplot(
         self,
-        visibilities=False,
-        noise_map=False,
-        signal_to_noise_map=False,
-        model_visibilities=False,
-        residual_map_real=False,
-        residual_map_imag=False,
-        normalized_residual_map_real=False,
-        normalized_residual_map_imag=False,
-        chi_squared_map_real=False,
-        chi_squared_map_imag=False,
-        dirty_image=False,
-        dirty_noise_map=False,
-        dirty_signal_to_noise_map=False,
-        dirty_model_image=False,
-        dirty_residual_map=False,
-        dirty_normalized_residual_map=False,
-        dirty_chi_squared_map=False,
-        auto_filename="subplot_fit_interferometer",
+        visibilities: bool = False,
+        noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        model_visibilities: bool = False,
+        residual_map_real: bool = False,
+        residual_map_imag: bool = False,
+        normalized_residual_map_real: bool = False,
+        normalized_residual_map_imag: bool = False,
+        chi_squared_map_real: bool = False,
+        chi_squared_map_imag: bool = False,
+        dirty_image: bool = False,
+        dirty_noise_map: bool = False,
+        dirty_signal_to_noise_map: bool = False,
+        dirty_model_image: bool = False,
+        dirty_residual_map: bool = False,
+        dirty_normalized_residual_map: bool = False,
+        dirty_chi_squared_map: bool = False,
+        auto_filename: str = "subplot_fit_interferometer",
     ):
 
         self._subplot_custom_plot(

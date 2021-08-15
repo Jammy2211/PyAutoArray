@@ -8,7 +8,9 @@ from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 
 class AbstractFitImagingPlotter(AbstractPlotter):
-    def __init__(self, fit, mat_plot_2d, visuals_2d, include_2d):
+    def __init__(
+        self, fit, mat_plot_2d: MatPlot2D, visuals_2d: Visuals2D, include_2d: Include2D
+    ):
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
@@ -16,7 +18,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
         self.fit = fit
 
     @property
-    def visuals_with_include_2d(self):
+    def visuals_with_include_2d(self) -> Visuals2D:
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
@@ -28,13 +30,13 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
     def figures_2d(
         self,
-        image=False,
-        noise_map=False,
-        signal_to_noise_map=False,
-        model_image=False,
-        residual_map=False,
-        normalized_residual_map=False,
-        chi_squared_map=False,
+        image: bool = False,
+        noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        model_image: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
     ):
         """Plot the model data of an analysis, using the *Fitter* class object.
 
@@ -115,14 +117,14 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
     def subplot(
         self,
-        image=False,
-        noise_map=False,
-        signal_to_noise_map=False,
-        model_image=False,
-        residual_map=False,
-        normalized_residual_map=False,
-        chi_squared_map=False,
-        auto_filename="subplot_fit_imaging",
+        image: bool = False,
+        noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        model_image: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
+        auto_filename: str = "subplot_fit_imaging",
     ):
 
         self._subplot_custom_plot(

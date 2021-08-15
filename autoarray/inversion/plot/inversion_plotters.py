@@ -6,6 +6,7 @@ from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 from autoarray.inversion.inversion.imaging import InversionImagingMatrix
 from autoarray.inversion.inversion.interferometer import InversionInterferometerMatrix
@@ -28,20 +29,20 @@ class InversionPlotter(MapperPlotter):
 
         self.inversion = inversion
 
-    def as_mapper(self, source_pixelization_values):
+    def as_mapper(self, source_pixelization_values) -> Array2D:
         return self.inversion.mapper.reconstruction_from(source_pixelization_values)
 
     def figures_2d(
         self,
-        reconstructed_image=False,
-        reconstruction=False,
-        errors=False,
-        residual_map=False,
-        normalized_residual_map=False,
-        chi_squared_map=False,
-        regularization_weight_list=False,
-        interpolated_reconstruction=False,
-        interpolated_errors=False,
+        reconstructed_image: bool = False,
+        reconstruction: bool = False,
+        errors: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
+        regularization_weight_list: bool = False,
+        interpolated_reconstruction: bool = False,
+        interpolated_errors: bool = False,
     ):
         """Plot the model data of an analysis, using the *Fitter* class object.
 
@@ -179,16 +180,16 @@ class InversionPlotter(MapperPlotter):
 
     def subplot(
         self,
-        reconstructed_image=False,
-        reconstruction=False,
-        errors=False,
-        residual_map=False,
-        normalized_residual_map=False,
-        chi_squared_map=False,
-        regularization_weight_list=False,
-        interpolated_reconstruction=False,
-        interpolated_errors=False,
-        auto_filename="subplot_inversion",
+        reconstructed_image: bool = False,
+        reconstruction: bool = False,
+        errors: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
+        regularization_weight_list: bool = False,
+        interpolated_reconstruction: bool = False,
+        interpolated_errors: bool = False,
+        auto_filename: str = "subplot_inversion",
     ):
 
         self._subplot_custom_plot(
