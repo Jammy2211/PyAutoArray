@@ -1,4 +1,4 @@
-from autoarray.plot.mat_wrap.wrap.wrap_base import set_backend
+from autoarray.plot.wrap.wrap_base import set_backend
 
 set_backend()
 
@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional, Union
 
-from autoarray.plot.mat_wrap.wrap import wrap_base as wb
-from autoarray.plot.mat_wrap.wrap import wrap_1d as w1d
-from autoarray.plot.mat_wrap.wrap import wrap_2d as w2d
+from autoarray.plot.wrap import wrap_base as wb
+from autoarray.plot.wrap import wrap_1d as w1d
+from autoarray.plot.wrap import wrap_2d as w2d
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers import MapperRectangular

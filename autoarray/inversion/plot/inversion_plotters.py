@@ -6,7 +6,7 @@ from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
-from autoarray.plot.structure_plotters import MapperPlotter
+from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 from autoarray.inversion.inversion.imaging import InversionImagingMatrix
 from autoarray.inversion.inversion.interferometer import InversionInterferometerMatrix
 

@@ -1,4 +1,4 @@
-from autoarray.plot.mat_wrap.wrap.wrap_base import set_backend
+from autoarray.plot.wrap.wrap_base import set_backend
 
 set_backend()
 
@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import List, Optional, Union
 
-from autoarray.plot.mat_wrap.wrap.wrap_base import AbstractMatWrap
+from autoarray.plot.wrap.wrap_base import AbstractMatWrap
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray import exc

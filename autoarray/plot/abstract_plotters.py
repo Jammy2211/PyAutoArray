@@ -1,4 +1,4 @@
-from autoarray.plot.mat_wrap.wrap.wrap_base import set_backend
+from autoarray.plot.wrap.wrap_base import set_backend
 
 set_backend()
 

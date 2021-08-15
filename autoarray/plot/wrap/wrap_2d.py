@@ -1,4 +1,4 @@
-from autoarray.plot.mat_wrap.wrap.wrap_base import set_backend
+from autoarray.plot.wrap.wrap_base import set_backend
 
 set_backend()
 
@@ -9,9 +9,9 @@ import numpy as np
 import itertools
 from typing import List, Union, Optional, Tuple
 
-from autoarray.plot.mat_wrap.wrap import wrap_base as wb
+from autoarray.plot.wrap import wrap_base as wb
 
-from autoarray.plot.mat_wrap.wrap.wrap_base import AbstractMatWrap
+from autoarray.plot.wrap.wrap_base import AbstractMatWrap
 from autoarray.inversion.mappers import MapperVoronoi
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular

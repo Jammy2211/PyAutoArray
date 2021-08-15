@@ -121,7 +121,7 @@ def test__output_as_fits__correct_output_format(
     fit_imaging_plotter.figures_2d(image=True)
 
     image_from_plot = aa.util.array_2d.numpy_array_2d_from_fits(
-        file_path=path.join(plot_path, "image.fits"), hdu=0
+        file_path=path.join(plot_path, "image_2d.fits"), hdu=0
     )
 
     assert image_from_plot.shape == (5, 5)
