@@ -1,4 +1,5 @@
 import numpy as np
+from typing import List, Optional
 
 from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
