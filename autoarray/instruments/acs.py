@@ -684,7 +684,10 @@ def output_quadrants_to_fits(
             )
 
     header_a = get_header(quadrant_a) if header_a is None else header_a
-    quadrant_a = copy.copy(np.asarray(quadrant_a.native))
+    try:
+        quadrant_a = copy.copy(np.asarray(quadrant_a.native))
+    except AttributeError:
+        quadrant_a = copy.copy(np.asarray(quadrant_a))
 
     quadrant_a = quadrant_convert_to_original(
         quadrant=quadrant_a, roe_corner=(1, 0), header=header_a, use_flipud=True
@@ -693,21 +696,30 @@ def output_quadrants_to_fits(
 
     header_b = get_header(quadrant_b) if header_b is None else header_b
 
-    quadrant_b = copy.copy(np.asarray(quadrant_b.native))
+    try:
+        quadrant_b = copy.copy(np.asarray(quadrant_b.native))
+    except AttributeError:
+        quadrant_b = copy.copy(np.asarray(quadrant_b))
     quadrant_b = quadrant_convert_to_original(
         quadrant=quadrant_b, roe_corner=(1, 1), header=header_b, use_flipud=True
     )
     array_hdu_4[0:2068, 2072:4144] = quadrant_b
 
     header_c = get_header(quadrant_c) if header_c is None else header_c
-    quadrant_c = copy.copy(np.asarray(quadrant_c.native))
+    try:
+        quadrant_c = copy.copy(np.asarray(quadrant_c.native))
+    except AttributeError:
+        quadrant_c = copy.copy(np.asarray(quadrant_c))
     quadrant_c = quadrant_convert_to_original(
         quadrant=quadrant_c, roe_corner=(1, 0), header=header_c, use_flipud=False
     )
     array_hdu_1[0:2068, 0:2072] = quadrant_c
 
     header_d = get_header(quadrant_d) if header_d is None else header_d
-    quadrant_d = copy.copy(np.asarray(quadrant_d.native))
+    try:
+        quadrant_d = copy.copy(np.asarray(quadrant_d.native))
+    except AttributeError:
+        quadrant_d = copy.copy(np.asarray(quadrant_d))
     quadrant_d = quadrant_convert_to_original(
         quadrant=quadrant_d, roe_corner=(1, 1), header=header_d, use_flipud=False
     )
