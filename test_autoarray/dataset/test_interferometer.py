@@ -238,16 +238,6 @@ class TestInterferometer:
         assert (interferometer.noise_map == 2.0 + 2.0j * np.ones((19,))).all()
         assert (interferometer.uv_wavelengths == 3.0 * np.ones((19, 2))).all()
 
-    def test__modified_noise_map(self, visibilities_noise_map_7, interferometer_7):
-
-        visibilities_noise_map_7[0] = 10.0 + 20.0j
-
-        interferometer_7 = interferometer_7.modify_noise_map(
-            noise_map=visibilities_noise_map_7
-        )
-
-        assert interferometer_7.noise_map[0] == 10.0 + 20.0j
-
 
 class TestSimulatorInterferometer:
     def test__from_image__setup_with_all_features_off(

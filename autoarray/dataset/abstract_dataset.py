@@ -277,14 +277,6 @@ class AbstractDataset:
         """
         return np.max(self.potential_chi_squared_map)
 
-    def modify_noise_map(self, noise_map) -> "AbstractDataset":
-
-        imaging = copy.deepcopy(self)
-
-        imaging.noise_map = noise_map
-
-        return imaging
-
     def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
 
         imaging = copy.copy(self)

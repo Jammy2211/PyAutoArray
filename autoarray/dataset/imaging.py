@@ -399,15 +399,6 @@ class Imaging(AbstractDataset):
 
         return imaging
 
-    def modify_image_and_noise_map(self, image, noise_map):
-
-        imaging = copy.deepcopy(self)
-
-        imaging.data = image
-        imaging.noise_map = noise_map
-
-        return imaging
-
     def output_to_fits(
         self, image_path, psf_path=None, noise_map_path=None, overwrite=False
     ):

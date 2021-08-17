@@ -362,32 +362,6 @@ class TestImagingApplyMask:
         assert (masked_imaging.image == np.array([1.0])).all()
         assert (masked_imaging.noise_map == np.array([2.0])).all()
 
-    def test__modified_image_and_noise_map(
-        self, image_7x7, noise_map_7x7, imaging_7x7, sub_mask_2d_7x7
-    ):
-
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
-
-        image_7x7[0] = 10.0
-        noise_map_7x7[0] = 11.0
-
-        noise_map_7x7[0] = 11.0
-
-        masked_imaging_7x7 = masked_imaging_7x7.modify_noise_map(
-            noise_map=noise_map_7x7
-        )
-
-        assert masked_imaging_7x7.noise_map[0] == 11.0
-
-        masked_imaging_7x7 = masked_imaging_7x7.modify_image_and_noise_map(
-            image=image_7x7, noise_map=noise_map_7x7
-        )
-
-        assert masked_imaging_7x7.image.slim[0] == 10.0
-        assert masked_imaging_7x7.image.native[0, 0] == 10.0
-        assert masked_imaging_7x7.noise_map.slim[0] == 11.0
-        assert masked_imaging_7x7.noise_map.native[0, 0] == 11.0
-
 
 class TestSimulatorImaging:
     def test__from_image__all_features_off(self):

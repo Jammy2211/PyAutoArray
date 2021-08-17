@@ -238,14 +238,6 @@ class Interferometer(AbstractDataset):
 
         return interferometer
 
-    def modify_noise_map(self, noise_map):
-
-        interferometer = copy.deepcopy(self)
-
-        interferometer.noise_map = noise_map
-
-        return interferometer
-
     def output_to_fits(
         self,
         visibilities_path=None,
