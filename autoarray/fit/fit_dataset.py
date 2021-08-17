@@ -46,129 +46,30 @@ class FitDataset:
         self.dataset = dataset
         self.fit = fit
 
-    @property
-    def data(self):
-        return self.fit.data
+        self.data = self.fit.data
+        self.noise_map = self.fit.noise_map
+        self.model_data = self.fit.model_data
+        self.residual_map = self.fit.residual_map
+        self.normalized_residual_map = self.fit.normalized_residual_map
+        self.chi_squared_map = self.fit.chi_squared_map
+        self.signal_to_noise_map = self.fit.signal_to_noise_map
+        self.chi_squared = self.fit.chi_squared
+        self.noise_normalization = self.fit.noise_normalization
+        self.log_likelihood = self.fit.log_likelihood
+        self.log_evidence = self.fit.log_evidence
+        self.figure_of_merit = self.fit.figure_of_merit
 
-    @property
-    def noise_map(self):
-        return self.fit.noise_map
+        self.log_likelihood_with_regularization = (
+            self.fit.log_likelihood_with_regularization
+        )
+        self.reduced_chi_squared = self.fit.reduced_chi_squared
 
-    @property
-    def model_data(self):
-        return self.fit.model_data
+        self.inversion = self.fit.inversion
+        self.total_inversions = self.fit.total_inversions
 
     @property
     def mask(self):
-        return self.fit.mask
-
-    @property
-    def residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
-        """
-        Returns the residual-map between the masked dataset and model data, where:
-
-        Residuals = (Data - Model_Data).
-        """
-        return self.fit.residual_map
-
-    @property
-    def normalized_residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
-        """
-        Returns the normalized residual-map between the masked dataset and model data, where:
-
-        Normalized_Residual = (Data - Model_Data) / Noise
-        """
-        return self.fit.normalized_residual_map
-
-    @property
-    def chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
-        """
-        Returns the chi-squared-map between the residual-map and noise-map, where:
-
-        Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
-        """
-        return self.fit.chi_squared_map
-
-    @property
-    def signal_to_noise_map(self) -> Union[np.ndarray, Array1D, Array2D]:
-        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
-        return self.fit.signal_to_noise_map
-
-    @property
-    def chi_squared(self) -> float:
-        """
-        Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
-        """
-        return self.fit.chi_squared
-
-    @property
-    def reduced_chi_squared(self) -> float:
-        return self.fit.reduced_chi_squared
-
-    @property
-    def noise_normalization(self) -> float:
-        """
-        Returns the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
-
-        [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
-        """
-        return self.fit.noise_normalization
-
-    @property
-    def log_likelihood(self) -> float:
-        """
-        Returns the log likelihood of each model data point's fit to the dataset, where:
-
-        Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
-        """
-        return self.fit.log_likelihood
-
-    @property
-    def log_likelihood_with_regularization(self) -> float:
-        """
-        Returns the log likelihood of an inversion's fit to the dataset, including a regularization term which \
-        comes from an inversion:
-
-        Log Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Noise_Term] (see functions above for these definitions)
-        """
-        return self.fit.log_likelihood_with_regularization
-
-    @property
-    def log_evidence(self) -> float:
-        """
-        Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
-        which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
-
-        Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
-                           Log(Regularization_Matrix_Term) + Noise_Term]
-
-        Parameters
-        ----------
-        chi_squared : float
-            The chi-squared term of the inversion's fit to the data.
-        regularization_term : float
-            The regularization term of the inversion, which is the sum of the difference between reconstructed \
-            flux of every pixel multiplied by the regularization coefficient.
-        log_curvature_regularization_term : float
-            The log of the determinant of the sum of the curvature and regularization matrices.
-        log_regularization_term : float
-            The log of the determinant o the regularization matrix.
-        noise_normalization : float
-            The normalization noise_map-term for the data's noise-map.
-        """
-        return self.fit.log_evidence
-
-    @property
-    def figure_of_merit(self) -> float:
-        return self.fit.figure_of_merit
-
-    @property
-    def inversion(self):
-        return self.fit.inversion
-
-    @property
-    def total_inversions(self) -> int:
-        return self.fit.total_inversions
+        raise NotImplementedError
 
 
 class FitImaging(FitDataset):
@@ -206,6 +107,10 @@ class FitImaging(FitDataset):
         """
 
         super().__init__(dataset=imaging, fit=fit)
+
+    @property
+    def mask(self):
+        return self.fit.mask
 
     @property
     def imaging(self):
