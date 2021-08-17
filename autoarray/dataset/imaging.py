@@ -18,12 +18,23 @@ from autoarray.dataset import preprocess
 logger = logging.getLogger(__name__)
 
 
-class WTilde:
-    def __init__(self, curvature_preload, indexes, lengths):
+class WTildeImaging:
+    def __init__(self, curvature_preload, indexes, lengths, noise_map_value):
 
         self.curvature_preload = curvature_preload
         self.indexes = indexes
         self.lengths = lengths
+        self.noise_map_value = noise_map_value
+
+    def check_noise_map(self, noise_map):
+
+        if noise_map[0] != self.noise_map_value:
+            raise exc.InversionException(
+                "The preloaded values of WTildeImaging are not consistent with the noise-map passed to them, thus "
+                "they cannot be used for the inversion."
+                ""
+                "Update WTildeImaging or do not use the w_tilde formalism to perform the Inversion."
+            )
 
 
 class SettingsImaging(AbstractSettingsDataset):
@@ -233,7 +244,7 @@ class Imaging(AbstractDataset):
 
         Returns
         -------
-        WTilde
+        WTildeImaging
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
@@ -245,10 +256,11 @@ class Imaging(AbstractDataset):
                 native_index_for_slim_index=self.mask._native_index_for_slim_index,
             )
 
-            self._w_tilde = WTilde(
+            self._w_tilde = WTildeImaging(
                 curvature_preload=preload,
                 indexes=indexes.astype("int"),
                 lengths=lengths.astype("int"),
+                noise_map_value=self.noise_map[0],
             )
 
         return self._w_tilde

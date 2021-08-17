@@ -10,7 +10,7 @@ from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
 from autoarray.preloads import Preloads
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.dataset.imaging import WTilde
+from autoarray.dataset.imaging import WTildeImaging
 
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion import mapper_util
@@ -144,12 +144,14 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         image: Array2D,
         noise_map: Array2D,
         convolver: Convolver,
-        w_tilde: WTilde,
+        w_tilde: WTildeImaging,
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
         settings=SettingsInversion(),
         preloads=Preloads(),
     ):
+
+        w_tilde.check_noise_map(noise_map=noise_map)
 
         data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
             data_pixels=w_tilde.lengths.shape[0],

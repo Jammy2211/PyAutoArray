@@ -1,4 +1,5 @@
 import autoarray as aa
+from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.inversion.imaging import InversionImagingMatrix
 from autoarray import exc
 from autoarray.mock import mock
@@ -41,6 +42,40 @@ class TestInversionImagingMatrix:
                     matrix_shape=matrix_shape, source_grid_slim=grid
                 ),
                 regularization=mock.MockRegularization(matrix_shape),
+            )
+
+    def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_noise_map(
+        self
+    ):
+
+        matrix_shape = (9, 3)
+
+        mask = aa.Mask2D.manual(
+            mask=np.array(
+                [[True, True, True], [False, False, False], [True, True, True]]
+            ),
+            pixel_scales=1.0,
+            sub_size=1,
+        )
+
+        grid = aa.Grid2D.from_mask(mask=mask)
+
+        w_tilde = WTildeImaging(
+            curvature_preload=None, indexes=None, lengths=None, noise_map_value=2.0
+        )
+
+        with pytest.raises(exc.InversionException):
+
+            InversionImagingMatrix.from_data_via_w_tilde(
+                image=np.ones(9),
+                noise_map=np.ones(9),
+                convolver=mock.MockConvolver(matrix_shape),
+                w_tilde=w_tilde,
+                mapper=mock.MockMapper(
+                    matrix_shape=matrix_shape, source_grid_slim=grid
+                ),
+                regularization=mock.MockRegularization(matrix_shape),
+                settings=aa.SettingsInversion(check_solution=False),
             )
 
     def test__preloads(self):
