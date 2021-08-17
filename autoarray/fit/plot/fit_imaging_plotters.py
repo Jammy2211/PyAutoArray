@@ -3,7 +3,7 @@ from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
-from autoarray.fit import fit as f
+from autoarray.fit.fit_dataset import FitImaging
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 
@@ -152,7 +152,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 class FitImagingPlotter(AbstractFitImagingPlotter):
     def __init__(
         self,
-        fit: f.FitImaging,
+        fit: FitImaging,
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),

@@ -4,8 +4,10 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.dataset.interferometer import SettingsInterferometer
 from autoarray.inversion.regularization import Constant
 from autoarray.operators.convolver import Convolver
-from autoarray.fit.fit import FitImaging
-from autoarray.fit.fit import FitInterferometer
+from autoarray.fit.fit_data import FitData
+from autoarray.fit.fit_data import FitDataComplex
+from autoarray.fit.fit_dataset import FitImaging
+from autoarray.fit.fit_dataset import FitInterferometer
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
@@ -302,23 +304,33 @@ def make_masked_imaging_no_blur_7x7():
 
 
 def make_imaging_fit_x1_plane_7x7():
-    return FitImaging(
-        imaging=make_masked_imaging_7x7(),
-        model_image=5.0 * make_masked_imaging_7x7().image,
+
+    imaging_7x7 = make_masked_imaging_7x7()
+
+    fit = FitData(
+        data=imaging_7x7.image,
+        noise_map=imaging_7x7.noise_map,
+        model_data=5.0 * imaging_7x7.image,
+        mask=imaging_7x7.mask,
         use_mask_in_fit=False,
     )
+
+    return FitImaging(imaging=imaging_7x7, fit=fit)
 
 
 def make_fit_interferometer_7():
 
     interferometer_7 = make_interferometer_7()
 
-    fit_interferometer = FitInterferometer(
-        interferometer=interferometer_7,
-        model_visibilities=5.0 * interferometer_7.visibilities,
+    fit = FitDataComplex(
+        data=interferometer_7.visibilities,
+        noise_map=interferometer_7.noise_map,
+        model_data=5.0 * interferometer_7.visibilities,
         use_mask_in_fit=False,
     )
-    fit_dataset = interferometer_7
+
+    fit_interferometer = FitInterferometer(interferometer=interferometer_7, fit=fit)
+
     return fit_interferometer
 
 

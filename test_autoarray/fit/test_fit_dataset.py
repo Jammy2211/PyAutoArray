@@ -22,9 +22,15 @@ class TestFitImaging:
 
         model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-        fit = aa.FitImaging(
-            imaging=masked_imaging, model_image=model_image, use_mask_in_fit=False
+        fit = aa.FitData(
+            data=masked_imaging.image,
+            noise_map=masked_imaging.noise_map,
+            model_data=model_image,
+            mask=mask,
+            use_mask_in_fit=False,
         )
+
+        fit = aa.FitImaging(imaging=masked_imaging, fit=fit)
 
         assert (fit.mask == np.array([[False, False], [False, False]])).all()
 
@@ -75,9 +81,15 @@ class TestFitImaging:
 
         model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0], mask=mask)
 
-        fit = aa.FitImaging(
-            imaging=imaging, model_image=model_image, use_mask_in_fit=False
+        fit = aa.FitData(
+            data=imaging.image,
+            noise_map=imaging.noise_map,
+            model_data=model_image,
+            mask=mask,
+            use_mask_in_fit=False,
         )
+
+        fit = aa.FitImaging(imaging=imaging, fit=fit)
 
         assert (fit.mask == np.array([[False, False], [True, False]])).all()
 
@@ -134,12 +146,16 @@ class TestFitImaging:
             log_det_regularization_matrix_term=4.0,
         )
 
-        fit = aa.FitImaging(
-            imaging=masked_imaging,
-            model_image=model_image,
+        fit = aa.FitData(
+            data=masked_imaging.image,
+            noise_map=masked_imaging.noise_map,
+            model_data=model_image,
+            mask=mask,
             inversion=inversion,
             use_mask_in_fit=False,
         )
+
+        fit = aa.FitImaging(imaging=masked_imaging, fit=fit)
 
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
@@ -180,11 +196,14 @@ class TestFitInterferometer:
             visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
         )
 
-        fit = aa.FitInterferometer(
-            interferometer=interferometer,
-            model_visibilities=model_visibilities,
+        fit = aa.FitDataComplex(
+            data=interferometer.visibilities,
+            noise_map=interferometer.noise_map,
+            model_data=model_visibilities,
             use_mask_in_fit=False,
         )
+
+        fit = aa.FitInterferometer(interferometer=interferometer, fit=fit)
 
         assert (fit.visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
 
@@ -235,11 +254,14 @@ class TestFitInterferometer:
             visibilities=[1.0 + 2.0j, 3.0 + 3.0j]
         )
 
-        fit = aa.FitInterferometer(
-            interferometer=interferometer,
-            model_visibilities=model_visibilities,
+        fit = aa.FitDataComplex(
+            data=interferometer.visibilities,
+            noise_map=interferometer.noise_map,
+            model_data=model_visibilities,
             use_mask_in_fit=False,
         )
+
+        fit = aa.FitInterferometer(interferometer=interferometer, fit=fit)
 
         assert (fit.visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
 
@@ -296,12 +318,15 @@ class TestFitInterferometer:
             log_det_regularization_matrix_term=4.0,
         )
 
-        fit = aa.FitInterferometer(
-            interferometer=interferometer,
-            model_visibilities=model_visibilities,
+        fit = aa.FitDataComplex(
+            data=interferometer.visibilities,
+            noise_map=interferometer.noise_map,
+            model_data=model_visibilities,
             inversion=inversion,
             use_mask_in_fit=False,
         )
+
+        fit = aa.FitInterferometer(interferometer=interferometer, fit=fit)
 
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
