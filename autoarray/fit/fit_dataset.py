@@ -65,11 +65,14 @@ class FitDataset:
         self.reduced_chi_squared = self.fit.reduced_chi_squared
 
         self.inversion = self.fit.inversion
-        self.total_inversions = self.fit.total_inversions
 
     @property
     def mask(self):
         raise NotImplementedError
+
+    @property
+    def total_inversions(self):
+        return self.fit.total_inversions
 
 
 class FitImaging(FitDataset):
