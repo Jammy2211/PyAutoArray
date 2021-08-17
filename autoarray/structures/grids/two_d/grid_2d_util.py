@@ -1,14 +1,13 @@
-from autoarray import decorator_util
 import numpy as np
-
-from autoarray.mask import mask_2d_util
-from autoarray.geometry import geometry_util
-from autoarray.structures.arrays.two_d import array_2d_util
-
 from typing import Tuple, Union, Optional
 
+from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.geometry import geometry_util
+from autoarray import numba_util
+from autoarray.mask import mask_2d_util
 
-@decorator_util.jit()
+
+@numba_util.jit()
 def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
     """
     Returns the centre of a grid from a 1D grid.
@@ -28,7 +27,7 @@ def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
     return centre_y, centre_x
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def grid_2d_slim_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: Union[float, Tuple[float, float]],
@@ -263,7 +262,7 @@ def grid_2d_via_shape_native_from(
     )
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
@@ -363,7 +362,7 @@ def grid_scaled_2d_slim_radial_projected_from(
     return grid_scaled_2d_slim_radii
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def grid_pixels_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -428,7 +427,7 @@ def grid_pixels_2d_slim_from(
     return grid_pixels_2d_slim
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def grid_pixel_centres_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -492,7 +491,7 @@ def grid_pixel_centres_2d_slim_from(
     return grid_pixels_2d_slim
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def grid_pixel_indexes_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -558,7 +557,7 @@ def grid_pixel_indexes_2d_slim_from(
     return grid_pixel_indexes_2d_slim
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def grid_scaled_2d_slim_from(
     grid_pixels_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -618,7 +617,7 @@ def grid_scaled_2d_slim_from(
     return grid_scaled_2d_slim
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def grid_pixel_centres_2d_from(
     grid_scaled_2d: np.ndarray,
     shape_native: Tuple[int, int],
@@ -678,7 +677,7 @@ def grid_pixel_centres_2d_from(
     return grid_pixels_2d
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def furthest_grid_2d_slim_index_from(
     grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
 ) -> int:
@@ -780,7 +779,7 @@ def grid_2d_native_from(
     return np.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def grid_2d_slim_upscaled_from(
     grid_slim: np.ndarray,
     upscale_factor: int,

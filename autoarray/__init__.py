@@ -1,7 +1,5 @@
 from . import exc
-from . import plot
 from . import util
-from . import mock
 from .preloads import Preloads
 from .dataset import preprocess
 from .dataset.imaging import SettingsImaging
@@ -10,6 +8,8 @@ from .dataset.imaging import SimulatorImaging
 from .dataset.interferometer import Interferometer
 from .dataset.interferometer import SettingsInterferometer
 from .dataset.interferometer import SimulatorInterferometer
+from .fit.fit import FitData
+from .fit.fit import FitDataset
 from .fit.fit import FitImaging
 from .fit.fit import FitInterferometer
 from .instruments import acs
@@ -46,8 +46,9 @@ from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from .structures.vector_fields.vector_field_irregular import VectorField2DIrregular
-from autoarray.layout.region import Region1D
-from autoarray.layout.region import Region2D
+from .structures.grids import grid_decorators as grid_dec
+from .layout.region import Region1D
+from .layout.region import Region2D
 from .structures.kernel_2d import Kernel2D
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap

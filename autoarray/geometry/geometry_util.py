@@ -1,6 +1,7 @@
-from autoarray import decorator_util
 from typing import Tuple, Union
 import numpy as np
+
+from autoarray import numba_util
 
 
 def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:
@@ -53,7 +54,7 @@ def convert_pixel_scales_1d(pixel_scales: Union[float, Tuple[float]]) -> Tuple[f
     return pixel_scales
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def central_pixel_coordinates_1d_from(
     shape_slim: Tuple[int]
 ) -> Union[Tuple[float], Tuple[float]]:
@@ -81,7 +82,7 @@ def central_pixel_coordinates_1d_from(
     return (float(shape_slim[0] - 1) / 2,)
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def central_scaled_coordinate_1d_from(
     shape_slim: Tuple[float],
     pixel_scales: Tuple[float],
@@ -117,7 +118,7 @@ def central_scaled_coordinate_1d_from(
     return (x_pixel,)
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def pixel_coordinates_1d_from(
     scaled_coordinates_1d: Tuple[float],
     shape_slim: Tuple[int],
@@ -136,7 +137,7 @@ def pixel_coordinates_1d_from(
     return (x_pixel,)
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def scaled_coordinates_1d_from(
     pixel_coordinates_1d: Tuple[float],
     shape_slim: Tuple[int],
@@ -182,7 +183,7 @@ def convert_pixel_scales_2d(
     return pixel_scales
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def central_pixel_coordinates_2d_from(
     shape_native: Tuple[int, int]
 ) -> Union[Tuple[float], Tuple[float, float]]:
@@ -209,7 +210,7 @@ def central_pixel_coordinates_2d_from(
     return (float(shape_native[0] - 1) / 2, float(shape_native[1] - 1) / 2)
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def central_scaled_coordinate_2d_from(
     shape_native: Tuple[float, float],
     pixel_scales: Union[float, Tuple[float, float]],
@@ -248,7 +249,7 @@ def central_scaled_coordinate_2d_from(
     return (y_pixel, x_pixel)
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def pixel_coordinates_2d_from(
     scaled_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],
@@ -274,7 +275,7 @@ def pixel_coordinates_2d_from(
     return (y_pixel, x_pixel)
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def scaled_coordinates_2d_from(
     pixel_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],

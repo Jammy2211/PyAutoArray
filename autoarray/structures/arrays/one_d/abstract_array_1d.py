@@ -1,9 +1,11 @@
-from autoarray.structures import abstract_structure
-from autoarray.structures.arrays.one_d import array_1d
+from autoarray.structures.abstract_structure import AbstractStructure1D
+
+from autoarray.structures.arrays.one_d import array_1d as a1d
+
 from autoarray.structures.arrays.one_d import array_1d_util
 
 
-class AbstractArray1D(abstract_structure.AbstractStructure1D):
+class AbstractArray1D(AbstractStructure1D):
     @property
     def slim(self):
         """
@@ -21,7 +23,7 @@ class AbstractArray1D(abstract_structure.AbstractStructure1D):
             array_1d_native=self, mask_1d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return array_1d.Array1D(array=array, mask=self.mask)
+        return a1d.Array1D(array=array, mask=self.mask)
 
     @property
     def native(self):
@@ -30,7 +32,7 @@ class AbstractArray1D(abstract_structure.AbstractStructure1D):
         [total_pixels * sub_size].
 
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
-        `slim` to `native` and returned as a new `Array1D`.
+        `slim` to `native` and returned as a new `a1d.Array1D`.
         """
 
         if self.shape[0] == self.mask.sub_shape_native[0]:
@@ -40,7 +42,7 @@ class AbstractArray1D(abstract_structure.AbstractStructure1D):
             array_1d_slim=self, mask_1d=self.mask, sub_size=self.sub_size
         )
 
-        return array_1d.Array1D(array=array, mask=self.mask)
+        return a1d.Array1D(array=array, mask=self.mask)
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """

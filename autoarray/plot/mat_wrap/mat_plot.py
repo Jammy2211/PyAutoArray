@@ -1,19 +1,22 @@
-from autoarray.plot.mat_wrap.wrap import wrap_base
-from autoarray.plot.mat_wrap.wrap import wrap_2d
-from autoarray.plot.mat_wrap.wrap import wrap_1d
+from autoarray.plot.wrap.wrap_base import set_backend
 
-wrap_base.set_backend()
+set_backend()
 
 import matplotlib.pyplot as plt
 import numpy as np
+from typing import Optional, List, Union
+
+from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.inversion.mappers import MapperRectangular
+from autoarray.inversion.mappers import MapperVoronoi
+from autoarray.plot.mat_wrap.visuals import Visuals1D
+from autoarray.plot.mat_wrap.visuals import Visuals2D
 
 from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.plot.mat_wrap import visuals as vis
-from autoarray.inversion import mappers
-
-import typing
-from typing import Optional
+from autoarray.plot.wrap import wrap_base as wb
+from autoarray.plot.wrap import wrap_1d as w1d
+from autoarray.plot.wrap import wrap_2d as w2d
 
 
 class AutoLabels:
@@ -31,21 +34,21 @@ class AutoLabels:
 class AbstractMatPlot:
     def __init__(
         self,
-        units: wrap_base.Units = wrap_base.Units(),
-        figure: wrap_base.Figure = wrap_base.Figure(),
-        axis: wrap_base.Axis = wrap_base.Axis(),
-        cmap: wrap_base.Cmap = wrap_base.Cmap(),
-        colorbar: wrap_base.Colorbar = wrap_base.Colorbar(),
-        colorbar_tickparams: wrap_base.ColorbarTickParams = wrap_base.ColorbarTickParams(),
-        tickparams: wrap_base.TickParams = wrap_base.TickParams(),
-        yticks: wrap_base.YTicks = wrap_base.YTicks(),
-        xticks: wrap_base.XTicks = wrap_base.XTicks(),
-        title: wrap_base.Title = wrap_base.Title(),
-        ylabel: wrap_base.YLabel = wrap_base.YLabel(),
-        xlabel: wrap_base.XLabel = wrap_base.XLabel(),
-        text: wrap_base.Text = wrap_base.Text(),
-        legend: wrap_base.Legend = wrap_base.Legend(),
-        output: wrap_base.Output = wrap_base.Output(),
+        units: wb.Units = wb.Units(),
+        figure: wb.Figure = wb.Figure(),
+        axis: wb.Axis = wb.Axis(),
+        cmap: wb.Cmap = wb.Cmap(),
+        colorbar: wb.Colorbar = wb.Colorbar(),
+        colorbar_tickparams: wb.ColorbarTickParams = wb.ColorbarTickParams(),
+        tickparams: wb.TickParams = wb.TickParams(),
+        yticks: wb.YTicks = wb.YTicks(),
+        xticks: wb.XTicks = wb.XTicks(),
+        title: wb.Title = wb.Title(),
+        ylabel: wb.YLabel = wb.YLabel(),
+        xlabel: wb.XLabel = wb.XLabel(),
+        text: wb.Text = wb.Text(),
+        legend: wb.Legend = wb.Legend(),
+        output: wb.Output = wb.Output(),
     ):
         """
         Visualizes data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -192,25 +195,25 @@ class AbstractMatPlot:
 class MatPlot1D(AbstractMatPlot):
     def __init__(
         self,
-        units: wrap_base.Units = wrap_base.Units(),
-        figure: wrap_base.Figure = wrap_base.Figure(),
-        axis: wrap_base.Axis = wrap_base.Axis(),
-        cmap: wrap_base.Cmap = wrap_base.Cmap(),
-        colorbar: wrap_base.Colorbar = wrap_base.Colorbar(),
-        colorbar_tickparams: wrap_base.ColorbarTickParams = wrap_base.ColorbarTickParams(),
-        tickparams: wrap_base.TickParams = wrap_base.TickParams(),
-        yticks: wrap_base.YTicks = wrap_base.YTicks(),
-        xticks: wrap_base.XTicks = wrap_base.XTicks(),
-        title: wrap_base.Title = wrap_base.Title(),
-        ylabel: wrap_base.YLabel = wrap_base.YLabel(),
-        xlabel: wrap_base.XLabel = wrap_base.XLabel(),
-        text: wrap_base.Text = wrap_base.Text(),
-        legend: wrap_base.Legend = wrap_base.Legend(),
-        output: wrap_base.Output = wrap_base.Output(),
-        yx_plot: wrap_1d.YXPlot = wrap_1d.YXPlot(),
-        vertical_line_axvline: wrap_1d.AXVLine = wrap_1d.AXVLine(),
-        yx_scatter: wrap_1d.YXPlot = wrap_1d.YXScatter(),
-        fill_between: wrap_1d.FillBetween = wrap_1d.FillBetween(),
+        units: wb.Units = wb.Units(),
+        figure: wb.Figure = wb.Figure(),
+        axis: wb.Axis = wb.Axis(),
+        cmap: wb.Cmap = wb.Cmap(),
+        colorbar: wb.Colorbar = wb.Colorbar(),
+        colorbar_tickparams: wb.ColorbarTickParams = wb.ColorbarTickParams(),
+        tickparams: wb.TickParams = wb.TickParams(),
+        yticks: wb.YTicks = wb.YTicks(),
+        xticks: wb.XTicks = wb.XTicks(),
+        title: wb.Title = wb.Title(),
+        ylabel: wb.YLabel = wb.YLabel(),
+        xlabel: wb.XLabel = wb.XLabel(),
+        text: wb.Text = wb.Text(),
+        legend: wb.Legend = wb.Legend(),
+        output: wb.Output = wb.Output(),
+        yx_plot: w1d.YXPlot = w1d.YXPlot(),
+        vertical_line_axvline: w1d.AXVLine = w1d.AXVLine(),
+        yx_scatter: w1d.YXPlot = w1d.YXScatter(),
+        fill_between: w1d.FillBetween = w1d.FillBetween(),
     ):
         """
         Visualizes 1D data structures (e.g a `Line`, etc.) using Matplotlib.
@@ -313,10 +316,10 @@ class MatPlot1D(AbstractMatPlot):
 
     def plot_yx(
         self,
-        y,
-        visuals_1d: vis.Visuals1D,
+        y: Union[np.ndarray, List, Array1D],
+        visuals_1d: Visuals1D,
         auto_labels: AutoLabels,
-        x=None,
+        x: Optional[Union[np.ndarray, List, Array1D]] = None,
         plot_axis_type_override: Optional[str] = None,
         y_errors=None,
         x_errors=None,
@@ -402,37 +405,37 @@ class MatPlot1D(AbstractMatPlot):
 class MatPlot2D(AbstractMatPlot):
     def __init__(
         self,
-        units: wrap_base.Units = wrap_base.Units(),
-        figure: wrap_base.Figure = wrap_base.Figure(),
-        axis: wrap_base.Axis = wrap_base.Axis(),
-        cmap: wrap_base.Cmap = wrap_base.Cmap(),
-        colorbar: wrap_base.Colorbar = wrap_base.Colorbar(),
-        colorbar_tickparams: wrap_base.ColorbarTickParams = wrap_base.ColorbarTickParams(),
-        tickparams: wrap_base.TickParams = wrap_base.TickParams(),
-        yticks: wrap_base.YTicks = wrap_base.YTicks(),
-        xticks: wrap_base.XTicks = wrap_base.XTicks(),
-        title: wrap_base.Title = wrap_base.Title(),
-        ylabel: wrap_base.YLabel = wrap_base.YLabel(),
-        xlabel: wrap_base.XLabel = wrap_base.XLabel(),
-        legend: wrap_base.Legend = wrap_base.Legend(),
-        text: wrap_base.Text = wrap_base.Text(),
-        output: wrap_base.Output = wrap_base.Output(),
-        array_overlay: wrap_2d.ArrayOverlay = wrap_2d.ArrayOverlay(),
-        grid_scatter: wrap_2d.GridScatter = wrap_2d.GridScatter(),
-        grid_plot: wrap_2d.GridPlot = wrap_2d.GridPlot(),
-        grid_errorbar: wrap_2d.GridErrorbar = wrap_2d.GridErrorbar(),
-        vector_field_quiver: wrap_2d.VectorFieldQuiver = wrap_2d.VectorFieldQuiver(),
-        patch_overlay: wrap_2d.PatchOverlay = wrap_2d.PatchOverlay(),
-        voronoi_drawer: wrap_2d.VoronoiDrawer = wrap_2d.VoronoiDrawer(),
-        origin_scatter: wrap_2d.OriginScatter = wrap_2d.OriginScatter(),
-        mask_scatter: wrap_2d.MaskScatter = wrap_2d.MaskScatter(),
-        border_scatter: wrap_2d.BorderScatter = wrap_2d.BorderScatter(),
-        positions_scatter: wrap_2d.PositionsScatter = wrap_2d.PositionsScatter(),
-        index_scatter: wrap_2d.IndexScatter = wrap_2d.IndexScatter(),
-        pixelization_grid_scatter: wrap_2d.PixelizationGridScatter = wrap_2d.PixelizationGridScatter(),
-        parallel_overscan_plot: wrap_2d.ParallelOverscanPlot = wrap_2d.ParallelOverscanPlot(),
-        serial_prescan_plot: wrap_2d.SerialPrescanPlot = wrap_2d.SerialPrescanPlot(),
-        serial_overscan_plot: wrap_2d.SerialOverscanPlot = wrap_2d.SerialOverscanPlot(),
+        units: wb.Units = wb.Units(),
+        figure: wb.Figure = wb.Figure(),
+        axis: wb.Axis = wb.Axis(),
+        cmap: wb.Cmap = wb.Cmap(),
+        colorbar: wb.Colorbar = wb.Colorbar(),
+        colorbar_tickparams: wb.ColorbarTickParams = wb.ColorbarTickParams(),
+        tickparams: wb.TickParams = wb.TickParams(),
+        yticks: wb.YTicks = wb.YTicks(),
+        xticks: wb.XTicks = wb.XTicks(),
+        title: wb.Title = wb.Title(),
+        ylabel: wb.YLabel = wb.YLabel(),
+        xlabel: wb.XLabel = wb.XLabel(),
+        legend: wb.Legend = wb.Legend(),
+        text: wb.Text = wb.Text(),
+        output: wb.Output = wb.Output(),
+        array_overlay: w2d.ArrayOverlay = w2d.ArrayOverlay(),
+        grid_scatter: w2d.GridScatter = w2d.GridScatter(),
+        grid_plot: w2d.GridPlot = w2d.GridPlot(),
+        grid_errorbar: w2d.GridErrorbar = w2d.GridErrorbar(),
+        vector_field_quiver: w2d.VectorFieldQuiver = w2d.VectorFieldQuiver(),
+        patch_overlay: w2d.PatchOverlay = w2d.PatchOverlay(),
+        voronoi_drawer: w2d.VoronoiDrawer = w2d.VoronoiDrawer(),
+        origin_scatter: w2d.OriginScatter = w2d.OriginScatter(),
+        mask_scatter: w2d.MaskScatter = w2d.MaskScatter(),
+        border_scatter: w2d.BorderScatter = w2d.BorderScatter(),
+        positions_scatter: w2d.PositionsScatter = w2d.PositionsScatter(),
+        index_scatter: w2d.IndexScatter = w2d.IndexScatter(),
+        pixelization_grid_scatter: w2d.PixelizationGridScatter = w2d.PixelizationGridScatter(),
+        parallel_overscan_plot: w2d.ParallelOverscanPlot = w2d.ParallelOverscanPlot(),
+        serial_prescan_plot: w2d.SerialPrescanPlot = w2d.SerialPrescanPlot(),
+        serial_overscan_plot: w2d.SerialOverscanPlot = w2d.SerialOverscanPlot(),
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -556,8 +559,8 @@ class MatPlot2D(AbstractMatPlot):
 
     def plot_array(
         self,
-        array: array_2d.Array2D,
-        visuals_2d: vis.Visuals2D,
+        array: Array2D,
+        visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         bypass: bool = False,
     ):
@@ -673,7 +676,7 @@ class MatPlot2D(AbstractMatPlot):
     def plot_grid(
         self,
         grid,
-        visuals_2d: vis.Visuals2D,
+        visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         color_array=None,
         y_errors=None,
@@ -762,13 +765,13 @@ class MatPlot2D(AbstractMatPlot):
 
     def plot_mapper(
         self,
-        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        visuals_2d: vis.Visuals2D,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
     ):
 
-        if isinstance(mapper, mappers.MapperRectangular):
+        if isinstance(mapper, MapperRectangular):
 
             self._plot_rectangular_mapper(
                 mapper=mapper,
@@ -788,8 +791,8 @@ class MatPlot2D(AbstractMatPlot):
 
     def _plot_rectangular_mapper(
         self,
-        mapper: mappers.MapperRectangular,
-        visuals_2d: vis.Visuals2D,
+        mapper: MapperRectangular,
+        visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
     ):
@@ -845,8 +848,8 @@ class MatPlot2D(AbstractMatPlot):
 
     def _plot_voronoi_mapper(
         self,
-        mapper: mappers.MapperVoronoi,
-        visuals_2d: vis.Visuals2D,
+        mapper: MapperVoronoi,
+        visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
     ):

@@ -1,12 +1,13 @@
-from autoarray import exc
-from autoarray import decorator_util
-from autoarray.inversion.inversion.settings import SettingsInversion
 import numpy as np
-
 from typing import Tuple
 
+from autoarray.inversion.inversion.settings import SettingsInversion
 
-@decorator_util.jit()
+from autoarray import numba_util
+from autoarray import exc
+
+
+@numba_util.jit()
 def w_tilde_data_imaging_from(
     image_native: np.ndarray,
     noise_map_native: np.ndarray,
@@ -76,7 +77,7 @@ def w_tilde_data_imaging_from(
     return w_tilde_data
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def w_tilde_curvature_imaging_from(
     noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index
 ) -> np.ndarray:
@@ -135,7 +136,7 @@ def w_tilde_curvature_imaging_from(
     return w_tilde_curvature
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def w_tilde_curvature_preload_imaging_from(
     noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -252,7 +253,7 @@ def w_tilde_curvature_preload_imaging_from(
     )
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def w_tilde_curvature_value_from(
     noise_map_native: np.ndarray, kernel_native: np.ndarray, ip0_y, ip0_x, ip1_y, ip1_x
 ) -> float:
@@ -337,7 +338,7 @@ def w_tilde_curvature_value_from(
     return value
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def data_vector_via_w_tilde_data_imaging_from(
     w_tilde_data: np.ndarray,
     data_to_pix_unique: np.ndarray,
@@ -387,7 +388,7 @@ def data_vector_via_w_tilde_data_imaging_from(
     return data_vector
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
@@ -420,7 +421,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     return data_vector
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def data_vector_via_transformed_mapping_matrix_from(
     transformed_mapping_matrix: np.ndarray,
     visibilities: np.ndarray,
@@ -466,7 +467,7 @@ def data_vector_via_transformed_mapping_matrix_from(
     return data_vector
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def curvature_matrix_via_w_tilde_from(
     w_tilde: np.ndarray, mapping_matrix: np.ndarray
 ) -> np.ndarray:
@@ -495,7 +496,7 @@ def curvature_matrix_via_w_tilde_from(
     return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     w_tilde_curvature_preload: np.ndarray,
     w_tilde_curvature_indexes: np.ndarray,
@@ -611,7 +612,7 @@ def curvature_matrix_via_mapping_matrix_from(
     return curvature_matrix
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def curvature_matrix_sparse_preload_via_mapping_matrix_from(
     mapping_matrix: np.ndarray,
 ) -> np.ndarray:
@@ -652,7 +653,7 @@ def curvature_matrix_sparse_preload_via_mapping_matrix_from(
     return curvature_matrix_sparse_preload, curvature_matrix_preload_counts
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def curvature_matrix_via_sparse_preload_from(
     mapping_matrix: np.ndarray,
     noise_map: np.ndarray,
@@ -724,7 +725,7 @@ def reconstruction_from(
     return reconstruction
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def mapped_reconstructed_data_via_image_to_pix_unique_from(
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
@@ -757,7 +758,7 @@ def mapped_reconstructed_data_via_image_to_pix_unique_from(
     return mapped_reconstructed_data
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def mapped_reconstructed_data_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
@@ -778,7 +779,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
     return mapped_reconstructed_data
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def mapped_reconstructed_visibilities_from(
     transformed_mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:

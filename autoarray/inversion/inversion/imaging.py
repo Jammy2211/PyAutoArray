@@ -1,25 +1,27 @@
 import numpy as np
+from typing import Union
 
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.operators import convolver as conv
-from autoarray.inversion.inversion import inversion_util
-from autoarray.inversion import regularization as reg
-from autoarray.inversion import mappers
-from autoarray.inversion import mapper_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.inversion.abstract import AbstractInversionMatrix
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.operators.convolver import Convolver
+from autoarray.inversion.regularization import Regularization
+from autoarray.inversion.mappers import MapperRectangular
+from autoarray.inversion.mappers import MapperVoronoi
+from autoarray.preloads import Preloads
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.dataset import imaging
-from autoarray import preloads as pload
-from typing import Union
+from autoarray.dataset.imaging import WTilde
+
+from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion import mapper_util
 
 
 def inversion_imaging_from(
     dataset,
-    mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-    regularization: reg.Regularization,
+    mapper: Union[MapperRectangular, MapperVoronoi],
+    regularization: Regularization,
     settings: SettingsInversion = SettingsInversion(),
-    preloads: pload.Preloads = pload.Preloads(),
+    preloads: Preloads = Preloads(),
 ):
 
     return inversion_imaging_unpacked_from(
@@ -35,14 +37,14 @@ def inversion_imaging_from(
 
 
 def inversion_imaging_unpacked_from(
-    image: array_2d.Array2D,
-    noise_map: array_2d.Array2D,
-    convolver: conv.Convolver,
+    image: Array2D,
+    noise_map: Array2D,
+    convolver: Convolver,
     w_tilde,
-    mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-    regularization: reg.Regularization,
+    mapper: Union[MapperRectangular, MapperVoronoi],
+    regularization: Regularization,
     settings: SettingsInversion = SettingsInversion(),
-    preloads: pload.Preloads = pload.Preloads(),
+    preloads: Preloads = Preloads(),
 ):
 
     if settings.use_w_tilde:
@@ -71,11 +73,11 @@ def inversion_imaging_unpacked_from(
 class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
     def __init__(
         self,
-        image: array_2d.Array2D,
-        noise_map: array_2d.Array2D,
-        convolver: conv.Convolver,
-        mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        image: Array2D,
+        noise_map: Array2D,
+        convolver: Convolver,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         curvature_matrix: np.ndarray,
         regularization_matrix: np.ndarray,
         curvature_reg_matrix: np.ndarray,
@@ -96,9 +98,9 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             Flattened 1D array of the observed image the inversion is fitting.
         noise_map
             Flattened 1D array of the noise-map used by the inversion during the fit.
-        convolver : imaging.convolution.Convolver
+        convolver : convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper : inversion.mappers.Mapper
+        mapper : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -139,14 +141,14 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
     @classmethod
     def from_data_via_w_tilde(
         cls,
-        image: array_2d.Array2D,
-        noise_map: array_2d.Array2D,
-        convolver: conv.Convolver,
-        w_tilde: imaging.WTilde,
-        mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        image: Array2D,
+        noise_map: Array2D,
+        convolver: Convolver,
+        w_tilde: WTilde,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         settings=SettingsInversion(),
-        preloads=pload.Preloads(),
+        preloads=Preloads(),
     ):
 
         data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
@@ -202,7 +204,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             reconstruction=reconstruction,
         )
 
-        mapped_reconstructed_image = array_2d.Array2D(
+        mapped_reconstructed_image = Array2D(
             array=mapped_reconstructed_image,
             mask=mapper.source_grid_slim.mask.mask_sub_1,
         )
@@ -228,13 +230,13 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
     @classmethod
     def from_data_via_pixelization_convolution(
         cls,
-        image: array_2d.Array2D,
-        noise_map: array_2d.Array2D,
-        convolver: conv.Convolver,
-        mapper: Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        regularization: reg.Regularization,
+        image: Array2D,
+        noise_map: Array2D,
+        convolver: Convolver,
+        mapper: Union[MapperRectangular, MapperVoronoi],
+        regularization: Regularization,
         settings=SettingsInversion(),
-        preloads=pload.Preloads(),
+        preloads=Preloads(),
     ):
 
         if preloads.blurred_mapping_matrix is None:
@@ -288,7 +290,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             mapping_matrix=blurred_mapping_matrix, reconstruction=reconstruction
         )
 
-        mapped_reconstructed_image = array_2d.Array2D(
+        mapped_reconstructed_image = Array2D(
             array=mapped_reconstructed_image,
             mask=mapper.source_grid_slim.mask.mask_sub_1,
         )

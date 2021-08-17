@@ -1,9 +1,9 @@
-from autoarray import decorator_util
-
 import numpy as np
 
+from autoarray import numba_util
 
-@decorator_util.jit()
+
+@numba_util.jit()
 def preload_real_transforms(
     grid_radians: np.ndarray, uv_wavelengths: np.ndarray
 ) -> np.ndarray:
@@ -51,7 +51,7 @@ def preload_real_transforms(
     return preloaded_real_transforms
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def preload_imag_transforms(grid_radians, uv_wavelengths):
 
     preloaded_imag_transforms = np.zeros(
@@ -72,7 +72,7 @@ def preload_imag_transforms(grid_radians, uv_wavelengths):
     return preloaded_imag_transforms
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def visibilities_via_preload_jit_from(image_1d, preloaded_reals, preloaded_imags):
 
     visibilities = 0 + 0j * np.zeros(shape=(preloaded_reals.shape[1]))
@@ -90,7 +90,7 @@ def visibilities_via_preload_jit_from(image_1d, preloaded_reals, preloaded_imags
     return visibilities
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def visibilities_jit(image_1d, grid_radians, uv_wavelengths):
 
     visibilities = 0 + 0j * np.zeros(shape=(uv_wavelengths.shape[0]))
@@ -118,7 +118,7 @@ def visibilities_jit(image_1d, grid_radians, uv_wavelengths):
     return visibilities
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def image_from_visibilities_jit(n_pixels, grid_radians, uv_wavelengths, visibilities):
 
     image_1d = np.zeros(n_pixels)
@@ -147,7 +147,7 @@ def image_from_visibilities_jit(n_pixels, grid_radians, uv_wavelengths, visibili
     return image_1d
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def transformed_mapping_matrix_via_preload_jit_from(
     mapping_matrix, preloaded_reals, preloaded_imags
 ):
@@ -174,7 +174,7 @@ def transformed_mapping_matrix_via_preload_jit_from(
     return transfomed_mapping_matrix
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelengths):
 
     transfomed_mapping_matrix = 0 + 0j * np.zeros(

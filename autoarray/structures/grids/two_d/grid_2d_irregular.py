@@ -6,13 +6,13 @@ import pickle
 import typing
 import json
 
-from autoarray.structures.arrays import values
+from autoarray.structures.arrays.values import ValuesIrregular
 
-# from autoarray.structures.arrays.one_d import array_1d
-from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformedNumpy
+
+from autoarray import exc
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
-from autoarray import exc
 
 
 class Grid2DIrregular(np.ndarray):
@@ -35,7 +35,7 @@ class Grid2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        grid : grid_2d_irregular.Grid2DIrregular
+        grid : Grid2DIrregular
             The irregular grid of (y,x) coordinates.
         """
 
@@ -138,7 +138,7 @@ class Grid2DIrregular(np.ndarray):
     def values_from_array_slim(self, array_slim):
         """Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *ValuesIrregular* are structured following this `Grid2DIrregular` instance."""
-        return values.ValuesIrregular(values=array_slim)
+        return ValuesIrregular(values=array_slim)
 
     def values_from_value(self, value):
         return self.values_from_array_slim(
@@ -148,7 +148,7 @@ class Grid2DIrregular(np.ndarray):
     def grid_from_grid_slim(self, grid_slim):
         """Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
         `Grid2DIrregular` are structured following this *Grid2DIrregular* instance."""
-        if isinstance(grid_slim, grid_2d.Grid2DTransformedNumpy):
+        if isinstance(grid_slim, Grid2DTransformedNumpy):
             return Grid2DIrregularTransformed(grid=grid_slim)
         return Grid2DIrregular(grid=grid_slim)
 
@@ -182,7 +182,7 @@ class Grid2DIrregular(np.ndarray):
 
     def structure_2d_from_result(
         self, result: np.ndarray or list
-    ) -> typing.Union[values.ValuesIrregular, list]:
+    ) -> typing.Union[ValuesIrregular, list]:
         """
         Convert a result from a non autoarray structure to an aa.ValuesIrregular or aa.Grid2DIrregular structure, where
         the conversion depends on type(result) as follows:
@@ -269,7 +269,7 @@ class Grid2DIrregular(np.ndarray):
         return self.values_from_array_slim(array_slim=distances)
 
     @property
-    def furthest_distances_from_other_coordinates(self) -> values.ValuesIrregular:
+    def furthest_distances_from_other_coordinates(self) -> ValuesIrregular:
         """
         For every (y,x) coordinate on the `Grid2DIrregular` returns the furthest radial distance of each coordinate
         to any other coordinate on the grid.
@@ -284,7 +284,7 @@ class Grid2DIrregular(np.ndarray):
 
         Returns
         -------
-        values.ValuesIrregular
+        ValuesIrregular
             The further distances of every coordinate to every other coordinate on the irregular grid.
         """
 

@@ -1,18 +1,23 @@
 import numpy as np
 from sklearn.cluster import KMeans
-from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.arrays.two_d import array_2d_util
-from autoarray.structures.grids import abstract_grid
-from autoarray.structures.grids.two_d import abstract_grid_2d
-from autoarray.mask import mask_2d as msk, mask_2d_util
-from autoarray.structures.grids.two_d import grid_2d_util, sparse_util
-from autoarray.geometry import geometry_util
-
 from typing import Union, Tuple
 
+from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
+from autoarray.mask.mask_2d import Mask2D
 
-class Grid2D(abstract_grid_2d.AbstractGrid2D):
+from autoarray.structures.arrays.two_d import array_2d as a2d
+
+from autoarray import exc
+from autoarray.structures.grids import abstract_grid
+from autoarray.structures.grids.two_d import abstract_grid_2d
+from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.structures.grids.two_d import grid_2d_util
+from autoarray.geometry import geometry_util
+from autoarray.mask.mask_2d import mask_2d_util
+from autoarray.structures.grids.two_d import sparse_util
+
+
+class Grid2D(AbstractGrid2D):
     def __new__(cls, grid, mask, *args, **kwargs):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -197,7 +202,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         ----------
         grid
             The (y,x) coordinates of the grid.
-        mask : msk.Mask2D
+        mask :Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         """
@@ -219,7 +224,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         ----------
         grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask2D
+        mask :Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         """
@@ -256,7 +261,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -300,7 +305,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         shape = (int(grid.shape[0] / sub_size), int(grid.shape[1] / sub_size))
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=shape,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -359,7 +364,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         ----------
         grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask2D
+        mask :Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         """
@@ -732,7 +737,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
             distance_mask += distances.native < distance
 
-        mask = msk.Mask2D.manual(
+        mask = Mask2D.manual(
             mask=distance_mask,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -758,7 +763,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result.shape) == 1:
-            return array_2d.Array2D(array=result, mask=self.mask)
+            return a2d.Array2D(array=result, mask=self.mask)
         else:
             if isinstance(result, Grid2DTransformedNumpy):
                 return Grid2DTransformed(grid=result, mask=self.mask)
@@ -783,7 +788,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         return [self.structure_2d_from_result(result=result) for result in result_list]
 
 
-class Grid2DSparse(abstract_grid_2d.AbstractGrid2D):
+class Grid2DSparse(AbstractGrid2D):
     def __new__(cls, grid, sparse_index_for_slim_index):
         """
         A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a

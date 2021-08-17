@@ -1,6 +1,3 @@
-from matplotlib import colors as mcolors
-
-
 class MultiFigurePlotter:
     def __init__(self, plotter_list):
 

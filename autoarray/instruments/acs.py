@@ -1,19 +1,19 @@
-from autoarray.structures.arrays import abstract_array
-from autoarray.structures.arrays.two_d import array_2d_util
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.layout import layout as lo, layout_util
-from autoarray.layout import region as reg
-from autoarray import exc
-
 from astropy.io import fits
-
 import copy
+import logging
 import numpy as np
-import shutil
 import os
 from os import path
+import shutil
 
-import logging
+from autoarray.structures.arrays.abstract_array import Header
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.layout.layout import Layout2D
+from autoarray.layout.region import Region2D
+
+from autoarray import exc
+from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.layout import layout_util
 
 logging.basicConfig()
 logger = logging.getLogger()
@@ -40,7 +40,7 @@ def array_eps_to_counts(array_eps, bscale, bzero):
     return (array_eps - bzero) / bscale
 
 
-class Array2DACS(array_2d.Array2D):
+class Array2DACS(Array2D):
     """
     An ACS array consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout (which are described
     at the following STScI 
@@ -481,7 +481,7 @@ class ImageACS(Array2DACS):
         )
 
 
-class Layout2DACS(lo.Layout2D):
+class Layout2DACS(Layout2D):
     @classmethod
     def from_sizes(cls, roe_corner, serial_prescan_size=24, parallel_overscan_size=20):
         """
@@ -492,13 +492,13 @@ class Layout2DACS(lo.Layout2D):
         rotations.
         """
 
-        parallel_overscan = reg.Region2D(
+        parallel_overscan = Region2D(
             (2068 - parallel_overscan_size, 2068, serial_prescan_size, 2072)
         )
 
-        serial_prescan = reg.Region2D((0, 2068, 0, serial_prescan_size))
+        serial_prescan = Region2D((0, 2068, 0, serial_prescan_size))
 
-        return lo.Layout2D.rotated_from_roe_corner(
+        return Layout2D.rotated_from_roe_corner(
             roe_corner=roe_corner,
             shape_native=(2068, 2072),
             parallel_overscan=parallel_overscan,
@@ -506,7 +506,7 @@ class Layout2DACS(lo.Layout2D):
         )
 
 
-class HeaderACS(abstract_array.Header):
+class HeaderACS(Header):
     def __init__(
         self,
         header_sci_obj,

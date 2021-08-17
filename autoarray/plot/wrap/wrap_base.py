@@ -1,7 +1,7 @@
 from autoconf import conf
 import matplotlib
 
-from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 
 from typing import Union, List
 
@@ -31,7 +31,7 @@ import os
 import typing
 
 
-from autoarray.structures import abstract_structure
+from autoarray.structures.abstract_structure import AbstractStructure
 from autoarray import exc
 
 
@@ -508,7 +508,7 @@ class AbstractTicks(AbstractMatWrap):
             return np.linspace(min_value, max_value, 5)
 
     def tick_values_in_units_from(
-        self, array: array_2d.Array2D, min_value: float, max_value: float, units: Units
+        self, array: Array2D, min_value: float, max_value: float, units: Units
     ) -> typing.Optional[np.ndarray]:
         """
         Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
@@ -518,7 +518,7 @@ class AbstractTicks(AbstractMatWrap):
 
         Parameters
         ----------
-        array : array_2d.Array2D
+        array : Array2D
             The array of data that is to be plotted, whose 2D shape is used to determine the tick values in units of
             pixels if this is the units specified by `units`.
         min_value : float
@@ -554,7 +554,7 @@ class AbstractTicks(AbstractMatWrap):
 class YTicks(AbstractTicks):
     def set(
         self,
-        array: typing.Optional[array_2d.Array2D],
+        array: typing.Optional[Array2D],
         min_value: float,
         max_value: float,
         units: Units,
@@ -564,7 +564,7 @@ class YTicks(AbstractTicks):
 
         Parameters
         -----------
-        array : array_2d.Array2D
+        array : Array2D
             The 2D array of data which is plotted.
         min_value : float
             the minimum value of the yticks that figure is plotted using.
@@ -584,7 +584,7 @@ class YTicks(AbstractTicks):
 class XTicks(AbstractTicks):
     def set(
         self,
-        array: typing.Optional[array_2d.Array2D],
+        array: typing.Optional[Array2D],
         min_value: float,
         max_value: float,
         units: Units,
@@ -595,7 +595,7 @@ class XTicks(AbstractTicks):
 
         Parameters
         -----------
-        array : array_2d.Array2D
+        array : Array2D
             The 2D array of data which is plotted.
         min_value : float
             the minimum value of the xticks that figure is plotted using.
@@ -869,9 +869,7 @@ class Output:
             return self.format
 
     def to_figure(
-        self,
-        structure: typing.Optional[abstract_structure.AbstractStructure],
-        auto_filename=None,
+        self, structure: typing.Optional[AbstractStructure], auto_filename=None
     ):
         """Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.
 

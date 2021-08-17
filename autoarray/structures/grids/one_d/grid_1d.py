@@ -1,21 +1,22 @@
-from autoarray.geometry import geometry_util
-from autoarray.structures.arrays.one_d import array_1d
-from autoarray.structures.grids import abstract_grid
-from autoarray.structures.grids.one_d import abstract_grid_1d
-from autoarray.structures.grids.one_d import grid_1d_util
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.geometry import geometry_util
-from autoarray.mask import mask_1d, mask_2d
-
-from autoarray import exc
-
 import numpy as np
-
 from typing import Union, Tuple
 
+from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
 
-class Grid1D(abstract_grid_1d.AbstractGrid1D):
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformed
+from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformedNumpy
+
+from autoarray.structures.arrays.one_d import array_1d as a1d
+from autoarray.mask import mask_1d as m1d
+
+from autoarray import exc
+from autoarray.structures.grids import abstract_grid
+from autoarray.structures.grids.one_d import grid_1d_util
+from autoarray.geometry import geometry_util
+
+
+class Grid1D(AbstractGrid1D):
     def __new__(cls, grid, mask, *args, **kwargs):
         """
         A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
@@ -156,7 +157,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         ----------
         grid
             The (y,x) coordinates of the grid.
-        mask : msk.Mask2D
+        mask
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         """
@@ -193,7 +194,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         grid = abstract_grid.convert_grid(grid=grid)
 
-        mask = mask_1d.Mask1D.unmasked(
+        mask = m1d.Mask1D.unmasked(
             shape_slim=grid.shape[0] // sub_size,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -239,7 +240,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         ----------
         grid or list
             The (x) coordinates of the grid input as an ndarray of shape [total_coordinates*sub_size] or a list of lists.
-        mask : msk.Mask1D
+        mask
             The 1D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         """
@@ -270,7 +271,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         Parameters
         ----------
-        mask : Mask1D
+        mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
 
@@ -371,11 +372,11 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result.shape) == 1:
-            return array_1d.Array1D(array=result, mask=self.mask)
+            return a1d.Array1D(array=result, mask=self.mask)
         else:
-            if isinstance(result, grid_2d.Grid2DTransformedNumpy):
-                return grid_2d.Grid2DTransformed(grid=result, mask=self.mask)
-            return grid_2d.Grid2D(grid=result, mask=self.mask.to_mask_2d)
+            if isinstance(result, Grid2DTransformedNumpy):
+                return Grid2DTransformed(grid=result, mask=self.mask)
+            return Grid2D(grid=result, mask=self.mask.to_mask_2d)
 
     def structure_2d_list_from_result_list(self, result_list: list):
         """

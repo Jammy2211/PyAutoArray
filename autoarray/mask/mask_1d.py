@@ -1,19 +1,21 @@
 import logging
-
 import numpy as np
 from typing import List, Tuple, Union
 
+from autoarray.mask.abstract_mask import AbstractMask
+
+from autoarray.structures.grids.one_d import grid_1d as g1d
+from autoarray.mask import mask_2d as m2d
+
 from autoarray import exc
-from autoarray.mask import abstract_mask, mask_2d
-from autoarray.structures.grids.one_d import grid_1d
-from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.structures.arrays.one_d import array_1d_util
+from autoarray.structures.grids.one_d import grid_1d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractMask1d(abstract_mask.AbstractMask):
+class AbstractMask1d(AbstractMask):
     def __new__(
         cls,
         mask: np.ndarray,
@@ -43,7 +45,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         """
 
         # noinspection PyArgumentList
-        return abstract_mask.AbstractMask.__new__(
+        return AbstractMask.__new__(
             cls=cls,
             mask=mask,
             pixel_scales=pixel_scales,
@@ -88,7 +90,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         )
 
     @property
-    def unmasked_grid_sub_1(self) -> grid_1d.Grid1D:
+    def unmasked_grid_sub_1(self) -> "g1d.Grid1D":
         """
         The scaled-grid of (y,x) coordinates of every pixel.
 
@@ -99,10 +101,10 @@ class AbstractMask1d(abstract_mask.AbstractMask):
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
-        return grid_1d.Grid1D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
+        return g1d.Grid1D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
 
     @property
-    def to_mask_2d(self) -> mask_2d.Mask2D:
+    def to_mask_2d(self) -> m2d.Mask2D:
         """
         Map the Mask1D to a Mask2D of shape [total_mask_1d_pixel, 1].
 
@@ -110,11 +112,11 @@ class AbstractMask1d(abstract_mask.AbstractMask):
 
         Returns
         -------
-        mask_2d.Mask2D
+        mask_2d
             The 1D mask mapped to a 2D mask of shape [total_mask_1d_pixel, 1].
         """
 
-        return mask_2d.Mask2D.manual(
+        return m2d.Mask2D.manual(
             [self],
             pixel_scales=(self.pixel_scale, self.pixel_scale),
             sub_size=self.sub_size,

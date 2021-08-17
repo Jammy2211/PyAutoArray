@@ -1,17 +1,21 @@
 import numpy as np
 import scipy.spatial.qhull as qhull
+
 from autoconf import conf
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.two_d import abstract_grid_2d
-from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformed
+from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformedNumpy
+from autoarray.mask.mask_2d import Mask2D
+
+from autoarray.structures.arrays.two_d import array_2d as a2d
+
 from autoarray.structures.grids import abstract_grid
-from autoarray.mask import mask_2d as msk
-from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
-from autoarray import exc
+from autoarray.structures.grids.two_d import grid_2d_util
 
 
-class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
+class Grid2DInterpolate(AbstractGrid2D):
     def __new__(cls, grid, mask, pixel_scales_interp, *args, **kwargs):
         """
         Represents a grid of coordinates as described in the `Grid2D` class, but allows for a sparse grid to be used
@@ -39,7 +43,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         ----------
         grid
             The (y,x) coordinates of the grid.
-        mask : msk.Mask2D
+        mask :Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         pixel_scales_interp : float
@@ -68,7 +72,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             origin=mask.origin,
         )
 
-        obj.grid_interp = grid_2d.Grid2D.manual_mask(grid=grid_interp, mask=mask_interp)
+        obj.grid_interp = Grid2D.manual_mask(grid=grid_interp, mask=mask_interp)
 
         obj.vtx, obj.wts = obj.interp_weight_list
 
@@ -76,7 +80,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
 
     def __array_finalize__(self, obj):
 
-        super(Grid2DInterpolate, self).__array_finalize__(obj)
+        super().__array_finalize__(obj)
 
         if hasattr(obj, "pixel_scales_interp"):
             self.pixel_scales_interp = obj.pixel_scales_interp
@@ -101,7 +105,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         ----------
         grid or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask2D
+        mask :Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         """
@@ -152,7 +156,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             pixel_scales=pixel_scales_interp
         )
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -253,7 +257,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         will be convolved into the unmasked those pixels. This when computing images from
         light profile objects.
 
-        See *grid_2d.Grid2D.blurring_grid_from_mask_and_kernel_shape* for a full description of a blurring grid. This
+        See *Grid2D.blurring_grid_from_mask_and_kernel_shape* for a full description of a blurring grid. This
         method creates the blurring grid as a Grid2DInterpolate.
 
         Parameters
@@ -313,7 +317,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             shape[1] + kernel_shape_native[1] - 1,
         )
 
-        padded_mask = msk.Mask2D.unmasked(
+        padded_mask = Mask2D.unmasked(
             shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
@@ -408,9 +412,9 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         interpolated_array = np.einsum(
             "nj,nj->n", np.take(array_interp, self.vtx), self.wts
         )
-        return array_2d.Array2D(array=interpolated_array, mask=self.mask)
+        return a2d.Array2D(array=interpolated_array, mask=self.mask)
 
-    def interpolated_grid_from_grid_interp(self, grid_interp) -> grid_2d.Grid2D:
+    def interpolated_grid_from_grid_interp(self, grid_interp) -> Grid2D:
         """
         Use the precomputed vertexes and weight_list of a Delaunay gridding to interpolate a grid of (y,x) values values
         computed on  the interpolation grid to the Grid2DInterpolate's full grid.
@@ -432,7 +436,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             array_interp=grid_interp[:, 1]
         )
         grid = np.asarray([y_values, x_values]).T
-        return grid_2d.Grid2D(grid=grid, mask=self.mask)
+        return Grid2D(grid=grid, mask=self.mask)
 
     def structure_2d_from_result(self, result: np.ndarray):
         """
@@ -452,11 +456,11 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         """
 
         if len(result.shape) == 1:
-            return array_2d.Array2D(array=result, mask=self.mask)
+            return a2d.Array2D(array=result, mask=self.mask)
         else:
-            if isinstance(result, grid_2d.Grid2DTransformedNumpy):
-                return grid_2d.Grid2DTransformed(grid=result, mask=self.mask)
-            return grid_2d.Grid2D(grid=result, mask=self.mask)
+            if isinstance(result, Grid2DTransformedNumpy):
+                return Grid2DTransformed(grid=result, mask=self.mask)
+            return Grid2D(grid=result, mask=self.mask)
 
     def structure_2d_list_from_result_list(self, result_list: list):
         """

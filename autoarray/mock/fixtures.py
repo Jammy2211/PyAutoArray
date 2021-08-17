@@ -1,23 +1,29 @@
 import numpy as np
 
-from autoarray.mask import mask_1d
-from autoarray.mask import mask_2d
-from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures.grids.one_d import grid_1d
-from autoarray.structures.grids.two_d import grid_2d
-from autoarray.structures.grids.two_d import grid_2d_iterate
-from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.structures.grids.two_d import grid_2d_pixelization
-from autoarray.layout import layout as lo
-from autoarray.structures import kernel_2d
-from autoarray.structures import visibilities as vis
-from autoarray.dataset import imaging
-from autoarray.dataset import interferometer
-from autoarray.operators import convolver
-from autoarray.operators import transformer
-from autoarray.fit import fit
-from autoarray.inversion import regularization as reg
-from autoarray.inversion import mappers
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.dataset.interferometer import SettingsInterferometer
+from autoarray.inversion.regularization import Constant
+from autoarray.operators.convolver import Convolver
+from autoarray.fit.fit import FitImaging
+from autoarray.fit.fit import FitInterferometer
+from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.dataset.imaging import Imaging
+from autoarray.dataset.interferometer import Interferometer
+from autoarray.structures.kernel_2d import Kernel2D
+from autoarray.layout.layout import Layout2D
+from autoarray.inversion.mappers import MapperRectangular
+from autoarray.inversion.mappers import MapperVoronoi
+from autoarray.mask.mask_1d import Mask1D
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.operators.transformer import TransformerDFT
+from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.inversion.inversion.imaging import inversion_imaging_from
 
 
@@ -25,14 +31,14 @@ def make_mask_1d_7():
 
     mask = np.array([True, True, False, False, False, True, True])
 
-    return mask_1d.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=1)
+    return Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=1)
 
 
 def make_sub_mask_1d_7():
 
     mask = np.array([True, True, False, False, False, True, True])
 
-    return mask_1d.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=2)
+    return Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=2)
 
 
 def make_mask_2d_7x7():
@@ -49,7 +55,7 @@ def make_mask_2d_7x7():
         ]
     )
 
-    return mask_2d.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    return Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 def make_sub_mask_2d_7x7():
@@ -65,7 +71,7 @@ def make_sub_mask_2d_7x7():
         ]
     )
 
-    return mask_2d.Mask2D.manual(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
+    return Mask2D.manual(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
 
 
 def make_mask_2d_7x7_1_pix():
@@ -81,7 +87,7 @@ def make_mask_2d_7x7_1_pix():
         ]
     )
 
-    return mask_2d.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    return Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
 
 def make_blurring_mask_2d_7x7():
@@ -97,18 +103,18 @@ def make_blurring_mask_2d_7x7():
         ]
     )
 
-    return mask_2d.Mask2D.manual(mask=blurring_mask, pixel_scales=(1.0, 1.0))
+    return Mask2D.manual(mask=blurring_mask, pixel_scales=(1.0, 1.0))
 
 
 ### arrays ###
 
 
 def make_array_2d_7x7():
-    return array_2d.Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
+    return Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 def make_layout_2d_7x7():
-    return lo.Layout2D(
+    return Layout2D(
         shape_2d=(7, 7),
         original_roe_corner=(1, 0),
         serial_overscan=(0, 6, 6, 7),
@@ -118,7 +124,7 @@ def make_layout_2d_7x7():
 
 
 def make_array_2d_layout_7x7():
-    return array_2d.Array2D.ones(
+    return Array2D.ones(
         shape_native=(7, 7), pixel_scales=(1.0, 1.0), layout=make_layout_2d_7x7()
     )
 
@@ -127,23 +133,23 @@ def make_array_2d_layout_7x7():
 
 
 def make_grid_1d_7():
-    return grid_1d.Grid1D.from_mask(mask=make_mask_1d_7())
+    return Grid1D.from_mask(mask=make_mask_1d_7())
 
 
 def make_sub_grid_1d_7():
-    return grid_1d.Grid1D.from_mask(mask=make_sub_mask_1d_7())
+    return Grid1D.from_mask(mask=make_sub_mask_1d_7())
 
 
 def make_grid_2d_7x7():
-    return grid_2d.Grid2D.from_mask(mask=make_mask_2d_7x7())
+    return Grid2D.from_mask(mask=make_mask_2d_7x7())
 
 
 def make_sub_grid_2d_7x7():
-    return grid_2d.Grid2D.from_mask(mask=make_sub_mask_2d_7x7())
+    return Grid2D.from_mask(mask=make_sub_mask_2d_7x7())
 
 
 def make_grid_2d_iterate_7x7():
-    return grid_2d_iterate.Grid2DIterate.from_mask(
+    return Grid2DIterate.from_mask(
         mask=make_mask_2d_7x7(), fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
     )
 
@@ -158,47 +164,45 @@ def make_sub_grid_2d_7x7_simple():
 
 
 def make_blurring_grid_2d_7x7():
-    return grid_2d.Grid2D.from_mask(mask=make_blurring_mask_2d_7x7())
+    return Grid2D.from_mask(mask=make_blurring_mask_2d_7x7())
 
 
 # CONVOLVERS #
 
 
 def make_convolver_7x7():
-    return convolver.Convolver(mask=make_mask_2d_7x7(), kernel=make_psf_3x3())
+    return Convolver(mask=make_mask_2d_7x7(), kernel=make_psf_3x3())
 
 
 def make_image_7x7():
-    return array_2d.Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
+    return Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 def make_psf_3x3():
-    return kernel_2d.Kernel2D.ones(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
+    return Kernel2D.ones(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
 
 
 def make_psf_no_blur_3x3():
-    return kernel_2d.Kernel2D.no_blur(pixel_scales=(1.0, 1.0))
+    return Kernel2D.no_blur(pixel_scales=(1.0, 1.0))
 
 
 def make_noise_map_7x7():
-    return array_2d.Array2D.full(
-        fill_value=2.0, shape_native=(7, 7), pixel_scales=(1.0, 1.0)
-    )
+    return Array2D.full(fill_value=2.0, shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 def make_grid_2d_irregular_7x7():
-    return grid_2d_irregular.Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)])
+    return Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)])
 
 
 def make_grid_2d_irregular_7x7_list():
     return [
-        grid_2d_irregular.Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)]),
-        grid_2d_irregular.Grid2DIrregular(grid=[(0.3, 0.3)]),
+        Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)]),
+        Grid2DIrregular(grid=[(0.3, 0.3)]),
     ]
 
 
 def make_imaging_7x7():
-    return imaging.Imaging(
+    return Imaging(
         image=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
@@ -207,7 +211,7 @@ def make_imaging_7x7():
 
 
 def make_imaging_no_blur_7x7():
-    return imaging.Imaging(
+    return Imaging(
         image=make_image_7x7(),
         psf=make_psf_no_blur_3x3(),
         noise_map=make_noise_map_7x7(),
@@ -216,13 +220,13 @@ def make_imaging_no_blur_7x7():
 
 
 def make_visibilities_7():
-    visibilities = vis.Visibilities.full(shape_slim=(7,), fill_value=1.0)
+    visibilities = Visibilities.full(shape_slim=(7,), fill_value=1.0)
     visibilities[6] = -1.0 - 1.0j
     return visibilities
 
 
 def make_visibilities_noise_map_7():
-    return vis.VisibilitiesNoiseMap.full(shape_slim=(7,), fill_value=2.0)
+    return VisibilitiesNoiseMap.full(shape_slim=(7,), fill_value=2.0)
 
 
 def make_uv_wavelengths_7x2():
@@ -240,46 +244,42 @@ def make_uv_wavelengths_7x2():
 
 
 def make_interferometer_7():
-    return interferometer.Interferometer(
+    return Interferometer(
         visibilities=make_visibilities_7(),
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_sub_mask_2d_7x7(),
-        settings=interferometer.SettingsInterferometer(
-            grid_class=grid_2d.Grid2D,
-            sub_size=1,
-            transformer_class=transformer.TransformerDFT,
+        settings=SettingsInterferometer(
+            grid_class=Grid2D, sub_size=1, transformer_class=TransformerDFT
         ),
     )
 
 
 def make_interferometer_7_grid():
-    return interferometer.Interferometer(
+    return Interferometer(
         visibilities=make_visibilities_7(),
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_sub_mask_2d_7x7(),
-        settings=interferometer.SettingsInterferometer(
-            sub_size=1, transformer_class=transformer.TransformerDFT
-        ),
+        settings=SettingsInterferometer(sub_size=1, transformer_class=TransformerDFT),
     )
 
 
 def make_interferometer_7_lop():
 
-    return interferometer.Interferometer(
+    return Interferometer(
         visibilities=make_visibilities_7(),
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
-        settings=interferometer.SettingsInterferometer(
-            sub_size_inversion=1, transformer_class=transformer.TransformerNUFFT
+        settings=SettingsInterferometer(
+            sub_size_inversion=1, transformer_class=TransformerNUFFT
         ),
     )
 
 
 def make_transformer_7x7_7():
-    return transformer.TransformerDFT(
+    return TransformerDFT(
         uv_wavelengths=make_uv_wavelengths_7x2(), real_space_mask=make_mask_2d_7x7()
     )
 
@@ -302,7 +302,7 @@ def make_masked_imaging_no_blur_7x7():
 
 
 def make_imaging_fit_x1_plane_7x7():
-    return fit.FitImaging(
+    return FitImaging(
         imaging=make_masked_imaging_7x7(),
         model_image=5.0 * make_masked_imaging_7x7().image,
         use_mask_in_fit=False,
@@ -313,23 +313,21 @@ def make_fit_interferometer_7():
 
     interferometer_7 = make_interferometer_7()
 
-    fit_interferometer = fit.FitInterferometer(
+    fit_interferometer = FitInterferometer(
         interferometer=interferometer_7,
         model_visibilities=5.0 * interferometer_7.visibilities,
         use_mask_in_fit=False,
     )
-    fit_interferometer.dataset = interferometer_7
+    fit_dataset = interferometer_7
     return fit_interferometer
 
 
 def make_rectangular_pixelization_grid_3x3():
-    return grid_2d_pixelization.Grid2DRectangular.overlay_grid(
-        grid=make_grid_2d_7x7(), shape_native=(3, 3)
-    )
+    return Grid2DRectangular.overlay_grid(grid=make_grid_2d_7x7(), shape_native=(3, 3))
 
 
 def make_rectangular_mapper_7x7_3x3():
-    return mappers.mapper(
+    return MapperRectangular(
         source_grid_slim=make_grid_2d_7x7(),
         source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
     )
@@ -337,7 +335,7 @@ def make_rectangular_mapper_7x7_3x3():
 
 def make_voronoi_pixelization_grid_9():
 
-    grid_9 = grid_2d.Grid2D.manual_slim(
+    grid_9 = Grid2D.manual_slim(
         grid=[
             [0.6, -0.3],
             [0.5, -0.8],
@@ -353,7 +351,7 @@ def make_voronoi_pixelization_grid_9():
         pixel_scales=1.0,
     )
 
-    return grid_2d_pixelization.Grid2DVoronoi(
+    return Grid2DVoronoi(
         grid=grid_9,
         nearest_pixelization_index_for_slim_index=np.zeros(
             shape=make_grid_2d_7x7().shape_slim, dtype="int"
@@ -362,17 +360,15 @@ def make_voronoi_pixelization_grid_9():
 
 
 def make_voronoi_mapper_9_3x3():
-    return mappers.mapper(
+    return MapperVoronoi(
         source_grid_slim=make_grid_2d_7x7(),
         source_pixelization_grid=make_voronoi_pixelization_grid_9(),
-        data_pixelization_grid=grid_2d.Grid2D.uniform(
-            shape_native=(2, 2), pixel_scales=0.1
-        ),
+        data_pixelization_grid=Grid2D.uniform(shape_native=(2, 2), pixel_scales=0.1),
     )
 
 
 def make_rectangular_inversion_7x7_3x3():
-    regularization = reg.Constant(coefficient=1.0)
+    regularization = Constant(coefficient=1.0)
 
     return inversion_imaging_from(
         dataset=make_masked_imaging_7x7(),
@@ -383,7 +379,7 @@ def make_rectangular_inversion_7x7_3x3():
 
 def make_voronoi_inversion_9_3x3():
 
-    regularization = reg.Constant(coefficient=1.0)
+    regularization = Constant(coefficient=1.0)
 
     return inversion_imaging_from(
         dataset=make_masked_imaging_7x7(),

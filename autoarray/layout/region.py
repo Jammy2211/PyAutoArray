@@ -1,8 +1,7 @@
 import numpy as np
+from typing import Tuple
 
 from autoarray import exc
-
-from typing import Tuple
 
 
 class Region1D:

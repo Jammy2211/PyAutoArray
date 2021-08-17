@@ -1,8 +1,9 @@
 import numpy as np
-from autoarray import decorator_util
+
+from autoarray import numba_util
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def constant_regularization_matrix_from(
     coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_size: np.ndarray
 ) -> np.ndarray:
@@ -78,7 +79,7 @@ def adaptive_regularization_weight_list_from(
     ) ** 2.0
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def weighted_regularization_matrix_from(
     regularization_weight_list: np.ndarray,
     pixel_neighbors: np.ndarray,

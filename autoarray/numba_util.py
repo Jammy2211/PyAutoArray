@@ -1,4 +1,5 @@
 import numba
+
 from autoconf import conf
 
 """

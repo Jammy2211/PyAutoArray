@@ -1,21 +1,22 @@
 import logging
-
 import numpy as np
 
+from autoarray.structures.arrays.two_d.abstract_array_2d import AbstractArray2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.mask.mask_2d import Mask2D
+
 from autoarray import exc
-from autoarray.geometry import geometry_util
-from autoarray.mask import mask_2d as msk
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.two_d import abstract_array_2d
+from autoarray.geometry import geometry_util
 from autoarray.structures.arrays.two_d import array_2d_util
-from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Array2D(abstract_array_2d.AbstractArray2D):
+class Array2D(AbstractArray2D):
     def __new__(cls, array, mask, header=None, zoom_for_plot=True, *args, **kwargs):
         """
         An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -177,7 +178,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         ----------
         array
             The values of the array.
-        mask : msk.Mask2D
+        mask
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
         """
@@ -234,7 +235,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
                 "The input shape_native parameter is not a tuple of type (float, float)"
             )
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -280,7 +281,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         shape_native = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
 
-        mask = msk.Mask2D.unmasked(
+        mask = Mask2D.unmasked(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -349,10 +350,10 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
-        mask : Mask2D
+        mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
         array = abstract_array_2d.convert_array_2d(array_2d=array, mask_2d=mask)
@@ -533,7 +534,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        grid = grid_2d.Grid2D.manual_yx_1d(
+        grid = Grid2D.manual_yx_1d(
             y=y, x=x, shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1
         )
 

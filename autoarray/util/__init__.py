@@ -1,3 +1,4 @@
+from autoarray import numba_util as numba
 from autoarray.geometry import geometry_util as geometry
 from autoarray.mask import mask_1d_util as mask_1d
 from autoarray.mask import mask_2d_util as mask_2d

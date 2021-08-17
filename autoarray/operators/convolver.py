@@ -1,7 +1,9 @@
-from autoarray import decorator_util
+from autoarray import numba_util
 import numpy as np
+
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+
 from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d
 from autoarray.mask import mask_2d_util
 
 
@@ -266,7 +268,7 @@ class Convolver:
                     mask_1d_index += 1
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def frame_at_coordinates_jit(coordinates, mask, mask_index_array, kernel_2d):
         """
         Returns the frame (indexes of pixels light is blurred into) and kernel_frame (kernel kernel values of those \
@@ -334,10 +336,10 @@ class Convolver:
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return array_2d.Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
+        return Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def convolve_jit(
         image_1d_array,
         image_frame_1d_indexes,
@@ -396,10 +398,10 @@ class Convolver:
             image_frame_1d_lengths=self.image_frame_1d_lengths,
         )
 
-        return array_2d.Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
+        return Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def convolve_no_blurring_jit(
         image_1d_array,
         image_frame_1d_indexes,
@@ -503,7 +505,7 @@ class Convolver:
         )
 
     @staticmethod
-    @decorator_util.jit()
+    @numba_util.jit()
     def convolve_matrix_jit(
         mapping_matrix,
         image_frame_1d_indexes,

@@ -1,10 +1,10 @@
 import numpy as np
-from autoarray import decorator_util
-
 from typing import Tuple
 
+from autoarray import numba_util
 
-@decorator_util.jit()
+
+@numba_util.jit()
 def rectangular_neighbors_from(
     shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -85,7 +85,7 @@ def rectangular_neighbors_from(
     return pixel_neighbors, pixel_neighbors_size
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def rectangular_corner_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
@@ -135,7 +135,7 @@ def rectangular_corner_neighbors(
     return pixel_neighbors, pixel_neighbors_size
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def rectangular_top_edge_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
@@ -173,7 +173,7 @@ def rectangular_top_edge_neighbors(
     return pixel_neighbors, pixel_neighbors_size
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def rectangular_left_edge_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
@@ -215,7 +215,7 @@ def rectangular_left_edge_neighbors(
     return pixel_neighbors, pixel_neighbors_size
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def rectangular_right_edge_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
@@ -257,7 +257,7 @@ def rectangular_right_edge_neighbors(
     return pixel_neighbors, pixel_neighbors_size
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def rectangular_bottom_edge_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
@@ -295,7 +295,7 @@ def rectangular_bottom_edge_neighbors(
     return pixel_neighbors, pixel_neighbors_size
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def rectangular_central_neighbors(
     pixel_neighbors: np.ndarray,
     pixel_neighbors_size: np.ndarray,
@@ -339,7 +339,7 @@ def rectangular_central_neighbors(
     return pixel_neighbors, pixel_neighbors_size
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def voronoi_neighbors_from(
     pixels: int, ridge_points: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray]:

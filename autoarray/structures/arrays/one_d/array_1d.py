@@ -1,8 +1,11 @@
 import numpy as np
+from autoarray.structures.arrays.abstract_array import Header
+from autoarray.structures.arrays.one_d.abstract_array_1d import AbstractArray1D
+
+from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.mask.mask_1d import Mask1D
+
 from autoarray.structures.arrays import abstract_array
-from autoarray.structures.arrays.one_d import abstract_array_1d
-from autoarray.mask import mask_1d as msk
-from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.arrays.one_d import array_1d_util
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.geometry import geometry_util
@@ -10,7 +13,7 @@ from autoarray.geometry import geometry_util
 from typing import Union, Tuple, List
 
 
-class Array1D(abstract_array_1d.AbstractArray1D):
+class Array1D(AbstractArray1D):
     def __new__(cls, array: np.ndarray, mask: np.ndarray, header=None, *args, **kwargs):
 
         obj = array.view(cls)
@@ -51,7 +54,7 @@ class Array1D(abstract_array_1d.AbstractArray1D):
 
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
-        mask = msk.Mask1D.unmasked(
+        mask = Mask1D.unmasked(
             shape_slim=array.shape[0] // sub_size,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -283,14 +286,12 @@ class Array1D(abstract_array_1d.AbstractArray1D):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            header=abstract_array.Header(
-                header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj
-            ),
+            header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
 
     @property
     def grid_radial(self):
-        return grid_1d.Grid1D.uniform_from_zero(
+        return Grid1D.uniform_from_zero(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,

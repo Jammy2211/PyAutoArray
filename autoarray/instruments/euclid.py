@@ -1,6 +1,8 @@
-from autoarray.layout import layout as lo, layout_util
-from autoarray.layout import region as reg
-from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.layout.layout import Layout2D
+from autoarray.layout.region import Region2D
+
+from autoarray.layout import layout_util
 
 
 def roe_corner_from(ccd_id, quadrant_id):
@@ -25,7 +27,7 @@ def roe_corner_from(ccd_id, quadrant_id):
         return (1, 1)
 
 
-class Array2DEuclid(array_2d.Array2D):
+class Array2DEuclid(Array2D):
     """
     In the Euclid FPA, the quadrant id ('E', 'F', 'G', 'H') depends on whether the CCD is located
     on the left side (rows 1-3) or right side (rows 4-6) of the FPA:
@@ -187,7 +189,7 @@ class Array2DEuclid(array_2d.Array2D):
         return cls.manual(array=array_electrons, pixel_scales=0.1)
 
 
-class Layout2DEuclid(lo.Layout2D):
+class Layout2DEuclid(Layout2D):
     @classmethod
     def from_fits_header(cls, ext_header):
         """
@@ -317,7 +319,7 @@ class Layout2DEuclid(lo.Layout2D):
 
         if parallel_overscan_size > 0:
 
-            parallel_overscan = reg.Region2D(
+            parallel_overscan = Region2D(
                 (
                     0,
                     parallel_overscan_size,
@@ -330,8 +332,8 @@ class Layout2DEuclid(lo.Layout2D):
 
             parallel_overscan = None
 
-        serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
-        serial_overscan = reg.Region2D(
+        serial_prescan = Region2D((0, parallel_size, 0, serial_prescan_size))
+        serial_overscan = Region2D(
             (
                 0,
                 parallel_size - parallel_overscan_size,
@@ -362,7 +364,7 @@ class Layout2DEuclid(lo.Layout2D):
 
         if parallel_overscan_size > 0:
 
-            parallel_overscan = reg.Region2D(
+            parallel_overscan = Region2D(
                 (
                     0,
                     parallel_overscan_size,
@@ -375,10 +377,10 @@ class Layout2DEuclid(lo.Layout2D):
 
             parallel_overscan = None
 
-        serial_prescan = reg.Region2D(
+        serial_prescan = Region2D(
             (0, parallel_size, serial_size - serial_prescan_size, serial_size)
         )
-        serial_overscan = reg.Region2D(
+        serial_overscan = Region2D(
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 
@@ -404,7 +406,7 @@ class Layout2DEuclid(lo.Layout2D):
 
         if parallel_overscan_size > 0:
 
-            parallel_overscan = reg.Region2D(
+            parallel_overscan = Region2D(
                 (
                     parallel_size - parallel_overscan_size,
                     parallel_size,
@@ -417,8 +419,8 @@ class Layout2DEuclid(lo.Layout2D):
 
             parallel_overscan = None
 
-        serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
-        serial_overscan = reg.Region2D(
+        serial_prescan = Region2D((0, parallel_size, 0, serial_prescan_size))
+        serial_overscan = Region2D(
             (
                 0,
                 parallel_size - parallel_overscan_size,
@@ -449,7 +451,7 @@ class Layout2DEuclid(lo.Layout2D):
 
         if parallel_overscan_size > 0:
 
-            parallel_overscan = reg.Region2D(
+            parallel_overscan = Region2D(
                 (
                     parallel_size - parallel_overscan_size,
                     parallel_size,
@@ -462,10 +464,10 @@ class Layout2DEuclid(lo.Layout2D):
 
             parallel_overscan = None
 
-        serial_prescan = reg.Region2D(
+        serial_prescan = Region2D(
             (0, parallel_size, serial_size - serial_prescan_size, serial_size)
         )
-        serial_overscan = reg.Region2D(
+        serial_overscan = Region2D(
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 

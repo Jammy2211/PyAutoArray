@@ -1,11 +1,11 @@
 import numpy as np
 from typing import Tuple
-from autoarray import decorator_util
 
+from autoarray import numba_util
 from autoarray import exc
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def data_slim_to_pixelization_unique_from(
     data_pixels, pixelization_index_for_sub_slim_index: np.ndarray, sub_size: int
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -89,7 +89,7 @@ def data_slim_to_pixelization_unique_from(
     return data_to_pix_unique, data_weights, pix_lengths
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def mapping_matrix_from(
     pixelization_index_for_sub_slim_index: np.ndarray,
     pixels: int,
@@ -125,7 +125,7 @@ def mapping_matrix_from(
     return mapping_matrix
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def pixelization_index_for_voronoi_sub_slim_index_from(
     grid: np.ndarray,
     nearest_pixelization_index_for_slim_index: np.ndarray,
@@ -232,7 +232,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
     return pixelization_index_for_voronoi_sub_slim_index
 
 
-@decorator_util.jit()
+@numba_util.jit()
 def adaptive_pixel_signals_from(
     pixels: int,
     signal_scale: float,

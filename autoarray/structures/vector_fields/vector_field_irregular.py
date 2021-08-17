@@ -1,11 +1,10 @@
 import logging
-
+from matplotlib.patches import Ellipse
 import numpy as np
 import typing
 
-from matplotlib.patches import Ellipse
-from autoarray.structures.arrays import values
-from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.arrays.values import ValuesIrregular
 
 from autoarray import exc
 
@@ -15,9 +14,7 @@ logger = logging.getLogger(__name__)
 
 class VectorField2DIrregular(np.ndarray):
     def __new__(
-        cls,
-        vectors: np.ndarray or [(float, float)],
-        grid: grid_2d_irregular.Grid2DIrregular or list,
+        cls, vectors: np.ndarray or [(float, float)], grid: Grid2DIrregular or list
     ):
         """
         A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.
@@ -39,7 +36,7 @@ class VectorField2DIrregular(np.ndarray):
         ----------
         vectors or [(float, float)]
             The 2D (y,x) vectors on an irregular grid that represent the vector-field.
-        grid : grid_2d_irregular.Grid2DIrregular
+        grid : Grid2DIrregular
             The irregular grid of (y,x) coordinates where each vector is located.
         """
 
@@ -50,7 +47,7 @@ class VectorField2DIrregular(np.ndarray):
             vectors = np.asarray(vectors)
 
         obj = vectors.view(cls)
-        obj.grid = grid_2d_irregular.Grid2DIrregular(grid=grid)
+        obj.grid = Grid2DIrregular(grid=grid)
 
         return obj
 
@@ -60,38 +57,36 @@ class VectorField2DIrregular(np.ndarray):
             self.grid = obj.grid
 
     @property
-    def ellipticities(self) -> values.ValuesIrregular:
+    def ellipticities(self) -> ValuesIrregular:
         """
         If we treat this vector field as a set of weak lensing shear measurements, the galaxy ellipticity each vector
         corresponds too.
         """
-        return values.ValuesIrregular(
-            values=np.sqrt(self[:, 0] ** 2 + self[:, 1] ** 2.0)
-        )
+        return ValuesIrregular(values=np.sqrt(self[:, 0] ** 2 + self[:, 1] ** 2.0))
 
     @property
-    def semi_major_axes(self) -> values.ValuesIrregular:
+    def semi_major_axes(self) -> ValuesIrregular:
         """
         If we treat this vector field as a set of weak lensing shear measurements, the semi-major axis of each
         galaxy ellipticity that each vector corresponds too.
         """
-        return values.ValuesIrregular(values=3 * (1 + self.ellipticities))
+        return ValuesIrregular(values=3 * (1 + self.ellipticities))
 
     @property
-    def semi_minor_axes(self) -> values.ValuesIrregular:
+    def semi_minor_axes(self) -> ValuesIrregular:
         """
         If we treat this vector field as a set of weak lensing shear measurements, the semi-minor axis of each
         galaxy ellipticity that each vector corresponds too.
         """
-        return values.ValuesIrregular(values=3 * (1 - self.ellipticities))
+        return ValuesIrregular(values=3 * (1 - self.ellipticities))
 
     @property
-    def phis(self) -> values.ValuesIrregular:
+    def phis(self) -> ValuesIrregular:
         """
         If we treat this vector field as a set of weak lensing shear measurements, the position angle defined
         counter clockwise from the positive x-axis of each galaxy ellipticity that each vector corresponds too.
         """
-        return values.ValuesIrregular(
+        return ValuesIrregular(
             values=np.arctan2(self[:, 0], self[:, 1]) * 180.0 / np.pi / 2.0
         )
 
@@ -175,7 +170,7 @@ class VectorField2DIrregular(np.ndarray):
             )
 
         return VectorField2DIrregular(
-            vectors=self[mask], grid=grid_2d_irregular.Grid2DIrregular(self.grid[mask])
+            vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )
 
     def vectors_within_annulus(
@@ -210,5 +205,5 @@ class VectorField2DIrregular(np.ndarray):
             )
 
         return VectorField2DIrregular(
-            vectors=self[mask], grid=grid_2d_irregular.Grid2DIrregular(self.grid[mask])
+            vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )
