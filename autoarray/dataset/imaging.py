@@ -410,16 +410,6 @@ class Imaging(AbstractDataset):
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
 
-    def copy_with_resets(self):
-
-        imaging = copy.deepcopy(self)
-
-        imaging._blurring_grid = None
-        imaging._convolver = None
-        imaging._w_tilde = None
-
-        return imaging
-
 
 class AbstractSimulatorImaging:
     def __init__(

@@ -210,32 +210,6 @@ class TestImaging:
         assert imaging.psf.mask.pixel_scales == (0.1, 0.1)
         assert imaging.noise_map.mask.pixel_scales == (0.1, 0.1)
 
-    def test__copy_with_resets(self):
-
-        image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-        noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-        psf = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-
-        imaging = aa.Imaging(
-            image=image, noise_map=noise_map, psf=psf, pad_for_convolver=False
-        )
-
-        imaging._w_tilde = 1
-        imaging._blurring_grid = 2
-        imaging._convolver = 3
-
-        imaging_copy = imaging.copy_with_resets()
-
-        assert (imaging_copy.image == imaging.image).all()
-
-        assert imaging._w_tilde == 1
-        assert imaging._blurring_grid == 2
-        assert imaging._convolver == 3
-
-        assert imaging_copy._w_tilde is None
-        assert imaging_copy._blurring_grid is None
-        assert imaging_copy._convolver is None
-
 
 class TestImagingApplyMask:
     def test__apply_mask__masks_dataset(self, imaging_7x7, sub_mask_2d_7x7):

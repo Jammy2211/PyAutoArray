@@ -5,6 +5,7 @@ from .dataset import preprocess
 from .dataset.imaging import SettingsImaging
 from .dataset.imaging import Imaging
 from .dataset.imaging import SimulatorImaging
+from .dataset.imaging import WTildeImaging
 from .dataset.interferometer import Interferometer
 from .dataset.interferometer import SettingsInterferometer
 from .dataset.interferometer import SimulatorInterferometer

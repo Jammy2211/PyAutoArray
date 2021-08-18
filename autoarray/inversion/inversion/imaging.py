@@ -151,6 +151,10 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         preloads=Preloads(),
     ):
 
+        if preloads.w_tilde is not None:
+
+            w_tilde = preloads.w_tilde
+
         w_tilde.check_noise_map(noise_map=noise_map)
 
         data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
