@@ -7,7 +7,7 @@ class Preloads:
         curvature_matrix_sparse_preload=None,
         curvature_matrix_preload_counts=None,
         w_tilde=None,
-        use_w_tilde=None
+        use_w_tilde=None,
     ):
 
         self.sparse_grids_of_planes = sparse_grids_of_planes

@@ -33,6 +33,8 @@ class WTildeImaging:
                 "The preloaded values of WTildeImaging are not consistent with the noise-map passed to them, thus "
                 "they cannot be used for the inversion."
                 ""
+                f"The value of the noise map is {noise_map[0]} whereas in WTildeImaging it is {self.noise_map_value}"
+                ""
                 "Update WTildeImaging or do not use the w_tilde formalism to perform the Inversion."
             )
 

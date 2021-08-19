@@ -268,12 +268,20 @@ class MockRegMapper:
 
 class MockMapper:
     def __init__(
-        self, matrix_shape, source_grid_slim=None, source_pixelization_grid=None
+        self,
+        matrix_shape=None,
+        source_grid_slim=None,
+        source_pixelization_grid=None,
+        mapping_matrix=None,
     ):
 
         self.source_grid_slim = source_grid_slim
         self.source_pixelization_grid = source_pixelization_grid
-        self.mapping_matrix = np.ones(matrix_shape)
+        if mapping_matrix is None:
+            self.mapping_matrix = np.ones(matrix_shape)
+        else:
+            self.mapping_matrix = mapping_matrix
+
         if source_pixelization_grid is not None:
             self.pixels = source_pixelization_grid.shape[0]
         else:
@@ -289,8 +297,17 @@ class MockConvolver:
 
 
 class MockInversion:
-    def __init__(self):
-        self.blurred_mapping_matrix = np.zeros((1, 1))
+    def __init__(self, mapper=None, blurred_mapping_matrix=None, curvature_matrix_sparse_preload=None, curvature_matrix_preload_counts=None):
+
+        self.mapper = mapper
+        self.curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
+        self.curvature_matrix_preload_counts = curvature_matrix_preload_counts
+
+        if blurred_mapping_matrix is None:
+            self.blurred_mapping_matrix = np.zeros((1, 1))
+        else:
+            self.blurred_mapping_matrix = blurred_mapping_matrix
+
         self.regularization_matrix = np.zeros((1, 1))
         self.curvature_matrix = np.zeros((1, 1))
         self.curvature_reg_matrix = np.zeros((1, 1))

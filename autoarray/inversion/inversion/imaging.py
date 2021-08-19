@@ -47,7 +47,12 @@ def inversion_imaging_unpacked_from(
     preloads: Preloads = Preloads(),
 ):
 
-    if settings.use_w_tilde:
+    if preloads.use_w_tilde is not None:
+        use_w_tilde = preloads.use_w_tilde
+    else:
+        use_w_tilde = settings.use_w_tilde
+
+    if use_w_tilde:
 
         return InversionImagingMatrix.from_data_via_w_tilde(
             image=image,
