@@ -145,10 +145,10 @@ class Imaging(AbstractDataset):
                 noise_map = noise_map.padded_before_convolution_from(
                     kernel_shape=psf.shape_native, mask_pad_value=1
                 )
-                print(
-                    f"The image and noise map of the `Imaging` objected had been padded to the dimensions"
-                    f"{image.shape}. This is because the blurring region around its mask, which defines where"
-                    f"PSF flux may be convolved into the masked region, extended beyond the edge of the image."
+                logger.info(
+                    f"The image and noise map of the `Imaging` objected have been padded to the dimensions"
+                    f"{image.shape}. This is because the blurring region around the mask (which defines where"
+                    f"PSF flux may be convolved into the masked region) extended beyond the edge of the image."
                     f""
                     f"This can be prevented by using a smaller mask, smaller PSF kernel size or manually padding"
                     f"the image and noise-map yourself."
@@ -252,6 +252,8 @@ class Imaging(AbstractDataset):
 
         if self._w_tilde is None:
 
+            logger.info("IMAGING - Computing W-Tilde... May take a moment.")
+
             preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=self.noise_map.native,
                 kernel_native=self.psf.native,
@@ -354,6 +356,8 @@ class Imaging(AbstractDataset):
         )
 
         imaging.unmasked = unmasked_imaging
+
+        logger.info(f"IMAGING - Data masked, contains a total of {mask.pixels_in_mask} image-pixels")
 
         return imaging
 
