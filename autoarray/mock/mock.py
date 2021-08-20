@@ -297,7 +297,13 @@ class MockConvolver:
 
 
 class MockInversion:
-    def __init__(self, mapper=None, blurred_mapping_matrix=None, curvature_matrix_sparse_preload=None, curvature_matrix_preload_counts=None):
+    def __init__(
+        self,
+        mapper=None,
+        blurred_mapping_matrix=None,
+        curvature_matrix_sparse_preload=None,
+        curvature_matrix_preload_counts=None,
+    ):
 
         self.mapper = mapper
         self.curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
