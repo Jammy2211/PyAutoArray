@@ -31,6 +31,7 @@ class MockInversionImagingMatrix(InversionImagingMatrix):
         reconstruction: Optional[np.ndarray] = None,
         mapped_reconstructed_image: Optional[np.ndarray] = None,
         settings: Optional[aa.SettingsInversion] = None,
+        preload_log_det_regularization_matrix_term=None,
     ):
 
         super().__init__(
@@ -45,6 +46,7 @@ class MockInversionImagingMatrix(InversionImagingMatrix):
             reconstruction=reconstruction,
             mapped_reconstructed_image=mapped_reconstructed_image,
             settings=settings,
+            preload_log_det_regularization_matrix_term=preload_log_det_regularization_matrix_term,
         )
 
 
@@ -391,3 +393,11 @@ class TestLogDetMatrixCholesky:
             assert pytest.approx(
                 abstract.log_determinant_of_matrix_cholesky(matrix), 1e-4
             )
+
+    def test__preload_of_log_det_regularizaation_term_overwrites_calculation(self):
+
+        inversion = MockInversionImagingMatrix(
+            preload_log_det_regularization_matrix_term=1.0
+        )
+
+        assert inversion.preload_log_det_regularization_matrix_term == 1.0

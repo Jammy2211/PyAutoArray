@@ -303,11 +303,13 @@ class MockInversion:
         blurred_mapping_matrix=None,
         curvature_matrix_sparse_preload=None,
         curvature_matrix_preload_counts=None,
+        log_det_regularization_matrix_term=None,
     ):
 
         self.mapper = mapper
         self.curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
         self.curvature_matrix_preload_counts = curvature_matrix_preload_counts
+        self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
         if blurred_mapping_matrix is None:
             self.blurred_mapping_matrix = np.zeros((1, 1))

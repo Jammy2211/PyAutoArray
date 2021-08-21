@@ -89,6 +89,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         reconstruction: np.ndarray,
         mapped_reconstructed_image: np.ndarray,
         settings: SettingsInversion,
+        preload_log_det_regularization_matrix_term: float = None,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -130,6 +131,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             regularization_matrix=regularization_matrix,
             reconstruction=reconstruction,
             settings=settings,
+            preload_log_det_regularization_matrix_term=preload_log_det_regularization_matrix_term,
         )
 
         AbstractInversionMatrix.__init__(
@@ -236,6 +238,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             reconstruction=reconstruction,
             mapped_reconstructed_image=mapped_reconstructed_image,
             settings=settings,
+            preload_log_det_regularization_matrix_term=preloads.log_det_regularization_matrix_term,
         )
 
     @classmethod
@@ -318,6 +321,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             reconstruction=reconstruction,
             mapped_reconstructed_image=mapped_reconstructed_image,
             settings=settings,
+            preload_log_det_regularization_matrix_term=preloads.log_det_regularization_matrix_term,
         )
 
     @property

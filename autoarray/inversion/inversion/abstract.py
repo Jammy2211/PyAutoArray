@@ -46,6 +46,7 @@ class AbstractInversion:
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
         settings: SettingsInversion,
+        preload_log_det_regularization_matrix_term: float = None,
     ):
 
         self.noise_map = noise_map
@@ -54,6 +55,9 @@ class AbstractInversion:
         self.regularization_matrix = regularization_matrix
         self.reconstruction = reconstruction
         self.settings = settings
+        self.preload_log_det_regularization_matrix_term = (
+            preload_log_det_regularization_matrix_term
+        )
 
     def interpolated_reconstructed_data_from_shape_native(self, shape_native=None):
         return self.interpolated_values_from_shape_native(
@@ -136,7 +140,9 @@ class AbstractInversion:
 
     @property
     def log_det_regularization_matrix_term(self):
-        return log_determinant_of_matrix_cholesky(self.regularization_matrix)
+        if self.preload_log_det_regularization_matrix_term is None:
+            return log_determinant_of_matrix_cholesky(self.regularization_matrix)
+        return self.preload_log_det_regularization_matrix_term
 
     @property
     def brightest_reconstruction_pixel(self):
