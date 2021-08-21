@@ -72,6 +72,7 @@ def inversion_imaging_unpacked_from(
         mapper=mapper,
         regularization=regularization,
         settings=settings,
+        preloads=preloads,
     )
 
 
@@ -280,12 +281,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             curvature_matrix = inversion_util.curvature_matrix_via_sparse_preload_from(
                 mapping_matrix=blurred_mapping_matrix,
                 noise_map=noise_map,
-                curvature_matrix_sparse_preload=preloads.curvature_matrix_sparse_preload.astype(
-                    "int"
-                ),
-                curvature_matrix_preload_counts=preloads.curvature_matrix_preload_counts.astype(
-                    "int"
-                ),
+                curvature_matrix_sparse_preload=preloads.curvature_matrix_sparse_preload,
+                curvature_matrix_preload_counts=preloads.curvature_matrix_preload_counts,
             )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(

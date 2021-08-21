@@ -107,8 +107,8 @@ class TestInversionImagingMatrix:
             settings=aa.SettingsInversion(check_solution=False),
             preloads=aa.Preloads(
                 blurred_mapping_matrix=blurred_mapping_matrix,
-                curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
-                curvature_matrix_preload_counts=curvature_matrix_preload_counts,
+                curvature_matrix_sparse_preload=curvature_matrix_sparse_preload.astype("int"),
+                curvature_matrix_preload_counts=curvature_matrix_preload_counts.astype("int"),
             ),
         )
 

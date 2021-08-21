@@ -614,7 +614,7 @@ def curvature_matrix_via_mapping_matrix_from(
 
 @numba_util.jit()
 def curvature_matrix_sparse_preload_via_mapping_matrix_from(
-    mapping_matrix: np.ndarray,
+    mapping_matrix: np.ndarray, mapping_matrix_threshold=1.0e-8
 ) -> np.ndarray:
     """
     Returns a matrix that expresses the non-zero entries of the blurred mapping matrix for an efficient construction of
@@ -634,7 +634,7 @@ def curvature_matrix_sparse_preload_via_mapping_matrix_from(
 
     for mask_1d_index in range(mapping_matrix.shape[0]):
         for pix_index in range(mapping_matrix.shape[1]):
-            if mapping_matrix[mask_1d_index, pix_index] > 0.0:
+            if mapping_matrix[mask_1d_index, pix_index] > mapping_matrix_threshold:
                 curvature_matrix_preload_counts[mask_1d_index] += 1
 
     preload_max = np.max(curvature_matrix_preload_counts)
@@ -646,7 +646,7 @@ def curvature_matrix_sparse_preload_via_mapping_matrix_from(
     for mask_1d_index in range(mapping_matrix.shape[0]):
         index = 0
         for pix_index in range(mapping_matrix.shape[1]):
-            if mapping_matrix[mask_1d_index, pix_index] > 0.0:
+            if mapping_matrix[mask_1d_index, pix_index] > mapping_matrix_threshold:
                 curvature_matrix_sparse_preload[mask_1d_index, index] = pix_index
                 index += 1
 

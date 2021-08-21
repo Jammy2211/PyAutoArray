@@ -226,6 +226,7 @@ class MockPixelization:
         sparse_image_plane_grid=None,
         hyper_image=None,
         settings=None,
+        preloads=None,
     ):
         return self.value
 
