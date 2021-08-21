@@ -5,6 +5,7 @@ from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.preloads import Preloads
 from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
 
@@ -81,6 +82,7 @@ class Rectangular(Pixelization):
         sparse_image_plane_grid: Grid2D = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
+        preloads: Preloads = Preloads(),
     ):
         """
         Setup a rectangular mapper from a rectangular pixelization, as follows:
@@ -99,10 +101,16 @@ class Rectangular(Pixelization):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        if settings.use_border:
-            relocated_grid = grid.relocated_grid_from_grid(grid=grid)
+        if preloads.relocated_grid is None:
+
+            if settings.use_border:
+                relocated_grid = grid.relocated_grid_from_grid(grid=grid)
+            else:
+                relocated_grid = grid
+
         else:
-            relocated_grid = grid
+
+            relocated_grid = preloads.relocated_grid
 
         pixelization_grid = Grid2DRectangular.overlay_grid(
             shape_native=self.shape, grid=relocated_grid
@@ -140,6 +148,7 @@ class Voronoi(Pixelization):
         sparse_image_plane_grid: Grid2DSparse = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
+        preloads: Preloads = Preloads(),
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -163,16 +172,22 @@ class Voronoi(Pixelization):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
+        if preloads.relocated_grid is None:
+
+            if settings.use_border:
+                relocated_grid = grid.relocated_grid_from_grid(grid=grid)
+            else:
+                relocated_grid = grid
+
+        else:
+
+            relocated_grid = preloads.relocated_grid
+
         if settings.use_border:
-
-            relocated_grid = grid.relocated_grid_from_grid(grid=grid)
-
             relocated_pixelization_grid = grid.relocated_pixelization_grid_from_pixelization_grid(
                 pixelization_grid=sparse_grid
             )
-
         else:
-            relocated_grid = grid
             relocated_pixelization_grid = sparse_grid
 
         try:

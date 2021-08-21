@@ -21,6 +21,21 @@ class TestRectangular:
 
         assert pixelization.sparse_grid_from_grid(grid=sub_grid_2d_7x7) == None
 
+    def test__preloads_used_for_relocated_grid(self, sub_grid_2d_7x7):
+
+        pixelization = aa.pix.Rectangular(shape=(3, 3))
+
+        relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
+
+        mapper = pixelization.mapper_from_grid_and_sparse_grid(
+            grid=relocated_grid,
+            sparse_grid=None,
+            settings=aa.SettingsPixelization(use_border=True),
+            preloads=aa.Preloads(relocated_grid=relocated_grid),
+        )
+
+        assert (mapper.source_grid_slim == relocated_grid).all()
+
 
 class TestVoronoiMagnification:
     def test__number_of_pixels_setup_correct(self):
@@ -47,6 +62,23 @@ class TestVoronoiMagnification:
             pixelization_grid.nearest_pixelization_index_for_slim_index
             == sparse_grid.sparse_index_for_slim_index
         ).all()
+
+    def test__preloads_used_for_relocated_grid(self, sub_grid_2d_7x7):
+
+        pixelization = aa.pix.VoronoiMagnification(shape=(3, 3))
+
+        relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
+
+        sparse_grid = pixelization.sparse_grid_from_grid(grid=sub_grid_2d_7x7)
+
+        mapper = pixelization.mapper_from_grid_and_sparse_grid(
+            grid=relocated_grid,
+            sparse_grid=sparse_grid,
+            settings=aa.SettingsPixelization(use_border=True),
+            preloads=aa.Preloads(relocated_grid=relocated_grid),
+        )
+
+        assert (mapper.source_grid_slim == relocated_grid).all()
 
 
 class TestVoronoiBrightness:

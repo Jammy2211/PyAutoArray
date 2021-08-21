@@ -357,7 +357,9 @@ class Imaging(AbstractDataset):
 
         imaging.unmasked = unmasked_imaging
 
-        logger.info(f"IMAGING - Data masked, contains a total of {mask.pixels_in_mask} image-pixels")
+        logger.info(
+            f"IMAGING - Data masked, contains a total of {mask.pixels_in_mask} image-pixels"
+        )
 
         return imaging
 
