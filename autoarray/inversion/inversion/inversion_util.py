@@ -138,7 +138,7 @@ def w_tilde_curvature_imaging_from(
 
 @numba_util.jit()
 def w_tilde_curvature_preload_imaging_from(
-    noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index
+    noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index, threshold=1.0e-8
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     The matrix `w_tilde_curvature` is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF
@@ -217,10 +217,9 @@ def w_tilde_curvature_preload_imaging_from(
             if ip0 == ip1:
                 value /= 2.0
 
-            w_tilde_curvature_preload_tmp[ip0, kernel_index] = value
+            if value > threshold:
 
-            if value > 0.0:
-
+                w_tilde_curvature_preload_tmp[ip0, kernel_index] = value
                 w_tilde_curvature_indexes_tmp[ip0, kernel_index] = ip1
                 kernel_index += 1
 
