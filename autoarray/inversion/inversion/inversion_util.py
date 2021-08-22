@@ -138,7 +138,10 @@ def w_tilde_curvature_imaging_from(
 
 @numba_util.jit()
 def w_tilde_curvature_preload_imaging_from(
-    noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index, threshold=1.0e-8
+    noise_map_native: np.ndarray,
+    kernel_native: np.ndarray,
+    native_index_for_slim_index,
+    threshold=1.0e-8,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     The matrix `w_tilde_curvature` is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF
@@ -709,12 +712,21 @@ def reconstruction_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
     settings: SettingsInversion,
+    curvature_reg_matrix_cholesky: np.ndarray,
+    use_sksparse: bool,
 ):
 
-    try:
-        reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
-    except np.linalg.LinAlgError:
-        raise exc.InversionException()
+    if use_sksparse:
+
+        factor = curvature_reg_matrix_cholesky
+        reconstruction = factor(data_vector)
+
+    else:
+
+        try:
+            reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
 
     if settings.check_solution:
         if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-4).all():

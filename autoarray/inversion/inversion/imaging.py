@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Union
 
+from scipy.sparse import csc_matrix
+
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.inversion.abstract import AbstractInversionMatrix
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -86,7 +88,9 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         regularization: Regularization,
         curvature_matrix: np.ndarray,
         regularization_matrix: np.ndarray,
+        regularization_matrix_csc: csc_matrix,
         curvature_reg_matrix: np.ndarray,
+        curvature_reg_matrix_cholesky,
         reconstruction: np.ndarray,
         mapped_reconstructed_image: np.ndarray,
         settings: SettingsInversion,
@@ -130,6 +134,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             mapper=mapper,
             regularization=regularization,
             regularization_matrix=regularization_matrix,
+            regularization_matrix_csc=regularization_matrix_csc,
             reconstruction=reconstruction,
             settings=settings,
             preload_log_det_regularization_matrix_term=preload_log_det_regularization_matrix_term,
@@ -139,6 +144,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             self=self,
             curvature_matrix=curvature_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
+            curvature_reg_matrix_cholesky=curvature_reg_matrix_cholesky,
             regularization_matrix=regularization_matrix,
         )
 
@@ -203,12 +209,30 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             mapper=mapper
         )
 
-        curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
+        if settings.use_sksparse:
+
+            from sksparse.cholmod import cholesky
+
+            regularization_matrix_csc = csc_matrix(regularization_matrix)
+
+            curvature_reg_matrix = (
+                csc_matrix(curvature_matrix) + regularization_matrix_csc
+            )
+            curvature_reg_matrix_cholesky = cholesky(curvature_reg_matrix)
+
+        else:
+
+            regularization_matrix_csc = None
+            curvature_reg_matrix_cholesky = None
+
+            curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
 
         reconstruction = inversion_util.reconstruction_from(
             data_vector=data_vector,
             curvature_reg_matrix=curvature_reg_matrix,
             settings=settings,
+            curvature_reg_matrix_cholesky=curvature_reg_matrix_cholesky,
+            use_sksparse=settings.use_sksparse,
         )
 
         mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
@@ -235,7 +259,9 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             mapper=mapper,
             regularization=regularization,
             regularization_matrix=regularization_matrix,
+            regularization_matrix_csc=regularization_matrix_csc,
             curvature_reg_matrix=curvature_reg_matrix,
+            curvature_reg_matrix_cholesky=curvature_reg_matrix_cholesky,
             reconstruction=reconstruction,
             mapped_reconstructed_image=mapped_reconstructed_image,
             settings=settings,
@@ -289,12 +315,30 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             mapper=mapper
         )
 
-        curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
+        if settings.use_sksparse:
+
+            from sksparse.cholmod import cholesky
+
+            regularization_matrix_csc = csc_matrix(regularization_matrix)
+
+            curvature_reg_matrix = (
+                csc_matrix(curvature_matrix) + regularization_matrix_csc
+            )
+            curvature_reg_matrix_cholesky = cholesky(curvature_reg_matrix)
+
+        else:
+
+            regularization_matrix_csc = None
+            curvature_reg_matrix_cholesky = None
+
+            curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
 
         reconstruction = inversion_util.reconstruction_from(
             data_vector=data_vector,
             curvature_reg_matrix=curvature_reg_matrix,
             settings=settings,
+            curvature_reg_matrix_cholesky=curvature_reg_matrix_cholesky,
+            use_sksparse=settings.use_sksparse,
         )
 
         mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
@@ -314,7 +358,9 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             mapper=mapper,
             regularization=regularization,
             regularization_matrix=regularization_matrix,
+            regularization_matrix_csc=regularization_matrix_csc,
             curvature_reg_matrix=curvature_reg_matrix,
+            curvature_reg_matrix_cholesky=curvature_reg_matrix_cholesky,
             reconstruction=reconstruction,
             mapped_reconstructed_image=mapped_reconstructed_image,
             settings=settings,

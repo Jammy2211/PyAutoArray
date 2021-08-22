@@ -74,6 +74,7 @@ class AbstractInversionInterferometer(AbstractInversion):
             regularization_matrix=regularization_matrix,
             reconstruction=reconstruction,
             settings=settings,
+            regularization_matrix_csc=None,
         )
 
         self.visibilities = visibilities
@@ -188,7 +189,7 @@ class InversionInterferometerMatrix(
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
-        super(InversionInterferometerMatrix, self).__init__(
+        super().__init__(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,
@@ -204,6 +205,7 @@ class InversionInterferometerMatrix(
             curvature_matrix=curvature_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
             regularization_matrix=regularization_matrix,
+            curvature_reg_matrix_cholesky=None,
         )
 
         self.curvature_reg_matrix = curvature_reg_matrix

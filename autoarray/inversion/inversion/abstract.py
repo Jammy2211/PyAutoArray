@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.interpolate import griddata
+from scipy.sparse import csc_matrix
 from typing import Union
 
 from autoconf import conf
@@ -37,6 +38,13 @@ def log_determinant_of_matrix_cholesky(matrix):
         raise exc.InversionException()
 
 
+def log_determine_of_matrix_via_sksparse(matrix):
+    from sksparse.cholmod import cholesky
+
+    factor = cholesky(matrix.tocsc())
+    return factor.logdet()
+
+
 class AbstractInversion:
     def __init__(
         self,
@@ -44,6 +52,7 @@ class AbstractInversion:
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
         regularization_matrix: np.ndarray,
+        regularization_matrix_csc: csc_matrix,
         reconstruction: np.ndarray,
         settings: SettingsInversion,
         preload_log_det_regularization_matrix_term: float = None,
@@ -53,6 +62,7 @@ class AbstractInversion:
         self.mapper = mapper
         self.regularization = regularization
         self.regularization_matrix = regularization_matrix
+        self.regularization_matrix_csc = regularization_matrix_csc
         self.reconstruction = reconstruction
         self.settings = settings
         self.preload_log_det_regularization_matrix_term = (
@@ -140,9 +150,16 @@ class AbstractInversion:
 
     @property
     def log_det_regularization_matrix_term(self):
-        if self.preload_log_det_regularization_matrix_term is None:
-            return log_determinant_of_matrix_cholesky(self.regularization_matrix)
-        return self.preload_log_det_regularization_matrix_term
+
+        if self.preload_log_det_regularization_matrix_term is not None:
+            return self.preload_log_det_regularization_matrix_term
+
+        if self.settings.use_sksparse:
+            return log_determine_of_matrix_via_sksparse(
+                matrix=self.regularization_matrix_csc
+            )
+
+        return log_determinant_of_matrix_cholesky(self.regularization_matrix)
 
     @property
     def brightest_reconstruction_pixel(self):
@@ -182,15 +199,21 @@ class AbstractInversionMatrix:
         self,
         curvature_reg_matrix: np.ndarray,
         curvature_matrix: np.ndarray,
+        curvature_reg_matrix_cholesky,
         regularization_matrix: np.ndarray,
     ):
 
         self.curvature_matrix = curvature_matrix
         self.curvature_reg_matrix = curvature_reg_matrix
+        self.curvature_reg_matrix_cholesky = curvature_reg_matrix_cholesky
         self.regularization_matrix = regularization_matrix
 
     @property
     def log_det_curvature_reg_matrix_term(self):
+
+        if self.settings.use_sksparse:
+            return self.curvature_reg_matrix_cholesky.logdet()
+
         return log_determinant_of_matrix_cholesky(self.curvature_reg_matrix)
 
     @property

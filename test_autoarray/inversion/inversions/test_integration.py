@@ -4,6 +4,59 @@ import numpy as np
 import pytest
 
 
+class TestSKSparse:
+
+    def test__sksparse_solutions_same_as_numpy(self, masked_imaging_7x7, rectangular_mapper_7x7_3x3):
+
+        regularization = aa.reg.Constant(coefficient=1.0)
+
+        settings = aa.SettingsInversion(use_w_tilde=True)
+        settings._use_sksparse = False
+
+        inversion_via_numpy = aa.InversionImaging(
+            dataset=masked_imaging_7x7,
+            mapper=rectangular_mapper_7x7_3x3,
+            regularization=regularization,
+            settings=settings,
+        )
+
+        settings = aa.SettingsInversion(use_w_tilde=True)
+        settings._use_sksparse = True
+
+        inversion_via_sksparse = aa.InversionImaging(
+            dataset=masked_imaging_7x7,
+            mapper=rectangular_mapper_7x7_3x3,
+            regularization=regularization,
+            settings=settings,
+        )
+
+        assert inversion_via_sksparse.reconstruction == pytest.approx(inversion_via_numpy.reconstruction, 1.0e-4)
+
+        regularization = aa.reg.Constant(coefficient=1.0)
+
+        settings = aa.SettingsInversion(use_w_tilde=False)
+        settings._use_sksparse = False
+
+        inversion_via_numpy = aa.InversionImaging(
+            dataset=masked_imaging_7x7,
+            mapper=rectangular_mapper_7x7_3x3,
+            regularization=regularization,
+            settings=settings,
+        )
+
+        settings = aa.SettingsInversion(use_w_tilde=False)
+        settings._use_sksparse = True
+
+        inversion_via_sksparse = aa.InversionImaging(
+            dataset=masked_imaging_7x7,
+            mapper=rectangular_mapper_7x7_3x3,
+            regularization=regularization,
+            settings=settings,
+        )
+
+        assert inversion_via_sksparse.reconstruction == pytest.approx(inversion_via_numpy.reconstruction, 1.0e-4)
+
+
 class TestImagingRectangular:
     def test__5_simple_grid__no_sub_grid(self):
 
