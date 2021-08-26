@@ -8,14 +8,14 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
-from autoarray.inversion.inversion.imaging import InversionImagingMatrix
-from autoarray.inversion.inversion.interferometer import InversionInterferometerMatrix
+from autoarray.inversion.inversion.imaging import InversionImagingWTilde
+from autoarray.inversion.inversion.interferometer import InversionInterferometerMapping
 
 
 class InversionPlotter(MapperPlotter):
     def __init__(
         self,
-        inversion: Union[InversionImagingMatrix, InversionInterferometerMatrix],
+        inversion: Union[InversionImagingWTilde, InversionInterferometerMapping],
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),

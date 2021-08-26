@@ -150,9 +150,9 @@ class VectorField2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        radius : float
+        radius
             The radius of the circle outside of which vectors are removed.
-        centre : float
+        centre
             The centre of the circle outside of which vectors are removed.
 
         Returns
@@ -185,9 +185,9 @@ class VectorField2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        radius : float
+        radius
             The radius of the circle outside of which vectors are removed.
-        centre : float
+        centre
             The centre of the circle outside of which vectors are removed.
 
         Returns

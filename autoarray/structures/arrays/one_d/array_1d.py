@@ -153,7 +153,7 @@ class Array1D(AbstractArray1D):
 
         Parameters
         ----------
-        fill_value : float
+        fill_value
             The value all array elements are filled with.
         shape_native : Tuple[int]
             The 1D shape of the mask the array is paired with.

@@ -852,7 +852,7 @@ class Mask2D(AbstractMask2D):
         ----------
         shape_native
             The (y,x) shape of the mask in units of pixels.
-        radius : float
+        radius
             The radius in scaled units of the circle within which pixels are `False` and unmasked.
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
@@ -909,9 +909,9 @@ class Mask2D(AbstractMask2D):
         ----------
         shape_native
             The (y,x) shape of the mask in units of pixels.
-        inner_radius : float
+        inner_radius
             The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
-        outer_radius : float
+        outer_radius
             The outer radius in scaled units of the annulus within which pixels are `False` and unmasked.
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
@@ -970,11 +970,11 @@ class Mask2D(AbstractMask2D):
         ----------
         shape_native
             The (y,x) shape of the mask in units of pixels.
-        inner_radius : float
+        inner_radius
             The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
-        outer_radius : float
+        outer_radius
             The first outer radius in scaled units of the annulus within which pixels are `True` and masked.
-        outer_radius_2 : float
+        outer_radius_2
             The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
             outside of which all entries are `True` and masked.
         pixel_scales
@@ -1034,7 +1034,7 @@ class Mask2D(AbstractMask2D):
         ----------
         shape_native
             The (y,x) shape of the mask in units of pixels.
-        major_axis_radius : float
+        major_axis_radius
             The major-axis in scaled units of the ellipse within which pixels are unmasked.
         axis_ratio
             The axis-ratio of the ellipse within which pixels are unmasked.
@@ -1103,18 +1103,18 @@ class Mask2D(AbstractMask2D):
             The (y,x) shape of the mask in units of pixels.
         pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
-        inner_major_axis_radius : float
+        inner_major_axis_radius
             The major-axis in scaled units of the inner ellipse within which pixels are masked.
         inner_axis_ratio
             The axis-ratio of the inner ellipse within which pixels are masked.
-        inner_phi : float
+        inner_phi
             The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the
             positive x-axis).
-        outer_major_axis_radius : float
+        outer_major_axis_radius
             The major-axis in scaled units of the outer ellipse within which pixels are unmasked.
         outer_axis_ratio
             The axis-ratio of the outer ellipse within which pixels are unmasked.
-        outer_phi : float
+        outer_phi
             The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
             positive x-axis).
         sub_size
@@ -1223,7 +1223,7 @@ class Mask2D(AbstractMask2D):
             The full path of the fits file.
         hdu
             The HDU number in the fits file containing the image image.
-        pixel_scales : float or (float, float)
+        pixel_scales or (float, float)
             The scaled units to pixel units conversion factor of each pixel.
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.

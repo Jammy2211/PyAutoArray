@@ -15,7 +15,7 @@ def constant_regularization_matrix_from(
 
     Parameters
     ----------
-    coefficients : float
+    coefficients
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
     pixel_neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in

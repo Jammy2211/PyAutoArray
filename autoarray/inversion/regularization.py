@@ -204,7 +204,7 @@ class AdaptiveBrightness(Regularization):
         coefficients
             The regularization coefficients which controls the degree of smoothing of the inversion reconstruction in \
             high and low signal regions of the reconstruction.
-        signal_scale : float
+        signal_scale
             A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
             low signal regions.
         """

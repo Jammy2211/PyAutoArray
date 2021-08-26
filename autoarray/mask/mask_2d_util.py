@@ -156,7 +156,7 @@ def mask_2d_circular_from(
         The (y,x) shape of the mask in units of pixels.
     pixel_scales: float
         The scaled units to pixel units conversion factor of each pixel.
-    radius : float
+    radius
         The radius (in scaled units) of the circle within which pixels unmasked.
     centre
             The centre of the circle used to mask pixels.
@@ -211,9 +211,9 @@ def mask_2d_circular_annular_from(
         The (y,x) shape of the mask in units of pixels.
     pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
-    inner_radius : float
+    inner_radius
         The radius (in scaled units) of the inner circle outside of which pixels are unmasked.
-    outer_radius : float
+    outer_radius
         The radius (in scaled units) of the outer circle within which pixels are unmasked.
     centre
             The centre of the annulus used to mask pixels.
@@ -270,11 +270,11 @@ def mask_2d_circular_anti_annular_from(
         The (y,x) shape of the mask in units of pixels.
     pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
-    inner_radius : float
+    inner_radius
         The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
-    outer_radius : float
+    outer_radius
         The first outer radius in scaled units of the annulus within which pixels are `True` and masked.
-    outer_radius_2 : float
+    outer_radius_2
         The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
         outside of which all entries are `True` and masked.
     centre
@@ -360,9 +360,9 @@ def elliptical_radius_from(
 
     Parameters
     ----------
-    y_scaled : float
+    y_scaled
         The scaled y coordinate in Cartesian coordinates which is converted to elliptical coordinates.
-    x_scaled : float
+    x_scaled
         The scaled x coordinate in Cartesian coordinates which is converted to elliptical coordinates.
     angle
             The rotation angle in degrees counter-clockwise from the positive x-axis
@@ -407,7 +407,7 @@ def mask_2d_elliptical_from(
         The (y,x) shape of the mask in units of pixels.
     pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
-    major_axis_radius : float
+    major_axis_radius
         The major-axis (in scaled units) of the ellipse within which pixels are unmasked.
     axis_ratio
             The axis-ratio of the ellipse within which pixels are unmasked.
@@ -474,18 +474,18 @@ def mask_2d_elliptical_annular_from(
         The (y,x) shape of the mask in units of pixels.
     pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
-    inner_major_axis_radius : float
+    inner_major_axis_radius
         The major-axis (in scaled units) of the inner ellipse within which pixels are masked.
     inner_axis_ratio
             The axis-ratio of the inner ellipse within which pixels are masked.
-    inner_phi : float
+    inner_phi
         The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the
         positive x-axis).
-    outer_major_axis_radius : float
+    outer_major_axis_radius
         The major-axis (in scaled units) of the outer ellipse within which pixels are unmasked.
     outer_axis_ratio
             The axis-ratio of the outer ellipse within which pixels are unmasked.
-    outer_phi : float
+    outer_phi
         The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
         positive x-axis).
     centre
@@ -1010,7 +1010,7 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
     ----------
     mask_2d
         The mask that is increased or decreased in size via rescaling.
-    rescale_factor : float
+    rescale_factor
         The factor by which the mask is increased in size or decreased in size.
 
     Returns

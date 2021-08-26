@@ -1,6 +1,7 @@
 import autoarray as aa
 from autoarray.dataset.imaging import WTildeImaging
-from autoarray.inversion.inversion.imaging import InversionImagingMatrix
+from autoarray.inversion.inversion.imaging import InversionImagingWTilde
+from autoarray.inversion.inversion.imaging import InversionImagingMapping
 from autoarray import exc
 from autoarray.mock import mock
 
@@ -11,7 +12,7 @@ import pytest
 directory = path.dirname(path.realpath(__file__))
 
 
-class TestInversionImagingMatrix:
+class TestInversionImaging:
     def test__blurred_mapping_matrix_property(self, rectangular_inversion_7x7_3x3):
 
         assert rectangular_inversion_7x7_3x3.blurred_mapping_matrix[
@@ -34,15 +35,19 @@ class TestInversionImagingMatrix:
 
         with pytest.raises(exc.InversionException):
 
-            InversionImagingMatrix.from_data_via_pixelization_convolution(
-                image=np.ones(9),
-                noise_map=np.ones(9),
+            # noinspection PyTypeChecker
+            inversion = InversionImagingMapping(
+                image=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+                noise_map=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
                 convolver=mock.MockConvolver(matrix_shape),
                 mapper=mock.MockMapper(
                     matrix_shape=matrix_shape, source_grid_slim=grid
                 ),
                 regularization=mock.MockRegularization(matrix_shape),
             )
+
+            # noinspection PyStatementEffect
+            inversion.reconstruction
 
     def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_noise_map(
         self
@@ -66,7 +71,8 @@ class TestInversionImagingMatrix:
 
         with pytest.raises(exc.InversionException):
 
-            InversionImagingMatrix.from_data_via_w_tilde(
+            # noinspection PyTypeChecker
+            InversionImagingWTilde(
                 image=np.ones(9),
                 noise_map=np.ones(9),
                 convolver=mock.MockConvolver(matrix_shape),
@@ -98,22 +104,25 @@ class TestInversionImagingMatrix:
             mapping_matrix=blurred_mapping_matrix
         )
 
-        inversion = InversionImagingMatrix.from_data_via_pixelization_convolution(
+        preloads = aa.Preloads(
+            blurred_mapping_matrix=blurred_mapping_matrix,
+            curvature_matrix_sparse_preload=curvature_matrix_sparse_preload.astype(
+                "int"
+            ),
+            curvature_matrix_preload_counts=curvature_matrix_preload_counts.astype(
+                "int"
+            ),
+        )
+
+        # noinspection PyTypeChecker
+        inversion = InversionImagingMapping(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(matrix_shape=matrix_shape, source_grid_slim=grid),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
-            preloads=aa.Preloads(
-                blurred_mapping_matrix=blurred_mapping_matrix,
-                curvature_matrix_sparse_preload=curvature_matrix_sparse_preload.astype(
-                    "int"
-                ),
-                curvature_matrix_preload_counts=curvature_matrix_preload_counts.astype(
-                    "int"
-                ),
-            ),
+            preloads=preloads,
         )
 
         assert inversion.reconstruction == pytest.approx(

@@ -169,7 +169,7 @@ class Kernel2D(Array2D):
 
         Parameters
         ----------
-        fill_value : float
+        fill_value
             The value all array elements are filled with.
         shape_native
             The 2D shape of the mask the array is paired with.
@@ -296,7 +296,7 @@ class Kernel2D(Array2D):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sigma : float
+        sigma
             The value of sigma in the equation, describing the size and full-width half maximum of the Gaussian.
         centre
             The (y,x) central coordinates of the Gaussian.
@@ -426,7 +426,7 @@ class Kernel2D(Array2D):
 
         Parameters
         ----------
-        rescale_factor : float
+        rescale_factor
             The factor by which the kernel is rescaled. If this has a value of 1.0, the kernel is rescaled to the
             closest odd-sized dimensions (e.g. 20 -> 19). Higher / lower values scale to higher / lower dimensions.
         normalize : bool

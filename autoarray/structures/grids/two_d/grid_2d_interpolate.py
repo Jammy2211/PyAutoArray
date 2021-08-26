@@ -46,7 +46,7 @@ class Grid2DInterpolate(AbstractGrid2D):
         mask :Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
-        pixel_scales_interp : float
+        pixel_scales_interp
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
         """
@@ -187,7 +187,7 @@ class Grid2DInterpolate(AbstractGrid2D):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        pixel_scales_interp : float
+        pixel_scales_interp
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
         origin
@@ -227,7 +227,7 @@ class Grid2DInterpolate(AbstractGrid2D):
         ----------
         mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
-        pixel_scales_interp : float
+        pixel_scales_interp
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
         """
@@ -266,7 +266,7 @@ class Grid2DInterpolate(AbstractGrid2D):
             The mask whose masked pixels are used to setup the blurring grid.
         kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
-        pixel_scales_interp : float
+        pixel_scales_interp
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
         """

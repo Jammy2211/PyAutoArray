@@ -178,7 +178,7 @@ class Visibilities(AbstractVisibilities):
 
         Parameters
         ----------
-        fill_value : float
+        fill_value
             The value all real and imaginary array elements are filled with.
         shape_slim
             The 1D shape of output visibilities.

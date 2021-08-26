@@ -79,7 +79,7 @@ def array_eps_to_adus(array_eps, exposure_time_map, gain):
         The array which is converted from electrons per seconds to adus.
     exposure_time_map
         The exposure time at every data-point of the array.
-    gain : float
+    gain
         The gain of the instrument used in the conversion to / from counts and ADUs.
     """
     return np.multiply(array_eps, exposure_time_map) / gain
@@ -100,7 +100,7 @@ def array_adus_to_eps(array_adus, exposure_time_map, gain):
         The array which is converted from adus to electrons per seconds
     exposure_time_map
         The exposure time at every data-point of the array.
-    gain : float
+    gain
         The gain of the instrument used in the conversion to / from counts and ADUs.
     """
     return np.divide(gain * array_adus, exposure_time_map)
@@ -127,7 +127,7 @@ def array_with_random_uniform_values_added(array, upper_limit=0.001):
     ----------
     data
         The array that the uniform noise values are added to.
-    upper_limit : float
+    upper_limit
         The upper limit of the uniform distribution from which the values are drawn.
     """
     return array + upper_limit * np.random.uniform(size=array.shape_slim)
@@ -165,7 +165,7 @@ def noise_map_from_weight_map(weight_map):
 
     Parameters
     -----------
-    pixel_scales : float
+    pixel_scales
         The size of each pixel in scaled units.
     weight_map
         The weight-value of each pixel which is converted to a variance.
@@ -272,7 +272,7 @@ def psf_with_odd_dimensions_from_psf(psf):
 
     Parameters
     ----------
-    rescale_factor : float
+    rescale_factor
         The factor by which the kernel is rescaled. If this has a value of 1.0, the kernel is rescaled to the
         closest odd-sized dimensions (e.g. 20 -> 19). Higher / lower values scale to higher / lower dimensions.
     normalize : bool
@@ -292,7 +292,7 @@ def exposure_time_map_from_exposure_time_and_background_noise_map(
 
     Parameters
     ----------
-    exposure_time : float
+    exposure_time
         The total exposure time of the observation.
     background_noise_map
         The RMS standard deviation error in every data point due to a background component of the noise-map in units
@@ -380,7 +380,7 @@ def gaussian_noise_from_shape_and_sigma(shape, sigma, seed=-1):
     ----------
     shape
         The (x,y) image_shape of the generated Gaussian noises map.
-    read_noise : float
+    read_noise
         Standard deviation of the 1D Gaussian that each noises value is drawn from
     seed
         The seed of the random number generator, used for the random noises maps.

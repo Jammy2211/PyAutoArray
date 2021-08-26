@@ -378,7 +378,7 @@ class Array2D(AbstractArray2D):
 
         Parameters
         ----------
-        fill_value : float
+        fill_value
             The value all array elements are filled with.
         shape_native
             The 2D shape of the mask the array is paired with.

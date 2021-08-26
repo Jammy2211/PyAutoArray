@@ -57,7 +57,7 @@ class Grid2DIterate(AbstractGrid2D):
         mask :Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
-        fractional_accuracy : float
+        fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
             of the value at a higher sub_size to othe value computed using the previous sub_size.
         sub_steps : [int] or None
@@ -139,7 +139,7 @@ class Grid2DIterate(AbstractGrid2D):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        fractional_accuracy : float
+        fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
             of the value at a higher sub_size to othe value computed using the previous sub_size.
         sub_steps : [int] or None
@@ -185,7 +185,7 @@ class Grid2DIterate(AbstractGrid2D):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        fractional_accuracy : float
+        fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
             of the value at a higher sub_size to othe value computed using the previous sub_size.
         sub_steps : [int] or None
@@ -230,7 +230,7 @@ class Grid2DIterate(AbstractGrid2D):
         ----------
         mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
-        fractional_accuracy : float
+        fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
             of the value at a higher sub_size to othe value computed using the previous sub_size.
         sub_steps : [int] or None
@@ -272,7 +272,7 @@ class Grid2DIterate(AbstractGrid2D):
             The mask whose masked pixels are used to setup the blurring grid.
         kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
-        fractional_accuracy : float
+        fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
             of the value at a higher sub_size to othe value computed using the previous sub_size.
         sub_steps : [int] or None

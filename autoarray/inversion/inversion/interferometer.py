@@ -3,8 +3,9 @@ from scipy import sparse
 import pylops
 from typing import Union
 
+from autoconf import cached_property
+
 from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.inversion.inversion.abstract import AbstractInversionMatrix
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
@@ -15,7 +16,6 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
-from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
 
 
@@ -44,7 +44,18 @@ def inversion_interferometer_unpacked_from(
     regularization: Regularization,
     settings: SettingsInversion = SettingsInversion(),
 ):
-    return AbstractInversionInterferometer.from_data_mapper_and_regularization(
+    if not settings.use_linear_operators:
+
+        return InversionInterferometerMapping(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            transformer=transformer,
+            mapper=mapper,
+            regularization=regularization,
+            settings=settings,
+        )
+
+    return InversionInterferometerLinearOperator.from_data_mapper_and_regularization(
         visibilities=visibilities,
         noise_map=noise_map,
         transformer=transformer,
@@ -62,53 +73,25 @@ class AbstractInversionInterferometer(AbstractInversion):
         transformer: TransformerNUFFT,
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
-        regularization_matrix: np.ndarray,
-        reconstruction: np.ndarray,
-        settings: SettingsInversion,
+        settings: SettingsInversion = SettingsInversion(),
     ):
 
-        super(AbstractInversionInterferometer, self).__init__(
+        super().__init__(
             noise_map=noise_map,
             mapper=mapper,
             regularization=regularization,
-            regularization_matrix=regularization_matrix,
-            reconstruction=reconstruction,
             settings=settings,
-            regularization_matrix_csc=None,
         )
 
         self.visibilities = visibilities
         self.transformer = transformer
 
-    @classmethod
-    def from_data_mapper_and_regularization(
-        cls,
-        visibilities: Visibilities,
-        noise_map: VisibilitiesNoiseMap,
-        transformer: TransformerNUFFT,
-        mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
-        settings=SettingsInversion(use_linear_operators=True),
-    ):
+    @cached_property
+    def transformed_mapping_matrix(self) -> np.ndarray:
 
-        if not settings.use_linear_operators:
-            return InversionInterferometerMatrix.from_data_mapper_and_regularization(
-                visibilities=visibilities,
-                noise_map=noise_map,
-                transformer=transformer,
-                mapper=mapper,
-                regularization=regularization,
-                settings=settings,
-            )
-        else:
-            return InversionInterferometerLinearOperator.from_data_mapper_and_regularization(
-                visibilities=visibilities,
-                noise_map=noise_map,
-                transformer=transformer,
-                mapper=mapper,
-                regularization=regularization,
-                settings=settings,
-            )
+        return self.transformer.transform_mapping_matrix(
+            mapping_matrix=self.mapper.mapping_matrix
+        )
 
     @property
     def mapped_reconstructed_image(self):
@@ -136,9 +119,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         return None
 
 
-class InversionInterferometerMatrix(
-    AbstractInversionInterferometer, AbstractInversionMatrix
-):
+class InversionInterferometerMapping(AbstractInversionInterferometer):
     def __init__(
         self,
         visibilities: Visibilities,
@@ -146,12 +127,7 @@ class InversionInterferometerMatrix(
         transformer: TransformerNUFFT,
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
-        regularization_matrix: np.ndarray,
-        reconstruction: np.ndarray,
-        transformed_mapping_matrix: np.ndarray,
-        curvature_matrix: np.ndarray,
-        curvature_reg_matrix: np.ndarray,
-        settings: SettingsInversion,
+        settings: SettingsInversion = SettingsInversion(),
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -195,81 +171,32 @@ class InversionInterferometerMatrix(
             transformer=transformer,
             mapper=mapper,
             regularization=regularization,
-            regularization_matrix=regularization_matrix,
-            reconstruction=reconstruction,
             settings=settings,
         )
 
-        AbstractInversionMatrix.__init__(
-            self=self,
-            curvature_matrix=curvature_matrix,
-            curvature_reg_matrix=curvature_reg_matrix,
-            regularization_matrix=regularization_matrix,
-            curvature_reg_matrix_cholesky=None,
+    @cached_property
+    def data_vector(self) -> np.ndarray:
+
+        return inversion_util.data_vector_via_transformed_mapping_matrix_from(
+            transformed_mapping_matrix=self.transformed_mapping_matrix,
+            visibilities=self.visibilities,
+            noise_map=self.noise_map,
         )
 
-        self.curvature_reg_matrix = curvature_reg_matrix
-        self.transformed_mapping_matrix = transformed_mapping_matrix
-
-    @classmethod
-    def from_data_mapper_and_regularization(
-        cls,
-        visibilities: Visibilities,
-        noise_map: VisibilitiesNoiseMap,
-        transformer: TransformerNUFFT,
-        mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
-        settings=SettingsInversion(),
-    ):
-
-        transformed_mapping_matrix = transformer.transform_mapping_matrix(
-            mapping_matrix=mapper.mapping_matrix
-        )
-
-        data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrix,
-            visibilities=visibilities,
-            noise_map=noise_map,
-        )
+    @cached_property
+    def curvature_matrix(self) -> np.ndarray:
 
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=transformed_mapping_matrix.real, noise_map=noise_map.real
+            mapping_matrix=self.transformed_mapping_matrix.real,
+            noise_map=self.noise_map.real,
         )
 
         imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=transformed_mapping_matrix.imag, noise_map=noise_map.imag
+            mapping_matrix=self.transformed_mapping_matrix.imag,
+            noise_map=self.noise_map.imag,
         )
 
-        regularization_matrix = regularization.regularization_matrix_from_mapper(
-            mapper=mapper
-        )
-
-        curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
-        curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
-
-        try:
-            values = np.linalg.solve(curvature_reg_matrix, data_vector)
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
-
-        if settings.check_solution:
-            if np.isclose(a=values[0], b=values[1], atol=1e-4).all():
-                if np.isclose(a=values[0], b=values, atol=1e-4).all():
-                    raise exc.InversionException()
-
-        return InversionInterferometerMatrix(
-            visibilities=visibilities,
-            noise_map=noise_map,
-            transformer=transformer,
-            mapper=mapper,
-            curvature_matrix=curvature_matrix,
-            regularization=regularization,
-            transformed_mapping_matrix=transformed_mapping_matrix,
-            regularization_matrix=regularization_matrix,
-            curvature_reg_matrix=curvature_reg_matrix,
-            reconstruction=values,
-            settings=settings,
-        )
+        return np.add(real_curvature_matrix, imag_curvature_matrix)
 
     @property
     def mapped_reconstructed_visibilities(self):
@@ -290,10 +217,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         transformer: TransformerNUFFT,
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
-        regularization_matrix: np.ndarray,
-        reconstruction: np.ndarray,
-        log_det_curvature_reg_matrix_term: float,
-        settings: SettingsInversion,
+        settings: SettingsInversion = SettingsInversion(),
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -331,16 +255,12 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
-        self._log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
-
         super(InversionInterferometerLinearOperator, self).__init__(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,
             mapper=mapper,
             regularization=regularization,
-            regularization_matrix=regularization_matrix,
-            reconstruction=reconstruction,
             settings=settings,
         )
 
@@ -355,59 +275,58 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         settings=SettingsInversion(),
     ):
 
-        regularization_matrix = regularization.regularization_matrix_from_mapper(
-            mapper=mapper
-        )
-
-        Aop = pylops.MatrixMult(sparse.bsr_matrix(mapper.mapping_matrix))
-
-        Fop = transformer
-
-        Op = Fop * Aop
-
-        curvature_matrix_approx = np.multiply(
-            np.sum(noise_map.weight_list_ordered_1d),
-            mapper.mapping_matrix.T @ mapper.mapping_matrix,
-        )
-
-        preconditioner_matrix = np.add(curvature_matrix_approx, regularization_matrix)
-
-        preconditioner_inverse_matrix = np.linalg.inv(preconditioner_matrix)
-
-        MOp = pylops.MatrixMult(sparse.bsr_matrix(preconditioner_inverse_matrix))
-
-        log_det_curvature_reg_matrix_term = 2.0 * np.sum(
-            np.log(np.diag(np.linalg.cholesky(preconditioner_matrix)))
-        )
-
-        reconstruction = pylops.NormalEquationsInversion(
-            Op=Op,
-            Regs=None,
-            epsNRs=[1.0],
-            data=visibilities.ordered_1d,
-            Weight=pylops.Diagonal(diag=noise_map.weight_list_ordered_1d),
-            NRegs=[pylops.MatrixMult(sparse.bsr_matrix(regularization_matrix))],
-            M=MOp,
-            tol=settings.tolerance,
-            atol=settings.tolerance,
-            **dict(maxiter=settings.maxiter),
-        )
-
         return InversionInterferometerLinearOperator(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,
             mapper=mapper,
             regularization=regularization,
-            regularization_matrix=regularization_matrix,
-            reconstruction=np.real(reconstruction),
             settings=settings,
-            log_det_curvature_reg_matrix_term=log_det_curvature_reg_matrix_term,
         )
 
-    @property
+    @cached_property
+    def preconditioner_matrix(self):
+
+        curvature_matrix_approx = np.multiply(
+            np.sum(self.noise_map.weight_list_ordered_1d),
+            self.mapper.mapping_matrix.T @ self.mapper.mapping_matrix,
+        )
+
+        return np.add(curvature_matrix_approx, self.regularization_matrix)
+
+    @cached_property
+    def preconditioner_matrix_inverse(self):
+        return np.linalg.inv(self.preconditioner_matrix)
+
+    @cached_property
+    def reconstruction(self):
+
+        Aop = pylops.MatrixMult(sparse.bsr_matrix(self.mapper.mapping_matrix))
+
+        Fop = self.transformer
+
+        Op = Fop * Aop
+
+        MOp = pylops.MatrixMult(sparse.bsr_matrix(self.preconditioner_matrix_inverse))
+
+        return pylops.NormalEquationsInversion(
+            Op=Op,
+            Regs=None,
+            epsNRs=[1.0],
+            data=self.visibilities.ordered_1d,
+            Weight=pylops.Diagonal(diag=self.noise_map.weight_list_ordered_1d),
+            NRegs=[pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))],
+            M=MOp,
+            tol=self.settings.tolerance,
+            atol=self.settings.tolerance,
+            **dict(maxiter=self.settings.maxiter),
+        )
+
+    @cached_property
     def log_det_curvature_reg_matrix_term(self):
-        return self._log_det_curvature_reg_matrix_term
+        return 2.0 * np.sum(
+            np.log(np.diag(np.linalg.cholesky(self.preconditioner_matrix)))
+        )
 
     @property
     def mapped_reconstructed_visibilities(self):

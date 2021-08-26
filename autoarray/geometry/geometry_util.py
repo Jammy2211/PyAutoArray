@@ -168,7 +168,7 @@ def convert_pixel_scales_2d(
 
     Parameters
     ----------
-    pixel_scales : float or (float, float)
+    pixel_scales or (float, float)
         The input pixel
 
     Returns

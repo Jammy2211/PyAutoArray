@@ -124,16 +124,16 @@ class AbstractFit(ABC):
 
         Parameters
         ----------
-        chi_squared : float
+        chi_squared
             The chi-squared term of the inversion's fit to the data.
-        regularization_term : float
+        regularization_term
             The regularization term of the inversion, which is the sum of the difference between reconstructed \
             flux of every pixel multiplied by the regularization coefficient.
-        log_curvature_regularization_term : float
+        log_curvature_regularization_term
             The log of the determinant of the sum of the curvature and regularization matrices.
-        log_regularization_term : float
+        log_regularization_term
             The log of the determinant o the regularization matrix.
-        noise_normalization : float
+        noise_normalization
             The normalization noise_map-term for the data's noise-map.
         """
         if self.inversion is not None:

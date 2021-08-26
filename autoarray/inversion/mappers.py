@@ -1,3 +1,5 @@
+from autoconf import cached_property
+
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
@@ -8,6 +10,14 @@ from autoarray.inversion import mapper_util
 
 import itertools
 import numpy as np
+
+
+class UniqueMappings:
+    def __init__(self, data_to_pix_unique, data_weights, pix_lengths):
+
+        self.data_to_pix_unique = data_to_pix_unique.astype("int")
+        self.data_weights = data_weights
+        self.pix_lengths = pix_lengths.astype("int")
 
 
 def mapper(
@@ -115,6 +125,7 @@ class Mapper:
         self.data_pixelization_grid = data_pixelization_grid
 
         self._pixelization_index_for_sub_slim_index = None
+        self._slim_to_pixelization_unique = None
         self._mapping_matrix = None
         self.hyper_image = hyper_image
 
@@ -149,20 +160,31 @@ class Mapper:
 
         return all_sub_slim_indexes_for_pixelization_index
 
-    @property
+    @cached_property
+    def data_unique_mappings(self):
+
+        data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
+            data_pixels=self.source_grid_slim.shape_slim,
+            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+            sub_size=self.source_grid_slim.sub_size,
+        )
+
+        return UniqueMappings(
+            data_to_pix_unique=data_to_pix_unique,
+            data_weights=data_weights,
+            pix_lengths=pix_lengths,
+        )
+
+    @cached_property
     def mapping_matrix(self):
 
-        if self._mapping_matrix is None:
-
-            self._mapping_matrix = mapper_util.mapping_matrix_from(
-                pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
-                pixels=self.pixels,
-                total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
-                slim_index_for_sub_slim_index=self._slim_index_for_sub_slim_index,
-                sub_fraction=self.source_grid_slim.mask.sub_fraction,
-            )
-
-        return self._mapping_matrix
+        return mapper_util.mapping_matrix_from(
+            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+            pixels=self.pixels,
+            total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
+            slim_index_for_sub_slim_index=self._slim_index_for_sub_slim_index,
+            sub_fraction=self.source_grid_slim.mask.sub_fraction,
+        )
 
     def pixel_signals_from_signal_scale(self, signal_scale):
 
@@ -243,24 +265,18 @@ class MapperRectangular(Mapper):
     def shape_native(self):
         return self.source_pixelization_grid.shape_native
 
-    @property
+    @cached_property
     def pixelization_index_for_sub_slim_index(self):
         """
         The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels.
         """
 
-        if self._pixelization_index_for_sub_slim_index is None:
-
-            self._pixelization_index_for_sub_slim_index = grid_2d_util.grid_pixel_indexes_2d_slim_from(
-                grid_scaled_2d_slim=self.source_grid_slim,
-                shape_native=self.source_pixelization_grid.shape_native,
-                pixel_scales=self.source_pixelization_grid.pixel_scales,
-                origin=self.source_pixelization_grid.origin,
-            ).astype(
-                "int"
-            )
-
-        return self._pixelization_index_for_sub_slim_index
+        return grid_2d_util.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=self.source_grid_slim,
+            shape_native=self.source_pixelization_grid.shape_native,
+            pixel_scales=self.source_pixelization_grid.pixel_scales,
+            origin=self.source_pixelization_grid.origin,
+        ).astype("int")
 
     def reconstruction_from(self, solution_vector):
         """
@@ -317,26 +333,20 @@ class MapperVoronoi(Mapper):
             hyper_image=hyper_image,
         )
 
-    @property
+    @cached_property
     def pixelization_index_for_sub_slim_index(self):
         """
         The 1D index mappings between the sub pixels and Voronoi pixelization pixels.
         """
 
-        if self._pixelization_index_for_sub_slim_index is None:
-
-            self._pixelization_index_for_sub_slim_index = mapper_util.pixelization_index_for_voronoi_sub_slim_index_from(
-                grid=self.source_grid_slim,
-                nearest_pixelization_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,
-                slim_index_for_sub_slim_index=self.source_grid_slim.mask._slim_index_for_sub_slim_index,
-                pixelization_grid=self.source_pixelization_grid,
-                pixel_neighbors=self.source_pixelization_grid.pixel_neighbors,
-                pixel_neighbors_size=self.source_pixelization_grid.pixel_neighbors_size,
-            ).astype(
-                "int"
-            )
-
-        return self._pixelization_index_for_sub_slim_index
+        return mapper_util.pixelization_index_for_voronoi_sub_slim_index_from(
+            grid=self.source_grid_slim,
+            nearest_pixelization_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,
+            slim_index_for_sub_slim_index=self.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            pixelization_grid=self.source_pixelization_grid,
+            pixel_neighbors=self.source_pixelization_grid.pixel_neighbors,
+            pixel_neighbors_size=self.source_pixelization_grid.pixel_neighbors_size,
+        ).astype("int")
 
     @property
     def voronoi(self):

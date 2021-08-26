@@ -1,10 +1,14 @@
 import numpy as np
 from scipy.interpolate import griddata
 from scipy.sparse import csc_matrix
+from scipy.sparse.linalg import splu
 from typing import Union
 
+from autoconf import cached_property
 from autoconf import conf
 
+from autoarray.structures.visibilities import VisibilitiesNoiseMap
+from autoarray.preloads import Preloads
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
@@ -14,60 +18,25 @@ from autoarray.inversion.regularization import Regularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import exc
-
-
-def log_determinant_of_matrix_cholesky(matrix):
-    """There are two terms in the inversion's Bayesian log likelihood function which require the log determinant of \
-    a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
-
-    ln[det(F + H)] = ln[det(curvature_reg_matrix)]
-    ln[det(H)]     = ln[det(regularization_matrix)]
-
-    The curvature_reg_matrix is positive-definite, which means the above log determinants can be computed \
-    efficiently (compared to using np.det) by using a Cholesky decomposition first and summing the log of each \
-    diagonal term.
-
-    Parameters
-    -----------
-    matrix
-        The positive-definite matrix the log determinant is computed for.
-    """
-    try:
-        return 2.0 * np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
-    except np.linalg.LinAlgError:
-        raise exc.InversionException()
-
-
-def log_determine_of_matrix_via_sksparse(matrix):
-    from sksparse.cholmod import cholesky
-
-    factor = cholesky(matrix.tocsc())
-    return factor.logdet()
+from autoarray.inversion.inversion import inversion_util
 
 
 class AbstractInversion:
     def __init__(
         self,
-        noise_map: np.ndarray,
+        noise_map: Union[Array2D, VisibilitiesNoiseMap],
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
-        regularization_matrix: np.ndarray,
-        regularization_matrix_csc: csc_matrix,
-        reconstruction: np.ndarray,
-        settings: SettingsInversion,
-        preload_log_det_regularization_matrix_term: float = None,
+        settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = Preloads(),
     ):
 
         self.noise_map = noise_map
         self.mapper = mapper
         self.regularization = regularization
-        self.regularization_matrix = regularization_matrix
-        self.regularization_matrix_csc = regularization_matrix_csc
-        self.reconstruction = reconstruction
+
         self.settings = settings
-        self.preload_log_det_regularization_matrix_term = (
-            preload_log_det_regularization_matrix_term
-        )
+        self.preloads = preloads
 
     def interpolated_reconstructed_data_from_shape_native(self, shape_native=None):
         return self.interpolated_values_from_shape_native(
@@ -131,6 +100,39 @@ class AbstractInversion:
         )
 
     @property
+    def data_vector(self) -> np.ndarray:
+        raise NotImplementedError
+
+    @property
+    def curvature_matrix(self) -> np.ndarray:
+        raise NotImplementedError
+
+    @cached_property
+    def curvature_reg_matrix(self):
+        return np.add(self.curvature_matrix, self.regularization_matrix)
+
+    @cached_property
+    def curvature_reg_matrix_cholesky(self):
+
+        try:
+            return np.linalg.cholesky(self.curvature_reg_matrix)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
+
+    @cached_property
+    def regularization_matrix(self) -> np.ndarray:
+        return self.regularization.regularization_matrix_from_mapper(mapper=self.mapper)
+
+    @cached_property
+    def reconstruction(self):
+
+        return inversion_util.reconstruction_from(
+            data_vector=self.data_vector,
+            curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
+            settings=self.settings,
+        )
+
+    @property
     def regularization_term(self):
         """
         Returns the regularization term of an inversion. This term represents the sum of the difference in flux \
@@ -148,22 +150,35 @@ class AbstractInversion:
             np.matmul(self.regularization_matrix, self.reconstruction),
         )
 
+    @cached_property
+    def log_det_curvature_reg_matrix_term(self):
+        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_cholesky)))
+
     @property
     def log_det_regularization_matrix_term(self):
 
-        if self.preload_log_det_regularization_matrix_term is not None:
-            return self.preload_log_det_regularization_matrix_term
+        if self.preloads.log_det_regularization_matrix_term is not None:
+            return self.preloads.log_det_regularization_matrix_term
 
-        if self.settings.use_sksparse:
-            return log_determine_of_matrix_via_sksparse(
-                matrix=self.regularization_matrix_csc
-            )
+        lu = splu(csc_matrix(self.regularization_matrix))
+        diagL = lu.L.diagonal()
+        diagU = lu.U.diagonal()
+        diagL = diagL.astype(np.complex128)
+        diagU = diagU.astype(np.complex128)
 
-        return log_determinant_of_matrix_cholesky(self.regularization_matrix)
+        return np.real(np.log(diagL).sum() + np.log(diagU).sum())
 
     @property
     def brightest_reconstruction_pixel(self):
         return np.argmax(self.reconstruction)
+
+    @property
+    def errors_with_covariance(self):
+        return np.linalg.inv(self.curvature_reg_matrix)
+
+    @property
+    def errors(self):
+        return np.diagonal(self.errors_with_covariance)
 
     @property
     def brightest_reconstruction_pixel_centre(self):
@@ -192,34 +207,3 @@ class AbstractInversion:
         return self.regularization.regularization_weight_list_from_mapper(
             mapper=self.mapper
         )
-
-
-class AbstractInversionMatrix:
-    def __init__(
-        self,
-        curvature_reg_matrix: np.ndarray,
-        curvature_matrix: np.ndarray,
-        curvature_reg_matrix_cholesky,
-        regularization_matrix: np.ndarray,
-    ):
-
-        self.curvature_matrix = curvature_matrix
-        self.curvature_reg_matrix = curvature_reg_matrix
-        self.curvature_reg_matrix_cholesky = curvature_reg_matrix_cholesky
-        self.regularization_matrix = regularization_matrix
-
-    @property
-    def log_det_curvature_reg_matrix_term(self):
-
-        if self.settings.use_sksparse:
-            return self.curvature_reg_matrix_cholesky.logdet()
-
-        return log_determinant_of_matrix_cholesky(self.curvature_reg_matrix)
-
-    @property
-    def errors_with_covariance(self):
-        return np.linalg.inv(self.curvature_reg_matrix)
-
-    @property
-    def errors(self):
-        return np.diagonal(self.errors_with_covariance)

@@ -722,7 +722,7 @@ class Grid2D(AbstractGrid2D):
         ----------
         coordinates : [(float, float)]
             The list of coordinates which are removed from the grid if they are within the distance threshold.
-        distance : float
+        distance
             The distance threshold that coordinates are removed if they are within that of the input coordinates.
         """
 

@@ -1,11 +1,9 @@
 from autoconf import conf
 import autoarray as aa
-from autoarray.inversion.inversion import abstract
-from autoarray.inversion.inversion.imaging import InversionImagingMatrix
+from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mock import mock
 from autoarray.inversion import mappers
 from autoarray.inversion import regularization as reg
-from autoarray import exc
 
 import numpy as np
 from os import path
@@ -15,40 +13,37 @@ from typing import Optional, Union
 directory = path.dirname(path.realpath(__file__))
 
 
-class MockInversionImagingMatrix(InversionImagingMatrix):
+class MockInversion(AbstractInversion):
     def __init__(
         self,
-        image: Optional[aa.Array2D] = None,
         noise_map: Optional[aa.Array2D] = None,
-        convolver: Optional[aa.Convolver] = None,
         mapper: Optional[
             Union[mappers.MapperRectangular, mappers.MapperVoronoi, mock.MockMapper]
         ] = None,
         regularization: Optional[reg.Regularization] = None,
+        settings: Optional[aa.SettingsInversion] = None,
+        preloads: aa.Preloads = aa.Preloads(),
         curvature_matrix: Optional[np.ndarray] = None,
+        curvature_reg_matrix_cholesky=None,
         regularization_matrix: Optional[np.ndarray] = None,
         curvature_reg_matrix: Optional[np.ndarray] = None,
         reconstruction: Optional[np.ndarray] = None,
         mapped_reconstructed_image: Optional[np.ndarray] = None,
-        settings: Optional[aa.SettingsInversion] = None,
-        preload_log_det_regularization_matrix_term=None,
     ):
 
+        self.__dict__["curvature_matrix"] = curvature_matrix
+        self.__dict__["curvature_reg_matrix_cholesky"] = curvature_reg_matrix_cholesky
+        self.__dict__["regularization_matrix"] = regularization_matrix
+        self.__dict__["curvature_reg_matrix"] = curvature_reg_matrix
+        self.__dict__["reconstruction"] = reconstruction
+        self.__dict__["mapped_reconstructed_image"] = mapped_reconstructed_image
+
         super().__init__(
-            image=image,
             noise_map=noise_map,
-            convolver=convolver,
             mapper=mapper,
             regularization=regularization,
-            curvature_matrix=curvature_matrix,
-            regularization_matrix=regularization_matrix,
-            regularization_matrix_csc=None,
-            curvature_reg_matrix=curvature_reg_matrix,
-            curvature_reg_matrix_cholesky=None,
-            reconstruction=reconstruction,
-            mapped_reconstructed_image=mapped_reconstructed_image,
             settings=settings,
-            preload_log_det_regularization_matrix_term=preload_log_det_regularization_matrix_term,
+            preloads=preloads,
         )
 
 
@@ -61,7 +56,7 @@ class TestAbstractInversion:
             [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         )
 
-        inversion = MockInversionImagingMatrix(
+        inversion = MockInversion(
             reconstruction=reconstruction, regularization_matrix=regularization_matrix
         )
 
@@ -87,7 +82,7 @@ class TestAbstractInversion:
             [[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]]
         )
 
-        inversion = MockInversionImagingMatrix(
+        inversion = MockInversion(
             reconstruction=reconstruction, regularization_matrix=regularization_matrix
         )
 
@@ -120,9 +115,7 @@ class TestAbstractInversion:
 
         reconstruction = np.array([2.0, 3.0, 5.0, 0.0])
 
-        inversion = MockInversionImagingMatrix(
-            mapper=mapper, reconstruction=reconstruction
-        )
+        inversion = MockInversion(mapper=mapper, reconstruction=reconstruction)
 
         assert inversion.brightest_reconstruction_pixel == 2
         assert inversion.brightest_reconstruction_pixel_centre.in_list == [(5.0, 6.0)]
@@ -133,9 +126,7 @@ class TestAbstractInversion:
             [[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 3.0]]
         )
 
-        inversion = MockInversionImagingMatrix(
-            curvature_reg_matrix=curvature_reg_matrix
-        )
+        inversion = MockInversion(curvature_reg_matrix=curvature_reg_matrix)
 
         assert inversion.errors_with_covariance == pytest.approx(
             np.array([[2.5, -1.0, -0.5], [-1.0, 1.0, 0.0], [-0.5, 0.0, 0.5]]), 1.0e-2
@@ -181,7 +172,7 @@ class TestAbstractInversion:
 
         curvature_reg_matrix = np.eye(N=9)
 
-        inversion = MockInversionImagingMatrix(
+        inversion = MockInversion(
             mapper=mapper,
             reconstruction=reconstruction,
             curvature_reg_matrix=curvature_reg_matrix,
@@ -249,9 +240,7 @@ class TestAbstractInversion:
 
         reconstruction = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        inversion = MockInversionImagingMatrix(
-            mapper=mapper, reconstruction=reconstruction
-        )
+        inversion = MockInversion(mapper=mapper, reconstruction=reconstruction)
 
         interpolated_reconstruction = (
             inversion.interpolated_reconstructed_data_from_shape_native()
@@ -331,9 +320,7 @@ class TestAbstractInversion:
 
         reconstruction = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        inversion = MockInversionImagingMatrix(
-            mapper=mapper, reconstruction=reconstruction
-        )
+        inversion = MockInversion(mapper=mapper, reconstruction=reconstruction)
 
         interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_native(
             shape_native=(2, 2)
@@ -373,33 +360,30 @@ class TestLogDetMatrixCholesky:
 
         log_determinant = np.log(np.linalg.det(matrix))
 
-        assert log_determinant == pytest.approx(
-            abstract.log_determinant_of_matrix_cholesky(matrix), 1e-4
+        inversion = MockInversion(
+            curvature_reg_matrix_cholesky=np.linalg.cholesky(matrix)
         )
 
-    def test__determinant_of_positive_definite_matrix_2_via_cholesky(self):
+        assert log_determinant == pytest.approx(
+            inversion.log_det_curvature_reg_matrix_term, 1e-4
+        )
 
         matrix = np.array([[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]])
 
         log_determinant = np.log(np.linalg.det(matrix))
 
-        assert log_determinant == pytest.approx(
-            abstract.log_determinant_of_matrix_cholesky(matrix), 1e-4
+        inversion = MockInversion(
+            curvature_reg_matrix_cholesky=np.linalg.cholesky(matrix)
         )
 
-    def test__matrix_not_positive_definite__raises_reconstruction_exception(self):
-
-        matrix = np.array([[2.0, 0.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 0.0]])
-
-        with pytest.raises(exc.InversionException):
-            assert pytest.approx(
-                abstract.log_determinant_of_matrix_cholesky(matrix), 1e-4
-            )
+        assert log_determinant == pytest.approx(
+            inversion.log_det_curvature_reg_matrix_term, 1e-4
+        )
 
     def test__preload_of_log_det_regularizaation_term_overwrites_calculation(self):
 
-        inversion = MockInversionImagingMatrix(
-            preload_log_det_regularization_matrix_term=1.0
+        inversion = MockInversion(
+            preloads=aa.Preloads(log_det_regularization_matrix_term=1.0)
         )
 
-        assert inversion.preload_log_det_regularization_matrix_term == 1.0
+        assert inversion.log_det_regularization_matrix_term == 1.0

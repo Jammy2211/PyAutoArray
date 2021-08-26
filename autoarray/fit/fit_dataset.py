@@ -32,14 +32,14 @@ class FitDataset:
             The residual-map of the fit (data - model_data).
         chi_squared_map
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
-        chi_squared : float
+        chi_squared
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
-        reduced_chi_squared : float
+        reduced_chi_squared
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over \
             every data point.
-        noise_normalization : float
+        noise_normalization
             The overall normalization term of the noise_map, summed over every data point.
-        log_likelihood : float
+        log_likelihood
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 
@@ -98,14 +98,14 @@ class FitImaging(FitDataset):
             The residual-map of the fit (data - model_data).
         chi_squared_map
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
-        chi_squared : float
+        chi_squared
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
-        reduced_chi_squared : float
+        reduced_chi_squared
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over \
             every data point.
-        noise_normalization : float
+        noise_normalization
             The overall normalization term of the noise_map, summed over every data point.
-        log_likelihood : float
+        log_likelihood
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 
@@ -151,14 +151,14 @@ class FitInterferometer(FitDataset):
             The residual-map of the fit (data - model_data).
         chi_squared_map
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
-        chi_squared : float
+        chi_squared
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
-        reduced_chi_squared : float
+        reduced_chi_squared
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over \
             every data point.
-        noise_normalization : float
+        noise_normalization
             The overall normalization term of the noise_map, summed over every data point.
-        log_likelihood : float
+        log_likelihood
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 

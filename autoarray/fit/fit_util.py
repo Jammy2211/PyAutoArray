@@ -421,9 +421,9 @@ def log_likelihood_from(*, chi_squared: float, noise_normalization: float) -> fl
 
     Parameters
     ----------
-    chi_squared : float
+    chi_squared
         The chi-squared term for the model-simulator fit to the dataset.
-    noise_normalization : float
+    noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """
     return float(-0.5 * (chi_squared + noise_normalization))
@@ -440,12 +440,12 @@ def log_likelihood_with_regularization_from(
 
     Parameters
     ----------
-    chi_squared : float
+    chi_squared
         The chi-squared term of the inversion's fit to the dataset.
-    regularization_term : float
+    regularization_term
         The regularization term of the inversion, which is the sum of the difference between reconstructed
         flux of every pixel multiplied by the regularization coefficient.
-    noise_normalization : float
+    noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """
     return float(-0.5 * (chi_squared + regularization_term + noise_normalization))
@@ -468,16 +468,16 @@ def log_evidence_from(
 
     Parameters
     ----------
-    chi_squared : float
+    chi_squared
         The chi-squared term of the inversion's fit to the dataset.
-    regularization_term : float
+    regularization_term
         The regularization term of the inversion, which is the sum of the difference between reconstructed
         flux of every pixel multiplied by the regularization coefficient.
-    log_curvature_regularization_term : float
+    log_curvature_regularization_term
         The log of the determinant of the sum of the curvature and regularization matrices.
-    log_regularization_term : float
+    log_regularization_term
         The log of the determinant o the regularization matrix.
-    noise_normalization : float
+    noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """
     return float(

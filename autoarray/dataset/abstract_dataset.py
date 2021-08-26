@@ -84,16 +84,16 @@ class AbstractSettingsDataset:
             description of these options).
         sub_size
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
-        fractional_accuracy : float
+        fractional_accuracy
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
             uses when evaluating functions.
         sub_steps : [int]
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        pixel_scales_interp : float or (float, float)
+        pixel_scales_interp or (float, float)
             If the grid and / or grid_inversion use a `Grid2DInterpolate`, this sets the resolution of the interpolation
             grid.
-        signal_to_noise_limit : float
+        signal_to_noise_limit
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
             signa to noise limit.
         """

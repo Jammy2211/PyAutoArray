@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.linalg import cho_solve
 from typing import Tuple
 
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -710,23 +711,14 @@ def curvature_matrix_via_sparse_preload_from(
 
 def reconstruction_from(
     data_vector: np.ndarray,
-    curvature_reg_matrix: np.ndarray,
-    settings: SettingsInversion,
     curvature_reg_matrix_cholesky: np.ndarray,
-    use_sksparse: bool,
+    settings: SettingsInversion = SettingsInversion(),
 ):
 
-    if use_sksparse:
-
-        factor = curvature_reg_matrix_cholesky
-        reconstruction = factor(data_vector)
-
-    else:
-
-        try:
-            reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
+    try:
+        reconstruction = cho_solve((curvature_reg_matrix_cholesky, True), data_vector)
+    except np.linalg.LinAlgError:
+        raise exc.InversionException()
 
     if settings.check_solution:
         if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-4).all():

@@ -47,7 +47,7 @@ class Layout2D:
 
         Parameters
         -----------
-        normalization : float
+        normalization
             The normalization of the charge injection lines.
         regions: [(int,)]
             A list of the integer coordinates specifying the corners of each charge injection region \

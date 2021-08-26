@@ -3,6 +3,8 @@ import logging
 import numpy as np
 from typing import List, Optional, Tuple, Union
 
+from autoconf import cached_property
+
 from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
 from autoarray.dataset.abstract_dataset import AbstractDataset
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -71,16 +73,16 @@ class SettingsImaging(AbstractSettingsDataset):
             (see the `Grid2D` documentation for a description of these options).
         sub_size
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
-        fractional_accuracy : float
+        fractional_accuracy
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
             uses when evaluating functions.
         sub_steps : [int]
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        pixel_scales_interp : float or (float, float)
+        pixel_scales_interp or (float, float)
             If the grid and / or grid_inversion use a `Grid2DInterpolate`, this sets the resolution of the interpolation
             grid.
-        signal_to_noise_limit : float
+        signal_to_noise_limit
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
             signa to noise limit.
         psf_shape_2d
@@ -184,7 +186,7 @@ class Imaging(AbstractDataset):
             return self.psf_normalized
         return self.psf_unormalized
 
-    @property
+    @cached_property
     def blurring_grid(self):
         """
         Returns a blurring-grid from a mask and the 2D shape of the PSF kernel.
@@ -202,15 +204,11 @@ class Imaging(AbstractDataset):
             The blurring grid given the mask of the imaging data.
         """
 
-        if self._blurring_grid is None:
+        return self.grid.blurring_grid_from_kernel_shape(
+            kernel_shape_native=self.psf.shape_native
+        )
 
-            self._blurring_grid = self.grid.blurring_grid_from_kernel_shape(
-                kernel_shape_native=self.psf.shape_native
-            )
-
-        return self._blurring_grid
-
-    @property
+    @cached_property
     def convolver(self):
         """
         Returns a `Convolver` from a mask and 2D PSF kernel.
@@ -226,13 +224,9 @@ class Imaging(AbstractDataset):
         Convolver
             The convolver given the masked imaging data's mask and PSF.
         """
-        if self._convolver is None:
+        return Convolver(mask=self.mask, kernel=self.psf)
 
-            self._convolver = Convolver(mask=self.mask, kernel=self.psf)
-
-        return self._convolver
-
-    @property
+    @cached_property
     def w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
@@ -250,24 +244,20 @@ class Imaging(AbstractDataset):
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
-        if self._w_tilde is None:
+        logger.info("IMAGING - Computing W-Tilde... May take a moment.")
 
-            logger.info("IMAGING - Computing W-Tilde... May take a moment.")
+        preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
+            noise_map_native=self.noise_map.native,
+            kernel_native=self.psf.native,
+            native_index_for_slim_index=self.mask._native_index_for_slim_index,
+        )
 
-            preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
-                noise_map_native=self.noise_map.native,
-                kernel_native=self.psf.native,
-                native_index_for_slim_index=self.mask._native_index_for_slim_index,
-            )
-
-            self._w_tilde = WTildeImaging(
-                curvature_preload=preload,
-                indexes=indexes.astype("int"),
-                lengths=lengths.astype("int"),
-                noise_map_value=self.noise_map[0],
-            )
-
-        return self._w_tilde
+        return WTildeImaging(
+            curvature_preload=preload,
+            indexes=indexes.astype("int"),
+            lengths=lengths.astype("int"),
+            noise_map_value=self.noise_map[0],
+        )
 
     @classmethod
     def from_fits(
@@ -294,7 +284,7 @@ class Imaging(AbstractDataset):
         name
         image_path : str
             The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
-        pixel_scales : float
+        pixel_scales
             The size of each pixel in scaled units.
         image_hdu
             The hdu the image is contained in the .fits file specified by *image_path*.
@@ -439,18 +429,18 @@ class AbstractSimulatorImaging:
         ----------
         psf : Kernel2D
             An arrays describing the PSF kernel of the image.
-        exposure_time : float
+        exposure_time
             The exposure time of the simulated imaging.
-        background_sky_level : float
+        background_sky_level
             The level of the background sky of the simulated imaging.
         normalize_psf : bool
             If `True`, the PSF kernel is normalized so all values sum to 1.0.
-        read_noise : float
+        read_noise
             The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
             sigma equal to the value `read_noise`.
         add_poisson_noise : bool
             Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
-        noise_if_add_noise_false : float
+        noise_if_add_noise_false
             If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
             the value of noise assigned to every pixel in the noise-map.
         noise_seed

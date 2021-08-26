@@ -110,7 +110,7 @@ def mapping_matrix_from(
         The number of datas pixels in the observed datas and thus on the grid.
     slim_index_for_sub_slim_index
         The mappings between the data's sub slimmed indexes and the slimmed indexes on the non sub-sized indexes.
-    sub_fraction : float
+    sub_fraction
         The fractional area each sub-pixel takes up in an pixel.
     """
 
@@ -259,7 +259,7 @@ def adaptive_pixel_signals_from(
     -----------
     pixels
         The total number of pixels in the pixelization the regularization scheme is applied to.
-    signal_scale : float
+    signal_scale
         A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
         low signal regions.
     regular_to_pix

@@ -142,7 +142,7 @@ def resized_array_2d_from_array_2d(
         The (y,x) new pixel dimension of the trimmed array.
     origin
         The oigin of the resized array, e.g. the central pixel around which the array is extracted.
-    pad_value : float
+    pad_value
         If the reszied array is bigger in size than the input array, the value the padded edge values are filled in
         using.
 
@@ -230,7 +230,7 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(
         The 2D image array used to locate the pixel indexes in the noise-map which are replaced.
     noise_map_2d
         The 2D noise-map array whose values are replaced.
-    target_signal_to_noise : float
+    target_signal_to_noise
         The target signal-to-noise the noise-map valueus are changed to.
 
     Returns

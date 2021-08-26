@@ -570,7 +570,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         ----------
         voronoi : Voronoi
             The input Voronoi diagram that is being plotted.
-        radius : float, optional
+        radius, optional
             Distance to 'points at infinity'.
 
         Returns

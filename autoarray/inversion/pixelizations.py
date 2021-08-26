@@ -42,6 +42,37 @@ class Pixelization:
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
 
+    def relocated_grid_from(
+        self,
+        grid: Grid2D,
+        settings: SettingsPixelization = SettingsPixelization(),
+        preloads: Preloads = Preloads(),
+    ):
+
+        if preloads.relocated_grid is None:
+
+            if settings.use_border:
+                return grid.relocated_grid_from_grid(grid=grid)
+            else:
+                return grid
+
+        else:
+
+            return preloads.relocated_grid
+
+    def relocated_pixelization_grid_from(
+        self,
+        grid: Grid2D,
+        pixelization_grid: Grid2DSparse,
+        settings: SettingsPixelization = SettingsPixelization(),
+    ):
+        raise NotImplementedError
+
+    def pixelization_grid_from(
+        self, relocated_grid=None, relocated_pixelization_grid=None
+    ):
+        raise NotImplementedError
+
     def weight_map_from_hyper_image(self, hyper_image: np.ndarray):
 
         raise NotImplementedError()
@@ -81,7 +112,7 @@ class Rectangular(Pixelization):
         sparse_grid: Grid2D = None,
         sparse_image_plane_grid: Grid2D = None,
         hyper_image: np.ndarray = None,
-        settings=SettingsPixelization(),
+        settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
     ):
         """
@@ -101,25 +132,26 @@ class Rectangular(Pixelization):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        if preloads.relocated_grid is None:
-
-            if settings.use_border:
-                relocated_grid = grid.relocated_grid_from_grid(grid=grid)
-            else:
-                relocated_grid = grid
-
-        else:
-
-            relocated_grid = preloads.relocated_grid
-
-        pixelization_grid = Grid2DRectangular.overlay_grid(
-            shape_native=self.shape, grid=relocated_grid
+        relocated_grid = self.relocated_grid_from(
+            grid=grid, settings=settings, preloads=preloads
         )
+        pixelization_grid = self.pixelization_grid_from(relocated_grid=relocated_grid)
 
         return MapperRectangular(
             source_grid_slim=relocated_grid,
             source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
+        )
+
+    def pixelization_grid_from(
+        self,
+        relocated_grid=None,
+        relocated_pixelization_grid=None,
+        sparse_index_for_slim_index=None,
+    ):
+
+        return Grid2DRectangular.overlay_grid(
+            shape_native=self.shape, grid=relocated_grid
         )
 
     def sparse_grid_from_grid(
@@ -172,29 +204,19 @@ class Voronoi(Pixelization):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        if preloads.relocated_grid is None:
-
-            if settings.use_border:
-                relocated_grid = grid.relocated_grid_from_grid(grid=grid)
-            else:
-                relocated_grid = grid
-
-        else:
-
-            relocated_grid = preloads.relocated_grid
-
-        if settings.use_border:
-            relocated_pixelization_grid = grid.relocated_pixelization_grid_from_pixelization_grid(
-                pixelization_grid=sparse_grid
-            )
-        else:
-            relocated_pixelization_grid = sparse_grid
+        relocated_grid = self.relocated_grid_from(
+            grid=grid, settings=settings, preloads=preloads
+        )
+        relocated_pixelization_grid = self.relocated_pixelization_grid_from(
+            grid=grid, pixelization_grid=sparse_grid, settings=settings
+        )
 
         try:
 
-            pixelization_grid = Grid2DVoronoi(
-                grid=relocated_pixelization_grid,
-                nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
+            pixelization_grid = self.pixelization_grid_from(
+                relocated_grid=relocated_grid,
+                relocated_pixelization_grid=relocated_pixelization_grid,
+                sparse_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
             )
 
             return MapperVoronoi(
@@ -206,6 +228,31 @@ class Voronoi(Pixelization):
 
         except ValueError as e:
             raise e
+
+    def relocated_pixelization_grid_from(
+        self,
+        grid: Grid2D,
+        pixelization_grid: Grid2DSparse,
+        settings: SettingsPixelization = SettingsPixelization(),
+    ):
+
+        if settings.use_border:
+            return grid.relocated_pixelization_grid_from_pixelization_grid(
+                pixelization_grid=pixelization_grid
+            )
+        return pixelization_grid
+
+    def pixelization_grid_from(
+        self,
+        relocated_grid=None,
+        relocated_pixelization_grid=None,
+        sparse_index_for_slim_index=None,
+    ):
+
+        return Grid2DVoronoi(
+            grid=relocated_pixelization_grid,
+            nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
+        )
 
 
 class VoronoiMagnification(Voronoi):
