@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Union
+from typing import Dict, Optional, Union
 
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
@@ -23,6 +23,7 @@ def inversion_imaging_from(
     regularization: Regularization,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
+    profiling_dict: Optional[Dict] = None,
 ):
 
     return inversion_imaging_unpacked_from(
@@ -34,6 +35,7 @@ def inversion_imaging_from(
         regularization=regularization,
         settings=settings,
         preloads=preloads,
+        profiling_dict=profiling_dict,
     )
 
 
@@ -46,6 +48,7 @@ def inversion_imaging_unpacked_from(
     regularization: Regularization,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
+    profiling_dict: Optional[Dict] = None,
 ):
 
     if preloads.use_w_tilde is not None:
@@ -64,6 +67,7 @@ def inversion_imaging_unpacked_from(
             regularization=regularization,
             settings=settings,
             preloads=preloads,
+            profiling_dict=profiling_dict,
         )
 
     return InversionImagingMapping(
@@ -74,6 +78,7 @@ def inversion_imaging_unpacked_from(
         regularization=regularization,
         settings=settings,
         preloads=preloads,
+        profiling_dict=profiling_dict,
     )
 
 
@@ -87,8 +92,10 @@ class AbstractInversionImaging(AbstractInversion):
         regularization: Regularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None,
     ):
-        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
+        """
+        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
         The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
@@ -130,6 +137,7 @@ class AbstractInversionImaging(AbstractInversion):
             regularization=regularization,
             settings=settings,
             preloads=preloads,
+            profiling_dict=profiling_dict,
         )
 
     @cached_property
@@ -202,6 +210,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         regularization: Regularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -254,6 +263,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             regularization=regularization,
             settings=settings,
             preloads=preloads,
+            profiling_dict=profiling_dict,
         )
 
     @cached_property
@@ -330,6 +340,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         regularization: Regularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -372,6 +383,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             regularization=regularization,
             settings=settings,
             preloads=preloads,
+            profiling_dict=profiling_dict,
         )
 
     @cached_property

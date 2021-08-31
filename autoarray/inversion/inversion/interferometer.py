@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import sparse
 import pylops
-from typing import Union
+from typing import Dict, Optional, Union
 
 from autoconf import cached_property
 
@@ -24,6 +24,7 @@ def inversion_interferometer_from(
     mapper: Union[MapperRectangular, MapperVoronoi],
     regularization,
     settings=SettingsInversion(),
+    profiling_dict: Optional[Dict] = None,
 ):
 
     return inversion_interferometer_unpacked_from(
@@ -33,6 +34,7 @@ def inversion_interferometer_from(
         mapper=mapper,
         regularization=regularization,
         settings=settings,
+        profiling_dict=profiling_dict,
     )
 
 
@@ -43,6 +45,7 @@ def inversion_interferometer_unpacked_from(
     mapper: Union[MapperRectangular, MapperVoronoi],
     regularization: Regularization,
     settings: SettingsInversion = SettingsInversion(),
+    profiling_dict: Optional[Dict] = None,
 ):
     if not settings.use_linear_operators:
 
@@ -53,15 +56,17 @@ def inversion_interferometer_unpacked_from(
             mapper=mapper,
             regularization=regularization,
             settings=settings,
+            profiling_dict=profiling_dict,
         )
 
-    return InversionInterferometerLinearOperator.from_data_mapper_and_regularization(
+    return InversionInterferometerLinearOperator(
         visibilities=visibilities,
         noise_map=noise_map,
         transformer=transformer,
         mapper=mapper,
         regularization=regularization,
         settings=settings,
+        profiling_dict=profiling_dict,
     )
 
 
@@ -74,6 +79,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
         settings: SettingsInversion = SettingsInversion(),
+        profiling_dict: Optional[Dict] = None,
     ):
 
         super().__init__(
@@ -81,6 +87,7 @@ class AbstractInversionInterferometer(AbstractInversion):
             mapper=mapper,
             regularization=regularization,
             settings=settings,
+            profiling_dict=profiling_dict,
         )
 
         self.visibilities = visibilities
@@ -128,6 +135,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
         settings: SettingsInversion = SettingsInversion(),
+        profiling_dict: Optional[Dict] = None,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -172,6 +180,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             mapper=mapper,
             regularization=regularization,
             settings=settings,
+            profiling_dict=profiling_dict,
         )
 
     @cached_property
@@ -218,6 +227,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         mapper: Union[MapperRectangular, MapperVoronoi],
         regularization: Regularization,
         settings: SettingsInversion = SettingsInversion(),
+        profiling_dict: Optional[Dict] = None,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -255,33 +265,14 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
-        super(InversionInterferometerLinearOperator, self).__init__(
+        super().__init__(
             visibilities=visibilities,
             noise_map=noise_map,
             transformer=transformer,
             mapper=mapper,
             regularization=regularization,
             settings=settings,
-        )
-
-    @classmethod
-    def from_data_mapper_and_regularization(
-        cls,
-        visibilities: Visibilities,
-        noise_map: VisibilitiesNoiseMap,
-        transformer: TransformerNUFFT,
-        mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
-        settings=SettingsInversion(),
-    ):
-
-        return InversionInterferometerLinearOperator(
-            visibilities=visibilities,
-            noise_map=noise_map,
-            transformer=transformer,
-            mapper=mapper,
-            regularization=regularization,
-            settings=settings,
+            profiling_dict=profiling_dict,
         )
 
     @cached_property

@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+from typing import Dict, Optional
 
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
@@ -34,10 +35,13 @@ class SettingsPixelization:
 
 class Pixelization:
     def __init__(self):
-        """ Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
+        """
+        Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
         """
 
-    def mapper_from_grid_and_sparse_grid(self, grid: Grid2D, border: np.ndarray):
+    def mapper_from_grid_and_sparse_grid(
+        self, grid: Grid2D, border: np.ndarray, profiling_dict: Optional[Dict] = None
+    ):
         raise NotImplementedError(
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
@@ -114,6 +118,7 @@ class Rectangular(Pixelization):
         hyper_image: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None,
     ):
         """
         Setup a rectangular mapper from a rectangular pixelization, as follows:
@@ -131,6 +136,8 @@ class Rectangular(Pixelization):
         hyper_image
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
+
+        self.profiling_dict = profiling_dict
 
         relocated_grid = self.relocate_grid_via_border(
             grid=grid, settings=settings, preloads=preloads
@@ -181,6 +188,7 @@ class Voronoi(Pixelization):
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None,
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -203,6 +211,8 @@ class Voronoi(Pixelization):
         hyper_image
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
+
+        self.profiling_dict = profiling_dict
 
         relocated_grid = self.relocate_grid_via_border(
             grid=grid, settings=settings, preloads=preloads

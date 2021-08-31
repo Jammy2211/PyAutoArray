@@ -1,3 +1,7 @@
+import itertools
+import numpy as np
+from typing import Dict, Optional
+
 from autoconf import cached_property
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -7,9 +11,6 @@ from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.inversion import mapper_util
-
-import itertools
-import numpy as np
 
 
 class UniqueMappings:
@@ -50,6 +51,7 @@ class Mapper:
         source_pixelization_grid,
         data_pixelization_grid=None,
         hyper_image=None,
+        profiling_dict: Optional[Dict] = None,
     ):
         """
         Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array in the form of
@@ -128,6 +130,7 @@ class Mapper:
         self._slim_to_pixelization_unique = None
         self._mapping_matrix = None
         self.hyper_image = hyper_image
+        self.profiling_dict = profiling_dict
 
     @property
     def pixels(self):
@@ -236,6 +239,7 @@ class MapperRectangular(Mapper):
         source_pixelization_grid,
         data_pixelization_grid=None,
         hyper_image=None,
+        profiling_dict: Optional[Dict] = None,
     ):
         """
         Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array in the form of
@@ -259,6 +263,7 @@ class MapperRectangular(Mapper):
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
             hyper_image=hyper_image,
+            profiling_dict=profiling_dict,
         )
 
     @property
@@ -305,6 +310,7 @@ class MapperVoronoi(Mapper):
         source_pixelization_grid,
         data_pixelization_grid=None,
         hyper_image=None,
+        profiling_dict: Optional[Dict] = None,
     ):
         """
         Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array in the form of
@@ -331,6 +337,7 @@ class MapperVoronoi(Mapper):
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
             hyper_image=hyper_image,
+            profiling_dict=profiling_dict,
         )
 
     @cached_property

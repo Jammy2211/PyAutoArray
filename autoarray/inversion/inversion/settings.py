@@ -1,7 +1,5 @@
 import logging
 
-from autoconf import conf
-
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 

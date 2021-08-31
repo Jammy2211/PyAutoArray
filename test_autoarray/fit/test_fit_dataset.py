@@ -390,3 +390,38 @@ class TestFitInterferometer:
         assert (
             fit_interferometer_7.dirty_chi_squared_map == dirty_chi_squared_map
         ).all()
+
+
+class TestProfilingDict:
+    def test__profiles_appropriate_functions(self):
+
+        mask = aa.Mask2D.manual(
+            mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
+        )
+
+        data = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+        noise_map = aa.Array2D.manual_mask(array=[2.0, 2.0, 2.0, 2.0], mask=mask)
+
+        imaging = aa.Imaging(image=data, noise_map=noise_map)
+
+        masked_imaging = imaging.apply_mask(mask=mask)
+
+        model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+
+        profiling_dict = {}
+
+        fit = aa.FitData(
+            data=masked_imaging.image,
+            noise_map=masked_imaging.noise_map,
+            model_data=model_image,
+            mask=mask,
+            use_mask_in_fit=False,
+            profiling_dict=profiling_dict,
+        )
+
+        fit = aa.FitImaging(
+            imaging=masked_imaging, fit=fit, profiling_dict=profiling_dict
+        )
+        fit.figure_of_merit
+
+        assert "figure_of_merit" in fit.profiling_dict

@@ -30,7 +30,7 @@ class AbstractInversion:
         regularization: Regularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None
+        profiling_dict: Optional[Dict] = None,
     ):
 
         self.noise_map = noise_map

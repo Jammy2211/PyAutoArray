@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Union
+from typing import Dict, Optional, Union
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -10,7 +10,12 @@ from autoarray.fit.fit_data import FitDataComplex
 class FitDataset:
 
     # noinspection PyUnresolvedReferences
-    def __init__(self, dataset, fit: Union[FitData, FitDataComplex]):
+    def __init__(
+        self,
+        dataset,
+        fit: Union[FitData, FitDataComplex],
+        profiling_dict: Optional[Dict] = None,
+    ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
         Parameters
@@ -42,6 +47,7 @@ class FitDataset:
         log_likelihood
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
+        self.profiling_dict = profiling_dict
 
         self.dataset = dataset
         self.fit = fit
@@ -76,7 +82,7 @@ class FitDataset:
 
 
 class FitImaging(FitDataset):
-    def __init__(self, imaging, fit: FitData):
+    def __init__(self, imaging, fit: FitData, profiling_dict: Optional[Dict] = None):
         """Class to fit a masked imaging dataset.
 
         Parameters
@@ -109,7 +115,7 @@ class FitImaging(FitDataset):
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 
-        super().__init__(dataset=imaging, fit=fit)
+        super().__init__(dataset=imaging, fit=fit, profiling_dict=profiling_dict)
 
     @property
     def mask(self):
@@ -129,7 +135,9 @@ class FitImaging(FitDataset):
 
 
 class FitInterferometer(FitDataset):
-    def __init__(self, interferometer, fit: FitDataComplex):
+    def __init__(
+        self, interferometer, fit: FitDataComplex, profiling_dict: Optional[Dict] = None
+    ):
         """Class to fit a masked interferometer dataset.
 
         Parameters
@@ -162,7 +170,7 @@ class FitInterferometer(FitDataset):
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 
-        super().__init__(dataset=interferometer, fit=fit)
+        super().__init__(dataset=interferometer, fit=fit, profiling_dict=profiling_dict)
 
     @property
     def mask(self):

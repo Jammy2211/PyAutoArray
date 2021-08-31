@@ -19,7 +19,7 @@ class AbstractFit(ABC):
         mask=None,
         inversion=None,
         use_mask_in_fit=False,
-        profiling_dict: Optional[Dict] = None
+        profiling_dict: Optional[Dict] = None,
     ):
 
         self.data = data
