@@ -1,12 +1,13 @@
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-from typing import Union
+from typing import Dict, Optional, Union
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 
 from autoarray.fit import fit_util
+from autoarray.numba_util import profile_func
 
 
 class AbstractFit(ABC):
@@ -18,6 +19,7 @@ class AbstractFit(ABC):
         mask=None,
         inversion=None,
         use_mask_in_fit=False,
+        profiling_dict: Optional[Dict] = None
     ):
 
         self.data = data
@@ -26,6 +28,8 @@ class AbstractFit(ABC):
         self._mask = mask
         self.inversion = inversion
         self.use_mask_in_fit = use_mask_in_fit
+
+        self.profiling_dict = profiling_dict
 
     @property
     @abstractmethod
@@ -146,6 +150,7 @@ class AbstractFit(ABC):
             )
 
     @property
+    @profile_func
     def figure_of_merit(self) -> float:
         if self.inversion is None:
             return self.log_likelihood

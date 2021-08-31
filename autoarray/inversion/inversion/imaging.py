@@ -2,6 +2,7 @@ import numpy as np
 from typing import Union
 
 from autoconf import cached_property
+from autoarray.numba_util import profile_func
 
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -13,7 +14,6 @@ from autoarray.preloads import Preloads
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.dataset.imaging import WTildeImaging
 
-from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
 
 
@@ -289,8 +289,20 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
     @cached_property
-    def mapped_reconstructed_image(self):
+    @profile_func
+    def mapped_reconstructed_image(self) -> Array2D:
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
 
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
         mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
             data_to_pix_unique=self.mapper.data_unique_mappings.data_to_pix_unique,
             data_weights=self.mapper.data_unique_mappings.data_weights,
@@ -390,8 +402,20 @@ class InversionImagingMapping(AbstractInversionImaging):
             )
 
     @cached_property
-    def mapped_reconstructed_image(self):
+    @profile_func
+    def mapped_reconstructed_image(self) -> Array2D:
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane (via
+        the blurred mapping_matrix) and reconstruct the image data.
 
+        This uses the blurring mapping matrix which describes the PSF convolved mappings of flux between every
+        source pixel and image pixels, which is a quantity that is already computed when using the mapping formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
         mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=self.blurred_mapping_matrix,
             reconstruction=self.reconstruction,

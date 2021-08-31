@@ -1,4 +1,7 @@
+from functools import wraps
 import numba
+import time
+from typing import Callable
 
 from autoconf import conf
 
@@ -31,45 +34,49 @@ def jit(nopython=nopython, cache=cache, parallel=parallel):
     return wrapper
 
 
-class CachedAttribute(object):
+def profile_func(func: Callable):
     """
-    Computes attribute value and caches it in instance.
+    Time every function called in a class and averages over repeated calls for profiling likelihood functions.
 
-    Example:
-        class MyClass(object):
-            def myMethod(self):
-                # ...
-            myMethod = CachedAttribute(myMethod)
-    Use "del inst.myMethod" to clear cache.
+    The timings are stored in the variable `_profiling_dict` of the class(s) from which each function is called,
+    which are collected at the end of the profiling process via recursion.
+
+    Parameters
+    ----------
+    func : (obj, grid, *args, **kwargs) -> Object
+        A function which is used in the likelihood function..
+
+    Returns
+    -------
+        A function that times the function being called.
     """
 
-    def __init__(self, method, name=None):
-        self.method = method
-        self.name = name or method.__name__
+    @wraps(func)
+    def wrapper(obj: object, *args, **kwargs):
+        """
+        Time a function and average over repeated calls for profiling an `Analysis` class's likelihood function. The
+        time is stored in a `_profiling_dict` attribute.
 
-    def __get__(self, inst, cls):
-        if inst is None:
-            return self
-        result = self.method(inst)
-        setattr(inst, self.name, result)
+        Returns
+        -------
+            The result of the function being timed.
+        """
+
+        if obj.profiling_dict is None:
+            return func(obj, *args, **kwargs)
+
+        repeats = (
+            obj.profiling_dict["repeats"] if "repeats" in obj.profiling_dict else 1
+        )
+
+        start = time.time()
+        for i in range(repeats):
+            result = func(obj, *args, **kwargs)
+
+        time_calc = (time.time() - start) / repeats
+
+        obj.profiling_dict[func.__name__] = time_calc
+
         return result
 
-
-class CachedClassAttribute(object):
-    """Computes attribute value and caches it in class.
-
-    Example:
-        class MyClass(object):
-            def myMethod(cls):
-                # ...
-            myMethod = CachedClassAttribute(myMethod)
-    Use "del MyClass.myMethod" to clear cache."""
-
-    def __init__(self, method, name=None):
-        self.method = method
-        self.name = name or method.__name__
-
-    def __get__(self, inst, cls):
-        result = self.method(cls)
-        setattr(cls, self.name, result)
-        return result
+    return wrapper

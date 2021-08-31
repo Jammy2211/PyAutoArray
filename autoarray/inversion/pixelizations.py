@@ -42,7 +42,7 @@ class Pixelization:
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
 
-    def relocated_grid_from(
+    def relocate_grid_via_border(
         self,
         grid: Grid2D,
         settings: SettingsPixelization = SettingsPixelization(),
@@ -60,7 +60,7 @@ class Pixelization:
 
             return preloads.relocated_grid
 
-    def relocated_pixelization_grid_from(
+    def relocate_pixelization_grid_via_border(
         self,
         grid: Grid2D,
         pixelization_grid: Grid2DSparse,
@@ -68,7 +68,7 @@ class Pixelization:
     ):
         raise NotImplementedError
 
-    def pixelization_grid_from(
+    def make_pixelization_grid(
         self, relocated_grid=None, relocated_pixelization_grid=None
     ):
         raise NotImplementedError
@@ -132,10 +132,10 @@ class Rectangular(Pixelization):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        relocated_grid = self.relocated_grid_from(
+        relocated_grid = self.relocate_grid_via_border(
             grid=grid, settings=settings, preloads=preloads
         )
-        pixelization_grid = self.pixelization_grid_from(relocated_grid=relocated_grid)
+        pixelization_grid = self.make_pixelization_grid(relocated_grid=relocated_grid)
 
         return MapperRectangular(
             source_grid_slim=relocated_grid,
@@ -143,7 +143,7 @@ class Rectangular(Pixelization):
             hyper_image=hyper_image,
         )
 
-    def pixelization_grid_from(
+    def make_pixelization_grid(
         self,
         relocated_grid=None,
         relocated_pixelization_grid=None,
@@ -204,16 +204,16 @@ class Voronoi(Pixelization):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        relocated_grid = self.relocated_grid_from(
+        relocated_grid = self.relocate_grid_via_border(
             grid=grid, settings=settings, preloads=preloads
         )
-        relocated_pixelization_grid = self.relocated_pixelization_grid_from(
+        relocated_pixelization_grid = self.relocate_pixelization_grid_via_border(
             grid=grid, pixelization_grid=sparse_grid, settings=settings
         )
 
         try:
 
-            pixelization_grid = self.pixelization_grid_from(
+            pixelization_grid = self.make_pixelization_grid(
                 relocated_grid=relocated_grid,
                 relocated_pixelization_grid=relocated_pixelization_grid,
                 sparse_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
@@ -229,7 +229,7 @@ class Voronoi(Pixelization):
         except ValueError as e:
             raise e
 
-    def relocated_pixelization_grid_from(
+    def relocate_pixelization_grid_via_border(
         self,
         grid: Grid2D,
         pixelization_grid: Grid2DSparse,
@@ -242,7 +242,7 @@ class Voronoi(Pixelization):
             )
         return pixelization_grid
 
-    def pixelization_grid_from(
+    def make_pixelization_grid(
         self,
         relocated_grid=None,
         relocated_pixelization_grid=None,

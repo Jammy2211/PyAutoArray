@@ -1,5 +1,6 @@
 from . import exc
 from . import util
+from .numba_util import profile_func
 from .preloads import Preloads
 from .dataset import preprocess
 from .dataset.imaging import SettingsImaging
@@ -21,9 +22,7 @@ from .inversion import pixelizations as pix
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.imaging import inversion_imaging_from as InversionImaging
-from .inversion.inversion.interferometer import (
-    inversion_interferometer_from as InversionInterferometer,
-)
+from .inversion.inversion.interferometer import inversion_interferometer_from as InversionInterferometer
 from .inversion.mappers import mapper as Mapper
 from .inversion.pixelizations import SettingsPixelization
 from .mask.mask_1d import Mask1D

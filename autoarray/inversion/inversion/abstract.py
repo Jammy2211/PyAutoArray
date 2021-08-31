@@ -2,10 +2,11 @@ import numpy as np
 from scipy.interpolate import griddata
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import splu
-from typing import Union
+from typing import Dict, Optional, Union
 
 from autoconf import cached_property
 from autoconf import conf
+from autoarray.numba_util import profile_func
 
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.preloads import Preloads
@@ -29,6 +30,7 @@ class AbstractInversion:
         regularization: Regularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None
     ):
 
         self.noise_map = noise_map
@@ -37,6 +39,8 @@ class AbstractInversion:
 
         self.settings = settings
         self.preloads = preloads
+
+        self.profiling_dict = profiling_dict
 
     def interpolated_reconstructed_data_from_shape_native(self, shape_native=None):
         return self.interpolated_values_from_shape_native(
@@ -133,16 +137,19 @@ class AbstractInversion:
         )
 
     @property
+    @profile_func
     def regularization_term(self):
         """
-        Returns the regularization term of an inversion. This term represents the sum of the difference in flux \
-        between every pair of neighboring pixels. This is computed as:
+        Returns the regularization term of an inversion. This term represents the sum of the difference in flux
+        between every pair of neighboring pixels.
+
+        This is computed as:
 
         s_T * H * s = solution_vector.T * regularization_matrix * solution_vector
 
         The term is referred to as *G_l* in Warren & Dye 2003, Nightingale & Dye 2015.
 
-        The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens, \
+        The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens,
         this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
         """
         return np.matmul(
@@ -155,8 +162,20 @@ class AbstractInversion:
         return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_cholesky)))
 
     @property
-    def log_det_regularization_matrix_term(self):
+    @profile_func
+    def log_det_regularization_matrix_term(self) -> float:
+        """
+        The Bayesian evidence of an inversion which quantifies its overall goodness-of-fit uses the log determinant
+        of regularization matrix, Log[Det[Lambda*H]].
 
+        Unlike the determinant of the curvature reg matrix, which uses an existing preloading Cholesky decomposition
+        used for the source reconstruction, this uses scipy sparse linear algebra to solve the determinant efficiently.
+
+        Returns
+        -------
+        float
+            The log determinant of the regularization matrix.
+        """
         if self.preloads.log_det_regularization_matrix_term is not None:
             return self.preloads.log_det_regularization_matrix_term
 

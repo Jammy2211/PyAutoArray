@@ -3,7 +3,7 @@ import matplotlib
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 
-from typing import Union, List
+from typing import Union, List, Optional, Tuple
 
 
 def set_backend():
@@ -28,7 +28,6 @@ import matplotlib.cm as cm
 import numpy as np
 from os import path
 import os
-import typing
 
 
 from autoarray.structures.abstract_structure import AbstractStructure
@@ -45,26 +44,27 @@ class Units:
         """
         This object controls the units of a plotted figure, and performs multiple tasks when making the plot:
 
-        1) Species the units of the plot (e.g. meters, kilometers) and contains a conversion factor which converts
-           the plotted data from its current units (e.g. meters) to the units plotted (e.g. kilometeters). Pixel units
-           can be used if `use_scaled=False`.
+        1: Species the units of the plot (e.g. meters, kilometers) and contains a conversion factor which converts
+        the plotted data from its current units (e.g. meters) to the units plotted (e.g. kilometeters). Pixel units
+        can be used if `use_scaled=False`.
 
-        2) Uses the conversion above to manually override the yticks and xticks of the figure, so it appears in the
-           converted units.
+        2: Uses the conversion above to manually override the yticks and xticks of the figure, so it appears in the
+        converted units.
 
-        3) Sets the ylabel and xlabel to include a string containing the units.
+        3: Sets the ylabel and xlabel to include a string containing the units.
 
         Parameters
         ----------
-        use_scaled : bool
-            If True, plot the 2D data with y and x ticks corresponding to its scaled coordinates (its `pixel_scales`
-            attribute is used as the `conversion_factor`). If `False` plot them in pixel units.
+        use_scaled
+            If True, plot the 2D data with y and x ticks corresponding to its scaled
+            coordinates (its `pixel_scales` attribute is used as the `conversion_factor`). If `False` plot them in
+            pixel units.
         conversion_factor
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
-        in_kpc : bool
-            If True, the scaled units are converted to kilo-parsecs via the input Comsology of the plot (this is only
-            relevent for the projects PyAutoGalaxy / PyAutoLens).
+        in_kpc
+            If True, the scaled units are converted to kilo-parsecs via the input Comsology of the
+            plot (this is only relevant for the projects PyAutoGalaxy / PyAutoLens).
         """
 
         self.use_scaled = use_scaled
@@ -127,8 +127,8 @@ class AbstractMatWrap:
         [subplot]
         figsize=auto
         
-        This specifies that when a data structure (like the `Array2D` above) is plotted, the figsize will always be 
-        (7,7) when a single figure is plotted and it will be chosen automatically if a subplot is plotted. This
+        This specifies that when a data structure (like the `Array2D` above) is plotted, the figsize will always
+        be  (7,7) when a single figure is plotted and it will be chosen automatically if a subplot is plotted. This
         allows one to customize the matplotlib settings of every plot in a project.
         """
 
@@ -182,7 +182,9 @@ class Figure(AbstractMatWrap):
 
     @property
     def config_dict(self):
-        """Creates a config dict of valid inputs of the method `plt.figure` from the object's config_dict."""
+        """
+        Creates a config dict of valid inputs of the method `plt.figure` from the object's config_dict.
+        """
 
         config_dict = super().config_dict
 
@@ -207,8 +209,8 @@ class Figure(AbstractMatWrap):
             return 1.0
 
     def aspect_from_shape_native(
-        self, shape_native: typing.Union[typing.Tuple[int, int]]
-    ) -> typing.Union[float, str]:
+        self, shape_native: Union[Tuple[int, int]]
+    ) -> Union[float, str]:
         """
         Returns the aspect ratio of the figure from the 2D shape of a data structure.
 
@@ -226,14 +228,18 @@ class Figure(AbstractMatWrap):
         return self.config_dict["aspect"]
 
     def open(self):
-        """Wraps the Matplotlib method 'plt.figure' for opening a figure."""
+        """
+        Wraps the Matplotlib method 'plt.figure' for opening a figure.
+        """
         if not plt.fignum_exists(num=1):
             config_dict = self.config_dict
             config_dict.pop("aspect")
             plt.figure(**config_dict)
 
     def close(self):
-        """Wraps the Matplotlib method 'plt.close' for closing a figure."""
+        """
+        Wraps the Matplotlib method 'plt.close' for closing a figure.
+        """
         if plt.fignum_exists(num=1):
             plt.close()
 
@@ -245,26 +251,27 @@ class Axis(AbstractMatWrap):
 
         This object wraps the following Matplotlib method:
 
-         plt.axis: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axis.html
+        - plt.axis: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axis.html
 
         Parameters
         ----------
-        symmetric_source_centre : bool
+        symmetric_source_centre
             If `True`, the axis is symmetric around the centre of the plotted structure's coordinates.
-         """
+        """
 
         super().__init__(**kwargs)
 
         self.symmetric_around_centre = symmetric_source_centre
 
-    def set(self, extent=None, grid=None):
+    def set(self, extent: List[float] = None, grid=None):
         """
         Set the axis limits of the figure the grid is plotted on.
 
         Parameters
-        -----------
-        extent : [float, float, float, float]
-            The extent of the figure which set the axis-limits on the figure the grid is plotted, following [xmin, xmax, ymin, ymax].
+        ----------
+        extent
+            The extent of the figure which set the axis-limits on the figure the grid is plotted,
+            following the format [xmin, xmax, ymin, ymax].
         """
 
         config_dict = self.config_dict
@@ -307,7 +314,7 @@ class Cmap(AbstractMatWrap):
 
     The cmap that is created is passed into various Matplotlib methods, most notably imshow:
 
-     https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
+    - https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
     """
 
     def vmin_from_array(self, array: np.ndarray):
@@ -332,7 +339,7 @@ class Cmap(AbstractMatWrap):
         are used.
 
         Parameters
-        -----------
+        ----------
         array
             The array of data which is to be plotted.
         """
@@ -357,7 +364,7 @@ class Cmap(AbstractMatWrap):
             return colors.TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
         else:
             raise exc.PlottingException(
-                "The normalization (norm) supplied to the plotter is not a valid string (must be "
+                "The normalization (norm) supplied to the plotter is not a valid string must be "
                 "{linear, log, symmetric_log}"
             )
 
@@ -365,8 +372,8 @@ class Cmap(AbstractMatWrap):
 class Colorbar(AbstractMatWrap):
     def __init__(
         self,
-        manual_tick_labels: typing.Optional[typing.List[float]] = None,
-        manual_tick_values: typing.Optional[typing.List[float]] = None,
+        manual_tick_labels: Optional[List[float]] = None,
+        manual_tick_values: Optional[List[float]] = None,
         **kwargs,
     ):
         """
@@ -374,19 +381,19 @@ class Colorbar(AbstractMatWrap):
 
         This object wraps the following Matplotlib method:
 
-         plt.colorbar: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.colorbar.html
+        - plt.colorbar: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.colorbar.html
 
         The colorbar object `cb` that is created is also customized using the following methods:
 
-         cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
+        - cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
 
         Parameters
         ----------
-        manual_tick_labels : [float]
+        manual_tick_labels
             Manually override the colorbar tick labels to an input list of float.
-        manual_tick_values : [float]
+        manual_tick_values
             If the colorbar tick labels are manually specified the locations on the colorbar they appear running 0 -> 1.
-         """
+        """
 
         super().__init__(**kwargs)
 
@@ -394,7 +401,9 @@ class Colorbar(AbstractMatWrap):
         self.manual_tick_values = manual_tick_values
 
     def set(self):
-        """ Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs. """
+        """
+        Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
+        """
 
         if self.manual_tick_values is None and self.manual_tick_labels is None:
             cb = plt.colorbar(**self.config_dict)
@@ -420,9 +429,9 @@ class Colorbar(AbstractMatWrap):
 
         Parameters
         ----------
-        cmap : str
-            The colormap used to map normalized data values to RGBA colors (see
-            https://matplotlib.org/3.3.2/api/cm_api.html).
+        cmap
+            The colormap used to map normalized data values to RGBA
+            colors (see https://matplotlib.org/3.3.2/api/cm_api.html).
         color_values
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
@@ -447,8 +456,8 @@ class ColorbarTickParams(AbstractMatWrap):
 
     This object wraps the following Matplotlib colorbar method:
 
-     cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
-     """
+    - cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
+    """
 
     def set(self, cb):
 
@@ -470,9 +479,7 @@ class TickParams(AbstractMatWrap):
 
 
 class AbstractTicks(AbstractMatWrap):
-    def __init__(
-        self, manual_values: typing.Optional[typing.List[float]] = None, **kwargs
-    ):
+    def __init__(self, manual_values: Optional[List[float]] = None, **kwargs):
         """
         The settings used to customize a figure's y and x ticks using the `YTicks` and `XTicks` objects.
 
@@ -483,7 +490,7 @@ class AbstractTicks(AbstractMatWrap):
 
         Parameters
         ----------
-        manual_values : [float]
+        manual_values
             Manually override the tick labels to display the labels as the input list of floats.
         """
         super().__init__(**kwargs)
@@ -504,12 +511,11 @@ class AbstractTicks(AbstractMatWrap):
         """
         if self.manual_values is not None:
             return np.linspace(min_value, max_value, len(self.manual_values))
-        else:
-            return np.linspace(min_value, max_value, 5)
+        return np.linspace(min_value, max_value, 5)
 
     def tick_values_in_units_from(
         self, array: Array2D, min_value: float, max_value: float, units: Units
-    ) -> typing.Optional[np.ndarray]:
+    ) -> Optional[np.ndarray]:
         """
         Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
         values of the y and x axis.
@@ -518,14 +524,14 @@ class AbstractTicks(AbstractMatWrap):
 
         Parameters
         ----------
-        array : Array2D
+        array
             The array of data that is to be plotted, whose 2D shape is used to determine the tick values in units of
             pixels if this is the units specified by `units`.
         min_value
             the minimum value of the ticks that figure is plotted using.
         max_value
             the maximum value of the ticks that figure is plotted using.
-        units : Units
+        units
             The units the tick values are plotted using.
         """
 
@@ -553,24 +559,20 @@ class AbstractTicks(AbstractMatWrap):
 
 class YTicks(AbstractTicks):
     def set(
-        self,
-        array: typing.Optional[Array2D],
-        min_value: float,
-        max_value: float,
-        units: Units,
+        self, array: Optional[Array2D], min_value: float, max_value: float, units: Units
     ):
         """
         Set the y ticks of a figure using the shape of an input `Array2D` object and input units.
 
         Parameters
-        -----------
-        array : Array2D
+        ----------
+        array
             The 2D array of data which is plotted.
         min_value
             the minimum value of the yticks that figure is plotted using.
         max_value
             the maximum value of the yticks that figure is plotted using.
-        units : Units
+        units
             The units of the figure.
         """
 
@@ -584,7 +586,7 @@ class YTicks(AbstractTicks):
 class XTicks(AbstractTicks):
     def set(
         self,
-        array: typing.Optional[Array2D],
+        array: Optional[Array2D],
         min_value: float,
         max_value: float,
         units: Units,
@@ -594,14 +596,14 @@ class XTicks(AbstractTicks):
         Set the x ticks of a figure using the shape of an input `Array2D` object and input units.
 
         Parameters
-        -----------
-        array : Array2D
+        ----------
+        array
             The 2D array of data which is plotted.
         min_value
             the minimum value of the xticks that figure is plotted using.
         max_value
             the maximum value of the xticks that figure is plotted using.
-        units : Units
+        units
             The units of the figure.
         """
 
@@ -673,13 +675,13 @@ class AbstractLabel(AbstractMatWrap):
         - plt.ylabel: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.ylabel.html
         - plt.xlabel: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.xlabel.html
 
-        The y and x labels will automatically be set if not specified, using the input `Unit`'s. object.
+        The y and x labels will automatically be set if not specified, using the input units.
 
         Parameters
         ----------
-        units : Units
+        units
             The units the data is plotted using.
-        manual_label : str
+        manual_label
             A manual label which overrides the default computed via the units if input.
         """
 
@@ -687,13 +689,13 @@ class AbstractLabel(AbstractMatWrap):
 
         self.manual_label = self.kwargs.get("label")
 
-    def label_from_units(self, units: Units) -> typing.Optional[str]:
+    def label_from_units(self, units: Units) -> Optional[str]:
         """
         Returns the label of an object, by determining it from the figure units if the label is not manually specified.
 
         Parameters
         ----------
-        units : Units
+        units
            The units of the data structure that is plotted which informs the appropriate label text.
         """
 
@@ -713,7 +715,12 @@ class AbstractLabel(AbstractMatWrap):
 
 
 class YLabel(AbstractLabel):
-    def set(self, units: Units, include_brackets: bool = True, auto_label=None):
+    def set(
+        self,
+        units: Units,
+        include_brackets: bool = True,
+        auto_label: Optional[str] = None,
+    ):
         """
         Set the y labels of the figure, including the fontsize.
 
@@ -721,10 +728,10 @@ class YLabel(AbstractLabel):
         the unit_label the figure is plotted in.
 
         Parameters
-        -----------
-         unit : Units
+        ----------
+        units
             The units of the image that is plotted which informs the appropriate y label text.
-        include_brackets : bool
+        include_brackets
             Whether to include brackets around the y label text of the units.
         """
 
@@ -747,7 +754,12 @@ class YLabel(AbstractLabel):
 
 
 class XLabel(AbstractLabel):
-    def set(self, units: Units, include_brackets: bool = True, auto_label=None):
+    def set(
+        self,
+        units: Units,
+        include_brackets: bool = True,
+        auto_label: Optional[str] = None,
+    ):
         """
         Set the x labels of the figure, including the fontsize.
 
@@ -755,10 +767,10 @@ class XLabel(AbstractLabel):
         the unit_label the figure is plotted in.
 
         Parameters
-        -----------
-         unit : Units
+        ----------
+        units
             The units of the image that is plotted which informs the appropriate x label text.
-        include_brackets : bool
+        include_brackets
             Whether to include brackets around the x label text of the units.
         """
 
@@ -787,11 +799,6 @@ class Legend(AbstractMatWrap):
     This object wraps the following Matplotlib methods:
 
     - plt.legend: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.legend.html
-
-    Parameters
-    ----------
-    include : bool
-        If the legend should be plotted and therefore included on the figure.
     """
 
     def __init__(self, include=True, **kwargs):
@@ -814,8 +821,8 @@ class Legend(AbstractMatWrap):
 class Output:
     def __init__(
         self,
-        path: str = None,
-        filename: str = None,
+        path: Optional[str] = None,
+        filename: Optional[str] = None,
         format: Union[str, List[str]] = None,
         bypass: bool = False,
     ):
@@ -832,14 +839,14 @@ class Output:
 
         Parameters
         ----------
-        path : str
+        path
             If the figure is output to hard-disk the path of the folder it is saved to.
-        filename : str
+        filename
             If the figure is output to hard-disk the filename used to save it.
-        format : str
+        format
             The format of the output, 'show' displays on the computer screen, 'png' outputs to .png, 'fits' outputs to
             `.fits` format.
-        bypass : bool
+        bypass
             Whether to bypass the `plt.show` or `plt.savefig` methods, used when plotting a subplot.
         """
         self.path = path
@@ -864,17 +871,19 @@ class Output:
     def format_list(self):
         if not isinstance(self.format, list):
             return [self.format]
-        else:
-            return self.format
+        return self.format
 
     def to_figure(
-        self, structure: typing.Optional[AbstractStructure], auto_filename=None
+        self,
+        structure: Optional[AbstractStructure],
+        auto_filename: Optional[str] = None,
     ):
-        """Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.
+        """
+        Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.
 
         Parameters
-        -----------
-        structure : abstract_structure.AbstractStructure
+        ----------
+        structure
             The 2D array of image to be output, required for outputting the image as a fits file.
         """
 
@@ -898,7 +907,7 @@ class Output:
 
     def subplot_to_figure(self, auto_filename=None):
         """
-        Output a subhplot figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
+        Output a subplot figure, either as an image on the screen or to the hard-disk as a png or fits file.
         """
 
         filename = auto_filename if self.filename is None else self.filename
