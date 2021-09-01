@@ -8,6 +8,7 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 
+from autoarray.numba_util import profile_func
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.inversion import mapper_util
@@ -126,9 +127,6 @@ class Mapper:
         self.source_pixelization_grid = source_pixelization_grid
         self.data_pixelization_grid = data_pixelization_grid
 
-        self._pixelization_index_for_sub_slim_index = None
-        self._slim_to_pixelization_unique = None
-        self._mapping_matrix = None
         self.hyper_image = hyper_image
         self.profiling_dict = profiling_dict
 
@@ -153,7 +151,8 @@ class Mapper:
         are determined after the grid is used to determine the pixelization.
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to
-        represent these mappings"""
+        represent these mappings.
+        """
         all_sub_slim_indexes_for_pixelization_index = [[] for _ in range(self.pixels)]
 
         for slim_index, pix_index in enumerate(
@@ -164,7 +163,12 @@ class Mapper:
         return all_sub_slim_indexes_for_pixelization_index
 
     @cached_property
+    @profile_func
     def data_unique_mappings(self):
+        """
+        The w_tilde formalism requires us to compute an array that gives the unique mappings between the sub-pixels of
+        every image pixel to their corresponding pixelization pixels.
+        """
 
         data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
             data_pixels=self.source_grid_slim.shape_slim,
@@ -179,8 +183,14 @@ class Mapper:
         )
 
     @cached_property
+    @profile_func
     def mapping_matrix(self):
+        """
+        The `mapping_matrix` is a matrix that represents the image-pixel to pixelization-pixel mappings above in a
+        2D matrix. It in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf.
 
+        A full description is given in `mapping_matrix_from`.
+        """
         return mapper_util.mapping_matrix_from(
             pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
             pixels=self.pixels,
@@ -271,11 +281,19 @@ class MapperRectangular(Mapper):
         return self.source_pixelization_grid.shape_native
 
     @cached_property
+    @profile_func
     def pixelization_index_for_sub_slim_index(self):
         """
-        The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels.
-        """
+        The `Mapper` contains:
 
+         1) The traced grid of (y,x) source pixel coordinate centres.
+         2) The traced grid of (y,x) image pixel coordinates.
+
+        The function below pairs every image-pixel coordinate to every source-pixel centre.
+
+        In the API, the `pixelization_index` refers to the source pixel index (e.g. source pixel 0, 1, 2 etc.) whereas
+        the sub_slim index refers to the index of a sub-gridded image pixel (e.g. sub pixel 0, 1, 2 etc.).
+        """
         return grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=self.source_grid_slim,
             shape_native=self.source_pixelization_grid.shape_native,
@@ -341,6 +359,7 @@ class MapperVoronoi(Mapper):
         )
 
     @cached_property
+    @profile_func
     def pixelization_index_for_sub_slim_index(self):
         """
         The 1D index mappings between the sub pixels and Voronoi pixelization pixels.

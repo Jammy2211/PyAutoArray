@@ -309,7 +309,8 @@ class Convolver:
         return frame, kernel_frame
 
     def convolve_image(self, image, blurring_image):
-        """For a given 1D array and blurring array, convolve the two using this convolver.
+        """
+        For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters
         -----------

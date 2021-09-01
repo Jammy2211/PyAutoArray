@@ -11,7 +11,7 @@ from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
 
 from autoarray import exc
-
+from autoarray.numba_util import profile_func
 
 class SettingsPixelization:
     def __init__(
@@ -46,13 +46,20 @@ class Pixelization:
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
 
+    @profile_func
     def relocate_grid_via_border(
         self,
         grid: Grid2D,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
     ):
+        """
+        Return all coordinates that are outside the pixelization border to the edge of the border. The pixelization
+        border is defined as the border of pixels in the original data's mask.
 
+        This is used in the project PyAutoLens because the coordinates that are ray-traced near the centre of mass
+        of galaxies are heavily demagnified and may trace to outskirts of the source-plane.
+        """
         if preloads.relocated_grid is None:
 
             if settings.use_border:
@@ -148,8 +155,10 @@ class Rectangular(Pixelization):
             source_grid_slim=relocated_grid,
             source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
+            profiling_dict=profiling_dict
         )
 
+    @profile_func
     def make_pixelization_grid(
         self,
         relocated_grid=None,
@@ -178,7 +187,7 @@ class Voronoi(Pixelization):
          The grid's coordinates are paired to Voronoi pixels as the nearest-neighbors of the Voronoi \
         pixel-centers.
          """
-        super(Voronoi, self).__init__()
+        super().__init__()
 
     def mapper_from_grid_and_sparse_grid(
         self,
@@ -234,30 +243,47 @@ class Voronoi(Pixelization):
                 source_pixelization_grid=pixelization_grid,
                 data_pixelization_grid=sparse_image_plane_grid,
                 hyper_image=hyper_image,
+                profiling_dict=profiling_dict
             )
 
         except ValueError as e:
             raise e
 
+    @profile_func
     def relocate_pixelization_grid_via_border(
         self,
         grid: Grid2D,
         pixelization_grid: Grid2DSparse,
         settings: SettingsPixelization = SettingsPixelization(),
     ):
+        """
+        Return all coordinates of the pixeliztion itself that are outside the pixelization border to the edge of the
+        border. The pixelization border is defined as the border of pixels in the original data's mask.
 
+        This is used in the project PyAutoLens because the coordinates that are ray-traced near the centre of mass
+        of galaxies are heavily demagnified and may trace to outskirts of the source-plane.
+        """
         if settings.use_border:
             return grid.relocated_pixelization_grid_from_pixelization_grid(
                 pixelization_grid=pixelization_grid
             )
         return pixelization_grid
 
+    @profile_func
     def make_pixelization_grid(
         self,
         relocated_grid=None,
         relocated_pixelization_grid=None,
         sparse_index_for_slim_index=None,
     ):
+        """
+        The relocated pixelization grid is now used to create the pixelization's Voronoi grid using
+        the scipy.spatial library.
+
+        The array `sparse_index_for_slim_index` encodes the closest source pixel of every pixel on the
+        (full resolution) sub image-plane grid. This is used for efficiently pairing every image-plane pixel to its
+        corresponding source-plane pixel.
+        """
 
         return Grid2DVoronoi(
             grid=relocated_pixelization_grid,

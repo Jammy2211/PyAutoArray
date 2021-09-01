@@ -48,3 +48,7 @@ class InversionException(Exception):
 
 class PlottingException(Exception):
     pass
+
+
+class ProfilingException(Exception):
+    pass

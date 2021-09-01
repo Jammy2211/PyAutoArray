@@ -103,40 +103,66 @@ class AbstractInversion:
             array=interpolated_reconstruction, pixel_scales=grid.pixel_scales
         )
 
-    @property
+    @cached_property
     def data_vector(self) -> np.ndarray:
         raise NotImplementedError
 
-    @property
+    @cached_property
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
     @cached_property
+    @profile_func
+    def regularization_matrix(self) -> np.ndarray:
+        """
+        The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
+        linear algebra system we solve for using D and F above and is given by
+        equation (12) in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+
+        A complete description of regularization is given in the `regularization.py` and `regularization_util.py`
+        modules.
+        """
+        return self.regularization.regularization_matrix_from_mapper(mapper=self.mapper)
+
+    @cached_property
+    @profile_func
     def curvature_reg_matrix(self):
+        """
+        The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
+        """
         return np.add(self.curvature_matrix, self.regularization_matrix)
 
     @cached_property
+    @profile_func
     def curvature_reg_matrix_cholesky(self):
+        """
+        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
+        linear system of equations of the `Inversion`.
 
+        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
+        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
+        """
         try:
             return np.linalg.cholesky(self.curvature_reg_matrix)
         except np.linalg.LinAlgError:
             raise exc.InversionException()
 
     @cached_property
-    def regularization_matrix(self) -> np.ndarray:
-        return self.regularization.regularization_matrix_from_mapper(mapper=self.mapper)
-
-    @cached_property
+    @profile_func
     def reconstruction(self):
+        """
+        Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
+        of https://arxiv.org/pdf/astro-ph/0302587.pdf
 
+        S is the vector of reconstructed inversion values.
+        """
         return inversion_util.reconstruction_from(
             data_vector=self.data_vector,
             curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
             settings=self.settings,
         )
 
-    @property
+    @cached_property
     @profile_func
     def regularization_term(self):
         """
@@ -158,10 +184,16 @@ class AbstractInversion:
         )
 
     @cached_property
+    @profile_func
     def log_det_curvature_reg_matrix_term(self):
+        """
+        The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
+
+        This uses the Cholesky decomposition which is already computed before solving the reconstruction.
+        """
         return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_cholesky)))
 
-    @property
+    @cached_property
     @profile_func
     def log_det_regularization_matrix_term(self) -> float:
         """

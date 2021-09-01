@@ -18,4 +18,4 @@ def test__profile_decorator_times_decorated_function():
     cls = MockClass(value=1.0, profiling_dict={})
     cls.value
 
-    assert "value" in cls.profiling_dict
+    assert "value_0" in cls.profiling_dict

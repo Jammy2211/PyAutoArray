@@ -424,4 +424,4 @@ class TestProfilingDict:
         )
         fit.figure_of_merit
 
-        assert "figure_of_merit" in fit.profiling_dict
+        assert "figure_of_merit_0" in fit.profiling_dict

@@ -141,8 +141,17 @@ class AbstractInversionImaging(AbstractInversion):
         )
 
     @cached_property
+    @profile_func
     def blurred_mapping_matrix(self) -> np.ndarray:
+        """
+        For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
+        image  plane. This therefore creates a 'image' of the source pixel (which corresponds to a set of values that
+        mostly zeros, but with 1's where mappings occur).
 
+        Before reconstructing the source, we blur every one of these source pixel images with the Point Spread Function
+        of our  dataset via 2D convolution. This uses the methods
+        in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
+        """
         if self.preloads.blurred_mapping_matrix is None:
 
             return self.convolver.convolve_mapping_matrix(
@@ -267,6 +276,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
     @cached_property
+    @profile_func
     def w_tilde_data(self):
         return inversion_util.w_tilde_data_imaging_from(
             image_native=self.image.native,
@@ -276,8 +286,20 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
     @cached_property
+    @profile_func
     def data_vector(self) -> np.ndarray:
+        """
+        To solve for the source pixel fluxes we now pose the problem as a linear inversion which we use the NumPy
+        linear  algebra libraries to solve. The linear algebra is based on
+        the paper https://arxiv.org/pdf/astro-ph/0302587.pdf .
 
+        This requires us to convert `w_tilde_data` into a data vector matrices of dimensions [image_pixels].
+
+        The `data_vector` D is the first such matrix, which is given by equation (4)
+        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+
+        The calculation is performed by the method `w_tilde_data_imaging_from`.
+        """
         return inversion_util.data_vector_via_w_tilde_data_imaging_from(
             w_tilde_data=self.w_tilde_data,
             data_to_pix_unique=self.mapper.data_unique_mappings.data_to_pix_unique,
@@ -287,7 +309,15 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
     @cached_property
+    @profile_func
     def curvature_matrix(self) -> np.ndarray:
+        """
+        The `curvature_matrix` F is the second matrix, given by equation (4)
+        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+
+        This function computes F using the w_tilde formalism, which is faster as it precomputes the PSF convolution
+        of different noise-map pixels (see `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`).
+        """
         return inversion_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
             w_tilde_curvature_preload=self.w_tilde.curvature_preload,
             w_tilde_curvature_indexes=self.w_tilde.indexes,
@@ -387,8 +417,21 @@ class InversionImagingMapping(AbstractInversionImaging):
         )
 
     @cached_property
+    @profile_func
     def data_vector(self) -> np.ndarray:
+        """
+        __Data Vector (D)__
 
+        To solve for the source pixel fluxes we now pose the problem as a linear inversion which we use the NumPy
+        linear  algebra libraries to solve. The linear algebra is based on the
+        paper https://arxiv.org/pdf/astro-ph/0302587.pdf .
+
+        This requires us to convert the blurred mapping matrix and our data / noise map into matrices of certain
+        dimensions.
+
+        The `data_vector` D is the first such matrix, which is given by equation (4)
+        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        """
         return inversion_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=self.blurred_mapping_matrix,
             image=self.image,
@@ -396,8 +439,15 @@ class InversionImagingMapping(AbstractInversionImaging):
         )
 
     @cached_property
+    @profile_func
     def curvature_matrix(self) -> np.ndarray:
+        """
+        The `curvature_matrix` F is the second matrix, given by equation (4)
+        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
 
+        This function computes F using the mapping matrix formalism, which is slower but must be used in circumstances
+        where the noise-map is varying.
+        """
         if self.preloads.curvature_matrix_sparse_preload is None:
 
             return inversion_util.curvature_matrix_via_mapping_matrix_from(
