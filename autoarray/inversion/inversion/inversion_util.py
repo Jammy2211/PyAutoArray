@@ -738,7 +738,7 @@ def curvature_reg_matrix_from(
     curvature_matrix: np.ndarray,
     regularization_matrix: np.ndarray,
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
 ):
     """
     Add together the `curvature_matrix` (F) and `regularization_matrix` (H).
@@ -759,7 +759,7 @@ def curvature_reg_matrix_from(
     pixel_neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
 
@@ -772,7 +772,7 @@ def curvature_reg_matrix_from(
 
         curvature_matrix[i, i] += regularization_matrix[i, i]
 
-        for j in range(pixel_neighbors_size[i]):
+        for j in range(pixel_neighbors_sizes[i]):
 
             neighbor_index = pixel_neighbors[i, j]
 

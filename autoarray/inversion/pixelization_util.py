@@ -22,12 +22,12 @@ def rectangular_neighbors_from(
     For example, on a 3x3 grid:
 
     - Pixel 0 is at the top-left and has two neighbors, the pixel to its right  (with index 1) and the  pixel below
-    it (with index 3). Therefore, the pixel_neighbors[0,:] = [1, 3, -1, -1] and pixel_neighbors_size[0] = 2.
+    it (with index 3). Therefore, the pixel_neighbors[0,:] = [1, 3, -1, -1] and pixel_neighbors_sizes[0] = 2.
 
     - Pixel 1 is at the top-middle and has three neighbors, to its left (index 0, right (index 2) and below it
-    (index 4). Therefore, pixel_neighbors[1,:] = [0, 2, 4, 1] and pixel_neighbors_size[1] = 3.
+    (index 4). Therefore, pixel_neighbors[1,:] = [0, 2, 4, 1] and pixel_neighbors_sizes[1] = 3.
 
-    - For pixel 4, the central pixel, pixel_neighbors[4,:] = [1, 3, 5, 7] and pixel_neighbors_size[4] = 4.
+    - For pixel 4, the central pixel, pixel_neighbors[4,:] = [1, 3, 5, 7] and pixel_neighbors_sizes[4] = 4.
 
     Parameters
     ----------
@@ -43,57 +43,57 @@ def rectangular_neighbors_from(
     pixels = shape_native[0] * shape_native[1]
 
     pixel_neighbors = -1 * np.ones(shape=(pixels, 4))
-    pixel_neighbors_size = np.zeros(pixels)
+    pixel_neighbors_sizes = np.zeros(pixels)
 
-    pixel_neighbors, pixel_neighbors_size = rectangular_corner_neighbors(
+    pixel_neighbors, pixel_neighbors_sizes = rectangular_corner_neighbors(
         pixel_neighbors=pixel_neighbors,
-        pixel_neighbors_size=pixel_neighbors_size,
+        pixel_neighbors_sizes=pixel_neighbors_sizes,
         shape_native=shape_native,
         pixels=pixels,
     )
-    pixel_neighbors, pixel_neighbors_size = rectangular_top_edge_neighbors(
+    pixel_neighbors, pixel_neighbors_sizes = rectangular_top_edge_neighbors(
         pixel_neighbors=pixel_neighbors,
-        pixel_neighbors_size=pixel_neighbors_size,
+        pixel_neighbors_sizes=pixel_neighbors_sizes,
         shape_native=shape_native,
         pixels=pixels,
     )
-    pixel_neighbors, pixel_neighbors_size = rectangular_left_edge_neighbors(
+    pixel_neighbors, pixel_neighbors_sizes = rectangular_left_edge_neighbors(
         pixel_neighbors=pixel_neighbors,
-        pixel_neighbors_size=pixel_neighbors_size,
+        pixel_neighbors_sizes=pixel_neighbors_sizes,
         shape_native=shape_native,
         pixels=pixels,
     )
-    pixel_neighbors, pixel_neighbors_size = rectangular_right_edge_neighbors(
+    pixel_neighbors, pixel_neighbors_sizes = rectangular_right_edge_neighbors(
         pixel_neighbors=pixel_neighbors,
-        pixel_neighbors_size=pixel_neighbors_size,
+        pixel_neighbors_sizes=pixel_neighbors_sizes,
         shape_native=shape_native,
         pixels=pixels,
     )
-    pixel_neighbors, pixel_neighbors_size = rectangular_bottom_edge_neighbors(
+    pixel_neighbors, pixel_neighbors_sizes = rectangular_bottom_edge_neighbors(
         pixel_neighbors=pixel_neighbors,
-        pixel_neighbors_size=pixel_neighbors_size,
+        pixel_neighbors_sizes=pixel_neighbors_sizes,
         shape_native=shape_native,
         pixels=pixels,
     )
-    pixel_neighbors, pixel_neighbors_size = rectangular_central_neighbors(
+    pixel_neighbors, pixel_neighbors_sizes = rectangular_central_neighbors(
         pixel_neighbors=pixel_neighbors,
-        pixel_neighbors_size=pixel_neighbors_size,
+        pixel_neighbors_sizes=pixel_neighbors_sizes,
         shape_native=shape_native,
         pixels=pixels,
     )
 
-    return pixel_neighbors, pixel_neighbors_size
+    return pixel_neighbors, pixel_neighbors_sizes
 
 
 @numba_util.jit()
 def rectangular_corner_neighbors(
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
     shape_native: Tuple[int, int],
     pixels: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
+    Updates the ``pixel_neighbors`` and ``pixel_neighbors_sizes`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the rectangular array or grid that are on the corners.
 
     Parameters
@@ -101,7 +101,7 @@ def rectangular_corner_neighbors(
     pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     shape_native
@@ -115,35 +115,35 @@ def rectangular_corner_neighbors(
     """
 
     pixel_neighbors[0, 0:2] = np.array([1, shape_native[1]])
-    pixel_neighbors_size[0] = 2
+    pixel_neighbors_sizes[0] = 2
 
     pixel_neighbors[shape_native[1] - 1, 0:2] = np.array(
         [shape_native[1] - 2, shape_native[1] + shape_native[1] - 1]
     )
-    pixel_neighbors_size[shape_native[1] - 1] = 2
+    pixel_neighbors_sizes[shape_native[1] - 1] = 2
 
     pixel_neighbors[pixels - shape_native[1], 0:2] = np.array(
         [pixels - shape_native[1] * 2, pixels - shape_native[1] + 1]
     )
-    pixel_neighbors_size[pixels - shape_native[1]] = 2
+    pixel_neighbors_sizes[pixels - shape_native[1]] = 2
 
     pixel_neighbors[pixels - 1, 0:2] = np.array(
         [pixels - shape_native[1] - 1, pixels - 2]
     )
-    pixel_neighbors_size[pixels - 1] = 2
+    pixel_neighbors_sizes[pixels - 1] = 2
 
-    return pixel_neighbors, pixel_neighbors_size
+    return pixel_neighbors, pixel_neighbors_sizes
 
 
 @numba_util.jit()
 def rectangular_top_edge_neighbors(
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
     shape_native: Tuple[int, int],
     pixels: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
+    Updates the ``pixel_neighbors`` and ``pixel_neighbors_sizes`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the top edge of the rectangular array or grid.
 
     Parameters
@@ -151,7 +151,7 @@ def rectangular_top_edge_neighbors(
     pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     shape_native
@@ -168,20 +168,20 @@ def rectangular_top_edge_neighbors(
         pixel_neighbors[pixel_index, 0:3] = np.array(
             [pixel_index - 1, pixel_index + 1, pixel_index + shape_native[1]]
         )
-        pixel_neighbors_size[pixel_index] = 3
+        pixel_neighbors_sizes[pixel_index] = 3
 
-    return pixel_neighbors, pixel_neighbors_size
+    return pixel_neighbors, pixel_neighbors_sizes
 
 
 @numba_util.jit()
 def rectangular_left_edge_neighbors(
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
     shape_native: Tuple[int, int],
     pixels: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
+    Updates the ``pixel_neighbors`` and ``pixel_neighbors_sizes`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the left edge of the rectangular array or grid.
 
     Parameters
@@ -189,7 +189,7 @@ def rectangular_left_edge_neighbors(
     pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     shape_native
@@ -210,20 +210,20 @@ def rectangular_left_edge_neighbors(
                 pixel_index + shape_native[1],
             ]
         )
-        pixel_neighbors_size[pixel_index] = 3
+        pixel_neighbors_sizes[pixel_index] = 3
 
-    return pixel_neighbors, pixel_neighbors_size
+    return pixel_neighbors, pixel_neighbors_sizes
 
 
 @numba_util.jit()
 def rectangular_right_edge_neighbors(
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
     shape_native: Tuple[int, int],
     pixels: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
+    Updates the ``pixel_neighbors`` and ``pixel_neighbors_sizes`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the right edge of the rectangular array or grid.
 
     Parameters
@@ -231,7 +231,7 @@ def rectangular_right_edge_neighbors(
     pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     shape_native
@@ -252,20 +252,20 @@ def rectangular_right_edge_neighbors(
                 pixel_index + shape_native[1],
             ]
         )
-        pixel_neighbors_size[pixel_index] = 3
+        pixel_neighbors_sizes[pixel_index] = 3
 
-    return pixel_neighbors, pixel_neighbors_size
+    return pixel_neighbors, pixel_neighbors_sizes
 
 
 @numba_util.jit()
 def rectangular_bottom_edge_neighbors(
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
     shape_native: Tuple[int, int],
     pixels: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
+    Updates the ``pixel_neighbors`` and ``pixel_neighbors_sizes`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels on the bottom edge of the rectangular array or grid.
 
     Parameters
@@ -273,7 +273,7 @@ def rectangular_bottom_edge_neighbors(
     pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     shape_native
@@ -290,20 +290,20 @@ def rectangular_bottom_edge_neighbors(
         pixel_neighbors[pixel_index, 0:3] = np.array(
             [pixel_index - shape_native[1], pixel_index - 1, pixel_index + 1]
         )
-        pixel_neighbors_size[pixel_index] = 3
+        pixel_neighbors_sizes[pixel_index] = 3
 
-    return pixel_neighbors, pixel_neighbors_size
+    return pixel_neighbors, pixel_neighbors_sizes
 
 
 @numba_util.jit()
 def rectangular_central_neighbors(
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
     shape_native: Tuple[int, int],
     pixels: int,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Updates the ``pixel_neighbors`` and ``pixel_neighbors_size`` arrays described in the function
+    Updates the ``pixel_neighbors`` and ``pixel_neighbors_sizes`` arrays described in the function
     ``rectangular_neighbors_from`` for pixels in the central pixels of the rectangular array or grid.
 
     Parameters
@@ -311,7 +311,7 @@ def rectangular_central_neighbors(
     pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     shape_native
@@ -334,9 +334,9 @@ def rectangular_central_neighbors(
                     pixel_index + shape_native[1],
                 ]
             )
-            pixel_neighbors_size[pixel_index] = 4
+            pixel_neighbors_sizes[pixel_index] = 4
 
-    return pixel_neighbors, pixel_neighbors_size
+    return pixel_neighbors, pixel_neighbors_sizes
 
 
 @numba_util.jit()
@@ -366,16 +366,16 @@ def voronoi_neighbors_from(
         The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
     """
 
-    pixel_neighbors_size = np.zeros(shape=(pixels))
+    pixel_neighbors_sizes = np.zeros(shape=(pixels))
 
     for ridge_index in range(ridge_points.shape[0]):
         pair0 = ridge_points[ridge_index, 0]
         pair1 = ridge_points[ridge_index, 1]
-        pixel_neighbors_size[pair0] += 1
-        pixel_neighbors_size[pair1] += 1
+        pixel_neighbors_sizes[pair0] += 1
+        pixel_neighbors_sizes[pair1] += 1
 
     pixel_neighbors_index = np.zeros(shape=(pixels))
-    pixel_neighbors = -1 * np.ones(shape=(pixels, int(np.max(pixel_neighbors_size))))
+    pixel_neighbors = -1 * np.ones(shape=(pixels, int(np.max(pixel_neighbors_sizes))))
 
     for ridge_index in range(ridge_points.shape[0]):
         pair0 = ridge_points[ridge_index, 0]
@@ -385,4 +385,4 @@ def voronoi_neighbors_from(
         pixel_neighbors_index[pair0] += 1
         pixel_neighbors_index[pair1] += 1
 
-    return pixel_neighbors, pixel_neighbors_size
+    return pixel_neighbors, pixel_neighbors_sizes

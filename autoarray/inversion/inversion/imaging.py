@@ -307,6 +307,11 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         This function computes F using the w_tilde formalism, which is faster as it precomputes the PSF convolution
         of different noise-map pixels (see `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`).
+
+        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
+        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
         """
         return inversion_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
             w_tilde_curvature_preload=self.w_tilde.curvature_preload,
@@ -437,6 +442,11 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         This function computes F using the mapping matrix formalism, which is slower but must be used in circumstances
         where the noise-map is varying.
+
+        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
+        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
         """
         if self.preloads.curvature_matrix_sparse_preload is None:
 

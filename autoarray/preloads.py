@@ -9,6 +9,7 @@ class Preloads:
         blurred_mapping_matrix=None,
         curvature_matrix_sparse_preload=None,
         curvature_matrix_preload_counts=None,
+        regularization_matrix=None,
         log_det_regularization_matrix_term=None,
     ):
 
@@ -20,4 +21,5 @@ class Preloads:
         self.blurred_mapping_matrix = blurred_mapping_matrix
         self.curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
         self.curvature_matrix_preload_counts = curvature_matrix_preload_counts
+        self.regularization_matrix = regularization_matrix
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term

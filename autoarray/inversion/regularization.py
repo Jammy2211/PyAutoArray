@@ -160,7 +160,7 @@ class Constant(Regularization):
         return regularization_util.constant_regularization_matrix_from(
             coefficient=self.coefficient,
             pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_size=mapper.source_pixelization_grid.pixel_neighbors_size,
+            pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
         )
 
 
@@ -234,7 +234,7 @@ class AdaptiveBrightness(Regularization):
         return regularization_util.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,
             pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_size=mapper.source_pixelization_grid.pixel_neighbors_size,
+            pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
         )
 
 

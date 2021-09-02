@@ -3,12 +3,23 @@ import scipy.spatial
 import scipy.spatial.qhull as qhull
 from typing import Tuple
 
+from autoconf import cached_property
+
 from autoarray.structures.abstract_structure import AbstractStructure2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.inversion import pixelization_util
+
+
+class PixelNeighbors(np.ndarray):
+    def __new__(cls, arr, sizes):
+
+        obj = arr.view(cls)
+        obj.sizes = sizes
+
+        return obj
 
 
 class Grid2DRectangular(AbstractStructure2D):
@@ -45,17 +56,12 @@ class Grid2DRectangular(AbstractStructure2D):
         obj = grid.view(cls)
         obj.mask = mask
 
-        (
-            pixel_neighbors,
-            pixel_neighbors_size,
-        ) = pixelization_util.rectangular_neighbors_from(shape_native=shape_native)
-        obj.pixel_neighbors = pixel_neighbors.astype("int")
-        obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
         return obj
 
     @classmethod
     def overlay_grid(cls, shape_native, grid, buffer=1e-8):
-        """The geometry of a rectangular grid.
+        """
+        The geometry of a rectangular grid.
 
         This is used to map grid of (y,x) scaled coordinates to the pixels on the rectangular grid.
 
@@ -70,7 +76,7 @@ class Grid2DRectangular(AbstractStructure2D):
         pixel_neighbors
             An array of length (y_pixels*x_pixels) which provides the index of all neighbors of every pixel in \
             the rectangular grid (entries of -1 correspond to no neighbor).
-        pixel_neighbors_size
+        pixel_neighbors.sizes
             An array of length (y_pixels*x_pixels) which gives the number of neighbors of every pixel in the \
             rectangular grid.
         """
@@ -100,6 +106,15 @@ class Grid2DRectangular(AbstractStructure2D):
             pixel_scales=pixel_scales,
             origin=origin,
         )
+
+    @cached_property
+    def pixel_neighbors(self):
+
+        neighbors, sizes = pixelization_util.rectangular_neighbors_from(
+            shape_native=self.shape_native
+        )
+
+        return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @property
     def pixels(self):
@@ -166,7 +181,7 @@ class Grid2DVoronoi(AbstractStructure2D):
     pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors.sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
         Voronoi grid.
     """
@@ -202,46 +217,32 @@ class Grid2DVoronoi(AbstractStructure2D):
             nearest_pixelization_index_for_slim_index
         )
 
-        try:
-            obj.voronoi = scipy.spatial.Voronoi(
-                np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
-            )
-        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
-            raise exc.PixelizationException() from e
-
-        (
-            pixel_neighbors,
-            pixel_neighbors_size,
-        ) = pixelization_util.voronoi_neighbors_from(
-            pixels=obj.pixels, ridge_points=np.asarray(obj.voronoi.ridge_points)
-        )
-
-        obj.pixel_neighbors = pixel_neighbors.astype("int")
-        obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
-        obj.nearest_pixelization_index_for_slim_index = (
-            nearest_pixelization_index_for_slim_index
-        )
-
         return obj
 
     def __array_finalize__(self, obj):
-
-        if hasattr(obj, "voronoi"):
-            self.voronoi = obj.voronoi
-
-        if hasattr(obj, "pixel_neighbors"):
-            self.pixel_neighbors = obj.pixel_neighbors
-
-        if hasattr(obj, "pixel_neighbors_size"):
-            self.pixel_neighbors_size = obj.pixel_neighbors_size
 
         if hasattr(obj, "nearest_pixelization_index_for_slim_index"):
             self.nearest_pixelization_index_for_slim_index = (
                 obj.nearest_pixelization_index_for_slim_index
             )
 
-        if hasattr(obj, "_sub_border_flat_indexes"):
-            self._sub_border_flat_indexes = obj.sub_border_flat_indexes
+    @cached_property
+    def voronoi(self) -> scipy.spatial.Voronoi:
+        try:
+            return scipy.spatial.Voronoi(
+                np.asarray([self[:, 1], self[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
+            )
+        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
+            raise exc.PixelizationException() from e
+
+    @cached_property
+    def pixel_neighbors(self):
+
+        neighbors, sizes = pixelization_util.voronoi_neighbors_from(
+            pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
+        )
+
+        return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @property
     def origin(self):
@@ -253,11 +254,13 @@ class Grid2DVoronoi(AbstractStructure2D):
 
     @property
     def sub_border_grid(self):
-        """The (y,x) grid of all sub-pixels which are at the border of the mask.
+        """
+        The (y,x) grid of all sub-pixels which are at the border of the mask.
 
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border."""
-        return self[self._sub_border_flat_indexes]
+        within these border pixels which are at the extreme edge of the border.
+        """
+        return self[self.mask.sub_border_flat_indexes]
 
     @classmethod
     def manual_slim(cls, grid):

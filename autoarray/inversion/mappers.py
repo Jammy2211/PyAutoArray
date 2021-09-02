@@ -371,7 +371,7 @@ class MapperVoronoi(Mapper):
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             pixelization_grid=self.source_pixelization_grid,
             pixel_neighbors=self.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_size=self.source_pixelization_grid.pixel_neighbors_size,
+            pixel_neighbors_sizes=self.source_pixelization_grid.pixel_neighbors.sizes,
         ).astype("int")
 
     @property

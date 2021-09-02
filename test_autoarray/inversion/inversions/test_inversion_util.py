@@ -583,12 +583,12 @@ class TestCurvatureRegMatrix:
             ]
         )
 
-        pixel_neighbors_size = np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
+        pixel_neighbors_sizes = np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
 
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         curvature_matrix = np.ones(regularization_matrix.shape)
@@ -599,7 +599,7 @@ class TestCurvatureRegMatrix:
             curvature_matrix=curvature_matrix,
             regularization_matrix=regularization_matrix,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert (curvature_reg_matrix == curvature_reg_matrix_util).all()

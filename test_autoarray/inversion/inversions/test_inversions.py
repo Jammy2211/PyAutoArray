@@ -34,10 +34,10 @@ class TestInversionImaging:
         matrix_shape = (9, 3)
 
         pixel_neighbors = np.zeros((3, 3)).astype("int")
-        pixel_neighbors_size = np.array([0, 0, 0]).astype("int")
+        pixel_neighbors_sizes = np.array([0, 0, 0]).astype("int")
 
         source_pixelization_grid = mock.MockPixelizationGrid(
-            pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
+            pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
         )
 
         with pytest.raises(exc.InversionException):
@@ -124,10 +124,10 @@ class TestInversionImaging:
         )
 
         pixel_neighbors = np.zeros((3, 3)).astype("int")
-        pixel_neighbors_size = np.array([0, 0, 0]).astype("int")
+        pixel_neighbors_sizes = np.array([0, 0, 0]).astype("int")
 
         source_pixelization_grid = mock.MockPixelizationGrid(
-            pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
+            pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
         )
 
         # noinspection PyTypeChecker

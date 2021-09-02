@@ -383,7 +383,13 @@ class TestLogDetMatrixCholesky:
     def test__preload_of_log_det_regularizaation_term_overwrites_calculation(self):
 
         inversion = MockInversion(
-            preloads=aa.Preloads(log_det_regularization_matrix_term=1.0)
+            preloads=aa.Preloads(
+                regularization_matrix=np.ones((2, 2)),
+                log_det_regularization_matrix_term=1.0,
+            )
         )
 
+        del inversion.__dict__["regularization_matrix"]
+
+        assert (inversion.regularization_matrix == np.ones((2, 2))).all()
         assert inversion.log_det_regularization_matrix_term == 1.0

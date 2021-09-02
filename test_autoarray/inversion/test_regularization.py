@@ -21,10 +21,10 @@ class TestRegularizationinstance:
             ]
         )
 
-        pixel_neighbors_size = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
+        pixel_neighbors_sizes = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
 
         pixelization_grid = MockPixelizationGrid(
-            pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
+            pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
         )
 
         mapper = MockRegMapper(source_pixelization_grid=pixelization_grid)
@@ -35,7 +35,7 @@ class TestRegularizationinstance:
         regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert (regularization_matrix == regularization_matrix_util).all()
@@ -75,11 +75,11 @@ class TestRegularizationWeighted:
             ]
         )
 
-        pixel_neighbors_size = np.array([2, 3, 4, 2, 4, 3])
+        pixel_neighbors_sizes = np.array([2, 3, 4, 2, 4, 3])
         pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
         pixelization_grid = MockPixelizationGrid(
-            pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
+            pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
         )
 
         mapper = MockRegMapper(
@@ -95,7 +95,7 @@ class TestRegularizationWeighted:
         regularization_matrix_util = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert (regularization_matrix == regularization_matrix_util).all()

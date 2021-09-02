@@ -5,7 +5,7 @@ from autoarray import numba_util
 
 @numba_util.jit()
 def constant_regularization_matrix_from(
-    coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_size: np.ndarray
+    coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_sizes: np.ndarray
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
@@ -20,7 +20,7 @@ def constant_regularization_matrix_from(
     pixel_neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
 
@@ -39,7 +39,7 @@ def constant_regularization_matrix_from(
 
     for i in range(pixels):
         regularization_matrix[i, i] += 1e-8
-        for j in range(pixel_neighbors_size[i]):
+        for j in range(pixel_neighbors_sizes[i]):
             neighbor_index = pixel_neighbors[i, j]
             regularization_matrix[i, i] += regularization_coefficient
             regularization_matrix[i, neighbor_index] -= regularization_coefficient
@@ -83,7 +83,7 @@ def adaptive_regularization_weight_list_from(
 def weighted_regularization_matrix_from(
     regularization_weight_list: np.ndarray,
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
     """
     From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
@@ -95,7 +95,7 @@ def weighted_regularization_matrix_from(
     pixel_neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
 
@@ -114,7 +114,7 @@ def weighted_regularization_matrix_from(
 
     for i in range(pixels):
         regularization_matrix[i, i] += 1e-8
-        for j in range(pixel_neighbors_size[i]):
+        for j in range(pixel_neighbors_sizes[i]):
             neighbor_index = pixel_neighbors[i, j]
             regularization_matrix[i, i] += regularization_weight[neighbor_index]
             regularization_matrix[

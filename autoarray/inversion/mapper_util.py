@@ -132,7 +132,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
     slim_index_for_sub_slim_index: np.ndarray,
     pixelization_grid: np.ndarray,
     pixel_neighbors: np.ndarray,
-    pixel_neighbors_size: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the mappings between a set of slimmed sub-grid pixels and pixelization pixels, using information on
@@ -157,7 +157,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
     pixel_neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size
+    pixel_neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     """
@@ -189,7 +189,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
             closest_separation_from_pixelization_to_neighbor = 1.0e8
 
             for neighbor_pixelization_index in range(
-                pixel_neighbors_size[nearest_pixelization_index]
+                pixel_neighbors_sizes[nearest_pixelization_index]
             ):
 
                 neighbor = pixel_neighbors[

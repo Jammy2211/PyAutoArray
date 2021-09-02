@@ -19,12 +19,12 @@ class TestGrid2DRectangular:
 
         (
             pixel_neighbors_util,
-            pixel_neighbors_size_util,
+            pixel_neighbors_sizes_util,
         ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(7, 5))
 
         assert (pixelization_grid.pixel_neighbors == pixel_neighbors_util).all()
         assert (
-            pixelization_grid.pixel_neighbors_size == pixel_neighbors_size_util
+            pixelization_grid.pixel_neighbors.sizes == pixel_neighbors_sizes_util
         ).all()
 
     def test__shape_native_and_pixel_scales(self):
@@ -187,13 +187,13 @@ class TestGrid2DVoronoi:
 
         (
             pixel_neighbors_util,
-            pixel_neighbors_size_util,
+            pixel_neighbors_sizes_util,
         ) = aa.util.pixelization.voronoi_neighbors_from(
             pixels=9, ridge_points=np.array(voronoi.ridge_points)
         )
 
         assert (pix.pixel_neighbors == pixel_neighbors_util).all()
-        assert (pix.pixel_neighbors_size == pixel_neighbors_size_util).all()
+        assert (pix.pixel_neighbors.sizes == pixel_neighbors_sizes_util).all()
 
     def test__pixelization_grid__attributes(self):
 
@@ -361,6 +361,7 @@ class TestGrid2DVoronoi:
     def test__qhull_error_is_caught(self):
 
         grid = np.array([[3.0, 0.0]])
+        grid = aa.Grid2DVoronoi(grid=grid)
 
         with pytest.raises(exc.PixelizationException):
-            aa.Grid2DVoronoi(grid=grid)
+            grid.voronoi

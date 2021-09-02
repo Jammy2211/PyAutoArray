@@ -122,6 +122,8 @@ class AbstractInversion:
         A complete description of regularization is given in the `regularization.py` and `regularization_util.py`
         modules.
         """
+        if self.preloads.regularization_matrix is not None:
+            return self.preloads.regularization_matrix
         return self.regularization.regularization_matrix_from_mapper(mapper=self.mapper)
 
     @cached_property
@@ -139,7 +141,7 @@ class AbstractInversion:
             curvature_matrix=self.curvature_matrix,
             regularization_matrix=self.regularization_matrix,
             pixel_neighbors=self.mapper.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_size=self.mapper.source_pixelization_grid.pixel_neighbors_size,
+            pixel_neighbors_sizes=self.mapper.source_pixelization_grid.pixel_neighbors.sizes,
         )
 
     @cached_property

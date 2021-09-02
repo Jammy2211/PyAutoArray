@@ -1,6 +1,7 @@
 import numpy as np
 
 from autoarray.structures.grids import grid_decorators
+from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
 
 ### Grids ###
 
@@ -243,7 +244,7 @@ class MockRegularization:
         self.shape = matrix_shape
 
     def regularization_matrix_from_pixel_neighbors(
-        self, pixel_neighbors, pixel_neighbors_size
+        self, pixel_neighbors, pixel_neighbors_sizes
     ):
         return np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
@@ -252,11 +253,12 @@ class MockRegularization:
 
 
 class MockPixelizationGrid:
-    def __init__(self, pixel_neighbors=None, pixel_neighbors_size=None):
+    def __init__(self, pixel_neighbors=None, pixel_neighbors_sizes=None):
 
-        self.pixel_neighbors = pixel_neighbors
-        self.pixel_neighbors_size = pixel_neighbors_size
-        self.shape = (len(pixel_neighbors_size),)
+        self.pixel_neighbors = PixelNeighbors(
+            arr=pixel_neighbors, sizes=pixel_neighbors_sizes
+        )
+        self.shape = (len(self.pixel_neighbors.sizes),)
 
 
 class MockRegMapper:

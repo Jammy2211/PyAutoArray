@@ -12,7 +12,7 @@ class TestRectangular:
 
         (
             pixel_neighbors,
-            pixel_neighbors_size,
+            pixel_neighbors_sizes,
         ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(3, 3))
 
         assert (pixel_neighbors[0] == [1, 3, -1, -1]).all()
@@ -25,7 +25,7 @@ class TestRectangular:
         assert (pixel_neighbors[7] == [4, 6, 8, -1]).all()
         assert (pixel_neighbors[8] == [5, 7, -1, -1]).all()
 
-        assert (pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()
+        assert (pixel_neighbors_sizes == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()
 
         # I0I1I 2I 3I
         # I4I5I 6I 7I
@@ -33,7 +33,7 @@ class TestRectangular:
 
         (
             pixel_neighbors,
-            pixel_neighbors_size,
+            pixel_neighbors_sizes,
         ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(3, 4))
 
         assert (pixel_neighbors[0] == [1, 4, -1, -1]).all()
@@ -50,7 +50,7 @@ class TestRectangular:
         assert (pixel_neighbors[11] == [7, 10, -1, -1]).all()
 
         assert (
-            pixel_neighbors_size == np.array([2, 3, 3, 2, 3, 4, 4, 3, 2, 3, 3, 2])
+            pixel_neighbors_sizes == np.array([2, 3, 3, 2, 3, 4, 4, 3, 2, 3, 3, 2])
         ).all()
 
         # I0I 1I 2I
@@ -60,7 +60,7 @@ class TestRectangular:
 
         (
             pixel_neighbors,
-            pixel_neighbors_size,
+            pixel_neighbors_sizes,
         ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(4, 3))
 
         assert (pixel_neighbors[0] == [1, 3, -1, -1]).all()
@@ -77,7 +77,7 @@ class TestRectangular:
         assert (pixel_neighbors[11] == [8, 10, -1, -1]).all()
 
         assert (
-            pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 3, 4, 3, 2, 3, 2])
+            pixel_neighbors_sizes == np.array([2, 3, 2, 3, 4, 3, 3, 4, 3, 2, 3, 2])
         ).all()
 
         # I0 I 1I 2I 3I
@@ -87,7 +87,7 @@ class TestRectangular:
 
         (
             pixel_neighbors,
-            pixel_neighbors_size,
+            pixel_neighbors_sizes,
         ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(4, 4))
 
         assert (pixel_neighbors[0] == [1, 4, -1, -1]).all()
@@ -108,7 +108,7 @@ class TestRectangular:
         assert (pixel_neighbors[15] == [11, 14, -1, -1]).all()
 
         assert (
-            pixel_neighbors_size
+            pixel_neighbors_sizes
             == np.array([2, 3, 3, 2, 3, 4, 4, 3, 3, 4, 4, 3, 2, 3, 3, 2])
         ).all()
 
@@ -123,7 +123,7 @@ class TestVoronoi:
         voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
         (
             pixel_neighbors,
-            pixel_neighbors_size,
+            pixel_neighbors_sizes,
         ) = aa.util.pixelization.voronoi_neighbors_from(
             pixels=5, ridge_points=np.array(voronoi.ridge_points)
         )
@@ -134,7 +134,7 @@ class TestVoronoi:
         assert set(pixel_neighbors[3]) == {0, 2, 4, -1}
         assert set(pixel_neighbors[4]) == {1, 2, 3, -1}
 
-        assert (pixel_neighbors_size == np.array([3, 3, 4, 3, 3])).all()
+        assert (pixel_neighbors_sizes == np.array([3, 3, 4, 3, 3])).all()
 
         # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
@@ -155,7 +155,7 @@ class TestVoronoi:
         voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
         (
             pixel_neighbors,
-            pixel_neighbors_size,
+            pixel_neighbors_sizes,
         ) = aa.util.pixelization.voronoi_neighbors_from(
             pixels=9, ridge_points=np.array(voronoi.ridge_points)
         )
@@ -170,4 +170,4 @@ class TestVoronoi:
         assert set(pixel_neighbors[7]) == {4, 6, 8, -1}
         assert set(pixel_neighbors[8]) == {5, 7, -1, -1}
 
-        assert (pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()
+        assert (pixel_neighbors_sizes == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()

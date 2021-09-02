@@ -16,7 +16,7 @@ class TestRegularizationinstanceMatrix:
 
         pixel_neighbors = np.array([[1, 2, -1], [0, -1, -1], [0, -1, -1]])
 
-        pixel_neighbors_size = np.array([2, 1, 1])
+        pixel_neighbors_sizes = np.array([2, 1, 1])
 
         test_b_matrix = np.array(
             [[-1, 1, 0], [-1, 0, 1], [0, 0, 0]]  # Pair 1  # Pair 2
@@ -29,7 +29,7 @@ class TestRegularizationinstanceMatrix:
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -51,12 +51,12 @@ class TestRegularizationinstanceMatrix:
             [[1, 3, -1, -1], [0, 2, -1, -1], [1, 3, -1, -1], [0, 2, -1, -1]]
         )
 
-        pixel_neighbors_size = np.array([2, 2, 2, 2])
+        pixel_neighbors_sizes = np.array([2, 2, 2, 2])
 
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -70,7 +70,7 @@ class TestRegularizationinstanceMatrix:
             [[1, 3, -1, -1], [0, 2, -1, -1], [1, 3, -1, -1], [0, 2, -1, -1]]
         )
 
-        pixel_neighbors_size = np.array([2, 2, 2, 2])
+        pixel_neighbors_sizes = np.array([2, 2, 2, 2])
 
         test_b_matrix = 2.0 * np.array(
             [[-1, 1, 0, 0], [0, -1, 1, 0], [0, 0, -1, 1], [1, 0, 0, -1]]
@@ -83,7 +83,7 @@ class TestRegularizationinstanceMatrix:
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=2.0,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -107,7 +107,7 @@ class TestRegularizationinstanceMatrix:
             ]
         )
 
-        pixel_neighbors_size = np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
+        pixel_neighbors_sizes = np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
 
         test_b_matrix_0 = np.array(
             [
@@ -149,7 +149,7 @@ class TestRegularizationinstanceMatrix:
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -209,7 +209,7 @@ class TestRegularizationWeightedMatrix:
 
         pixel_neighbors = np.array([[2], [3], [0], [1]])
 
-        pixel_neighbors_size = np.array([1, 1, 1, 1])
+        pixel_neighbors_sizes = np.array([1, 1, 1, 1])
 
         test_b_matrix = np.array(
             [[-1, 0, 1, 0], [0, -1, 0, 1], [1, 0, -1, 0], [0, 1, 0, -1]]
@@ -222,7 +222,7 @@ class TestRegularizationWeightedMatrix:
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert regularization_matrix == pytest.approx(
@@ -240,7 +240,7 @@ class TestRegularizationWeightedMatrix:
 
         pixel_neighbors = np.array([[1, 2], [0, -1], [0, -1]])
 
-        pixel_neighbors_size = np.array([2, 1, 1])
+        pixel_neighbors_sizes = np.array([2, 1, 1])
 
         test_b_matrix_1 = np.array(
             [[-1, 1, 0], [-1, 0, 1], [1, -1, 0]]  # Pair 1  # Pair 2
@@ -261,7 +261,7 @@ class TestRegularizationWeightedMatrix:
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert regularization_matrix == pytest.approx(
@@ -290,14 +290,14 @@ class TestRegularizationWeightedMatrix:
 
         pixel_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
 
-        pixel_neighbors_size = np.array([2, 2, 2, 2])
+        pixel_neighbors_sizes = np.array([2, 2, 2, 2])
 
         regularization_weight_list = np.ones((4,))
 
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert regularization_matrix == pytest.approx(
@@ -321,7 +321,7 @@ class TestRegularizationWeightedMatrix:
             ]
         )
 
-        pixel_neighbors_size = np.array([3, 2, 4, 2, 2, 3])
+        pixel_neighbors_sizes = np.array([3, 2, 4, 2, 2, 3])
 
         test_b_matrix_1 = np.array(
             [
@@ -387,7 +387,7 @@ class TestRegularizationWeightedMatrix:
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert regularization_matrix == pytest.approx(
@@ -428,12 +428,12 @@ class TestRegularizationWeightedMatrix:
             [[1, 2, -1, -1], [0, 2, 3, -1], [0, 1, -1, -1], [1, -1, -1, -1]]
         )
 
-        pixel_neighbors_size = np.array([2, 3, 2, 1])
+        pixel_neighbors_sizes = np.array([2, 3, 2, 1])
 
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert regularization_matrix == pytest.approx(
@@ -455,7 +455,7 @@ class TestRegularizationWeightedMatrix:
             ]
         )
 
-        pixel_neighbors_size = np.array([2, 3, 4, 2, 4, 3])
+        pixel_neighbors_sizes = np.array([2, 3, 4, 2, 4, 3])
         regularization_weight_list = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
         # I'm inputting the regularization weight_list directly thiss time, as it'd be a pain to multiply with a
@@ -522,7 +522,7 @@ class TestRegularizationWeightedMatrix:
         regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weight_list=regularization_weight_list,
             pixel_neighbors=pixel_neighbors,
-            pixel_neighbors_size=pixel_neighbors_size,
+            pixel_neighbors_sizes=pixel_neighbors_sizes,
         )
 
         assert regularization_matrix == pytest.approx(
