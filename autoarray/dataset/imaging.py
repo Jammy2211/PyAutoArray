@@ -166,20 +166,6 @@ class Imaging(AbstractDataset):
                 array=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
 
-        self._convolver = None
-        self._blurring_grid = None
-        self._w_tilde = None
-
-    def __array_finalize__(self, obj):
-        if isinstance(obj, Imaging):
-            try:
-                for key, value in obj.__dict__.items():
-                    setattr(self, key, value)
-            except AttributeError:
-                logger.debug(
-                    "Original object in Imaging.__array_finalize__ missing one or more attributes"
-                )
-
     @property
     def psf(self):
         if self.settings.use_normalized_psf:
@@ -250,7 +236,7 @@ class Imaging(AbstractDataset):
             noise_map_native=self.noise_map.native,
             signal_to_noise_map_native=self.signal_to_noise_map.native,
             kernel_native=self.psf.native,
-            native_index_for_slim_index=self.mask._native_index_for_slim_index,
+            native_index_for_slim_index=self.mask.native_index_for_slim_index,
         )
 
         return WTildeImaging(

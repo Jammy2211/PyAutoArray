@@ -10,57 +10,6 @@ from autoarray import numba_util
 from autoarray.mask import mask_2d_util
 
 
-class Memoizer:
-    def __init__(self):
-        """
-        Class to store the results of a function given a set of inputs.
-        """
-        self.results = {}
-        self.calls = 0
-        self.arg_names = None
-
-    def __call__(self, func):
-        """
-        Memoize decorator. Any time a function is called that a memoizer has been attached to its results are stored in
-        the results dictionary or retrieved from the dictionary if the function has aaready been called with those
-        arguments.
-
-        Note that the same memoizer persists over all instances of a class. Any state for a given instance that is not
-        given in the representation of that instance will be ignored. That is, it is possible that the memoizer will
-        give incorrect results if instance state does not affect __str__ but does affect the value returned by the
-        memoized method.
-
-        Parameters
-        ----------
-        func: function
-            A function for which results should be memoized
-
-        Returns
-        -------
-        decorated : function
-            A function that memoizes results
-        """
-        if self.arg_names is not None:
-            raise AssertionError("Instantiate a new Memoizer for each function")
-        self.arg_names = inspect.getfullargspec(func).args
-
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            key = ", ".join(
-                [
-                    "('{}', {})".format(arg_name, arg)
-                    for arg_name, arg in list(zip(self.arg_names, args))
-                    + [(k, v) for k, v in kwargs.items()]
-                ]
-            )
-            if key not in self.results:
-                self.calls += 1
-            self.results[key] = func(*args, **kwargs)
-            return self.results[key]
-
-        return wrapper
-
-
 @numba_util.jit()
 def extracted_array_2d_from(
     array_2d: np.ndarray, y0: int, y1: int, x0: int, x1: int

@@ -652,7 +652,7 @@ class TestRegions:
             mask_2d=mask, sub_size=1
         )
 
-        assert mask._native_index_for_slim_index == pytest.approx(
+        assert mask.native_index_for_slim_index == pytest.approx(
             sub_native_index_for_sub_slim_index_2d, 1e-4
         )
 
@@ -718,10 +718,10 @@ class TestRegions:
 
         edge_pixels_util = aa.util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
-        assert mask._edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
-        assert mask._edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
-        assert mask._edge_2d_indexes[10] == pytest.approx(np.array([3, 3]), 1e-4)
-        assert mask._edge_1d_indexes.shape[0] == mask._edge_2d_indexes.shape[0]
+        assert mask.edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
+        assert mask.edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
+        assert mask.edge_2d_indexes[10] == pytest.approx(np.array([3, 3]), 1e-4)
+        assert mask.edge_1d_indexes.shape[0] == mask.edge_2d_indexes.shape[0]
 
     def test__edge_mask(self):
         mask = aa.Mask2D.manual(
@@ -774,10 +774,10 @@ class TestRegions:
 
         border_pixels_util = aa.util.mask_2d.border_slim_indexes_from(mask_2d=mask)
 
-        assert mask._border_1d_indexes == pytest.approx(border_pixels_util, 1e-4)
-        assert mask._border_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
-        assert mask._border_2d_indexes[10] == pytest.approx(np.array([3, 7]), 1e-4)
-        assert mask._border_1d_indexes.shape[0] == mask._border_2d_indexes.shape[0]
+        assert mask.border_1d_indexes == pytest.approx(border_pixels_util, 1e-4)
+        assert mask.border_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
+        assert mask.border_2d_indexes[10] == pytest.approx(np.array([3, 7]), 1e-4)
+        assert mask.border_1d_indexes.shape[0] == mask.border_2d_indexes.shape[0]
 
     def test__border_mask(self):
         mask = aa.Mask2D.manual(
@@ -832,7 +832,7 @@ class TestRegions:
             mask_2d=mask, sub_size=2
         )
 
-        assert mask._sub_border_flat_indexes == pytest.approx(
+        assert mask.sub_border_flat_indexes == pytest.approx(
             sub_border_pixels_util, 1e-4
         )
 
@@ -851,7 +851,7 @@ class TestRegions:
         )
 
         assert (
-            mask._sub_border_flat_indexes == np.array([0, 5, 9, 14, 23, 26, 31, 35])
+            mask.sub_border_flat_indexes == np.array([0, 5, 9, 14, 23, 26, 31, 35])
         ).all()
 
     def test__slim_index_for_sub_slim_index__compare_to_util(self):
@@ -866,7 +866,7 @@ class TestRegions:
         )
 
         assert (
-            mask._slim_index_for_sub_slim_index == slim_index_for_sub_slim_index_util
+            mask.slim_index_for_sub_slim_index == slim_index_for_sub_slim_index_util
         ).all()
 
     def test__sub_mask_index_for_sub_mask_1d_index__compare_to_array_util(self):
@@ -880,7 +880,7 @@ class TestRegions:
             mask_2d=mask, sub_size=2
         )
 
-        assert mask._sub_mask_index_for_sub_mask_1d_index == pytest.approx(
+        assert mask.sub_mask_index_for_sub_mask_1d_index == pytest.approx(
             sub_mask_index_for_sub_mask_1d_index, 1e-4
         )
 

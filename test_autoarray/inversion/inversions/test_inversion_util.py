@@ -292,7 +292,7 @@ class TestDataVectorFromData:
                 image_native=image.native,
                 noise_map_native=noise_map.native,
                 kernel_native=kernel.native,
-                native_index_for_slim_index=mask._native_index_for_slim_index,
+                native_index_for_slim_index=mask.native_index_for_slim_index,
             )
 
             data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
@@ -483,7 +483,7 @@ class TestCurvatureMatrixFromBlurred:
         w_tilde = aa.util.inversion.w_tilde_curvature_imaging_from(
             noise_map_native=noise_map.native,
             kernel_native=kernel.native,
-            native_index_for_slim_index=mask._native_index_for_slim_index,
+            native_index_for_slim_index=mask.native_index_for_slim_index,
         )
 
         curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_from(
@@ -533,7 +533,7 @@ class TestCurvatureMatrixFromBlurred:
                 noise_map_native=noise_map.native,
                 signal_to_noise_map_native=noise_map.native,
                 kernel_native=kernel.native,
-                native_index_for_slim_index=mask._native_index_for_slim_index,
+                native_index_for_slim_index=mask.native_index_for_slim_index,
                 signal_to_noise_threshold=0.0,
             )
 

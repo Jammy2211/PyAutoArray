@@ -254,7 +254,7 @@ class TestGrid:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        assert grid.mask._sub_border_flat_indexes == pytest.approx(
+        assert grid.mask.sub_border_flat_indexes == pytest.approx(
             sub_border_flat_indexes_util, 1e-4
         )
 

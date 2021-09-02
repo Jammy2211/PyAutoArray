@@ -135,8 +135,8 @@ class Mapper:
         return self.source_pixelization_grid.pixels
 
     @property
-    def _slim_index_for_sub_slim_index(self):
-        return self.source_grid_slim.mask._slim_index_for_sub_slim_index
+    def slim_index_for_sub_slim_index(self):
+        return self.source_grid_slim.mask.slim_index_for_sub_slim_index
 
     @property
     def pixelization_index_for_sub_slim_index(self):
@@ -195,7 +195,7 @@ class Mapper:
             pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
             pixels=self.pixels,
             total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
-            slim_index_for_sub_slim_index=self._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )
 
@@ -205,7 +205,7 @@ class Mapper:
             pixels=self.pixels,
             signal_scale=signal_scale,
             pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
-            slim_index_for_sub_slim_index=self.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             hyper_image=self.hyper_image,
         )
 
@@ -368,7 +368,7 @@ class MapperVoronoi(Mapper):
         return mapper_util.pixelization_index_for_voronoi_sub_slim_index_from(
             grid=self.source_grid_slim,
             nearest_pixelization_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,
-            slim_index_for_sub_slim_index=self.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             pixelization_grid=self.source_pixelization_grid,
             pixel_neighbors=self.source_pixelization_grid.pixel_neighbors,
             pixel_neighbors_size=self.source_pixelization_grid.pixel_neighbors_size,

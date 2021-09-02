@@ -241,7 +241,7 @@ class Grid2DVoronoi(AbstractStructure2D):
             )
 
         if hasattr(obj, "_sub_border_flat_indexes"):
-            self._sub_border_flat_indexes = obj._sub_border_flat_indexes
+            self._sub_border_flat_indexes = obj.sub_border_flat_indexes
 
     @property
     def origin(self):

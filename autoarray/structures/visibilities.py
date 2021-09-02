@@ -1,6 +1,8 @@
 import logging
 import numpy as np
 
+from autoconf import cached_property
+
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 from autoarray.structures.arrays.two_d import array_2d_util
@@ -97,13 +99,11 @@ class AbstractVisibilities(np.ndarray):
     def shape_slim(self):
         return self.shape[0]
 
-    @property
-    @array_2d_util.Memoizer()
+    @cached_property
     def amplitudes(self):
         return np.sqrt(np.square(self.real) + np.square(self.imag))
 
-    @property
-    @array_2d_util.Memoizer()
+    @cached_property
     def phases(self):
         return np.arctan2(self.imag, self.real)
 

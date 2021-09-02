@@ -675,7 +675,7 @@ class TestRectangularMapper:
             pixels=9,
             signal_scale=2.0,
             pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
-            slim_index_for_sub_slim_index=grid_2d_7x7.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
             hyper_image=image_7x7,
         )
 
@@ -832,7 +832,7 @@ class TestVoronoiMapper:
             pixels=6,
             signal_scale=2.0,
             pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
-            slim_index_for_sub_slim_index=grid_2d_7x7.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
             hyper_image=image_7x7,
         )
 

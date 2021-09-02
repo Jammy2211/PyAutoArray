@@ -2,8 +2,9 @@ import numpy as np
 from typing import List, Tuple, Union
 
 from autoconf import conf
-from autoarray.structures.abstract_structure import AbstractStructure2D
+from autoconf import cached_property
 
+from autoarray.structures.abstract_structure import AbstractStructure2D
 from autoarray.structures.arrays.two_d import array_2d as a2d
 from autoarray.structures.grids.two_d import grid_2d as g2d
 from autoarray.structures.grids.two_d import grid_2d_irregular as g2d_irr
@@ -13,7 +14,6 @@ from autoarray import exc
 from autoarray.structures.grids import abstract_grid
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
-from autoarray import numba_util
 from autoarray.geometry import geometry_util
 
 
@@ -126,7 +126,7 @@ class AbstractGrid2D(AbstractStructure2D):
         super().__array_finalize__(obj)
 
         if hasattr(obj, "_sub_border_flat_indexes"):
-            self.mask._sub_border_flat_indexes = obj._sub_border_flat_indexes
+            self.mask.sub_border_flat_indexes = obj.sub_border_flat_indexes
 
     @property
     def slim(self):
@@ -206,8 +206,7 @@ class AbstractGrid2D(AbstractStructure2D):
         """
         return np.fliplr(self)
 
-    @property
-    @array_2d_util.Memoizer()
+    @cached_property
     def in_radians(self):
         """
         Return the grid as an ndarray where all (y,x) values are converted to Radians.
@@ -422,7 +421,7 @@ class AbstractGrid2D(AbstractStructure2D):
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border.
         """
-        return self[self.mask._sub_border_flat_indexes]
+        return self[self.mask.sub_border_flat_indexes]
 
     def relocated_grid_from_grid(self, grid):
         """
@@ -452,7 +451,7 @@ class AbstractGrid2D(AbstractStructure2D):
             return grid
 
         return g2d.Grid2D(
-            grid=self.relocated_grid_from_grid_jit(
+            grid=grid_2d_util.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.sub_border_grid
             ),
             mask=grid.mask,
@@ -477,82 +476,11 @@ class AbstractGrid2D(AbstractStructure2D):
             return pixelization_grid
 
         return g2d.Grid2DSparse(
-            grid=self.relocated_grid_from_grid_jit(
+            grid=grid_2d_util.relocated_grid_from_grid_jit(
                 grid=pixelization_grid, border_grid=self.sub_border_grid
             ),
             sparse_index_for_slim_index=pixelization_grid.sparse_index_for_slim_index,
         )
-
-    @staticmethod
-    @numba_util.jit()
-    def relocated_grid_from_grid_jit(grid, border_grid):
-        """
-        Relocate the coordinates of a grid to its border if they are outside the border, where the border is
-        defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
-
-        This is performed as follows:
-
-        1: Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
-        2: Compute the radial distance of every grid coordinate from the origin.
-        3: For every coordinate, find its nearest pixel in the border.
-        4: Determine if it is outside the border, by comparing its radial distance from the origin to its paired
-        border pixel's radial distance.
-        5: If its radial distance is larger, use the ratio of radial distances to move the coordinate to the
-        border (if its inside the border, do nothing).
-
-        The method can be used on uniform or irregular grids, however for irregular grids the border of the
-        'image-plane' mask is used to define border pixels.
-
-        Parameters
-        ----------
-        grid : Grid2D
-            The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
-        border_grid : Grid2D
-            The grid of border (y,x) coordinates.
-        """
-
-        grid_relocated = np.zeros(grid.shape)
-        grid_relocated[:, :] = grid[:, :]
-
-        border_origin = np.zeros(2)
-        border_origin[0] = np.mean(border_grid[:, 0])
-        border_origin[1] = np.mean(border_grid[:, 1])
-        border_grid_radii = np.sqrt(
-            np.add(
-                np.square(np.subtract(border_grid[:, 0], border_origin[0])),
-                np.square(np.subtract(border_grid[:, 1], border_origin[1])),
-            )
-        )
-        border_min_radii = np.min(border_grid_radii)
-
-        grid_radii = np.sqrt(
-            np.add(
-                np.square(np.subtract(grid[:, 0], border_origin[0])),
-                np.square(np.subtract(grid[:, 1], border_origin[1])),
-            )
-        )
-
-        for pixel_index in range(grid.shape[0]):
-
-            if grid_radii[pixel_index] > border_min_radii:
-
-                closest_pixel_index = np.argmin(
-                    np.square(grid[pixel_index, 0] - border_grid[:, 0])
-                    + np.square(grid[pixel_index, 1] - border_grid[:, 1])
-                )
-
-                move_factor = (
-                    border_grid_radii[closest_pixel_index] / grid_radii[pixel_index]
-                )
-
-                if move_factor < 1.0:
-
-                    grid_relocated[pixel_index, :] = (
-                        move_factor * (grid[pixel_index, :] - border_origin[:])
-                        + border_origin[:]
-                    )
-
-        return grid_relocated
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """

@@ -167,7 +167,7 @@ class AbstractInversionImaging(AbstractInversion):
         return inversion_util.inversion_residual_map_from(
             pixelization_values=self.reconstruction,
             data=self.image,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
             all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
         )
 
@@ -177,7 +177,7 @@ class AbstractInversionImaging(AbstractInversion):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
             all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
         )
 
@@ -187,7 +187,7 @@ class AbstractInversionImaging(AbstractInversion):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
             all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
         )
 
@@ -282,7 +282,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             image_native=self.image.native,
             noise_map_native=self.noise_map.native,
             kernel_native=self.convolver.kernel.native,
-            native_index_for_slim_index=self.image.mask._native_index_for_slim_index,
+            native_index_for_slim_index=self.image.mask.native_index_for_slim_index,
         )
 
     @cached_property
