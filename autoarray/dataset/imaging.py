@@ -248,6 +248,7 @@ class Imaging(AbstractDataset):
 
         preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=self.noise_map.native,
+            signal_to_noise_map_native=self.signal_to_noise_map.native,
             kernel_native=self.psf.native,
             native_index_for_slim_index=self.mask._native_index_for_slim_index,
         )

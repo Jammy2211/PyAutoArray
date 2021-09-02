@@ -122,7 +122,7 @@ def w_tilde_curvature_imaging_from(
             ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
             w_tilde_curvature[ip0, ip1] += w_tilde_curvature_value_from(
-                noise_map_native=noise_map_native,
+                value_native=noise_map_native,
                 kernel_native=kernel_native,
                 ip0_y=ip0_y,
                 ip0_x=ip0_x,
@@ -140,22 +140,24 @@ def w_tilde_curvature_imaging_from(
 @numba_util.jit()
 def w_tilde_curvature_preload_imaging_from(
     noise_map_native: np.ndarray,
+    signal_to_noise_map_native: np.ndarray,
     kernel_native: np.ndarray,
     native_index_for_slim_index,
-    threshold=1.0e-8,
+    signal_to_noise_threshold=1.0e-10,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     The matrix `w_tilde_curvature` is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF
-    convolution of every pair of image pixels given the noise map. This can be used to efficiently compute the
-    curvature matrix via the mappings between image and source pixels, in a way that omits having to perform the PSF
+    convolution of every pair of image pixels on the noise map. This can be used to efficiently compute the
+    curvature matrix via the mappings between image and source pixels, in a way that omits having to repeat the PSF
     convolution on every individual source pixel. This provides a significant speed up for inversions of imaging
     datasets.
 
     The limitation of this matrix is that the dimensions of [image_pixels, image_pixels] can exceed many 10s of GB's,
-    making it impossible to store in memory and its use in linear algebra calculations extremely. This methods creates
-    a sparse matrix that can compute the matrix `w_tilde_curvature`.
+    making it impossible to store in memory and its use in linear algebra calculations slow. This methods creates
+    a sparse matrix that can compute the matrix `w_tilde_curvature` efficiently, albeit the linear algebra calculations
+    in PyAutoArray bypass this matrix entire to go straight to the curvature matrix.
 
-    For imaging data, w_tilde is a sparse meatrix, whereby non-zero entries are only contained for pairs of image pixels
+    For imaging data, w_tilde is a sparse matrix, whereby non-zero entries are only contained for pairs of image pixels
     where the two pixels overlap due to the kernel size. For example, if the kernel size is (11, 11) and two image
     pixels are separated by more than 20 pixels, the kernel will never convolve flux between the two pixels. Two image
     pixels will only share a convolution if they are within `kernel_overlap_size = 2 * kernel_shape - 1` pixels within
@@ -170,6 +172,15 @@ def w_tilde_curvature_preload_imaging_from(
     matrix, the image pixel pairs corresponding to the same image pixel are divided by two. This ensures that when the
     curvature matrix is computed these pixels are not double-counted.
 
+    The values stored in `w_tilde_curvature_preload` represent the convolution of overlapping noise-maps given the
+    PSF kernel. It is common for many values to be neglibly small. Removing these values can speed up the inversion
+    and reduce memory at the expense of a numerically irrelevent change of solution.
+
+    Removing values based on the noise-map depends on the units of the noise-map and is hard to define generically.
+    Thus a `signal_to_noise_threshold` is used instead that removes all PSF convolved image-pixel pairs where the
+    convolved S/N is below this value. Tests reveal that using a value of 1.0e-10 has neglible impact on the numerical
+    solution of an inversion.
+
     This matrix can then be used to compute the `curvature_matrix` in a memory efficient way that exploits the sparsity
     of the linear algebra.
 
@@ -177,6 +188,9 @@ def w_tilde_curvature_preload_imaging_from(
     ----------
     noise_map_native
         The two dimensional masked noise-map of values which `w_tilde_curvature` is computed from.
+    signal_to_noise_map_native
+        The two dimensional masked signal-to-noise-map from which the threshold discarding low S/N image pixel
+        pairs is used.
     kernel_native
         The two dimensional PSF kernel that `w_tilde_curvature` encodes the convolution of.
     native_index_for_slim_index
@@ -209,8 +223,8 @@ def w_tilde_curvature_preload_imaging_from(
 
             ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
-            value = w_tilde_curvature_value_from(
-                noise_map_native=noise_map_native,
+            signal_to_noise_value = w_tilde_curvature_value_from(
+                value_native=signal_to_noise_map_native,
                 kernel_native=kernel_native,
                 ip0_y=ip0_y,
                 ip0_x=ip0_x,
@@ -218,12 +232,21 @@ def w_tilde_curvature_preload_imaging_from(
                 ip1_x=ip1_x,
             )
 
-            if ip0 == ip1:
-                value /= 2.0
+            if signal_to_noise_value > signal_to_noise_threshold:
 
-            if value > threshold:
+                noise_value = w_tilde_curvature_value_from(
+                    value_native=noise_map_native,
+                    kernel_native=kernel_native,
+                    ip0_y=ip0_y,
+                    ip0_x=ip0_x,
+                    ip1_y=ip1_y,
+                    ip1_x=ip1_x,
+                )
 
-                w_tilde_curvature_preload_tmp[ip0, kernel_index] = value
+                if ip0 == ip1:
+                    noise_value /= 2.0
+
+                w_tilde_curvature_preload_tmp[ip0, kernel_index] = noise_value
                 w_tilde_curvature_indexes_tmp[ip0, kernel_index] = ip1
                 kernel_index += 1
 
@@ -258,7 +281,7 @@ def w_tilde_curvature_preload_imaging_from(
 
 @numba_util.jit()
 def w_tilde_curvature_value_from(
-    noise_map_native: np.ndarray, kernel_native: np.ndarray, ip0_y, ip0_x, ip1_y, ip1_x
+    value_native: np.ndarray, kernel_native: np.ndarray, ip0_y, ip0_x, ip1_y, ip1_x
 ) -> float:
     """
     Compute the value of an entry of the `w_tilde_curvature` matrix, where this entry encodes the PSF convolution of
@@ -277,8 +300,9 @@ def w_tilde_curvature_value_from(
 
     Parameters
     ----------
-    noise_map_native
-        The two dimensional masked noise-map of values which w_tilde is computed from.
+    value_native
+        A two dimensional masked array of values (e.g. a noise-map, signal to noise map) which the w_tilde curvature
+        values are computed from.
     kernel_native
         The two dimensional PSF kernel that w_tilde encodes the convolution of.
     ip0_y
@@ -296,7 +320,7 @@ def w_tilde_curvature_value_from(
         The w_tilde value that encodes the value of PSF convolution between a pair of image pixels.
 
     """
-    value = 0.0
+    curvature_value = 0.0
 
     kernel_shift_y = -(kernel_native.shape[1] // 2)
     kernel_shift_x = -(kernel_native.shape[0] // 2)
@@ -310,16 +334,16 @@ def w_tilde_curvature_value_from(
         or ip_x_offset < 2 * kernel_shift_x
         or ip_x_offset > -2 * kernel_shift_x
     ):
-        return value
+        return curvature_value
 
     for k0_y in range(kernel_native.shape[0]):
         for k0_x in range(kernel_native.shape[1]):
 
-            noise_value = noise_map_native[
+            value = value_native[
                 ip0_y + k0_y + kernel_shift_y, ip0_x + k0_x + kernel_shift_x
             ]
 
-            if noise_value > 0.0:
+            if value > 0.0:
 
                 k1_y = k0_y + ip_y_offset
                 k1_x = k0_x + ip_x_offset
@@ -334,11 +358,11 @@ def w_tilde_curvature_value_from(
                     kernel_value_0 = kernel_native[k0_y, k0_x]
                     kernel_value_1 = kernel_native[k1_y, k1_x]
 
-                    value += (
-                        kernel_value_0 * kernel_value_1 * (1.0 / noise_value) ** 2.0
+                    curvature_value += (
+                        kernel_value_0 * kernel_value_1 * (1.0 / value) ** 2.0
                     )
 
-    return value
+    return curvature_value
 
 
 @numba_util.jit()

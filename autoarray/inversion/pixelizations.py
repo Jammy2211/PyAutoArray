@@ -13,6 +13,7 @@ from autoarray.inversion.mappers import MapperVoronoi
 from autoarray import exc
 from autoarray.numba_util import profile_func
 
+
 class SettingsPixelization:
     def __init__(
         self,
@@ -155,7 +156,7 @@ class Rectangular(Pixelization):
             source_grid_slim=relocated_grid,
             source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
-            profiling_dict=profiling_dict
+            profiling_dict=profiling_dict,
         )
 
     @profile_func
@@ -243,7 +244,7 @@ class Voronoi(Pixelization):
                 source_pixelization_grid=pixelization_grid,
                 data_pixelization_grid=sparse_image_plane_grid,
                 hyper_image=hyper_image,
-                profiling_dict=profiling_dict
+                profiling_dict=profiling_dict,
             )
 
         except ValueError as e:

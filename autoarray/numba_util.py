@@ -73,7 +73,9 @@ def profile_func(func: Callable):
 
         repeats = conf.instance["general"]["profiling"]["repeats"]
 
-        last_key_before_call = list(obj.profiling_dict)[-1] if obj.profiling_dict else None
+        last_key_before_call = (
+            list(obj.profiling_dict)[-1] if obj.profiling_dict else None
+        )
 
         start = time.time()
         for i in range(repeats):
@@ -81,7 +83,9 @@ def profile_func(func: Callable):
 
         time_func = (time.time() - start) / repeats
 
-        last_key_after_call = list(obj.profiling_dict)[-1] if obj.profiling_dict else None
+        last_key_after_call = (
+            list(obj.profiling_dict)[-1] if obj.profiling_dict else None
+        )
 
         profile_call_max = 5
 

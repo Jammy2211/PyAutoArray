@@ -87,6 +87,7 @@ class TestWTilde:
 
         w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
             noise_map_native=noise_map_2d,
+            signal_to_noise_map_native=noise_map_2d,
             kernel_native=kernel,
             native_index_for_slim_index=native_index_for_slim_index,
         )
@@ -530,8 +531,10 @@ class TestCurvatureMatrixFromBlurred:
 
             w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=noise_map.native,
+                signal_to_noise_map_native=noise_map.native,
                 kernel_native=kernel.native,
                 native_index_for_slim_index=mask._native_index_for_slim_index,
+                signal_to_noise_threshold=0.0,
             )
 
             data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(

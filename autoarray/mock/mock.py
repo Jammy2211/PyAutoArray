@@ -227,6 +227,7 @@ class MockPixelization:
         hyper_image=None,
         settings=None,
         preloads=None,
+        profiling_dict=None,
     ):
         return self.value
 
