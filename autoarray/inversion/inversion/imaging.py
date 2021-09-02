@@ -221,7 +221,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
-        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
+        """
+        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
         The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
@@ -241,17 +242,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
             inversion
-
-        Attributes
-        -----------
-        regularization_matrix
-            The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-        curvature_matrix
-            The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
-        curvature_reg_matrix
-            The curvature_matrix + regularization matrix.
-        solution_vector
-            The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
         if preloads.w_tilde is not None:
@@ -308,7 +298,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             pix_pixels=self.mapper.pixels,
         )
 
-    @cached_property
+    @property
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
@@ -438,7 +428,7 @@ class InversionImagingMapping(AbstractInversionImaging):
             noise_map=self.noise_map,
         )
 
-    @cached_property
+    @property
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """

@@ -256,6 +256,7 @@ class MockPixelizationGrid:
 
         self.pixel_neighbors = pixel_neighbors
         self.pixel_neighbors_size = pixel_neighbors_size
+        self.shape = (len(pixel_neighbors_size),)
 
 
 class MockRegMapper:

@@ -121,13 +121,6 @@ def convert_grid_2d_to_native(grid_2d: Union[np.ndarray, List], mask_2d) -> np.n
 
 
 class AbstractGrid2D(AbstractStructure2D):
-    def __array_finalize__(self, obj):
-
-        super().__array_finalize__(obj)
-
-        if hasattr(obj, "_sub_border_flat_indexes"):
-            self.mask.sub_border_flat_indexes = obj.sub_border_flat_indexes
-
     @property
     def slim(self):
         """
@@ -206,7 +199,7 @@ class AbstractGrid2D(AbstractStructure2D):
         """
         return np.fliplr(self)
 
-    @cached_property
+    @property
     def in_radians(self):
         """
         Return the grid as an ndarray where all (y,x) values are converted to Radians.
@@ -413,7 +406,7 @@ class AbstractGrid2D(AbstractStructure2D):
 
         return g2d.Grid2D.from_mask(mask=padded_mask)
 
-    @property
+    @cached_property
     def sub_border_grid(self):
         """
         The (y,x) grid of all sub-pixels which are at the border of the mask.

@@ -65,8 +65,7 @@ class Pixelization:
 
             if settings.use_border:
                 return grid.relocated_grid_from_grid(grid=grid)
-            else:
-                return grid
+            return grid
 
         else:
 

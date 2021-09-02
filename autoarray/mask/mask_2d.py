@@ -525,9 +525,10 @@ class AbstractMask2D(AbstractMask):
         """
         return self.native_index_for_slim_index[self.border_1d_indexes].astype("int")
 
-    @property
+    @cached_property
     def sub_border_flat_indexes(self):
-        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        """
+        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """

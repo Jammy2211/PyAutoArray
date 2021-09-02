@@ -33,6 +33,13 @@ class TestInversionImaging:
 
         matrix_shape = (9, 3)
 
+        pixel_neighbors = np.zeros((3, 3)).astype("int")
+        pixel_neighbors_size = np.array([0, 0, 0]).astype("int")
+
+        source_pixelization_grid = mock.MockPixelizationGrid(
+            pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
+        )
+
         with pytest.raises(exc.InversionException):
 
             # noinspection PyTypeChecker
@@ -41,7 +48,9 @@ class TestInversionImaging:
                 noise_map=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
                 convolver=mock.MockConvolver(matrix_shape),
                 mapper=mock.MockMapper(
-                    matrix_shape=matrix_shape, source_grid_slim=grid
+                    matrix_shape=matrix_shape,
+                    source_grid_slim=grid,
+                    source_pixelization_grid=source_pixelization_grid,
                 ),
                 regularization=mock.MockRegularization(matrix_shape),
             )
@@ -114,12 +123,23 @@ class TestInversionImaging:
             ),
         )
 
+        pixel_neighbors = np.zeros((3, 3)).astype("int")
+        pixel_neighbors_size = np.array([0, 0, 0]).astype("int")
+
+        source_pixelization_grid = mock.MockPixelizationGrid(
+            pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
+        )
+
         # noinspection PyTypeChecker
         inversion = InversionImagingMapping(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
-            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_grid_slim=grid),
+            mapper=mock.MockMapper(
+                matrix_shape=matrix_shape,
+                source_grid_slim=grid,
+                source_pixelization_grid=source_pixelization_grid,
+            ),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
             preloads=preloads,

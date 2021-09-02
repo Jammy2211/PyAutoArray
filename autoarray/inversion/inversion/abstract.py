@@ -107,7 +107,7 @@ class AbstractInversion:
     def data_vector(self) -> np.ndarray:
         raise NotImplementedError
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
@@ -129,8 +129,18 @@ class AbstractInversion:
     def curvature_reg_matrix(self):
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
+
+        This function overwrites the `curvature_matrix`, because for large matrices this avoids overhead. The
+        `curvature_matrix` is not a cached property as a result, to ensure if we access it after computing the
+        `curvature_reg_matrix` it is correctly recalculated in a new array of memory.
         """
-        return np.add(self.curvature_matrix, self.regularization_matrix)
+
+        return inversion_util.curvature_reg_matrix_from(
+            curvature_matrix=self.curvature_matrix,
+            regularization_matrix=self.regularization_matrix,
+            pixel_neighbors=self.mapper.source_pixelization_grid.pixel_neighbors,
+            pixel_neighbors_size=self.mapper.source_pixelization_grid.pixel_neighbors_size,
+        )
 
     @cached_property
     @profile_func

@@ -566,6 +566,45 @@ class TestCurvatureMatrixFromBlurred:
             )
 
 
+class TestCurvatureRegMatrix:
+    def test__uses_pixel_neighbors_to_add_matrices_correctly(self):
+
+        pixel_neighbors = np.array(
+            [
+                [1, 3, -1, -1],
+                [4, 2, 0, -1],
+                [1, 5, -1, -1],
+                [4, 6, 0, -1],
+                [7, 1, 5, 3],
+                [4, 2, 8, -1],
+                [7, 3, -1, -1],
+                [4, 8, 6, -1],
+                [7, 5, -1, -1],
+            ]
+        )
+
+        pixel_neighbors_size = np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
+
+        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
+            coefficient=1.0,
+            pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size,
+        )
+
+        curvature_matrix = np.ones(regularization_matrix.shape)
+
+        curvature_reg_matrix = curvature_matrix + regularization_matrix
+
+        curvature_reg_matrix_util = aa.util.inversion.curvature_reg_matrix_from(
+            curvature_matrix=curvature_matrix,
+            regularization_matrix=regularization_matrix,
+            pixel_neighbors=pixel_neighbors,
+            pixel_neighbors_size=pixel_neighbors_size,
+        )
+
+        assert (curvature_reg_matrix == curvature_reg_matrix_util).all()
+
+
 class TestMappedReconstructedDataFrom:
     def test__mapped_reconstructed_data_via_mapping_matrix_from(self):
 

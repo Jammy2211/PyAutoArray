@@ -192,7 +192,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             noise_map=self.noise_map,
         )
 
-    @cached_property
+    @property
     def curvature_matrix(self) -> np.ndarray:
 
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
