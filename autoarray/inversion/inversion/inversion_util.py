@@ -209,9 +209,9 @@ def w_tilde_curvature_preload_imaging_from(
         2 * kernel_native.shape[1] - 1
     )
 
-    w_tilde_curvature_preload_tmp = np.zeros((image_pixels, kernel_overlap_size))
-    w_tilde_curvature_indexes_tmp = np.zeros((image_pixels, kernel_overlap_size))
-    w_tilde_curvature_lengths = np.zeros(image_pixels)
+    curvature_preload_tmp = np.zeros((image_pixels, kernel_overlap_size))
+    curvature_indexes_tmp = np.zeros((image_pixels, kernel_overlap_size))
+    curvature_lengths = np.zeros(image_pixels)
 
     for ip0 in range(image_pixels):
 
@@ -219,7 +219,7 @@ def w_tilde_curvature_preload_imaging_from(
 
         kernel_index = 0
 
-        for ip1 in range(ip0, w_tilde_curvature_preload_tmp.shape[0]):
+        for ip1 in range(ip0, curvature_preload_tmp.shape[0]):
 
             ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
@@ -246,37 +246,29 @@ def w_tilde_curvature_preload_imaging_from(
                 if ip0 == ip1:
                     noise_value /= 2.0
 
-                w_tilde_curvature_preload_tmp[ip0, kernel_index] = noise_value
-                w_tilde_curvature_indexes_tmp[ip0, kernel_index] = ip1
+                curvature_preload_tmp[ip0, kernel_index] = noise_value
+                curvature_indexes_tmp[ip0, kernel_index] = ip1
                 kernel_index += 1
 
-        w_tilde_curvature_lengths[ip0] = kernel_index
+        curvature_lengths[ip0] = kernel_index
 
-    w_tilde_curvature_total_pairs = int(np.sum(w_tilde_curvature_lengths))
+    curvature_total_pairs = int(np.sum(curvature_lengths))
 
-    w_tilde_curvature_preload = np.zeros((w_tilde_curvature_total_pairs))
-    w_tilde_curvature_indexes = np.zeros((w_tilde_curvature_total_pairs))
+    curvature_preload = np.zeros((curvature_total_pairs))
+    curvature_indexes = np.zeros((curvature_total_pairs))
 
     index = 0
 
     for i in range(image_pixels):
 
-        for data_index in range(int(w_tilde_curvature_lengths[i])):
+        for data_index in range(int(curvature_lengths[i])):
 
-            w_tilde_curvature_preload[index] = w_tilde_curvature_preload_tmp[
-                i, data_index
-            ]
-            w_tilde_curvature_indexes[index] = w_tilde_curvature_indexes_tmp[
-                i, data_index
-            ]
+            curvature_preload[index] = curvature_preload_tmp[i, data_index]
+            curvature_indexes[index] = curvature_indexes_tmp[i, data_index]
 
             index += 1
 
-    return (
-        w_tilde_curvature_preload,
-        w_tilde_curvature_indexes,
-        w_tilde_curvature_lengths,
-    )
+    return (curvature_preload, curvature_indexes, curvature_lengths)
 
 
 @numba_util.jit()

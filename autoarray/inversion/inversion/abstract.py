@@ -223,13 +223,24 @@ class AbstractInversion:
         if self.preloads.log_det_regularization_matrix_term is not None:
             return self.preloads.log_det_regularization_matrix_term
 
-        lu = splu(csc_matrix(self.regularization_matrix))
-        diagL = lu.L.diagonal()
-        diagU = lu.U.diagonal()
-        diagL = diagL.astype(np.complex128)
-        diagU = diagU.astype(np.complex128)
+        try:
 
-        return np.real(np.log(diagL).sum() + np.log(diagU).sum())
+            lu = splu(csc_matrix(self.regularization_matrix))
+            diagL = lu.L.diagonal()
+            diagU = lu.U.diagonal()
+            diagL = diagL.astype(np.complex128)
+            diagU = diagU.astype(np.complex128)
+
+            return np.real(np.log(diagL).sum() + np.log(diagU).sum())
+
+        except RuntimeError:
+
+            try:
+                return 2.0 * np.sum(
+                    np.log(np.diag(np.linalg.cholesky(self.regularization_matrix)))
+                )
+            except np.linalg.LinAlgError:
+                raise exc.InversionException()
 
     @property
     def brightest_reconstruction_pixel(self):
