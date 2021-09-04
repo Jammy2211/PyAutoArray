@@ -8,7 +8,6 @@ from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformed
 from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformedNumpy
-from autoarray.structures.grids.two_d.grid_2d_interpolate import Grid2DInterpolate
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.grids.two_d.grid_2d_irregular import (
@@ -38,7 +37,7 @@ def grid_1d_to_structure(func):
     def wrapper(obj, grid, *args, **kwargs) -> Union[Array1D, ValuesIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
-        `Grid2DInterpolate`, `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
+        `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
@@ -84,11 +83,9 @@ def grid_1d_to_structure(func):
             if obj.angle is not None:
                 angle = obj.angle + 90.0
 
-        if (
-            isinstance(grid, Grid2D)
-            or isinstance(grid, Grid2DIterate)
-            or isinstance(grid, Grid2DInterpolate)
-        ):
+        print(angle)
+
+        if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIterate):
             grid_2d_projected = grid.grid_2d_radial_projected_from(
                 centre=centre, angle=angle
             )
@@ -129,7 +126,7 @@ def grid_1d_output_structure(func):
     def wrapper(obj, grid, *args, **kwargs) -> Union[Array1D, ValuesIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
-        `Grid2DInterpolate`, `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
+        `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
@@ -165,11 +162,7 @@ def grid_1d_output_structure(func):
 
         result = func(obj, grid, *args, **kwargs)
 
-        if (
-            isinstance(grid, Grid2D)
-            or isinstance(grid, Grid2DIterate)
-            or isinstance(grid, Grid2DInterpolate)
-        ):
+        if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIterate):
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
 
         elif isinstance(grid, Grid2DIrregular):
@@ -203,7 +196,7 @@ def grid_2d_to_structure(func):
     def wrapper(obj, grid, *args, **kwargs):
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
-        `Grid2DInterpolate`, `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
+        `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
@@ -239,8 +232,6 @@ def grid_2d_to_structure(func):
 
         if isinstance(grid, Grid2DIterate):
             return grid.iterated_result_from_func(func=func, cls=obj)
-        elif isinstance(grid, Grid2DInterpolate):
-            return grid.result_from_func(func=func, cls=obj)
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from_result(result=result)
@@ -305,8 +296,6 @@ def grid_2d_to_structure_list(func):
             ]
             result_list = [result.binned for result in result_list]
             return grid.grid.structure_2d_list_from_result_list(result_list=result_list)
-        elif isinstance(grid, Grid2DInterpolate):
-            return func(obj, grid, *args, **kwargs)
         elif isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_list_from_result_list(result_list=result_list)

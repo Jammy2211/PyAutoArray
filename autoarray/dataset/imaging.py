@@ -50,7 +50,6 @@ class SettingsImaging(AbstractSettingsDataset):
         sub_size_inversion=4,
         fractional_accuracy: float = 0.9999,
         sub_steps: List[int] = None,
-        pixel_scales_interp: Optional[Union[float, Tuple[float, float]]] = None,
         signal_to_noise_limit: Optional[float] = None,
         signal_to_noise_limit_radii: Optional[float] = None,
         use_normalized_psf=True,
@@ -66,10 +65,10 @@ class SettingsImaging(AbstractSettingsDataset):
         ----------
         grid_class : ag.Grid2D
             The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
-            `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a description of these options).
+            and `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
         grid_inversion_class : ag.Grid2D
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` 
+            The options are `Grid2D` and `Grid2DIterate`.
             (see the `Grid2D` documentation for a description of these options).
         sub_size
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
@@ -79,9 +78,6 @@ class SettingsImaging(AbstractSettingsDataset):
         sub_steps : [int]
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        pixel_scales_interp or (float, float)
-            If the grid and / or grid_inversion use a `Grid2DInterpolate`, this sets the resolution of the interpolation
-            grid.
         signal_to_noise_limit
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
             signa to noise limit.
@@ -97,7 +93,6 @@ class SettingsImaging(AbstractSettingsDataset):
             sub_size_inversion=sub_size_inversion,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
-            pixel_scales_interp=pixel_scales_interp,
             signal_to_noise_limit=signal_to_noise_limit,
             signal_to_noise_limit_radii=signal_to_noise_limit_radii,
         )

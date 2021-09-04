@@ -9,7 +9,6 @@ from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_2d_interpolate import Grid2DInterpolate
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
@@ -20,7 +19,6 @@ def grid_from_mask_and_grid_class(
     grid_class: Union[Type[Grid1D], Type[Grid2D]],
     fractional_accuracy: float,
     sub_steps: List[int],
-    pixel_scales_interp: Union[float, Tuple[float, float]],
 ) -> Optional[Union[Grid1D, Grid2D]]:
 
     if mask.pixel_scales is None:
@@ -46,12 +44,6 @@ def grid_from_mask_and_grid_class(
             mask=mask, fractional_accuracy=fractional_accuracy, sub_steps=sub_steps
         )
 
-    elif grid_class is Grid2DInterpolate:
-
-        return Grid2DInterpolate.from_mask(
-            mask=mask, pixel_scales_interp=pixel_scales_interp
-        )
-
 
 class AbstractSettingsDataset:
     def __init__(
@@ -62,7 +54,6 @@ class AbstractSettingsDataset:
         sub_size_inversion: int = 2,
         fractional_accuracy: float = 0.9999,
         sub_steps: Optional[List[int]] = None,
-        pixel_scales_interp: Optional[Union[float, Tuple[float, float]]] = None,
         signal_to_noise_limit: Optional[float] = None,
         signal_to_noise_limit_radii: Optional[float] = None,
     ):
@@ -76,11 +67,11 @@ class AbstractSettingsDataset:
         Parameters
         ----------
         grid_class : ag.Grid2D
-            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
-            `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a description of these options).
+            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D` and
+            `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
         grid_inversion_class : ag.Grid2D
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a
+            The options are `Grid2D` and `Grid2DIterate` (see the `Grid2D` documentation for a
             description of these options).
         sub_size
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
@@ -90,9 +81,6 @@ class AbstractSettingsDataset:
         sub_steps : [int]
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        pixel_scales_interp or (float, float)
-            If the grid and / or grid_inversion use a `Grid2DInterpolate`, this sets the resolution of the interpolation
-            grid.
         signal_to_noise_limit
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
             signa to noise limit.
@@ -108,7 +96,6 @@ class AbstractSettingsDataset:
             sub_steps = [2, 4, 8, 16]
 
         self.sub_steps = sub_steps
-        self.pixel_scales_interp = pixel_scales_interp
         self.signal_to_noise_limit = signal_to_noise_limit
         self.signal_to_noise_limit_radii = signal_to_noise_limit_radii
 
@@ -119,7 +106,6 @@ class AbstractSettingsDataset:
             grid_class=self.grid_class,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
-            pixel_scales_interp=self.pixel_scales_interp,
         )
 
     def grid_inversion_from_mask(self, mask) -> Union[Grid1D, Grid2D]:
@@ -129,7 +115,6 @@ class AbstractSettingsDataset:
             grid_class=self.grid_inversion_class,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
-            pixel_scales_interp=self.pixel_scales_interp,
         )
 
 

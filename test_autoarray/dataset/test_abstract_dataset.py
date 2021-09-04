@@ -150,24 +150,6 @@ class TestAbstractDatasetApplyMask:
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
         assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
 
-        masked_imaging_7x7 = abstract_dataset.AbstractDataset(
-            data=masked_image_7x7,
-            noise_map=masked_noise_map_7x7,
-            settings=abstract_dataset.AbstractSettingsDataset(
-                grid_class=aa.Grid2DInterpolate, pixel_scales_interp=1.0
-            ),
-        )
-
-        grid = aa.Grid2DInterpolate.from_mask(
-            mask=sub_mask_2d_7x7, pixel_scales_interp=1.0
-        )
-
-        assert isinstance(masked_imaging_7x7.grid, aa.Grid2DInterpolate)
-        assert (masked_imaging_7x7.grid == grid).all()
-        assert (masked_imaging_7x7.grid.grid_interp == grid.grid_interp).all()
-        assert (masked_imaging_7x7.grid.vtx == grid.vtx).all()
-        assert (masked_imaging_7x7.grid.wts == grid.wts).all()
-
     def test__grid_inversion(
         self, image_7x7, noise_map_7x7, sub_mask_2d_7x7, grid_2d_7x7, sub_grid_2d_7x7
     ):
@@ -210,23 +192,6 @@ class TestAbstractDatasetApplyMask:
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid2D)
         assert masked_imaging_7x7.grid_inversion.sub_size == 4
-
-        masked_imaging_7x7 = abstract_dataset.AbstractDataset(
-            data=masked_image_7x7,
-            noise_map=masked_noise_map_7x7,
-            settings=abstract_dataset.AbstractSettingsDataset(
-                grid_inversion_class=aa.Grid2DInterpolate, pixel_scales_interp=1.0
-            ),
-        )
-
-        grid = aa.Grid2DInterpolate.from_mask(
-            mask=sub_mask_2d_7x7, pixel_scales_interp=1.0
-        )
-
-        assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid2DInterpolate)
-        assert (masked_imaging_7x7.grid_inversion == grid).all()
-        assert (masked_imaging_7x7.grid_inversion.vtx == grid.vtx).all()
-        assert (masked_imaging_7x7.grid_inversion.wts == grid.wts).all()
 
     def test__grids_change_sub_size_using_settings(self, image_7x7, noise_map_7x7):
 

@@ -263,29 +263,6 @@ class TestImagingApplyMask:
         assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DIterate)
         assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_2d_7x7).all()
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
-        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-            settings=aa.SettingsImaging(
-                grid_class=aa.Grid2DInterpolate, pixel_scales_interp=1.0, sub_size=2
-            )
-        )
-
-        grid = aa.Grid2DInterpolate.from_mask(
-            mask=sub_mask_2d_7x7, pixel_scales_interp=1.0
-        )
-
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_native=(3, 3))
-
-        assert isinstance(masked_imaging_7x7.grid, aa.Grid2DInterpolate)
-        assert (masked_imaging_7x7.grid == grid).all()
-        assert (masked_imaging_7x7.grid.vtx == grid.vtx).all()
-        assert (masked_imaging_7x7.grid.wts == grid.wts).all()
-
-        assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DInterpolate)
-        assert (masked_imaging_7x7.blurring_grid == blurring_grid).all()
-        assert (masked_imaging_7x7.blurring_grid.vtx == blurring_grid.vtx).all()
-        assert (masked_imaging_7x7.blurring_grid.wts == blurring_grid.wts).all()
-
     def test__psf_convolvers_and_w_tilde_native(self, imaging_7x7, sub_mask_2d_7x7):
 
         masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
