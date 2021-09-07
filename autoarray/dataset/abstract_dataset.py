@@ -1,7 +1,7 @@
 import copy
 import numpy as np
 import pickle
-from typing import List, Optional, Tuple, Type, Union
+from typing import List, Optional, Type, Union
 
 from autoconf import conf
 from autoarray.structures.abstract_structure import AbstractStructure
@@ -12,6 +12,27 @@ from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
+
+from autoarray import exc
+
+
+class AbstractWTilde:
+    def __init__(self, curvature_preload, noise_map_value):
+
+        self.curvature_preload = curvature_preload
+        self.noise_map_value = noise_map_value
+
+    def check_noise_map(self, noise_map):
+
+        if noise_map[0] != self.noise_map_value:
+            raise exc.InversionException(
+                "The preloaded values of WTildeImaging are not consistent with the noise-map passed to them, thus "
+                "they cannot be used for the inversion."
+                ""
+                f"The value of the noise map is {noise_map[0]} whereas in WTildeImaging it is {self.noise_map_value}"
+                ""
+                "Update WTildeImaging or do not use the w_tilde formalism to perform the Inversion."
+            )
 
 
 def grid_from_mask_and_grid_class(

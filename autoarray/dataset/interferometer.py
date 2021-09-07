@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 import copy
-from typing import List, Optional, Tuple, Type, Union
+from typing import List, Optional
 
 from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
 from autoarray.dataset.abstract_dataset import AbstractDataset

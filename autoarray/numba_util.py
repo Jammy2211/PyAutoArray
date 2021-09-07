@@ -98,7 +98,7 @@ def profile_func(func: Callable):
                 if last_key_before_call == last_key_after_call:
                     obj.profiling_dict[key_func] = time_func
                 else:
-                    for key, value in reversed(obj.profiling_dict.items()):
+                    for key, value in reversed(list(obj.profiling_dict.items())):
 
                         if last_key_before_call == key:
 

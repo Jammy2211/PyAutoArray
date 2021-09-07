@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 
-class TestWTilde:
+class TestWTildeImaging:
     def test__w_tilde_imaging_from(self):
 
         noise_map_2d = np.array(
@@ -312,7 +312,7 @@ class TestDataVectorFromData:
             assert data_vector_via_w_tilde == pytest.approx(data_vector, 1.0e-4)
 
 
-class TestCurvatureMatrixFromBlurred:
+class TestCurvatureMatrixImaging:
     def test__curvature_matrix_from_w_tilde(self):
 
         w_tilde = np.array(

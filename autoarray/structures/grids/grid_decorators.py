@@ -83,8 +83,6 @@ def grid_1d_to_structure(func):
             if obj.angle is not None:
                 angle = obj.angle + 90.0
 
-        print(angle)
-
         if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIterate):
             grid_2d_projected = grid.grid_2d_radial_projected_from(
                 centre=centre, angle=angle

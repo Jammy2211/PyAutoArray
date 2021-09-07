@@ -1,10 +1,11 @@
 import copy
 import logging
 import numpy as np
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional
 
 from autoconf import cached_property
 
+from autoarray.dataset.abstract_dataset import AbstractWTilde
 from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
 from autoarray.dataset.abstract_dataset import AbstractDataset
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -20,25 +21,15 @@ from autoarray.dataset import preprocess
 logger = logging.getLogger(__name__)
 
 
-class WTildeImaging:
+class WTildeImaging(AbstractWTilde):
     def __init__(self, curvature_preload, indexes, lengths, noise_map_value):
 
-        self.curvature_preload = curvature_preload
+        super().__init__(
+            curvature_preload=curvature_preload, noise_map_value=noise_map_value
+        )
+
         self.indexes = indexes
         self.lengths = lengths
-        self.noise_map_value = noise_map_value
-
-    def check_noise_map(self, noise_map):
-
-        if noise_map[0] != self.noise_map_value:
-            raise exc.InversionException(
-                "The preloaded values of WTildeImaging are not consistent with the noise-map passed to them, thus "
-                "they cannot be used for the inversion."
-                ""
-                f"The value of the noise map is {noise_map[0]} whereas in WTildeImaging it is {self.noise_map_value}"
-                ""
-                "Update WTildeImaging or do not use the w_tilde formalism to perform the Inversion."
-            )
 
 
 class SettingsImaging(AbstractSettingsDataset):
@@ -227,7 +218,7 @@ class Imaging(AbstractDataset):
 
         logger.info("IMAGING - Computing W-Tilde... May take a moment.")
 
-        preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
+        curvature_preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=self.noise_map.native,
             signal_to_noise_map_native=self.signal_to_noise_map.native,
             kernel_native=self.psf.native,
@@ -235,7 +226,7 @@ class Imaging(AbstractDataset):
         )
 
         return WTildeImaging(
-            curvature_preload=preload,
+            curvature_preload=curvature_preload,
             indexes=indexes.astype("int"),
             lengths=lengths.astype("int"),
             noise_map_value=self.noise_map[0],
