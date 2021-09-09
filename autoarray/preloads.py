@@ -1,5 +1,8 @@
 import logging
 import numpy as np
+from typing import List
+
+from autoconf import conf
 
 from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
@@ -67,14 +70,18 @@ class Preloads:
 
             logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
 
-            self.w_tilde = self.w_tilde_via_snr_cut_iteration(fit=fit_0)
+            if conf.instance["general"]["w_tilde"]["snr_cut_iteration"]:
+                self.w_tilde = self.w_tilde_via_snr_cut_iteration(fit=fit_0)
+            else:
+                self.w_tilde = fit_0.inversion.w_tilde
+
             self.use_w_tilde = True
 
             logger.info("PRELOADS - W-Tilde preloaded for this model-fit.")
 
     def w_tilde_via_snr_cut_iteration(self, fit):
 
-        snr_cut = fit.imaging.settings.w_tilde_snr_cut
+        snr_cut = conf.instance["general"]["w_tilde"]["snr_cut_start"]
         likelihood_threshold = fit.imaging.settings.w_tilde_likelihood_threshold
 
         fit_snr_cut = self.fit_for_snr_cut(fit=fit, snr_cut=snr_cut)
@@ -352,3 +359,72 @@ class Preloads:
             logger.info(
                 "PRELOADS - Inversion Log Det Regularization Matrix Term preloaded for this model-fit."
             )
+
+    def check_via_fit(self, fit, horrible=True):
+
+        likelihood_threshold = fit.imaging.settings.w_tilde_likelihood_threshold
+
+        fom_with_preloads = fit.refit_with_new_preloads(preloads=self).figure_of_merit
+
+        fom_without_preloads = fit.refit_with_new_preloads(
+            preloads=Preloads(use_w_tilde=False)
+        ).figure_of_merit
+
+        if horrible:
+            if abs(fom_with_preloads - fit.figure_of_merit) > likelihood_threshold:
+
+                raise exc.PreloadsException(
+                    f"Seomthing has gone really bad."
+                    f"{fom_with_preloads} {fit.figure_of_merit}"
+                )
+
+        if abs(fom_with_preloads - fom_without_preloads) > likelihood_threshold:
+
+            raise exc.PreloadsException(
+                f"The log likelihood of fits using and not using preloads are not"
+                f"consistent, indicating preloading has gone wrong."
+                f"The likelihood values are {fom_with_preloads} (with preloads) and "
+                f"{fom_without_preloads} (without preloads)"
+            )
+
+    def reset_all(self):
+        """
+        Reset all preloads, typically done at the end of a model-fit to save memory.
+        """
+        self.w_tilde = None
+
+        self.blurred_image = None
+        self.traced_grids_of_planes_for_inversion = None
+        self.sparse_image_plane_grids_of_planes = None
+        self.relocated_grid = None
+        self.mapper = None
+        self.blurred_mapping_matrix = None
+        self.curvature_matrix_sparse_preload = None
+        self.curvature_matrix_preload_counts = None
+        self.regularization_matrix = None
+        self.log_det_regularization_matrix_term = None
+
+    @property
+    def info(self) -> List[str]:
+        """
+        The information on what has or has not been preloaded, which is written to the file `preloads.summary`.
+
+        Returns
+        -------
+            A list of strings containing True and False values as to whether a quantity has been preloaded.
+        """
+        line = [f"W Tilde = {self.w_tilde is not None}\n"]
+        line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
+        line += [f"Mapper = {self.mapper is not None}\n"]
+        line += [
+            f"Blurred Mapping Matrix = {self.blurred_mapping_matrix is not None}\n"
+        ]
+        line += [
+            f"Curvature Matrix Sparse = {self.curvature_matrix_sparse_preload is not None}\n"
+        ]
+        line += [f"Regularization Matrix = {self.regularization_matrix is not None}\n"]
+        line += [
+            f"Log Det Regularization Matrix Term = {self.log_det_regularization_matrix_term is not None}\n"
+        ]
+
+        return line

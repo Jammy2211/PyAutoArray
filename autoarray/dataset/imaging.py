@@ -45,7 +45,7 @@ class SettingsImaging(AbstractSettingsDataset):
         signal_to_noise_limit: Optional[float] = None,
         signal_to_noise_limit_radii: Optional[float] = None,
         use_normalized_psf: Optional[bool] = True,
-        w_tilde_snr_cut: Optional[float] = 1.0e-10,
+        w_tilde_snr_cut: Optional[float] = 0.0,
         w_tilde_likelihood_threshold: Optional[float] = 1.0e-4,
     ):
         """

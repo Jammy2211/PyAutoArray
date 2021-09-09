@@ -143,7 +143,7 @@ def w_tilde_curvature_preload_imaging_from(
     signal_to_noise_map_native: np.ndarray,
     kernel_native: np.ndarray,
     native_index_for_slim_index,
-    snr_cut=1.0e-10,
+    snr_cut=0.0,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     The matrix `w_tilde_curvature` is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF
