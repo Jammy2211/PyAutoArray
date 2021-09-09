@@ -73,7 +73,7 @@ class Preloads:
             if conf.instance["general"]["w_tilde"]["snr_cut_iteration"]:
                 self.w_tilde = self.w_tilde_via_snr_cut_iteration(fit=fit_0)
             else:
-                self.w_tilde = fit_0.inversion.w_tilde
+                self.w_tilde = self.w_tilde_for_snr_cut(fit=fit_0, snr_cut=-1.0e99)
 
             self.use_w_tilde = True
 
