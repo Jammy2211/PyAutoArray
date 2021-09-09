@@ -143,7 +143,7 @@ def w_tilde_curvature_preload_imaging_from(
     signal_to_noise_map_native: np.ndarray,
     kernel_native: np.ndarray,
     native_index_for_slim_index,
-    signal_to_noise_threshold=1.0e-10,
+    snr_cut=1.0e-10,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     The matrix `w_tilde_curvature` is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF
@@ -177,7 +177,7 @@ def w_tilde_curvature_preload_imaging_from(
     and reduce memory at the expense of a numerically irrelevent change of solution.
 
     Removing values based on the noise-map depends on the units of the noise-map and is hard to define generically.
-    Thus a `signal_to_noise_threshold` is used instead that removes all PSF convolved image-pixel pairs where the
+    Thus a `snr_cut` is used instead that removes all PSF convolved image-pixel pairs where the
     convolved S/N is below this value. Tests reveal that using a value of 1.0e-10 has neglible impact on the numerical
     solution of an inversion.
 
@@ -233,7 +233,7 @@ def w_tilde_curvature_preload_imaging_from(
                 renormalize=True,
             )
 
-            if signal_to_noise_value > signal_to_noise_threshold:
+            if signal_to_noise_value > snr_cut:
 
                 noise_value = w_tilde_curvature_value_from(
                     value_native=noise_map_native,

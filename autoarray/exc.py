@@ -50,5 +50,9 @@ class PlottingException(Exception):
     pass
 
 
+class PreloadsException(Exception):
+    pass
+
+
 class ProfilingException(Exception):
     pass

@@ -534,7 +534,7 @@ class TestCurvatureMatrixImaging:
                 signal_to_noise_map_native=noise_map.native,
                 kernel_native=kernel.native,
                 native_index_for_slim_index=mask.native_index_for_slim_index,
-                signal_to_noise_threshold=0.0,
+                snr_cut=0.0,
             )
 
             data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(

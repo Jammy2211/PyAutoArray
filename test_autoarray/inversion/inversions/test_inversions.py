@@ -75,7 +75,11 @@ class TestInversionImaging:
         grid = aa.Grid2D.from_mask(mask=mask)
 
         w_tilde = WTildeImaging(
-            curvature_preload=None, indexes=None, lengths=None, noise_map_value=2.0
+            curvature_preload=None,
+            indexes=None,
+            lengths=None,
+            noise_map_value=2.0,
+            snr_cut=1.0e-10,
         )
 
         with pytest.raises(exc.InversionException):
