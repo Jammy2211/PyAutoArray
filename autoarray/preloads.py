@@ -144,7 +144,7 @@ class Preloads:
             f"Unable to decrease snr_cut to be greater than w_tilde_likelihood_threshold after {iterations} iterations"
         )
 
-    def fit_for_snr_cut(self, fit, snr_cut):
+    def w_tilde_for_snr_cut(self, fit, snr_cut):
 
         from autoarray.dataset.imaging import WTildeImaging
 
@@ -156,13 +156,17 @@ class Preloads:
             snr_cut=snr_cut,
         )
 
-        w_tilde = WTildeImaging(
+        return WTildeImaging(
             curvature_preload=preload,
             indexes=indexes.astype("int"),
             lengths=lengths.astype("int"),
             noise_map_value=fit.noise_map[0],
             snr_cut=snr_cut,
         )
+
+    def fit_for_snr_cut(self, fit, snr_cut):
+
+        w_tilde = self.w_tilde_for_snr_cut(fit=fit, snr_cut=snr_cut)
 
         preloads = self.__class__(w_tilde=w_tilde, use_w_tilde=True)
 
