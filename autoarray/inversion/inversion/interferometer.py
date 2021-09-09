@@ -137,7 +137,8 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
-        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
+        """
+        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
         The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
@@ -320,8 +321,17 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         )
 
     @property
-    def mapped_reconstructed_visibilities(self):
+    def mapped_reconstructed_visibilities(self) -> Visibilities:
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane to
+        reconstruct the image in real-space. We then apply the Fourier Transform to map this to the reconstructed
+        visibilities.
 
+        Returns
+        -------
+        Visibilities
+            The reconstructed visibilities which the inversion fits.
+        """
         return self.transformer.visibilities_from_image(
             image=self.mapped_reconstructed_image
         )

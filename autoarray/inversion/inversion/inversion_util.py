@@ -230,6 +230,7 @@ def w_tilde_curvature_preload_imaging_from(
                 ip0_x=ip0_x,
                 ip1_y=ip1_y,
                 ip1_x=ip1_x,
+                renormalize=True,
             )
 
             if signal_to_noise_value > signal_to_noise_threshold:
@@ -273,7 +274,13 @@ def w_tilde_curvature_preload_imaging_from(
 
 @numba_util.jit()
 def w_tilde_curvature_value_from(
-    value_native: np.ndarray, kernel_native: np.ndarray, ip0_y, ip0_x, ip1_y, ip1_x
+    value_native: np.ndarray,
+    kernel_native: np.ndarray,
+    ip0_y,
+    ip0_x,
+    ip1_y,
+    ip1_x,
+    renormalize=False,
 ) -> float:
     """
     Compute the value of an entry of the `w_tilde_curvature` matrix, where this entry encodes the PSF convolution of
@@ -312,6 +319,7 @@ def w_tilde_curvature_value_from(
         The w_tilde value that encodes the value of PSF convolution between a pair of image pixels.
 
     """
+
     curvature_value = 0.0
 
     kernel_shift_y = -(kernel_native.shape[1] // 2)
@@ -327,6 +335,9 @@ def w_tilde_curvature_value_from(
         or ip_x_offset > -2 * kernel_shift_x
     ):
         return curvature_value
+
+    kernel_pixels = kernel_native.shape[0] * kernel_native.shape[1]
+    kernel_count = 0
 
     for k0_y in range(kernel_native.shape[0]):
         for k0_x in range(kernel_native.shape[1]):
@@ -347,12 +358,18 @@ def w_tilde_curvature_value_from(
                     and k1_x < kernel_native.shape[1]
                 ):
 
+                    kernel_count += 1
+
                     kernel_value_0 = kernel_native[k0_y, k0_x]
                     kernel_value_1 = kernel_native[k1_y, k1_x]
 
                     curvature_value += (
                         kernel_value_0 * kernel_value_1 * (1.0 / value) ** 2.0
                     )
+
+    if renormalize:
+        if kernel_count > 0:
+            curvature_value *= kernel_pixels / kernel_count
 
     return curvature_value
 
@@ -517,9 +534,9 @@ def curvature_matrix_via_w_tilde_from(
 
 @numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-    w_tilde_curvature_preload: np.ndarray,
-    w_tilde_curvature_indexes: np.ndarray,
-    w_tilde_curvature_lengths: np.ndarray,
+    curvature_preload: np.ndarray,
+    curvature_indexes: np.ndarray,
+    curvature_lengths: np.ndarray,
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
     pix_lengths: np.ndarray,
@@ -545,12 +562,12 @@ def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
 
     Parameters
     ----------
-    w_tilde_curvature_preload
+    curvature_preload
         A matrix that precomputes the values for fast computation of the curvature matrix in a memory efficient way.
-    w_tilde_curvature_indexes
+    curvature_indexes
         The image-pixel indexes of the values stored in the w tilde preload matrix, which are used to compute
         the weights of the data values when computing the curvature matrix.
-    w_tilde_curvature_lengths
+    curvature_lengths
         The number of image pixels in every row of `w_tilde_curvature`, which is iterated over when computing the
         curvature matrix.
     data_to_pix_unique
@@ -571,7 +588,7 @@ def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
         The curvature matrix `F` (see Warren & Dye 2003).
     """
 
-    data_pixels = w_tilde_curvature_lengths.shape[0]
+    data_pixels = curvature_lengths.shape[0]
 
     curvature_matrix = np.zeros((pix_pixels, pix_pixels))
 
@@ -579,10 +596,10 @@ def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
 
     for data_0 in range(data_pixels):
 
-        for data_1_index in range(w_tilde_curvature_lengths[data_0]):
+        for data_1_index in range(curvature_lengths[data_0]):
 
-            data_1 = w_tilde_curvature_indexes[curvature_index]
-            w_tilde_value = w_tilde_curvature_preload[curvature_index]
+            data_1 = curvature_indexes[curvature_index]
+            w_tilde_value = curvature_preload[curvature_index]
 
             for pix_0_index in range(pix_lengths[data_0]):
 

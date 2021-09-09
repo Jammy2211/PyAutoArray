@@ -544,9 +544,9 @@ class TestCurvatureMatrixImaging:
             )
 
             curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-                w_tilde_curvature_preload=w_tilde_preload,
-                w_tilde_curvature_indexes=w_tilde_indexes.astype("int"),
-                w_tilde_curvature_lengths=w_tilde_lengths.astype("int"),
+                curvature_preload=w_tilde_preload,
+                curvature_indexes=w_tilde_indexes.astype("int"),
+                curvature_lengths=w_tilde_lengths.astype("int"),
                 data_to_pix_unique=data_to_pix_unique.astype("int"),
                 data_weights=data_weights,
                 pix_lengths=pix_lengths.astype("int"),

@@ -43,7 +43,8 @@ class SettingsImaging(AbstractSettingsDataset):
         sub_steps: List[int] = None,
         signal_to_noise_limit: Optional[float] = None,
         signal_to_noise_limit_radii: Optional[float] = None,
-        use_normalized_psf=True,
+        use_normalized_psf: Optional[bool] = True,
+        w_tilde_signal_to_noise_threshold: Optional[float] = 1.0e-10,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver
@@ -86,6 +87,7 @@ class SettingsImaging(AbstractSettingsDataset):
             sub_steps=sub_steps,
             signal_to_noise_limit=signal_to_noise_limit,
             signal_to_noise_limit_radii=signal_to_noise_limit_radii,
+            w_tilde_signal_to_noise_threshold=w_tilde_signal_to_noise_threshold,
         )
 
         self.use_normalized_psf = use_normalized_psf
@@ -223,6 +225,7 @@ class Imaging(AbstractDataset):
             signal_to_noise_map_native=self.signal_to_noise_map.native,
             kernel_native=self.psf.native,
             native_index_for_slim_index=self.mask.native_index_for_slim_index,
+            signal_to_noise_threshold=self.settings.w_tilde_signal_to_noise_threshold,
         )
 
         return WTildeImaging(

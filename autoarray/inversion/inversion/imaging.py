@@ -314,9 +314,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
         array of memory.
         """
         return inversion_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-            w_tilde_curvature_preload=self.w_tilde.curvature_preload,
-            w_tilde_curvature_indexes=self.w_tilde.indexes,
-            w_tilde_curvature_lengths=self.w_tilde.lengths,
+            curvature_preload=self.w_tilde.curvature_preload,
+            curvature_indexes=self.w_tilde.indexes,
+            curvature_lengths=self.w_tilde.lengths,
             data_to_pix_unique=self.mapper.data_unique_mappings.data_to_pix_unique,
             data_weights=self.mapper.data_unique_mappings.data_weights,
             pix_lengths=self.mapper.data_unique_mappings.pix_lengths,

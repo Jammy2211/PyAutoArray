@@ -77,6 +77,7 @@ class AbstractSettingsDataset:
         sub_steps: Optional[List[int]] = None,
         signal_to_noise_limit: Optional[float] = None,
         signal_to_noise_limit_radii: Optional[float] = None,
+        w_tilde_signal_to_noise_threshold: Optional[float] = 1.0e-10,
     ):
         """
         A dataset is a collection of data structures (e.g. the data, noise-map, PSF), a mask, grid, convolver
@@ -119,6 +120,8 @@ class AbstractSettingsDataset:
         self.sub_steps = sub_steps
         self.signal_to_noise_limit = signal_to_noise_limit
         self.signal_to_noise_limit_radii = signal_to_noise_limit_radii
+
+        self.w_tilde_signal_to_noise_threshold = w_tilde_signal_to_noise_threshold
 
     def grid_from_mask(self, mask) -> Union[Grid1D, Grid2D]:
 
