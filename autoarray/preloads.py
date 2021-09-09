@@ -360,23 +360,15 @@ class Preloads:
                 "PRELOADS - Inversion Log Det Regularization Matrix Term preloaded for this model-fit."
             )
 
-    def check_via_fit(self, fit, horrible=True):
+    def check_via_fit(self, fit):
 
         likelihood_threshold = fit.imaging.settings.w_tilde_likelihood_threshold
 
         fom_with_preloads = fit.refit_with_new_preloads(preloads=self).figure_of_merit
 
         fom_without_preloads = fit.refit_with_new_preloads(
-            preloads=Preloads(use_w_tilde=False)
+            preloads=self.__class__(use_w_tilde=False)
         ).figure_of_merit
-
-        if horrible:
-            if abs(fom_with_preloads - fit.figure_of_merit) > likelihood_threshold:
-
-                raise exc.PreloadsException(
-                    f"Seomthing has gone really bad."
-                    f"{fom_with_preloads} {fit.figure_of_merit}"
-                )
 
         if abs(fom_with_preloads - fom_without_preloads) > likelihood_threshold:
 
