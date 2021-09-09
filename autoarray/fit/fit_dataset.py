@@ -59,6 +59,7 @@ class FitDataset:
         self.normalized_residual_map = self.fit.normalized_residual_map
         self.chi_squared_map = self.fit.chi_squared_map
         self.signal_to_noise_map = self.fit.signal_to_noise_map
+        self.potential_chi_squared_map = self.fit.potential_chi_squared_map
         self.chi_squared = self.fit.chi_squared
         self.noise_normalization = self.fit.noise_normalization
         self.log_likelihood = self.fit.log_likelihood

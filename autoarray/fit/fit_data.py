@@ -44,6 +44,13 @@ class AbstractFit(ABC):
         """
 
     @property
+    @abstractmethod
+    def potential_chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+        """
+        The signal-to-noise_map of the dataset and noise-map which are fitted.
+        """
+
+    @property
     def residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the residual-map between the masked dataset and model data, where:
@@ -180,6 +187,12 @@ class FitData(AbstractFit):
         return signal_to_noise_map
 
     @property
+    def potential_chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
+        absolute_signal_to_noise_map = np.divide(np.abs(self.data), self.noise_map)
+        return np.square(absolute_signal_to_noise_map)
+
+    @property
     def normalized_residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
@@ -274,6 +287,11 @@ class FitDataComplex(AbstractFit):
         signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
 
         return signal_to_noise_map_real + 1.0j * signal_to_noise_map_imag
+
+    @property
+    def potential_chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
+        return self.signal_to_noise_map
 
     @property
     def chi_squared(self) -> float:

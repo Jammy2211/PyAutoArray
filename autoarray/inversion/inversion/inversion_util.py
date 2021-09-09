@@ -143,7 +143,7 @@ def w_tilde_curvature_preload_imaging_from(
     signal_to_noise_map_native: np.ndarray,
     kernel_native: np.ndarray,
     native_index_for_slim_index,
-    snr_cut=0.0,
+    snr_cut=-1.0e99,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     The matrix `w_tilde_curvature` is a matrix of dimensions [image_pixels, image_pixels] that encodes the PSF
@@ -223,29 +223,31 @@ def w_tilde_curvature_preload_imaging_from(
 
             ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
-            signal_to_noise_value = w_tilde_curvature_value_from(
-                value_native=signal_to_noise_map_native,
+            # signal_to_noise_value = w_tilde_curvature_value_from(
+            #     value_native=signal_to_noise_map_native,
+            #     kernel_native=kernel_native,
+            #     ip0_y=ip0_y,
+            #     ip0_x=ip0_x,
+            #     ip1_y=ip1_y,
+            #     ip1_x=ip1_x,
+            #     renormalize=True,
+            # )
+            #
+            # if signal_to_noise_value > snr_cut:
+
+            noise_value = w_tilde_curvature_value_from(
+                value_native=noise_map_native,
                 kernel_native=kernel_native,
                 ip0_y=ip0_y,
                 ip0_x=ip0_x,
                 ip1_y=ip1_y,
                 ip1_x=ip1_x,
-                renormalize=True,
             )
 
-            if signal_to_noise_value > snr_cut:
+            if ip0 == ip1:
+                noise_value /= 2.0
 
-                noise_value = w_tilde_curvature_value_from(
-                    value_native=noise_map_native,
-                    kernel_native=kernel_native,
-                    ip0_y=ip0_y,
-                    ip0_x=ip0_x,
-                    ip1_y=ip1_y,
-                    ip1_x=ip1_x,
-                )
-
-                if ip0 == ip1:
-                    noise_value /= 2.0
+            if noise_value > 0.0:
 
                 curvature_preload_tmp[ip0, kernel_index] = noise_value
                 curvature_indexes_tmp[ip0, kernel_index] = ip1

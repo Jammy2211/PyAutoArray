@@ -44,6 +44,9 @@ class TestFitImaging:
         assert (
             fit.signal_to_noise_map.native == np.array([[0.5, 1.0], [1.5, 2.0]])
         ).all()
+        assert (
+            fit.potential_chi_squared_map.slim == np.array([0.25, 1.0, 2.25, 4.0])
+        ).all()
 
         assert (fit.model_image.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert (fit.model_image.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
