@@ -199,7 +199,7 @@ class Mapper:
             sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )
 
-    def pixel_signals_from_signal_scale(self, signal_scale):
+    def pixel_signals_from(self, signal_scale):
 
         return mapper_util.adaptive_pixel_signals_from(
             pixels=self.pixels,

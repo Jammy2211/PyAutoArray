@@ -1170,9 +1170,7 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     sub_two_to_one = mask_to_mask_1d_index_from_mask(mask=mask)
     """
 
-    sub_slim_index_for_sub_native_index = -1 * np.ones(
-        shape=sub_mask_2d.shape
-    )
+    sub_slim_index_for_sub_native_index = -1 * np.ones(shape=sub_mask_2d.shape)
 
     sub_mask_1d_index = 0
 
