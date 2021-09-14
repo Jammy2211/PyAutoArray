@@ -7,8 +7,8 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.inversion.mappers import MapperRectangular
-from autoarray.inversion.mappers import MapperVoronoi
+from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
 
 class MapperPlotter(AbstractPlotter):

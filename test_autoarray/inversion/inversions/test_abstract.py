@@ -1,9 +1,11 @@
 from autoconf import conf
 import autoarray as aa
 from autoarray.inversion.inversion.abstract import AbstractInversion
+from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.voronoi import MapperVoronoi
+
+from autoarray.inversion.regularization import AbstractRegularization
 from autoarray.mock import mock
-from autoarray.inversion import mappers
-from autoarray.inversion import regularization as reg
 
 import numpy as np
 from os import path
@@ -18,9 +20,9 @@ class MockInversion(AbstractInversion):
         self,
         noise_map: Optional[aa.Array2D] = None,
         mapper: Optional[
-            Union[mappers.MapperRectangular, mappers.MapperVoronoi, mock.MockMapper]
+            Union[MapperRectangular, MapperVoronoi, mock.MockMapper]
         ] = None,
-        regularization: Optional[reg.AbstractRegularization] = None,
+        regularization: Optional[AbstractRegularization] = None,
         settings: Optional[aa.SettingsInversion] = None,
         preloads: aa.Preloads = aa.Preloads(),
         curvature_matrix: Optional[np.ndarray] = None,

@@ -2,41 +2,6 @@ import autoarray as aa
 import numpy as np
 
 
-class TestSettingsPixelization:
-    def test__settings_with_is_stochastic_true(self):
-
-        settings = aa.SettingsPixelization(is_stochastic=False)
-        settings = settings.settings_with_is_stochastic_true()
-        assert settings.is_stochastic is True
-
-        settings = aa.SettingsPixelization(is_stochastic=True)
-        settings = settings.settings_with_is_stochastic_true()
-        assert settings.is_stochastic is True
-
-
-class TestRectangular:
-    def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_2d_7x7):
-
-        pixelization = aa.pix.Rectangular(shape=(3, 3))
-
-        assert pixelization.sparse_grid_from_grid(grid=sub_grid_2d_7x7) == None
-
-    def test__preloads_used_for_relocated_grid(self, sub_grid_2d_7x7):
-
-        pixelization = aa.pix.Rectangular(shape=(3, 3))
-
-        relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
-
-        mapper = pixelization.mapper_from_grid_and_sparse_grid(
-            grid=relocated_grid,
-            sparse_grid=None,
-            settings=aa.SettingsPixelization(use_border=True),
-            preloads=aa.Preloads(relocated_grid=relocated_grid),
-        )
-
-        assert (mapper.source_grid_slim == relocated_grid).all()
-
-
 class TestVoronoiMagnification:
     def test__number_of_pixels_setup_correct(self):
 
@@ -44,7 +9,7 @@ class TestVoronoiMagnification:
 
         assert pixelization.shape == (3, 3)
 
-    def test__pixelization_grid_returns_same_as_computed_from_grids_module(
+    def test__sparse_grid_from_grid__returns_same_as_computed_from_grids_module(
         self, sub_grid_2d_7x7
     ):
 
@@ -82,7 +47,7 @@ class TestVoronoiMagnification:
 
 
 class TestVoronoiBrightness:
-    def test__hyper_image_doesnt_use_min_and_max_weight_map_uses_floor_and_power(self):
+    def test__weight_map_from_hyper_image(self):
 
         hyper_image = np.array([0.0, 1.0, 0.0])
 
@@ -118,8 +83,6 @@ class TestVoronoiBrightness:
 
         assert (weight_map == np.array([1.0, 4.0, 1.0])).all()
 
-    def test__hyper_image_uses_min_and_max__weight_map_uses_floor_and_power(self):
-
         hyper_image = np.array([-1.0, 1.0, 3.0])
 
         pixelization = aa.pix.VoronoiBrightnessImage(
@@ -146,7 +109,7 @@ class TestVoronoiBrightness:
 
         assert (weight_map == np.array([3.0, 3.5, 4.0])).all()
 
-    def test__pixelization_grid_returns_same_as_computed_from_grids_module(
+    def test__pixelization_grid__matches_manual_comparison_to_grids_module(
         self, sub_grid_2d_7x7
     ):
 
@@ -175,43 +138,3 @@ class TestVoronoiBrightness:
             pixelization_grid.nearest_pixelization_index_for_slim_index
             == sparse_grid.sparse_index_for_slim_index
         ).all()
-
-
-class TestRegression:
-    def test__grid_is_relocated_via_border(self, sub_grid_2d_7x7):
-        pixelization = aa.pix.VoronoiMagnification(shape=(3, 3))
-
-        mask = aa.Mask2D.circular(
-            shape_native=(60, 60),
-            radius=1.0,
-            pixel_scales=(0.1, 0.1),
-            centre=(1.0, 1.0),
-            sub_size=1,
-        )
-
-        grid = aa.Grid2D.from_mask(mask=mask)
-
-        sparse_grid = pixelization.sparse_grid_from_grid(grid=grid)
-
-        grid[8, 0] = 100.0
-
-        mapper = pixelization.mapper_from_grid_and_sparse_grid(
-            grid=grid,
-            sparse_grid=sparse_grid,
-            settings=aa.SettingsPixelization(use_border=True),
-        )
-
-        assert grid[8, 0] != mapper.source_grid_slim[8, 0]
-        assert mapper.source_grid_slim[8, 0] < 5.0
-
-        grid[0, 0] = 0.0
-        sparse_grid[0, 0] = 100.0
-
-        mapper = pixelization.mapper_from_grid_and_sparse_grid(
-            grid=grid,
-            sparse_grid=sparse_grid,
-            settings=aa.SettingsPixelization(use_border=True),
-        )
-
-        assert sparse_grid[0, 0] != mapper.source_pixelization_grid[0, 0]
-        assert mapper.source_pixelization_grid[0, 0] < 5.0

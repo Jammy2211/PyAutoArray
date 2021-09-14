@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 
-class TestRegularizationinstanceMatrix:
+class TestConstantMatrix:
     def test__1_b_matrix_size_3x3__weight_list_all_1s__makes_correct_regularization_matrix(
         self,
     ):
@@ -156,7 +156,7 @@ class TestRegularizationinstanceMatrix:
         assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
-class TestRegularizationWeightedRegularizationweight_list:
+class TestAdaptiveWeightList:
     def test__pixel_signals_all_1s__coefficients_all_1s__weight_list_all_1s(self):
 
         pixel_signals = np.array([1.0, 1.0, 1.0])
@@ -202,7 +202,7 @@ class TestRegularizationWeightedRegularizationweight_list:
         assert (weight_list == np.array([0.75 ** 2.0, 0.5 ** 2.0, 0.25 ** 2.0])).all()
 
 
-class TestRegularizationWeightedMatrix:
+class TestWeightedRegularizationMatrix:
     def test__1_b_matrix_size_4x4__weight_list_all_1s__makes_correct_regularization_matrix(
         self,
     ):

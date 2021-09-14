@@ -17,16 +17,16 @@ from .fit.fit_dataset import FitImaging
 from .fit.fit_dataset import FitInterferometer
 from .instruments import acs
 from .instruments import euclid
-from .inversion.mappers import AbstractMapper
-from .inversion import pixelizations as pix
+from .inversion.mappers.abstract import AbstractMapper
+from .inversion.pixelizations import pix
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.imaging import inversion_imaging_from as InversionImaging
 from .inversion.inversion.interferometer import (
     inversion_interferometer_from as InversionInterferometer,
 )
-from .inversion.mappers import mapper as Mapper
-from .inversion.pixelizations import SettingsPixelization
+from .inversion.mappers.abstract import mapper as Mapper
+from .inversion.pixelizations.settings import SettingsPixelization
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
 from .mock import fixtures

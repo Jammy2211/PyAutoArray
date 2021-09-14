@@ -8,8 +8,8 @@ from typing import Optional, List, Union
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.inversion.mappers import MapperRectangular
-from autoarray.inversion.mappers import MapperVoronoi
+from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 

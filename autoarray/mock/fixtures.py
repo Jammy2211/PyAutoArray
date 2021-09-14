@@ -18,8 +18,8 @@ from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
 from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.layout.layout import Layout2D
-from autoarray.inversion.mappers import MapperRectangular
-from autoarray.inversion.mappers import MapperVoronoi
+from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.transformer import TransformerDFT

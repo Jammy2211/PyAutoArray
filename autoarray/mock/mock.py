@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.inversion.mappers import AbstractMapper
+from autoarray.inversion.mappers.abstract import AbstractMapper
 
 from autoarray.structures.grids import grid_decorators
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors

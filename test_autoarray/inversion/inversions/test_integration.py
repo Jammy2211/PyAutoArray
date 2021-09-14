@@ -1,5 +1,6 @@
 import autoarray as aa
-from autoarray.inversion import mappers
+from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.voronoi import MapperVoronoi
 import numpy as np
 import pytest
 
@@ -39,6 +40,8 @@ class TestImagingRectangular:
             settings=aa.SettingsPixelization(use_border=False),
             hyper_image=np.ones((2, 2)),
         )
+
+        assert isinstance(mapper, MapperRectangular)
 
         assert mapper.data_pixelization_grid == None
         assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
@@ -483,7 +486,7 @@ class TestImagingVoronoiMagnification:
         #     assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
-        assert isinstance(mapper, mappers.MapperVoronoi)
+        assert isinstance(mapper, MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -576,7 +579,7 @@ class TestImagingVoronoiMagnification:
         assert (mapper.source_pixelization_grid == sparse_grid).all()
         #   assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
-        assert isinstance(mapper, mappers.MapperVoronoi)
+        assert isinstance(mapper, MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -683,7 +686,7 @@ class TestImagingVoronoiMagnification:
         assert (mapper.source_pixelization_grid == sparse_grid).all()
         #    assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.005), 1.0e-4)
 
-        assert isinstance(mapper, mappers.MapperVoronoi)
+        assert isinstance(mapper, MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -769,7 +772,7 @@ class TestImagingVoronoiMagnification:
         assert (mapper.source_pixelization_grid == sparse_grid).all()
         #   assert mapper.pixelization_grid.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
-        assert isinstance(mapper, mappers.MapperVoronoi)
+        assert isinstance(mapper, MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
