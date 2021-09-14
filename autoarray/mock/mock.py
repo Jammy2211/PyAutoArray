@@ -1,7 +1,10 @@
 import numpy as np
 
+from autoarray.inversion.mappers import AbstractMapper
+
 from autoarray.structures.grids import grid_decorators
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
+
 
 ### Grids ###
 
@@ -284,36 +287,51 @@ class MockPixelizationGrid:
         self.shape = (len(self.pixel_neighbors.sizes),)
 
 
-class MockRegMapper:
-    def __init__(self, source_pixelization_grid=None, pixel_signals=None):
-
-        self.source_pixelization_grid = source_pixelization_grid
-        self.pixel_signals = pixel_signals
-
-    def pixel_signals_from_signal_scale(self, signal_scale):
-        return self.pixel_signals
-
-
-class MockMapper:
+class MockMapper(AbstractMapper):
     def __init__(
         self,
-        matrix_shape=None,
         source_grid_slim=None,
         source_pixelization_grid=None,
+        hyper_image=None,
+        pixelization_index_for_sub_slim_index=None,
         mapping_matrix=None,
+        pixel_signals=None,
+        pixels=None,
     ):
 
-        self.source_grid_slim = source_grid_slim
-        self.source_pixelization_grid = source_pixelization_grid
-        if mapping_matrix is None:
-            self.mapping_matrix = np.ones(matrix_shape)
-        else:
-            self.mapping_matrix = mapping_matrix
+        super().__init__(
+            source_grid_slim=source_grid_slim,
+            source_pixelization_grid=source_pixelization_grid,
+            hyper_image=hyper_image,
+        )
 
-        if source_pixelization_grid is not None:
-            self.pixels = source_pixelization_grid.shape[0]
-        else:
-            self.pixels = None
+        self._pixelization_index_for_sub_slim_index = (
+            pixelization_index_for_sub_slim_index
+        )
+        self._mapping_matrix = mapping_matrix
+
+        self._pixels = pixels
+
+        self._pixel_signals = pixel_signals
+
+    def pixel_signals_from(self, signal_scale):
+        if self._pixel_signals is None:
+            return super().pixel_signals_from(signal_scale=signal_scale)
+        return self._pixel_signals
+
+    @property
+    def pixels(self):
+        if self._pixels is None:
+            return super().pixels
+        return self._pixels
+
+    @property
+    def pixelization_index_for_sub_slim_index(self):
+        return self._pixelization_index_for_sub_slim_index
+
+    @property
+    def mapping_matrix(self):
+        return self._mapping_matrix
 
 
 class MockConvolver:

@@ -15,7 +15,7 @@ from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
-from autoarray.inversion.regularization import Regularization
+from autoarray.inversion.regularization import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import exc
@@ -27,7 +27,7 @@ class AbstractInversion:
         self,
         noise_map: Union[Array2D, VisibilitiesNoiseMap],
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
+        regularization: AbstractRegularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -42,17 +42,17 @@ class AbstractInversion:
 
         self.profiling_dict = profiling_dict
 
-    def interpolated_reconstructed_data_from_shape_native(self, shape_native=None):
-        return self.interpolated_values_from_shape_native(
+    def interpolated_reconstruction_from(self, shape_native=None):
+        return self.interpolated_values_from(
             values=self.reconstruction, shape_native=shape_native
         )
 
-    def interpolated_errors_from_shape_native(self, shape_native=None):
-        return self.interpolated_values_from_shape_native(
+    def interpolated_errors_from(self, shape_native=None):
+        return self.interpolated_values_from(
             values=self.errors, shape_native=shape_native
         )
 
-    def interpolated_values_from_shape_native(self, values, shape_native=None):
+    def interpolated_values_from(self, values, shape_native=None):
 
         if shape_native is not None:
 

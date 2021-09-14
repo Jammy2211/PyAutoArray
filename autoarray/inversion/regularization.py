@@ -4,7 +4,7 @@ import pylops
 from autoarray.inversion import regularization_util
 
 
-class Regularization:
+class AbstractRegularization:
     def __init__(self):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
         smooth-source solution and prevent over-fitting noise_map in the hyper_galaxies. This is achieved by computing a \
@@ -130,7 +130,7 @@ class Regularization:
         raise NotImplementedError
 
 
-class Constant(Regularization):
+class Constant(AbstractRegularization):
     def __init__(self, coefficient=1.0):
         """A instance-regularization scheme (regularization is described in the `Regularization` class above).
 
@@ -164,7 +164,7 @@ class Constant(Regularization):
         )
 
 
-class AdaptiveBrightness(Regularization):
+class AdaptiveBrightness(AbstractRegularization):
     def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
         """ A instance-regularization scheme (regularization is described in the `Regularization` class above).
 

@@ -161,7 +161,7 @@ class InversionPlotter(MapperPlotter):
         if interpolated_reconstruction:
 
             self.mat_plot_2d.plot_array(
-                array=self.inversion.interpolated_reconstructed_data_from_shape_native(),
+                array=self.inversion.interpolated_reconstruction_from(),
                 visuals_2d=self.visuals_data_with_include_2d,
                 auto_labels=AutoLabels(
                     title="Interpolated Reconstruction",
@@ -171,7 +171,7 @@ class InversionPlotter(MapperPlotter):
 
         if interpolated_errors:
             self.mat_plot_2d.plot_array(
-                array=self.inversion.interpolated_errors_from_shape_native(),
+                array=self.inversion.interpolated_errors_from(),
                 visuals_2d=self.visuals_data_with_include_2d,
                 auto_labels=AutoLabels(
                     title="Interpolated Errors", filename="interpolated_errors"

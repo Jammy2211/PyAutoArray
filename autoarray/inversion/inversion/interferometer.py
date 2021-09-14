@@ -9,7 +9,7 @@ from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
-from autoarray.inversion.regularization import Regularization
+from autoarray.inversion.regularization import AbstractRegularization
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -43,7 +43,7 @@ def inversion_interferometer_unpacked_from(
     noise_map: VisibilitiesNoiseMap,
     transformer: Union[TransformerDFT, TransformerNUFFT],
     mapper: Union[MapperRectangular, MapperVoronoi],
-    regularization: Regularization,
+    regularization: AbstractRegularization,
     settings: SettingsInversion = SettingsInversion(),
     profiling_dict: Optional[Dict] = None,
 ):
@@ -77,7 +77,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
+        regularization: AbstractRegularization,
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
@@ -133,7 +133,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
+        regularization: AbstractRegularization,
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
@@ -226,7 +226,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
+        regularization: AbstractRegularization,
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):

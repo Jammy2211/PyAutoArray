@@ -45,7 +45,7 @@ def mapper(
         )
 
 
-class Mapper:
+class AbstractMapper:
     def __init__(
         self,
         source_grid_slim,
@@ -242,7 +242,7 @@ class Mapper:
         raise NotImplementedError()
 
 
-class MapperRectangular(Mapper):
+class MapperRectangular(AbstractMapper):
     def __init__(
         self,
         source_grid_slim,
@@ -321,7 +321,7 @@ class MapperRectangular(Mapper):
         )
 
 
-class MapperVoronoi(Mapper):
+class MapperVoronoi(AbstractMapper):
     def __init__(
         self,
         source_grid_slim,

@@ -7,7 +7,7 @@ from autoarray.numba_util import profile_func
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
-from autoarray.inversion.regularization import Regularization
+from autoarray.inversion.regularization import AbstractRegularization
 from autoarray.inversion.mappers import MapperRectangular
 from autoarray.inversion.mappers import MapperVoronoi
 from autoarray.preloads import Preloads
@@ -20,7 +20,7 @@ from autoarray.inversion.inversion import inversion_util
 def inversion_imaging_from(
     dataset,
     mapper: Union[MapperRectangular, MapperVoronoi],
-    regularization: Regularization,
+    regularization: AbstractRegularization,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -45,7 +45,7 @@ def inversion_imaging_unpacked_from(
     convolver: Convolver,
     w_tilde,
     mapper: Union[MapperRectangular, MapperVoronoi],
-    regularization: Regularization,
+    regularization: AbstractRegularization,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -89,7 +89,7 @@ class AbstractInversionImaging(AbstractInversion):
         noise_map: Array2D,
         convolver: Convolver,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
+        regularization: AbstractRegularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -216,7 +216,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         convolver: Convolver,
         w_tilde: WTildeImaging,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
+        regularization: AbstractRegularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -362,7 +362,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         noise_map: Array2D,
         convolver: Convolver,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: Regularization,
+        regularization: AbstractRegularization,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,

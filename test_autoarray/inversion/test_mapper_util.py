@@ -13,6 +13,31 @@ def make_five_pixels():
     return np.array([[0, 0], [0, 1], [1, 0], [1, 1], [1, 2]])
 
 
+def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
+    def compute_squared_separation(coordinate1, coordinate2):
+        """
+        Returns the squared separation of two grid (no square root for efficiency)"""
+        return (coordinate1[0] - coordinate2[0]) ** 2 + (
+            coordinate1[1] - coordinate2[1]
+        ) ** 2
+
+    image_pixels = grid.shape[0]
+
+    image_to_pixelization = np.zeros((image_pixels,))
+
+    for image_index, image_coordinate in enumerate(grid):
+        distances = list(
+            map(
+                lambda centers: compute_squared_separation(image_coordinate, centers),
+                pixel_centers,
+            )
+        )
+
+        image_to_pixelization[image_index] = np.argmin(distances)
+
+    return image_to_pixelization
+
+
 class TestMappingMatrix:
     def test__3_image_pixels__6_pixel_pixels__sub_grid_1x1(self, three_pixels):
 
@@ -291,6 +316,105 @@ class TestDataToPixUnique:
         assert (data_to_pix_unique[1, :] == np.array([2, 1, 0, -1])).all()
         assert (data_weights[1, :] == np.array([0.5, 0.25, 0.25, 0.0])).all()
         assert (pix_lengths == np.array([2, 3])).all()
+
+
+class TestPixelizationIndexesVoronoi:
+    def test__grid_to_pixel_pixels_via_nearest_neighbour(self):
+        pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+        grid = aa.Grid2D.manual_slim(
+            [[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
+            shape_native=(2, 2),
+            pixel_scales=1.0,
+        )
+
+        sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
+
+        assert sub_to_pix[0] == 0
+        assert sub_to_pix[1] == 1
+        assert sub_to_pix[2] == 2
+        assert sub_to_pix[3] == 3
+
+        pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
+        grid = aa.Grid2D.manual_slim(
+            [
+                [1.1, 1.1],
+                [-1.1, 1.1],
+                [-1.1, -1.1],
+                [1.1, -1.1],
+                [0.9, -0.9],
+                [-0.9, -0.9],
+                [-0.9, 0.9],
+                [0.9, 0.9],
+            ],
+            shape_native=(3, 3),
+            pixel_scales=0.1,
+        )
+
+        sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
+
+        assert sub_to_pix[0] == 0
+        assert sub_to_pix[1] == 1
+        assert sub_to_pix[2] == 2
+        assert sub_to_pix[3] == 3
+        assert sub_to_pix[4] == 3
+        assert sub_to_pix[5] == 2
+        assert sub_to_pix[6] == 1
+        assert sub_to_pix[7] == 0
+
+        pixel_centers = np.array(
+            [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]]
+        )
+        grid = aa.Grid2D.manual_slim(
+            [
+                [0.1, 0.1],
+                [-0.1, -0.1],
+                [0.49, 0.49],
+                [0.51, 0.51],
+                [1.01, 1.01],
+                [1.51, 1.51],
+            ],
+            shape_native=(3, 2),
+            pixel_scales=1.0,
+        )
+
+        sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
+
+        assert sub_to_pix[0] == 4
+        assert sub_to_pix[1] == 4
+        assert sub_to_pix[2] == 4
+        assert sub_to_pix[3] == 0
+        assert sub_to_pix[4] == 0
+        assert sub_to_pix[5] == 5
+
+    def test__pixelization_index_for_voronoi_sub_slim_index_from__matches_nearest_neighbor_calculation(
+        self, grid_2d_7x7
+    ):
+        pixelization_grid = aa.Grid2D.manual_slim(
+            [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]],
+            shape_native=(3, 2),
+            pixel_scales=1.0,
+        )
+
+        sub_to_pix_nearest_neighbour = grid_to_pixel_pixels_via_nearest_neighbour(
+            grid_2d_7x7, pixelization_grid
+        )
+
+        nearest_pixelization_index_for_slim_index = np.array(
+            [0, 0, 1, 0, 0, 1, 2, 2, 3]
+        )
+
+        pixelization_grid = aa.Grid2DVoronoi(
+            grid=pixelization_grid,
+            nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
+        )
+
+        mapper = aa.Mapper(
+            source_grid_slim=grid_2d_7x7, source_pixelization_grid=pixelization_grid
+        )
+
+        assert (
+            mapper.pixelization_index_for_sub_slim_index == sub_to_pix_nearest_neighbour
+        ).all()
 
 
 class TestPixelSignals:

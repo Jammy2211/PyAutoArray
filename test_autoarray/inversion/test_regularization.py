@@ -1,11 +1,11 @@
 import autoarray as aa
 import numpy as np
 
-from autoarray.mock.mock import MockPixelizationGrid, MockRegMapper
+from autoarray.mock.mock import MockPixelizationGrid, MockMapper
 
 
-class TestRegularizationinstance:
-    def test__regularization_matrix__compare_to_regularization_util(self):
+class TestConstant:
+    def test__regularization_matrix__matches_util(self):
 
         pixel_neighbors = np.array(
             [
@@ -27,7 +27,7 @@ class TestRegularizationinstance:
             pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
         )
 
-        mapper = MockRegMapper(source_pixelization_grid=pixelization_grid)
+        mapper = MockMapper(source_pixelization_grid=pixelization_grid)
 
         reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
@@ -41,14 +41,14 @@ class TestRegularizationinstance:
         assert (regularization_matrix == regularization_matrix_util).all()
 
 
-class TestRegularizationWeighted:
-    def test__weight_list__compare_to_regularization_util(self):
+class TestAdaptiveBrightness:
+    def test__weight_list__matches_util(self):
 
         reg = aa.reg.AdaptiveBrightness(inner_coefficient=10.0, outer_coefficient=15.0)
 
         pixel_signals = np.array([0.21, 0.586, 0.45])
 
-        mapper = MockRegMapper(pixel_signals=pixel_signals)
+        mapper = MockMapper(pixel_signals=pixel_signals)
 
         weight_list = reg.regularization_weight_list_from_mapper(mapper=mapper)
 
@@ -58,7 +58,7 @@ class TestRegularizationWeighted:
 
         assert (weight_list == weight_list_util).all()
 
-    def test__regularization_matrix__compare_to_regularization_util(self):
+    def test__regularization_matrix__matches_util(self):
 
         reg = aa.reg.AdaptiveBrightness(
             inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0
@@ -82,7 +82,7 @@ class TestRegularizationWeighted:
             pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
         )
 
-        mapper = MockRegMapper(
+        mapper = MockMapper(
             source_pixelization_grid=pixelization_grid, pixel_signals=pixel_signals
         )
 

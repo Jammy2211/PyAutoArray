@@ -48,7 +48,7 @@ class TestInversionImaging:
                 noise_map=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
                 convolver=mock.MockConvolver(matrix_shape),
                 mapper=mock.MockMapper(
-                    matrix_shape=matrix_shape,
+                    mapping_matrix=np.ones(matrix_shape),
                     source_grid_slim=grid,
                     source_pixelization_grid=source_pixelization_grid,
                 ),
@@ -91,7 +91,7 @@ class TestInversionImaging:
                 convolver=mock.MockConvolver(matrix_shape),
                 w_tilde=w_tilde,
                 mapper=mock.MockMapper(
-                    matrix_shape=matrix_shape, source_grid_slim=grid
+                    mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
                 ),
                 regularization=mock.MockRegularization(matrix_shape),
                 settings=aa.SettingsInversion(check_solution=False),
@@ -140,7 +140,7 @@ class TestInversionImaging:
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
-                matrix_shape=matrix_shape,
+                mapping_matrix=np.ones(matrix_shape),
                 source_grid_slim=grid,
                 source_pixelization_grid=source_pixelization_grid,
             ),
