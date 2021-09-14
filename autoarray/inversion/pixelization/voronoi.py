@@ -6,8 +6,8 @@ from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from autoarray.preloads import Preloads
-from autoarray.inversion.pixelizations.abstract import AbstractPixelization
-from autoarray.inversion.pixelizations.settings import SettingsPixelization
+from autoarray.inversion.pixelization.abstract import AbstractPixelization
+from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
 from autoarray.numba_util import profile_func

@@ -9,7 +9,7 @@ from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.regularization import AbstractRegularization
+from autoarray.inversion.regularizations.abstract import AbstractRegularization
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.inversion.inversion.settings import SettingsInversion

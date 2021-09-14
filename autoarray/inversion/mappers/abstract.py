@@ -8,7 +8,7 @@ from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangu
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 
 from autoarray.numba_util import profile_func
-from autoarray.inversion import mapper_util
+from autoarray.inversion.mappers import mapper_util
 
 
 def mapper(

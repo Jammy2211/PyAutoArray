@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Dict, Optional
 
-from autoarray.inversion.pixelizations.settings import SettingsPixelization
+from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
 from autoarray.preloads import Preloads

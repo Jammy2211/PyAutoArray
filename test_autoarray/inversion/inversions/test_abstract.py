@@ -4,7 +4,7 @@ from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
-from autoarray.inversion.regularization import AbstractRegularization
+from autoarray.inversion.regularizations.abstract import AbstractRegularization
 from autoarray.mock import mock
 
 import numpy as np

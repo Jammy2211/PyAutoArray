@@ -5,7 +5,7 @@ from autoconf import cached_property
 from autoarray.inversion.mappers.abstract import AbstractMapper
 
 from autoarray.numba_util import profile_func
-from autoarray.inversion import mapper_util
+from autoarray.inversion.mappers import mapper_util
 
 
 class MapperVoronoi(AbstractMapper):
