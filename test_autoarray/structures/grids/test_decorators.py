@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 import autoarray as aa
-from autoarray.mock.mock import (
+from autoarray.mock.mock_grid import (
     MockGridLikeIteratorObj,
     MockGrid1DLikeObj,
     MockGrid2DLikeObj,

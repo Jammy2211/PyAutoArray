@@ -3,7 +3,7 @@ import autoarray as aa
 import numpy as np
 import pytest
 
-from autoarray.mock import mock
+from autoarray.mock.mock import MockFit
 
 
 class TestFitImaging:
@@ -143,7 +143,7 @@ class TestFitImaging:
 
         model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-        inversion = mock.MockFitInversion(
+        inversion = MockFit(
             regularization_term=2.0,
             log_det_curvature_reg_matrix_term=3.0,
             log_det_regularization_matrix_term=4.0,
@@ -315,7 +315,7 @@ class TestFitInterferometer:
             visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
         )
 
-        inversion = mock.MockFitInversion(
+        inversion = MockFit(
             regularization_term=2.0,
             log_det_curvature_reg_matrix_term=3.0,
             log_det_regularization_matrix_term=4.0,

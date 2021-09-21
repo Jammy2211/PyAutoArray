@@ -2,8 +2,10 @@ import autoarray as aa
 from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.inversion.imaging import InversionImagingWTilde
 from autoarray.inversion.inversion.imaging import InversionImagingMapping
+
+from autoarray.mock.mock import MockConvolver, MockPixelizationGrid, MockRegularization, MockMapper
+
 from autoarray import exc
-from autoarray.mock import mock
 
 import numpy as np
 from os import path
@@ -36,7 +38,7 @@ class TestInversionImaging:
         pixel_neighbors = np.zeros((3, 3)).astype("int")
         pixel_neighbors_sizes = np.array([0, 0, 0]).astype("int")
 
-        source_pixelization_grid = mock.MockPixelizationGrid(
+        source_pixelization_grid = MockPixelizationGrid(
             pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
         )
 
@@ -46,13 +48,13 @@ class TestInversionImaging:
             inversion = InversionImagingMapping(
                 image=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
                 noise_map=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
-                convolver=mock.MockConvolver(matrix_shape),
-                mapper=mock.MockMapper(
+                convolver=MockConvolver(matrix_shape),
+                mapper=MockMapper(
                     mapping_matrix=np.ones(matrix_shape),
                     source_grid_slim=grid,
                     source_pixelization_grid=source_pixelization_grid,
                 ),
-                regularization=mock.MockRegularization(matrix_shape),
+                regularization=MockRegularization(matrix_shape),
             )
 
             # noinspection PyStatementEffect
@@ -88,12 +90,12 @@ class TestInversionImaging:
             InversionImagingWTilde(
                 image=np.ones(9),
                 noise_map=np.ones(9),
-                convolver=mock.MockConvolver(matrix_shape),
+                convolver=MockConvolver(matrix_shape),
                 w_tilde=w_tilde,
-                mapper=mock.MockMapper(
+                mapper=MockMapper(
                     mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
                 ),
-                regularization=mock.MockRegularization(matrix_shape),
+                regularization=MockRegularization(matrix_shape),
                 settings=aa.SettingsInversion(check_solution=False),
             )
 
@@ -130,7 +132,7 @@ class TestInversionImaging:
         pixel_neighbors = np.zeros((3, 3)).astype("int")
         pixel_neighbors_sizes = np.array([0, 0, 0]).astype("int")
 
-        source_pixelization_grid = mock.MockPixelizationGrid(
+        source_pixelization_grid = MockPixelizationGrid(
             pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
         )
 
@@ -138,13 +140,13 @@ class TestInversionImaging:
         inversion = InversionImagingMapping(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock.MockConvolver(matrix_shape),
-            mapper=mock.MockMapper(
+            convolver=MockConvolver(matrix_shape),
+            mapper=MockMapper(
                 mapping_matrix=np.ones(matrix_shape),
                 source_grid_slim=grid,
                 source_pixelization_grid=source_pixelization_grid,
             ),
-            regularization=mock.MockRegularization(matrix_shape),
+            regularization=MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
             preloads=preloads,
         )

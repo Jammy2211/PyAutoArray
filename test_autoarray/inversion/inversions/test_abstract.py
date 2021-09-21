@@ -5,7 +5,7 @@ from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
 from autoarray.inversion.regularizations.abstract import AbstractRegularization
-from autoarray.mock import mock
+from autoarray.mock.mock import MockMapper
 
 import numpy as np
 from os import path
@@ -20,7 +20,7 @@ class MockInversion(AbstractInversion):
         self,
         noise_map: Optional[aa.Array2D] = None,
         mapper: Optional[
-            Union[MapperRectangular, MapperVoronoi, mock.MockMapper]
+            Union[MapperRectangular, MapperVoronoi, MockMapper]
         ] = None,
         regularization: Optional[AbstractRegularization] = None,
         settings: Optional[aa.SettingsInversion] = None,
@@ -108,7 +108,7 @@ class TestAbstractInversion:
 
         matrix_shape = (9, 3)
 
-        mapper = mock.MockMapper(
+        mapper = MockMapper(
             matrix_shape,
             source_pixelization_grid=aa.Grid2DVoronoi.manual_slim(
                 [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
@@ -164,7 +164,7 @@ class TestAbstractInversion:
 
         reconstruction = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        mapper = mock.MockMapper(
+        mapper = MockMapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
         )
 
@@ -226,7 +226,7 @@ class TestAbstractInversion:
             shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
-        mapper = mock.MockMapper(
+        mapper = MockMapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid, pixels=9
         )
 
@@ -300,7 +300,7 @@ class TestAbstractInversion:
             shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
-        mapper = mock.MockMapper(
+        mapper = MockMapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
         )
 

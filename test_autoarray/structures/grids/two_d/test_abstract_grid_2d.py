@@ -4,7 +4,7 @@ import pytest
 from autoconf import conf
 import autoarray as aa
 
-from autoarray.mock.mock import MockGridRadialMinimum
+from autoarray.mock.mock_grid import MockGridRadialMinimum
 
 
 class TestGrid:
