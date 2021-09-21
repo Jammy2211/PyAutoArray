@@ -161,7 +161,8 @@ class VoronoiBrightnessImage(Voronoi):
         ----------
 
         """
-        super(VoronoiBrightnessImage, self).__init__()
+        super().__init__()
+
         self.pixels = int(pixels)
         self.weight_floor = weight_floor
         self.weight_power = weight_power

@@ -136,8 +136,10 @@ class Grid2DIrregular(np.ndarray):
         return [tuple(value) for value in self]
 
     def values_from_array_slim(self, array_slim):
-        """Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
-        *ValuesIrregular* are structured following this `Grid2DIrregular` instance."""
+        """
+        Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
+        *ValuesIrregular* are structured following this `Grid2DIrregular` instance.
+        """
         return ValuesIrregular(values=array_slim)
 
     def values_from_value(self, value):

@@ -117,7 +117,7 @@ def convert_array_2d_to_native(
 
     if len(array_2d.shape) == 2:
 
-        array_2d_native = array_2d
+        array_2d_native = array_2d * np.invert(mask_2d)
 
         if array_2d.shape != mask_2d.sub_shape_native:
             raise exc.ArrayException(

@@ -6,6 +6,7 @@ from autoconf import cached_property
 
 from autoarray.structures.abstract_structure import AbstractStructure2D
 from autoarray.structures.arrays.two_d import array_2d as a2d
+from autoarray.structures.arrays.values import ValuesIrregular
 from autoarray.structures.grids.two_d import grid_2d as g2d
 from autoarray.structures.grids.two_d import grid_2d_irregular as g2d_irr
 from autoarray.mask import mask_2d as m2d
@@ -207,6 +208,13 @@ class AbstractGrid2D(AbstractStructure2D):
         This grid is used by the interferometer module.
         """
         return (self * np.pi) / 648000.0
+
+    def values_from_array_slim(self, array_slim):
+        """
+        Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
+        *ValuesIrregular* are structured following this `Grid2DIrregular` instance.
+        """
+        return ValuesIrregular(values=array_slim)
 
     def squared_distances_from_coordinate(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
