@@ -8,14 +8,14 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
-from autoarray.inversion.inversion.imaging import InversionImagingWTilde
-from autoarray.inversion.inversion.interferometer import InversionInterferometerMapping
+from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingWTilde
+from autoarray.inversion.inversion.interferometer import LinearEqnInterferometerMapping
 
 
-class InversionPlotter(MapperPlotter):
+class LinearEqnPlotter(MapperPlotter):
     def __init__(
         self,
-        inversion: Union[InversionImagingWTilde, InversionInterferometerMapping],
+        inversion: Union[LinearEqnImagingWTilde, LinearEqnInterferometerMapping],
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
@@ -90,7 +90,7 @@ class InversionPlotter(MapperPlotter):
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
                 auto_labels=AutoLabels(
-                    title="Source Reconstruction", filename="reconstruction"
+                    title="Source Inversion", filename="reconstruction"
                 ),
                 source_pixelilzation_values=self.as_mapper(
                     self.inversion.reconstruction
@@ -164,7 +164,7 @@ class InversionPlotter(MapperPlotter):
                 array=self.inversion.interpolated_reconstruction_from(),
                 visuals_2d=self.visuals_data_with_include_2d,
                 auto_labels=AutoLabels(
-                    title="Interpolated Reconstruction",
+                    title="Interpolated Inversion",
                     filename="interpolated_reconstruction",
                 ),
             )

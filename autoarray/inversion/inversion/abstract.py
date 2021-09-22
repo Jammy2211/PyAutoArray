@@ -1,21 +1,20 @@
 import numpy as np
-from scipy.interpolate import griddata
+import pylops
 from scipy.sparse import csc_matrix
+from scipy import sparse
 from scipy.sparse.linalg import splu
 from typing import Dict, Optional, Union
 
 from autoconf import cached_property
-from autoconf import conf
 from autoarray.numba_util import profile_func
 
-from autoarray.structures.visibilities import VisibilitiesNoiseMap
-from autoarray.preloads import Preloads
+from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.inversion.mappers.rectangular import MapperRectangular
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.regularizations.abstract import AbstractRegularization
+from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
+from autoarray.inversion.linear_eqn.interferometer import (
+    AbstractLinearEqnInterferometer,
+)
 from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import exc
@@ -25,91 +24,65 @@ from autoarray.inversion.inversion import inversion_util
 class AbstractInversion:
     def __init__(
         self,
-        noise_map: Union[Array2D, VisibilitiesNoiseMap],
-        mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: AbstractRegularization,
+        data: Union[Visibilities, Array2D],
+        linear_eqn: Union[AbstractLinearEqnImaging, AbstractLinearEqnInterferometer],
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
 
-        self.noise_map = noise_map
-        self.mapper = mapper
-        self.regularization = regularization
+        self.data = data
+
+        self.linear_eqn = linear_eqn
 
         self.settings = settings
-        self.preloads = preloads
 
         self.profiling_dict = profiling_dict
 
-    def interpolated_reconstruction_from(self, shape_native=None):
-        return self.interpolated_values_from(
-            values=self.reconstruction, shape_native=shape_native
-        )
-
-    def interpolated_errors_from(self, shape_native=None):
-        return self.interpolated_values_from(
-            values=self.errors, shape_native=shape_native
-        )
-
-    def interpolated_values_from(self, values, shape_native=None):
-
-        if shape_native is not None:
-
-            grid = Grid2D.bounding_box(
-                bounding_box=self.mapper.source_pixelization_grid.extent,
-                shape_native=shape_native,
-                buffer_around_corners=False,
-            )
-
-        elif (
-            conf.instance["general"]["inversion"]["interpolated_grid_shape"]
-            in "image_grid"
-        ):
-
-            grid = self.mapper.source_grid_slim
-
-        elif (
-            conf.instance["general"]["inversion"]["interpolated_grid_shape"]
-            in "source_grid"
-        ):
-
-            dimension = int(np.sqrt(self.mapper.pixels))
-            shape_native = (dimension, dimension)
-
-            grid = Grid2D.bounding_box(
-                bounding_box=self.mapper.source_pixelization_grid.extent,
-                shape_native=shape_native,
-                buffer_around_corners=False,
-            )
-
-        else:
-
-            raise exc.InversionException(
-                "In the genenal.ini config file a valid option was not found for the"
-                "interpolated_grid_shape. Must be {image_grid, source_grid}"
-            )
-
-        interpolated_reconstruction = griddata(
-            points=self.mapper.source_pixelization_grid,
-            values=values,
-            xi=grid.binned.native,
-            method="linear",
-        )
-
-        interpolated_reconstruction[np.isnan(interpolated_reconstruction)] = 0.0
-
-        return Array2D.manual(
-            array=interpolated_reconstruction, pixel_scales=grid.pixel_scales
-        )
-
-    @cached_property
-    def data_vector(self) -> np.ndarray:
-        raise NotImplementedError
+    @property
+    def noise_map(self):
+        return self.linear_eqn.noise_map
 
     @property
+    def mapper_list(self):
+        return [eqn.mapper for eqn in [self.linear_eqn]]
+
+    @property
+    def regularization_list(self):
+        return [eqn.regularization for eqn in [self.linear_eqn]]
+
+    @cached_property
+    @profile_func
+    def data_vector(self) -> np.ndarray:
+        """
+        To solve for the source pixel fluxes we now pose the problem as a linear inversion which we use the NumPy
+        linear  algebra libraries to solve. The linear algebra is based on
+        the paper https://arxiv.org/pdf/astro-ph/0302587.pdf .
+
+        This requires us to convert `w_tilde_data` into a data vector matrices of dimensions [image_pixels].
+
+        The `data_vector` D is the first such matrix, which is given by equation (4)
+        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+
+        The calculation is performed by the method `w_tilde_data_imaging_from`.
+        """
+        return self.linear_eqn.data_vector_from(data=self.data)
+
+    @property
+    @profile_func
     def curvature_matrix(self) -> np.ndarray:
-        raise NotImplementedError
+        """
+        The `curvature_matrix` F is the second matrix, given by equation (4)
+        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+
+        This function computes F using the w_tilde formalism, which is faster as it precomputes the PSF convolution
+        of different noise-map pixels (see `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`).
+
+        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
+        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
+        """
+        return self.linear_eqn.curvature_matrix
 
     @cached_property
     @profile_func
@@ -122,9 +95,7 @@ class AbstractInversion:
         A complete description of regularization is given in the `regularization.py` and `regularization_util.py`
         modules.
         """
-        if self.preloads.regularization_matrix is not None:
-            return self.preloads.regularization_matrix
-        return self.regularization.regularization_matrix_from_mapper(mapper=self.mapper)
+        return self.linear_eqn.regularization_matrix
 
     @cached_property
     @profile_func
@@ -136,20 +107,14 @@ class AbstractInversion:
         `curvature_matrix` is not a cached property as a result, to ensure if we access it after computing the
         `curvature_reg_matrix` it is correctly recalculated in a new array of memory.
         """
-
-        return inversion_util.curvature_reg_matrix_from(
-            curvature_matrix=self.curvature_matrix,
-            regularization_matrix=self.regularization_matrix,
-            pixel_neighbors=self.mapper.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_sizes=self.mapper.source_pixelization_grid.pixel_neighbors.sizes,
-        )
+        return self.linear_eqn.curvature_reg_matrix
 
     @cached_property
     @profile_func
     def curvature_reg_matrix_cholesky(self):
         """
         Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
-        linear system of equations of the `Inversion`.
+        linear system of equations of the `LinearEqn`.
 
         The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
         to speed up the calculation of `log_det_curvature_reg_matrix_term`.
@@ -168,10 +133,57 @@ class AbstractInversion:
 
         S is the vector of reconstructed inversion values.
         """
-        return inversion_util.reconstruction_from(
-            data_vector=self.data_vector,
-            curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
-            settings=self.settings,
+        if self.data_vector is not None:
+            return inversion_util.reconstruction_from(
+                data_vector=self.data_vector,
+                curvature_reg_matrix_cholesky=self.linear_eqn.curvature_reg_matrix_cholesky,
+                settings=self.settings,
+            )
+        else:
+            Aop = pylops.MatrixMult(
+                sparse.bsr_matrix(self.mapper_list[0].mapping_matrix)
+            )
+
+            Fop = self.linear_eqn.transformer
+
+            Op = Fop * Aop
+
+            MOp = pylops.MatrixMult(
+                sparse.bsr_matrix(self.linear_eqn.preconditioner_matrix_inverse)
+            )
+
+            return pylops.NormalEquationsInversion(
+                Op=Op,
+                Regs=None,
+                epsNRs=[1.0],
+                data=self.data.ordered_1d,
+                Weight=pylops.Diagonal(diag=self.noise_map.weight_list_ordered_1d),
+                NRegs=[
+                    pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))
+                ],
+                M=MOp,
+                tol=self.settings.tolerance,
+                atol=self.settings.tolerance,
+                **dict(maxiter=self.settings.maxiter),
+            )
+
+    @cached_property
+    @profile_func
+    def mapped_reconstructed_image(self) -> Array2D:
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
+        return self.linear_eqn.mapped_reconstructed_image_from(
+            reconstruction=self.reconstruction
         )
 
     @cached_property
@@ -192,7 +204,7 @@ class AbstractInversion:
         """
         return np.matmul(
             self.reconstruction.T,
-            np.matmul(self.regularization_matrix, self.reconstruction),
+            np.matmul(self.linear_eqn.regularization_matrix, self.reconstruction),
         )
 
     @cached_property
@@ -203,7 +215,9 @@ class AbstractInversion:
 
         This uses the Cholesky decomposition which is already computed before solving the reconstruction.
         """
-        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_cholesky)))
+        return 2.0 * np.sum(
+            np.log(np.diag(self.linear_eqn.curvature_reg_matrix_cholesky))
+        )
 
     @cached_property
     @profile_func
@@ -220,12 +234,12 @@ class AbstractInversion:
         float
             The log determinant of the regularization matrix.
         """
-        if self.preloads.log_det_regularization_matrix_term is not None:
-            return self.preloads.log_det_regularization_matrix_term
+        if self.linear_eqn.preloads.log_det_regularization_matrix_term is not None:
+            return self.linear_eqn.preloads.log_det_regularization_matrix_term
 
         try:
 
-            lu = splu(csc_matrix(self.regularization_matrix))
+            lu = splu(csc_matrix(self.linear_eqn.regularization_matrix))
             diagL = lu.L.diagonal()
             diagU = lu.U.diagonal()
             diagL = diagL.astype(np.complex128)
@@ -237,7 +251,11 @@ class AbstractInversion:
 
             try:
                 return 2.0 * np.sum(
-                    np.log(np.diag(np.linalg.cholesky(self.regularization_matrix)))
+                    np.log(
+                        np.diag(
+                            np.linalg.cholesky(self.linear_eqn.regularization_matrix)
+                        )
+                    )
                 )
             except np.linalg.LinAlgError:
                 raise exc.InversionException()
@@ -247,18 +265,10 @@ class AbstractInversion:
         return np.argmax(self.reconstruction)
 
     @property
-    def errors_with_covariance(self):
-        return np.linalg.inv(self.curvature_reg_matrix)
-
-    @property
-    def errors(self):
-        return np.diagonal(self.errors_with_covariance)
-
-    @property
     def brightest_reconstruction_pixel_centre(self):
         return Grid2DIrregular(
             grid=[
-                self.mapper.source_pixelization_grid[
+                self.linear_eqn.mapper.source_pixelization_grid[
                     self.brightest_reconstruction_pixel
                 ]
             ]
@@ -275,9 +285,3 @@ class AbstractInversion:
     @property
     def chi_squared_map(self):
         raise NotImplementedError()
-
-    @property
-    def regularization_weight_list(self):
-        return self.regularization.regularization_weight_list_from_mapper(
-            mapper=self.mapper
-        )

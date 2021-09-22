@@ -252,7 +252,7 @@ class VisibilitiesNoiseMap(Visibilities):
         an `Interferometer` dataset.
 
         This data structure behaves the same as the `Visibilities` structure (see `AbstractVisibilities.__new__`). The
-        only difference is that it includes a `WeightOperator` used by `Inversion`'s which use `LinearOperators` and
+        only difference is that it includes a `WeightOperator` used by `LinearEqn`'s which use `LinearOperators` and
         the library `PyLops` to fit `Interferometer` data.
 
         Parameters

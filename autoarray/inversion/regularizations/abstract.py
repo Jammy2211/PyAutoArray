@@ -21,7 +21,7 @@ class AbstractRegularization:
            coefficient is a 'hyper_galaxies-parameter' which determines how strongly we smooth the pixelization's reconstruction.
 
         The value of the coefficients(s) is set using the Bayesian framework of (Suyu 2006) and this \
-        is described further in the (*inversion.Inversion* class).
+        is described further in the (*inversion.LinearEqn* class).
 
         The regularization matrix, H, is calculated by defining a set of B matrices which describe how the \
         pixels neighbor one another. For example, lets take a 3x3 square grid:

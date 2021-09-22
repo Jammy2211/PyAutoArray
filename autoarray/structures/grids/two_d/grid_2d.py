@@ -836,7 +836,7 @@ class Grid2DSparse(AbstractGrid2D):
         This is performed by overlaying the 2D sparse grid (computed from the unmaksed sparse shape) over the edge
         values of the Grid2D.
 
-        This function is used in the `Inversion` package to set up the VoronoiMagnification Pixelization.
+        This function is used in the `LinearEqn` package to set up the VoronoiMagnification Pixelization.
 
         Parameters
         -----------
@@ -929,7 +929,7 @@ class Grid2DSparse(AbstractGrid2D):
         This is performed by running a KMeans clustering algorithm on the weight map, such that Grid2DSparse (y,x)
         coordinates cluster around the weight map values with higher values.
 
-        This function is used in the `Inversion` package to set up the VoronoiMagnification Pixelization.
+        This function is used in the `LinearEqn` package to set up the VoronoiMagnification Pixelization.
 
         Parameters
         -----------

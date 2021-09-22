@@ -1,3 +1,4 @@
+from autoarray.structures.arrays.abstract_array import Header
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.layout.layout import Layout2D
 from autoarray.layout.region import Region2D
@@ -138,7 +139,9 @@ class Array2DEuclid(Array2D):
             array=array_electrons, roe_corner=(0, 0)
         )
 
-        return cls.manual(array=array_electrons, pixel_scales=0.1)
+        header = Header(original_roe_corner=(0, 0))
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1, header=header)
 
     @classmethod
     def top_right(cls, array_electrons):
@@ -154,7 +157,9 @@ class Array2DEuclid(Array2D):
             array=array_electrons, roe_corner=(0, 1)
         )
 
-        return cls.manual(array=array_electrons, pixel_scales=0.1)
+        header = Header(original_roe_corner=(0, 1))
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1, header=header)
 
     @classmethod
     def bottom_left(cls, array_electrons):
@@ -170,7 +175,9 @@ class Array2DEuclid(Array2D):
             array=array_electrons, roe_corner=(1, 0)
         )
 
-        return cls.manual(array=array_electrons, pixel_scales=0.1)
+        header = Header(original_roe_corner=(1, 0))
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1, header=header)
 
     @classmethod
     def bottom_right(cls, array_electrons):
@@ -186,7 +193,9 @@ class Array2DEuclid(Array2D):
             array=array_electrons, roe_corner=(1, 1)
         )
 
-        return cls.manual(array=array_electrons, pixel_scales=0.1)
+        header = Header(original_roe_corner=(1, 1))
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1, header=header)
 
 
 class Layout2DEuclid(Layout2D):

@@ -64,7 +64,7 @@ class Preloads:
         self.use_w_tilde = False
 
         if (
-            fit_0.inversion is not None
+            fit_0.linear_eqn is not None
             and np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8
         ):
 
@@ -200,11 +200,11 @@ class Preloads:
 
         self.relocated_grid = None
 
-        if fit_0.inversion is None:
+        if fit_0.linear_eqn is None:
             return
 
-        mapper_0 = fit_0.inversion.mapper
-        mapper_1 = fit_1.inversion.mapper
+        mapper_0 = fit_0.linear_eqn.mapper
+        mapper_1 = fit_1.linear_eqn.mapper
 
         if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
 
@@ -241,11 +241,11 @@ class Preloads:
 
         self.mapper = None
 
-        if fit_0.inversion is None:
+        if fit_0.linear_eqn is None:
             return
 
-        mapper_0 = fit_0.inversion.mapper
-        mapper_1 = fit_1.inversion.mapper
+        mapper_0 = fit_0.linear_eqn.mapper
+        mapper_1 = fit_1.linear_eqn.mapper
 
         if mapper_0.mapping_matrix.shape[1] == mapper_1.mapping_matrix.shape[1]:
 
@@ -281,8 +281,8 @@ class Preloads:
         self.curvature_matrix_sparse_preload = None
         self.curvature_matrix_preload_counts = None
 
-        inversion_0 = fit_0.inversion
-        inversion_1 = fit_1.inversion
+        inversion_0 = fit_0.linear_eqn
+        inversion_1 = fit_1.linear_eqn
 
         if inversion_0 is None:
             return
@@ -311,7 +311,7 @@ class Preloads:
                 ).astype("int")
 
                 logger.info(
-                    "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
+                    "PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit."
                 )
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
@@ -337,8 +337,8 @@ class Preloads:
         self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
-        inversion_0 = fit_0.inversion
-        inversion_1 = fit_1.inversion
+        inversion_0 = fit_0.linear_eqn
+        inversion_1 = fit_1.linear_eqn
 
         if inversion_0 is None:
             return
@@ -357,7 +357,7 @@ class Preloads:
             )
 
             logger.info(
-                "PRELOADS - Inversion Log Det Regularization Matrix Term preloaded for this model-fit."
+                "PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit."
             )
 
     def check_via_fit(self, fit):

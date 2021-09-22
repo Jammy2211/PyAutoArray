@@ -29,8 +29,8 @@ def convert_array(array):
 class Header:
     def __init__(
         self,
-        header_sci_obj,
-        header_hdu_obj,
+        header_sci_obj=None,
+        header_hdu_obj=None,
         original_roe_corner=None,
         readout_offsets: Optional[Tuple] = None,
     ):

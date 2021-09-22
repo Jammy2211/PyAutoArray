@@ -1,7 +1,10 @@
 import numpy as np
 
+from autoarray.preloads import Preloads
 from autoarray.inversion.mappers.abstract import AbstractMapper
-
+from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
+from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
+from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
 
 
@@ -20,14 +23,15 @@ class MockDataset:
 
 
 class MockFit:
-    def __init__(self,
-                 dataset=MockDataset(),
-                 inversion=None,
-                 noise_map=None,
-                 regularization_term=None,
-                 log_det_curvature_reg_matrix_term=None,
-                 log_det_regularization_matrix_term=None,
-                 ):
+    def __init__(
+        self,
+        dataset=MockDataset(),
+        inversion=None,
+        noise_map=None,
+        regularization_term=None,
+        log_det_curvature_reg_matrix_term=None,
+        log_det_regularization_matrix_term=None,
+    ):
 
         self.dataset = dataset
         self.inversion = inversion
@@ -39,15 +43,24 @@ class MockFit:
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
 
-### Inversion ###
+### LinearEqn ###
 
 
 class MockConvolver:
-    def __init__(self, matrix_shape):
-        self.shape = matrix_shape
+    def __init__(self, convolved_mapping_matrix=None):
+        self.convolved_mapping_matrix = convolved_mapping_matrix
 
     def convolve_mapping_matrix(self, mapping_matrix):
-        return np.ones(self.shape)
+        return self.convolved_mapping_matrix
+
+
+class MockPixelizationGrid:
+    def __init__(self, pixel_neighbors=None, pixel_neighbors_sizes=None):
+
+        self.pixel_neighbors = PixelNeighbors(
+            arr=pixel_neighbors, sizes=pixel_neighbors_sizes
+        )
+        self.shape = (len(self.pixel_neighbors.sizes),)
 
 
 class MockPixelization:
@@ -76,25 +89,18 @@ class MockPixelization:
 
 
 class MockRegularization:
-    def __init__(self, matrix_shape):
-        self.shape = matrix_shape
+    def __init__(self, regularization_matrix=None):
+
+        self.regularization_matrix = regularization_matrix
 
     def regularization_matrix_from_pixel_neighbors(
         self, pixel_neighbors, pixel_neighbors_sizes
     ):
-        return np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
+        return self.regularization_matrix
 
     def regularization_matrix_from_mapper(self, mapper):
-        return np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
-
-class MockPixelizationGrid:
-    def __init__(self, pixel_neighbors=None, pixel_neighbors_sizes=None):
-
-        self.pixel_neighbors = PixelNeighbors(
-            arr=pixel_neighbors, sizes=pixel_neighbors_sizes
-        )
-        self.shape = (len(self.pixel_neighbors.sizes),)
+        return self.regularization_matrix
 
 
 class MockMapper(AbstractMapper):
@@ -144,33 +150,123 @@ class MockMapper(AbstractMapper):
         return self._mapping_matrix
 
 
-class MockInversion:
+class MockLinearEqn(AbstractLinearEqn):
     def __init__(
         self,
+        noise_map=None,
         mapper=None,
+        regularization=None,
         blurred_mapping_matrix=None,
+        curvature_matrix=None,
+        curvature_reg_matrix=None,
+        regularization_matrix=None,
+        log_det_regularization_matrix_term=None,
         curvature_matrix_sparse_preload=None,
         curvature_matrix_preload_counts=None,
-        log_det_regularization_matrix_term=None,
+        preloads: Preloads = Preloads(),
     ):
 
-        self.mapper = mapper
+        super().__init__(
+            noise_map=noise_map,
+            mapper=mapper,
+            regularization=regularization,
+            preloads=preloads,
+        )
+
+        self._regularization_matrix = regularization_matrix
+
+        self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
+        self._blurred_mapping_matrix = blurred_mapping_matrix
+
+        self._curvature_matrix = curvature_matrix
+        self._curvature_reg_matrix = curvature_reg_matrix
+
         self.curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
         self.curvature_matrix_preload_counts = curvature_matrix_preload_counts
-        self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
-        if blurred_mapping_matrix is None:
-            self.blurred_mapping_matrix = np.zeros((1, 1))
-        else:
-            self.blurred_mapping_matrix = blurred_mapping_matrix
+    @property
+    def curvature_matrix(self):
+        return self._curvature_matrix
 
-        self.regularization_matrix = np.zeros((1, 1))
-        self.curvature_matrix = np.zeros((1, 1))
-        self.curvature_reg_matrix = np.zeros((1, 1))
-        self.solution_vector = np.zeros((1))
+    @property
+    def curvature_reg_matrix(self):
+        return self._curvature_reg_matrix
+
+    @property
+    def regularization_matrix(self):
+
+        if self._regularization_matrix is None:
+            return super().regularization_matrix
+
+        return self._regularization_matrix
+
+    @property
+    def log_det_regularization_matrix_term(self):
+        return self._log_det_regularization_matrix_term
 
     @property
     def reconstructed_image(self):
         return np.zeros((1, 1))
 
 
+class MockLinearEqnImaging(AbstractLinearEqnImaging):
+    def __init__(
+        self,
+        noise_map=None,
+        convolver=None,
+        mapper=None,
+        regularization=None,
+        preloads: Preloads = Preloads(),
+    ):
+
+        super().__init__(
+            noise_map=noise_map,
+            convolver=convolver,
+            mapper=mapper,
+            regularization=regularization,
+            preloads=preloads,
+        )
+
+
+class MockInversion(AbstractInversion):
+    def __init__(
+        self,
+        data=None,
+        linear_eqn: MockLinearEqn = None,
+        reconstruction: np.ndarray = None,
+        data_vector=None,
+        #     regularization: Optional[AbstractRegularization] = None,
+    ):
+
+        # self.__dict__["curvature_matrix"] = curvature_matrix
+        # self.__dict__["curvature_reg_matrix_cholesky"] = curvature_reg_matrix_cholesky
+        # self.__dict__["regularization_matrix"] = regularization_matrix
+        # self.__dict__["curvature_reg_matrix"] = curvature_reg_matrix
+        # self.__dict__["reconstruction"] = reconstruction
+        # self.__dict__["mapped_reconstructed_image"] = mapped_reconstructed_image
+
+        self._data_vector = data_vector
+
+        self._reconstruction = reconstruction
+
+        super().__init__(data=data, linear_eqn=linear_eqn)
+
+    @property
+    def data_vector(self) -> np.ndarray:
+        if self._data_vector is None:
+            return super().data_vector
+        return self._data_vector
+
+    @property
+    def reconstruction(self):
+        """
+        Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
+        of https://arxiv.org/pdf/astro-ph/0302587.pdf
+
+        S is the vector of reconstructed inversion values.
+        """
+
+        if self._reconstruction is None:
+            return super().reconstruction
+
+        return self._reconstruction

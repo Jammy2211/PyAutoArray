@@ -6,7 +6,7 @@ from autoarray.mock.mock import MockMask
 from autoarray.mock.mock import MockDataset
 from autoarray.mock.mock import MockFit
 from autoarray.mock.mock import MockMapper
-from autoarray.mock.mock import MockInversion
+from autoarray.mock.mock import MockLinearEqn
 
 # def test__set_w_tilde():
 #
@@ -68,7 +68,7 @@ from autoarray.mock.mock import MockInversion
 
 def test__set_relocated_grid():
 
-    # Inversion is None so there is no mapper, thus preload mapper to None.
+    # LinearEqn is None so there is no mapper, thus preload mapper to None.
 
     fit_0 = MockFit(inversion=None)
     fit_1 = MockFit(inversion=None)
@@ -80,8 +80,8 @@ def test__set_relocated_grid():
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
-    inversion_0 = MockInversion(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
-    inversion_1 = MockInversion(
+    inversion_0 = MockLinearEqn(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
+    inversion_1 = MockLinearEqn(
         mapper=MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))
     )
 
@@ -95,8 +95,8 @@ def test__set_relocated_grid():
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
-    inversion_0 = MockInversion(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
-    inversion_1 = MockInversion(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
+    inversion_0 = MockLinearEqn(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
+    inversion_1 = MockLinearEqn(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
 
     fit_0 = MockFit(inversion=inversion_0)
     fit_1 = MockFit(inversion=inversion_1)
@@ -109,7 +109,7 @@ def test__set_relocated_grid():
 
 def test__set_mapper():
 
-    # Inversion is None so there is no mapper, thus preload mapper to None.
+    # LinearEqn is None so there is no mapper, thus preload mapper to None.
 
     fit_0 = MockFit(inversion=None)
     fit_1 = MockFit(inversion=None)
@@ -121,8 +121,8 @@ def test__set_mapper():
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
-    inversion_0 = MockInversion(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
-    inversion_1 = MockInversion(mapper=MockMapper(mapping_matrix=2.0 * np.ones((3, 2))))
+    inversion_0 = MockLinearEqn(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
+    inversion_1 = MockLinearEqn(mapper=MockMapper(mapping_matrix=2.0 * np.ones((3, 2))))
 
     fit_0 = MockFit(inversion=inversion_0)
     fit_1 = MockFit(inversion=inversion_1)
@@ -134,8 +134,8 @@ def test__set_mapper():
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
-    inversion_0 = MockInversion(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
-    inversion_1 = MockInversion(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
+    inversion_0 = MockLinearEqn(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
+    inversion_1 = MockLinearEqn(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
 
     fit_0 = MockFit(inversion=inversion_0)
     fit_1 = MockFit(inversion=inversion_1)
@@ -151,7 +151,7 @@ def test__set_inversion():
     curvature_matrix_sparse_preload = np.array([[1.0]])
     curvature_matrix_preload_counts = np.array([1.0])
 
-    # Inversion is None thus preload it to None.
+    # LinearEqn is None thus preload it to None.
 
     fit_0 = MockFit(inversion=None)
     fit_1 = MockFit(inversion=None)
@@ -167,7 +167,7 @@ def test__set_inversion():
     assert preloads.curvature_matrix_sparse_preload is None
     assert preloads.curvature_matrix_preload_counts is None
 
-    # Inversion's blurred mapping matrices are different thus no preloading.
+    # LinearEqn's blurred mapping matrices are different thus no preloading.
 
     blurred_mapping_matrix_0 = np.array(
         [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
@@ -177,8 +177,8 @@ def test__set_inversion():
         [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
     )
 
-    inversion_0 = MockInversion(blurred_mapping_matrix=blurred_mapping_matrix_0)
-    inversion_1 = MockInversion(blurred_mapping_matrix=blurred_mapping_matrix_1)
+    inversion_0 = MockLinearEqn(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    inversion_1 = MockLinearEqn(blurred_mapping_matrix=blurred_mapping_matrix_1)
 
     fit_0 = MockFit(inversion=inversion_0)
     fit_1 = MockFit(inversion=inversion_1)
@@ -194,14 +194,14 @@ def test__set_inversion():
     assert preloads.curvature_matrix_sparse_preload is None
     assert preloads.curvature_matrix_preload_counts is None
 
-    # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
+    # LinearEqn's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
-    inversion_0 = MockInversion(
+    inversion_0 = MockLinearEqn(
         blurred_mapping_matrix=blurred_mapping_matrix_0,
         curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
         curvature_matrix_preload_counts=curvature_matrix_preload_counts,
     )
-    inversion_1 = MockInversion(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    inversion_1 = MockLinearEqn(blurred_mapping_matrix=blurred_mapping_matrix_0)
 
     fit_0 = MockFit(inversion=inversion_0)
     fit_1 = MockFit(inversion=inversion_1)
@@ -226,7 +226,7 @@ def test__set_inversion():
 
 def test__set_regularization_matrix_and_term():
 
-    # Inversion is None thus preload log_det_regularization_matrix_term to None.
+    # LinearEqn is None thus preload log_det_regularization_matrix_term to None.
 
     fit_0 = MockFit(inversion=None)
     fit_1 = MockFit(inversion=None)
@@ -237,10 +237,10 @@ def test__set_regularization_matrix_and_term():
     assert preloads.regularization_matrix is None
     assert preloads.log_det_regularization_matrix_term is None
 
-    # Inversion's log_det_regularization_matrix_term are different thus no preloading.
+    # LinearEqn's log_det_regularization_matrix_term are different thus no preloading.
 
-    inversion_0 = MockInversion(log_det_regularization_matrix_term=0)
-    inversion_1 = MockInversion(log_det_regularization_matrix_term=1)
+    inversion_0 = MockLinearEqn(log_det_regularization_matrix_term=0)
+    inversion_1 = MockLinearEqn(log_det_regularization_matrix_term=1)
 
     fit_0 = MockFit(inversion=inversion_0)
     fit_1 = MockFit(inversion=inversion_1)
@@ -251,10 +251,10 @@ def test__set_regularization_matrix_and_term():
     assert preloads.regularization_matrix is None
     assert preloads.log_det_regularization_matrix_term is None
 
-    # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
+    # LinearEqn's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
-    inversion_0 = MockInversion(log_det_regularization_matrix_term=1)
-    inversion_1 = MockInversion(log_det_regularization_matrix_term=1)
+    inversion_0 = MockLinearEqn(log_det_regularization_matrix_term=1)
+    inversion_1 = MockLinearEqn(log_det_regularization_matrix_term=1)
 
     fit_0 = MockFit(inversion=inversion_0)
     fit_1 = MockFit(inversion=inversion_1)

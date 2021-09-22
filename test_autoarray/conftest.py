@@ -129,6 +129,11 @@ def make_noise_map_7x7():
     return fixtures.make_noise_map_7x7()
 
 
+@pytest.fixture(name="convolver_7x7")
+def make_convolver_7x7():
+    return fixtures.make_convolver_7x7()
+
+
 @pytest.fixture(name="imaging_7x7")
 def make_imaging_7x7():
     return fixtures.make_imaging_7x7()
