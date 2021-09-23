@@ -246,17 +246,14 @@ def test__set_regularization_matrix_and_term():
 
     # Inversion's log_det_regularization_matrix_term are different thus no preloading.
 
-    linear_eqn_0 = MockLinearEqn(regularization=regularization)
-    linear_eqn_1 = MockLinearEqn(regularization=regularization)
-
     fit_0 = MockFit(
         inversion=MockInversion(
-            linear_eqn=linear_eqn_0, log_det_regularization_matrix_term=0
+            log_det_regularization_matrix_term=0, regularization=regularization
         )
     )
     fit_1 = MockFit(
         inversion=MockInversion(
-            linear_eqn=linear_eqn_1, log_det_regularization_matrix_term=1
+            log_det_regularization_matrix_term=1, regularization=regularization
         )
     )
 
@@ -268,21 +265,23 @@ def test__set_regularization_matrix_and_term():
 
     # LinearEqn's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
-    linear_eqn_0 = MockLinearEqn(regularization=regularization)
-    linear_eqn_1 = MockLinearEqn(regularization=regularization)
+    preloads = aa.Preloads(log_det_regularization_matrix_term=2)
 
     fit_0 = MockFit(
         inversion=MockInversion(
-            linear_eqn=linear_eqn_0, log_det_regularization_matrix_term=1
+            linear_eqn=MockLinearEqn(preloads=preloads),
+            log_det_regularization_matrix_term=1,
+            regularization=regularization,
         )
     )
     fit_1 = MockFit(
         inversion=MockInversion(
-            linear_eqn=linear_eqn_1, log_det_regularization_matrix_term=1
+            linear_eqn=MockLinearEqn(preloads=preloads),
+            log_det_regularization_matrix_term=1,
+            regularization=regularization,
         )
     )
 
-    preloads = aa.Preloads(log_det_regularization_matrix_term=2)
     preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.regularization_matrix == np.eye(2)).all()

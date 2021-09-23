@@ -920,9 +920,9 @@ def mapped_reconstructed_visibilities_from(
     return mapped_reconstructed_visibilities
 
 
-def inversion_residual_map_from(
+def residual_map_from(
     *,
-    pixelization_values: np.ndarray,
+    reconstruction: np.ndarray,
     data: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
     all_sub_slim_indexes_for_pixelization_index: [list],
@@ -939,7 +939,7 @@ def inversion_residual_map_from(
 
     Parameters
     ----------
-    pixelization_values
+    reconstruction
         The values computed by the `LinearEqn` for the `reconstruction`, which are used in this function to compute
         the `residual_map` values.
     data
@@ -965,7 +965,7 @@ def inversion_residual_map_from(
         for sub_mask_1d_index in sub_slim_indexes:
             sub_mask_total += 1
             mask_1d_index = slim_index_for_sub_slim_index[sub_mask_1d_index]
-            residual = data[mask_1d_index] - pixelization_values[pix_index]
+            residual = data[mask_1d_index] - reconstruction[pix_index]
             residual_map[pix_index] += np.abs(residual)
 
         if sub_mask_total > 0:
@@ -976,7 +976,7 @@ def inversion_residual_map_from(
 
 def inversion_normalized_residual_map_from(
     *,
-    pixelization_values,
+    reconstruction,
     data,
     noise_map_1d,
     slim_index_for_sub_slim_index,
@@ -994,7 +994,7 @@ def inversion_normalized_residual_map_from(
 
     Parameters
     ----------
-    pixelization_values
+    reconstruction
         The values computed by the `LinearEqn` for the `reconstruction`, which are used in this function to compute
         the `normalized residual_map` values.
     data
@@ -1021,7 +1021,7 @@ def inversion_normalized_residual_map_from(
         for sub_mask_1d_index in sub_slim_indexes:
             sub_mask_total += 1
             mask_1d_index = slim_index_for_sub_slim_index[sub_mask_1d_index]
-            residual = data[mask_1d_index] - pixelization_values[pix_index]
+            residual = data[mask_1d_index] - reconstruction[pix_index]
             normalized_residual_map[pix_index] += np.abs(
                 (residual / noise_map_1d[mask_1d_index])
             )
@@ -1034,7 +1034,7 @@ def inversion_normalized_residual_map_from(
 
 def inversion_chi_squared_map_from(
     *,
-    pixelization_values,
+    reconstruction,
     data,
     noise_map_1d,
     slim_index_for_sub_slim_index,
@@ -1052,7 +1052,7 @@ def inversion_chi_squared_map_from(
 
     Parameters
     ----------
-    pixelization_values
+    reconstruction
         The values computed by the `LinearEqn` for the `reconstruction`, which are used in this function to compute
         the `chi_squared_map` values.
     data
@@ -1077,7 +1077,7 @@ def inversion_chi_squared_map_from(
         for sub_mask_1d_index in sub_slim_indexes:
             sub_mask_total += 1
             mask_1d_index = slim_index_for_sub_slim_index[sub_mask_1d_index]
-            residual = data[mask_1d_index] - pixelization_values[pix_index]
+            residual = data[mask_1d_index] - reconstruction[pix_index]
             chi_squared_map[pix_index] += (
                 residual / noise_map_1d[mask_1d_index]
             ) ** 2.0

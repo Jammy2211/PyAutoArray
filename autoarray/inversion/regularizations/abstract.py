@@ -1,8 +1,6 @@
 import numpy as np
 import pylops
 
-from autoarray.inversion.regularizations import regularization_util
-
 
 class AbstractRegularization:
     def __init__(self):

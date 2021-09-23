@@ -21,10 +21,7 @@ from .inversion.mappers.abstract import AbstractMapper
 from .inversion import pixelizations as pix
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
-from .inversion.inversion.imaging import inversion_imaging_from as InversionImaging
-from .inversion.inversion.interferometer import (
-    inversion_interferometer_from as InversionInterferometer,
-)
+from .inversion.inversion.factory import inversion_from as Inversion
 from .inversion.mappers.abstract import mapper as Mapper
 from .inversion.pixelization.settings import SettingsPixelization
 from .mask.mask_1d import Mask1D

@@ -7,7 +7,6 @@ from autoarray.numba_util import profile_func
 from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
-from autoarray.inversion.regularizations.abstract import AbstractRegularization
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.preloads import Preloads
@@ -22,7 +21,6 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         noise_map: Array2D,
         convolver: Convolver,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: AbstractRegularization,
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
@@ -63,7 +61,6 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         super().__init__(
             noise_map=noise_map,
             mapper=mapper,
-            regularization=regularization,
             preloads=preloads,
             profiling_dict=profiling_dict,
         )
@@ -89,6 +86,10 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         return self.preloads.blurred_mapping_matrix
 
     @property
+    def operated_mapping_matrix(self) -> np.ndarray:
+        return self.blurred_mapping_matrix
+
+    @property
     def curvature_matrix_sparse_preload(self) -> np.ndarray:
         curvature_matrix_sparse_preload, curvature_matrix_preload_counts = inversion_util.curvature_matrix_sparse_preload_via_mapping_matrix_from(
             mapping_matrix=self.blurred_mapping_matrix
@@ -112,7 +113,6 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         convolver: Convolver,
         w_tilde: WTildeImaging,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: AbstractRegularization,
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
@@ -134,9 +134,6 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
             The convolver used to blur the mapping matrix with the PSF.
         mapper : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
-        regularization : inversion.regularization.Regularization
-            The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
-            inversion
         """
 
         if preloads.w_tilde is not None:
@@ -153,7 +150,6 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
             noise_map=noise_map,
             convolver=convolver,
             mapper=mapper,
-            regularization=regularization,
             preloads=preloads,
             profiling_dict=profiling_dict,
         )
@@ -251,7 +247,6 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         noise_map: Array2D,
         convolver: Convolver,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        regularization: AbstractRegularization,
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
@@ -272,27 +267,12 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
             The convolver used to blur the mapping matrix with the PSF.
         mapper : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
-        regularization : inversion.regularization.Regularization
-            The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
-            inversion
-
-        Attributes
-        -----------
-        regularization_matrix
-            The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-        curvature_matrix
-            The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
-        curvature_reg_matrix
-            The curvature_matrix + regularization matrix.
-        solution_vector
-            The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
         super().__init__(
             noise_map=noise_map,
             convolver=convolver,
             mapper=mapper,
-            regularization=regularization,
             preloads=preloads,
             profiling_dict=profiling_dict,
         )

@@ -1,11 +1,12 @@
-import autoarray as aa
-from autoarray.inversion.mappers.rectangular import MapperRectangular
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
 import numpy as np
 import pytest
 
+import autoarray as aa
 
-def test__inversion_imaging_mapping__rectangular_mapper():
+from autoarray.inversion.mappers.voronoi import MapperVoronoi
+
+
+def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper():
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -105,7 +106,7 @@ def test__inversion_imaging_mapping__rectangular_mapper():
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
-    inversion = aa.InversionImaging(
+    inversion = aa.Inversion(
         dataset=masked_imaging,
         mapper=mapper,
         regularization=reg,
@@ -117,7 +118,7 @@ def test__inversion_imaging_mapping__rectangular_mapper():
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
 
-def test__inversion_imaging_mapping__voronoi_mapper():
+def test__inversion_matrices__linear_eqns_mapping__voronoi_mapper():
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -214,7 +215,7 @@ def test__inversion_imaging_mapping__voronoi_mapper():
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
-    inversion = aa.InversionImaging(
+    inversion = aa.Inversion(
         dataset=masked_imaging,
         mapper=mapper,
         regularization=reg,
@@ -225,7 +226,7 @@ def test__inversion_imaging_mapping__voronoi_mapper():
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
 
-def test__inversion_imaging_w_tilde__identical_inversion_values_as_inversion_mapping():
+def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eqns_mapping():
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -263,21 +264,21 @@ def test__inversion_imaging_w_tilde__identical_inversion_values_as_inversion_map
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
-    inversion_w_tilde = aa.InversionImaging(
+    inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging,
         mapper=mapper,
         regularization=reg,
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
-    inversion_mapping_matrices = aa.InversionImaging(
+    inversion_mapping_matrices = aa.Inversion(
         dataset=masked_imaging,
         mapper=mapper,
         regularization=reg,
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
-    assert (inversion_w_tilde.image == inversion_mapping_matrices.image).all()
+    assert (inversion_w_tilde.data == inversion_mapping_matrices.data).all()
     assert (inversion_w_tilde.noise_map == inversion_mapping_matrices.noise_map).all()
     assert inversion_w_tilde.mapper_list == inversion_mapping_matrices.mapper_list
     assert (
@@ -304,7 +305,7 @@ def test__inversion_imaging_w_tilde__identical_inversion_values_as_inversion_map
     )
 
 
-def test__inversion_interferometer__rectangular_mapper__matrix_formalism():
+def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper__matrix_formalism():
 
     real_space_mask = aa.Mask2D.unmasked(
         shape_native=(7, 7), pixel_scales=0.1, sub_size=1
@@ -341,7 +342,7 @@ def test__inversion_interferometer__rectangular_mapper__matrix_formalism():
         real_space_mask=real_space_mask,
     )
 
-    inversion = aa.InversionInterferometer(
+    inversion = aa.Inversion(
         dataset=interferometer,
         mapper=mapper,
         regularization=reg,
@@ -355,7 +356,7 @@ def test__inversion_interferometer__rectangular_mapper__matrix_formalism():
     assert (np.imag(inversion.mapped_reconstructed_visibilities) > 0.0).all()
 
 
-def test__inversion_interferometer__voronoi_mapper__matrix_formalism():
+def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formalism():
 
     real_space_mask = aa.Mask2D.unmasked(
         shape_native=(7, 7), pixel_scales=0.1, sub_size=1
@@ -396,7 +397,7 @@ def test__inversion_interferometer__voronoi_mapper__matrix_formalism():
         real_space_mask=real_space_mask,
     )
 
-    inversion = aa.InversionInterferometer(
+    inversion = aa.Inversion(
         dataset=interferometer,
         mapper=mapper,
         regularization=reg,
@@ -410,7 +411,7 @@ def test__inversion_interferometer__voronoi_mapper__matrix_formalism():
     assert (np.imag(inversion.mapped_reconstructed_visibilities) > 0.0).all()
 
 
-def test__inversion_interferometer__linear_operator_formalism():
+def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():
 
     real_space_mask = aa.Mask2D.unmasked(
         shape_native=(7, 7), pixel_scales=0.1, sub_size=1
@@ -448,7 +449,7 @@ def test__inversion_interferometer__linear_operator_formalism():
         settings=aa.SettingsInterferometer(transformer_class=aa.TransformerNUFFT),
     )
 
-    inversion = aa.InversionInterferometer(
+    inversion = aa.Inversion(
         dataset=interferometer,
         mapper=mapper,
         regularization=reg,

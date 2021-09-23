@@ -64,7 +64,6 @@ class TestLinearEqnImaging:
                 mapper=MockMapper(
                     mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
                 ),
-                regularization=MockRegularization(matrix_shape),
             )
 
     def test__preloads(self):
@@ -90,7 +89,6 @@ class TestLinearEqnImaging:
             noise_map=np.ones(9),
             convolver=MockConvolver(),
             mapper=MockMapper(),
-            regularization=MockRegularization(),
             preloads=preloads,
         )
 

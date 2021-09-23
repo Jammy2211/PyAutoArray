@@ -5,7 +5,7 @@ from autoarray.preloads import Preloads
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
 from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
-from autoarray.inversion.inversion.abstract import AbstractInversion
+from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
 
 
@@ -156,40 +156,17 @@ class MockLinearEqn(AbstractLinearEqn):
         self,
         noise_map=None,
         mapper: Union[MockMapper] = None,
-        regularization: MockRegularization = None,
         curvature_matrix=None,
-        curvature_reg_matrix=None,
-        regularization_matrix=None,
         preloads: Preloads = Preloads(),
     ):
 
-        super().__init__(
-            noise_map=noise_map,
-            mapper=mapper,
-            regularization=regularization,
-            preloads=preloads,
-        )
-
-        self._regularization_matrix = regularization_matrix
+        super().__init__(noise_map=noise_map, mapper=mapper, preloads=preloads)
 
         self._curvature_matrix = curvature_matrix
-        self._curvature_reg_matrix = curvature_reg_matrix
 
     @property
     def curvature_matrix(self):
         return self._curvature_matrix
-
-    @property
-    def curvature_reg_matrix(self):
-        return self._curvature_reg_matrix
-
-    @property
-    def regularization_matrix(self):
-
-        if self._regularization_matrix is None:
-            return super().regularization_matrix
-
-        return self._regularization_matrix
 
     @property
     def reconstructed_image(self):
@@ -202,7 +179,6 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
         noise_map=None,
         convolver=None,
         mapper=None,
-        regularization: MockRegularization = None,
         blurred_mapping_matrix=None,
         curvature_matrix_sparse_preload=None,
         curvature_matrix_preload_counts=None,
@@ -210,11 +186,7 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
     ):
 
         super().__init__(
-            noise_map=noise_map,
-            convolver=convolver,
-            mapper=mapper,
-            regularization=regularization,
-            preloads=preloads,
+            noise_map=noise_map, convolver=convolver, mapper=mapper, preloads=preloads
         )
 
         self._blurred_mapping_matrix = blurred_mapping_matrix
@@ -244,11 +216,14 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
         return self._curvature_matrix_preload_counts
 
 
-class MockInversion(AbstractInversion):
+class MockInversion(InversionMatrices):
     def __init__(
         self,
         data=None,
         linear_eqn: Union[MockLinearEqn, MockLinearEqnImaging] = None,
+        regularization: MockRegularization = None,
+        regularization_matrix=None,
+        curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
         log_det_regularization_matrix_term=None,
         data_vector=None,
@@ -262,10 +237,13 @@ class MockInversion(AbstractInversion):
         # self.__dict__["reconstruction"] = reconstruction
         # self.__dict__["mapped_reconstructed_image"] = mapped_reconstructed_image
 
-        super().__init__(data=data, linear_eqn=linear_eqn)
+        super().__init__(
+            data=data, linear_eqn=linear_eqn, regularization=regularization
+        )
 
         self._data_vector = data_vector
-
+        self._regularization_matrix = regularization_matrix
+        self._curvature_reg_matrix = curvature_reg_matrix
         self._reconstruction = reconstruction
 
         self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
@@ -275,6 +253,18 @@ class MockInversion(AbstractInversion):
         if self._data_vector is None:
             return super().data_vector
         return self._data_vector
+
+    @property
+    def regularization_matrix(self):
+
+        if self._regularization_matrix is None:
+            return super().regularization_matrix
+
+        return self._regularization_matrix
+
+    @property
+    def curvature_reg_matrix(self):
+        return self._curvature_reg_matrix
 
     @property
     def reconstruction(self):

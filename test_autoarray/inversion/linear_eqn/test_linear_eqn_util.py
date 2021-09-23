@@ -683,8 +683,8 @@ class TestPixelizationQuantity:
         slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
         all_sub_slim_indexes_for_pixelization_index = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from(
-            pixelization_values=pixelization_values,
+        pixelization_residuals = aa.util.inversion.residual_map_from(
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             all_sub_slim_indexes_for_pixelization_index=all_sub_slim_indexes_for_pixelization_index,
@@ -701,8 +701,8 @@ class TestPixelizationQuantity:
         slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
         all_sub_slim_indexes_for_pixelization_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from(
-            pixelization_values=pixelization_values,
+        pixelization_residuals = aa.util.inversion.residual_map_from(
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             all_sub_slim_indexes_for_pixelization_index=all_sub_slim_indexes_for_pixelization_index,
@@ -715,8 +715,8 @@ class TestPixelizationQuantity:
         slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
         all_sub_slim_indexes_for_pixelization_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from(
-            pixelization_values=pixelization_values,
+        pixelization_residuals = aa.util.inversion.residual_map_from(
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             all_sub_slim_indexes_for_pixelization_index=all_sub_slim_indexes_for_pixelization_index,
@@ -735,7 +735,7 @@ class TestPixelizationQuantity:
         all_sub_slim_indexes_for_pixelization_index = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
 
         pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from(
-            pixelization_values=pixelization_values,
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -755,7 +755,7 @@ class TestPixelizationQuantity:
         all_sub_slim_indexes_for_pixelization_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from(
-            pixelization_values=pixelization_values,
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -771,7 +771,7 @@ class TestPixelizationQuantity:
         all_sub_slim_indexes_for_pixelization_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from(
-            pixelization_values=pixelization_values,
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -791,7 +791,7 @@ class TestPixelizationQuantity:
         all_sub_slim_indexes_for_pixelization_index = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
 
         pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from(
-            pixelization_values=pixelization_values,
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -809,7 +809,7 @@ class TestPixelizationQuantity:
         all_sub_slim_indexes_for_pixelization_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from(
-            pixelization_values=pixelization_values,
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -825,7 +825,7 @@ class TestPixelizationQuantity:
         all_sub_slim_indexes_for_pixelization_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
 
         pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from(
-            pixelization_values=pixelization_values,
+            reconstruction=pixelization_values,
             data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,

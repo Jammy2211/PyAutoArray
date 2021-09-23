@@ -1,6 +1,3 @@
-import numpy as np
-import pylops
-
 from autoarray.inversion.regularizations.abstract import AbstractRegularization
 
 from autoarray.inversion.regularizations import regularization_util
@@ -50,7 +47,9 @@ class AdaptiveBrightness(AbstractRegularization):
             A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
             low signal regions.
         """
-        super(AdaptiveBrightness, self).__init__()
+
+        super().__init__()
+
         self.inner_coefficient = inner_coefficient
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale

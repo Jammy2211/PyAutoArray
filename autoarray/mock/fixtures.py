@@ -26,7 +26,7 @@ from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
-from autoarray.inversion.inversion.imaging import inversion_imaging_from
+from autoarray.inversion.inversion.factory import inversion_from
 
 
 def make_mask_1d_7():
@@ -382,7 +382,7 @@ def make_voronoi_mapper_9_3x3():
 def make_rectangular_inversion_7x7_3x3():
     regularization = Constant(coefficient=1.0)
 
-    return inversion_imaging_from(
+    return inversion_from(
         dataset=make_masked_imaging_7x7(),
         mapper=make_rectangular_mapper_7x7_3x3(),
         regularization=regularization,
@@ -393,7 +393,7 @@ def make_voronoi_inversion_9_3x3():
 
     regularization = Constant(coefficient=1.0)
 
-    return inversion_imaging_from(
+    return inversion_from(
         dataset=make_masked_imaging_7x7(),
         mapper=make_voronoi_mapper_9_3x3(),
         regularization=regularization,

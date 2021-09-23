@@ -12,36 +12,114 @@ from autoarray import exc
 directory = path.dirname(path.realpath(__file__))
 
 
-class TestAbstractLinearEqn:
-    def test__errors_and_errors_with_covariance(self,):
+def test__regularization_term():
 
-        curvature_reg_matrix = np.array(
-            [[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 3.0]]
+    reconstruction = np.array([1.0, 1.0, 1.0])
+
+    regularization_matrix = np.array(
+        [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    )
+
+    inversion = MockInversion(
+        reconstruction=reconstruction, regularization_matrix=regularization_matrix
+    )
+
+    # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
+
+    # G_l = s_T * H * s
+
+    # Matrix multiplication:
+
+    # s_T * H = [1.0, 1.0, 1.0] * [1.0, 1.0, 1.0] = [(1.0*1.0) + (1.0*0.0) + (1.0*0.0)] = [1.0, 1.0, 1.0]
+    #                             [1.0, 1.0, 1.0]   [(1.0*0.0) + (1.0*1.0) + (1.0*0.0)]
+    #                             [1.0, 1.0, 1.0]   [(1.0*0.0) + (1.0*0.0) + (1.0*1.0)]
+
+    # (s_T * H) * s = [1.0, 1.0, 1.0] * [1.0] = 3.0
+    #                                   [1.0]
+    #                                   [1.0]
+
+    assert inversion.regularization_term == 3.0
+
+    reconstruction = np.array([2.0, 3.0, 5.0])
+
+    regularization_matrix = np.array(
+        [[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]]
+    )
+
+    inversion = MockInversion(
+        reconstruction=reconstruction, regularization_matrix=regularization_matrix
+    )
+
+    # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
+
+    # G_l = s_T * H * s
+
+    # Matrix multiplication:
+
+    # s_T * H = [2.0, 3.0, 5.0] * [2.0,  -1.0,  0.0] = [(2.0* 2.0) + (3.0*-1.0) + (5.0 *0.0)] = [1.0, -1.0, 7.0]
+    #                             [-1.0,  2.0, -1.0]   [(2.0*-1.0) + (3.0* 2.0) + (5.0*-1.0)]
+    #                             [ 0.0, -1.0,  2.0]   [(2.0* 0.0) + (3.0*-1.0) + (5.0 *2.0)]
+
+    # (s_T * H) * s = [1.0, -1.0, 7.0] * [2.0] = 34.0
+    #                                    [3.0]
+    #                                    [5.0]
+
+    assert inversion.regularization_term == 34.0
+
+
+def test__preload_of_regularization_matrix__overwrites_calculation():
+
+    linear_eqn = MockLinearEqn(
+        preloads=aa.Preloads(regularization_matrix=np.ones((2, 2)))
+    )
+
+    inversion = MockInversion(linear_eqn=linear_eqn)
+
+    assert (inversion.regularization_matrix == np.ones((2, 2))).all()
+
+
+def test__reconstruction_raises_exception_for_linalg_error():
+
+    with pytest.raises(exc.InversionException):
+
+        # noinspection PyTypeChecker
+        inversion = MockInversion(
+            data_vector=np.ones(3), curvature_reg_matrix=np.ones((3, 3))
         )
 
-        inversion = MockLinearEqn(curvature_reg_matrix=curvature_reg_matrix)
+        # noinspection PyStatementEffect
+        inversion.reconstruction
 
-        assert inversion.errors_with_covariance == pytest.approx(
-            np.array([[2.5, -1.0, -0.5], [-1.0, 1.0, 0.0], [-0.5, 0.0, 0.5]]), 1.0e-2
-        )
-        assert inversion.errors == pytest.approx(np.array([2.5, 1.0, 0.5]), 1.0e-3)
 
-    def test__preload_of_regularization_matrix__overwrites_calculation(self):
+def test__determinant_of_positive_definite_matrix_via_cholesky():
 
-        inversion = MockLinearEqn(
-            preloads=aa.Preloads(regularization_matrix=np.ones((2, 2)))
-        )
+    matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
-        assert (inversion.regularization_matrix == np.ones((2, 2))).all()
+    linear_eqn = MockInversion(curvature_reg_matrix=matrix)
 
-    def test__reconstruction_raises_exception_for_linalg_error(self):
+    log_determinant = np.log(np.linalg.det(matrix))
 
-        linear_eqn = MockLinearEqn(curvature_reg_matrix=np.ones((3, 3)))
+    assert log_determinant == pytest.approx(
+        linear_eqn.log_det_curvature_reg_matrix_term, 1e-4
+    )
 
-        with pytest.raises(exc.InversionException):
+    matrix = np.array([[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]])
 
-            # noinspection PyTypeChecker
-            inversion = MockInversion(data_vector=np.ones(3), linear_eqn=linear_eqn)
+    linear_eqn = MockInversion(curvature_reg_matrix=matrix)
 
-            # noinspection PyStatementEffect
-            inversion.reconstruction
+    log_determinant = np.log(np.linalg.det(matrix))
+
+    assert log_determinant == pytest.approx(
+        linear_eqn.log_det_curvature_reg_matrix_term, 1e-4
+    )
+
+
+def test__preload_of_log_det_regularization_term_overwrites_calculation():
+
+    linear_eqn = MockLinearEqn(
+        preloads=aa.Preloads(log_det_regularization_matrix_term=1.0)
+    )
+
+    inversion = MockInversion(linear_eqn=linear_eqn)
+
+    assert inversion.log_det_regularization_matrix_term == 1.0
