@@ -64,7 +64,7 @@ class Preloads:
         self.use_w_tilde = False
 
         if (
-            fit_0.linear_eqn is not None
+            fit_0.inversion is not None
             and np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8
         ):
 
@@ -200,11 +200,11 @@ class Preloads:
 
         self.relocated_grid = None
 
-        if fit_0.linear_eqn is None:
+        if fit_0.inversion is None:
             return
 
-        mapper_0 = fit_0.linear_eqn.mapper
-        mapper_1 = fit_1.linear_eqn.mapper
+        mapper_0 = fit_0.inversion.mapper
+        mapper_1 = fit_1.inversion.mapper
 
         if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
 
@@ -241,11 +241,11 @@ class Preloads:
 
         self.mapper = None
 
-        if fit_0.linear_eqn is None:
+        if fit_0.inversion is None:
             return
 
-        mapper_0 = fit_0.linear_eqn.mapper
-        mapper_1 = fit_1.linear_eqn.mapper
+        mapper_0 = fit_0.inversion.mapper
+        mapper_1 = fit_1.inversion.mapper
 
         if mapper_0.mapping_matrix.shape[1] == mapper_1.mapping_matrix.shape[1]:
 
@@ -281,33 +281,38 @@ class Preloads:
         self.curvature_matrix_sparse_preload = None
         self.curvature_matrix_preload_counts = None
 
-        inversion_0 = fit_0.linear_eqn
-        inversion_1 = fit_1.linear_eqn
+        inversion_0 = fit_0.inversion
+        inversion_1 = fit_1.inversion
 
         if inversion_0 is None:
             return
 
+        if len(inversion_0.mapper_list) > 1:
+            return
+
         if (
-            inversion_0.blurred_mapping_matrix.shape[1]
-            == inversion_1.blurred_mapping_matrix.shape[1]
+            inversion_0.linear_eqn.blurred_mapping_matrix.shape[1]
+            == inversion_1.linear_eqn.blurred_mapping_matrix.shape[1]
         ):
 
             if (
                 np.max(
                     abs(
-                        inversion_0.blurred_mapping_matrix
-                        - inversion_1.blurred_mapping_matrix
+                        inversion_0.linear_eqn.blurred_mapping_matrix
+                        - inversion_1.linear_eqn.blurred_mapping_matrix
                     )
                 )
                 < 1e-8
             ):
 
-                self.blurred_mapping_matrix = inversion_0.blurred_mapping_matrix
+                self.blurred_mapping_matrix = (
+                    inversion_0.linear_eqn.blurred_mapping_matrix
+                )
                 self.curvature_matrix_sparse_preload = (
-                    inversion_0.curvature_matrix_sparse_preload
+                    inversion_0.linear_eqn.curvature_matrix_sparse_preload
                 ).astype("int")
                 self.curvature_matrix_preload_counts = (
-                    inversion_0.curvature_matrix_preload_counts
+                    inversion_0.linear_eqn.curvature_matrix_preload_counts
                 ).astype("int")
 
                 logger.info(
@@ -337,11 +342,14 @@ class Preloads:
         self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
-        inversion_0 = fit_0.linear_eqn
-        inversion_1 = fit_1.linear_eqn
+        inversion_0 = fit_0.inversion
+        inversion_1 = fit_1.inversion
 
         if inversion_0 is None:
             return
+
+        print(inversion_0.log_det_regularization_matrix_term)
+        print(inversion_1.log_det_regularization_matrix_term)
 
         if (
             abs(

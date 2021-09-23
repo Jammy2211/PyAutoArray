@@ -43,6 +43,10 @@ class AbstractInversion:
         return self.linear_eqn.noise_map
 
     @property
+    def mapper(self):
+        return self.mapper_list[0]
+
+    @property
     def mapper_list(self):
         return [eqn.mapper for eqn in [self.linear_eqn]]
 

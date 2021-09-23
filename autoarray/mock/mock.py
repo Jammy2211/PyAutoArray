@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union
 
 from autoarray.preloads import Preloads
 from autoarray.inversion.mappers.abstract import AbstractMapper
@@ -154,15 +155,11 @@ class MockLinearEqn(AbstractLinearEqn):
     def __init__(
         self,
         noise_map=None,
-        mapper=None,
-        regularization=None,
-        blurred_mapping_matrix=None,
+        mapper: Union[MockMapper] = None,
+        regularization: MockRegularization = None,
         curvature_matrix=None,
         curvature_reg_matrix=None,
         regularization_matrix=None,
-        log_det_regularization_matrix_term=None,
-        curvature_matrix_sparse_preload=None,
-        curvature_matrix_preload_counts=None,
         preloads: Preloads = Preloads(),
     ):
 
@@ -175,14 +172,8 @@ class MockLinearEqn(AbstractLinearEqn):
 
         self._regularization_matrix = regularization_matrix
 
-        self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
-        self._blurred_mapping_matrix = blurred_mapping_matrix
-
         self._curvature_matrix = curvature_matrix
         self._curvature_reg_matrix = curvature_reg_matrix
-
-        self.curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
-        self.curvature_matrix_preload_counts = curvature_matrix_preload_counts
 
     @property
     def curvature_matrix(self):
@@ -201,10 +192,6 @@ class MockLinearEqn(AbstractLinearEqn):
         return self._regularization_matrix
 
     @property
-    def log_det_regularization_matrix_term(self):
-        return self._log_det_regularization_matrix_term
-
-    @property
     def reconstructed_image(self):
         return np.zeros((1, 1))
 
@@ -215,7 +202,10 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
         noise_map=None,
         convolver=None,
         mapper=None,
-        regularization=None,
+        regularization: MockRegularization = None,
+        blurred_mapping_matrix=None,
+        curvature_matrix_sparse_preload=None,
+        curvature_matrix_preload_counts=None,
         preloads: Preloads = Preloads(),
     ):
 
@@ -227,13 +217,40 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
             preloads=preloads,
         )
 
+        self._blurred_mapping_matrix = blurred_mapping_matrix
+
+        self._curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
+        self._curvature_matrix_preload_counts = curvature_matrix_preload_counts
+
+    @property
+    def blurred_mapping_matrix(self):
+        if self._blurred_mapping_matrix is None:
+            return super().blurred_mapping_matrix
+
+        return self._blurred_mapping_matrix
+
+    @property
+    def curvature_matrix_sparse_preload(self):
+        if self._curvature_matrix_sparse_preload is None:
+            return super().curvature_matrix_sparse_preload
+
+        return self._curvature_matrix_sparse_preload
+
+    @property
+    def curvature_matrix_preload_counts(self):
+        if self._curvature_matrix_preload_counts is None:
+            return super().curvature_matrix_preload_counts
+
+        return self._curvature_matrix_preload_counts
+
 
 class MockInversion(AbstractInversion):
     def __init__(
         self,
         data=None,
-        linear_eqn: MockLinearEqn = None,
+        linear_eqn: Union[MockLinearEqn, MockLinearEqnImaging] = None,
         reconstruction: np.ndarray = None,
+        log_det_regularization_matrix_term=None,
         data_vector=None,
         #     regularization: Optional[AbstractRegularization] = None,
     ):
@@ -245,11 +262,13 @@ class MockInversion(AbstractInversion):
         # self.__dict__["reconstruction"] = reconstruction
         # self.__dict__["mapped_reconstructed_image"] = mapped_reconstructed_image
 
+        super().__init__(data=data, linear_eqn=linear_eqn)
+
         self._data_vector = data_vector
 
         self._reconstruction = reconstruction
 
-        super().__init__(data=data, linear_eqn=linear_eqn)
+        self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
     @property
     def data_vector(self) -> np.ndarray:
@@ -270,3 +289,11 @@ class MockInversion(AbstractInversion):
             return super().reconstruction
 
         return self._reconstruction
+
+    @property
+    def log_det_regularization_matrix_term(self):
+
+        if self._log_det_regularization_matrix_term is None:
+            return super().log_det_regularization_matrix_term
+
+        return self._log_det_regularization_matrix_term
