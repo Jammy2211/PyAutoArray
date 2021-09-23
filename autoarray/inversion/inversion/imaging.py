@@ -127,8 +127,12 @@ class InversionImaging(AbstractInversion):
         return inversion_util.inversion_residual_map_from(
             pixelization_values=self.reconstruction,
             data=self.image,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
+            slim_index_for_sub_slim_index=self.mapper_list[
+                0
+            ].source_grid_slim.mask.slim_index_for_sub_slim_index,
+            all_sub_slim_indexes_for_pixelization_index=self.mapper_list[
+                0
+            ].all_sub_slim_indexes_for_pixelization_index,
         )
 
     @property
@@ -137,8 +141,12 @@ class InversionImaging(AbstractInversion):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
+            slim_index_for_sub_slim_index=self.mapper_list[
+                0
+            ].source_grid_slim.mask.slim_index_for_sub_slim_index,
+            all_sub_slim_indexes_for_pixelization_index=self.mapper_list[
+                0
+            ].all_sub_slim_indexes_for_pixelization_index,
         )
 
     @property
@@ -147,6 +155,10 @@ class InversionImaging(AbstractInversion):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
+            slim_index_for_sub_slim_index=self.mapper_list[
+                0
+            ].source_grid_slim.mask.slim_index_for_sub_slim_index,
+            all_sub_slim_indexes_for_pixelization_index=self.mapper_list[
+                0
+            ].all_sub_slim_indexes_for_pixelization_index,
         )

@@ -2,49 +2,94 @@ import numpy as np
 from typing import Union
 
 from autoconf import conf
+from autoarray.plot.abstract_plotters import AbstractPlotter
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.inversion.inversion.imaging import InversionImaging
+from autoarray.inversion.inversion.interferometer import InversionInterferometer
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
-from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingWTilde
-from autoarray.inversion.inversion.interferometer import LinearEqnInterferometerMapping
 
 
-class LinearEqnPlotter(MapperPlotter):
+class InversionPlotter(AbstractPlotter):
     def __init__(
         self,
-        inversion: Union[LinearEqnImagingWTilde, LinearEqnInterferometerMapping],
+        inversion: Union[InversionImaging, InversionInterferometer],
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
     ):
         super().__init__(
-            mapper=inversion.mapper,
-            mat_plot_2d=mat_plot_2d,
-            include_2d=include_2d,
-            visuals_2d=visuals_2d,
+            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
         self.inversion = inversion
 
-    def as_mapper(self, source_pixelization_values) -> Array2D:
-        return self.inversion.mapper.reconstruction_from(source_pixelization_values)
+    def as_mapper(self, solution_vector) -> Array2D:
+        return self.inversion.mapper_list[0].reconstruction_from(solution_vector)
 
-    def figures_2d(
-        self,
-        reconstructed_image: bool = False,
-        reconstruction: bool = False,
-        errors: bool = False,
-        residual_map: bool = False,
-        normalized_residual_map: bool = False,
-        chi_squared_map: bool = False,
-        regularization_weight_list: bool = False,
-        interpolated_reconstruction: bool = False,
-        interpolated_errors: bool = False,
-    ):
-        """Plot the model data of an analysis, using the *Fitter* class object.
+    def mapper_plotter_from(self, mapper_index):
+        return MapperPlotter(
+            mapper=self.inversion.mapper_list[mapper_index],
+            mat_plot_2d=self.mat_plot_2d,
+            visuals_2d=self.visuals_2d,
+            include_2d=self.include_2d,
+        )
+
+    @property
+    def visuals_data_with_include_2d(self) -> Visuals2D:
+        """
+        Extracts from a `Mapper` attributes that can be plotted for figures in its data-plane (e.g. the reconstructed
+        data) and return them in a `Visuals` object.
+
+        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+
+        From a `Mapper` the following attributes can be extracted for plotting in the data-plane:
+
+        - origin: the (y,x) origin of the `Array2D`'s coordinate system in the data plane.
+        - mask : the `Mask` defined in the data-plane containing the data that is used by the `Mapper`.
+        - mapper_data_pixelization_grid: the `Mapper`'s pixelization grid in the data-plane.
+        - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
+
+        Parameters
+        ----------
+        mapper : Mapper
+            The mapper whose data-plane attributes are extracted for plotting.
+
+        Returns
+        -------
+        Visuals2D
+            The collection of attributes that can be plotted by a `Plotter2D` object.
+        """
+        return self.visuals_2d + self.visuals_2d.__class__(
+            origin=self.extract_2d(
+                "origin",
+                Grid2DIrregular(
+                    grid=[self.inversion.mapper_list[0].source_grid_slim.mask.origin]
+                ),
+            ),
+            mask=self.extract_2d(
+                "mask", self.inversion.mapper_list[0].source_grid_slim.mask
+            ),
+            border=self.extract_2d(
+                "border",
+                self.inversion.mapper_list[
+                    0
+                ].source_grid_slim.mask.border_grid_sub_1.binned,
+            ),
+            pixelization_grid=self.extract_2d(
+                "pixelization_grid",
+                self.inversion.mapper_list[0].data_pixelization_grid,
+                "mapper_data_pixelization_grid",
+            ),
+        )
+
+    def figures_2d(self, reconstructed_image: bool = False):
+        """
+        Plot the model data of an analysis, using the *Fitter* class object.
 
         The visualization and output type can be fully customized.
 
@@ -69,6 +114,49 @@ class LinearEqnPlotter(MapperPlotter):
                 ),
             )
 
+    def figures_2d_of_mapper(
+        self,
+        mapper_index: int = 0,
+        reconstructed_image: bool = False,
+        reconstruction: bool = False,
+        errors: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
+        regularization_weight_list: bool = False,
+    ):
+        """
+        Plot the model data of an analysis, using the *Fitter* class object.
+
+        The visualization and output type can be fully customized.
+
+        Parameters
+        -----------
+        fit : autolens.lens.fitting.Fitter
+            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
+        output_path : str
+            The path where the data is output if the output_type is a file format (e.g. png, fits)
+        output_format : str
+            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data
+            in the python interpreter window.
+        """
+
+        mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)
+
+        ### TODO : Make image of individual mapper
+
+        if reconstructed_image:
+
+            self.mat_plot_2d.plot_array(
+                array=self.inversion.mapped_reconstructed_image,
+                visuals_2d=self.visuals_data_with_include_2d,
+                auto_labels=AutoLabels(
+                    title="Reconstructed Image", filename="reconstructed_image"
+                ),
+            )
+
+        ### TODO : All of the solution vectors below need to be for an indivudla mapper
+
         if reconstruction:
 
             vmax_custom = False
@@ -86,14 +174,10 @@ class LinearEqnPlotter(MapperPlotter):
                     )
                     vmax_custom = True
 
-            self.mat_plot_2d.plot_mapper(
-                mapper=self.inversion.mapper,
-                visuals_2d=self.visuals_source_with_include_2d,
+            mapper_plotter.plot_source_from_values(
+                source_pixelization_values=self.inversion.reconstruction,
                 auto_labels=AutoLabels(
                     title="Source Inversion", filename="reconstruction"
-                ),
-                source_pixelilzation_values=self.as_mapper(
-                    self.inversion.reconstruction
                 ),
             )
 
@@ -102,115 +186,75 @@ class LinearEqnPlotter(MapperPlotter):
 
         if errors:
 
-            self.mat_plot_2d.plot_mapper(
-                mapper=self.inversion.mapper,
-                visuals_2d=self.visuals_source_with_include_2d,
+            mapper_plotter.plot_source_from_values(
+                source_pixelization_values=self.inversion.errors,
                 auto_labels=AutoLabels(title="Errors", filename="errors"),
-                source_pixelilzation_values=self.as_mapper(self.inversion.errors),
             )
 
         if residual_map:
 
-            self.mat_plot_2d.plot_mapper(
-                mapper=self.inversion.mapper,
-                visuals_2d=self.visuals_source_with_include_2d,
+            mapper_plotter.plot_source_from_values(
+                source_pixelization_values=self.inversion.residual_map,
                 auto_labels=AutoLabels(title="Residual Map", filename="residual_map"),
-                source_pixelilzation_values=self.as_mapper(self.inversion.residual_map),
             )
 
         if normalized_residual_map:
 
-            self.mat_plot_2d.plot_mapper(
-                mapper=self.inversion.mapper,
-                visuals_2d=self.visuals_source_with_include_2d,
+            mapper_plotter.plot_source_from_values(
+                source_pixelization_values=self.inversion.normalized_residual_map,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map", filename="normalized_residual_map"
-                ),
-                source_pixelilzation_values=self.as_mapper(
-                    self.inversion.normalized_residual_map
                 ),
             )
 
         if chi_squared_map:
 
-            self.mat_plot_2d.plot_mapper(
-                mapper=self.inversion.mapper,
-                visuals_2d=self.visuals_source_with_include_2d,
+            mapper_plotter.plot_source_from_values(
+                source_pixelization_values=self.inversion.chi_squared_map,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", filename="chi_squared_map"
-                ),
-                source_pixelilzation_values=self.as_mapper(
-                    self.inversion.chi_squared_map
                 ),
             )
 
         if regularization_weight_list:
 
-            self.mat_plot_2d.plot_mapper(
-                mapper=self.inversion.mapper,
-                visuals_2d=self.visuals_source_with_include_2d,
+            mapper_plotter.plot_source_from_values(
+                source_pixelization_values=self.inversion.regularization_weight_list,
                 auto_labels=AutoLabels(
                     title="Regularization weight_list",
                     filename="regularization_weight_list",
                 ),
-                source_pixelilzation_values=self.as_mapper(
-                    self.inversion.regularization_weight_list
-                ),
             )
 
-        if interpolated_reconstruction:
-
-            self.mat_plot_2d.plot_array(
-                array=self.inversion.interpolated_reconstruction_from(),
-                visuals_2d=self.visuals_data_with_include_2d,
-                auto_labels=AutoLabels(
-                    title="Interpolated Inversion",
-                    filename="interpolated_reconstruction",
-                ),
-            )
-
-        if interpolated_errors:
-            self.mat_plot_2d.plot_array(
-                array=self.inversion.interpolated_errors_from(),
-                visuals_2d=self.visuals_data_with_include_2d,
-                auto_labels=AutoLabels(
-                    title="Interpolated Errors", filename="interpolated_errors"
-                ),
-            )
-
-    def subplot(
-        self,
-        reconstructed_image: bool = False,
-        reconstruction: bool = False,
-        errors: bool = False,
-        residual_map: bool = False,
-        normalized_residual_map: bool = False,
-        chi_squared_map: bool = False,
-        regularization_weight_list: bool = False,
-        interpolated_reconstruction: bool = False,
-        interpolated_errors: bool = False,
-        auto_filename: str = "subplot_inversion",
-    ):
-
-        self._subplot_custom_plot(
-            reconstructed_image=reconstructed_image,
-            reconstruction=reconstruction,
-            errors=errors,
-            residual_map=residual_map,
-            normalized_residual_map=normalized_residual_map,
-            chi_squared_map=chi_squared_map,
-            regularization_weight_list=regularization_weight_list,
-            interpolated_reconstruction=interpolated_reconstruction,
-            interpolated_errors=interpolated_errors,
-            auto_labels=AutoLabels(filename=auto_filename),
-        )
-
-    def subplot_inversion(self):
-        return self.subplot(
-            reconstructed_image=True,
-            reconstruction=True,
-            errors=True,
-            residual_map=True,
-            chi_squared_map=True,
-            regularization_weight_list=True,
-        )
+    # def subplot(
+    #     self,
+    #     reconstructed_image: bool = False,
+    #     reconstruction: bool = False,
+    #     errors: bool = False,
+    #     residual_map: bool = False,
+    #     normalized_residual_map: bool = False,
+    #     chi_squared_map: bool = False,
+    #     regularization_weight_list: bool = False,
+    #     auto_filename: str = "subplot_inversion",
+    # ):
+    #
+    #     self._subplot_custom_plot(
+    #         reconstructed_image=reconstructed_image,
+    #         reconstruction=reconstruction,
+    #         errors=errors,
+    #         residual_map=residual_map,
+    #         normalized_residual_map=normalized_residual_map,
+    #         chi_squared_map=chi_squared_map,
+    #         regularization_weight_list=regularization_weight_list,
+    #         auto_labels=AutoLabels(filename=auto_filename),
+    #     )
+    #
+    # def subplot_inversion(self):
+    #     return self.subplot(
+    #         reconstructed_image=True,
+    #         reconstruction=True,
+    #         errors=True,
+    #         residual_map=True,
+    #         chi_squared_map=True,
+    #         regularization_weight_list=True,
+    #     )

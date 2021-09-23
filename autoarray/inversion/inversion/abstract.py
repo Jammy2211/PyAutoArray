@@ -133,13 +133,14 @@ class AbstractInversion:
 
         S is the vector of reconstructed inversion values.
         """
-        if self.data_vector is not None:
+
+        try:
             return inversion_util.reconstruction_from(
                 data_vector=self.data_vector,
                 curvature_reg_matrix_cholesky=self.linear_eqn.curvature_reg_matrix_cholesky,
                 settings=self.settings,
             )
-        else:
+        except NotImplementedError:
             Aop = pylops.MatrixMult(
                 sparse.bsr_matrix(self.mapper_list[0].mapping_matrix)
             )
@@ -285,3 +286,11 @@ class AbstractInversion:
     @property
     def chi_squared_map(self):
         raise NotImplementedError()
+
+    @property
+    def errors(self):
+        return self.linear_eqn.errors
+
+    @property
+    def regularization_weight_list(self):
+        return self.linear_eqn.regularization_weight_list

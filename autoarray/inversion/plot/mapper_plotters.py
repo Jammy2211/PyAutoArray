@@ -26,7 +26,7 @@ class MapperPlotter(AbstractPlotter):
         self.mapper = mapper
 
     @property
-    def visuals_data_with_include_2d(self) -> Include2D:
+    def visuals_data_with_include_2d(self) -> Visuals2D:
         """
         Extracts from a `Mapper` attributes that can be plotted for figures in its data-plane (e.g. the reconstructed
         data) and return them in a `Visuals` object.
@@ -67,7 +67,7 @@ class MapperPlotter(AbstractPlotter):
         )
 
     @property
-    def visuals_source_with_include_2d(self) -> Include2D:
+    def visuals_source_with_include_2d(self) -> Visuals2D:
         """
         Extracts from a `Mapper` attributes that can be plotted for figures in its source-plane (e.g. the reconstruction
         and return them in a `Visuals` object.
@@ -110,12 +110,12 @@ class MapperPlotter(AbstractPlotter):
             ),
         )
 
-    def figure_2d(self, source_pixelilzation_values: bool = None):
+    def figure_2d(self, solution_vector: bool = None):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
             visuals_2d=self.visuals_source_with_include_2d,
-            source_pixelilzation_values=source_pixelilzation_values,
+            source_pixelilzation_values=solution_vector,
             auto_labels=AutoLabels(title="Mapper", filename="mapper"),
         )
 
@@ -145,3 +145,14 @@ class MapperPlotter(AbstractPlotter):
             auto_filename="subplot_image_and_mapper"
         )
         self.close_subplot_figure()
+
+    def plot_source_from_values(self, source_pixelization_values, auto_labels):
+
+        self.mat_plot_2d.plot_mapper(
+            mapper=self.mapper,
+            visuals_2d=self.visuals_source_with_include_2d,
+            auto_labels=auto_labels,
+            source_pixelilzation_values=self.mapper.reconstruction_from(
+                source_pixelization_values
+            ),
+        )
