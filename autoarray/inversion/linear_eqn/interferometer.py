@@ -11,7 +11,7 @@ from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
-from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion.linear_eqn import linear_eqn_util
 
 
 class AbstractLinearEqnInterferometer(AbstractLinearEqn):
@@ -42,7 +42,7 @@ class AbstractLinearEqnInterferometer(AbstractLinearEqn):
 
     def mapped_reconstructed_image_from(self, reconstruction: np.ndarray):
 
-        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
+        mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=self.mapper.mapping_matrix, reconstruction=reconstruction
         )
 
@@ -109,7 +109,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
 
     def data_vector_from(self, data: Visibilities) -> np.ndarray:
 
-        return inversion_util.data_vector_via_transformed_mapping_matrix_from(
+        return linear_eqn_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=self.transformed_mapping_matrix,
             visibilities=data,
             noise_map=self.noise_map,
@@ -118,12 +118,12 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
     @property
     def curvature_matrix(self) -> np.ndarray:
 
-        real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+        real_curvature_matrix = linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.transformed_mapping_matrix.real,
             noise_map=self.noise_map.real,
         )
 
-        imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+        imag_curvature_matrix = linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.transformed_mapping_matrix.imag,
             noise_map=self.noise_map.imag,
         )
@@ -134,7 +134,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
         self, reconstruction: np.ndarray
     ) -> Visibilities:
 
-        visibilities = inversion_util.mapped_reconstructed_visibilities_from(
+        visibilities = linear_eqn_util.mapped_reconstructed_visibilities_from(
             transformed_mapping_matrix=self.transformed_mapping_matrix,
             reconstruction=reconstruction,
         )

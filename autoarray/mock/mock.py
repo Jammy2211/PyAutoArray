@@ -180,8 +180,8 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
         convolver=None,
         mapper=None,
         blurred_mapping_matrix=None,
-        curvature_matrix_sparse_preload=None,
-        curvature_matrix_preload_counts=None,
+        curvature_matrix_preload=None,
+        curvature_matrix_counts=None,
         preloads: Preloads = Preloads(),
     ):
 
@@ -191,8 +191,8 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
 
         self._blurred_mapping_matrix = blurred_mapping_matrix
 
-        self._curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
-        self._curvature_matrix_preload_counts = curvature_matrix_preload_counts
+        self._curvature_matrix_preload = curvature_matrix_preload
+        self._curvature_matrix_counts = curvature_matrix_counts
 
     @property
     def blurred_mapping_matrix(self):
@@ -202,18 +202,18 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
         return self._blurred_mapping_matrix
 
     @property
-    def curvature_matrix_sparse_preload(self):
-        if self._curvature_matrix_sparse_preload is None:
-            return super().curvature_matrix_sparse_preload
+    def curvature_matrix_preload(self):
+        if self._curvature_matrix_preload is None:
+            return super().curvature_matrix_preload
 
-        return self._curvature_matrix_sparse_preload
+        return self._curvature_matrix_preload
 
     @property
-    def curvature_matrix_preload_counts(self):
-        if self._curvature_matrix_preload_counts is None:
-            return super().curvature_matrix_preload_counts
+    def curvature_matrix_counts(self):
+        if self._curvature_matrix_counts is None:
+            return super().curvature_matrix_counts
 
-        return self._curvature_matrix_preload_counts
+        return self._curvature_matrix_counts
 
 
 class MockInversion(InversionMatrices):

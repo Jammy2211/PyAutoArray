@@ -2,10 +2,8 @@ import logging
 import numpy as np
 from typing import List
 
-from autoconf import conf
-
 from autoarray import exc
-from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion.linear_eqn import linear_eqn_util
 
 
 logger = logging.getLogger(__name__)
@@ -22,8 +20,8 @@ class Preloads:
         relocated_grid=None,
         mapper=None,
         blurred_mapping_matrix=None,
-        curvature_matrix_sparse_preload=None,
-        curvature_matrix_preload_counts=None,
+        curvature_matrix_preload=None,
+        curvature_matrix_counts=None,
         regularization_matrix=None,
         log_det_regularization_matrix_term=None,
     ):
@@ -35,8 +33,8 @@ class Preloads:
         self.relocated_grid = relocated_grid
         self.mapper = mapper
         self.blurred_mapping_matrix = blurred_mapping_matrix
-        self.curvature_matrix_sparse_preload = curvature_matrix_sparse_preload
-        self.curvature_matrix_preload_counts = curvature_matrix_preload_counts
+        self.curvature_matrix_preload = curvature_matrix_preload
+        self.curvature_matrix_counts = curvature_matrix_counts
         self.regularization_matrix = regularization_matrix
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
@@ -70,114 +68,25 @@ class Preloads:
 
             logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
 
-            if conf.instance["general"]["w_tilde"]["snr_cut_iteration"]:
-                self.w_tilde = self.w_tilde_via_snr_cut_iteration(fit=fit_0)
-            else:
-                self.w_tilde = self.w_tilde_for_snr_cut(fit=fit_0, snr_cut=-1.0e99)
+            from autoarray.dataset.imaging import WTildeImaging
+
+            preload, indexes, lengths = linear_eqn_util.w_tilde_curvature_preload_imaging_from(
+                noise_map_native=fit_0.noise_map.native,
+                signal_to_noise_map_native=fit_0.signal_to_noise_map.native,
+                kernel_native=fit_0.dataset.psf.native,
+                native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
+            )
+
+            self.w_tilde = WTildeImaging(
+                curvature_preload=preload,
+                indexes=indexes.astype("int"),
+                lengths=lengths.astype("int"),
+                noise_map_value=fit_0.noise_map[0],
+            )
 
             self.use_w_tilde = True
 
             logger.info("PRELOADS - W-Tilde preloaded for this model-fit.")
-
-    def w_tilde_via_snr_cut_iteration(self, fit):
-
-        snr_cut = conf.instance["general"]["w_tilde"]["snr_cut_start"]
-        likelihood_threshold = fit.imaging.settings.w_tilde_likelihood_threshold
-
-        fit_snr_cut = self.fit_for_snr_cut(fit=fit, snr_cut=snr_cut)
-        fit_higher_snr_cut = self.fit_for_snr_cut(fit=fit, snr_cut=snr_cut * 10.0)
-
-        if (
-            abs(fit_snr_cut.figure_of_merit - fit_higher_snr_cut.figure_of_merit)
-            < likelihood_threshold
-        ):
-            return self.increase_snr_cut_until_greater_than_likelihood_threshold(
-                fit=fit_higher_snr_cut, snr_cut=snr_cut * 10.0
-            )
-
-        return self.decrease_snr_cut_until_less_than_likelihood_threshold(
-            fit=fit, snr_cut=snr_cut
-        )
-
-    def decrease_snr_cut_until_less_than_likelihood_threshold(
-        self, fit, snr_cut, iterations=20
-    ):
-
-        likelihood_threshold = fit.imaging.settings.w_tilde_likelihood_threshold
-
-        for i in range(iterations):
-
-            fit_prev = fit
-
-            snr_cut /= 10.0
-
-            fit = self.fit_for_snr_cut(fit=fit, snr_cut=snr_cut)
-
-            if (
-                abs(fit.figure_of_merit - fit_prev.figure_of_merit)
-                < likelihood_threshold
-            ):
-                return fit.preloads.w_tilde
-
-        raise exc.PreloadsException(
-            f"Unable to decrease snr_cut to be less than w_tilde_likelihood_threshold after {iterations} iterations"
-        )
-
-    def increase_snr_cut_until_greater_than_likelihood_threshold(
-        self, fit, snr_cut, iterations=20
-    ):
-
-        likelihood_threshold = fit.imaging.settings.w_tilde_likelihood_threshold
-
-        for i in range(iterations):
-
-            fit_prev = fit
-
-            snr_cut *= 10.0
-
-            try:
-                fit = self.fit_for_snr_cut(fit=fit, snr_cut=snr_cut)
-            except exc.InversionException:
-                return fit_prev.preloads.w_tilde
-
-            if (
-                abs(fit.figure_of_merit - fit_prev.figure_of_merit)
-                > likelihood_threshold
-            ):
-
-                return fit_prev.preloads.w_tilde
-
-        raise exc.PreloadsException(
-            f"Unable to decrease snr_cut to be greater than w_tilde_likelihood_threshold after {iterations} iterations"
-        )
-
-    def w_tilde_for_snr_cut(self, fit, snr_cut):
-
-        from autoarray.dataset.imaging import WTildeImaging
-
-        preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
-            noise_map_native=fit.noise_map.native,
-            signal_to_noise_map_native=fit.signal_to_noise_map.native,
-            kernel_native=fit.dataset.psf.native,
-            native_index_for_slim_index=fit.dataset.mask.native_index_for_slim_index,
-            snr_cut=snr_cut,
-        )
-
-        return WTildeImaging(
-            curvature_preload=preload,
-            indexes=indexes.astype("int"),
-            lengths=lengths.astype("int"),
-            noise_map_value=fit.noise_map[0],
-            snr_cut=snr_cut,
-        )
-
-    def fit_for_snr_cut(self, fit, snr_cut):
-
-        w_tilde = self.w_tilde_for_snr_cut(fit=fit, snr_cut=snr_cut)
-
-        preloads = self.__class__(w_tilde=w_tilde, use_w_tilde=True)
-
-        return fit.refit_with_new_preloads(preloads=preloads)
 
     def set_relocated_grid(self, fit_0, fit_1):
         """
@@ -278,8 +187,8 @@ class Preloads:
         """
 
         self.blurred_mapping_matrix = None
-        self.curvature_matrix_sparse_preload = None
-        self.curvature_matrix_preload_counts = None
+        self.curvature_matrix_preload = None
+        self.curvature_matrix_counts = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
@@ -308,11 +217,11 @@ class Preloads:
                 self.blurred_mapping_matrix = (
                     inversion_0.linear_eqn.blurred_mapping_matrix
                 )
-                self.curvature_matrix_sparse_preload = (
-                    inversion_0.linear_eqn.curvature_matrix_sparse_preload
+                self.curvature_matrix_preload = (
+                    inversion_0.linear_eqn.curvature_matrix_preload
                 ).astype("int")
-                self.curvature_matrix_preload_counts = (
-                    inversion_0.linear_eqn.curvature_matrix_preload_counts
+                self.curvature_matrix_counts = (
+                    inversion_0.linear_eqn.curvature_matrix_counts
                 ).astype("int")
 
                 logger.info(
@@ -399,8 +308,8 @@ class Preloads:
         self.relocated_grid = None
         self.mapper = None
         self.blurred_mapping_matrix = None
-        self.curvature_matrix_sparse_preload = None
-        self.curvature_matrix_preload_counts = None
+        self.curvature_matrix_preload = None
+        self.curvature_matrix_counts = None
         self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
@@ -420,7 +329,7 @@ class Preloads:
             f"Blurred Mapping Matrix = {self.blurred_mapping_matrix is not None}\n"
         ]
         line += [
-            f"Curvature Matrix Sparse = {self.curvature_matrix_sparse_preload is not None}\n"
+            f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"
         ]
         line += [f"Regularization Matrix = {self.regularization_matrix is not None}\n"]
         line += [

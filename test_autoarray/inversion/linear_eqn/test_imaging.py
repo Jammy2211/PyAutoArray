@@ -47,11 +47,7 @@ class TestLinearEqnImaging:
         grid = aa.Grid2D.from_mask(mask=mask)
 
         w_tilde = WTildeImaging(
-            curvature_preload=None,
-            indexes=None,
-            lengths=None,
-            noise_map_value=2.0,
-            snr_cut=1.0e-10,
+            curvature_preload=None, indexes=None, lengths=None, noise_map_value=2.0
         )
 
         with pytest.raises(exc.InversionException):
@@ -70,18 +66,14 @@ class TestLinearEqnImaging:
 
         blurred_mapping_matrix = 2.0 * np.ones((9, 3))
 
-        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = aa.util.inversion.curvature_matrix_sparse_preload_via_mapping_matrix_from(
+        curvature_matrix_preload, curvature_matrix_counts = aa.util.linear_eqn.curvature_matrix_preload_from(
             mapping_matrix=blurred_mapping_matrix
         )
 
         preloads = aa.Preloads(
             blurred_mapping_matrix=blurred_mapping_matrix,
-            curvature_matrix_sparse_preload=curvature_matrix_sparse_preload.astype(
-                "int"
-            ),
-            curvature_matrix_preload_counts=curvature_matrix_preload_counts.astype(
-                "int"
-            ),
+            curvature_matrix_preload=curvature_matrix_preload.astype("int"),
+            curvature_matrix_counts=curvature_matrix_counts.astype("int"),
         )
 
         # noinspection PyTypeChecker

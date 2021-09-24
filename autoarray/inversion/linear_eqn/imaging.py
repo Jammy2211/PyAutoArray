@@ -12,7 +12,7 @@ from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.preloads import Preloads
 from autoarray.dataset.imaging import WTildeImaging
 
-from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion.linear_eqn import linear_eqn_util
 
 
 class AbstractLinearEqnImaging(AbstractLinearEqn):
@@ -90,20 +90,20 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         return self.blurred_mapping_matrix
 
     @property
-    def curvature_matrix_sparse_preload(self) -> np.ndarray:
-        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = inversion_util.curvature_matrix_sparse_preload_via_mapping_matrix_from(
+    def curvature_matrix_preload(self) -> np.ndarray:
+        curvature_matrix_preload, curvature_matrix_counts = linear_eqn_util.curvature_matrix_preload_from(
             mapping_matrix=self.blurred_mapping_matrix
         )
 
-        return curvature_matrix_sparse_preload
+        return curvature_matrix_preload
 
     @property
-    def curvature_matrix_preload_counts(self) -> np.ndarray:
-        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = inversion_util.curvature_matrix_sparse_preload_via_mapping_matrix_from(
+    def curvature_matrix_counts(self) -> np.ndarray:
+        curvature_matrix_preload, curvature_matrix_counts = linear_eqn_util.curvature_matrix_preload_from(
             mapping_matrix=self.blurred_mapping_matrix
         )
 
-        return curvature_matrix_preload_counts
+        return curvature_matrix_counts
 
 
 class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
@@ -169,14 +169,14 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         The calculation is performed by the method `w_tilde_data_imaging_from`.
         """
 
-        w_tilde_data = inversion_util.w_tilde_data_imaging_from(
+        w_tilde_data = linear_eqn_util.w_tilde_data_imaging_from(
             image_native=data.native,
             noise_map_native=self.noise_map.native,
             kernel_native=self.convolver.kernel.native,
             native_index_for_slim_index=data.mask.native_index_for_slim_index,
         )
 
-        return inversion_util.data_vector_via_w_tilde_data_imaging_from(
+        return linear_eqn_util.data_vector_via_w_tilde_data_imaging_from(
             w_tilde_data=w_tilde_data,
             data_to_pix_unique=self.mapper.data_unique_mappings.data_to_pix_unique,
             data_weights=self.mapper.data_unique_mappings.data_weights,
@@ -199,7 +199,7 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        return inversion_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+        return linear_eqn_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
             curvature_indexes=self.w_tilde.indexes,
             curvature_lengths=self.w_tilde.lengths,
@@ -224,7 +224,7 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
             The reconstructed image data which the inversion fits.
         """
 
-        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
+        mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
             data_to_pix_unique=self.mapper.data_unique_mappings.data_to_pix_unique,
             data_weights=self.mapper.data_unique_mappings.data_weights,
             pix_lengths=self.mapper.data_unique_mappings.pix_lengths,
@@ -292,7 +292,7 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         The `data_vector` D is the first such matrix, which is given by equation (4)
         in https://arxiv.org/pdf/astro-ph/0302587.pdf.
         """
-        return inversion_util.data_vector_via_blurred_mapping_matrix_from(
+        return linear_eqn_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=self.blurred_mapping_matrix,
             image=data,
             noise_map=self.noise_map,
@@ -313,17 +313,17 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        if self.preloads.curvature_matrix_sparse_preload is None:
+        if self.preloads.curvature_matrix_preload is None:
 
-            return inversion_util.curvature_matrix_via_mapping_matrix_from(
+            return linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
                 mapping_matrix=self.blurred_mapping_matrix, noise_map=self.noise_map
             )
 
-        return inversion_util.curvature_matrix_via_sparse_preload_from(
+        return linear_eqn_util.curvature_matrix_via_sparse_preload_from(
             mapping_matrix=self.blurred_mapping_matrix,
             noise_map=self.noise_map,
-            curvature_matrix_sparse_preload=self.preloads.curvature_matrix_sparse_preload,
-            curvature_matrix_preload_counts=self.preloads.curvature_matrix_preload_counts,
+            curvature_matrix_preload=self.preloads.curvature_matrix_preload,
+            curvature_matrix_counts=self.preloads.curvature_matrix_counts,
         )
 
     @profile_func
@@ -340,7 +340,7 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
+        mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=self.blurred_mapping_matrix, reconstruction=reconstruction
         )
 

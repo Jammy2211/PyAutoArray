@@ -153,8 +153,8 @@ def test__set_mapper():
 
 def test__set_inversion():
 
-    curvature_matrix_sparse_preload = np.array([[1.0]])
-    curvature_matrix_preload_counts = np.array([1.0])
+    curvature_matrix_preload = np.array([[1.0]])
+    curvature_matrix_counts = np.array([1.0])
 
     # LinearEqn is None thus preload it to None.
 
@@ -163,14 +163,14 @@ def test__set_inversion():
 
     preloads = aa.Preloads(
         blurred_mapping_matrix=1,
-        curvature_matrix_sparse_preload=np.array([[1.0]]),
-        curvature_matrix_preload_counts=np.array([1.0]),
+        curvature_matrix_preload=np.array([[1.0]]),
+        curvature_matrix_counts=np.array([1.0]),
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.blurred_mapping_matrix is None
-    assert preloads.curvature_matrix_sparse_preload is None
-    assert preloads.curvature_matrix_preload_counts is None
+    assert preloads.curvature_matrix_preload is None
+    assert preloads.curvature_matrix_counts is None
 
     # LinearEqn's blurred mapping matrices are different thus no preloading.
 
@@ -190,21 +190,21 @@ def test__set_inversion():
 
     preloads = aa.Preloads(
         blurred_mapping_matrix=1,
-        curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
-        curvature_matrix_preload_counts=curvature_matrix_preload_counts,
+        curvature_matrix_preload=curvature_matrix_preload,
+        curvature_matrix_counts=curvature_matrix_counts,
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.blurred_mapping_matrix is None
-    assert preloads.curvature_matrix_sparse_preload is None
-    assert preloads.curvature_matrix_preload_counts is None
+    assert preloads.curvature_matrix_preload is None
+    assert preloads.curvature_matrix_counts is None
 
     # LinearEqn's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
     linear_eqn_0 = MockLinearEqnImaging(
         blurred_mapping_matrix=blurred_mapping_matrix_0,
-        curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
-        curvature_matrix_preload_counts=curvature_matrix_preload_counts,
+        curvature_matrix_preload=curvature_matrix_preload,
+        curvature_matrix_counts=curvature_matrix_counts,
     )
     linear_eqn_1 = MockLinearEqnImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
 
@@ -213,19 +213,17 @@ def test__set_inversion():
 
     preloads = aa.Preloads(
         blurred_mapping_matrix=1,
-        curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
-        curvature_matrix_preload_counts=curvature_matrix_preload_counts,
+        curvature_matrix_preload=curvature_matrix_preload,
+        curvature_matrix_counts=curvature_matrix_counts,
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.blurred_mapping_matrix == blurred_mapping_matrix_0).all()
     assert (
-        preloads.curvature_matrix_sparse_preload
-        == curvature_matrix_sparse_preload.astype("int")
+        preloads.curvature_matrix_preload == curvature_matrix_preload.astype("int")
     ).all()
     assert (
-        preloads.curvature_matrix_preload_counts
-        == curvature_matrix_preload_counts.astype("int")
+        preloads.curvature_matrix_counts == curvature_matrix_counts.astype("int")
     ).all()
 
 

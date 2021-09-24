@@ -15,14 +15,14 @@ from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
-from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion.linear_eqn import linear_eqn_util
 from autoarray.dataset import preprocess
 
 logger = logging.getLogger(__name__)
 
 
 class WTildeImaging(AbstractWTilde):
-    def __init__(self, curvature_preload, indexes, lengths, noise_map_value, snr_cut):
+    def __init__(self, curvature_preload, indexes, lengths, noise_map_value):
 
         super().__init__(
             curvature_preload=curvature_preload, noise_map_value=noise_map_value
@@ -30,7 +30,6 @@ class WTildeImaging(AbstractWTilde):
 
         self.indexes = indexes
         self.lengths = lengths
-        self.snr_cut = snr_cut
 
 
 class SettingsImaging(AbstractSettingsDataset):
@@ -45,8 +44,6 @@ class SettingsImaging(AbstractSettingsDataset):
         signal_to_noise_limit: Optional[float] = None,
         signal_to_noise_limit_radii: Optional[float] = None,
         use_normalized_psf: Optional[bool] = True,
-        w_tilde_snr_cut: Optional[float] = -1.0e99,
-        w_tilde_likelihood_threshold: Optional[float] = 1.0e-4,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver
@@ -89,8 +86,6 @@ class SettingsImaging(AbstractSettingsDataset):
             sub_steps=sub_steps,
             signal_to_noise_limit=signal_to_noise_limit,
             signal_to_noise_limit_radii=signal_to_noise_limit_radii,
-            w_tilde_snr_cut=w_tilde_snr_cut,
-            w_tilde_likelihood_threshold=w_tilde_likelihood_threshold,
         )
 
         self.use_normalized_psf = use_normalized_psf
@@ -207,7 +202,7 @@ class Imaging(AbstractDataset):
     def w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
-        noise-map values given the PSF (see `inversion.inversion_util`).
+        noise-map values given the PSF (see `inversion.linear_eqn_util`).
 
         The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
         per analysis.
@@ -223,12 +218,10 @@ class Imaging(AbstractDataset):
 
         logger.info("IMAGING - Computing W-Tilde... May take a moment.")
 
-        curvature_preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
+        curvature_preload, indexes, lengths = linear_eqn_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=self.noise_map.native,
-            signal_to_noise_map_native=self.signal_to_noise_map.native,
             kernel_native=self.psf.native,
             native_index_for_slim_index=self.mask.native_index_for_slim_index,
-            snr_cut=self.settings.w_tilde_snr_cut,
         )
 
         return WTildeImaging(
@@ -236,7 +229,6 @@ class Imaging(AbstractDataset):
             indexes=indexes.astype("int"),
             lengths=lengths.astype("int"),
             noise_map_value=self.noise_map[0],
-            snr_cut=self.settings.w_tilde_snr_cut,
         )
 
     @classmethod
