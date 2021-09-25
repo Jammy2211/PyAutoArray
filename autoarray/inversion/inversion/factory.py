@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from autoarray.dataset.imaging import Imaging
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -24,7 +24,7 @@ from autoarray.preloads import Preloads
 
 def inversion_from(
     dataset,
-    mapper: Union[MapperRectangular, MapperVoronoi],
+    mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
     regularization: AbstractRegularization,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
@@ -38,7 +38,7 @@ def inversion_from(
             noise_map=dataset.noise_map,
             convolver=dataset.convolver,
             w_tilde=dataset.w_tilde,
-            mapper=mapper,
+            mapper_list=mapper_list,
             regularization=regularization,
             settings=settings,
             preloads=preloads,
@@ -49,7 +49,7 @@ def inversion_from(
         visibilities=dataset.visibilities,
         noise_map=dataset.noise_map,
         transformer=dataset.transformer,
-        mapper=mapper,
+        mapper_list=mapper_list,
         regularization=regularization,
         settings=settings,
         profiling_dict=profiling_dict,
@@ -61,7 +61,7 @@ def inversion_imaging_unpacked_from(
     noise_map: Array2D,
     convolver: Convolver,
     w_tilde,
-    mapper: Union[MapperRectangular, MapperVoronoi],
+    mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
     regularization: AbstractRegularization,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
@@ -75,28 +75,28 @@ def inversion_imaging_unpacked_from(
 
     if use_w_tilde:
 
-        linear_eqn = LinearEqnImagingWTilde(
+        linear_eqn_list = [LinearEqnImagingWTilde(
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
             mapper=mapper,
             preloads=preloads,
             profiling_dict=profiling_dict,
-        )
+        ) for mapper in mapper_list]
 
     else:
 
-        linear_eqn = LinearEqnImagingMapping(
+        linear_eqn_list = [LinearEqnImagingMapping(
             noise_map=noise_map,
             convolver=convolver,
             mapper=mapper,
             preloads=preloads,
             profiling_dict=profiling_dict,
-        )
+        ) for mapper in mapper_list]
 
     return InversionMatrices(
         data=image,
-        linear_eqn=linear_eqn,
+        linear_eqn_list=linear_eqn_list,
         regularization=regularization,
         settings=settings,
         profiling_dict=profiling_dict,
@@ -107,34 +107,34 @@ def inversion_interferometer_unpacked_from(
     visibilities: Visibilities,
     noise_map: VisibilitiesNoiseMap,
     transformer: Union[TransformerDFT, TransformerNUFFT],
-    mapper: Union[MapperRectangular, MapperVoronoi],
+    mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
     regularization: AbstractRegularization,
     settings: SettingsInversion = SettingsInversion(),
     profiling_dict: Optional[Dict] = None,
 ):
     if not settings.use_linear_operators:
 
-        linear_eqn = LinearEqnInterferometerMapping(
+        linear_eqn_list = [LinearEqnInterferometerMapping(
             noise_map=noise_map,
             transformer=transformer,
             mapper=mapper,
             profiling_dict=profiling_dict,
-        )
+        ) for mapper in mapper_list]
 
     else:
 
-        linear_eqn = LinearEqnInterferometerLinearOperator(
+        linear_eqn_list = [LinearEqnInterferometerLinearOperator(
             noise_map=noise_map,
             transformer=transformer,
             mapper=mapper,
             profiling_dict=profiling_dict,
-        )
+        ) for mapper in mapper_list]
 
     if not settings.use_linear_operators:
 
         return InversionMatrices(
             data=visibilities,
-            linear_eqn=linear_eqn,
+            linear_eqn_list=linear_eqn_list,
             regularization=regularization,
             settings=settings,
             profiling_dict=profiling_dict,
@@ -142,7 +142,7 @@ def inversion_interferometer_unpacked_from(
 
     return InversionLinearOperator(
         data=visibilities,
-        linear_eqn=linear_eqn,
+        linear_eqn_list=linear_eqn_list,
         regularization=regularization,
         settings=settings,
         profiling_dict=profiling_dict,

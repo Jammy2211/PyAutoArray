@@ -2,11 +2,7 @@ import numpy as np
 from os import path
 import pytest
 
-import autoarray as aa
-
-from autoarray.mock.mock import MockLinearEqn, MockInversion
-
-from autoarray import exc
+from autoarray.mock.mock import MockInversion
 
 
 directory = path.dirname(path.realpath(__file__))

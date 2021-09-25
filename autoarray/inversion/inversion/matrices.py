@@ -1,39 +1,11 @@
 import numpy as np
-import pylops
 from scipy.sparse import csc_matrix
-from scipy import sparse
 from scipy.sparse.linalg import splu
-from typing import Dict, Optional, Union
 
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.dataset.imaging import Imaging
-from autoarray.dataset.interferometer import Interferometer
-from autoarray.structures.visibilities import Visibilities
-from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.structures.visibilities import Visibilities
-from autoarray.structures.visibilities import VisibilitiesNoiseMap
-from autoarray.operators.convolver import Convolver
-from autoarray.operators.transformer import TransformerDFT
-from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
-from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingWTilde
-from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingMapping
-from autoarray.inversion.linear_eqn.interferometer import (
-    AbstractLinearEqnInterferometer,
-)
-from autoarray.inversion.linear_eqn.interferometer import LinearEqnInterferometerMapping
-from autoarray.inversion.linear_eqn.interferometer import (
-    LinearEqnInterferometerLinearOperator,
-)
-from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.inversion.mappers.rectangular import MapperRectangular
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.preloads import Preloads
 
 from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
@@ -52,7 +24,7 @@ class InversionMatrices(AbstractInversion):
         of our  dataset via 2D convolution. This uses the methods
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
-        return self.linear_eqn.operated_mapping_matrix
+        return self.linear_eqn_list[0].operated_mapping_matrix
 
     @cached_property
     @profile_func
@@ -69,7 +41,7 @@ class InversionMatrices(AbstractInversion):
 
         The calculation is performed by the method `w_tilde_data_imaging_from`.
         """
-        return self.linear_eqn.data_vector_from(data=self.data)
+        return self.linear_eqn_list[0].data_vector_from(data=self.data)
 
     @property
     @profile_func
@@ -86,7 +58,7 @@ class InversionMatrices(AbstractInversion):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        return self.linear_eqn.curvature_matrix
+        return self.linear_eqn_list[0].curvature_matrix
 
     @cached_property
     @profile_func
@@ -156,8 +128,8 @@ class InversionMatrices(AbstractInversion):
         float
             The log determinant of the regularization matrix.
         """
-        if self.linear_eqn.preloads.log_det_regularization_matrix_term is not None:
-            return self.linear_eqn.preloads.log_det_regularization_matrix_term
+        if self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term is not None:
+            return self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term
 
         try:
 

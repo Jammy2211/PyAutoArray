@@ -112,8 +112,8 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        mapper_0 = fit_0.inversion.mapper
-        mapper_1 = fit_1.inversion.mapper
+        mapper_0 = fit_0.inversion.mapper_list[0]
+        mapper_1 = fit_1.inversion.mapper_list[0]
 
         if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
 
@@ -153,8 +153,8 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        mapper_0 = fit_0.inversion.mapper
-        mapper_1 = fit_1.inversion.mapper
+        mapper_0 = fit_0.inversion.mapper_list[0]
+        mapper_1 = fit_1.inversion.mapper_list[0]
 
         if mapper_0.mapping_matrix.shape[1] == mapper_1.mapping_matrix.shape[1]:
 
@@ -200,28 +200,28 @@ class Preloads:
             return
 
         if (
-            inversion_0.linear_eqn.blurred_mapping_matrix.shape[1]
-            == inversion_1.linear_eqn.blurred_mapping_matrix.shape[1]
+            inversion_0.linear_eqn_list[0].blurred_mapping_matrix.shape[1]
+            == inversion_1.linear_eqn_list[0].blurred_mapping_matrix.shape[1]
         ):
 
             if (
                 np.max(
                     abs(
-                        inversion_0.linear_eqn.blurred_mapping_matrix
-                        - inversion_1.linear_eqn.blurred_mapping_matrix
+                        inversion_0.linear_eqn_list[0].blurred_mapping_matrix
+                        - inversion_1.linear_eqn_list[0].blurred_mapping_matrix
                     )
                 )
                 < 1e-8
             ):
 
                 self.blurred_mapping_matrix = (
-                    inversion_0.linear_eqn.blurred_mapping_matrix
+                    inversion_0.linear_eqn_list[0].blurred_mapping_matrix
                 )
                 self.curvature_matrix_preload = (
-                    inversion_0.linear_eqn.curvature_matrix_preload
+                    inversion_0.linear_eqn_list[0].curvature_matrix_preload
                 ).astype("int")
                 self.curvature_matrix_counts = (
-                    inversion_0.linear_eqn.curvature_matrix_counts
+                    inversion_0.linear_eqn_list[0].curvature_matrix_counts
                 ).astype("int")
 
                 logger.info(

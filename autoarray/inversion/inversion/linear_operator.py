@@ -13,8 +13,8 @@ class InversionLinearOperator(AbstractInversion):
     def preconditioner_matrix(self):
 
         curvature_matrix_approx = np.multiply(
-            np.sum(self.noise_map.weight_list_ordered_1d),
-            self.mapper.mapping_matrix.T @ self.mapper.mapping_matrix,
+            np.sum(self.linear_eqn_list[0].noise_map.weight_list_ordered_1d),
+            self.mapper_list[0].mapping_matrix.T @ self.mapper_list[0].mapping_matrix,
         )
 
         return np.add(curvature_matrix_approx, self.regularization_matrix)
@@ -35,7 +35,7 @@ class InversionLinearOperator(AbstractInversion):
 
         Aop = pylops.MatrixMult(sparse.bsr_matrix(self.mapper_list[0].mapping_matrix))
 
-        Fop = self.linear_eqn.transformer
+        Fop = self.linear_eqn_list[0].transformer
 
         Op = Fop * Aop
 
@@ -46,7 +46,7 @@ class InversionLinearOperator(AbstractInversion):
             Regs=None,
             epsNRs=[1.0],
             data=self.data.ordered_1d,
-            Weight=pylops.Diagonal(diag=self.noise_map.weight_list_ordered_1d),
+            Weight=pylops.Diagonal(diag=self.linear_eqn_list[0].noise_map.weight_list_ordered_1d),
             NRegs=[pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))],
             M=MOp,
             tol=self.settings.tolerance,

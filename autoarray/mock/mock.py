@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Union
+from typing import List, Union
 
 from autoarray.preloads import Preloads
 from autoarray.inversion.pixelization.abstract import AbstractPixelization
@@ -228,7 +228,7 @@ class MockInversion(InversionMatrices):
     def __init__(
         self,
         data=None,
-        linear_eqn: Union[MockLinearEqn, MockLinearEqnImaging] = None,
+        linear_eqn_list: List[Union[MockLinearEqn, MockLinearEqnImaging]] = None,
         regularization: MockRegularization = None,
         regularization_matrix=None,
         curvature_reg_matrix=None,
@@ -246,7 +246,7 @@ class MockInversion(InversionMatrices):
         # self.__dict__["mapped_reconstructed_image"] = mapped_reconstructed_image
 
         super().__init__(
-            data=data, linear_eqn=linear_eqn, regularization=regularization
+            data=data, linear_eqn_list=linear_eqn_list, regularization=regularization
         )
 
         self._data_vector = data_vector

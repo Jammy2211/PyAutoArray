@@ -73,7 +73,7 @@ def test__preload_of_regularization_matrix__overwrites_calculation():
         preloads=aa.Preloads(regularization_matrix=np.ones((2, 2)))
     )
 
-    inversion = MockInversion(linear_eqn=linear_eqn)
+    inversion = MockInversion(linear_eqn_list=[linear_eqn])
 
     assert (inversion.regularization_matrix == np.ones((2, 2))).all()
 
@@ -120,6 +120,6 @@ def test__preload_of_log_det_regularization_term_overwrites_calculation():
         preloads=aa.Preloads(log_det_regularization_matrix_term=1.0)
     )
 
-    inversion = MockInversion(linear_eqn=linear_eqn)
+    inversion = MockInversion(linear_eqn_list=[linear_eqn])
 
     assert inversion.log_det_regularization_matrix_term == 1.0

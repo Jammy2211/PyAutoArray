@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import splu
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
@@ -22,7 +22,7 @@ class AbstractInversion:
     def __init__(
         self,
         data: Union[Visibilities, Array2D],
-        linear_eqn: Union[AbstractLinearEqnImaging, AbstractLinearEqnInterferometer],
+        linear_eqn_list: List[Union[AbstractLinearEqnImaging, AbstractLinearEqnInterferometer]],
         regularization: AbstractRegularization,
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
@@ -30,7 +30,7 @@ class AbstractInversion:
 
         self.data = data
 
-        self.linear_eqn = linear_eqn
+        self.linear_eqn_list = linear_eqn_list
         self.regularization = regularization
 
         self.settings = settings
@@ -39,23 +39,15 @@ class AbstractInversion:
 
     @property
     def preloads(self):
-        return self.linear_eqn.preloads
+        return self.linear_eqn_list[0].preloads
 
     @property
     def noise_map(self):
-        return self.linear_eqn.noise_map
-
-    @property
-    def mapper(self):
-        return self.mapper_list[0]
+        return self.linear_eqn_list[0].noise_map
 
     @property
     def mapper_list(self):
-        return [eqn.mapper for eqn in [self.linear_eqn]]
-
-    @property
-    def linear_eqn_list(self):
-        return [self.linear_eqn]
+        return [eqn.mapper for eqn in self.linear_eqn_list]
 
     @property
     def regularization_list(self):
@@ -74,7 +66,7 @@ class AbstractInversion:
         """
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
-        return self.regularization.regularization_matrix_from_mapper(mapper=self.mapper)
+        return self.regularization.regularization_matrix_from_mapper(mapper=self.mapper_list[0])
 
     @cached_property
     @profile_func
@@ -101,7 +93,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.linear_eqn.mapped_reconstructed_image_from(
+        return self.linear_eqn_list[0].mapped_reconstructed_image_from(
             reconstruction=self.reconstruction
         )
 
@@ -120,7 +112,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.linear_eqn.mapped_reconstructed_visibilities_from(
+        return self.linear_eqn_list[0].mapped_reconstructed_visibilities_from(
             reconstruction=self.reconstruction
         )
 
@@ -170,8 +162,8 @@ class AbstractInversion:
         float
             The log determinant of the regularization matrix.
         """
-        if self.linear_eqn.preloads.log_det_regularization_matrix_term is not None:
-            return self.linear_eqn.preloads.log_det_regularization_matrix_term
+        if self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term is not None:
+            return self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term
 
         try:
 
@@ -233,6 +225,6 @@ class AbstractInversion:
 
     @property
     def regularization_weight_list(self):
-        return self.regularization.regularization_weight_list_from_mapper(
-            mapper=self.mapper
+        return self.regularization.regularization_weights_from_mapper(
+            mapper=self.mapper_list[0]
         )

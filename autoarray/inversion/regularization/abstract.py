@@ -121,7 +121,7 @@ class AbstractRegularization:
 
         """
 
-    def regularization_weight_list_from_mapper(self, mapper):
+    def regularization_weights_from_mapper(self, mapper):
         raise NotImplementedError
 
     def regularization_matrix_from_mapper(self, mapper):

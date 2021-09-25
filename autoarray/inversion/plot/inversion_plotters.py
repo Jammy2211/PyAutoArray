@@ -140,8 +140,9 @@ class InversionPlotter(AbstractPlotter):
             in the python interpreter window.
         """
 
-        linear_eqns = self.inversion.linear_eqn_list[mapper_index]
         mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)
+
+        linear_eqns = self.inversion.linear_eqn_list[mapper_index]
         reconstruction_of_mapper = self.inversion.reconstructions_of_mappers_list[
             mapper_index
         ]

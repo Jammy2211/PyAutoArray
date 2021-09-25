@@ -88,8 +88,8 @@ def test__set_relocated_grid():
         mapper=MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))
     )
 
-    fit_0 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_0))
-    fit_1 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_1))
+    fit_0 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_0]))
+    fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
     preloads = aa.Preloads(relocated_grid=1)
     preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
@@ -101,8 +101,8 @@ def test__set_relocated_grid():
     linear_eqn_0 = MockLinearEqn(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
     linear_eqn_1 = MockLinearEqn(mapper=MockMapper(source_grid_slim=np.ones((3, 2))))
 
-    fit_0 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_0))
-    fit_1 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_1))
+    fit_0 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_0]))
+    fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
     preloads = aa.Preloads(relocated_grid=1)
     preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
@@ -129,8 +129,8 @@ def test__set_mapper():
         mapper=MockMapper(mapping_matrix=2.0 * np.ones((3, 2)))
     )
 
-    fit_0 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_0))
-    fit_1 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_1))
+    fit_0 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_0]))
+    fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
     preloads = aa.Preloads(mapper=1)
     preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
@@ -142,8 +142,8 @@ def test__set_mapper():
     linear_eqn_0 = MockLinearEqn(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
     linear_eqn_1 = MockLinearEqn(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
 
-    fit_0 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_0))
-    fit_1 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_1))
+    fit_0 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_0]))
+    fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
     preloads = aa.Preloads(mapper=1)
     preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
@@ -185,8 +185,8 @@ def test__set_inversion():
     linear_eqn_0 = MockLinearEqnImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
     linear_eqn_1 = MockLinearEqnImaging(blurred_mapping_matrix=blurred_mapping_matrix_1)
 
-    fit_0 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_0))
-    fit_1 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_1))
+    fit_0 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_0]))
+    fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
     preloads = aa.Preloads(
         blurred_mapping_matrix=1,
@@ -208,8 +208,8 @@ def test__set_inversion():
     )
     linear_eqn_1 = MockLinearEqnImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
 
-    fit_0 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_0))
-    fit_1 = MockFit(inversion=MockInversion(linear_eqn=linear_eqn_1))
+    fit_0 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_0]))
+    fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
     preloads = aa.Preloads(
         blurred_mapping_matrix=1,
@@ -267,14 +267,14 @@ def test__set_regularization_matrix_and_term():
 
     fit_0 = MockFit(
         inversion=MockInversion(
-            linear_eqn=MockLinearEqn(preloads=preloads),
+            linear_eqn_list=[MockLinearEqn(preloads=preloads)],
             log_det_regularization_matrix_term=1,
             regularization=regularization,
         )
     )
     fit_1 = MockFit(
         inversion=MockInversion(
-            linear_eqn=MockLinearEqn(preloads=preloads),
+            linear_eqn_list=[MockLinearEqn(preloads=preloads)],
             log_det_regularization_matrix_term=1,
             regularization=regularization,
         )
