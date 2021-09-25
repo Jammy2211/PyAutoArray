@@ -214,9 +214,9 @@ class Preloads:
                 < 1e-8
             ):
 
-                self.blurred_mapping_matrix = (
-                    inversion_0.linear_eqn_list[0].blurred_mapping_matrix
-                )
+                self.blurred_mapping_matrix = inversion_0.linear_eqn_list[
+                    0
+                ].blurred_mapping_matrix
                 self.curvature_matrix_preload = (
                     inversion_0.linear_eqn_list[0].curvature_matrix_preload
                 ).astype("int")
@@ -256,9 +256,6 @@ class Preloads:
 
         if inversion_0 is None:
             return
-
-        print(inversion_0.log_det_regularization_matrix_term)
-        print(inversion_1.log_det_regularization_matrix_term)
 
         if (
             abs(

@@ -42,7 +42,7 @@ def test__individual_attributes_are_output_for_all_mappers(
         residual_map=True,
         normalized_residual_map=True,
         chi_squared_map=True,
-        regularization_weight_list=True,
+        regularization_weights=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
@@ -69,7 +69,7 @@ def test__individual_attributes_are_output_for_all_mappers(
         residual_map=True,
         normalized_residual_map=True,
         chi_squared_map=True,
-        regularization_weight_list=True,
+        regularization_weights=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths

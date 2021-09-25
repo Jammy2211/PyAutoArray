@@ -246,12 +246,12 @@ def test__set_regularization_matrix_and_term():
 
     fit_0 = MockFit(
         inversion=MockInversion(
-            log_det_regularization_matrix_term=0, regularization=regularization
+            log_det_regularization_matrix_term=0, regularization_list=[regularization]
         )
     )
     fit_1 = MockFit(
         inversion=MockInversion(
-            log_det_regularization_matrix_term=1, regularization=regularization
+            log_det_regularization_matrix_term=1, regularization_list=[regularization]
         )
     )
 
@@ -269,14 +269,14 @@ def test__set_regularization_matrix_and_term():
         inversion=MockInversion(
             linear_eqn_list=[MockLinearEqn(preloads=preloads)],
             log_det_regularization_matrix_term=1,
-            regularization=regularization,
+            regularization_list=[regularization],
         )
     )
     fit_1 = MockFit(
         inversion=MockInversion(
             linear_eqn_list=[MockLinearEqn(preloads=preloads)],
             log_det_regularization_matrix_term=1,
-            regularization=regularization,
+            regularization_list=[regularization],
         )
     )
 

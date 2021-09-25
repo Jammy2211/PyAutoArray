@@ -122,7 +122,7 @@ class InversionPlotter(AbstractPlotter):
         residual_map: bool = False,
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
-        regularization_weight_list: bool = False,
+        regularization_weights: bool = False,
     ):
         """
         Plot the model data of an analysis, using the *Fitter* class object.
@@ -226,10 +226,12 @@ class InversionPlotter(AbstractPlotter):
                 ),
             )
 
-        if regularization_weight_list:
+        if regularization_weights:
 
             mapper_plotter.plot_source_from_values(
-                source_pixelization_values=self.inversion.regularization_weight_list,
+                source_pixelization_values=self.inversion.regularization_weights_of_mappers_list[
+                    mapper_index
+                ],
                 auto_labels=AutoLabels(
                     title="Regularization weight_list",
                     filename="regularization_weight_list",

@@ -22,8 +22,10 @@ class AbstractInversion:
     def __init__(
         self,
         data: Union[Visibilities, Array2D],
-        linear_eqn_list: List[Union[AbstractLinearEqnImaging, AbstractLinearEqnInterferometer]],
-        regularization: AbstractRegularization,
+        linear_eqn_list: List[
+            Union[AbstractLinearEqnImaging, AbstractLinearEqnInterferometer]
+        ],
+        regularization_list: [AbstractRegularization],
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
@@ -31,7 +33,7 @@ class AbstractInversion:
         self.data = data
 
         self.linear_eqn_list = linear_eqn_list
-        self.regularization = regularization
+        self.regularization_list = regularization_list
 
         self.settings = settings
 
@@ -49,10 +51,6 @@ class AbstractInversion:
     def mapper_list(self):
         return [eqn.mapper for eqn in self.linear_eqn_list]
 
-    @property
-    def regularization_list(self):
-        return [self.regularization]
-
     @cached_property
     @profile_func
     def regularization_matrix(self) -> np.ndarray:
@@ -66,7 +64,9 @@ class AbstractInversion:
         """
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
-        return self.regularization.regularization_matrix_from_mapper(mapper=self.mapper_list[0])
+        return self.regularization_list[0].regularization_matrix_from_mapper(
+            mapper=self.mapper_list[0]
+        )
 
     @cached_property
     @profile_func
@@ -162,7 +162,10 @@ class AbstractInversion:
         float
             The log determinant of the regularization matrix.
         """
-        if self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term is not None:
+        if (
+            self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term
+            is not None
+        ):
             return self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term
 
         try:
@@ -224,7 +227,10 @@ class AbstractInversion:
         return brightest_reconstruction_pixel_centre_list
 
     @property
-    def regularization_weight_list(self):
-        return self.regularization.regularization_weights_from_mapper(
-            mapper=self.mapper_list[0]
-        )
+    def regularization_weights_of_mappers_list(self):
+        return [
+            regularization.regularization_weights_from_mapper(
+                mapper=self.mapper_list[0]
+            )
+            for regularization in self.regularization_list
+        ]

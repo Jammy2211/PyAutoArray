@@ -229,7 +229,7 @@ class MockInversion(InversionMatrices):
         self,
         data=None,
         linear_eqn_list: List[Union[MockLinearEqn, MockLinearEqnImaging]] = None,
-        regularization: MockRegularization = None,
+        regularization_list: List[MockRegularization] = None,
         regularization_matrix=None,
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
@@ -246,7 +246,9 @@ class MockInversion(InversionMatrices):
         # self.__dict__["mapped_reconstructed_image"] = mapped_reconstructed_image
 
         super().__init__(
-            data=data, linear_eqn_list=linear_eqn_list, regularization=regularization
+            data=data,
+            linear_eqn_list=linear_eqn_list,
+            regularization_list=regularization_list,
         )
 
         self._data_vector = data_vector

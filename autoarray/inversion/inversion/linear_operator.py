@@ -46,7 +46,9 @@ class InversionLinearOperator(AbstractInversion):
             Regs=None,
             epsNRs=[1.0],
             data=self.data.ordered_1d,
-            Weight=pylops.Diagonal(diag=self.linear_eqn_list[0].noise_map.weight_list_ordered_1d),
+            Weight=pylops.Diagonal(
+                diag=self.linear_eqn_list[0].noise_map.weight_list_ordered_1d
+            ),
             NRegs=[pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))],
             M=MOp,
             tol=self.settings.tolerance,

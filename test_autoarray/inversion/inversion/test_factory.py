@@ -109,7 +109,7 @@ def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper():
     inversion = aa.Inversion(
         dataset=masked_imaging,
         mapper_list=[mapper],
-        regularization=reg,
+        regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
 
@@ -218,7 +218,7 @@ def test__inversion_matrices__linear_eqns_mapping__voronoi_mapper():
     inversion = aa.Inversion(
         dataset=masked_imaging,
         mapper_list=[mapper],
-        regularization=reg,
+        regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
 
@@ -267,14 +267,14 @@ def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eq
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging,
         mapper_list=[mapper],
-        regularization=reg,
+        regularization_list=[reg],
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping_matrices = aa.Inversion(
         dataset=masked_imaging,
         mapper_list=[mapper],
-        regularization=reg,
+        regularization_list=[reg],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
@@ -345,7 +345,7 @@ def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper__matrix_fo
     inversion = aa.Inversion(
         dataset=interferometer,
         mapper_list=[mapper],
-        regularization=reg,
+        regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
 
@@ -400,7 +400,7 @@ def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formal
     inversion = aa.Inversion(
         dataset=interferometer,
         mapper_list=[mapper],
-        regularization=reg,
+        regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
 
@@ -452,7 +452,7 @@ def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():
     inversion = aa.Inversion(
         dataset=interferometer,
         mapper_list=[mapper],
-        regularization=reg,
+        regularization_list=[reg],
         settings=aa.SettingsInversion(use_linear_operators=True, check_solution=False),
     )
 
