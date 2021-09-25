@@ -1,8 +1,8 @@
 import numpy as np
 
-from autoarray.inversion.regularizations.abstract import AbstractRegularization
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 
-from autoarray.inversion.regularizations import regularization_util
+from autoarray.inversion.regularization import regularization_util
 
 
 class Constant(AbstractRegularization):

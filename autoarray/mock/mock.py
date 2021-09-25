@@ -2,6 +2,8 @@ import numpy as np
 from typing import Union
 
 from autoarray.preloads import Preloads
+from autoarray.inversion.pixelization.abstract import AbstractPixelization
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
 from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
@@ -64,10 +66,13 @@ class MockPixelizationGrid:
         self.shape = (len(self.pixel_neighbors.sizes),)
 
 
-class MockPixelization:
-    def __init__(self, value, grid=None):
-        self.value = value
-        self.grid = grid
+class MockPixelization(AbstractPixelization):
+    def __init__(self, mapper=None, sparse_grid=None):
+
+        super().__init__()
+
+        self.mapper = mapper
+        self.sparse_grid = sparse_grid
 
     # noinspection PyUnusedLocal,PyShadowingNames
     def mapper_from_grid_and_sparse_grid(
@@ -80,17 +85,20 @@ class MockPixelization:
         preloads=None,
         profiling_dict=None,
     ):
-        return self.value
+        return self.mapper
 
     def sparse_grid_from_grid(self, grid, hyper_image, settings=None):
-        if hyper_image is None:
-            return self.grid
-        else:
-            return self.grid * hyper_image
+
+        if hyper_image is not None:
+            return hyper_image * self.sparse_grid
+
+        return self.sparse_grid
 
 
-class MockRegularization:
+class MockRegularization(AbstractRegularization):
     def __init__(self, regularization_matrix=None):
+
+        super().__init__()
 
         self.regularization_matrix = regularization_matrix
 

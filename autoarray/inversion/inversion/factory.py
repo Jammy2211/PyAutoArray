@@ -15,7 +15,7 @@ from autoarray.inversion.linear_eqn.interferometer import LinearEqnInterferomete
 from autoarray.inversion.linear_eqn.interferometer import (
     LinearEqnInterferometerLinearOperator,
 )
-from autoarray.inversion.regularizations.abstract import AbstractRegularization
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.inversion.settings import SettingsInversion

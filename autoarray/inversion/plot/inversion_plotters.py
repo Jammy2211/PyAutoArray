@@ -235,35 +235,37 @@ class InversionPlotter(AbstractPlotter):
                 ),
             )
 
-    # def subplot(
-    #     self,
-    #     reconstructed_image: bool = False,
-    #     reconstruction: bool = False,
-    #     errors: bool = False,
-    #     residual_map: bool = False,
-    #     normalized_residual_map: bool = False,
-    #     chi_squared_map: bool = False,
-    #     regularization_weight_list: bool = False,
-    #     auto_filename: str = "subplot_inversion",
-    # ):
-    #
-    #     self._subplot_custom_plot(
-    #         reconstructed_image=reconstructed_image,
-    #         reconstruction=reconstruction,
-    #         errors=errors,
-    #         residual_map=residual_map,
-    #         normalized_residual_map=normalized_residual_map,
-    #         chi_squared_map=chi_squared_map,
-    #         regularization_weight_list=regularization_weight_list,
-    #         auto_labels=AutoLabels(filename=auto_filename),
-    #     )
-    #
-    # def subplot_inversion(self):
-    #     return self.subplot(
-    #         reconstructed_image=True,
-    #         reconstruction=True,
-    #         errors=True,
-    #         residual_map=True,
-    #         chi_squared_map=True,
-    #         regularization_weight_list=True,
-    #     )
+    def subplot(
+        self,
+        reconstructed_image: bool = False,
+        reconstruction: bool = False,
+        errors: bool = False,
+        residual_map: bool = False,
+        normalized_residual_map: bool = False,
+        chi_squared_map: bool = False,
+        regularization_weight_list: bool = False,
+        auto_filename: str = "subplot_inversion",
+    ):
+
+        return
+
+        self._subplot_custom_plot(
+            reconstructed_image=reconstructed_image,
+            reconstruction=reconstruction,
+            errors=errors,
+            residual_map=residual_map,
+            normalized_residual_map=normalized_residual_map,
+            chi_squared_map=chi_squared_map,
+            regularization_weight_list=regularization_weight_list,
+            auto_labels=AutoLabels(filename=auto_filename),
+        )
+
+    def subplot_inversion(self):
+        return self.subplot(
+            reconstructed_image=True,
+            reconstruction=True,
+            errors=True,
+            residual_map=True,
+            chi_squared_map=True,
+            regularization_weight_list=True,
+        )

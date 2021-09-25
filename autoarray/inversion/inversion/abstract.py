@@ -12,7 +12,7 @@ from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
 from autoarray.inversion.linear_eqn.interferometer import (
     AbstractLinearEqnInterferometer,
 )
-from autoarray.inversion.regularizations.abstract import AbstractRegularization
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import exc

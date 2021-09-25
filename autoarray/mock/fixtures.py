@@ -2,7 +2,7 @@ import numpy as np
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.dataset.interferometer import SettingsInterferometer
-from autoarray.inversion.regularizations.constant import Constant
+from autoarray.inversion.regularization.constant import Constant
 from autoarray.operators.convolver import Convolver
 from autoarray.fit.fit_data import FitData
 from autoarray.fit.fit_data import FitDataComplex

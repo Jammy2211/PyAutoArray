@@ -279,15 +279,13 @@ class Preloads:
 
     def check_via_fit(self, fit):
 
-        likelihood_threshold = fit.imaging.settings.w_tilde_likelihood_threshold
-
         fom_with_preloads = fit.refit_with_new_preloads(preloads=self).figure_of_merit
 
         fom_without_preloads = fit.refit_with_new_preloads(
             preloads=self.__class__(use_w_tilde=False)
         ).figure_of_merit
 
-        if abs(fom_with_preloads - fom_without_preloads) > likelihood_threshold:
+        if abs(fom_with_preloads - fom_without_preloads) > 1.0e-8:
 
             raise exc.PreloadsException(
                 f"The log likelihood of fits using and not using preloads are not"
