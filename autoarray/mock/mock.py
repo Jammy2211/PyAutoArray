@@ -75,7 +75,7 @@ class MockPixelization(AbstractPixelization):
         self.sparse_grid = sparse_grid
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grid_and_sparse_grid(
+    def mapper_from(
         self,
         grid,
         sparse_grid,
@@ -89,7 +89,7 @@ class MockPixelization(AbstractPixelization):
 
     def sparse_grid_from_grid(self, grid, hyper_image, settings=None):
 
-        if hyper_image is not None:
+        if hyper_image is not None and self.sparse_grid is not None:
             return hyper_image * self.sparse_grid
 
         return self.sparse_grid

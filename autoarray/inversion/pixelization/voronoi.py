@@ -23,7 +23,7 @@ class Voronoi(AbstractPixelization):
          """
         super().__init__()
 
-    def mapper_from_grid_and_sparse_grid(
+    def mapper_from(
         self,
         grid: Grid2D,
         sparse_grid: Grid2DSparse = None,

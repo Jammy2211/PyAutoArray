@@ -36,7 +36,7 @@ class Rectangular(AbstractPixelization):
         self.pixels = self.shape[0] * self.shape[1]
         super(Rectangular, self).__init__()
 
-    def mapper_from_grid_and_sparse_grid(
+    def mapper_from(
         self,
         grid: Grid2D,
         sparse_grid: Grid2D = None,

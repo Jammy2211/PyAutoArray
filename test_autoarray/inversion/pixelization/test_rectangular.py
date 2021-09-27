@@ -14,7 +14,7 @@ class TestRectangular:
 
         relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
-        mapper = pixelization.mapper_from_grid_and_sparse_grid(
+        mapper = pixelization.mapper_from(
             grid=relocated_grid,
             sparse_grid=None,
             settings=aa.SettingsPixelization(use_border=True),

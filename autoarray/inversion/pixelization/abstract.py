@@ -15,7 +15,7 @@ class AbstractPixelization:
         Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
         """
 
-    def mapper_from_grid_and_sparse_grid(
+    def mapper_from(
         self, grid: Grid2D, border: np.ndarray, profiling_dict: Optional[Dict] = None
     ):
         raise NotImplementedError(

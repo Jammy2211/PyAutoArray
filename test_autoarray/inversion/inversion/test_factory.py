@@ -54,7 +54,7 @@ def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper():
 
     pix = aa.pix.Rectangular(shape=(3, 3))
 
-    mapper = pix.mapper_from_grid_and_sparse_grid(
+    mapper = pix.mapper_from(
         grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
     )
 
@@ -164,7 +164,7 @@ def test__inversion_matrices__linear_eqns_mapping__voronoi_mapper():
         grid=grid, unmasked_sparse_shape=pix.shape
     )
 
-    mapper = pix.mapper_from_grid_and_sparse_grid(
+    mapper = pix.mapper_from(
         grid=grid,
         sparse_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
@@ -248,7 +248,7 @@ def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eq
 
     pix = aa.pix.Rectangular(shape=(3, 3))
 
-    mapper = pix.mapper_from_grid_and_sparse_grid(
+    mapper = pix.mapper_from(
         grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
     )
 
@@ -315,7 +315,7 @@ def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper__matrix_fo
 
     pix = aa.pix.Rectangular(shape=(7, 7))
 
-    mapper = pix.mapper_from_grid_and_sparse_grid(
+    mapper = pix.mapper_from(
         grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
     )
 
@@ -368,7 +368,7 @@ def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formal
 
     sparse_grid = pix.sparse_grid_from_grid(grid=grid)
 
-    mapper = pix.mapper_from_grid_and_sparse_grid(
+    mapper = pix.mapper_from(
         grid=grid,
         sparse_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
@@ -421,7 +421,7 @@ def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():
 
     pix = aa.pix.Rectangular(shape=(7, 7))
 
-    mapper = pix.mapper_from_grid_and_sparse_grid(
+    mapper = pix.mapper_from(
         grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
     )
 

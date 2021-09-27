@@ -36,7 +36,7 @@ class TestVoronoiMagnification:
 
         sparse_grid = pixelization.sparse_grid_from_grid(grid=sub_grid_2d_7x7)
 
-        mapper = pixelization.mapper_from_grid_and_sparse_grid(
+        mapper = pixelization.mapper_from(
             grid=relocated_grid,
             sparse_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),

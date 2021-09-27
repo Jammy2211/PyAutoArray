@@ -19,7 +19,7 @@ class TestRegression:
 
         grid[8, 0] = 100.0
 
-        mapper = pixelization.mapper_from_grid_and_sparse_grid(
+        mapper = pixelization.mapper_from(
             grid=grid,
             sparse_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
@@ -31,7 +31,7 @@ class TestRegression:
         grid[0, 0] = 0.0
         sparse_grid[0, 0] = 100.0
 
-        mapper = pixelization.mapper_from_grid_and_sparse_grid(
+        mapper = pixelization.mapper_from(
             grid=grid,
             sparse_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
