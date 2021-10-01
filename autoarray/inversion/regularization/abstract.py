@@ -104,7 +104,7 @@ class AbstractRegularization:
         Infact, going through the rigmarole of computing and multiplying B matrices like this is uncessary. It is \
         more computationally efficiently to directly compute H. This is possible, provided you know know all of the \
         neighboring pixel pairs (which, by definition, you need to know to set up the B matrices anyway). Thus, the \
-       'regularization_matrix_from_pixel_neighbors' functions in this module directly compute H from the pixel \
+       'regularization_matrix_via_pixel_neighbors_from' functions in this module directly compute H from the pixel \
         neighbors.
 
         # POSITIVE DEFINITE MATRIX #
@@ -124,7 +124,7 @@ class AbstractRegularization:
     def regularization_weights_from_mapper(self, mapper):
         raise NotImplementedError
 
-    def regularization_matrix_from_mapper(self, mapper):
+    def regularization_matrix_from(self, mapper):
         raise NotImplementedError
 
 

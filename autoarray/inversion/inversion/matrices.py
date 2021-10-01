@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import splu
 
@@ -8,6 +9,7 @@ from autoarray.numba_util import profile_func
 from autoarray.inversion.inversion.abstract import AbstractInversion
 
 from autoarray import exc
+from autoarray.inversion.linear_eqn import linear_eqn_util
 from autoarray.inversion.inversion import inversion_util
 
 
@@ -24,7 +26,14 @@ class InversionMatrices(AbstractInversion):
         of our  dataset via 2D convolution. This uses the methods
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
-        return self.linear_eqn_list[0].operated_mapping_matrix
+
+        if self.preloads.operated_mapping_matrix is None:
+
+            return np.hstack(
+                [eqn.operated_mapping_matrix for eqn in self.linear_eqn_list]
+            )
+
+        return self.preloads.operated_mapping_matrix
 
     @cached_property
     @profile_func
@@ -41,11 +50,20 @@ class InversionMatrices(AbstractInversion):
 
         The calculation is performed by the method `w_tilde_data_imaging_from`.
         """
-        return self.linear_eqn_list[0].data_vector_from(data=self.data)
+        return np.concatenate(
+            [eqn.data_vector_from(data=self.data) for eqn in self.linear_eqn_list]
+        )
 
     @property
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
+        if self.settings.use_w_tilde:
+            return self._curvature_matrix_via_w_tilde
+        return self._curvature_matrix_via_mapping
+
+    @property
+    @profile_func
+    def _curvature_matrix_via_w_tilde(self) -> np.ndarray:
         """
         The `curvature_matrix` F is the second matrix, given by equation (4)
         in https://arxiv.org/pdf/astro-ph/0302587.pdf.
@@ -58,7 +76,52 @@ class InversionMatrices(AbstractInversion):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        return self.linear_eqn_list[0].curvature_matrix
+        if len(self.linear_eqn_list) == 1:
+            return self.linear_eqn_list[0].curvature_matrix_diag
+        
+        curvature_matrix_diag = block_diag(*[eqn.curvature_matrix_diag for eqn in self.linear_eqn_list])
+        
+        curvature_matrix_off_diag = self.linear_eqn_list[0].curvature_matrix_off_diag_from(
+            mapper_off_diag=self.mapper_list[1]
+        )
+
+        pixels_diag = self.mapper_list[0].pixels
+
+        curvature_matrix_diag[0:pixels_diag, pixels_diag:] = curvature_matrix_off_diag
+
+        for i in range(curvature_matrix_diag.shape[0]):
+            for j in range(curvature_matrix_diag.shape[1]):
+                curvature_matrix_diag[j, i] = curvature_matrix_diag[i, j]
+
+        return curvature_matrix_diag
+
+    @property
+    @profile_func
+    def _curvature_matrix_via_mapping(self) -> np.ndarray:
+        """
+        The `curvature_matrix` F is the second matrix, given by equation (4)
+        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+
+        This function computes F using the mapping matrix formalism, which is slower but must be used in circumstances
+        where the noise-map is varying.
+
+        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
+        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
+        """
+        if self.preloads.curvature_matrix_preload is None:
+
+            return linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=self.operated_mapping_matrix, noise_map=self.noise_map
+            )
+
+        return linear_eqn_util.curvature_matrix_via_sparse_preload_from(
+            mapping_matrix=self.operated_mapping_matrix,
+            noise_map=self.noise_map,
+            curvature_matrix_preload=self.preloads.curvature_matrix_preload,
+            curvature_matrix_counts=self.preloads.curvature_matrix_counts,
+        )
 
     @cached_property
     @profile_func
@@ -129,10 +192,10 @@ class InversionMatrices(AbstractInversion):
             The log determinant of the regularization matrix.
         """
         if (
-            self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term
+            self.preloads.log_det_regularization_matrix_term
             is not None
         ):
-            return self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term
+            return self.preloads.log_det_regularization_matrix_term
 
         try:
 
@@ -160,3 +223,19 @@ class InversionMatrices(AbstractInversion):
     @property
     def errors(self):
         return np.diagonal(self.errors_with_covariance)
+
+    @property
+    def curvature_matrix_preload(self) -> np.ndarray:
+        curvature_matrix_preload, curvature_matrix_counts = linear_eqn_util.curvature_matrix_preload_from(
+            mapping_matrix=self.operated_mapping_matrix
+        )
+
+        return curvature_matrix_preload
+
+    @property
+    def curvature_matrix_counts(self) -> np.ndarray:
+        curvature_matrix_preload, curvature_matrix_counts = linear_eqn_util.curvature_matrix_preload_from(
+            mapping_matrix=self.operated_mapping_matrix
+        )
+
+        return curvature_matrix_counts

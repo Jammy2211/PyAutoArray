@@ -143,7 +143,7 @@ class InversionPlotter(AbstractPlotter):
         mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)
 
         linear_eqns = self.inversion.linear_eqn_list[mapper_index]
-        reconstruction_of_mapper = self.inversion.reconstructions_of_mappers_list[
+        reconstruction_of_mapper = self.inversion.reconstruction_of_mappers[
             mapper_index
         ]
 

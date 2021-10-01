@@ -81,7 +81,6 @@ def inversion_imaging_unpacked_from(
                 convolver=convolver,
                 w_tilde=w_tilde,
                 mapper=mapper,
-                preloads=preloads,
                 profiling_dict=profiling_dict,
             )
             for mapper in mapper_list
@@ -94,7 +93,6 @@ def inversion_imaging_unpacked_from(
                 noise_map=noise_map,
                 convolver=convolver,
                 mapper=mapper,
-                preloads=preloads,
                 profiling_dict=profiling_dict,
             )
             for mapper in mapper_list
@@ -105,6 +103,7 @@ def inversion_imaging_unpacked_from(
         linear_eqn_list=linear_eqn_list,
         regularization_list=regularization_list,
         settings=settings,
+        preloads=preloads,
         profiling_dict=profiling_dict,
     )
 
@@ -116,6 +115,7 @@ def inversion_interferometer_unpacked_from(
     mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
     regularization_list: List[AbstractRegularization],
     settings: SettingsInversion = SettingsInversion(),
+    preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
 ):
     if not settings.use_linear_operators:
@@ -149,6 +149,7 @@ def inversion_interferometer_unpacked_from(
             linear_eqn_list=linear_eqn_list,
             regularization_list=regularization_list,
             settings=settings,
+            preloads=preloads,
             profiling_dict=profiling_dict,
         )
 

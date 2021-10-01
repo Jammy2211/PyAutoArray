@@ -31,7 +31,7 @@ class Constant(AbstractRegularization):
         regularization_weight_list = self.coefficient * np.ones(mapper.pixels)
         return mapper.reconstruction_from(solution_vector=regularization_weight_list)
 
-    def regularization_matrix_from_mapper(self, mapper):
+    def regularization_matrix_from(self, mapper):
         return regularization_util.constant_regularization_matrix_from(
             coefficient=self.coefficient,
             pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,

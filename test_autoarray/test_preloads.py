@@ -162,13 +162,13 @@ def test__set_inversion():
     fit_1 = MockFit(inversion=None)
 
     preloads = aa.Preloads(
-        blurred_mapping_matrix=1,
+        operated_mapping_matrix=1,
         curvature_matrix_preload=np.array([[1.0]]),
         curvature_matrix_counts=np.array([1.0]),
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.blurred_mapping_matrix is None
+    assert preloads.operated_mapping_matrix is None
     assert preloads.curvature_matrix_preload is None
     assert preloads.curvature_matrix_counts is None
 
@@ -189,13 +189,13 @@ def test__set_inversion():
     fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
     preloads = aa.Preloads(
-        blurred_mapping_matrix=1,
+        operated_mapping_matrix=1,
         curvature_matrix_preload=curvature_matrix_preload,
         curvature_matrix_counts=curvature_matrix_counts,
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.blurred_mapping_matrix is None
+    assert preloads.operated_mapping_matrix is None
     assert preloads.curvature_matrix_preload is None
     assert preloads.curvature_matrix_counts is None
 
@@ -212,13 +212,13 @@ def test__set_inversion():
     fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
     preloads = aa.Preloads(
-        blurred_mapping_matrix=1,
+        operated_mapping_matrix=1,
         curvature_matrix_preload=curvature_matrix_preload,
         curvature_matrix_counts=curvature_matrix_counts,
     )
     preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
 
-    assert (preloads.blurred_mapping_matrix == blurred_mapping_matrix_0).all()
+    assert (preloads.operated_mapping_matrix == blurred_mapping_matrix_0).all()
     assert (
         preloads.curvature_matrix_preload == curvature_matrix_preload.astype("int")
     ).all()

@@ -102,12 +102,12 @@ class MockRegularization(AbstractRegularization):
 
         self.regularization_matrix = regularization_matrix
 
-    def regularization_matrix_from_pixel_neighbors(
+    def regularization_matrix_via_pixel_neighbors_from(
         self, pixel_neighbors, pixel_neighbors_sizes
     ):
         return self.regularization_matrix
 
-    def regularization_matrix_from_mapper(self, mapper):
+    def regularization_matrix_from(self, mapper):
 
         return self.regularization_matrix
 
@@ -164,21 +164,77 @@ class MockLinearEqn(AbstractLinearEqn):
         self,
         noise_map=None,
         mapper: Union[MockMapper] = None,
+        operated_mapping_matrix=None,
+        data_vector=None,
         curvature_matrix=None,
-        preloads: Preloads = Preloads(),
+        mapped_reconstructed_data=None,
+        mapped_reconstructed_image=None,
     ):
 
-        super().__init__(noise_map=noise_map, mapper=mapper, preloads=preloads)
+        super().__init__(noise_map=noise_map, mapper=mapper)
 
+        self._operated_mapping_matrix = operated_mapping_matrix
+        self._data_vector = data_vector
         self._curvature_matrix = curvature_matrix
+        self._mapped_reconstructed_data = mapped_reconstructed_data
+        self._mapped_reconstructed_image = mapped_reconstructed_image
 
     @property
-    def curvature_matrix(self):
+    def operated_mapping_matrix(self) -> np.ndarray:
+        if self._operated_mapping_matrix is None:
+            return super().operated_mapping_matrix
+
+        return self._operated_mapping_matrix
+
+    def data_vector_from(self, data) -> np.ndarray:
+        if self._data_vector is None:
+            return super().data_vector_from(data=data)
+
+        return self._data_vector
+
+    @property
+    def curvature_matrix_diag(self):
         return self._curvature_matrix
 
-    @property
-    def reconstructed_image(self):
-        return np.zeros((1, 1))
+    def mapped_reconstructed_data_from(self, reconstruction: np.ndarray):
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
+
+        if self._mapped_reconstructed_data is None:
+            return super().mapped_reconstructed_data_from(reconstruction=reconstruction)
+
+        return self._mapped_reconstructed_data
+
+    def mapped_reconstructed_image_from(self, reconstruction: np.ndarray):
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image image.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image image which the inversion fits.
+        """
+
+        if self._mapped_reconstructed_image is None:
+            return super().mapped_reconstructed_image_from(
+                reconstruction=reconstruction
+            )
+
+        return self._mapped_reconstructed_image
 
 
 class MockLinearEqnImaging(AbstractLinearEqnImaging):
@@ -233,9 +289,10 @@ class MockInversion(InversionMatrices):
         regularization_matrix=None,
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
+        reconstruction_of_mappers: List[np.ndarray] = None,
         log_det_regularization_matrix_term=None,
         data_vector=None,
-        #     regularization: Optional[AbstractRegularization] = None,
+        preloads: Preloads = Preloads(),
     ):
 
         # self.__dict__["curvature_matrix"] = curvature_matrix
@@ -249,12 +306,14 @@ class MockInversion(InversionMatrices):
             data=data,
             linear_eqn_list=linear_eqn_list,
             regularization_list=regularization_list,
+            preloads=preloads,
         )
 
         self._data_vector = data_vector
         self._regularization_matrix = regularization_matrix
         self._curvature_reg_matrix = curvature_reg_matrix
         self._reconstruction = reconstruction
+        self._reconstruction_of_mappers = reconstruction_of_mappers
 
         self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
@@ -289,6 +348,20 @@ class MockInversion(InversionMatrices):
             return super().reconstruction
 
         return self._reconstruction
+
+    @property
+    def reconstruction_of_mappers(self):
+        """
+        Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
+        of https://arxiv.org/pdf/astro-ph/0302587.pdf
+
+        S is the vector of reconstructed inversion values.
+        """
+
+        if self._reconstruction_of_mappers is None:
+            return super().reconstruction_of_mappers
+
+        return self._reconstruction_of_mappers
 
     @property
     def log_det_regularization_matrix_term(self):

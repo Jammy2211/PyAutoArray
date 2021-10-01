@@ -29,7 +29,7 @@ def test__regularization_matrix__matches_util():
     mapper = MockMapper(source_pixelization_grid=pixelization_grid)
 
     reg = aa.reg.Constant(coefficient=1.0)
-    regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
+    regularization_matrix = reg.regularization_matrix_from(mapper=mapper)
 
     regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from(
         coefficient=1.0,

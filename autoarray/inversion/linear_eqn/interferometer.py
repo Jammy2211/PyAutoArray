@@ -40,6 +40,9 @@ class AbstractLinearEqnInterferometer(AbstractLinearEqn):
     def operated_mapping_matrix(self) -> np.ndarray:
         return self.transformed_mapping_matrix
 
+    def mapped_reconstructed_data_from(self, reconstruction: np.ndarray):
+        raise NotImplementedError
+
     def mapped_reconstructed_image_from(self, reconstruction: np.ndarray):
 
         mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_mapping_matrix_from(
@@ -50,9 +53,6 @@ class AbstractLinearEqnInterferometer(AbstractLinearEqn):
             array=mapped_reconstructed_image,
             mask=self.mapper.source_grid_slim.mask.mask_sub_1,
         )
-
-    def mapped_reconstructed_visibilities_from(self, reconstruction: np.ndarray):
-        raise NotImplementedError
 
 
 class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
@@ -116,7 +116,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
         )
 
     @property
-    def curvature_matrix(self) -> np.ndarray:
+    def curvature_matrix_diag(self) -> np.ndarray:
 
         real_curvature_matrix = linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.transformed_mapping_matrix.real,
@@ -130,7 +130,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
 
         return np.add(real_curvature_matrix, imag_curvature_matrix)
 
-    def mapped_reconstructed_visibilities_from(
+    def mapped_reconstructed_data_from(
         self, reconstruction: np.ndarray
     ) -> Visibilities:
 
@@ -193,7 +193,7 @@ class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
             profiling_dict=profiling_dict,
         )
 
-    def mapped_reconstructed_visibilities_from(
+    def mapped_reconstructed_data_from(
         self, reconstruction: np.ndarray
     ) -> Visibilities:
         """

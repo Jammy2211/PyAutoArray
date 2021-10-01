@@ -19,7 +19,7 @@ class Preloads:
         sparse_image_plane_grids_of_planes=None,
         relocated_grid=None,
         mapper=None,
-        blurred_mapping_matrix=None,
+        operated_mapping_matrix=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         regularization_matrix=None,
@@ -32,7 +32,7 @@ class Preloads:
         self.sparse_image_plane_grids_of_planes = sparse_image_plane_grids_of_planes
         self.relocated_grid = relocated_grid
         self.mapper = mapper
-        self.blurred_mapping_matrix = blurred_mapping_matrix
+        self.operated_mapping_matrix = operated_mapping_matrix
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
         self.regularization_matrix = regularization_matrix
@@ -172,7 +172,7 @@ class Preloads:
         source-pixels does not change during the model-fit and matrices used to perform the linear algebra in an
         inversion can be preloaded, which help efficiently construct the curvature matrix.
 
-        This function compares the blurred mapping matrix of two fit's corresponding to two model instances, and
+        This function compares the operated mapping matrix of two fit's corresponding to two model instances, and
         preloads the mapper if the mapping matrix of both fits are the same.
 
         The preload is typically used in searches where only light profiles vary (e.g. when only the lens's light is
@@ -186,7 +186,7 @@ class Preloads:
             The second fit corresponding to a model with a different set of unit-values.
         """
 
-        self.blurred_mapping_matrix = None
+        self.operated_mapping_matrix = None
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
 
@@ -200,23 +200,23 @@ class Preloads:
             return
 
         if (
-            inversion_0.linear_eqn_list[0].blurred_mapping_matrix.shape[1]
-            == inversion_1.linear_eqn_list[0].blurred_mapping_matrix.shape[1]
+            inversion_0.linear_eqn_list[0].operated_mapping_matrix.shape[1]
+            == inversion_1.linear_eqn_list[0].operated_mapping_matrix.shape[1]
         ):
 
             if (
                 np.max(
                     abs(
-                        inversion_0.linear_eqn_list[0].blurred_mapping_matrix
-                        - inversion_1.linear_eqn_list[0].blurred_mapping_matrix
+                        inversion_0.linear_eqn_list[0].operated_mapping_matrix
+                        - inversion_1.linear_eqn_list[0].operated_mapping_matrix
                     )
                 )
                 < 1e-8
             ):
 
-                self.blurred_mapping_matrix = inversion_0.linear_eqn_list[
+                self.operated_mapping_matrix = inversion_0.linear_eqn_list[
                     0
-                ].blurred_mapping_matrix
+                ].operated_mapping_matrix
                 self.curvature_matrix_preload = (
                     inversion_0.linear_eqn_list[0].curvature_matrix_preload
                 ).astype("int")
@@ -302,7 +302,7 @@ class Preloads:
         self.sparse_image_plane_grids_of_planes = None
         self.relocated_grid = None
         self.mapper = None
-        self.blurred_mapping_matrix = None
+        self.operated_mapping_matrix = None
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
         self.regularization_matrix = None
@@ -321,7 +321,7 @@ class Preloads:
         line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
         line += [f"Mapper = {self.mapper is not None}\n"]
         line += [
-            f"Blurred Mapping Matrix = {self.blurred_mapping_matrix is not None}\n"
+            f"Blurred Mapping Matrix = {self.operated_mapping_matrix is not None}\n"
         ]
         line += [
             f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"

@@ -1,11 +1,9 @@
 import numpy as np
 from typing import Dict, Optional, Union
 
-from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
-from autoarray.preloads import Preloads
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.inversion.mappers.rectangular import MapperRectangular
@@ -19,14 +17,11 @@ class AbstractLinearEqn:
         self,
         noise_map: Union[Array2D, VisibilitiesNoiseMap],
         mapper: Union[MapperRectangular, MapperVoronoi],
-        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
 
         self.noise_map = noise_map
         self.mapper = mapper
-
-        self.preloads = preloads
 
         self.profiling_dict = profiling_dict
 
@@ -39,7 +34,14 @@ class AbstractLinearEqn:
         raise NotImplementedError
 
     @property
-    def curvature_matrix(self) -> np.ndarray:
+    def curvature_matrix_diag(self) -> np.ndarray:
+        raise NotImplementedError
+
+    def curvature_matrix_off_diag_from(self, mapper_off_diag) -> np.ndarray:
+        raise NotImplementedError
+
+    @profile_func
+    def mapped_reconstructed_data_from(self, reconstruction) -> Array2D:
         raise NotImplementedError
 
     @profile_func

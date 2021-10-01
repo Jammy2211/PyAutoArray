@@ -1,12 +1,10 @@
 import autoarray as aa
 from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingWTilde
-from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingMapping
 
 from autoarray.mock.mock import (
     MockConvolver,
     MockLinearEqnImaging,
-    MockRegularization,
     MockMapper,
 )
 
@@ -62,27 +60,4 @@ class TestLinearEqnImaging:
                 ),
             )
 
-    def test__preloads(self):
 
-        blurred_mapping_matrix = 2.0 * np.ones((9, 3))
-
-        curvature_matrix_preload, curvature_matrix_counts = aa.util.linear_eqn.curvature_matrix_preload_from(
-            mapping_matrix=blurred_mapping_matrix
-        )
-
-        preloads = aa.Preloads(
-            blurred_mapping_matrix=blurred_mapping_matrix,
-            curvature_matrix_preload=curvature_matrix_preload.astype("int"),
-            curvature_matrix_counts=curvature_matrix_counts.astype("int"),
-        )
-
-        # noinspection PyTypeChecker
-        linear_eqn = LinearEqnImagingMapping(
-            noise_map=np.ones(9),
-            convolver=MockConvolver(),
-            mapper=MockMapper(),
-            preloads=preloads,
-        )
-
-        assert linear_eqn.blurred_mapping_matrix[0, 0] == 2.0
-        assert linear_eqn.curvature_matrix[0, 0] == 36.0

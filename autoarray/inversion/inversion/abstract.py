@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import splu
 from typing import Dict, List, Optional, Union
@@ -14,6 +15,7 @@ from autoarray.inversion.linear_eqn.interferometer import (
 )
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 
 from autoarray import exc
 
@@ -27,6 +29,7 @@ class AbstractInversion:
         ],
         regularization_list: [AbstractRegularization],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
 
@@ -36,12 +39,8 @@ class AbstractInversion:
         self.regularization_list = regularization_list
 
         self.settings = settings
-
+        self.preloads = preloads
         self.profiling_dict = profiling_dict
-
-    @property
-    def preloads(self):
-        return self.linear_eqn_list[0].preloads
 
     @property
     def noise_map(self):
@@ -64,8 +63,12 @@ class AbstractInversion:
         """
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
-        return self.regularization_list[0].regularization_matrix_from_mapper(
-            mapper=self.mapper_list[0]
+
+        return block_diag(
+            *[
+                reg.regularization_matrix_from(mapper=mapper)
+                for (reg, mapper) in zip(self.regularization_list, self.mapper_list)
+            ]
         )
 
     @cached_property
@@ -75,8 +78,87 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def reconstructions_of_mappers_list(self):
-        return [self.reconstruction]
+    def reconstruction_of_mappers(self):
+
+        reconstruction = self.reconstruction
+
+        reconstruction_of_mappers = []
+
+        index = 0
+
+        for mapper in self.mapper_list:
+
+            reconstruction_of_mappers.append(
+                reconstruction[index : index + mapper.pixels]
+            )
+
+            index += mapper.pixels
+
+        return reconstruction_of_mappers
+
+    @cached_property
+    @profile_func
+    def mapped_reconstructed_data_of_mappers(
+        self
+    ) -> List[Union[Array2D, Visibilities]]:
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
+
+        return [
+            eqn.mapped_reconstructed_data_from(reconstruction=reconstruction)
+            for eqn, reconstruction in zip(
+                self.linear_eqn_list, self.reconstruction_of_mappers
+            )
+        ]
+
+    @cached_property
+    @profile_func
+    def mapped_reconstructed_image_of_mappers(self) -> List[Array2D]:
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
+        return [
+            eqn.mapped_reconstructed_image_from(reconstruction=reconstruction)
+            for eqn, reconstruction in zip(
+                self.linear_eqn_list, self.reconstruction_of_mappers
+            )
+        ]
+
+    @cached_property
+    @profile_func
+    def mapped_reconstructed_data(self) -> Union[Array2D, Visibilities]:
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
+        return sum(self.mapped_reconstructed_data_of_mappers)
 
     @cached_property
     @profile_func
@@ -93,28 +175,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.linear_eqn_list[0].mapped_reconstructed_image_from(
-            reconstruction=self.reconstruction
-        )
-
-    @cached_property
-    @profile_func
-    def mapped_reconstructed_visibilities(self) -> Array2D:
-        """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
-        reconstruct the image data.
-
-        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
-        computed when using the w-tilde formalism.
-
-        Returns
-        -------
-        Array2D
-            The reconstructed image data which the inversion fits.
-        """
-        return self.linear_eqn_list[0].mapped_reconstructed_visibilities_from(
-            reconstruction=self.reconstruction
-        )
+        return sum(self.mapped_reconstructed_image_of_mappers)
 
     @cached_property
     @profile_func
@@ -163,10 +224,10 @@ class AbstractInversion:
             The log determinant of the regularization matrix.
         """
         if (
-            self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term
+            self.preloads.log_det_regularization_matrix_term
             is not None
         ):
-            return self.linear_eqn_list[0].preloads.log_det_regularization_matrix_term
+            return self.preloads.log_det_regularization_matrix_term
 
         try:
 
@@ -201,7 +262,7 @@ class AbstractInversion:
         brightest_reconstruction_pixel_list = []
 
         for eqn, reconstruction in zip(
-            self.linear_eqn_list, self.reconstructions_of_mappers_list
+            self.linear_eqn_list, self.reconstruction_of_mappers
         ):
 
             brightest_reconstruction_pixel_list.append(
@@ -216,7 +277,7 @@ class AbstractInversion:
         brightest_reconstruction_pixel_centre_list = []
 
         for eqn, reconstruction in zip(
-            self.linear_eqn_list, self.reconstructions_of_mappers_list
+            self.linear_eqn_list, self.reconstruction_of_mappers
         ):
             brightest_reconstruction_pixel_centre_list.append(
                 eqn.brightest_reconstruction_pixel_centre_from(

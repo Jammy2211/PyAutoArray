@@ -49,7 +49,7 @@ def test__regularization_matrix__matches_util():
         source_pixelization_grid=pixelization_grid, pixel_signals=pixel_signals
     )
 
-    regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
+    regularization_matrix = reg.regularization_matrix_from(mapper=mapper)
 
     regularization_weight_list = aa.util.regularization.adaptive_regularization_weight_list_from(
         pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0

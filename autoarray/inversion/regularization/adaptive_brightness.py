@@ -63,7 +63,7 @@ class AdaptiveBrightness(AbstractRegularization):
             pixel_signals=pixel_signals,
         )
 
-    def regularization_matrix_from_mapper(self, mapper):
+    def regularization_matrix_from(self, mapper):
         regularization_weight_list = self.regularization_weights_from_mapper(
             mapper=mapper
         )

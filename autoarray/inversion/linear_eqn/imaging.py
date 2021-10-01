@@ -9,7 +9,6 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.preloads import Preloads
 from autoarray.dataset.imaging import WTildeImaging
 
 from autoarray.inversion.linear_eqn import linear_eqn_util
@@ -21,7 +20,6 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         noise_map: Array2D,
         convolver: Convolver,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -61,7 +59,6 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         super().__init__(
             noise_map=noise_map,
             mapper=mapper,
-            preloads=preloads,
             profiling_dict=profiling_dict,
         )
 
@@ -77,33 +74,17 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         of our  dataset via 2D convolution. This uses the methods
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
-        if self.preloads.blurred_mapping_matrix is None:
-
-            return self.convolver.convolve_mapping_matrix(
-                mapping_matrix=self.mapper.mapping_matrix
-            )
-
-        return self.preloads.blurred_mapping_matrix
+        return self.convolver.convolve_mapping_matrix(
+            mapping_matrix=self.mapper.mapping_matrix
+        )
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
         return self.blurred_mapping_matrix
 
-    @property
-    def curvature_matrix_preload(self) -> np.ndarray:
-        curvature_matrix_preload, curvature_matrix_counts = linear_eqn_util.curvature_matrix_preload_from(
-            mapping_matrix=self.blurred_mapping_matrix
-        )
-
-        return curvature_matrix_preload
-
-    @property
-    def curvature_matrix_counts(self) -> np.ndarray:
-        curvature_matrix_preload, curvature_matrix_counts = linear_eqn_util.curvature_matrix_preload_from(
-            mapping_matrix=self.blurred_mapping_matrix
-        )
-
-        return curvature_matrix_counts
+    @profile_func
+    def mapped_reconstructed_image_from(self, reconstruction: np.ndarray) -> Array2D:
+        return self.mapped_reconstructed_data_from(reconstruction=reconstruction)
 
 
 class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
@@ -113,7 +94,6 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         convolver: Convolver,
         w_tilde: WTildeImaging,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -136,21 +116,13 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         """
 
-        if preloads.w_tilde is not None:
-
-            self.w_tilde = preloads.w_tilde
-
-        else:
-
-            self.w_tilde = w_tilde
-
+        self.w_tilde = w_tilde
         self.w_tilde.check_noise_map(noise_map=noise_map)
 
         super().__init__(
             noise_map=noise_map,
             convolver=convolver,
             mapper=mapper,
-            preloads=preloads,
             profiling_dict=profiling_dict,
         )
 
@@ -186,7 +158,7 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
 
     @property
     @profile_func
-    def curvature_matrix(self) -> np.ndarray:
+    def curvature_matrix_diag(self) -> np.ndarray:
         """
         The `curvature_matrix` F is the second matrix, given by equation (4)
         in https://arxiv.org/pdf/astro-ph/0302587.pdf.
@@ -210,7 +182,33 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         )
 
     @profile_func
-    def mapped_reconstructed_image_from(self, reconstruction: np.ndarray) -> Array2D:
+    def curvature_matrix_off_diag_from(self, mapper_off_diag) -> np.ndarray:
+        """
+        Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) by computing them
+        using `w_tilde_preload` (see `w_tilde_preload_interferometer_from`) for an imaging inversion.
+
+        The `curvature_matrix` F is the second matrix, given by equation (4)
+        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+
+        This function computes the off-diagonal terms of F using the w_tilde formalism for the mapper of this
+        `LinearEqn` and an input second mapper.
+        """
+        return linear_eqn_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
+            curvature_preload=self.w_tilde.curvature_preload,
+            curvature_indexes=self.w_tilde.indexes,
+            curvature_lengths=self.w_tilde.lengths,
+            data_to_pix_unique_0=self.mapper.data_unique_mappings.data_to_pix_unique,
+            data_weights_0=self.mapper.data_unique_mappings.data_weights,
+            pix_lengths_0=self.mapper.data_unique_mappings.pix_lengths,
+            pix_pixels_0=self.mapper.pixels,
+            data_to_pix_unique_1=mapper_off_diag.data_unique_mappings.data_to_pix_unique,
+            data_weights_1=mapper_off_diag.data_unique_mappings.data_weights,
+            pix_lengths_1=mapper_off_diag.data_unique_mappings.pix_lengths,
+            pix_pixels_1=mapper_off_diag.pixels,
+        )
+
+    @profile_func
+    def mapped_reconstructed_data_from(self, reconstruction: np.ndarray) -> Array2D:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
         reconstruct the image data.
@@ -247,7 +245,6 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         noise_map: Array2D,
         convolver: Convolver,
         mapper: Union[MapperRectangular, MapperVoronoi],
-        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
@@ -273,7 +270,6 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
             noise_map=noise_map,
             convolver=convolver,
             mapper=mapper,
-            preloads=preloads,
             profiling_dict=profiling_dict,
         )
 
@@ -298,36 +294,8 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
             noise_map=self.noise_map,
         )
 
-    @property
     @profile_func
-    def curvature_matrix(self) -> np.ndarray:
-        """
-        The `curvature_matrix` F is the second matrix, given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
-
-        This function computes F using the mapping matrix formalism, which is slower but must be used in circumstances
-        where the noise-map is varying.
-
-        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
-        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
-        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
-        array of memory.
-        """
-        if self.preloads.curvature_matrix_preload is None:
-
-            return linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
-                mapping_matrix=self.blurred_mapping_matrix, noise_map=self.noise_map
-            )
-
-        return linear_eqn_util.curvature_matrix_via_sparse_preload_from(
-            mapping_matrix=self.blurred_mapping_matrix,
-            noise_map=self.noise_map,
-            curvature_matrix_preload=self.preloads.curvature_matrix_preload,
-            curvature_matrix_counts=self.preloads.curvature_matrix_counts,
-        )
-
-    @profile_func
-    def mapped_reconstructed_image_from(self, reconstruction) -> Array2D:
+    def mapped_reconstructed_data_from(self, reconstruction) -> Array2D:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane (via
         the blurred mapping_matrix) and reconstruct the image data.
