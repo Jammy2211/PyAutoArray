@@ -2,11 +2,7 @@ import autoarray as aa
 from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingWTilde
 
-from autoarray.mock.mock import (
-    MockConvolver,
-    MockLinearEqnImaging,
-    MockMapper,
-)
+from autoarray.mock.mock import MockConvolver, MockLinearEqnImaging, MockMapper
 
 from autoarray import exc
 
@@ -59,5 +55,3 @@ class TestLinearEqnImaging:
                     mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
                 ),
             )
-
-

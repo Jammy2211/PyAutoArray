@@ -78,12 +78,14 @@ class InversionMatrices(AbstractInversion):
         """
         if len(self.linear_eqn_list) == 1:
             return self.linear_eqn_list[0].curvature_matrix_diag
-        
-        curvature_matrix_diag = block_diag(*[eqn.curvature_matrix_diag for eqn in self.linear_eqn_list])
-        
-        curvature_matrix_off_diag = self.linear_eqn_list[0].curvature_matrix_off_diag_from(
-            mapper_off_diag=self.mapper_list[1]
+
+        curvature_matrix_diag = block_diag(
+            *[eqn.curvature_matrix_diag for eqn in self.linear_eqn_list]
         )
+
+        curvature_matrix_off_diag = self.linear_eqn_list[
+            0
+        ].curvature_matrix_off_diag_from(mapper_off_diag=self.mapper_list[1])
 
         pixels_diag = self.mapper_list[0].pixels
 
@@ -191,10 +193,7 @@ class InversionMatrices(AbstractInversion):
         float
             The log determinant of the regularization matrix.
         """
-        if (
-            self.preloads.log_det_regularization_matrix_term
-            is not None
-        ):
+        if self.preloads.log_det_regularization_matrix_term is not None:
             return self.preloads.log_det_regularization_matrix_term
 
         try:

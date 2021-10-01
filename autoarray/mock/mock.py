@@ -8,6 +8,7 @@ from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
 from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
 from autoarray.inversion.inversion.matrices import InversionMatrices
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
 
 
@@ -244,19 +245,13 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
         convolver=None,
         mapper=None,
         blurred_mapping_matrix=None,
-        curvature_matrix_preload=None,
-        curvature_matrix_counts=None,
-        preloads: Preloads = Preloads(),
     ):
 
         super().__init__(
-            noise_map=noise_map, convolver=convolver, mapper=mapper, preloads=preloads
+            noise_map=noise_map, convolver=convolver, mapper=mapper,
         )
 
         self._blurred_mapping_matrix = blurred_mapping_matrix
-
-        self._curvature_matrix_preload = curvature_matrix_preload
-        self._curvature_matrix_counts = curvature_matrix_counts
 
     @property
     def blurred_mapping_matrix(self):
@@ -265,20 +260,6 @@ class MockLinearEqnImaging(AbstractLinearEqnImaging):
 
         return self._blurred_mapping_matrix
 
-    @property
-    def curvature_matrix_preload(self):
-        if self._curvature_matrix_preload is None:
-            return super().curvature_matrix_preload
-
-        return self._curvature_matrix_preload
-
-    @property
-    def curvature_matrix_counts(self):
-        if self._curvature_matrix_counts is None:
-            return super().curvature_matrix_counts
-
-        return self._curvature_matrix_counts
-
 
 class MockInversion(InversionMatrices):
     def __init__(
@@ -286,12 +267,15 @@ class MockInversion(InversionMatrices):
         data=None,
         linear_eqn_list: List[Union[MockLinearEqn, MockLinearEqnImaging]] = None,
         regularization_list: List[MockRegularization] = None,
+        data_vector=None,
         regularization_matrix=None,
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
         reconstruction_of_mappers: List[np.ndarray] = None,
         log_det_regularization_matrix_term=None,
-        data_vector=None,
+        curvature_matrix_preload=None,
+        curvature_matrix_counts=None,
+        settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
 
@@ -306,6 +290,7 @@ class MockInversion(InversionMatrices):
             data=data,
             linear_eqn_list=linear_eqn_list,
             regularization_list=regularization_list,
+            settings=settings,
             preloads=preloads,
         )
 
@@ -316,6 +301,9 @@ class MockInversion(InversionMatrices):
         self._reconstruction_of_mappers = reconstruction_of_mappers
 
         self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
+
+        self._curvature_matrix_preload = curvature_matrix_preload
+        self._curvature_matrix_counts = curvature_matrix_counts
 
     @property
     def data_vector(self) -> np.ndarray:
@@ -370,3 +358,17 @@ class MockInversion(InversionMatrices):
             return super().log_det_regularization_matrix_term
 
         return self._log_det_regularization_matrix_term
+
+    @property
+    def curvature_matrix_preload(self):
+        if self._curvature_matrix_preload is None:
+            return super().curvature_matrix_preload
+
+        return self._curvature_matrix_preload
+
+    @property
+    def curvature_matrix_counts(self):
+        if self._curvature_matrix_counts is None:
+            return super().curvature_matrix_counts
+
+        return self._curvature_matrix_counts

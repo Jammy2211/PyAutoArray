@@ -57,9 +57,7 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         self.convolver = convolver
 
         super().__init__(
-            noise_map=noise_map,
-            mapper=mapper,
-            profiling_dict=profiling_dict,
+            noise_map=noise_map, mapper=mapper, profiling_dict=profiling_dict
         )
 
     @cached_property

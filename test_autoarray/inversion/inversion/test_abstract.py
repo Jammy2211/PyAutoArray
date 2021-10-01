@@ -57,10 +57,7 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
     )
 
     # noinspection PyTypeChecker
-    linear_eqn = MockLinearEqn(
-        noise_map=np.ones(9),
-        mapper=MockMapper(),
-    )
+    linear_eqn = MockLinearEqn(noise_map=np.ones(9), mapper=MockMapper())
 
     inversion = MockInversion(linear_eqn_list=[linear_eqn], preloads=preloads)
 
@@ -70,7 +67,9 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
 
 def test__preload_of_regularization_matrix__overwrites_calculation():
 
-    inversion = MockInversion(preloads=aa.Preloads(regularization_matrix=np.ones((2, 2))))
+    inversion = MockInversion(
+        preloads=aa.Preloads(regularization_matrix=np.ones((2, 2)))
+    )
 
     assert (inversion.regularization_matrix == np.ones((2, 2))).all()
 
@@ -222,7 +221,9 @@ def test__regularization_term():
 
 def test__preload_of_log_det_regularization_term_overwrites_calculation():
 
-    inversion = MockInversion( preloads=aa.Preloads(log_det_regularization_matrix_term=1.0))
+    inversion = MockInversion(
+        preloads=aa.Preloads(log_det_regularization_matrix_term=1.0)
+    )
 
     assert inversion.log_det_regularization_matrix_term == 1.0
 

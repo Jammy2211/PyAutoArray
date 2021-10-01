@@ -18,10 +18,7 @@ def test__operated_mapping_matrix():
     inversion = MockInversion(linear_eqn_list=[linear_eqn_0, linear_eqn_1])
 
     operated_mapping_matrix = np.array(
-        [
-            [1.0, 1.0, 2.0, 2.0, 2.0],
-            [1.0, 1.0, 2.0, 2.0, 2.0],
-        ]
+        [[1.0, 1.0, 2.0, 2.0, 2.0], [1.0, 1.0, 2.0, 2.0, 2.0]]
     )
 
     assert inversion.operated_mapping_matrix == pytest.approx(operated_mapping_matrix)
@@ -34,44 +31,41 @@ def test__data_vector_from():
 
     inversion = MockInversion(linear_eqn_list=[linear_eqn_0, linear_eqn_1])
 
-    data_vector = np.array([3.0, 3.0, 3.0])
+    assert inversion.data_vector == pytest.approx(
+        np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0]), 1.0e-4
+    )
 
-    assert inversion.data_vector == pytest.approx(data_vector)
 
+def test__curvature_matrix__via_mapping():
 
-def test__curvature_matrix():
+    noise_map = np.ones(2)
 
-    linear_eqn_0 = MockLinearEqn(curvature_matrix=np.ones((2, 2)))
-    linear_eqn_1 = MockLinearEqn(curvature_matrix=2.0 * np.ones((3, 3)))
+    linear_eqn_0 = MockLinearEqn(
+        noise_map=noise_map, operated_mapping_matrix=np.ones((2, 2))
+    )
+    linear_eqn_1 = MockLinearEqn(
+        noise_map=noise_map, operated_mapping_matrix=2.0 * np.ones((2, 3))
+    )
 
-    inversion = MockInversion(linear_eqn_list=[linear_eqn_0, linear_eqn_1])
+    inversion = MockInversion(
+        linear_eqn_list=[linear_eqn_0, linear_eqn_1],
+        settings=aa.SettingsInversion(use_w_tilde=False),
+    )
 
     curvature_matrix = np.array(
         [
-            [1.0, 1.0, 0.0, 0.0, 0.0],
-            [1.0, 1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 2.0, 2.0, 2.0],
-            [0.0, 0.0, 2.0, 2.0, 2.0],
-            [0.0, 0.0, 2.0, 2.0, 2.0],
+            [2.0, 2.0, 4.0, 4.0, 4.0],
+            [2.0, 2.0, 4.0, 4.0, 4.0],
+            [4.0, 4.0, 8.0, 8.0, 8.0],
+            [4.0, 4.0, 8.0, 8.0, 8.0],
+            [4.0, 4.0, 8.0, 8.0, 8.0],
         ]
     )
 
     assert inversion.curvature_matrix == pytest.approx(curvature_matrix)
 
 
-def test__errors_and_errors_with_covariance():
-
-    curvature_reg_matrix = np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 3.0]])
-
-    inversion = MockInversion(curvature_reg_matrix=curvature_reg_matrix)
-
-    assert inversion.errors_with_covariance == pytest.approx(
-        np.array([[2.5, -1.0, -0.5], [-1.0, 1.0, 0.0], [-0.5, 0.0, 0.5]]), 1.0e-2
-    )
-    assert inversion.errors == pytest.approx(np.array([2.5, 1.0, 0.5]), 1.0e-3)
-
-
-def test__integration__x2_mappers_give_same_result_via_mapping_and_w_tilde():
+def test__curvature_matrix__via_w_tilde_identical_to_mapping():
     mask = aa.Mask2D.manual(
         mask=[
             [True, True, True, True, True, True, True],
@@ -86,9 +80,7 @@ def test__integration__x2_mappers_give_same_result_via_mapping_and_w_tilde():
         sub_size=1,
     )
 
-    grid = aa.Grid2D.from_mask(
-        mask=mask,
-    )
+    grid = aa.Grid2D.from_mask(mask=mask)
 
     pix_0 = aa.pix.Rectangular(shape=(3, 3))
     pix_1 = aa.pix.Rectangular(shape=(4, 4))
@@ -130,21 +122,18 @@ def test__integration__x2_mappers_give_same_result_via_mapping_and_w_tilde():
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
-    assert inversion_w_tilde.reconstruction == pytest.approx(inversion_mapping.reconstruction, 1.0e-4)
-
-    data_vector = aa.util.linear_eqn.data_vector_via_blurred_mapping_matrix_from(
-        blurred_mapping_matrix=inversion_w_tilde.operated_mapping_matrix,
-        image=masked_imaging.image,
-        noise_map=masked_imaging.noise_map
+    assert inversion_w_tilde.reconstruction == pytest.approx(
+        inversion_mapping.reconstruction, 1.0e-4
     )
 
-    curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
-        mapping_matrix=inversion_w_tilde.operated_mapping_matrix,
-        noise_map=masked_imaging.noise_map
+
+def test__errors_and_errors_with_covariance():
+
+    curvature_reg_matrix = np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 3.0]])
+
+    inversion = MockInversion(curvature_reg_matrix=curvature_reg_matrix)
+
+    assert inversion.errors_with_covariance == pytest.approx(
+        np.array([[2.5, -1.0, -0.5], [-1.0, 1.0, 0.0], [-0.5, 0.0, 0.5]]), 1.0e-2
     )
-
-    curvature_reg_matrix = curvature_matrix + inversion_w_tilde.regularization_matrix
-
-    reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
-
-    assert inversion_w_tilde.reconstruction == pytest.approx(reconstruction, 1.0e-4)
+    assert inversion.errors == pytest.approx(np.array([2.5, 1.0, 0.5]), 1.0e-3)

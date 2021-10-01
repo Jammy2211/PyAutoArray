@@ -305,150 +305,141 @@ def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eq
     )
 
 
-# def test__inversion_matrices__linear_eqns_x2_mapping():
-#
-#     mask = aa.Mask2D.manual(
-#         mask=[
-#             [True, True, True, True, True, True, True],
-#             [True, True, True, True, True, True, True],
-#             [True, True, True, False, True, True, True],
-#             [True, True, False, False, False, True, True],
-#             [True, True, True, False, True, True, True],
-#             [True, True, True, True, True, True, True],
-#             [True, True, True, True, True, True, True],
-#         ],
-#         pixel_scales=2.0,
-#         sub_size=2,
-#     )
-#
-#     # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
-#     # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
-#     # happen for a real lens calculation. This is to make a mapping_matrix matrix which explicitly tests the
-#     # sub-grid.
-#     grid = aa.Grid2D.manual_mask(
-#         grid=[
-#             [1.0, -1.0],
-#             [1.0, -1.0],
-#             [1.0, -1.0],
-#             [1.0, 1.0],
-#             [1.0, 1.0],
-#             [1.0, 1.0],
-#             [-1.0, -1.0],
-#             [-1.0, -1.0],
-#             [-1.0, -1.0],
-#             [-1.0, 1.0],
-#             [-1.0, 1.0],
-#             [-1.0, 1.0],
-#             [0.0, 0.0],
-#             [0.0, 0.0],
-#             [0.0, 0.0],
-#             [0.0, 0.0],
-#             [0.0, 0.0],
-#             [0.0, 0.0],
-#             [0.0, 0.0],
-#             [0.0, 0.0],
-#         ],
-#         mask=mask,
-#     )
-#
-#     pix = aa.pix.Rectangular(shape=(3, 3))
-#     pix_1 = aa.pix.Rectangular(shape=(4, 4))
-#
-#     mapper = pix.mapper_from(
-#         grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
-#     )
-#
-#     mapper_1 = pix_1.mapper_from(
-#         grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
-#     )
-#
-#     reg = aa.reg.Constant(coefficient=1.0)
-#
-#     image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
-#     noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
-#     psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
-#
-#     imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
-#
-#     masked_imaging = imaging.apply_mask(mask=mask)
-#
-#     inversion = aa.Inversion(
-#         dataset=masked_imaging,
-#         mapper_list=[mapper, mapper_1],
-#         regularization_list=[reg, reg],
-#         settings=aa.SettingsInversion(check_solution=False),
-#     )
-#
-#     curvature_matrix_true = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
-#         mapping_matrix=inversion.operated_mapping_matrix,
-#         noise_map=inversion.noise_map
-#     )
-#
-#     curvature_matrix_top_left = aa.util.linear_eqn.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-#         curvature_preload=inversion.linear_eqn_list[0].w_tilde.curvature_preload,
-#         curvature_indexes=inversion.linear_eqn_list[0].w_tilde.indexes,
-#         curvature_lengths=inversion.linear_eqn_list[0].w_tilde.lengths,
-#         data_to_pix_unique=inversion.mapper_list[0].data_unique_mappings.data_to_pix_unique,
-#         data_weights=inversion.mapper_list[0].data_unique_mappings.data_weights,
-#         pix_lengths=inversion.mapper_list[0].data_unique_mappings.pix_lengths,
-#         pix_pixels=inversion.mapper_list[0].pixels,
-#     )
-#
-#     curvature_matrix_diagonal = aa.util.linear_eqn.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
-#         curvature_preload=inversion.linear_eqn_list[0].w_tilde.curvature_preload,
-#         curvature_indexes=inversion.linear_eqn_list[0].w_tilde.indexes,
-#         curvature_lengths=inversion.linear_eqn_list[0].w_tilde.lengths,
-#         data_to_pix_unique_0=inversion.mapper_list[0].data_unique_mappings.data_to_pix_unique,
-#         data_weights_0=inversion.mapper_list[0].data_unique_mappings.data_weights,
-#         pix_lengths_0=inversion.mapper_list[0].data_unique_mappings.pix_lengths,
-#         pix_pixels_0=inversion.mapper_list[0].pixels,
-#         data_to_pix_unique_1=inversion.mapper_list[1].data_unique_mappings.data_to_pix_unique,
-#         data_weights_1=inversion.mapper_list[1].data_unique_mappings.data_weights,
-#         pix_lengths_1=inversion.mapper_list[1].data_unique_mappings.pix_lengths,
-#         pix_pixels_1=inversion.mapper_list[1].pixels,
-#     )
-#
-#    # print(curvature_matrix_diagonal)
-#
-#     curvature_matrix_inversion = inversion.curvature_matrix_diag
-#     curvature_matrix_inversion[0:9, 9:25] = curvature_matrix_diagonal
-#
-#     print(curvature_matrix_inversion.shape)
-#
-#     for i in range(curvature_matrix_inversion.shape[0]):
-#         for j in range(curvature_matrix_inversion.shape[1]):
-#             curvature_matrix_inversion[j, i] = curvature_matrix_inversion[i, j]
-#
-#     print(curvature_matrix_true - curvature_matrix_inversion)
-#     stop
-#
-#
-#     curvature_matrix = curvature_matrix_inversion + curvature_matrix_diagonal
-#
-#     blurred_mapping_matrix = masked_imaging.convolver.convolve_mapping_matrix(mapper.mapping_matrix)
-#
-#     # assert (inversion.operated_mapping_matrix[0:5, 0:9] == blurred_mapping_matrix).all()
-#     # assert (inversion.operated_mapping_matrix[0:5, 9:18] == blurred_mapping_matrix).all()
-#
-#     curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
-#         mapping_matrix=inversion.operated_mapping_matrix,
-#         noise_map=masked_imaging.noise_map
-#     )
-#
-#     # print(curvature_matrix - inversion.curvature_matrix)
-#     #
-#     # assert (inversion.curvature_matrix == curvature_matrix).all()
-#
-#     regularization_matrix_of_reg = reg.regularization_matrix_from(mapper=mapper)
-#
-#     assert (inversion.regularization_matrix[0:9, 0:9] == regularization_matrix_of_reg).all()
-#     assert (inversion.regularization_matrix[9:18, 9:18] == regularization_matrix_of_reg).all()
-#
-#     print(inversion.mapped_reconstructed_data_of_mappers)
-#     print(inversion.mapped_reconstructed_image)
-#
-#     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
-#
+def test__inversion_matrices__linear_eqns_x2_mapping():
+
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, False, True, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, True, False, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ],
+        pixel_scales=2.0,
+        sub_size=2,
+    )
+
+    # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
+    # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
+    # happen for a real lens calculation. This is to make a mapping_matrix matrix which explicitly tests the
+    # sub-grid.
+    grid = aa.Grid2D.manual_mask(
+        grid=[
+            [1.0, -1.0],
+            [1.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 1.0],
+            [1.0, 1.0],
+            [1.0, 1.0],
+            [-1.0, -1.0],
+            [-1.0, -1.0],
+            [-1.0, -1.0],
+            [-1.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 1.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+        ],
+        mask=mask,
+    )
+
+    pix_0 = aa.pix.Rectangular(shape=(3, 3))
+    pix_1 = aa.pix.Rectangular(shape=(4, 4))
+
+    mapper_0 = pix_0.mapper_from(
+        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+    )
+
+    mapper_1 = pix_1.mapper_from(
+        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+    )
+
+    reg = aa.reg.Constant(coefficient=1.0)
+
+    image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+    noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+    psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
+
+    imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
+
+    masked_imaging = imaging.apply_mask(mask=mask)
+
+    inversion = aa.Inversion(
+        dataset=masked_imaging,
+        mapper_list=[mapper_0, mapper_1],
+        regularization_list=[reg, reg],
+        settings=aa.SettingsInversion(check_solution=False),
+    )
+
+    blurred_mapping_matrix_0 = masked_imaging.convolver.convolve_mapping_matrix(
+        mapping_matrix=mapper_0.mapping_matrix
+    )
+    blurred_mapping_matrix_1 = masked_imaging.convolver.convolve_mapping_matrix(
+        mapping_matrix=mapper_1.mapping_matrix
+    )
+
+    assert (
+        inversion.operated_mapping_matrix[0:5, 0:9] == blurred_mapping_matrix_0
+    ).all()
+    assert (
+        inversion.operated_mapping_matrix[0:5, 9:25] == blurred_mapping_matrix_1
+    ).all()
+
+    blurred_mapping_matrix = np.hstack(
+        [blurred_mapping_matrix_0, blurred_mapping_matrix_1]
+    )
+
+    assert inversion.operated_mapping_matrix == pytest.approx(
+        blurred_mapping_matrix, 1.0e-4
+    )
+
+    curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
+        mapping_matrix=blurred_mapping_matrix, noise_map=inversion.noise_map
+    )
+
+    assert inversion.curvature_matrix == pytest.approx(curvature_matrix, 1.0e-4)
+
+    regularization_matrix_of_reg_0 = reg.regularization_matrix_from(mapper=mapper_0)
+    regularization_matrix_of_reg_1 = reg.regularization_matrix_from(mapper=mapper_1)
+
+    assert (
+        inversion.regularization_matrix[0:9, 0:9] == regularization_matrix_of_reg_0
+    ).all()
+    assert (
+        inversion.regularization_matrix[9:25, 9:25] == regularization_matrix_of_reg_1
+    ).all()
+    assert (inversion.regularization_matrix[0:9, 9:25] == np.zeros((9, 16))).all()
+    assert (inversion.regularization_matrix[9:25, 0:9] == np.zeros((16, 9))).all()
+
+    reconstruction_0 = 0.64 * np.ones(9)
+    reconstruction_1 = 0.36 * np.ones(16)
+
+    assert inversion.reconstruction_of_mappers[0] == pytest.approx(
+        reconstruction_0, 1.0e-4
+    )
+    assert inversion.reconstruction_of_mappers[1] == pytest.approx(
+        reconstruction_1, 1.0e-4
+    )
+    assert inversion.reconstruction == pytest.approx(
+        np.concatenate([reconstruction_0, reconstruction_1]), 1.0e-4
+    )
+
+    assert inversion.mapped_reconstructed_data_of_mappers[0] == pytest.approx(
+        0.64 * np.ones(5), 1.0e-4
+    )
+    assert inversion.mapped_reconstructed_data_of_mappers[1] == pytest.approx(
+        0.36 * np.ones(5), 1.0e-4
+    )
+    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
 
 def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper__matrix_formalism():
 

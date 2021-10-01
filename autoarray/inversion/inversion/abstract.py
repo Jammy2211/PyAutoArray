@@ -223,10 +223,7 @@ class AbstractInversion:
         float
             The log determinant of the regularization matrix.
         """
-        if (
-            self.preloads.log_det_regularization_matrix_term
-            is not None
-        ):
+        if self.preloads.log_det_regularization_matrix_term is not None:
             return self.preloads.log_det_regularization_matrix_term
 
         try:
