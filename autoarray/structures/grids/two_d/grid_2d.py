@@ -765,6 +765,14 @@ class Grid2D(AbstractGrid2D):
         if len(result.shape) == 1:
             return a2d.Array2D(array=result, mask=self.mask)
         else:
+
+            from autoarray.structures.grids.two_d.grid_transformed import (
+                Grid2DTransformed,
+            )
+            from autoarray.structures.grids.two_d.grid_transformed import (
+                Grid2DTransformedNumpy,
+            )
+
             if isinstance(result, Grid2DTransformedNumpy):
                 return Grid2DTransformed(grid=result, mask=self.mask)
             return Grid2D(grid=result, mask=self.mask)
@@ -976,13 +984,3 @@ class Grid2DSparse(AbstractGrid2D):
     @property
     def total_sparse_pixels(self):
         return len(self)
-
-
-class Grid2DTransformed(Grid2D):
-
-    pass
-
-
-class Grid2DTransformedNumpy(np.ndarray):
-    def __new__(cls, grid, *args, **kwargs):
-        return grid.view(cls)

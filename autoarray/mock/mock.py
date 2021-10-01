@@ -2,7 +2,7 @@ import numpy as np
 from typing import List, Union
 
 from autoarray.preloads import Preloads
-from autoarray.inversion.pixelization.abstract import AbstractPixelization
+from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging

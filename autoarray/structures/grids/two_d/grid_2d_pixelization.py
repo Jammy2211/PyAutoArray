@@ -10,7 +10,7 @@ from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
 from autoarray.structures.grids.two_d import grid_2d_util
-from autoarray.inversion.pixelization import pixelization_util
+from autoarray.inversion.pixelizations import pixelization_util
 
 
 class PixelNeighbors(np.ndarray):

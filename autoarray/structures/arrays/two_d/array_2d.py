@@ -2,7 +2,6 @@ import logging
 import numpy as np
 
 from autoarray.structures.arrays.two_d.abstract_array_2d import AbstractArray2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
@@ -533,6 +532,8 @@ class Array2D(AbstractArray2D):
             The origin of the grid's mask.
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+
+        from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
         grid = Grid2D.manual_yx_1d(
             y=y, x=x, shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1

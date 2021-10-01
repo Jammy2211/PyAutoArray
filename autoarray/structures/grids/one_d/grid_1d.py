@@ -3,10 +3,6 @@ from typing import Union, Tuple
 
 from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
 
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformed
-from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformedNumpy
-
 from autoarray.structures.arrays.one_d import array_1d as a1d
 from autoarray.mask import mask_1d as m1d
 
@@ -373,10 +369,16 @@ class Grid1D(AbstractGrid1D):
         """
         if len(result.shape) == 1:
             return a1d.Array1D(array=result, mask=self.mask)
-        else:
-            if isinstance(result, Grid2DTransformedNumpy):
-                return Grid2DTransformed(grid=result, mask=self.mask)
-            return Grid2D(grid=result, mask=self.mask.to_mask_2d)
+
+        from autoarray.structures.grids.two_d.grid_transformed import Grid2DTransformed
+        from autoarray.structures.grids.two_d.grid_transformed import (
+            Grid2DTransformedNumpy,
+        )
+        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+
+        if isinstance(result, Grid2DTransformedNumpy):
+            return Grid2DTransformed(grid=result, mask=self.mask)
+        return Grid2D(grid=result, mask=self.mask.to_mask_2d)
 
     def structure_2d_list_from_result_list(self, result_list: list):
         """

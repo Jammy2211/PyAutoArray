@@ -18,8 +18,8 @@ from .fit.fit_dataset import FitInterferometer
 from .instruments import acs
 from .instruments import euclid
 from .inversion.mappers.abstract import AbstractMapper
-from .inversion.pixelization import pixelizations as pix
-from .inversion.regularization import regularization as reg
+from .inversion import pixelizations as pix
+from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.factory import inversion_from as Inversion
 from .inversion.inversion.factory import (
@@ -29,7 +29,7 @@ from .inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
 from .inversion.mappers.abstract import mapper as Mapper
-from .inversion.pixelization.settings import SettingsPixelization
+from .inversion.pixelizations.settings import SettingsPixelization
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
 from .mock import fixtures

@@ -6,8 +6,8 @@ from autoconf import conf
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformed
-from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformedNumpy
+from autoarray.structures.grids.two_d.grid_transformed import Grid2DTransformed
+from autoarray.structures.grids.two_d.grid_transformed import Grid2DTransformedNumpy
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.grids.two_d.grid_2d_irregular import (

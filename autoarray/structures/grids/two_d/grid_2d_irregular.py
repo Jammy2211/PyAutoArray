@@ -8,8 +8,6 @@ import json
 
 from autoarray.structures.arrays.values import ValuesIrregular
 
-from autoarray.structures.grids.two_d.grid_2d import Grid2DTransformedNumpy
-
 from autoarray import exc
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
@@ -150,6 +148,11 @@ class Grid2DIrregular(np.ndarray):
     def grid_from_grid_slim(self, grid_slim):
         """Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
         `Grid2DIrregular` are structured following this *Grid2DIrregular* instance."""
+
+        from autoarray.structures.grids.two_d.grid_transformed import (
+            Grid2DTransformedNumpy,
+        )
+
         if isinstance(grid_slim, Grid2DTransformedNumpy):
             return Grid2DIrregularTransformed(grid=grid_slim)
         return Grid2DIrregular(grid=grid_slim)
