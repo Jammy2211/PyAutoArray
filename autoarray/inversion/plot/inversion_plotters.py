@@ -147,19 +147,17 @@ class InversionPlotter(AbstractPlotter):
             mapper_index
         ]
 
-        ### TODO : Make image of individual mapper
-
         if reconstructed_image:
 
             self.mat_plot_2d.plot_array(
-                array=self.inversion.mapped_reconstructed_image,
+                array=self.inversion.mapped_reconstructed_image_of_mappers[
+                    mapper_index
+                ],
                 visuals_2d=self.visuals_data_with_include_2d,
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
             )
-
-        ### TODO : All of the solution vectors below need to be for an indivudla mapper
 
         if reconstruction:
 
@@ -191,7 +189,9 @@ class InversionPlotter(AbstractPlotter):
         if errors:
 
             mapper_plotter.plot_source_from_values(
-                source_pixelization_values=self.inversion.errors,
+                source_pixelization_values=self.inversion.errors_of_mappers[
+                    mapper_index
+                ],
                 auto_labels=AutoLabels(title="Errors", filename="errors"),
             )
 
@@ -229,7 +229,7 @@ class InversionPlotter(AbstractPlotter):
         if regularization_weights:
 
             mapper_plotter.plot_source_from_values(
-                source_pixelization_values=self.inversion.regularization_weights_of_mappers_list[
+                source_pixelization_values=self.inversion.regularization_weights_of_mappers[
                     mapper_index
                 ],
                 auto_labels=AutoLabels(
@@ -238,37 +238,16 @@ class InversionPlotter(AbstractPlotter):
                 ),
             )
 
-    def subplot(
-        self,
-        reconstructed_image: bool = False,
-        reconstruction: bool = False,
-        errors: bool = False,
-        residual_map: bool = False,
-        normalized_residual_map: bool = False,
-        chi_squared_map: bool = False,
-        regularization_weight_list: bool = False,
-        auto_filename: str = "subplot_inversion",
+    def subplot_of_mapper(
+        self, mapper_index: int = 0, auto_filename: str = "subplot_inversion"
     ):
 
-        return
+        self.open_subplot_figure(number_subplots=6)
 
-        self._subplot_custom_plot(
-            reconstructed_image=reconstructed_image,
-            reconstruction=reconstruction,
-            errors=errors,
-            residual_map=residual_map,
-            normalized_residual_map=normalized_residual_map,
-            chi_squared_map=chi_squared_map,
-            regularization_weight_list=regularization_weight_list,
-            auto_labels=AutoLabels(filename=auto_filename),
+        self.figures_2d_of_mapper(mapper_index=mapper_index, reconstructed_image=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename=f"{auto_filename}_{mapper_index}"
         )
 
-    def subplot_inversion(self):
-        return self.subplot(
-            reconstructed_image=True,
-            reconstruction=True,
-            errors=True,
-            residual_map=True,
-            chi_squared_map=True,
-            regularization_weight_list=True,
-        )
+        self.close_subplot_figure()

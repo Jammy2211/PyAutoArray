@@ -200,15 +200,15 @@ class Preloads:
             return
 
         if (
-            inversion_0.linear_eqn_list[0].operated_mapping_matrix.shape[1]
-            == inversion_1.linear_eqn_list[0].operated_mapping_matrix.shape[1]
+            inversion_0.operated_mapping_matrix.shape[1]
+            == inversion_1.operated_mapping_matrix.shape[1]
         ):
 
             if (
                 np.max(
                     abs(
-                        inversion_0.linear_eqn_list[0].operated_mapping_matrix
-                        - inversion_1.linear_eqn_list[0].operated_mapping_matrix
+                        inversion_0.operated_mapping_matrix
+                        - inversion_1.operated_mapping_matrix
                     )
                 )
                 < 1e-8
@@ -218,10 +218,10 @@ class Preloads:
                     0
                 ].operated_mapping_matrix
                 self.curvature_matrix_preload = (
-                    inversion_0.linear_eqn_list[0].curvature_matrix_preload
+                    inversion_0.curvature_matrix_preload
                 ).astype("int")
                 self.curvature_matrix_counts = (
-                    inversion_0.linear_eqn_list[0].curvature_matrix_counts
+                    inversion_0.curvature_matrix_counts
                 ).astype("int")
 
                 logger.info(

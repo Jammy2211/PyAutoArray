@@ -94,19 +94,19 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
 
-# def test__inversion_subplot_is_output_for_all_inversions(
-#     imaging_7x7,
-#     rectangular_inversion_7x7_3x3,
-#     voronoi_inversion_9_3x3,
-#     plot_path,
-#     plot_patch,
-# ):
-#
-#     inversion_plotter = aplt.InversionPlotter(
-#         inversion=rectangular_inversion_7x7_3x3,
-#         visuals_2d=aplt.Visuals2D(indexes=[0], pixelization_indexes=[1]),
-#         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-#     )
-#
-#     inversion_plotter.subplot_inversion()
-#     assert path.join(plot_path, "subplot_inversion.png") in plot_patch.paths
+def test__inversion_subplot_of_mapper__is_output_for_all_inversions(
+    imaging_7x7,
+    rectangular_inversion_7x7_3x3,
+    voronoi_inversion_9_3x3,
+    plot_path,
+    plot_patch,
+):
+
+    inversion_plotter = aplt.InversionPlotter(
+        inversion=rectangular_inversion_7x7_3x3,
+        visuals_2d=aplt.Visuals2D(indexes=[0], pixelization_indexes=[1]),
+        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    inversion_plotter.subplot_of_mapper(mapper_index=0)
+    assert path.join(plot_path, "subplot_inversion_0.png") in plot_patch.paths

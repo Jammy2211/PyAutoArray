@@ -240,16 +240,10 @@ class MockLinearEqn(AbstractLinearEqn):
 
 class MockLinearEqnImaging(AbstractLinearEqnImaging):
     def __init__(
-        self,
-        noise_map=None,
-        convolver=None,
-        mapper=None,
-        blurred_mapping_matrix=None,
+        self, noise_map=None, convolver=None, mapper=None, blurred_mapping_matrix=None
     ):
 
-        super().__init__(
-            noise_map=noise_map, convolver=convolver, mapper=mapper,
-        )
+        super().__init__(noise_map=noise_map, convolver=convolver, mapper=mapper)
 
         self._blurred_mapping_matrix = blurred_mapping_matrix
 

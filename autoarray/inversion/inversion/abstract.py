@@ -50,6 +50,40 @@ class AbstractInversion:
     def mapper_list(self):
         return [eqn.mapper for eqn in self.linear_eqn_list]
 
+    def source_quantity_of_mappers_from(
+        self, source_quantity: np.ndarray
+    ) -> List[np.ndarray]:
+        """
+        Certain results in an `Inversion` are stored as a ndarray which contains the values of that quantity for
+        every mapper. For example, the `reconstruction` of an inversion is a ndarray which has the source flux
+        values of every mapper within the inversion.
+
+        This function converts such an ndarray of `source_quantity` to a list of ndarrays, where each list index
+        corresponds to each mapper in the inversion.
+
+        Parameters
+        ----------
+        source_quantity
+            The quantity whose values are mapped to a list of values for each individual mapper.
+
+        Returns
+        -------
+        The list of ndarrays of values for each individual mapper.
+
+        """
+        source_quantity_of_mappers = []
+
+        index = 0
+
+        for mapper in self.mapper_list:
+            source_quantity_of_mappers.append(
+                source_quantity[index : index + mapper.pixels]
+            )
+
+            index += mapper.pixels
+
+        return source_quantity_of_mappers
+
     @cached_property
     @profile_func
     def regularization_matrix(self) -> np.ndarray:
@@ -79,22 +113,7 @@ class AbstractInversion:
     @cached_property
     @profile_func
     def reconstruction_of_mappers(self):
-
-        reconstruction = self.reconstruction
-
-        reconstruction_of_mappers = []
-
-        index = 0
-
-        for mapper in self.mapper_list:
-
-            reconstruction_of_mappers.append(
-                reconstruction[index : index + mapper.pixels]
-            )
-
-            index += mapper.pixels
-
-        return reconstruction_of_mappers
+        return self.source_quantity_of_mappers_from(source_quantity=self.reconstruction)
 
     @cached_property
     @profile_func
@@ -284,8 +303,13 @@ class AbstractInversion:
 
         return brightest_reconstruction_pixel_centre_list
 
+    @cached_property
+    @profile_func
+    def errors_of_mappers(self):
+        return self.source_quantity_of_mappers_from(source_quantity=self.errors)
+
     @property
-    def regularization_weights_of_mappers_list(self):
+    def regularization_weights_of_mappers(self):
         return [
             regularization.regularization_weights_from_mapper(
                 mapper=self.mapper_list[0]
