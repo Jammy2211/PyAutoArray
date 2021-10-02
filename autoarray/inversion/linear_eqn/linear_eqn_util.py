@@ -696,16 +696,6 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
 
             curvature_index += 1
 
-    curvature_matrix *= 2.0
-
-    # for i in range(pix_pixels_0):
-    #     for j in range(i, pix_pixels_1):
-    #         curvature_matrix[i, j] += curvature_matrix[j, i]
-    #
-    # for i in range(pix_pixels_0):
-    #     for j in range(i, pix_pixels_1):
-    #         curvature_matrix[j, i] = curvature_matrix[i, j]
-
     return curvature_matrix
 
 

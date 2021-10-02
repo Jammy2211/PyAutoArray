@@ -16,6 +16,21 @@ from autoarray.inversion.inversion import inversion_util
 class InversionMatrices(AbstractInversion):
     @cached_property
     @profile_func
+    def mapping_matrix(self) -> np.ndarray:
+        """
+        For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
+        image  plane. This therefore creates a 'image' of the source pixel (which corresponds to a set of values that
+        mostly zeros, but with 1's where mappings occur).
+
+        Before reconstructing the source, we blur every one of these source pixel images with the Point Spread Function
+        of our  dataset via 2D convolution. This uses the methods
+        in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
+        """
+
+        return np.hstack([mapper.mapping_matrix for mapper in self.mapper_list])
+
+    @cached_property
+    @profile_func
     def operated_mapping_matrix(self) -> np.ndarray:
         """
         For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
@@ -90,6 +105,16 @@ class InversionMatrices(AbstractInversion):
         pixels_diag = self.mapper_list[0].pixels
 
         curvature_matrix_diag[0:pixels_diag, pixels_diag:] = curvature_matrix_off_diag
+
+        curvature_matrix_off_diag = self.linear_eqn_list[
+            1
+        ].curvature_matrix_off_diag_from(mapper_off_diag=self.mapper_list[0])
+
+        pixels_diag = self.mapper_list[0].pixels
+
+        curvature_matrix_diag[
+            0:pixels_diag, pixels_diag:
+        ] += curvature_matrix_off_diag.T
 
         for i in range(curvature_matrix_diag.shape[0]):
             for j in range(curvature_matrix_diag.shape[1]):

@@ -78,8 +78,8 @@ class FitDataset:
         raise NotImplementedError
 
     @property
-    def total_inversions(self):
-        return self.fit.total_inversions
+    def total_mappers(self):
+        return self.fit.total_mappers
 
 
 class FitImaging(FitDataset):

@@ -110,17 +110,17 @@ def test__set_relocated_grid():
     assert (preloads.relocated_grid == np.ones((3, 2))).all()
 
 
-def test__set_mapper():
+def test__set_mapper_list():
 
     # LinearEqn is None so there is no mapper, thus preload mapper to None.
 
     fit_0 = MockFit(inversion=None)
     fit_1 = MockFit(inversion=None)
 
-    preloads = aa.Preloads(mapper=1)
-    preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(mapper_list=1)
+    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.mapper is None
+    assert preloads.mapper_list is None
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
@@ -132,10 +132,10 @@ def test__set_mapper():
     fit_0 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_0]))
     fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
-    preloads = aa.Preloads(mapper=1)
-    preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(mapper_list=1)
+    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.mapper is None
+    assert preloads.mapper_list is None
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
@@ -145,10 +145,10 @@ def test__set_mapper():
     fit_0 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_0]))
     fit_1 = MockFit(inversion=MockInversion(linear_eqn_list=[linear_eqn_1]))
 
-    preloads = aa.Preloads(mapper=1)
-    preloads.set_mapper(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(mapper_list=1)
+    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert (preloads.mapper.mapping_matrix == np.ones((3, 2))).all()
+    assert (preloads.mapper_list[0].mapping_matrix == np.ones((3, 2))).all()
 
 
 def test__set_inversion():

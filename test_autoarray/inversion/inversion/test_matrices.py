@@ -4,10 +4,25 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.mock.mock import MockLinearEqn, MockInversion
+from autoarray.mock.mock import MockMapper, MockLinearEqn, MockInversion
 
 
 directory = path.dirname(path.realpath(__file__))
+
+
+def test__mapping_matrix():
+
+    mapper_0 = MockMapper(mapping_matrix=np.ones((2, 2)))
+    mapper_1 = MockMapper(mapping_matrix=2.0 * np.ones((2, 3)))
+
+    linear_eqn_0 = MockLinearEqn(mapper=mapper_0)
+    linear_eqn_1 = MockLinearEqn(mapper=mapper_1)
+
+    inversion = MockInversion(linear_eqn_list=[linear_eqn_0, linear_eqn_1])
+
+    mapping_matrix = np.array([[1.0, 1.0, 2.0, 2.0, 2.0], [1.0, 1.0, 2.0, 2.0, 2.0]])
+
+    assert inversion.mapping_matrix == pytest.approx(mapping_matrix, 1.0e-4)
 
 
 def test__operated_mapping_matrix():
@@ -21,7 +36,9 @@ def test__operated_mapping_matrix():
         [[1.0, 1.0, 2.0, 2.0, 2.0], [1.0, 1.0, 2.0, 2.0, 2.0]]
     )
 
-    assert inversion.operated_mapping_matrix == pytest.approx(operated_mapping_matrix)
+    assert inversion.operated_mapping_matrix == pytest.approx(
+        operated_mapping_matrix, 1.0e-4
+    )
 
 
 def test__data_vector_from():
@@ -95,14 +112,12 @@ def test__curvature_matrix__via_w_tilde_identical_to_mapping():
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    # image = aa.Array2D.manual_native(array=np.random.random(7, 7), pixel_scales=1.0)
-    # noise_map = aa.Array2D.manual_native(array=np.random.random(7, 7), pixel_scales=1.0)
-    # kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0],[0.0, 1.0, 0.0]])
-    # psf = aa.Kernel2D.manual_native(array=kernel, pixel_scales=1.0)
-
-    image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
-    noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
-    psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
+    image = aa.Array2D.manual_native(array=np.random.random((7, 7)), pixel_scales=1.0)
+    noise_map = aa.Array2D.manual_native(
+        array=np.random.random((7, 7)), pixel_scales=1.0
+    )
+    kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
+    psf = aa.Kernel2D.manual_native(array=kernel, pixel_scales=1.0)
 
     imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -122,8 +137,8 @@ def test__curvature_matrix__via_w_tilde_identical_to_mapping():
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
-    assert inversion_w_tilde.reconstruction == pytest.approx(
-        inversion_mapping.reconstruction, 1.0e-4
+    assert inversion_w_tilde.curvature_matrix == pytest.approx(
+        inversion_mapping.curvature_matrix, 1.0e-4
     )
 
 

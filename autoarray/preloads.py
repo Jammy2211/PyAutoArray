@@ -18,7 +18,7 @@ class Preloads:
         use_w_tilde=None,
         sparse_image_plane_grids_of_planes=None,
         relocated_grid=None,
-        mapper=None,
+        mapper_list=None,
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
@@ -31,7 +31,7 @@ class Preloads:
 
         self.sparse_image_plane_grids_of_planes = sparse_image_plane_grids_of_planes
         self.relocated_grid = relocated_grid
-        self.mapper = mapper
+        self.mapper_list = mapper_list
         self.operated_mapping_matrix = operated_mapping_matrix
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
@@ -128,14 +128,14 @@ class Preloads:
                     "PRELOADS - Relocated grid of pxielization preloaded for this model-fit."
                 )
 
-    def set_mapper(self, fit_0, fit_1):
+    def set_mapper_list(self, fit_0, fit_1):
         """
         If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
-        source-pixels does not change during the model-fit and the `Mapper` containing this information can be
-        preloaded. This includes preloading the `mapping_matrix`.
+        source-pixels does not change during the model-fit and the list of `Mapper`'s containing this information can
+        be preloaded. This includes preloading the `mapping_matrix`.
 
         This function compares the mapping matrix of two fit's corresponding to two model instances, and preloads the
-        mapper if the mapping matrix of both fits are the same.
+        list of mappers if the mapping matrix of both fits are the same.
 
         The preload is typically used in searches where only light profiles vary (e.g. when only the lens's light is
         being fitted for).
@@ -148,19 +148,19 @@ class Preloads:
             The second fit corresponding to a model with a different set of unit-values.
         """
 
-        self.mapper = None
+        self.mapper_list = None
 
         if fit_0.inversion is None:
             return
 
-        mapper_0 = fit_0.inversion.mapper_list[0]
-        mapper_1 = fit_1.inversion.mapper_list[0]
+        inversion_0 = fit_0.inversion
+        inversion_1 = fit_1.inversion
 
-        if mapper_0.mapping_matrix.shape[1] == mapper_1.mapping_matrix.shape[1]:
+        if inversion_0.mapping_matrix.shape[1] == inversion_1.mapping_matrix.shape[1]:
 
-            if np.allclose(mapper_0.mapping_matrix, mapper_1.mapping_matrix):
+            if np.allclose(inversion_0.mapping_matrix, inversion_1.mapping_matrix):
 
-                self.mapper = mapper_0
+                self.mapper_list = inversion_0.mapper_list
 
                 logger.info(
                     "PRELOADS - Mappers of planes preloaded for this model-fit."
@@ -301,7 +301,7 @@ class Preloads:
         self.traced_grids_of_planes_for_inversion = None
         self.sparse_image_plane_grids_of_planes = None
         self.relocated_grid = None
-        self.mapper = None
+        self.mapper_list = None
         self.operated_mapping_matrix = None
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
@@ -319,7 +319,7 @@ class Preloads:
         """
         line = [f"W Tilde = {self.w_tilde is not None}\n"]
         line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
-        line += [f"Mapper = {self.mapper is not None}\n"]
+        line += [f"Mapper = {self.mapper_list is not None}\n"]
         line += [
             f"Blurred Mapping Matrix = {self.operated_mapping_matrix is not None}\n"
         ]

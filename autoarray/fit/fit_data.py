@@ -164,7 +164,7 @@ class AbstractFit(ABC):
         return self.log_evidence
 
     @property
-    def total_inversions(self) -> int:
+    def total_mappers(self) -> int:
         if self.inversion is None:
             return 0
         return 1
