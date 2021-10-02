@@ -8,6 +8,7 @@ from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
 from autoarray.inversion.linear_eqn.interferometer import (
@@ -18,15 +19,14 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 
 from autoarray import exc
+from autoarray.inversion.inversion import inversion_util
 
 
 class AbstractInversion:
     def __init__(
         self,
         data: Union[Visibilities, Array2D],
-        linear_eqn_list: List[
-            Union[AbstractLinearEqnImaging, AbstractLinearEqnInterferometer]
-        ],
+        linear_eqn: Union[AbstractLinearEqnImaging, AbstractLinearEqnInterferometer],
         regularization_list: [AbstractRegularization],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -35,7 +35,7 @@ class AbstractInversion:
 
         self.data = data
 
-        self.linear_eqn_list = linear_eqn_list
+        self.linear_eqn = linear_eqn
         self.regularization_list = regularization_list
 
         self.settings = settings
@@ -44,45 +44,11 @@ class AbstractInversion:
 
     @property
     def noise_map(self):
-        return self.linear_eqn_list[0].noise_map
+        return self.linear_eqn.noise_map
 
     @property
     def mapper_list(self):
-        return [eqn.mapper for eqn in self.linear_eqn_list]
-
-    def source_quantity_of_mappers_from(
-        self, source_quantity: np.ndarray
-    ) -> List[np.ndarray]:
-        """
-        Certain results in an `Inversion` are stored as a ndarray which contains the values of that quantity for
-        every mapper. For example, the `reconstruction` of an inversion is a ndarray which has the source flux
-        values of every mapper within the inversion.
-
-        This function converts such an ndarray of `source_quantity` to a list of ndarrays, where each list index
-        corresponds to each mapper in the inversion.
-
-        Parameters
-        ----------
-        source_quantity
-            The quantity whose values are mapped to a list of values for each individual mapper.
-
-        Returns
-        -------
-        The list of ndarrays of values for each individual mapper.
-
-        """
-        source_quantity_of_mappers = []
-
-        index = 0
-
-        for mapper in self.mapper_list:
-            source_quantity_of_mappers.append(
-                source_quantity[index : index + mapper.pixels]
-            )
-
-            index += mapper.pixels
-
-        return source_quantity_of_mappers
+        return self.linear_eqn.mapper_list
 
     @cached_property
     @profile_func
@@ -113,7 +79,9 @@ class AbstractInversion:
     @cached_property
     @profile_func
     def reconstruction_of_mappers(self):
-        return self.source_quantity_of_mappers_from(source_quantity=self.reconstruction)
+        return self.linear_eqn.source_quantity_of_mappers_from(
+            source_quantity=self.reconstruction
+        )
 
     @cached_property
     @profile_func
@@ -132,13 +100,9 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-
-        return [
-            eqn.mapped_reconstructed_data_from(reconstruction=reconstruction)
-            for eqn, reconstruction in zip(
-                self.linear_eqn_list, self.reconstruction_of_mappers
-            )
-        ]
+        return self.linear_eqn.mapped_reconstructed_data_of_mappers_from(
+            reconstruction=self.reconstruction
+        )
 
     @cached_property
     @profile_func
@@ -155,12 +119,9 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return [
-            eqn.mapped_reconstructed_image_from(reconstruction=reconstruction)
-            for eqn, reconstruction in zip(
-                self.linear_eqn_list, self.reconstruction_of_mappers
-            )
-        ]
+        return self.linear_eqn.mapped_reconstructed_image_of_mappers_from(
+            reconstruction=self.reconstruction
+        )
 
     @cached_property
     @profile_func
@@ -277,13 +238,9 @@ class AbstractInversion:
 
         brightest_reconstruction_pixel_list = []
 
-        for eqn, reconstruction in zip(
-            self.linear_eqn_list, self.reconstruction_of_mappers
-        ):
+        for reconstruction in self.reconstruction_of_mappers:
 
-            brightest_reconstruction_pixel_list.append(
-                eqn.brightest_reconstruction_pixel_from(reconstruction=reconstruction)
-            )
+            brightest_reconstruction_pixel_list.append(np.argmax(reconstruction))
 
         return brightest_reconstruction_pixel_list
 
@@ -292,21 +249,26 @@ class AbstractInversion:
 
         brightest_reconstruction_pixel_centre_list = []
 
-        for eqn, reconstruction in zip(
-            self.linear_eqn_list, self.reconstruction_of_mappers
+        for mapper, reconstruction in zip(
+            self.mapper_list, self.reconstruction_of_mappers
         ):
-            brightest_reconstruction_pixel_centre_list.append(
-                eqn.brightest_reconstruction_pixel_centre_from(
-                    reconstruction=reconstruction
-                )
+
+            brightest_reconstruction_pixel = np.argmax(reconstruction)
+
+            centre = Grid2DIrregular(
+                grid=[mapper.source_pixelization_grid[brightest_reconstruction_pixel]]
             )
+
+            brightest_reconstruction_pixel_centre_list.append(centre)
 
         return brightest_reconstruction_pixel_centre_list
 
     @cached_property
     @profile_func
     def errors_of_mappers(self):
-        return self.source_quantity_of_mappers_from(source_quantity=self.errors)
+        return self.linear_eqn.source_quantity_of_mappers_from(
+            source_quantity=self.errors
+        )
 
     @property
     def regularization_weights_of_mappers(self):
@@ -316,3 +278,72 @@ class AbstractInversion:
             )
             for regularization in self.regularization_list
         ]
+
+    @property
+    def residual_map_of_mappers(self,) -> List[np.ndarray]:
+
+        residual_map_of_mappers = []
+
+        for mapper_index in range(self.linear_eqn.total_mappers):
+
+            mapper = self.mapper_list[mapper_index]
+            reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
+
+            residual_map = inversion_util.inversion_residual_map_from(
+                reconstruction=reconstruction_of_mapper,
+                data=self.data,
+                slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
+                all_sub_slim_indexes_for_pixelization_index=mapper.all_sub_slim_indexes_for_pixelization_index,
+            )
+
+            residual_map_of_mappers.append(residual_map)
+
+        return residual_map_of_mappers
+
+    @property
+    def normalized_residual_map_of_mappers(self) -> List[np.ndarray]:
+
+        normalized_map_of_mappers = []
+
+        for mapper_index in range(self.linear_eqn.total_mappers):
+
+            mapper = self.mapper_list[mapper_index]
+            reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
+
+            normalized_map = inversion_util.inversion_normalized_residual_map_from(
+                reconstruction=reconstruction_of_mapper,
+                data=self.data,
+                noise_map_1d=self.noise_map.slim,
+                slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
+                all_sub_slim_indexes_for_pixelization_index=mapper.all_sub_slim_indexes_for_pixelization_index,
+            )
+
+            normalized_map_of_mappers.append(normalized_map)
+
+        return normalized_map_of_mappers
+
+    @property
+    def chi_squared_map_of_mappers(self) -> List[np.ndarray]:
+
+        chi_squared_map_of_mappers = []
+
+        for mapper_index in range(self.linear_eqn.total_mappers):
+
+            mapper = self.mapper_list[mapper_index]
+            reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
+
+            chi_squared_map = inversion_util.inversion_chi_squared_map_from(
+                reconstruction=reconstruction_of_mapper,
+                data=self.data,
+                noise_map_1d=self.noise_map.slim,
+                slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
+                all_sub_slim_indexes_for_pixelization_index=mapper.all_sub_slim_indexes_for_pixelization_index,
+            )
+
+            chi_squared_map_of_mappers.append(chi_squared_map)
+
+        return chi_squared_map_of_mappers
+
+    @property
+    def total_mappers(self):
+        return len(self.mapper_list)

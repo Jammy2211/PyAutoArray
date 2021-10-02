@@ -142,11 +142,6 @@ class InversionPlotter(AbstractPlotter):
 
         mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)
 
-        linear_eqns = self.inversion.linear_eqn_list[mapper_index]
-        reconstruction_of_mapper = self.inversion.reconstruction_of_mappers[
-            mapper_index
-        ]
-
         if reconstructed_image:
 
             self.mat_plot_2d.plot_array(
@@ -177,7 +172,9 @@ class InversionPlotter(AbstractPlotter):
                     vmax_custom = True
 
             mapper_plotter.plot_source_from_values(
-                source_pixelization_values=reconstruction_of_mapper,
+                source_pixelization_values=self.inversion.reconstruction_of_mappers[
+                    mapper_index
+                ],
                 auto_labels=AutoLabels(
                     title="Source Inversion", filename="reconstruction"
                 ),
@@ -198,18 +195,18 @@ class InversionPlotter(AbstractPlotter):
         if residual_map:
 
             mapper_plotter.plot_source_from_values(
-                source_pixelization_values=linear_eqns.residual_map_from(
-                    data=self.inversion.data, reconstruction=reconstruction_of_mapper
-                ),
+                source_pixelization_values=self.inversion.residual_map_of_mappers[
+                    mapper_index
+                ],
                 auto_labels=AutoLabels(title="Residual Map", filename="residual_map"),
             )
 
         if normalized_residual_map:
 
             mapper_plotter.plot_source_from_values(
-                source_pixelization_values=linear_eqns.normalized_residual_map_from(
-                    data=self.inversion.data, reconstruction=reconstruction_of_mapper
-                ),
+                source_pixelization_values=self.inversion.normalized_residual_map_of_mappers[
+                    mapper_index
+                ],
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map", filename="normalized_residual_map"
                 ),
@@ -218,9 +215,9 @@ class InversionPlotter(AbstractPlotter):
         if chi_squared_map:
 
             mapper_plotter.plot_source_from_values(
-                source_pixelization_values=linear_eqns.chi_squared_map_from(
-                    data=self.inversion.data, reconstruction=reconstruction_of_mapper
-                ),
+                source_pixelization_values=self.inversion.chi_squared_map_of_mappers[
+                    mapper_index
+                ],
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", filename="chi_squared_map"
                 ),

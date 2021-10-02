@@ -1,29 +1,43 @@
 import numpy as np
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
+
+from autoconf import cached_property
 
 from autoarray.numba_util import profile_func
 
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-
-from autoarray.inversion.linear_eqn import linear_eqn_util
 
 
 class AbstractLinearEqn:
     def __init__(
         self,
         noise_map: Union[Array2D, VisibilitiesNoiseMap],
-        mapper: Union[MapperRectangular, MapperVoronoi],
+        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
         profiling_dict: Optional[Dict] = None,
     ):
 
         self.noise_map = noise_map
-        self.mapper = mapper
+        self.mapper_list = mapper_list
 
         self.profiling_dict = profiling_dict
+
+    @cached_property
+    @profile_func
+    def mapping_matrix(self) -> np.ndarray:
+        """
+        For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
+        image  plane. This therefore creates a 'image' of the source pixel (which corresponds to a set of values that
+        mostly zeros, but with 1's where mappings occur).
+
+        Before reconstructing the source, we blur every one of these source pixel images with the Point Spread Function
+        of our  dataset via 2D convolution. This uses the methods
+        in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
+        """
+
+        return np.hstack([mapper.mapping_matrix for mapper in self.mapper_list])
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
@@ -34,61 +48,53 @@ class AbstractLinearEqn:
         raise NotImplementedError
 
     @property
-    def curvature_matrix_diag(self) -> np.ndarray:
+    def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
-    def curvature_matrix_off_diag_from(self, mapper_off_diag) -> np.ndarray:
+    def source_quantity_of_mappers_from(
+        self, source_quantity: np.ndarray
+    ) -> List[np.ndarray]:
+        """
+        Certain results in an `Inversion` are stored as a ndarray which contains the values of that quantity for
+        every mapper. For example, the `reconstruction` of an inversion is a ndarray which has the source flux
+        values of every mapper within the inversion.
+
+        This function converts such an ndarray of `source_quantity` to a list of ndarrays, where each list index
+        corresponds to each mapper in the inversion.
+
+        Parameters
+        ----------
+        source_quantity
+            The quantity whose values are mapped to a list of values for each individual mapper.
+
+        Returns
+        -------
+        The list of ndarrays of values for each individual mapper.
+
+        """
+        source_quantity_of_mappers = []
+
+        index = 0
+
+        for mapper in self.mapper_list:
+            source_quantity_of_mappers.append(
+                source_quantity[index : index + mapper.pixels]
+            )
+
+            index += mapper.pixels
+
+        return source_quantity_of_mappers
+
+    @profile_func
+    def mapped_reconstructed_data_of_mappers_from(
+        self, reconstruction
+    ) -> List[Array2D]:
         raise NotImplementedError
 
     @profile_func
-    def mapped_reconstructed_data_from(self, reconstruction) -> Array2D:
+    def mapped_reconstructed_image_of_mappers_from(self, reconstruction) -> Array2D:
         raise NotImplementedError
 
-    @profile_func
-    def mapped_reconstructed_image_from(self, reconstruction) -> Array2D:
-        raise NotImplementedError
-
-    def residual_map_from(
-        self, data: np.ndarray, reconstruction: np.ndarray
-    ) -> np.ndarray:
-        return linear_eqn_util.residual_map_from(
-            reconstruction=reconstruction,
-            data=data,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
-        )
-
-    def normalized_residual_map_from(
-        self, data: np.ndarray, reconstruction: np.ndarray
-    ) -> np.ndarray:
-        return linear_eqn_util.inversion_normalized_residual_map_from(
-            reconstruction=reconstruction,
-            data=data,
-            noise_map_1d=self.noise_map,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
-        )
-
-    def chi_squared_map_from(
-        self, data: np.ndarray, reconstruction: np.ndarray
-    ) -> np.ndarray:
-        return linear_eqn_util.inversion_chi_squared_map_from(
-            data=data,
-            reconstruction=reconstruction,
-            noise_map_1d=self.noise_map,
-            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
-        )
-
-    def brightest_reconstruction_pixel_from(self, reconstruction: np.ndarray):
-        return np.argmax(reconstruction)
-
-    def brightest_reconstruction_pixel_centre_from(self, reconstruction: np.ndarray):
-
-        brightest_reconstruction_pixel = self.brightest_reconstruction_pixel_from(
-            reconstruction=reconstruction
-        )
-
-        return Grid2DIrregular(
-            grid=[self.mapper.source_pixelization_grid[brightest_reconstruction_pixel]]
-        )
+    @property
+    def total_mappers(self):
+        return len(self.mapper_list)

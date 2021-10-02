@@ -1,7 +1,8 @@
 import numpy as np
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
+from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -19,40 +20,63 @@ class AbstractLinearEqnInterferometer(AbstractLinearEqn):
         self,
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
-        mapper: Union[MapperRectangular, MapperVoronoi],
+        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
         profiling_dict: Optional[Dict] = None,
     ):
 
         super().__init__(
-            noise_map=noise_map, mapper=mapper, profiling_dict=profiling_dict
+            noise_map=noise_map, mapper_list=mapper_list, profiling_dict=profiling_dict
         )
 
         self.transformer = transformer
 
     @cached_property
     def transformed_mapping_matrix(self) -> np.ndarray:
+        return np.hstack(
+            [
+                self.transformed_mapping_matrix_of_mapper(mapper_index=mapper_index)
+                for mapper_index in range(self.total_mappers)
+            ]
+        )
 
+    def transformed_mapping_matrix_of_mapper(self, mapper_index: int) -> np.ndarray:
         return self.transformer.transform_mapping_matrix(
-            mapping_matrix=self.mapper.mapping_matrix
+            mapping_matrix=self.mapper_list[mapper_index].mapping_matrix
         )
 
     @property
+    @profile_func
     def operated_mapping_matrix(self) -> np.ndarray:
         return self.transformed_mapping_matrix
 
-    def mapped_reconstructed_data_from(self, reconstruction: np.ndarray):
+    def mapped_reconstructed_data_of_mappers_from(self, reconstruction: np.ndarray):
         raise NotImplementedError
 
-    def mapped_reconstructed_image_from(self, reconstruction: np.ndarray):
+    def mapped_reconstructed_image_of_mappers_from(self, reconstruction: np.ndarray):
 
-        mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_mapping_matrix_from(
-            mapping_matrix=self.mapper.mapping_matrix, reconstruction=reconstruction
+        mapped_reconstructed_image_of_mappers = []
+
+        reconstruction_of_mappers = self.source_quantity_of_mappers_from(
+            source_quantity=reconstruction
         )
 
-        return Array2D(
-            array=mapped_reconstructed_image,
-            mask=self.mapper.source_grid_slim.mask.mask_sub_1,
-        )
+        for mapper_index in range(self.total_mappers):
+
+            mapper = self.mapper_list[mapper_index]
+            reconstruction = reconstruction_of_mappers[mapper_index]
+
+            mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_mapping_matrix_from(
+                mapping_matrix=mapper.mapping_matrix, reconstruction=reconstruction
+            )
+
+            mapped_reconstructed_image = Array2D(
+                array=mapped_reconstructed_image,
+                mask=mapper.source_grid_slim.mask.mask_sub_1,
+            )
+
+            mapped_reconstructed_image_of_mappers.append(mapped_reconstructed_image)
+
+        return mapped_reconstructed_image_of_mappers
 
 
 class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
@@ -60,7 +84,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
         self,
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
-        mapper: Union[MapperRectangular, MapperVoronoi],
+        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -79,7 +103,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper : inversion.Mapper
+        mapper_list : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -103,7 +127,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
         super().__init__(
             noise_map=noise_map,
             transformer=transformer,
-            mapper=mapper,
+            mapper_list=mapper_list,
             profiling_dict=profiling_dict,
         )
 
@@ -115,8 +139,8 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
             noise_map=self.noise_map,
         )
 
-    @property
-    def curvature_matrix_diag(self) -> np.ndarray:
+    @cached_property
+    def curvature_matrix(self) -> np.ndarray:
 
         real_curvature_matrix = linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.transformed_mapping_matrix.real,
@@ -130,16 +154,33 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
 
         return np.add(real_curvature_matrix, imag_curvature_matrix)
 
-    def mapped_reconstructed_data_from(
+    def mapped_reconstructed_data_of_mappers_from(
         self, reconstruction: np.ndarray
-    ) -> Visibilities:
+    ) -> List[Visibilities]:
 
-        visibilities = linear_eqn_util.mapped_reconstructed_visibilities_from(
-            transformed_mapping_matrix=self.transformed_mapping_matrix,
-            reconstruction=reconstruction,
+        mapped_reconstructed_data_of_mappers = []
+
+        reconstruction_of_mappers = self.source_quantity_of_mappers_from(
+            source_quantity=reconstruction
         )
 
-        return Visibilities(visibilities=visibilities)
+        for mapper_index in range(self.total_mappers):
+
+            reconstruction = reconstruction_of_mappers[mapper_index]
+            transformed_mapping_matrix = self.transformed_mapping_matrix_of_mapper(
+                mapper_index=mapper_index
+            )
+
+            visibilities = linear_eqn_util.mapped_reconstructed_visibilities_from(
+                transformed_mapping_matrix=transformed_mapping_matrix,
+                reconstruction=reconstruction,
+            )
+
+            visibilities = Visibilities(visibilities=visibilities)
+
+            mapped_reconstructed_data_of_mappers.append(visibilities)
+
+        return mapped_reconstructed_data_of_mappers
 
 
 class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
@@ -147,7 +188,7 @@ class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
         self,
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
-        mapper: Union[MapperRectangular, MapperVoronoi],
+        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
         profiling_dict: Optional[Dict] = None,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
@@ -165,7 +206,7 @@ class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper : inversion.Mapper
+        mapper_list : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -189,13 +230,13 @@ class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
         super().__init__(
             noise_map=noise_map,
             transformer=transformer,
-            mapper=mapper,
+            mapper_list=mapper_list,
             profiling_dict=profiling_dict,
         )
 
-    def mapped_reconstructed_data_from(
+    def mapped_reconstructed_data_of_mappers_from(
         self, reconstruction: np.ndarray
-    ) -> Visibilities:
+    ) -> List[Visibilities]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane to
         reconstruct the image in real-space. We then apply the Fourier Transform to map this to the reconstructed
@@ -206,6 +247,12 @@ class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
         Visibilities
             The reconstructed visibilities which the inversion fits.
         """
-        return self.transformer.visibilities_from_image(
-            image=self.mapped_reconstructed_image_from(reconstruction=reconstruction)
+
+        mapped_reconstructed_image_of_mappers = self.mapped_reconstructed_image_of_mappers_from(
+            reconstruction=reconstruction
         )
+
+        return [
+            self.transformer.visibilities_from_image(image=mapped_reconstructed_image)
+            for mapped_reconstructed_image in mapped_reconstructed_image_of_mappers
+        ]

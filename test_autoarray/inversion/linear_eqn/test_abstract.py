@@ -9,30 +9,13 @@ from autoarray.mock.mock import MockMapper, MockLinearEqn
 directory = path.dirname(path.realpath(__file__))
 
 
-class TestAbstractLinearEqn:
-    def test__brightest_reconstruction_pixel_and_centre(self):
+def test__mapping_matrix():
 
-        matrix_shape = (9, 3)
+    mapper_0 = MockMapper(mapping_matrix=np.ones((2, 2)))
+    mapper_1 = MockMapper(mapping_matrix=2.0 * np.ones((2, 3)))
 
-        mapper = MockMapper(
-            matrix_shape,
-            source_pixelization_grid=aa.Grid2DVoronoi.manual_slim(
-                [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
-            ),
-        )
+    linear_eqn = MockLinearEqn(mapper_list=[mapper_0, mapper_1])
 
-        linear_eqn = MockLinearEqn(mapper=mapper)
+    mapping_matrix = np.array([[1.0, 1.0, 2.0, 2.0, 2.0], [1.0, 1.0, 2.0, 2.0, 2.0]])
 
-        reconstruction = np.array([2.0, 3.0, 5.0, 0.0])
-
-        brightest_reconstruction_pixel = linear_eqn.brightest_reconstruction_pixel_from(
-            reconstruction=reconstruction
-        )
-
-        assert brightest_reconstruction_pixel == 2
-
-        brightest_reconstruction_pixel_centre = linear_eqn.brightest_reconstruction_pixel_centre_from(
-            reconstruction=reconstruction
-        )
-
-        assert brightest_reconstruction_pixel_centre.in_list == [(5.0, 6.0)]
+    assert linear_eqn.mapping_matrix == pytest.approx(mapping_matrix, 1.0e-4)

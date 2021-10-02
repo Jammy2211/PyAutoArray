@@ -75,32 +75,26 @@ def inversion_imaging_unpacked_from(
 
     if use_w_tilde:
 
-        linear_eqn_list = [
-            LinearEqnImagingWTilde(
-                noise_map=noise_map,
-                convolver=convolver,
-                w_tilde=w_tilde,
-                mapper=mapper,
-                profiling_dict=profiling_dict,
-            )
-            for mapper in mapper_list
-        ]
+        linear_eqn = LinearEqnImagingWTilde(
+            noise_map=noise_map,
+            convolver=convolver,
+            w_tilde=w_tilde,
+            mapper_list=mapper_list,
+            profiling_dict=profiling_dict,
+        )
 
     else:
 
-        linear_eqn_list = [
-            LinearEqnImagingMapping(
-                noise_map=noise_map,
-                convolver=convolver,
-                mapper=mapper,
-                profiling_dict=profiling_dict,
-            )
-            for mapper in mapper_list
-        ]
+        linear_eqn = LinearEqnImagingMapping(
+            noise_map=noise_map,
+            convolver=convolver,
+            mapper_list=mapper_list,
+            profiling_dict=profiling_dict,
+        )
 
     return InversionMatrices(
         data=image,
-        linear_eqn_list=linear_eqn_list,
+        linear_eqn=linear_eqn,
         regularization_list=regularization_list,
         settings=settings,
         preloads=preloads,
@@ -120,33 +114,27 @@ def inversion_interferometer_unpacked_from(
 ):
     if not settings.use_linear_operators:
 
-        linear_eqn_list = [
-            LinearEqnInterferometerMapping(
-                noise_map=noise_map,
-                transformer=transformer,
-                mapper=mapper,
-                profiling_dict=profiling_dict,
-            )
-            for mapper in mapper_list
-        ]
+        linear_eqn = LinearEqnInterferometerMapping(
+            noise_map=noise_map,
+            transformer=transformer,
+            mapper_list=mapper_list,
+            profiling_dict=profiling_dict,
+        )
 
     else:
 
-        linear_eqn_list = [
-            LinearEqnInterferometerLinearOperator(
-                noise_map=noise_map,
-                transformer=transformer,
-                mapper=mapper,
-                profiling_dict=profiling_dict,
-            )
-            for mapper in mapper_list
-        ]
+        linear_eqn = LinearEqnInterferometerLinearOperator(
+            noise_map=noise_map,
+            transformer=transformer,
+            mapper_list=mapper_list,
+            profiling_dict=profiling_dict,
+        )
 
     if not settings.use_linear_operators:
 
         return InversionMatrices(
             data=visibilities,
-            linear_eqn_list=linear_eqn_list,
+            linear_eqn=linear_eqn,
             regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
@@ -155,7 +143,7 @@ def inversion_interferometer_unpacked_from(
 
     return InversionLinearOperator(
         data=visibilities,
-        linear_eqn_list=linear_eqn_list,
+        linear_eqn=linear_eqn,
         regularization_list=regularization_list,
         settings=settings,
         profiling_dict=profiling_dict,

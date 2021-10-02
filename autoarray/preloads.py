@@ -16,7 +16,7 @@ class Preloads:
         self,
         w_tilde=None,
         use_w_tilde=None,
-        sparse_image_plane_grids_of_planes=None,
+        sparse_image_plane_grid_list_of_planes=None,
         relocated_grid=None,
         mapper_list=None,
         operated_mapping_matrix=None,
@@ -29,7 +29,9 @@ class Preloads:
         self.w_tilde = w_tilde
         self.use_w_tilde = use_w_tilde
 
-        self.sparse_image_plane_grids_of_planes = sparse_image_plane_grids_of_planes
+        self.sparse_image_plane_grid_list_of_planes = (
+            sparse_image_plane_grid_list_of_planes
+        )
         self.relocated_grid = relocated_grid
         self.mapper_list = mapper_list
         self.operated_mapping_matrix = operated_mapping_matrix
@@ -112,7 +114,7 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        if fit_0.total_mappers > 1:
+        if fit_0.inversion.total_mappers > 1:
             return
 
         mapper_0 = fit_0.inversion.mapper_list[0]
@@ -214,9 +216,7 @@ class Preloads:
                 < 1e-8
             ):
 
-                self.operated_mapping_matrix = inversion_0.linear_eqn_list[
-                    0
-                ].operated_mapping_matrix
+                self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
                 self.curvature_matrix_preload = (
                     inversion_0.curvature_matrix_preload
                 ).astype("int")
@@ -299,7 +299,7 @@ class Preloads:
 
         self.blurred_image = None
         self.traced_grids_of_planes_for_inversion = None
-        self.sparse_image_plane_grids_of_planes = None
+        self.sparse_image_plane_grid_list_of_planes = None
         self.relocated_grid = None
         self.mapper_list = None
         self.operated_mapping_matrix = None

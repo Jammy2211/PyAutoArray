@@ -51,11 +51,11 @@ class MockFit:
 
 
 class MockConvolver:
-    def __init__(self, convolved_mapping_matrix=None):
-        self.convolved_mapping_matrix = convolved_mapping_matrix
+    def __init__(self, blurred_mapping_matrix=None):
+        self.blurred_mapping_matrix = blurred_mapping_matrix
 
     def convolve_mapping_matrix(self, mapping_matrix):
-        return self.convolved_mapping_matrix
+        return self.blurred_mapping_matrix
 
 
 class MockPixelizationGrid:
@@ -164,21 +164,25 @@ class MockLinearEqn(AbstractLinearEqn):
     def __init__(
         self,
         noise_map=None,
-        mapper: Union[MockMapper] = None,
+        mapper_list: List[Union[MockMapper]] = None,
         operated_mapping_matrix=None,
         data_vector=None,
         curvature_matrix=None,
-        mapped_reconstructed_data=None,
-        mapped_reconstructed_image=None,
+        mapped_reconstructed_data_of_mappers=None,
+        mapped_reconstructed_image_of_mappers=None,
     ):
 
-        super().__init__(noise_map=noise_map, mapper=mapper)
+        super().__init__(noise_map=noise_map, mapper_list=mapper_list)
 
         self._operated_mapping_matrix = operated_mapping_matrix
         self._data_vector = data_vector
         self._curvature_matrix = curvature_matrix
-        self._mapped_reconstructed_data = mapped_reconstructed_data
-        self._mapped_reconstructed_image = mapped_reconstructed_image
+        self._mapped_reconstructed_data_of_mappers = (
+            mapped_reconstructed_data_of_mappers
+        )
+        self._mapped_reconstructed_image_of_mappers = (
+            mapped_reconstructed_image_of_mappers
+        )
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
@@ -197,7 +201,7 @@ class MockLinearEqn(AbstractLinearEqn):
     def curvature_matrix_diag(self):
         return self._curvature_matrix
 
-    def mapped_reconstructed_data_from(self, reconstruction: np.ndarray):
+    def mapped_reconstructed_data_of_mappers_from(self, reconstruction: np.ndarray):
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
         reconstruct the image data.
@@ -211,12 +215,14 @@ class MockLinearEqn(AbstractLinearEqn):
             The reconstructed image data which the inversion fits.
         """
 
-        if self._mapped_reconstructed_data is None:
-            return super().mapped_reconstructed_data_from(reconstruction=reconstruction)
+        if self._mapped_reconstructed_data_of_mappers is None:
+            return super().mapped_reconstructed_data_of_mappers_from(
+                reconstruction=reconstruction
+            )
 
-        return self._mapped_reconstructed_data
+        return self._mapped_reconstructed_data_of_mappers
 
-    def mapped_reconstructed_image_from(self, reconstruction: np.ndarray):
+    def mapped_reconstructed_image_of_mappers_from(self, reconstruction: np.ndarray):
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
         reconstruct the image image.
@@ -230,20 +236,26 @@ class MockLinearEqn(AbstractLinearEqn):
             The reconstructed image image which the inversion fits.
         """
 
-        if self._mapped_reconstructed_image is None:
-            return super().mapped_reconstructed_image_from(
+        if self._mapped_reconstructed_image_of_mappers is None:
+            return super().mapped_reconstructed_image_of_mappers_from(
                 reconstruction=reconstruction
             )
 
-        return self._mapped_reconstructed_image
+        return self._mapped_reconstructed_image_of_mappers
 
 
 class MockLinearEqnImaging(AbstractLinearEqnImaging):
     def __init__(
-        self, noise_map=None, convolver=None, mapper=None, blurred_mapping_matrix=None
+        self,
+        noise_map=None,
+        convolver=None,
+        mapper_list=None,
+        blurred_mapping_matrix=None,
     ):
 
-        super().__init__(noise_map=noise_map, convolver=convolver, mapper=mapper)
+        super().__init__(
+            noise_map=noise_map, convolver=convolver, mapper_list=mapper_list
+        )
 
         self._blurred_mapping_matrix = blurred_mapping_matrix
 
@@ -259,7 +271,7 @@ class MockInversion(InversionMatrices):
     def __init__(
         self,
         data=None,
-        linear_eqn_list: List[Union[MockLinearEqn, MockLinearEqnImaging]] = None,
+        linear_eqn: Union[MockLinearEqn, MockLinearEqnImaging] = None,
         regularization_list: List[MockRegularization] = None,
         data_vector=None,
         regularization_matrix=None,
@@ -282,7 +294,7 @@ class MockInversion(InversionMatrices):
 
         super().__init__(
             data=data,
-            linear_eqn_list=linear_eqn_list,
+            linear_eqn=linear_eqn,
             regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
