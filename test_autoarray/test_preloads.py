@@ -150,8 +150,26 @@ def test__set_mapper_list():
 
     assert (preloads.mapper_list[0].mapping_matrix == np.ones((3, 2))).all()
 
+    # Multiple mappers pre inversion still preloads full mapper list.
 
-def test__set_inversion():
+    linear_eqn_0 = MockLinearEqn(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
+    linear_eqn_1 = MockLinearEqn(mapper=MockMapper(mapping_matrix=np.ones((3, 2))))
+
+    fit_0 = MockFit(
+        inversion=MockInversion(linear_eqn_list=[linear_eqn_0, linear_eqn_1])
+    )
+    fit_1 = MockFit(
+        inversion=MockInversion(linear_eqn_list=[linear_eqn_0, linear_eqn_1])
+    )
+
+    preloads = aa.Preloads(mapper_list=1)
+    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
+
+    assert (preloads.mapper_list[0].mapping_matrix == np.ones((3, 2))).all()
+    assert (preloads.mapper_list[1].mapping_matrix == np.ones((3, 2))).all()
+
+
+def test__set_operated_mapping_matrix_with_preloads():
 
     curvature_matrix_preload = np.array([[1.0]])
     curvature_matrix_counts = np.array([1.0])
@@ -166,7 +184,7 @@ def test__set_inversion():
         curvature_matrix_preload=np.array([[1.0]]),
         curvature_matrix_counts=np.array([1.0]),
     )
-    preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.operated_mapping_matrix is None
     assert preloads.curvature_matrix_preload is None
@@ -193,7 +211,7 @@ def test__set_inversion():
         curvature_matrix_preload=curvature_matrix_preload,
         curvature_matrix_counts=curvature_matrix_counts,
     )
-    preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.operated_mapping_matrix is None
     assert preloads.curvature_matrix_preload is None
@@ -218,7 +236,7 @@ def test__set_inversion():
         curvature_matrix_preload=curvature_matrix_preload,
         curvature_matrix_counts=curvature_matrix_counts,
     )
-    preloads.set_inversion(fit_0=fit_0, fit_1=fit_1)
+    preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.operated_mapping_matrix == blurred_mapping_matrix_0).all()
     assert (

@@ -90,7 +90,7 @@ class Preloads:
 
     def set_relocated_grid(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s in a model are fixed their traced grid (which may have had coordinates relocated at
+        If the `MassProfile`'s in a model are fixed their traced grids (which may have had coordinates relocated at
         the border) does not change during the model=fit and can therefore be preloaded.
 
         This function compares the relocated grids of the mappers of two fit corresponding to two model instances, and
@@ -110,6 +110,9 @@ class Preloads:
         self.relocated_grid = None
 
         if fit_0.inversion is None:
+            return
+
+        if fit_0.total_mappers > 1:
             return
 
         mapper_0 = fit_0.inversion.mapper_list[0]
@@ -166,7 +169,7 @@ class Preloads:
                     "PRELOADS - Mappers of planes preloaded for this model-fit."
                 )
 
-    def set_inversion(self, fit_0, fit_1):
+    def set_operated_mapping_matrix_with_preloads(self, fit_0, fit_1):
         """
         If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and matrices used to perform the linear algebra in an
@@ -194,9 +197,6 @@ class Preloads:
         inversion_1 = fit_1.inversion
 
         if inversion_0 is None:
-            return
-
-        if len(inversion_0.mapper_list) > 1:
             return
 
         if (
