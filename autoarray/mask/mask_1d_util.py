@@ -25,7 +25,7 @@ def total_pixels_1d_from(mask_1d: np.ndarray) -> int:
                  [False, False, False]
                  [True, False, True]])
 
-    total_regular_pixels = total_regular_pixels_from_mask(mask=mask)
+    total_regular_pixels = total_regular_pixels_from(mask=mask)
     """
 
     total_regular_pixels = 0
@@ -61,7 +61,7 @@ def total_sub_pixels_1d_from(mask_1d: np.ndarray, sub_size: int) -> int:
                      [False, False, False]
                      [True, False, True]])
 
-    total_sub_pixels = total_sub_pixels_from_mask(mask=mask, sub_size=2)
+    total_sub_pixels = total_sub_pixels_from(mask=mask, sub_size=2)
     """
     return total_pixels_1d_from(mask_1d) * sub_size
 

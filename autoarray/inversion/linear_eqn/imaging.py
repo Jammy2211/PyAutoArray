@@ -414,7 +414,7 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         array of memory.
         """
         return linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=self.operated_mapping_matrix, noise_map=self.noise_map,
+            mapping_matrix=self.operated_mapping_matrix, noise_map=self.noise_map
         )
 
     @profile_func

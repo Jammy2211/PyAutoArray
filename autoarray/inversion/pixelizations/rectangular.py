@@ -89,7 +89,7 @@ class Rectangular(AbstractPixelization):
             shape_native=self.shape, grid=relocated_grid
         )
 
-    def sparse_grid_from_grid(
+    def sparse_grid_from(
         self,
         grid: Grid2D,
         hyper_image: np.ndarray = None,

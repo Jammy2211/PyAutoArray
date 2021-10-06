@@ -54,7 +54,7 @@ class AdaptiveBrightness(AbstractRegularization):
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
 
-    def regularization_weights_from_mapper(self, mapper):
+    def regularization_weights_from(self, mapper):
         pixel_signals = mapper.pixel_signals_from(signal_scale=self.signal_scale)
 
         return regularization_util.adaptive_regularization_weights_from(
@@ -64,9 +64,7 @@ class AdaptiveBrightness(AbstractRegularization):
         )
 
     def regularization_matrix_from(self, mapper):
-        regularization_weights = self.regularization_weights_from_mapper(
-            mapper=mapper
-        )
+        regularization_weights = self.regularization_weights_from(mapper=mapper)
 
         return regularization_util.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,

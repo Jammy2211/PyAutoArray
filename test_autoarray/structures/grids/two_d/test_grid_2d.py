@@ -584,11 +584,11 @@ class TestAPI:
 
 
 class TestGrid:
-    def test__grid_from_deflection_grid(self):
+    def test__grid_via_deflection_grid_from(self):
 
         grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=2.0)
 
-        grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
+        grid_deflected = grid.grid_via_deflection_grid_from(deflection_grid=grid)
 
         assert type(grid_deflected) == aa.Grid2D
         assert (
@@ -606,7 +606,7 @@ class TestGrid:
         assert grid_deflected.pixel_scales == (2.0, 2.0)
         assert grid_deflected.origin == (0.0, 0.0)
 
-    def test__blurring_grid_from_mask_and_kernel_shape__compare_to_array_util(self):
+    def test__blurring_grid_from__compare_to_array_util(self):
         mask = np.array(
             [
                 [True, True, True, True, True, True, True, True, True],
@@ -633,7 +633,7 @@ class TestGrid:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        blurring_grid = aa.Grid2D.blurring_grid_from_mask_and_kernel_shape(
+        blurring_grid = aa.Grid2D.blurring_grid_from(
             mask=mask, kernel_shape_native=(3, 5)
         )
 
@@ -642,7 +642,7 @@ class TestGrid:
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scales == (2.0, 2.0)
 
-    def test__blurring_grid_from_kernel_shape__compare_to_array_util(self):
+    def test__blurring_grid_via_kernel_shape_from__compare_to_array_util(self):
         mask = np.array(
             [
                 [True, True, True, True, True, True, True, True, True],
@@ -669,14 +669,16 @@ class TestGrid:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_native=(3, 5))
+        blurring_grid = grid.blurring_grid_via_kernel_shape_from(
+            kernel_shape_native=(3, 5)
+        )
 
         assert isinstance(blurring_grid, aa.Grid2D)
         assert len(blurring_grid.shape) == 2
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scales == (2.0, 2.0)
 
-    def test__structure_2d_from_result__maps_numpy_array_to__auto_array_or_grid(self):
+    def test__structure_2d_from__maps_numpy_array_to__auto_array_or_grid(self):
 
         mask = np.array(
             [
@@ -691,7 +693,7 @@ class TestGrid:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        result = grid.structure_2d_from_result(result=np.array([1.0, 2.0, 3.0, 4.0]))
+        result = grid.structure_2d_from(result=np.array([1.0, 2.0, 3.0, 4.0]))
 
         assert isinstance(result, aa.Array2D)
         assert (
@@ -706,7 +708,7 @@ class TestGrid:
             )
         ).all()
 
-        result = grid.structure_2d_from_result(
+        result = grid.structure_2d_from(
             result=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
         )
 
@@ -723,9 +725,7 @@ class TestGrid:
             )
         ).all()
 
-    def test__structure_2d_list_from_result_list__maps_list_to_auto_arrays_or_grids(
-        self
-    ):
+    def test__structure_2d_list_from__maps_list_to_auto_arrays_or_grids(self):
 
         mask = np.array(
             [
@@ -740,7 +740,7 @@ class TestGrid:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        result = grid.structure_2d_list_from_result_list(
+        result = grid.structure_2d_list_from(
             result_list=[np.array([1.0, 2.0, 3.0, 4.0])]
         )
 
@@ -757,7 +757,7 @@ class TestGrid:
             )
         ).all()
 
-        result = grid.structure_2d_list_from_result_list(
+        result = grid.structure_2d_list_from(
             result_list=[np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])]
         )
 

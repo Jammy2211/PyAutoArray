@@ -163,7 +163,7 @@ class TestNewArrays:
         assert (arr.native == arr_resized_manual).all()
         assert arr.mask.pixel_scales == (1.0, 1.0)
 
-    def test__padded_from_kernel_shape__padded_edge_of_zeros_where_extra_psf_blurring_is_performed(
+    def test__padded_before_convolution_from__padded_edge_of_zeros_where_extra_psf_blurring_is_performed(
         self,
     ):
         array_2d = np.ones((5, 5))
@@ -584,7 +584,7 @@ class TestOutputToFits:
 
         arr.output_to_fits(file_path=path.join(output_data_dir, "array.fits"))
 
-        array_from_out = aa.util.array_2d.numpy_array_2d_from_fits(
+        array_from_out = aa.util.array_2d.numpy_array_2d_via_fits_from(
             file_path=path.join(output_data_dir, "array.fits"), hdu=0
         )
 
@@ -598,7 +598,7 @@ class TestOutputToFits:
             file_path=path.join(output_data_dir, "masked_array.fits")
         )
 
-        masked_array_from_out = aa.util.array_2d.numpy_array_2d_from_fits(
+        masked_array_from_out = aa.util.array_2d.numpy_array_2d_via_fits_from(
             file_path=path.join(output_data_dir, "masked_array.fits"), hdu=0
         )
 

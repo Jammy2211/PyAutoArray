@@ -133,7 +133,7 @@ def array_with_random_uniform_values_added(array, upper_limit=0.001):
     return array + upper_limit * np.random.uniform(size=array.shape_slim)
 
 
-def noise_map_from_data_eps_and_exposure_time_map(data_eps, exposure_time_map):
+def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_map):
     """Estimate the noise-map value in every data-point, by converting the data to units of counts and taking the
     square root of these values.
 
@@ -152,7 +152,7 @@ def noise_map_from_data_eps_and_exposure_time_map(data_eps, exposure_time_map):
     return np.sqrt(np.abs(data_eps * exposure_time_map)) / exposure_time_map
 
 
-def noise_map_from_weight_map(weight_map):
+def noise_map_via_weight_map_from(weight_map):
     """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
     the software package MultiDrizzle.
 
@@ -176,7 +176,7 @@ def noise_map_from_weight_map(weight_map):
     return noise_map
 
 
-def noise_map_from_inverse_noise_map(inverse_noise_map):
+def noise_map_via_inverse_noise_map_from(inverse_noise_map):
     """Setup the noise-map from an inverse noise-map.
 
     The variance in each pixel is computed as:
@@ -191,7 +191,7 @@ def noise_map_from_inverse_noise_map(inverse_noise_map):
     return 1.0 / inverse_noise_map
 
 
-def noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
+def noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from(
     data_eps, exposure_time_map, background_noise_map
 ):
     """Estimate the noise-map values in every data-point, by converting the data to units of counts, adding the
@@ -220,7 +220,7 @@ def noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
     )
 
 
-def background_noise_map_from_edges_of_image(image, no_edges):
+def background_noise_map_via_edges_of_image_from(image, no_edges):
     """
     Estimate the background noise level in an image using the data values at its edges. These edge values are binned
     into a histogram, with a Gaussian profile fitted to this histogram, such that its standard deviation (sigma) gives
@@ -261,7 +261,7 @@ def background_noise_map_from_edges_of_image(image, no_edges):
     )
 
 
-def psf_with_odd_dimensions_from_psf(psf):
+def psf_with_odd_dimensions_from(psf):
     """
     If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
     dimensions (odd-sized dimensions are required by a *Convolver*).
@@ -278,10 +278,10 @@ def psf_with_odd_dimensions_from_psf(psf):
     normalize : bool
         Whether the PSF should be normalized after being rescaled.
     """
-    return psf.rescaled_with_odd_dimensions_from_rescale_factor(rescale_factor=1.0)
+    return psf.rescaled_with_odd_dimensions_from(rescale_factor=1.0)
 
 
-def exposure_time_map_from_exposure_time_and_background_noise_map(
+def exposure_time_map_via_exposure_time_and_background_noise_map_from(
     exposure_time, background_noise_map
 ):
     """
@@ -321,7 +321,7 @@ def setup_random_seed(seed):
     np.random.seed(seed)
 
 
-def poisson_noise_from_data_eps(data_eps, exposure_time_map, seed=-1):
+def poisson_noise_via_data_eps_from(data_eps, exposure_time_map, seed=-1):
     """
     Generate a two-dimensional poisson noise_maps-mappers from an image.
 
@@ -368,12 +368,12 @@ def data_eps_with_poisson_noise_added(data_eps, exposure_time_map, seed=-1):
     poisson_noise_map: np.ndarray
         An array describing simulated poisson noise_maps
     """
-    return data_eps + poisson_noise_from_data_eps(
+    return data_eps + poisson_noise_via_data_eps_from(
         data_eps=data_eps, exposure_time_map=exposure_time_map, seed=seed
     )
 
 
-def gaussian_noise_from_shape_and_sigma(shape, sigma, seed=-1):
+def gaussian_noise_via_shape_and_sigma_from(shape, sigma, seed=-1):
     """Generate a two-dimensional read noises-map, generating values from a Gaussian distribution with mean 0.0.
 
     Params
@@ -394,14 +394,14 @@ def gaussian_noise_from_shape_and_sigma(shape, sigma, seed=-1):
 
 
 def data_with_gaussian_noise_added(data, sigma, seed=-1):
-    return data + gaussian_noise_from_shape_and_sigma(
+    return data + gaussian_noise_via_shape_and_sigma_from(
         shape=data.shape, sigma=sigma, seed=seed
     )
 
 
 def data_with_complex_gaussian_noise_added(data, sigma, seed=-1):
 
-    gaussian_noise = gaussian_noise_from_shape_and_sigma(
+    gaussian_noise = gaussian_noise_via_shape_and_sigma_from(
         shape=(data.shape[0], 2), sigma=sigma, seed=seed
     )
 

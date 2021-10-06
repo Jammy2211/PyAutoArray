@@ -20,7 +20,7 @@ logger = logging.getLogger()
 logger.setLevel("INFO")
 
 
-def fits_hdu_from_quadrant_letter(quadrant_letter):
+def fits_hdu_via_quadrant_letter_from(quadrant_letter):
 
     if quadrant_letter == "D" or quadrant_letter == "C":
         return 1
@@ -74,9 +74,9 @@ class Array2DACS(Array2D):
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
-        hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
+        hdu = fits_hdu_via_quadrant_letter_from(quadrant_letter=quadrant_letter)
 
-        array = array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
+        array = array_2d_util.numpy_array_2d_via_fits_from(file_path=file_path, hdu=hdu)
 
         return cls.from_ccd(array_electrons=array, quadrant_letter=quadrant_letter)
 
@@ -170,7 +170,7 @@ class Array2DACS(Array2D):
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
-        array_electrons = layout_util.rotate_array_from_roe_corner(
+        array_electrons = layout_util.rotate_array_via_roe_corner_from(
             array=array_electrons, roe_corner=roe_corner
         )
 
@@ -189,7 +189,7 @@ class Array2DACS(Array2D):
 
         if bias is not None:
 
-            bias = layout_util.rotate_array_from_roe_corner(
+            bias = layout_util.rotate_array_via_roe_corner_from(
                 array=bias, roe_corner=roe_corner
             )
 
@@ -216,7 +216,7 @@ class Array2DACS(Array2D):
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
-        array_electrons = layout_util.rotate_array_from_roe_corner(
+        array_electrons = layout_util.rotate_array_via_roe_corner_from(
             array=array_electrons, roe_corner=(1, 1)
         )
 
@@ -234,7 +234,7 @@ class Array2DACS(Array2D):
 
         if bias is not None:
 
-            bias = layout_util.rotate_array_from_roe_corner(
+            bias = layout_util.rotate_array_via_roe_corner_from(
                 array=bias, roe_corner=(1, 1)
             )
 
@@ -260,7 +260,7 @@ class Array2DACS(Array2D):
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
-        array_electrons = layout_util.rotate_array_from_roe_corner(
+        array_electrons = layout_util.rotate_array_via_roe_corner_from(
             array=array_electrons, roe_corner=(1, 0)
         )
 
@@ -276,7 +276,7 @@ class Array2DACS(Array2D):
 
         if bias is not None:
 
-            bias = layout_util.rotate_array_from_roe_corner(
+            bias = layout_util.rotate_array_via_roe_corner_from(
                 array=bias, roe_corner=(1, 0)
             )
 
@@ -300,7 +300,7 @@ class Array2DACS(Array2D):
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
-        array_electrons = layout_util.rotate_array_from_roe_corner(
+        array_electrons = layout_util.rotate_array_via_roe_corner_from(
             array=array_electrons, roe_corner=(1, 1)
         )
 
@@ -315,7 +315,7 @@ class Array2DACS(Array2D):
 
         if bias is not None:
 
-            bias = layout_util.rotate_array_from_roe_corner(
+            bias = layout_util.rotate_array_via_roe_corner_from(
                 array=bias, roe_corner=(1, 1)
             )
 
@@ -405,12 +405,10 @@ class ImageACS(Array2DACS):
             If True, the calibrated gain values are used to convert from COUNTS to ELECTRONS.
         """
 
-        hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
+        hdu = fits_hdu_via_quadrant_letter_from(quadrant_letter=quadrant_letter)
 
-        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from_fits(
-            file_path=file_path, hdu=hdu
-        )
+        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
         header = HeaderACS(
             header_sci_obj=header_sci_obj,
@@ -429,11 +427,11 @@ class ImageACS(Array2DACS):
                 f"The file {file_path} does not point to a valid HST ACS dataset."
             )
 
-        array = array_2d_util.numpy_array_2d_from_fits(
+        array = array_2d_util.numpy_array_2d_via_fits_from(
             file_path=file_path, hdu=hdu, do_not_scale_image_data=True
         )
 
-        array = header.array_from_original_to_electrons(
+        array = header.array_original_to_electrons(
             array=array, use_calibrated_gain=use_calibrated_gain
         )
 
@@ -444,14 +442,14 @@ class ImageACS(Array2DACS):
                 file_dir = os.path.split(file_path)[0]
                 bias_file_path = path.join(file_dir, header.bias_file)
 
-            bias = array_2d_util.numpy_array_2d_from_fits(
+            bias = array_2d_util.numpy_array_2d_via_fits_from(
                 file_path=bias_file_path, hdu=hdu, do_not_scale_image_data=True
             )
 
-            header_sci_obj = array_2d_util.header_obj_from_fits(
+            header_sci_obj = array_2d_util.header_obj_from(
                 file_path=bias_file_path, hdu=0
             )
-            header_hdu_obj = array_2d_util.header_obj_from_fits(
+            header_hdu_obj = array_2d_util.header_obj_from(
                 file_path=bias_file_path, hdu=hdu
             )
 
@@ -572,7 +570,7 @@ class HeaderACS(Header):
             array_eps=array_eps, bscale=self.bscale, bzero=self.bzero
         )
 
-    def array_from_original_to_electrons(self, array, use_calibrated_gain):
+    def array_original_to_electrons(self, array, use_calibrated_gain):
 
         if self.original_units in "COUNTS":
             array = (array * self.bscale) + self.bzero
@@ -584,7 +582,7 @@ class HeaderACS(Header):
         else:
             return array * self.gain
 
-    def array_from_electrons_to_original(self, array, use_calibrated_gain):
+    def array_electrons_to_original(self, array, use_calibrated_gain):
 
         if use_calibrated_gain:
             array /= self.calibrated_gain
@@ -754,13 +752,13 @@ def quadrant_convert_to_original(
     if header.bias_serial_prescan_column is not None:
         quadrant += header.bias_serial_prescan_column
 
-    quadrant = header.array_from_electrons_to_original(
+    quadrant = header.array_electrons_to_original(
         array=quadrant, use_calibrated_gain=use_calibrated_gain
     )
 
     if use_flipud:
         quadrant = np.flipud(quadrant)
 
-    return layout_util.rotate_array_from_roe_corner(
+    return layout_util.rotate_array_via_roe_corner_from(
         array=quadrant, roe_corner=roe_corner
     )

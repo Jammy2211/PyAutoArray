@@ -237,7 +237,7 @@ class Visibilities(AbstractVisibilities):
         hdu
             The Header-Data Unit of the .fits file the visibilitiy data is loaded from.
         """
-        visibilities_1d = array_2d_util.numpy_array_2d_from_fits(
+        visibilities_1d = array_2d_util.numpy_array_2d_via_fits_from(
             file_path=file_path, hdu=hdu
         )
         return cls.manual_slim(visibilities=visibilities_1d)

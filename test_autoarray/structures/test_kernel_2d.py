@@ -144,7 +144,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.manual_native(
             array=array_2d, pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.5, normalize=True
         )
         assert kernel.pixel_scales == (2.0, 2.0)
@@ -154,7 +154,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.manual_native(
             array=array_2d, pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.333333333333333, normalize=True
         )
         assert kernel.pixel_scales == (3.0, 3.0)
@@ -164,7 +164,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.manual_native(
             array=array_2d, pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.5, normalize=True
         )
         assert kernel.pixel_scales == (2.0, 2.0)
@@ -174,7 +174,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.manual_native(
             array=array_2d, pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.5, normalize=True
         )
         assert kernel.pixel_scales == (2.0, 2.0)
@@ -187,7 +187,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.ones(
             shape_native=(2, 2), pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=2.0, normalize=True
         )
         assert kernel.pixel_scales == (0.4, 0.4)
@@ -196,7 +196,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.ones(
             shape_native=(40, 40), pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.1, normalize=True
         )
         assert kernel.pixel_scales == (8.0, 8.0)
@@ -205,7 +205,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.ones(
             shape_native=(2, 4), pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=2.0, normalize=True
         )
 
@@ -216,7 +216,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.ones(
             shape_native=(4, 2), pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=2.0, normalize=True
         )
         assert kernel.pixel_scales[0] == pytest.approx(0.4444444, 1.0e-4)
@@ -229,7 +229,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.ones(
             shape_native=(6, 4), pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.5, normalize=True
         )
 
@@ -239,7 +239,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.ones(
             shape_native=(9, 12), pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.33333333333, normalize=True
         )
 
@@ -249,7 +249,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.ones(
             shape_native=(4, 6), pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.5, normalize=True
         )
 
@@ -259,7 +259,7 @@ class TestBinnedUp:
         kernel = aa.Kernel2D.ones(
             shape_native=(12, 9), pixel_scales=1.0, normalize=False
         )
-        kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
+        kernel = kernel.rescaled_with_odd_dimensions_from(
             rescale_factor=0.33333333333, normalize=True
         )
         assert kernel.pixel_scales == pytest.approx((2.4, 3.0), 1.0e-4)
@@ -274,7 +274,7 @@ class TestConvolve:
         )
 
         with pytest.raises(exc.KernelException):
-            kernel.convolved_array_from_array(np.ones((5, 5)))
+            kernel.convolved_array_from(np.ones((5, 5)))
 
     def test__image_is_3x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
         self,
@@ -288,7 +288,7 @@ class TestConvolve:
             array=[[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
         )
 
-        blurred_image = kernel.convolved_array_from_array(image)
+        blurred_image = kernel.convolved_array_from(image)
 
         assert (blurred_image == kernel).all()
 
@@ -309,7 +309,7 @@ class TestConvolve:
             array=[[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
         )
 
-        blurred_image = kernel.convolved_array_from_array(array=image)
+        blurred_image = kernel.convolved_array_from(array=image)
 
         assert (
             blurred_image.native
@@ -335,7 +335,7 @@ class TestConvolve:
             array=[[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
         )
 
-        blurred_image = kernel.convolved_array_from_array(image)
+        blurred_image = kernel.convolved_array_from(image)
 
         assert (
             blurred_image.native
@@ -356,7 +356,7 @@ class TestConvolve:
             array=[[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
         )
 
-        blurred_image = kernel.convolved_array_from_array(image)
+        blurred_image = kernel.convolved_array_from(image)
 
         assert (
             blurred_image.native
@@ -382,7 +382,7 @@ class TestConvolve:
             array=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
         )
 
-        blurred_image = kernel.convolved_array_from_array(image)
+        blurred_image = kernel.convolved_array_from(image)
 
         assert (
             blurred_image.native
@@ -413,7 +413,7 @@ class TestConvolve:
             array=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
         )
 
-        blurred_image = kernel.convolved_array_from_array(image)
+        blurred_image = kernel.convolved_array_from(image)
 
         assert (
             blurred_image.native
@@ -444,7 +444,7 @@ class TestConvolve:
             array=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
         )
 
-        blurred_image = kernel.convolved_array_from_array(image)
+        blurred_image = kernel.convolved_array_from(image)
 
         assert (
             blurred_image.native

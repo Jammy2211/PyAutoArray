@@ -258,6 +258,6 @@ class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
         )
 
         return [
-            self.transformer.visibilities_from_image(image=mapped_reconstructed_image)
+            self.transformer.visibilities_from(image=mapped_reconstructed_image)
             for mapped_reconstructed_image in mapped_reconstructed_image_of_mappers
         ]

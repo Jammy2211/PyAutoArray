@@ -151,9 +151,7 @@ class AbstractMatWrap:
             ]["subplot"]._dict
 
         if "c" in config_dict:
-            config_dict["c"] = remove_spaces_and_commas_from_colors(
-                colors=config_dict["c"]
-            )
+            config_dict["c"] = remove_spaces_and_commas_from(colors=config_dict["c"])
 
         config_dict = {**config_dict, **self.kwargs}
 
@@ -197,7 +195,7 @@ class Figure(AbstractMatWrap):
 
         return config_dict
 
-    def aspect_for_subplot_from_grid(self, extent):
+    def aspect_for_subplot_from(self, extent):
 
         ratio = float((extent[1] - extent[0]) / (extent[3] - extent[2]))
 
@@ -208,9 +206,7 @@ class Figure(AbstractMatWrap):
         elif self.config_dict["aspect"] in "equal":
             return 1.0
 
-    def aspect_from_shape_native(
-        self, shape_native: Union[Tuple[int, int]]
-    ) -> Union[float, str]:
+    def aspect_from(self, shape_native: Union[Tuple[int, int]]) -> Union[float, str]:
         """
         Returns the aspect ratio of the figure from the 2D shape of a data structure.
 
@@ -317,21 +313,21 @@ class Cmap(AbstractMatWrap):
     - https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
     """
 
-    def vmin_from_array(self, array: np.ndarray):
+    def vmin_from(self, array: np.ndarray):
 
         if self.config_dict["vmin"] is None:
             return np.min(array)
         else:
             return self.config_dict["vmin"]
 
-    def vmax_from_array(self, array: np.ndarray):
+    def vmax_from(self, array: np.ndarray):
 
         if self.config_dict["vmax"] is None:
             return np.max(array)
         else:
             return self.config_dict["vmax"]
 
-    def norm_from_array(self, array: np.ndarray) -> object:
+    def norm_from(self, array: np.ndarray) -> object:
         """
         Returns the `Normalization` object which scales of the colormap.
 
@@ -344,8 +340,8 @@ class Cmap(AbstractMatWrap):
             The array of data which is to be plotted.
         """
 
-        vmin = self.vmin_from_array(array=array)
-        vmax = self.vmax_from_array(array=array)
+        vmin = self.vmin_from(array=array)
+        vmax = self.vmax_from(array=array)
 
         if self.config_dict["norm"] in "linear":
             return colors.Normalize(vmin=vmin, vmax=vmax)
@@ -689,7 +685,7 @@ class AbstractLabel(AbstractMatWrap):
 
         self.manual_label = self.kwargs.get("label")
 
-    def label_from_units(self, units: Units) -> Optional[str]:
+    def label_from(self, units: Units) -> Optional[str]:
         """
         Returns the label of an object, by determining it from the figure units if the label is not manually specified.
 
@@ -746,11 +742,9 @@ class YLabel(AbstractLabel):
             plt.ylabel(ylabel=auto_label, **config_dict)
         else:
             if include_brackets:
-                plt.ylabel(
-                    ylabel=f"y ({self.label_from_units(units=units)})", **config_dict
-                )
+                plt.ylabel(ylabel=f"y ({self.label_from(units=units)})", **config_dict)
             else:
-                plt.ylabel(ylabel=self.label_from_units(units=units), **config_dict)
+                plt.ylabel(ylabel=self.label_from(units=units), **config_dict)
 
 
 class XLabel(AbstractLabel):
@@ -785,11 +779,9 @@ class XLabel(AbstractLabel):
             plt.xlabel(xlabel=auto_label, **config_dict)
         else:
             if include_brackets:
-                plt.xlabel(
-                    xlabel=f"x ({self.label_from_units(units=units)})", **config_dict
-                )
+                plt.xlabel(xlabel=f"x ({self.label_from(units=units)})", **config_dict)
             else:
-                plt.xlabel(xlabel=self.label_from_units(units=units), **config_dict)
+                plt.xlabel(xlabel=self.label_from(units=units), **config_dict)
 
 
 class Legend(AbstractMatWrap):
@@ -922,7 +914,7 @@ class Output:
                 plt.savefig(path.join(self.path, f"{filename}.pdf"))
 
 
-def remove_spaces_and_commas_from_colors(colors):
+def remove_spaces_and_commas_from(colors):
 
     colors = [color.strip(",") for color in colors]
     colors = [color.strip(" ") for color in colors]

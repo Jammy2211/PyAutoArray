@@ -186,7 +186,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
                 + (grid[sub_slim_index, 1] - nearest_pixelization_pixel_center[1]) ** 2
             )
 
-            closest_separation_from_pixelization_to_neighbor = 1.0e8
+            closest_separation_pixelization_to_neighbor = 1.0e8
 
             for neighbor_pixelization_index in range(
                 pixel_neighbors_sizes[nearest_pixelization_index]
@@ -196,24 +196,19 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
                     nearest_pixelization_index, neighbor_pixelization_index
                 ]
 
-                separation_from_neighbor = (
+                distance_to_neighbor = (
                     grid[sub_slim_index, 0] - pixelization_grid[neighbor, 0]
                 ) ** 2 + (grid[sub_slim_index, 1] - pixelization_grid[neighbor, 1]) ** 2
 
-                if (
-                    separation_from_neighbor
-                    < closest_separation_from_pixelization_to_neighbor
-                ):
-                    closest_separation_from_pixelization_to_neighbor = (
-                        separation_from_neighbor
-                    )
+                if distance_to_neighbor < closest_separation_pixelization_to_neighbor:
+                    closest_separation_pixelization_to_neighbor = distance_to_neighbor
                     closest_neighbor_pixelization_index = neighbor_pixelization_index
 
             neighboring_pixelization_index = pixel_neighbors[
                 nearest_pixelization_index, closest_neighbor_pixelization_index
             ]
             sub_pixel_to_neighboring_pixelization_distance = (
-                closest_separation_from_pixelization_to_neighbor
+                closest_separation_pixelization_to_neighbor
             )
 
             whiletime += 1

@@ -13,7 +13,7 @@ def grid_to_grid_radii(grid):
     return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
 
-def ndarray_1d_from_grid(profile, grid):
+def ndarray_1d_from(profile, grid):
 
     sersic_constant = (
         (2 * 2.0)
@@ -62,7 +62,7 @@ def grid_to_grid_cartesian(grid, radius):
     return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
 
-def ndarray_2d_from_grid(profile, grid):
+def ndarray_2d_from(profile, grid):
     return grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
 
 
@@ -111,7 +111,7 @@ class MockGridLikeIteratorObj:
         return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
     @grid_decorators.grid_2d_to_structure
-    def ndarray_1d_from_grid(self, grid):
+    def ndarray_1d_from(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return np.exp(
             np.multiply(
@@ -121,13 +121,13 @@ class MockGridLikeIteratorObj:
         )
 
     @grid_decorators.grid_2d_to_structure
-    def ndarray_2d_from_grid(self, grid):
+    def ndarray_2d_from(self, grid):
         return self.grid_to_grid_cartesian(
             grid=grid, radius=np.full(grid.shape[0], 2.0)
         )
 
     @grid_decorators.grid_2d_to_structure_list
-    def ndarray_1d_list_from_grid(self, grid):
+    def ndarray_1d_list_from(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return [
             np.exp(
@@ -139,7 +139,7 @@ class MockGridLikeIteratorObj:
         ]
 
     @grid_decorators.grid_2d_to_structure_list
-    def ndarray_2d_list_from_grid(self, grid):
+    def ndarray_2d_list_from(self, grid):
         return [
             self.grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
         ]
@@ -152,19 +152,19 @@ class MockGrid1DLikeObj:
         self.angle = angle
 
     @grid_decorators.grid_1d_to_structure
-    def ndarray_1d_from_grid(self, grid):
+    def ndarray_1d_from(self, grid):
         return np.ones(shape=grid.shape[0])
 
     # @grid_decorators.grid_1d_to_structure
-    # def ndarray_2d_from_grid(self, grid):
+    # def ndarray_2d_from(self, grid):
     #     return np.multiply(2.0, grid)
 
     # @grid_decorators.grid_1d_to_structure_list
-    # def ndarray_1d_list_from_grid(self, grid):
+    # def ndarray_1d_list_from(self, grid):
     #     return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
     #
     # @grid_decorators.grid_1d_to_structure_list
-    # def ndarray_2d_list_from_grid(self, grid):
+    # def ndarray_2d_list_from(self, grid):
     #     return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
 
@@ -173,19 +173,19 @@ class MockGrid2DLikeObj:
         pass
 
     @grid_decorators.grid_2d_to_structure
-    def ndarray_1d_from_grid(self, grid):
+    def ndarray_1d_from(self, grid):
         return np.ones(shape=grid.shape[0])
 
     @grid_decorators.grid_2d_to_structure
-    def ndarray_2d_from_grid(self, grid):
+    def ndarray_2d_from(self, grid):
         return np.multiply(2.0, grid)
 
     @grid_decorators.grid_2d_to_structure_list
-    def ndarray_1d_list_from_grid(self, grid):
+    def ndarray_1d_list_from(self, grid):
         return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
 
     @grid_decorators.grid_2d_to_structure_list
-    def ndarray_2d_list_from_grid(self, grid):
+    def ndarray_2d_list_from(self, grid):
         return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
 
@@ -197,5 +197,5 @@ class MockGridRadialMinimum:
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
     @grid_decorators.relocate_to_radial_minimum
-    def deflections_2d_from_grid(self, grid):
+    def deflections_2d_from(self, grid):
         return grid

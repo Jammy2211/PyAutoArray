@@ -220,7 +220,7 @@ class AbstractArray2D(AbstractStructure2D):
 
     @property
     def original_orientation(self):
-        return layout_util.rotate_array_from_roe_corner(
+        return layout_util.rotate_array_via_roe_corner_from(
             array=self, roe_corner=self.header.original_roe_corner
         )
 
@@ -338,11 +338,11 @@ class AbstractArray2D(AbstractStructure2D):
             The new 2D shape of the array.
         """
 
-        resized_array_2d = array_2d_util.resized_array_2d_from_array_2d(
+        resized_array_2d = array_2d_util.resized_array_2d_from(
             array_2d=self.native, resized_shape=new_shape
         )
 
-        resized_mask = self.mask.resized_mask_from_new_shape(
+        resized_mask = self.mask.resized_mask_from(
             new_shape=new_shape, pad_value=mask_pad_value
         )
 
@@ -374,7 +374,7 @@ class AbstractArray2D(AbstractStructure2D):
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
         To ensure this signal is included the array can be padded, a padded array can be computed via the method
-        *padded_from_kernel_shape*. This function trims the array back to its original shape, after the padded array
+        *padded_before_convolution_from*. This function trims the array back to its original shape, after the padded array
         has been used for computational.
 
         Parameters
@@ -390,9 +390,7 @@ class AbstractArray2D(AbstractStructure2D):
             psf_cut_y : array_y - psf_cut_y, psf_cut_x : array_x - psf_cut_x
         ]
 
-        resized_mask = self.mask.resized_mask_from_new_shape(
-            new_shape=trimmed_array_2d.shape
-        )
+        resized_mask = self.mask.resized_mask_from(new_shape=trimmed_array_2d.shape)
 
         array = convert_array_2d(array_2d=trimmed_array_2d, mask_2d=resized_mask)
 

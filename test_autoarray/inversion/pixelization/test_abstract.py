@@ -15,7 +15,7 @@ class TestRegression:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        sparse_grid = pixelization.sparse_grid_from_grid(grid=grid)
+        sparse_grid = pixelization.sparse_grid_from(grid=grid)
 
         grid[8, 0] = 100.0
 

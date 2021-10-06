@@ -224,7 +224,7 @@ class TestImageACS:
         assert array.in_counts.native[0, 0] == 30.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(
+        array_original = array.header.array_electrons_to_original(
             array=array, use_calibrated_gain=False
         )
 
@@ -237,7 +237,7 @@ class TestImageACS:
         assert array.native[0, 0] == (40.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(
+        array_original = array.header.array_electrons_to_original(
             array=array, use_calibrated_gain=False
         )
 
@@ -250,7 +250,7 @@ class TestImageACS:
         assert array.native[0, 0] == (10.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(
+        array_original = array.header.array_electrons_to_original(
             array=array, use_calibrated_gain=False
         )
 
@@ -263,7 +263,7 @@ class TestImageACS:
         assert array.native[0, 0] == (20.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(
+        array_original = array.header.array_electrons_to_original(
             array=array, use_calibrated_gain=False
         )
 
@@ -302,7 +302,7 @@ class TestImageACS:
         assert array.native[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(
+        array_original = array.header.array_electrons_to_original(
             array=array, use_calibrated_gain=False
         )
 
@@ -315,7 +315,7 @@ class TestImageACS:
         assert array.native[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(
+        array_original = array.header.array_electrons_to_original(
             array=array, use_calibrated_gain=False
         )
 
@@ -328,7 +328,7 @@ class TestImageACS:
         assert array.native[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(
+        array_original = array.header.array_electrons_to_original(
             array=array, use_calibrated_gain=False
         )
 
@@ -341,7 +341,7 @@ class TestImageACS:
         assert array.native[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
         assert array.shape_native == (2068, 2072)
 
-        array_original = array.header.array_from_electrons_to_original(
+        array_original = array.header.array_electrons_to_original(
             array=array, use_calibrated_gain=False
         )
 
@@ -611,14 +611,14 @@ class TestOutputQuadrants:
             overwrite=True,
         )
 
-        acs_ccd_output = aa.util.array_2d.numpy_array_2d_from_fits(
+        acs_ccd_output = aa.util.array_2d.numpy_array_2d_via_fits_from(
             file_path=file_path, hdu=1, do_not_scale_image_data=True
         )
 
         assert acs_ccd_output[0, 0] == 10.0
         assert acs_ccd_output[0, -1] == 20.0
 
-        acs_ccd_output = aa.util.array_2d.numpy_array_2d_from_fits(
+        acs_ccd_output = aa.util.array_2d.numpy_array_2d_via_fits_from(
             file_path=file_path, hdu=4, do_not_scale_image_data=True
         )
 

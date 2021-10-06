@@ -52,21 +52,21 @@ class TestFigure:
         assert figure.config_dict["figsize"] == (6, 6)
         assert figure.config_dict["aspect"] == "square"
 
-    def test__aspect_from_shape_native(self):
+    def test__aspect_from(self):
 
         figure = aplt.Figure(aspect="auto")
 
-        aspect = figure.aspect_from_shape_native(shape_native=(2, 2))
+        aspect = figure.aspect_from(shape_native=(2, 2))
 
         assert aspect == "auto"
 
         figure = aplt.Figure(aspect="square")
 
-        aspect = figure.aspect_from_shape_native(shape_native=(2, 2))
+        aspect = figure.aspect_from(shape_native=(2, 2))
 
         assert aspect == 1.0
 
-        aspect = figure.aspect_from_shape_native(shape_native=(4, 2))
+        aspect = figure.aspect_from(shape_native=(4, 2))
 
         assert aspect == 0.5
 
@@ -142,11 +142,11 @@ class TestCmap:
         assert cmap.config_dict["cmap"] == "cold"
         assert cmap.config_dict["norm"] == "linear"
 
-    def test__norm_from_array__uses_input_vmin_and_max_if_input(self):
+    def test__norm_from__uses_input_vmin_and_max_if_input(self):
 
         cmap = aplt.Cmap(vmin=0.0, vmax=1.0, norm="linear")
 
-        norm = cmap.norm_from_array(array=None)
+        norm = cmap.norm_from(array=None)
 
         assert isinstance(norm, colors.Normalize)
         assert norm.vmin == 0.0
@@ -154,7 +154,7 @@ class TestCmap:
 
         cmap = aplt.Cmap(vmin=0.0, vmax=1.0, norm="log")
 
-        norm = cmap.norm_from_array(array=None)
+        norm = cmap.norm_from(array=None)
 
         assert isinstance(norm, colors.LogNorm)
         assert norm.vmin == 1.0e-4  # Increased from 0.0 to ensure min isn't inf
@@ -164,21 +164,21 @@ class TestCmap:
             vmin=0.0, vmax=1.0, linthresh=2.0, linscale=3.0, norm="symmetric_log"
         )
 
-        norm = cmap.norm_from_array(array=None)
+        norm = cmap.norm_from(array=None)
 
         assert isinstance(norm, colors.SymLogNorm)
         assert norm.vmin == 0.0
         assert norm.vmax == 1.0
         assert norm.linthresh == 2.0
 
-    def test__norm_from_array__uses_array_to_get_vmin_and_max_if_no_manual_input(self,):
+    def test__norm_from__uses_array_to_get_vmin_and_max_if_no_manual_input(self,):
 
         array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
         array[0] = 0.0
 
         cmap = aplt.Cmap(vmin=None, vmax=None, norm="linear")
 
-        norm = cmap.norm_from_array(array=array)
+        norm = cmap.norm_from(array=array)
 
         assert isinstance(norm, colors.Normalize)
         assert norm.vmin == 0.0
@@ -186,7 +186,7 @@ class TestCmap:
 
         cmap = aplt.Cmap(vmin=None, vmax=None, norm="log")
 
-        norm = cmap.norm_from_array(array=array)
+        norm = cmap.norm_from(array=array)
 
         assert isinstance(norm, colors.LogNorm)
         assert norm.vmin == 1.0e-4  # Increased from 0.0 to ensure min isn't inf
@@ -196,7 +196,7 @@ class TestCmap:
             vmin=None, vmax=None, linthresh=2.0, linscale=3.0, norm="symmetric_log"
         )
 
-        norm = cmap.norm_from_array(array=array)
+        norm = cmap.norm_from(array=array)
 
         assert isinstance(norm, colors.SymLogNorm)
         assert norm.vmin == 0.0

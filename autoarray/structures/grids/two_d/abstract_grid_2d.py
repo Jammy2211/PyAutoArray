@@ -209,14 +209,14 @@ class AbstractGrid2D(AbstractStructure2D):
         """
         return (self * np.pi) / 648000.0
 
-    def values_from_array_slim(self, array_slim):
+    def values_from(self, array_slim):
         """
         Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *ValuesIrregular* are structured following this `Grid2DIrregular` instance.
         """
         return ValuesIrregular(values=array_slim)
 
-    def squared_distances_from_coordinate(
+    def squared_distances_to_coordinate(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
     ):
         """
@@ -232,7 +232,7 @@ class AbstractGrid2D(AbstractStructure2D):
         )
         return a2d.Array2D.manual_mask(array=squared_distances, mask=self.mask)
 
-    def distances_from_coordinate(self, coordinate: Tuple[float, float] = (0.0, 0.0)):
+    def distances_to_coordinate(self, coordinate: Tuple[float, float] = (0.0, 0.0)):
         """
         Returns the distance of every coordinate on the grid from an input (y,x) coordinate.
 
@@ -241,9 +241,7 @@ class AbstractGrid2D(AbstractStructure2D):
         coordinate
             The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
-        distances = np.sqrt(
-            self.squared_distances_from_coordinate(coordinate=coordinate)
-        )
+        distances = np.sqrt(self.squared_distances_to_coordinate(coordinate=coordinate))
         return a2d.Array2D.manual_mask(array=distances, mask=self.mask)
 
     def grid_2d_radial_projected_from(
@@ -386,7 +384,7 @@ class AbstractGrid2D(AbstractStructure2D):
             self.scaled_maxima[0] + buffer,
         ]
 
-    def padded_grid_from_kernel_shape(self, kernel_shape_native: Tuple[float, float]):
+    def padded_grid_from(self, kernel_shape_native: Tuple[float, float]):
         """
         When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will
         be 'missing' if the grid is used to evaluate the signal via an analytic function.
@@ -424,7 +422,7 @@ class AbstractGrid2D(AbstractStructure2D):
         """
         return self[self.mask.sub_border_flat_indexes]
 
-    def relocated_grid_from_grid(self, grid):
+    def relocated_grid_from(self, grid):
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
         border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
@@ -452,17 +450,17 @@ class AbstractGrid2D(AbstractStructure2D):
             return grid
 
         return g2d.Grid2D(
-            grid=grid_2d_util.relocated_grid_from_grid_jit(
+            grid=grid_2d_util.relocated_grid_via_jit_from(
                 grid=grid, border_grid=self.sub_border_grid
             ),
             mask=grid.mask,
             sub_size=grid.mask.sub_size,
         )
 
-    def relocated_pixelization_grid_from_pixelization_grid(self, pixelization_grid):
+    def relocated_pixelization_grid_from(self, pixelization_grid):
         """
         Relocate the coordinates of a pixelization grid to the border of this grid, see the method
-        *relocated_grid_from_grid* for a full description of grid relocation.
+        *relocated_grid_from* for a full description of grid relocation.
 
         This function operates the same as other grid relocation functions by returns the grid as a
         `Grid2DVoronoi` instance.
@@ -477,7 +475,7 @@ class AbstractGrid2D(AbstractStructure2D):
             return pixelization_grid
 
         return g2d.Grid2DSparse(
-            grid=grid_2d_util.relocated_grid_from_grid_jit(
+            grid=grid_2d_util.relocated_grid_via_jit_from(
                 grid=pixelization_grid, border_grid=self.sub_border_grid
             ),
             sparse_index_for_slim_index=pixelization_grid.sparse_index_for_slim_index,

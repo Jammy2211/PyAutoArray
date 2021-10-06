@@ -19,19 +19,17 @@ class TestValuesIrregular:
         assert (values == np.array([1.0, -1.0])).all()
         assert values.in_list == [1.0, -1.0]
 
-    def test__values_from_array_slim(self):
+    def test__values_from(self):
 
         values = aa.ValuesIrregular(values=[1.0, 2.0])
 
-        values_from_1d = values.values_from_array_slim(array_slim=np.array([1.0, 2.0]))
+        values_from_1d = values.values_from(array_slim=np.array([1.0, 2.0]))
 
         assert values_from_1d.in_list == [1.0, 2.0]
 
         values = aa.ValuesIrregular(values=[1.0, 2.0, 3.0])
 
-        values_from_1d = values.values_from_array_slim(
-            array_slim=np.array([1.0, 2.0, 3.0])
-        )
+        values_from_1d = values.values_from(array_slim=np.array([1.0, 2.0, 3.0]))
 
         assert values_from_1d.in_list == [1.0, 2.0, 3.0]
 
@@ -39,7 +37,7 @@ class TestValuesIrregular:
 
         values = aa.ValuesIrregular(values=[1.0, 2.0])
 
-        coordinate_from_1d = values.grid_from_grid_slim(
+        coordinate_from_1d = values.grid_from(
             grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]])
         )
 
@@ -47,7 +45,7 @@ class TestValuesIrregular:
 
         values = aa.ValuesIrregular(values=[[1.0, 2.0, 3.0]])
 
-        coordinate_from_1d = values.grid_from_grid_slim(
+        coordinate_from_1d = values.grid_from(
             grid_slim=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
         )
 

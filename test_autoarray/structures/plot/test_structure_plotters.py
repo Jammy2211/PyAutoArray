@@ -146,7 +146,7 @@ class TestArray2DPlotter:
 
         array_plotter.figure_2d()
 
-        arr = aa.util.array_2d.numpy_array_2d_from_fits(
+        arr = aa.util.array_2d.numpy_array_2d_via_fits_from(
             file_path=path.join(plot_path, "array.fits"), hdu=0
         )
 

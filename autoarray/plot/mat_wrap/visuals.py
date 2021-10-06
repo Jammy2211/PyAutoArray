@@ -176,7 +176,7 @@ class Visuals2D(AbstractVisuals):
             )
 
         if self.pixelization_indexes is not None and mapper is not None:
-            indexes = mapper.slim_indexes_from_pixelization_indexes(
+            indexes = mapper.pixelization_indexes_for_slim_indexes(
                 pixelization_indexes=self.pixelization_indexes
             )
 

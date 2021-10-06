@@ -154,10 +154,10 @@ class TestGrid:
             1.0 * np.pi / (180 * 3600), 1.0e-8
         )
 
-    def test__padded_grid_from_kernel_shape__matches_grid_2d_after_padding(self):
+    def test__padded_grid_from__matches_grid_2d_after_padding(self):
         grid = aa.Grid2D.uniform(shape_native=(4, 4), pixel_scales=3.0, sub_size=1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
+        padded_grid = grid.padded_grid_from(kernel_shape_native=(3, 3))
 
         padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
@@ -170,7 +170,7 @@ class TestGrid:
 
         grid = aa.Grid2D.uniform(shape_native=(4, 5), pixel_scales=2.0, sub_size=1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
+        padded_grid = grid.padded_grid_from(kernel_shape_native=(3, 3))
 
         padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_size=1
@@ -181,7 +181,7 @@ class TestGrid:
 
         grid = aa.Grid2D.uniform(shape_native=(5, 4), pixel_scales=1.0, sub_size=1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
+        padded_grid = grid.padded_grid_from(kernel_shape_native=(3, 3))
 
         padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((7, 6), False), pixel_scales=(1.0, 1.0), sub_size=1
@@ -192,7 +192,7 @@ class TestGrid:
 
         grid = aa.Grid2D.uniform(shape_native=(5, 5), pixel_scales=8.0, sub_size=1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(2, 5))
+        padded_grid = grid.padded_grid_from(kernel_shape_native=(2, 5))
 
         padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
@@ -207,7 +207,7 @@ class TestGrid:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
+        padded_grid = grid.padded_grid_from(kernel_shape_native=(3, 3))
 
         padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_size=2
@@ -223,7 +223,7 @@ class TestGrid:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(5, 5))
+        padded_grid = grid.padded_grid_from(kernel_shape_native=(5, 5))
 
         padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
@@ -267,13 +267,13 @@ class TestGrid:
             grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
         )
 
-        square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 0.0))
+        square_distances = grid.squared_distances_to_coordinate(coordinate=(0.0, 0.0))
 
         assert isinstance(square_distances, aa.Array2D)
         assert (square_distances.slim == np.array([2.0, 13.0, 5.0])).all()
         assert (square_distances.mask == mask).all()
 
-        square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 1.0))
+        square_distances = grid.squared_distances_to_coordinate(coordinate=(0.0, 1.0))
 
         assert isinstance(square_distances, aa.Array2D)
         assert (square_distances.slim == np.array([1.0, 8.0, 2.0])).all()
@@ -287,7 +287,7 @@ class TestGrid:
             grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
         )
 
-        square_distances = grid.distances_from_coordinate(coordinate=(0.0, 0.0))
+        square_distances = grid.distances_to_coordinate(coordinate=(0.0, 0.0))
 
         assert (
             square_distances.slim
@@ -295,7 +295,7 @@ class TestGrid:
         ).all()
         assert (square_distances.mask == mask).all()
 
-        square_distances = grid.distances_from_coordinate(coordinate=(0.0, 1.0))
+        square_distances = grid.distances_to_coordinate(coordinate=(0.0, 1.0))
 
         assert (
             square_distances.slim == np.array([1.0, np.sqrt(8.0), np.sqrt(2.0)])
@@ -415,7 +415,7 @@ class TestGridRadialMinimum:
         grid = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_2d_from_grid(grid=grid)
+        deflections = mock_profile.deflections_2d_from(grid=grid)
         assert (deflections == grid).all()
 
     def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(
@@ -424,7 +424,7 @@ class TestGridRadialMinimum:
         grid = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_2d_from_grid(grid=grid)
+        deflections = mock_profile.deflections_2d_from(grid=grid)
 
         assert (deflections == np.array([[2.5, 0.0], [2.5, 0.0], [6.0, 0.0]])).all()
 
@@ -439,7 +439,7 @@ class TestGridRadialMinimum:
 
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_2d_from_grid(grid=grid)
+        deflections = mock_profile.deflections_2d_from(grid=grid)
 
         assert deflections == pytest.approx(
             np.array(
@@ -497,7 +497,7 @@ class TestBorder:
             grid=np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]), mask=mask
         )
 
-        relocated_grid = grid.relocated_grid_from_grid(grid=grid_to_relocate)
+        relocated_grid = grid.relocated_grid_from(grid=grid_to_relocate)
 
         assert (
             relocated_grid == np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]])
@@ -515,7 +515,7 @@ class TestBorder:
             grid=np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]), mask=mask
         )
 
-        relocated_grid = grid.relocated_grid_from_grid(grid=grid_to_relocate)
+        relocated_grid = grid.relocated_grid_from(grid=grid_to_relocate)
 
         assert (
             relocated_grid == np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]])
@@ -535,7 +535,7 @@ class TestBorder:
             grid=np.array([[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]), mask=mask
         )
 
-        relocated_grid = grid.relocated_grid_from_grid(grid=grid_to_relocate)
+        relocated_grid = grid.relocated_grid_from(grid=grid_to_relocate)
 
         assert relocated_grid == pytest.approx(
             np.array([[0.95, 0.0], [0.0, 0.95], [-0.7017, -0.7017]]), 0.1
@@ -553,7 +553,7 @@ class TestBorder:
             grid=np.array([[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]), mask=mask
         )
 
-        relocated_grid = grid.relocated_grid_from_grid(grid=grid_to_relocate)
+        relocated_grid = grid.relocated_grid_from(grid=grid_to_relocate)
 
         assert relocated_grid == pytest.approx(
             np.array([[0.9778, 0.0], [0.0, 0.97788], [-0.7267, -0.7267]]), 0.1
@@ -580,7 +580,7 @@ class TestBorder:
             mask=mask,
         )
 
-        relocated_grid = grid.relocated_grid_from_grid(grid=grid_to_relocate)
+        relocated_grid = grid.relocated_grid_from(grid=grid_to_relocate)
 
         assert relocated_grid == pytest.approx(
             np.array(
@@ -605,7 +605,7 @@ class TestBorder:
             grid=np.array([[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]), mask=mask
         )
 
-        relocated_grid = grid.relocated_grid_from_grid(grid=grid_to_relocate)
+        relocated_grid = grid.relocated_grid_from(grid=grid_to_relocate)
 
         assert relocated_grid == pytest.approx(
             np.array(

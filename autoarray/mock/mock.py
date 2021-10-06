@@ -88,7 +88,7 @@ class MockPixelization(AbstractPixelization):
     ):
         return self.mapper
 
-    def sparse_grid_from_grid(self, grid, hyper_image, settings=None):
+    def sparse_grid_from(self, grid, hyper_image, settings=None):
 
         if hyper_image is not None and self.sparse_grid is not None:
             return hyper_image * self.sparse_grid

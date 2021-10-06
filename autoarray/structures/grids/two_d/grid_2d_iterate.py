@@ -15,7 +15,7 @@ from autoarray.geometry import geometry_util
 from autoarray.structures.grids.two_d import grid_2d_util
 
 
-def sub_steps_from_none(sub_steps):
+def sub_steps_from(sub_steps):
 
     if sub_steps is None:
         return [2, 4, 8, 16]
@@ -65,7 +65,7 @@ class Grid2DIterate(AbstractGrid2D):
             they are setup as the default values [2, 4, 8, 16].
         """
 
-        sub_steps = sub_steps_from_none(sub_steps=sub_steps)
+        sub_steps = sub_steps_from(sub_steps=sub_steps)
 
         obj = grid.view(cls)
         obj.mask = mask
@@ -250,7 +250,7 @@ class Grid2DIterate(AbstractGrid2D):
         )
 
     @classmethod
-    def blurring_grid_from_mask_and_kernel_shape(
+    def blurring_grid_from(
         cls,
         mask,
         kernel_shape_native,
@@ -263,7 +263,7 @@ class Grid2DIterate(AbstractGrid2D):
         will be convolved into the unmasked those pixels. This when computing images from
         light profile objects.
 
-        See *Grid2D.blurring_grid_from_mask_and_kernel_shape* for a full description of a blurring grid. This
+        See *Grid2D.blurring_grid_from* for a full description of a blurring grid. This
         method creates the blurring grid as a Grid2DIterate.
 
         Parameters
@@ -280,9 +280,7 @@ class Grid2DIterate(AbstractGrid2D):
             they are setup as the default values [2, 4, 8, 16].
         """
 
-        blurring_mask = mask.blurring_mask_from_kernel_shape(
-            kernel_shape_native=kernel_shape_native
-        )
+        blurring_mask = mask.blurring_mask_from(kernel_shape_native=kernel_shape_native)
 
         return cls.from_mask(
             mask=blurring_mask,
@@ -290,7 +288,7 @@ class Grid2DIterate(AbstractGrid2D):
             sub_steps=sub_steps,
         )
 
-    def grid_from_deflection_grid(self, deflection_grid):
+    def grid_via_deflection_grid_from(self, deflection_grid):
         """
         Returns a new Grid2DIterate from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
         termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
@@ -309,11 +307,11 @@ class Grid2DIterate(AbstractGrid2D):
             sub_steps=self.sub_steps,
         )
 
-    def blurring_grid_from_kernel_shape(self, kernel_shape_native):
+    def blurring_grid_via_kernel_shape_from(self, kernel_shape_native):
         """
         Returns the blurring grid from a grid and create it as a Grid2DIterate, via an input 2D kernel shape.
 
-            For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
+            For a full description of blurring grids, checkout *blurring_grid_from*.
 
             Parameters
             ----------
@@ -321,14 +319,14 @@ class Grid2DIterate(AbstractGrid2D):
                 The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
-        return Grid2DIterate.blurring_grid_from_mask_and_kernel_shape(
+        return Grid2DIterate.blurring_grid_from(
             mask=self.mask,
             kernel_shape_native=kernel_shape_native,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
         )
 
-    def padded_grid_from_kernel_shape(self, kernel_shape_native):
+    def padded_grid_from(self, kernel_shape_native):
         """
         When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
@@ -361,28 +359,24 @@ class Grid2DIterate(AbstractGrid2D):
         )
 
     @staticmethod
-    def array_at_sub_size_from_func_and_mask(func, cls, mask, sub_size):
+    def array_at_sub_size_from(func, cls, mask, sub_size):
 
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
         grid_compute = Grid2D.from_mask(mask=mask_higher_sub)
         array_higher_sub = func(cls, grid_compute)
-        return grid_compute.structure_2d_from_result(
-            result=array_higher_sub
-        ).binned.native
+        return grid_compute.structure_2d_from(result=array_higher_sub).binned.native
 
     @staticmethod
-    def grid_at_sub_size_from_func_and_mask(func, cls, mask, sub_size):
+    def grid_at_sub_size_from(func, cls, mask, sub_size):
 
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
         grid_compute = Grid2D.from_mask(mask=mask_higher_sub)
         grid_higher_sub = func(cls, grid_compute)
-        return grid_compute.structure_2d_from_result(
-            result=grid_higher_sub
-        ).binned.native
+        return grid_compute.structure_2d_from(result=grid_higher_sub).binned.native
 
-    def fractional_mask_from_arrays(
+    def fractional_mask_via_arrays_from(
         self, array_lower_sub_2d, array_higher_sub_2d
     ) -> Mask2D:
         """
@@ -409,7 +403,7 @@ class Grid2DIterate(AbstractGrid2D):
             invert=True,
         )
 
-        fractional_mask = self.fractional_mask_jit_from_array(
+        fractional_mask = self.fractional_mask_via_arrays_jit_from(
             fractional_accuracy_threshold=self.fractional_accuracy,
             fractional_mask=fractional_mask,
             array_higher_sub_2d=array_higher_sub_2d,
@@ -425,7 +419,7 @@ class Grid2DIterate(AbstractGrid2D):
 
     @staticmethod
     @numba_util.jit()
-    def fractional_mask_jit_from_array(
+    def fractional_mask_via_arrays_jit_from(
         fractional_accuracy_threshold,
         fractional_mask,
         array_higher_sub_2d,
@@ -464,7 +458,7 @@ class Grid2DIterate(AbstractGrid2D):
 
         return fractional_mask
 
-    def iterated_array_from_func(self, func, cls, array_lower_sub_2d):
+    def iterated_array_from(self, func, cls, array_lower_sub_2d):
         """
         Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
         The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
@@ -479,7 +473,7 @@ class Grid2DIterate(AbstractGrid2D):
         If the function return all zeros, the iteration is terminated early given that all levels of sub-gridding will
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
-        An example use case of this function is when a "image_2d_from_grid" methods in **PyAutoGalaxy**'s
+        An example use case of this function is when a "image_2d_from" methods in **PyAutoGalaxy**'s
         `LightProfile` module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
         the analytic light profile at more points and thus more precisely.
 
@@ -502,13 +496,13 @@ class Grid2DIterate(AbstractGrid2D):
 
         for sub_size in self.sub_steps[:-1]:
 
-            array_higher_sub = self.array_at_sub_size_from_func_and_mask(
+            array_higher_sub = self.array_at_sub_size_from(
                 func=func, cls=cls, mask=fractional_mask_lower_sub, sub_size=sub_size
             )
 
             try:
 
-                fractional_mask_higher_sub = self.fractional_mask_from_arrays(
+                fractional_mask_higher_sub = self.fractional_mask_via_arrays_from(
                     array_lower_sub_2d=array_lower_sub_2d,
                     array_higher_sub_2d=array_higher_sub,
                 )
@@ -531,7 +525,7 @@ class Grid2DIterate(AbstractGrid2D):
             array_lower_sub_2d = array_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
 
-        array_higher_sub = self.array_at_sub_size_from_func_and_mask(
+        array_higher_sub = self.array_at_sub_size_from(
             func=func,
             cls=cls,
             mask=fractional_mask_lower_sub,
@@ -586,7 +580,7 @@ class Grid2DIterate(AbstractGrid2D):
 
         return iterated_array
 
-    def fractional_mask_from_grids(
+    def fractional_mask_via_grids_from(
         self, grid_lower_sub_2d, grid_higher_sub_2d
     ) -> Mask2D:
         """
@@ -613,7 +607,7 @@ class Grid2DIterate(AbstractGrid2D):
             invert=True,
         )
 
-        fractional_mask = self.fractional_mask_jit_from_grid(
+        fractional_mask = self.fractional_mask_via_grids_jit_from(
             fractional_accuracy_threshold=self.fractional_accuracy,
             fractional_mask=fractional_mask,
             grid_higher_sub_2d=grid_higher_sub_2d,
@@ -629,7 +623,7 @@ class Grid2DIterate(AbstractGrid2D):
 
     @staticmethod
     @numba_util.jit()
-    def fractional_mask_jit_from_grid(
+    def fractional_mask_via_grids_jit_from(
         fractional_accuracy_threshold,
         fractional_mask,
         grid_higher_sub_2d,
@@ -684,7 +678,7 @@ class Grid2DIterate(AbstractGrid2D):
 
         return fractional_mask
 
-    def iterated_grid_from_func(self, func, cls, grid_lower_sub_2d):
+    def iterated_grid_from(self, func, cls, grid_lower_sub_2d):
         """
         Iterate over a function that returns a grid of values until the it meets a specified fractional accuracy.
         The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
@@ -699,7 +693,7 @@ class Grid2DIterate(AbstractGrid2D):
         If the function return all zeros, the iteration is terminated early given that all levels of sub-gridding will
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
-        An example use case of this function is when a "deflections_2d_from_grid" methods in **PyAutoLens**'s `MassProfile`
+        An example use case of this function is when a "deflections_2d_from" methods in **PyAutoLens**'s `MassProfile`
         module is computed, which by evaluating the function on a higher resolution sub-grid samples the analytic
         mass profile at more points and thus more precisely.
 
@@ -722,11 +716,11 @@ class Grid2DIterate(AbstractGrid2D):
 
         for sub_size in self.sub_steps[:-1]:
 
-            grid_higher_sub = self.grid_at_sub_size_from_func_and_mask(
+            grid_higher_sub = self.grid_at_sub_size_from(
                 func=func, cls=cls, mask=fractional_mask_lower_sub, sub_size=sub_size
             )
 
-            fractional_mask_higher_sub = self.fractional_mask_from_grids(
+            fractional_mask_higher_sub = self.fractional_mask_via_grids_from(
                 grid_lower_sub_2d=grid_lower_sub_2d, grid_higher_sub_2d=grid_higher_sub
             )
 
@@ -748,7 +742,7 @@ class Grid2DIterate(AbstractGrid2D):
             grid_lower_sub_2d = grid_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
 
-        grid_higher_sub = self.grid_at_sub_size_from_func_and_mask(
+        grid_higher_sub = self.grid_at_sub_size_from(
             func=func,
             cls=cls,
             mask=fractional_mask_lower_sub,
@@ -787,14 +781,14 @@ class Grid2DIterate(AbstractGrid2D):
 
         return iterated_grid
 
-    def iterated_result_from_func(self, func, cls):
+    def iterated_result_from(self, func, cls):
         """
         Iterate over a function that returns an array or grid of values until the it meets a specified fractional
         accuracy. The function returns a result on a pixel-grid where evaluating it on more points on a higher
         resolution sub-grid followed by binning lead to a more precise evaluation of the function.
 
-        A full description of the iteration method can be found in the functions *iterated_array_from_func* and
-        *iterated_grid_from_func*. This function computes the result on a grid with a sub-size of 1, and uses its
+        A full description of the iteration method can be found in the functions *iterated_array_from* and
+        *iterated_grid_from*. This function computes the result on a grid with a sub-size of 1, and uses its
         shape to call the correct function.
 
         Parameters
@@ -805,15 +799,15 @@ class Grid2DIterate(AbstractGrid2D):
             The class the function belongs to.
         """
         result_sub_1_1d = func(cls, self.grid)
-        result_sub_1_2d = self.grid.structure_2d_from_result(
+        result_sub_1_2d = self.grid.structure_2d_from(
             result=result_sub_1_1d
         ).binned.native
 
         if len(result_sub_1_2d.shape) == 2:
-            return self.iterated_array_from_func(
+            return self.iterated_array_from(
                 func=func, cls=cls, array_lower_sub_2d=result_sub_1_2d
             )
         elif len(result_sub_1_2d.shape) == 3:
-            return self.iterated_grid_from_func(
+            return self.iterated_grid_from(
                 func=func, cls=cls, grid_lower_sub_2d=result_sub_1_2d
             )

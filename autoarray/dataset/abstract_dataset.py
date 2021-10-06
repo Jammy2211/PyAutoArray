@@ -35,7 +35,7 @@ class AbstractWTilde:
             )
 
 
-def grid_from_mask_and_grid_class(
+def grid_via_grid_class_from(
     mask: Union[Mask1D, Mask2D],
     grid_class: Union[Type[Grid1D], Type[Grid2D]],
     fractional_accuracy: float,
@@ -120,18 +120,18 @@ class AbstractSettingsDataset:
         self.signal_to_noise_limit = signal_to_noise_limit
         self.signal_to_noise_limit_radii = signal_to_noise_limit_radii
 
-    def grid_from_mask(self, mask) -> Union[Grid1D, Grid2D]:
+    def grid_from(self, mask) -> Union[Grid1D, Grid2D]:
 
-        return grid_from_mask_and_grid_class(
+        return grid_via_grid_class_from(
             mask=mask,
             grid_class=self.grid_class,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
         )
 
-    def grid_inversion_from_mask(self, mask) -> Union[Grid1D, Grid2D]:
+    def grid_inversion_from(self, mask) -> Union[Grid1D, Grid2D]:
 
-        return grid_from_mask_and_grid_class(
+        return grid_via_grid_class_from(
             mask=mask,
             grid_class=self.grid_inversion_class,
             fractional_accuracy=self.fractional_accuracy,
@@ -147,7 +147,8 @@ class AbstractDataset:
         settings=AbstractSettingsDataset(),
         name: str = None,
     ):
-        """A collection of abstract data structures for different types of data (an image, pixel-scale, noise-map, etc.)
+        """
+        A collection of abstract data structures for different types of data (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
@@ -197,13 +198,13 @@ class AbstractDataset:
             mask_grid = mask.mask_new_sub_size_from(
                 mask=mask, sub_size=settings.sub_size
             )
-            self.grid = settings.grid_from_mask(mask=mask_grid)
+            self.grid = settings.grid_from(mask=mask_grid)
 
             mask_inversion = mask.mask_new_sub_size_from(
                 mask=mask, sub_size=settings.sub_size_inversion
             )
 
-            self.grid_inversion = settings.grid_inversion_from_mask(mask=mask_inversion)
+            self.grid_inversion = settings.grid_inversion_from(mask=mask_inversion)
 
     @property
     def mask(self) -> Union[Mask1D, Mask2D]:

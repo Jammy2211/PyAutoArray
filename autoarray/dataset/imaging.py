@@ -123,9 +123,7 @@ class Imaging(AbstractDataset):
         if pad_for_convolver and psf is not None:
 
             try:
-                image.mask.blurring_mask_from_kernel_shape(
-                    kernel_shape_native=psf.shape_native
-                )
+                image.mask.blurring_mask_from(kernel_shape_native=psf.shape_native)
             except exc.MaskException:
                 image = image.padded_before_convolution_from(
                     kernel_shape=psf.shape_native, mask_pad_value=1
@@ -176,7 +174,7 @@ class Imaging(AbstractDataset):
             The blurring grid given the mask of the imaging data.
         """
 
-        return self.grid.blurring_grid_from_kernel_shape(
+        return self.grid.blurring_grid_via_kernel_shape_from(
             kernel_shape_native=self.psf.shape_native
         )
 
@@ -461,7 +459,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
         else:
             psf = Kernel2D.no_blur(pixel_scales=image.pixel_scales)
 
-        image = psf.convolved_array_from_array(array=image)
+        image = psf.convolved_array_from(array=image)
 
         image = image + background_sky_map
 
@@ -472,7 +470,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
                 seed=self.noise_seed,
             )
 
-            noise_map = preprocess.noise_map_from_data_eps_and_exposure_time_map(
+            noise_map = preprocess.noise_map_via_data_eps_and_exposure_time_map_from(
                 data_eps=image, exposure_time_map=exposure_time_map
             )
 

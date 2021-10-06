@@ -8,7 +8,7 @@ class TestRotations:
 
         arr = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 0.0], [0.0, 0.0, 0.0]])
 
-        arr_bl = aa.util.layout.rotate_array_from_roe_corner(
+        arr_bl = aa.util.layout.rotate_array_via_roe_corner_from(
             array=arr, roe_corner=(1, 0)
         )
 
@@ -16,13 +16,13 @@ class TestRotations:
             np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 0.0], [0.0, 0.0, 0.0]]), 1.0e-4
         )
 
-        arr_bl = aa.util.layout.rotate_array_from_roe_corner(
+        arr_bl = aa.util.layout.rotate_array_via_roe_corner_from(
             array=arr_bl, roe_corner=(1, 0)
         )
 
         assert arr_bl == pytest.approx(np.array(arr), 1.0e-4)
 
-        arr_br = aa.util.layout.rotate_array_from_roe_corner(
+        arr_br = aa.util.layout.rotate_array_via_roe_corner_from(
             array=arr, roe_corner=(1, 1)
         )
 
@@ -30,13 +30,13 @@ class TestRotations:
             np.array([[0.0, 1.0, 0.0], [0.0, 2.0, 1.0], [0.0, 0.0, 0.0]]), 1.0e-4
         )
 
-        arr_br = aa.util.layout.rotate_array_from_roe_corner(
+        arr_br = aa.util.layout.rotate_array_via_roe_corner_from(
             array=arr_br, roe_corner=(1, 1)
         )
 
         assert arr_br == pytest.approx(np.array(arr), 1.0e-4)
 
-        arr_tl = aa.util.layout.rotate_array_from_roe_corner(
+        arr_tl = aa.util.layout.rotate_array_via_roe_corner_from(
             array=arr, roe_corner=(0, 0)
         )
 
@@ -44,13 +44,13 @@ class TestRotations:
             np.array([[0.0, 0.0, 0.0], [1.0, 2.0, 0.0], [0.0, 1.0, 0.0]]), 1.0e-4
         )
 
-        arr_tl = aa.util.layout.rotate_array_from_roe_corner(
+        arr_tl = aa.util.layout.rotate_array_via_roe_corner_from(
             array=arr_tl, roe_corner=(0, 0)
         )
 
         assert arr_tl == pytest.approx(np.array(arr), 1.0e-4)
 
-        arr_tr = aa.util.layout.rotate_array_from_roe_corner(
+        arr_tr = aa.util.layout.rotate_array_via_roe_corner_from(
             array=arr, roe_corner=(0, 1)
         )
 
@@ -58,7 +58,7 @@ class TestRotations:
             np.array([[0.0, 0.0, 0.0], [0.0, 2.0, 1.0], [0.0, 1.0, 0.0]]), 1.0e-4
         )
 
-        arr_tr = aa.util.layout.rotate_array_from_roe_corner(
+        arr_tr = aa.util.layout.rotate_array_via_roe_corner_from(
             array=arr_tr, roe_corner=(0, 1)
         )
 
@@ -70,49 +70,49 @@ class TestRotations:
 
         shape_native = (8, 10)
 
-        region_bl = aa.util.layout.rotate_region_from_roe_corner(
+        region_bl = aa.util.layout.rotate_region_via_roe_corner_from(
             region=region, shape_native=shape_native, roe_corner=(1, 0)
         )
 
         assert region_bl == (0, 2, 1, 3)
 
-        region_bl = aa.util.layout.rotate_region_from_roe_corner(
+        region_bl = aa.util.layout.rotate_region_via_roe_corner_from(
             region=region_bl, shape_native=shape_native, roe_corner=(1, 0)
         )
 
         assert region_bl == (0, 2, 1, 3)
 
-        region_br = aa.util.layout.rotate_region_from_roe_corner(
+        region_br = aa.util.layout.rotate_region_via_roe_corner_from(
             region=region, shape_native=shape_native, roe_corner=(1, 1)
         )
 
         assert region_br == (0, 2, 7, 9)
 
-        region_br = aa.util.layout.rotate_region_from_roe_corner(
+        region_br = aa.util.layout.rotate_region_via_roe_corner_from(
             region=region_br, shape_native=shape_native, roe_corner=(1, 1)
         )
 
         assert region_br == (0, 2, 1, 3)
 
-        region_tl = aa.util.layout.rotate_region_from_roe_corner(
+        region_tl = aa.util.layout.rotate_region_via_roe_corner_from(
             region=region, shape_native=shape_native, roe_corner=(0, 0)
         )
 
         assert region_tl == (6, 8, 1, 3)
 
-        region_tl = aa.util.layout.rotate_region_from_roe_corner(
+        region_tl = aa.util.layout.rotate_region_via_roe_corner_from(
             region=region_tl, shape_native=shape_native, roe_corner=(0, 0)
         )
 
         assert region_tl == (0, 2, 1, 3)
 
-        region_tr = aa.util.layout.rotate_region_from_roe_corner(
+        region_tr = aa.util.layout.rotate_region_via_roe_corner_from(
             region=region, shape_native=shape_native, roe_corner=(0, 1)
         )
 
         assert region_tr == (6, 8, 7, 9)
 
-        region_tr = aa.util.layout.rotate_region_from_roe_corner(
+        region_tr = aa.util.layout.rotate_region_via_roe_corner_from(
             region=region_tr, shape_native=shape_native, roe_corner=(0, 1)
         )
 
@@ -126,50 +126,50 @@ class TestRotations:
     #
     #     shape_native = (2, 2)
     #
-    #     pattern_bl = aa.util.layout.rotate_pattern_ci_from_roe_corner(
+    #     pattern_bl = aa.util.layout.rotate_pattern_ci_via_roe_corner_from(
     #         pattern_ci=pattern, shape_native=shape_native, roe_corner=(1, 0)
     #     )
     #
     #     assert pattern_bl.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]
     #     assert pattern_bl.normalization == 10.0
     #
-    #     pattern_bl = aa.util.layout.rotate_pattern_ci_from_roe_corner(
+    #     pattern_bl = aa.util.layout.rotate_pattern_ci_via_roe_corner_from(
     #         pattern_ci=pattern_bl, shape_native=shape_native, roe_corner=(1, 0)
     #     )
     #
     #     assert pattern_bl.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]
     #
-    #     pattern_br = aa.util.layout.rotate_pattern_ci_from_roe_corner(
+    #     pattern_br = aa.util.layout.rotate_pattern_ci_via_roe_corner_from(
     #         pattern_ci=pattern, shape_native=shape_native, roe_corner=(1, 1)
     #     )
     #
     #     assert pattern_br.regions == [(0, 1, 0, 1), (0, 2, 0, 2)]
     #
-    #     pattern_br = aa.util.layout.rotate_pattern_ci_from_roe_corner(
+    #     pattern_br = aa.util.layout.rotate_pattern_ci_via_roe_corner_from(
     #         pattern_ci=pattern_br, shape_native=shape_native, roe_corner=(1, 1)
     #     )
     #
     #     assert pattern_br.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]
     #
-    #     pattern_tl = aa.util.layout.rotate_pattern_ci_from_roe_corner(
+    #     pattern_tl = aa.util.layout.rotate_pattern_ci_via_roe_corner_from(
     #         pattern_ci=pattern, shape_native=shape_native, roe_corner=(0, 0)
     #     )
     #
     #     assert pattern_tl.regions == [(1, 2, 1, 2), (0, 2, 0, 2)]
     #
-    #     pattern_tl = aa.util.layout.rotate_pattern_ci_from_roe_corner(
+    #     pattern_tl = aa.util.layout.rotate_pattern_ci_via_roe_corner_from(
     #         pattern_ci=pattern_tl, shape_native=shape_native, roe_corner=(0, 0)
     #     )
     #
     #     assert pattern_tl.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]
     #
-    #     pattern_tr = aa.util.layout.rotate_pattern_ci_from_roe_corner(
+    #     pattern_tr = aa.util.layout.rotate_pattern_ci_via_roe_corner_from(
     #         pattern_ci=pattern, shape_native=shape_native, roe_corner=(0, 1)
     #     )
     #
     #     assert pattern_tr.regions == [(1, 2, 0, 1), (0, 2, 0, 2)]
     #
-    #     pattern_tr = aa.util.layout.rotate_pattern_ci_from_roe_corner(
+    #     pattern_tr = aa.util.layout.rotate_pattern_ci_via_roe_corner_from(
     #         pattern_ci=pattern_tr, shape_native=shape_native, roe_corner=(0, 1)
     #     )
     #

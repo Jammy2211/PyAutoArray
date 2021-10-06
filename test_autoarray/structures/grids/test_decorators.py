@@ -7,8 +7,8 @@ from autoarray.mock.mock_grid import (
     MockGridLikeIteratorObj,
     MockGrid1DLikeObj,
     MockGrid2DLikeObj,
-    ndarray_1d_from_grid,
-    ndarray_2d_from_grid,
+    ndarray_1d_from,
+    ndarray_2d_from,
 )
 
 
@@ -19,7 +19,7 @@ class TestGrid1DToStructure:
 
         grid_like_object = MockGrid1DLikeObj()
 
-        array_output = grid_like_object.ndarray_1d_from_grid(grid=grid_2d)
+        array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
         assert isinstance(array_output, aa.Array1D)
         assert (array_output.native == np.array([1.0, 1.0, 1.0])).all()
@@ -27,7 +27,7 @@ class TestGrid1DToStructure:
 
         grid_like_object = MockGrid1DLikeObj(centre=(1.0, 0.0), angle=45.0)
 
-        array_output = grid_like_object.ndarray_1d_from_grid(grid=grid_2d)
+        array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
         assert isinstance(array_output, aa.Array1D)
         assert (array_output.native == np.array([1.0, 1.0, 1.0])).all()
@@ -39,7 +39,7 @@ class TestGrid1DToStructure:
 
         grid_like_object = MockGrid1DLikeObj()
 
-        array_output = grid_like_object.ndarray_1d_from_grid(grid=grid_2d)
+        array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
         assert isinstance(array_output, aa.Array1D)
         assert (array_output.native == np.array([1.0])).all()
@@ -47,7 +47,7 @@ class TestGrid1DToStructure:
 
         grid_like_object = MockGrid1DLikeObj(centre=(1.0, 0.0))
 
-        array_output = grid_like_object.ndarray_1d_from_grid(grid=grid_2d)
+        array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
         assert isinstance(array_output, aa.Array1D)
         assert (array_output.native == np.array([1.0, 1.0, 1.0])).all()
@@ -59,7 +59,7 @@ class TestGrid1DToStructure:
 
         grid_like_object = MockGrid1DLikeObj()
 
-        array_output = grid_like_object.ndarray_1d_from_grid(grid=grid_2d)
+        array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
         assert isinstance(array_output, aa.ValuesIrregular)
         assert (array_output == np.array([1.0, 1.0, 1.0])).all()
@@ -76,12 +76,12 @@ class TestGrid2DToStructure:
 
         grid_like_object = MockGrid2DLikeObj()
 
-        array_output = grid_like_object.ndarray_1d_from_grid(grid=grid_1d)
+        array_output = grid_like_object.ndarray_1d_from(grid=grid_1d)
 
         assert isinstance(array_output, aa.Array1D)
         assert (array_output.native == np.array([0.0, 1.0, 1.0, 0.0])).all()
 
-        grid_output = grid_like_object.ndarray_2d_from_grid(grid=grid_1d)
+        grid_output = grid_like_object.ndarray_2d_from(grid=grid_1d)
 
         assert isinstance(grid_output, aa.Grid2D)
         assert grid_output.native == pytest.approx(
@@ -98,7 +98,7 @@ class TestGrid2DToStructure:
 
         grid_like_object = MockGrid2DLikeObj()
 
-        array_output = grid_like_object.ndarray_1d_list_from_grid(grid=grid_1d)
+        array_output = grid_like_object.ndarray_1d_list_from(grid=grid_1d)
 
         assert isinstance(array_output[0], aa.Array1D)
         assert (array_output[0].native == np.array([[0.0, 1.0, 1.0, 0.0]])).all()
@@ -106,7 +106,7 @@ class TestGrid2DToStructure:
         assert isinstance(array_output[1], aa.Array1D)
         assert (array_output[1].native == np.array([[0.0, 2.0, 2.0, 0.0]])).all()
 
-        grid_output = grid_like_object.ndarray_2d_list_from_grid(grid=grid_1d)
+        grid_output = grid_like_object.ndarray_2d_list_from(grid=grid_1d)
 
         assert isinstance(grid_output[0], aa.Grid2D)
         assert grid_output[0].native == pytest.approx(
@@ -135,7 +135,7 @@ class TestGrid2DToStructure:
 
         grid_like_object = MockGrid2DLikeObj()
 
-        array_output = grid_like_object.ndarray_1d_from_grid(grid=grid_2d)
+        array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
         assert isinstance(array_output, aa.Array2D)
         assert (
@@ -150,7 +150,7 @@ class TestGrid2DToStructure:
             )
         ).all()
 
-        grid_output = grid_like_object.ndarray_2d_from_grid(grid=grid_2d)
+        grid_output = grid_like_object.ndarray_2d_from(grid=grid_2d)
 
         assert isinstance(grid_output, aa.Grid2D)
         assert (
@@ -182,7 +182,7 @@ class TestGrid2DToStructure:
 
         grid_like_object = MockGrid2DLikeObj()
 
-        array_output = grid_like_object.ndarray_1d_list_from_grid(grid=grid_2d)
+        array_output = grid_like_object.ndarray_1d_list_from(grid=grid_2d)
 
         assert isinstance(array_output[0], aa.Array2D)
         assert (
@@ -210,7 +210,7 @@ class TestGrid2DToStructure:
             )
         ).all()
 
-        grid_output = grid_like_object.ndarray_2d_list_from_grid(grid=grid_2d)
+        grid_output = grid_like_object.ndarray_2d_list_from(grid=grid_2d)
 
         assert isinstance(grid_output[0], aa.Grid2D)
         assert (
@@ -244,11 +244,11 @@ class TestGrid2DToStructure:
 
         grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
-        values_output = grid_like_object.ndarray_1d_from_grid(grid=grid_2d)
+        values_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
         assert values_output.in_list == [1.0, 1.0, 1.0]
 
-        grid_output = grid_like_object.ndarray_2d_from_grid(grid=grid_2d)
+        grid_output = grid_like_object.ndarray_2d_from(grid=grid_2d)
 
         assert grid_output.in_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
 
@@ -258,12 +258,12 @@ class TestGrid2DToStructure:
 
         grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
-        grid_output = grid_like_object.ndarray_1d_list_from_grid(grid=grid_2d)
+        grid_output = grid_like_object.ndarray_1d_list_from(grid=grid_2d)
 
         assert grid_output[0].in_list == [1.0, 1.0, 1.0]
         assert grid_output[1].in_list == [2.0, 2.0, 2.0]
 
-        grid_output = grid_like_object.ndarray_2d_list_from_grid(grid=grid_2d)
+        grid_output = grid_like_object.ndarray_2d_list_from(grid=grid_2d)
 
         assert grid_output[0].in_list == [(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)]
         assert grid_output[1].in_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
@@ -288,12 +288,12 @@ class TestGrid2DToStructure:
 
         grid_like_obj = MockGridLikeIteratorObj()
 
-        values = grid_like_obj.ndarray_1d_from_grid(grid=grid_2d)
+        values = grid_like_obj.ndarray_1d_from(grid=grid_2d)
 
         mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
         grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
-        values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
-        values_sub_3 = grid_sub_3.structure_2d_from_result(result=values_sub_3)
+        values_sub_3 = ndarray_1d_from(grid=grid_sub_3, profile=None)
+        values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
 
         assert (values == values_sub_3.binned).all()
 
@@ -303,12 +303,12 @@ class TestGrid2DToStructure:
 
         grid_like_obj = MockGridLikeIteratorObj()
 
-        values = grid_like_obj.ndarray_1d_from_grid(grid=grid_2d)
+        values = grid_like_obj.ndarray_1d_from(grid=grid_2d)
 
         mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
-        values_sub_2 = ndarray_1d_from_grid(grid=grid_sub_2, profile=None)
-        values_sub_2 = grid_sub_2.structure_2d_from_result(result=values_sub_2)
+        values_sub_2 = ndarray_1d_from(grid=grid_sub_2, profile=None)
+        values_sub_2 = grid_sub_2.structure_2d_from(result=values_sub_2)
 
         assert (values == values_sub_2.binned).all()
 
@@ -318,17 +318,17 @@ class TestGrid2DToStructure:
 
         iterate_obj = MockGridLikeIteratorObj()
 
-        values = iterate_obj.ndarray_1d_from_grid(grid=grid_2d)
+        values = iterate_obj.ndarray_1d_from(grid=grid_2d)
 
         mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
-        values_sub_2 = ndarray_1d_from_grid(grid=grid_sub_2, profile=None)
-        values_sub_2 = grid_sub_2.structure_2d_from_result(result=values_sub_2)
+        values_sub_2 = ndarray_1d_from(grid=grid_sub_2, profile=None)
+        values_sub_2 = grid_sub_2.structure_2d_from(result=values_sub_2)
 
         mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
         grid_sub_4 = aa.Grid2D.from_mask(mask=mask_sub_4)
-        values_sub_4 = ndarray_1d_from_grid(grid=grid_sub_4, profile=None)
-        values_sub_4 = grid_sub_4.structure_2d_from_result(result=values_sub_4)
+        values_sub_4 = ndarray_1d_from(grid=grid_sub_4, profile=None)
+        values_sub_4 = grid_sub_4.structure_2d_from(result=values_sub_4)
 
         assert values.native[1, 1] == values_sub_2.binned.native[1, 1]
         assert values.native[2, 2] != values_sub_2.binned.native[2, 2]
@@ -358,12 +358,12 @@ class TestGrid2DToStructure:
 
         grid_like_obj = MockGridLikeIteratorObj()
 
-        values = grid_like_obj.ndarray_1d_list_from_grid(grid=grid_2d)
+        values = grid_like_obj.ndarray_1d_list_from(grid=grid_2d)
 
         mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
         grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
-        values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
-        values_sub_3 = grid_sub_3.structure_2d_from_result(result=values_sub_3)
+        values_sub_3 = ndarray_1d_from(grid=grid_sub_3, profile=None)
+        values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
 
         assert (values[0] == values_sub_3.binned).all()
 
@@ -387,12 +387,12 @@ class TestGrid2DToStructure:
 
         grid_like_obj = MockGridLikeIteratorObj()
 
-        values = grid_like_obj.ndarray_2d_from_grid(grid=grid_2d)
+        values = grid_like_obj.ndarray_2d_from(grid=grid_2d)
 
         mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
         grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
-        values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
-        values_sub_3 = grid_sub_3.structure_2d_from_result(result=values_sub_3)
+        values_sub_3 = ndarray_2d_from(grid=grid_sub_3, profile=None)
+        values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
 
         assert (values == values_sub_3.binned).all()
 
@@ -402,12 +402,12 @@ class TestGrid2DToStructure:
 
         grid_like_obj = MockGridLikeIteratorObj()
 
-        values = grid_like_obj.ndarray_2d_from_grid(grid=grid_2d)
+        values = grid_like_obj.ndarray_2d_from(grid=grid_2d)
 
         mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
-        values_sub_2 = ndarray_2d_from_grid(grid=grid_sub_2, profile=None)
-        values_sub_2 = grid_sub_2.structure_2d_from_result(result=values_sub_2)
+        values_sub_2 = ndarray_2d_from(grid=grid_sub_2, profile=None)
+        values_sub_2 = grid_sub_2.structure_2d_from(result=values_sub_2)
 
         assert (values == values_sub_2.binned).all()
 
@@ -417,17 +417,17 @@ class TestGrid2DToStructure:
 
         iterate_obj = MockGridLikeIteratorObj()
 
-        values = iterate_obj.ndarray_2d_from_grid(grid=grid_2d)
+        values = iterate_obj.ndarray_2d_from(grid=grid_2d)
 
         mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
-        values_sub_2 = ndarray_2d_from_grid(grid=grid_sub_2, profile=None)
-        values_sub_2 = grid_sub_2.structure_2d_from_result(result=values_sub_2)
+        values_sub_2 = ndarray_2d_from(grid=grid_sub_2, profile=None)
+        values_sub_2 = grid_sub_2.structure_2d_from(result=values_sub_2)
 
         mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
         grid_sub_4 = aa.Grid2D.from_mask(mask=mask_sub_4)
-        values_sub_4 = ndarray_2d_from_grid(grid=grid_sub_4, profile=None)
-        values_sub_4 = grid_sub_4.structure_2d_from_result(result=values_sub_4)
+        values_sub_4 = ndarray_2d_from(grid=grid_sub_4, profile=None)
+        values_sub_4 = grid_sub_4.structure_2d_from(result=values_sub_4)
 
         assert values.native[1, 1, 0] == values_sub_2.binned.native[1, 1, 0]
         assert values.native[2, 2, 0] != values_sub_2.binned.native[2, 2, 0]
@@ -463,12 +463,12 @@ class TestGrid2DToStructure:
 
         grid_like_obj = MockGridLikeIteratorObj()
 
-        values = grid_like_obj.ndarray_2d_list_from_grid(grid=grid_2d)
+        values = grid_like_obj.ndarray_2d_list_from(grid=grid_2d)
 
         mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
         grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
-        values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
-        values_sub_3 = grid_sub_3.structure_2d_from_result(result=values_sub_3)
+        values_sub_3 = ndarray_2d_from(grid=grid_sub_3, profile=None)
+        values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
 
         assert (values[0][0] == values_sub_3.binned[0]).all()
         assert (values[0][1] == values_sub_3.binned[1]).all()

@@ -35,7 +35,7 @@ def mask_2d_centres_from(
 
     Examples
     --------
-    centres_scaled = centres_from_shape_pixel_scales_and_centre(shape=(5,5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
+    centres_scaled = centres_from(shape=(5,5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
     """
     y_centre_scaled = (float(shape_native[0] - 1) / 2) - (centre[0] / pixel_scales[0])
     x_centre_scaled = (float(shape_native[1] - 1) / 2) + (centre[1] / pixel_scales[1])
@@ -65,7 +65,7 @@ def total_pixels_2d_from(mask_2d: np.ndarray) -> int:
                  [False, False, False]
                  [True, False, True]])
 
-    total_regular_pixels = total_regular_pixels_from_mask(mask=mask)
+    total_regular_pixels = total_regular_pixels_from(mask=mask)
     """
 
     total_regular_pixels = 0
@@ -102,7 +102,7 @@ def total_sub_pixels_2d_from(mask_2d: np.ndarray, sub_size: int) -> int:
                      [False, False, False]
                      [True, False, True]])
 
-    total_sub_pixels = total_sub_pixels_from_mask(mask=mask, sub_size=2)
+    total_sub_pixels = total_sub_pixels_from(mask=mask, sub_size=2)
     """
     return total_pixels_2d_from(mask_2d) * sub_size ** 2
 
@@ -168,7 +168,7 @@ def mask_2d_circular_from(
 
     Examples
     --------
-    mask = mask_circular_from_shape_pixel_scale_and_radius(
+    mask = mask_circular_from(
         shape=(10, 10), pixel_scales=0.1, radius=0.5, centre=(0.0, 0.0))
     """
 
@@ -225,7 +225,7 @@ def mask_2d_circular_annular_from(
 
     Examples
     --------
-    mask = mask_annnular_from_shape_pixel_scale_and_radius(
+    mask = mask_annnular_from(
         shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
     """
 
@@ -287,7 +287,7 @@ def mask_2d_circular_anti_annular_from(
 
     Examples
     --------
-    mask = mask_annnular_from_shape_pixel_scale_and_radius(
+    mask = mask_annnular_from(
         shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
 
     """
@@ -424,7 +424,7 @@ def mask_2d_elliptical_from(
 
     Examples
     --------
-    mask = mask_elliptical_from_shape_pixel_scale_and_radius(
+    mask = mask_elliptical_from(
         shape=(10, 10), pixel_scales=0.1, major_axis_radius=0.5, elliptical_comps=(0.333333, 0.0), centre=(0.0, 0.0))
     """
 
@@ -498,7 +498,7 @@ def mask_2d_elliptical_annular_from(
 
     Examples
     --------
-    mask = mask_elliptical_annuli_from_shape_pixel_scale_and_radius(
+    mask = mask_elliptical_annuli_from(
         shape=(10, 10), pixel_scales=0.1,
          inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
          outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
@@ -566,7 +566,7 @@ def blurring_mask_2d_from(
                      [True, False, True]
                      [True, True, True]])
 
-    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask)
+    blurring_mask = blurring_mask_from(mask=mask)
 
     """
 
@@ -630,7 +630,7 @@ def mask_2d_via_shape_native_and_native_for_slim(
     --------
     native_for_slim = np.array([[0,1], [1,0], [1,1], [1,2], [2,1]])
 
-    mask = mask_from_shape_and_native_for_slim(shape=(3,3), native_for_slim=native_for_slim)
+    mask = mask_from(shape=(3,3), native_for_slim=native_for_slim)
     """
 
     mask = np.ones(shape_native)
@@ -1167,7 +1167,7 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     Examples
     --------
     mask = np.full(fill_value=False, shape=(9,9))
-    sub_two_to_one = mask_to_mask_1d_index_from_mask(mask=mask)
+    sub_two_to_one = mask_to_mask_1d_index_from(mask=mask)
     """
 
     sub_slim_index_for_sub_native_index = -1 * np.ones(shape=sub_mask_2d.shape)

@@ -195,36 +195,28 @@ class FitInterferometer(FitDataset):
 
     @property
     def dirty_image(self):
-        return self.transformer.image_from_visibilities(visibilities=self.visibilities)
+        return self.transformer.image_from(visibilities=self.visibilities)
 
     @property
     def dirty_noise_map(self):
-        return self.transformer.image_from_visibilities(visibilities=self.fit.noise_map)
+        return self.transformer.image_from(visibilities=self.fit.noise_map)
 
     @property
     def dirty_signal_to_noise_map(self):
-        return self.transformer.image_from_visibilities(
-            visibilities=self.signal_to_noise_map
-        )
+        return self.transformer.image_from(visibilities=self.signal_to_noise_map)
 
     @property
     def dirty_model_image(self):
-        return self.transformer.image_from_visibilities(
-            visibilities=self.model_visibilities
-        )
+        return self.transformer.image_from(visibilities=self.model_visibilities)
 
     @property
     def dirty_residual_map(self):
-        return self.transformer.image_from_visibilities(visibilities=self.residual_map)
+        return self.transformer.image_from(visibilities=self.residual_map)
 
     @property
     def dirty_normalized_residual_map(self):
-        return self.transformer.image_from_visibilities(
-            visibilities=self.normalized_residual_map
-        )
+        return self.transformer.image_from(visibilities=self.normalized_residual_map)
 
     @property
     def dirty_chi_squared_map(self):
-        return self.transformer.image_from_visibilities(
-            visibilities=self.chi_squared_map
-        )
+        return self.transformer.image_from(visibilities=self.chi_squared_map)

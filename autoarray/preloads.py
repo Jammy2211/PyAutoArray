@@ -281,8 +281,7 @@ class Preloads:
         settings_inversion.use_curvature_matrix_preload = False
 
         fom_with_preloads = fit.refit_with_new_preloads(
-            preloads=self,
-            settings_inversion=settings_inversion
+            preloads=self, settings_inversion=settings_inversion
         ).figure_of_merit
 
         fom_without_preloads = fit.refit_with_new_preloads(

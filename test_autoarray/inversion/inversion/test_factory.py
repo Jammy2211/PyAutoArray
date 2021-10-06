@@ -502,7 +502,7 @@ def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formal
 
     pix = aa.pix.VoronoiMagnification(shape=(7, 7))
 
-    sparse_grid = pix.sparse_grid_from_grid(grid=grid)
+    sparse_grid = pix.sparse_grid_from(grid=grid)
 
     mapper = pix.mapper_from(
         grid=grid,

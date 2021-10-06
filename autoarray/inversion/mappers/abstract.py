@@ -202,7 +202,7 @@ class AbstractMapper:
             hyper_image=self.hyper_image,
         )
 
-    def slim_indexes_from_pixelization_indexes(self, pixelization_indexes):
+    def pixelization_indexes_for_slim_indexes(self, pixelization_indexes):
 
         image_for_source = self.all_sub_slim_indexes_for_pixelization_index
 

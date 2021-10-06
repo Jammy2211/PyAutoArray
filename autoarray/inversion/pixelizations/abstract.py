@@ -18,9 +18,7 @@ class AbstractPixelization:
     def mapper_from(
         self, grid: Grid2D, border: np.ndarray, profiling_dict: Optional[Dict] = None
     ):
-        raise NotImplementedError(
-            "pixelization_mapper_from_grids_and_borders should be overridden"
-        )
+        raise NotImplementedError("pixelization_mapper_from should be overridden")
 
     @profile_func
     def relocate_grid_via_border(
@@ -39,7 +37,7 @@ class AbstractPixelization:
         if preloads.relocated_grid is None:
 
             if settings.use_border:
-                return grid.relocated_grid_from_grid(grid=grid)
+                return grid.relocated_grid_from(grid=grid)
             return grid
 
         else:
@@ -59,7 +57,7 @@ class AbstractPixelization:
     ):
         raise NotImplementedError
 
-    def weight_map_from_hyper_image(self, hyper_image: np.ndarray):
+    def weight_map_from(self, hyper_image: np.ndarray):
 
         raise NotImplementedError()
 

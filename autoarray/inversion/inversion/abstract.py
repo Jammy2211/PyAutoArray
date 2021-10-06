@@ -268,9 +268,7 @@ class AbstractInversion:
     @property
     def regularization_weights_of_mappers(self):
         return [
-            regularization.regularization_weights_from_mapper(
-                mapper=self.mapper_list[0]
-            )
+            regularization.regularization_weights_from(mapper=self.mapper_list[0])
             for regularization in self.regularization_list
         ]
 

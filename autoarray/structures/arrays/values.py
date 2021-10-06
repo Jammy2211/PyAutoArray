@@ -63,7 +63,7 @@ class ValuesIrregular(np.ndarray):
         """Return the values in a list."""
         return [value for value in self]
 
-    def values_from_array_slim(self, array_slim):
+    def values_from(self, array_slim):
         """Create a *ValuesIrregular* object from a 1D ndarray of values of shape [total_values].
 
         The *ValuesIrregular* are structured following this `ValuesIrregular` instance.
@@ -74,7 +74,7 @@ class ValuesIrregular(np.ndarray):
             The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregular* object."""
         return ValuesIrregular(values=array_slim)
 
-    def grid_from_grid_slim(self, grid_slim):
+    def grid_from(self, grid_slim):
         """Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
 
         The `Grid2DIrregular` are structured following this *ValuesIrregular* instance.

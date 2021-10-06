@@ -81,9 +81,9 @@ def test__array_1d_native_from():
     ).all()
 
 
-def test__numpy_array_1d_from_fits():
+def test__numpy_array_1d_via_fits_from():
 
-    arr = aa.util.array_1d.numpy_array_1d_from_fits(
+    arr = aa.util.array_1d.numpy_array_1d_via_fits_from(
         file_path=path.join(test_data_path, "3_ones.fits"), hdu=0
     )
 
@@ -101,6 +101,8 @@ def test__numpy_array_1d_to_fits__output_and_load():
 
     aa.util.array_1d.numpy_array_1d_to_fits(arr, file_path=file_path)
 
-    array_load = aa.util.array_1d.numpy_array_1d_from_fits(file_path=file_path, hdu=0)
+    array_load = aa.util.array_1d.numpy_array_1d_via_fits_from(
+        file_path=file_path, hdu=0
+    )
 
     assert (arr == array_load).all()

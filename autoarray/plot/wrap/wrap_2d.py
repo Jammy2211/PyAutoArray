@@ -49,7 +49,7 @@ class ArrayOverlay(AbstractMatWrap2D):
 
     def overlay_array(self, array, figure):
 
-        aspect = figure.aspect_from_shape_native(shape_native=array.shape_native)
+        aspect = figure.aspect_from(shape_native=array.shape_native)
         extent = array.extent_of_zoomed_array(buffer=0)
 
         plt.imshow(X=array.native, aspect=aspect, extent=extent, **self.config_dict)
@@ -532,8 +532,8 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
         if values is not None:
 
-            vmin = cmap.vmin_from_array(array=values)
-            vmax = cmap.vmax_from_array(array=values)
+            vmin = cmap.vmin_from(array=values)
+            vmax = cmap.vmax_from(array=values)
 
             color_values = np.where(values > vmax, vmax, values)
             color_values = np.where(values < vmin, vmin, color_values)

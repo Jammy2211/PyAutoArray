@@ -133,19 +133,19 @@ class Grid2DIrregular(np.ndarray):
         """Return the coordinates in a list."""
         return [tuple(value) for value in self]
 
-    def values_from_array_slim(self, array_slim):
+    def values_from(self, array_slim):
         """
         Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *ValuesIrregular* are structured following this `Grid2DIrregular` instance.
         """
         return ValuesIrregular(values=array_slim)
 
-    def values_from_value(self, value):
-        return self.values_from_array_slim(
+    def values_via_value_from(self, value):
+        return self.values_from(
             array_slim=np.full(fill_value=value, shape=self.shape[0])
         )
 
-    def grid_from_grid_slim(self, grid_slim):
+    def grid_from(self, grid_slim):
         """Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
         `Grid2DIrregular` are structured following this *Grid2DIrregular* instance."""
 
@@ -157,7 +157,7 @@ class Grid2DIrregular(np.ndarray):
             return Grid2DIrregularTransformed(grid=grid_slim)
         return Grid2DIrregular(grid=grid_slim)
 
-    def grid_from_deflection_grid(self, deflection_grid):
+    def grid_via_deflection_grid_from(self, deflection_grid):
         """
         Returns a new Grid2DIrregular from this grid coordinates, where the (y,x) coordinates of this grid have a
             grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
@@ -172,7 +172,7 @@ class Grid2DIrregular(np.ndarray):
         """
         return Grid2DIrregular(grid=self - deflection_grid)
 
-    def grid_from_mask_within_radius(self, radius, centre):
+    def grid_via_mask_within_radius_from(self, radius, centre):
 
         mask = grid_2d_util.mask_of_points_within_radius(
             grid=self, radius=radius, centre=centre
@@ -185,7 +185,7 @@ class Grid2DIrregular(np.ndarray):
 
         return Grid2DIrregular(grid=np.asarray(inside))
 
-    def structure_2d_from_result(
+    def structure_2d_from(
         self, result: np.ndarray or list
     ) -> typing.Union[ValuesIrregular, list]:
         """
@@ -208,20 +208,16 @@ class Grid2DIrregular(np.ndarray):
 
         if isinstance(result, np.ndarray):
             if len(result.shape) == 1:
-                return self.values_from_array_slim(array_slim=result)
+                return self.values_from(array_slim=result)
             elif len(result.shape) == 2:
-                return self.grid_from_grid_slim(grid_slim=result)
+                return self.grid_from(grid_slim=result)
         elif isinstance(result, list):
             if len(result[0].shape) == 1:
-                return [
-                    self.values_from_array_slim(array_slim=value) for value in result
-                ]
+                return [self.values_from(array_slim=value) for value in result]
             elif len(result[0].shape) == 2:
-                return [self.grid_from_grid_slim(grid_slim=value) for value in result]
+                return [self.grid_from(grid_slim=value) for value in result]
 
-    def structure_2d_list_from_result_list(
-        self, result_list: list
-    ) -> typing.Union[list]:
+    def structure_2d_list_from(self, result_list: list) -> typing.Union[list]:
         """
         Convert a result from a list of non autoarray structures to a list of aa.ValuesIrregular or aa.Grid2DIrregular
         structures, where the conversion depends on type(result) as follows:
@@ -238,13 +234,11 @@ class Grid2DIrregular(np.ndarray):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result_list[0].shape) == 1:
-            return [
-                self.values_from_array_slim(array_slim=value) for value in result_list
-            ]
+            return [self.values_from(array_slim=value) for value in result_list]
         elif len(result_list[0].shape) == 2:
-            return [self.grid_from_grid_slim(grid_slim=value) for value in result_list]
+            return [self.grid_from(grid_slim=value) for value in result_list]
 
-    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+    def squared_distances_to_coordinate(self, coordinate=(0.0, 0.0)):
         """
         Returns the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
             coordinate.
@@ -257,9 +251,9 @@ class Grid2DIrregular(np.ndarray):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return self.values_from_array_slim(array_slim=squared_distances)
+        return self.values_from(array_slim=squared_distances)
 
-    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+    def distances_to_coordinate(self, coordinate=(0.0, 0.0)):
         """
         Returns the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
 
@@ -268,13 +262,11 @@ class Grid2DIrregular(np.ndarray):
             coordinate
                 The (y,x) coordinate from which the distance of every *Coordinate* is computed.
         """
-        distances = np.sqrt(
-            self.squared_distances_from_coordinate(coordinate=coordinate)
-        )
-        return self.values_from_array_slim(array_slim=distances)
+        distances = np.sqrt(self.squared_distances_to_coordinate(coordinate=coordinate))
+        return self.values_from(array_slim=distances)
 
     @property
-    def furthest_distances_from_other_coordinates(self) -> ValuesIrregular:
+    def furthest_distances_to_other_coordinates(self) -> ValuesIrregular:
         """
         For every (y,x) coordinate on the `Grid2DIrregular` returns the furthest radial distance of each coordinate
         to any other coordinate on the grid.
@@ -302,9 +294,9 @@ class Grid2DIrregular(np.ndarray):
 
             radial_distances_max[i] = np.sqrt(np.max(np.add(x_distances, y_distances)))
 
-        return self.values_from_array_slim(array_slim=radial_distances_max)
+        return self.values_from(array_slim=radial_distances_max)
 
-    def grid_of_closest_from_grid_pair(self, grid_pair):
+    def grid_of_closest_from(self, grid_pair):
         """
         From an input grid, find the closest coordinates of this instance of the `Grid2DIrregular` to each coordinate on
         the input grid and return each closest coordinate as a new `Grid2DIrregular`.
@@ -518,7 +510,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
             grid=grid_upscaled_1d, pixel_scales=pixel_scales, shape_native=shape_native
         )
 
-    def grid_from_grid_slim(self, grid_slim):
+    def grid_from(self, grid_slim):
         """Create a `Grid2DIrregularUniform` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
         `Grid2DIrregularUniform` are structured following this *GridIrregular2D* instance."""
         return Grid2DIrregularUniform(
@@ -527,7 +519,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
             shape_native=self.shape_native,
         )
 
-    def grid_from_deflection_grid(self, deflection_grid):
+    def grid_via_deflection_grid_from(self, deflection_grid):
         """
         Returns a new Grid2DIrregular from this grid coordinates, where the (y,x) coordinates of this grid have a
             grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)

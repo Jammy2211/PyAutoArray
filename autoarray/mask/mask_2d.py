@@ -98,7 +98,7 @@ class AbstractMask2D(AbstractMask):
             native_for_slim=self.sub_mask_index_for_sub_mask_1d_index,
         ).astype("bool")
 
-    def rescaled_mask_from_rescale_factor(self, rescale_factor):
+    def rescaled_mask_from(self, rescale_factor):
 
         rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
             mask_2d=self, rescale_factor=rescale_factor
@@ -120,7 +120,7 @@ class AbstractMask2D(AbstractMask):
             mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
         )
 
-    def resized_mask_from_new_shape(self, new_shape, pad_value: int = 0.0):
+    def resized_mask_from(self, new_shape, pad_value: int = 0.0):
         """
         Resized the array to a new shape and at a new origin.
 
@@ -132,7 +132,7 @@ class AbstractMask2D(AbstractMask):
 
         mask = copy.deepcopy(self)
 
-        resized_mask = array_2d_util.resized_array_2d_from_array_2d(
+        resized_mask = array_2d_util.resized_array_2d_from(
             array_2d=mask, resized_shape=new_shape, pad_value=pad_value
         ).astype("bool")
 
@@ -143,9 +143,7 @@ class AbstractMask2D(AbstractMask):
             origin=self.origin,
         )
 
-    def trimmed_array_from_padded_array_and_image_shape(
-        self, padded_array, image_shape
-    ):
+    def trimmed_array_from(self, padded_array, image_shape):
         """
         Map a padded 1D array of values to its original 2D array, trimming all edge values.
 
@@ -168,9 +166,7 @@ class AbstractMask2D(AbstractMask):
             origin=self.origin,
         )
 
-    def unmasked_blurred_array_from_padded_array_psf_and_image_shape(
-        self, padded_array, psf, image_shape
-    ):
+    def unmasked_blurred_array_from(self, padded_array, psf, image_shape):
         """
         For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
 
@@ -185,9 +181,9 @@ class AbstractMask2D(AbstractMask):
             The 1D unmasked image which is blurred.
         """
 
-        blurred_image = psf.convolved_array_from_array(array=padded_array)
+        blurred_image = psf.convolved_array_from(array=padded_array)
 
-        return self.trimmed_array_from_padded_array_and_image_shape(
+        return self.trimmed_array_from(
             padded_array=blurred_image, image_shape=image_shape
         )
 
@@ -363,7 +359,7 @@ class AbstractMask2D(AbstractMask):
         border_grid_1d = self.masked_grid_sub_1[self.border_1d_indexes]
         return g2d.Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
-    def grid_pixels_from_grid_scaled_1d(self, grid_scaled_1d):
+    def grid_pixels_from(self, grid_scaled_1d):
         """
         Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
         returned as floats such that they include the decimal offset from each pixel's top-left corner.
@@ -387,7 +383,7 @@ class AbstractMask2D(AbstractMask):
         )
         return g2d.Grid2D(grid=grid_pixels_1d, mask=self.mask_sub_1)
 
-    def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
+    def grid_pixel_centres_from(self, grid_scaled_1d):
         """
         Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
         returned as integers such that they map directly to the pixel they are contained within.
@@ -412,7 +408,7 @@ class AbstractMask2D(AbstractMask):
 
         return g2d.Grid2D(grid=grid_pixel_centres_1d, mask=self.edge_mask.mask_sub_1)
 
-    def grid_pixel_indexes_from_grid_scaled_1d(self, grid_scaled_1d):
+    def grid_pixel_indexes_from(self, grid_scaled_1d):
         """
         Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are
         returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then
@@ -441,7 +437,7 @@ class AbstractMask2D(AbstractMask):
 
         return a2d.Array2D(array=grid_pixel_indexes_1d, mask=self.edge_mask.mask_sub_1)
 
-    def grid_scaled_from_grid_pixels_1d(self, grid_pixels_1d):
+    def grid_scaled_from(self, grid_pixels_1d):
         """
         Convert a grid of (y,x) pixel coordinates to a grid of (y,x) scaled values.
 
@@ -464,9 +460,7 @@ class AbstractMask2D(AbstractMask):
         )
         return g2d.Grid2D(grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1)
 
-    def grid_scaled_from_grid_pixels_1d_for_marching_squares(
-        self, grid_pixels_1d, shape_native
-    ):
+    def grid_scaled_for_marching_squares_from(self, grid_pixels_1d, shape_native):
 
         grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,
@@ -536,10 +530,10 @@ class AbstractMask2D(AbstractMask):
             mask_2d=self, sub_size=self.sub_size
         ).astype("int")
 
-    def blurring_mask_from_kernel_shape(self, kernel_shape_native):
+    def blurring_mask_from(self, kernel_shape_native):
         """
         Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked
-        pixels via PSF convolution (see grid.Grid2D.blurring_grid_from_mask_and_psf_shape).
+        pixels via PSF convolution (see grid.Grid2D.blurring_grid_from).
 
         Parameters
         ----------
@@ -649,7 +643,7 @@ class AbstractMask2D(AbstractMask):
     @property
     def zoom_centre(self):
 
-        extraction_grid_1d = self.grid_pixels_from_grid_scaled_1d(
+        extraction_grid_1d = self.grid_pixels_from(
             grid_scaled_1d=self.masked_grid_sub_1.slim
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
@@ -1221,13 +1215,13 @@ class Mask2D(AbstractMask2D):
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask = cls(
-            array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
+            array_2d_util.numpy_array_2d_via_fits_from(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
 
         if resized_mask_shape is not None:
-            mask = mask.resized_mask_from_new_shape(new_shape=resized_mask_shape)
+            mask = mask.resized_mask_from(new_shape=resized_mask_shape)
 
         return mask

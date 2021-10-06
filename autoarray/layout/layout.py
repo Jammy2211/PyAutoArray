@@ -80,13 +80,13 @@ class Layout2D:
         serial_overscan=None,
     ):
 
-        parallel_overscan = layout_util.rotate_region_from_roe_corner(
+        parallel_overscan = layout_util.rotate_region_via_roe_corner_from(
             region=parallel_overscan, shape_native=shape_native, roe_corner=roe_corner
         )
-        serial_prescan = layout_util.rotate_region_from_roe_corner(
+        serial_prescan = layout_util.rotate_region_via_roe_corner_from(
             region=serial_prescan, shape_native=shape_native, roe_corner=roe_corner
         )
-        serial_overscan = layout_util.rotate_region_from_roe_corner(
+        serial_overscan = layout_util.rotate_region_via_roe_corner_from(
             region=serial_overscan, shape_native=shape_native, roe_corner=roe_corner
         )
 
@@ -118,19 +118,19 @@ class Layout2D:
             serial_overscan=serial_overscan,
         )
 
-    def new_rotated_from_roe_corner(self, roe_corner):
+    def new_rotated_from(self, roe_corner):
 
-        parallel_overscan = layout_util.rotate_region_from_roe_corner(
+        parallel_overscan = layout_util.rotate_region_via_roe_corner_from(
             region=self.parallel_overscan,
             shape_native=self.shape_2d,
             roe_corner=roe_corner,
         )
-        serial_prescan = layout_util.rotate_region_from_roe_corner(
+        serial_prescan = layout_util.rotate_region_via_roe_corner_from(
             region=self.serial_prescan,
             shape_native=self.shape_2d,
             roe_corner=roe_corner,
         )
-        serial_overscan = layout_util.rotate_region_from_roe_corner(
+        serial_overscan = layout_util.rotate_region_via_roe_corner_from(
             region=self.serial_overscan,
             shape_native=self.shape_2d,
             roe_corner=roe_corner,
@@ -145,7 +145,7 @@ class Layout2D:
         )
 
     def original_orientation_from(self, array):
-        return layout_util.rotate_array_from_roe_corner(
+        return layout_util.rotate_array_via_roe_corner_from(
             array=array, roe_corner=self.original_roe_corner
         )
 

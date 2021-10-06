@@ -678,7 +678,7 @@ def grid_pixel_centres_2d_from(
 
 
 @numba_util.jit()
-def relocated_grid_from_grid_jit(grid, border_grid):
+def relocated_grid_via_jit_from(grid, border_grid):
     """
     Relocate the coordinates of a grid to its border if they are outside the border, where the border is
     defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
@@ -753,16 +753,16 @@ def furthest_grid_2d_slim_index_from(
     grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
 ) -> int:
 
-    distance_from_centre = 0.0
+    distance_to_centre = 0.0
 
     for slim_index in slim_indexes:
 
         y = grid_2d_slim[slim_index, 0]
         x = grid_2d_slim[slim_index, 1]
-        distance_from_centre_new = (x - coordinate[1]) ** 2 + (y - coordinate[0]) ** 2
+        distance_to_centre_new = (x - coordinate[1]) ** 2 + (y - coordinate[0]) ** 2
 
-        if distance_from_centre_new >= distance_from_centre:
-            distance_from_centre = distance_from_centre_new
+        if distance_to_centre_new >= distance_to_centre:
+            distance_to_centre = distance_to_centre_new
             furthest_grid_2d_slim_index = slim_index
 
     return furthest_grid_2d_slim_index

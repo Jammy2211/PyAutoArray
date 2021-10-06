@@ -272,12 +272,12 @@ class Array1D(AbstractArray1D):
         origin
             The (x,) scaled units origin of the coordinate system.
         """
-        array_1d = array_1d_util.numpy_array_1d_from_fits(file_path=file_path, hdu=hdu)
-
-        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from_fits(
+        array_1d = array_1d_util.numpy_array_1d_via_fits_from(
             file_path=file_path, hdu=hdu
         )
+
+        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
         return cls.manual_native(
             array=array_1d.astype(

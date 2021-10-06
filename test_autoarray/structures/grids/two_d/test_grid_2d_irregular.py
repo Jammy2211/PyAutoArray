@@ -72,97 +72,91 @@ class TestGrid2DIrregular:
 
         assert grid.in_list == [(1.0, -1.0), (1.0, 1.0)]
 
-    def test__values_from_array_slim(self):
+    def test__values_from(self):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0)])
 
-        values_from_1d = grid.values_from_array_slim(array_slim=np.array([1.0, 2.0]))
+        values_from_1d = grid.values_from(array_slim=np.array([1.0, 2.0]))
 
         assert isinstance(values_from_1d, aa.ValuesIrregular)
         assert values_from_1d.in_list == [1.0, 2.0]
 
         grid = aa.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
 
-        values_from_1d = grid.values_from_array_slim(
-            array_slim=np.array([1.0, 2.0, 3.0])
-        )
+        values_from_1d = grid.values_from(array_slim=np.array([1.0, 2.0, 3.0]))
 
         assert isinstance(values_from_1d, aa.ValuesIrregular)
         assert values_from_1d.in_list == [1.0, 2.0, 3.0]
 
-    def test__values_from_value(self):
+    def test__values_via_value_from(self):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0)])
 
-        values_from_value = grid.values_from_value(value=1.0)
+        values_via_value_from = grid.values_via_value_from(value=1.0)
 
-        assert values_from_value.in_list == [1.0, 1.0]
+        assert values_via_value_from.in_list == [1.0, 1.0]
 
-    def test__grid_from_grid_slim(self):
+    def test__grid_from(self):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0)])
 
-        grid_from_1d = grid.grid_from_grid_slim(
-            grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]])
-        )
+        grid_from_1d = grid.grid_from(grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]]))
 
         assert type(grid_from_1d) == aa.Grid2DIrregular
         assert grid_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0)]
 
         grid = aa.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
 
-        grid_from_1d = grid.grid_from_grid_slim(
+        grid_from_1d = grid.grid_from(
             grid_slim=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
         )
 
         assert type(grid_from_1d) == aa.Grid2DIrregular
         assert grid_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
 
-    def test__grid_from_deflection_grid(self):
+    def test__grid_via_deflection_grid_from(self):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0)])
 
-        grid = grid.grid_from_deflection_grid(
+        grid = grid.grid_via_deflection_grid_from(
             deflection_grid=np.array([[1.0, 0.0], [1.0, 1.0]])
         )
 
         assert type(grid) == aa.Grid2DIrregular
         assert grid.in_list == [(0.0, 1.0), (1.0, 1.0)]
 
-    def test__furthest_distances_from_other_coordinates(self):
+    def test__furthest_distances_to_other_coordinates(self):
 
         grid = aa.Grid2DIrregular(grid=[(0.0, 0.0), (0.0, 1.0)])
 
-        assert grid.furthest_distances_from_other_coordinates.in_list == [1.0, 1.0]
+        assert grid.furthest_distances_to_other_coordinates.in_list == [1.0, 1.0]
 
         grid = aa.Grid2DIrregular(grid=[(2.0, 4.0), (3.0, 6.0)])
 
-        assert grid.furthest_distances_from_other_coordinates.in_list == [
+        assert grid.furthest_distances_to_other_coordinates.in_list == [
             np.sqrt(5),
             np.sqrt(5),
         ]
 
         grid = aa.Grid2DIrregular(grid=[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)])
 
-        assert grid.furthest_distances_from_other_coordinates.in_list == [3.0, 2.0, 3.0]
+        assert grid.furthest_distances_to_other_coordinates.in_list == [3.0, 2.0, 3.0]
 
     def test__grid_of_closest_from_grid(self):
 
         grid = aa.Grid2DIrregular(grid=[(0.0, 0.0), (0.0, 1.0)])
 
-        grid_of_closest = grid.grid_of_closest_from_grid_pair(
-            grid_pair=np.array([[0.0, 0.1]])
-        )
+        grid_of_closest = grid.grid_of_closest_from(grid_pair=np.array([[0.0, 0.1]]))
 
         assert (grid_of_closest == np.array([[0.0, 0.0]])).all()
 
-        grid_of_closest = grid.grid_of_closest_from_grid_pair(
+        grid_of_closest = grid.grid_of_closest_from(
             grid_pair=np.array([[0.0, 0.1], [0.0, 0.2], [0.0, 0.3]])
         )
 
         assert (grid_of_closest == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])).all()
 
-        grid_of_closest = grid.grid_of_closest_from_grid_pair(
+        grid_of_closest = grid.grid_of_closest_from(
             grid_pair=np.array([[0.0, 0.1], [0.0, 0.2], [0.0, 0.9], [0.0, -0.1]])
         )
 
@@ -171,36 +165,30 @@ class TestGrid2DIrregular:
             == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 1.0], [0.0, 0.0]])
         ).all()
 
-    def test__structure_2d_from_result__maps_numpy_array_to__auto_array_or_grid(self):
+    def test__structure_2d_from__maps_numpy_array_to__auto_array_or_grid(self):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, -1.0), (1.0, 1.0)])
 
-        result = grid.structure_2d_from_result(result=np.array([1.0, 2.0]))
+        result = grid.structure_2d_from(result=np.array([1.0, 2.0]))
 
         assert isinstance(result, aa.ValuesIrregular)
         assert result.in_list == [1.0, 2.0]
 
-        result = grid.structure_2d_from_result(
-            result=np.array([[1.0, 1.0], [2.0, 2.0]])
-        )
+        result = grid.structure_2d_from(result=np.array([[1.0, 1.0], [2.0, 2.0]]))
 
         assert isinstance(result, aa.Grid2DIrregular)
         assert result.in_list == [(1.0, 1.0), (2.0, 2.0)]
 
-    def test__structure_2d_list_from_result_list__maps_list_to_auto_arrays_or_grids(
-        self
-    ):
+    def test__structure_2d_list_from__maps_list_to_auto_arrays_or_grids(self):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, -1.0), (1.0, 1.0)])
 
-        result = grid.structure_2d_list_from_result_list(
-            result_list=[np.array([1.0, 2.0])]
-        )
+        result = grid.structure_2d_list_from(result_list=[np.array([1.0, 2.0])])
 
         assert isinstance(result[0], aa.ValuesIrregular)
         assert result[0].in_list == [1.0, 2.0]
 
-        result = grid.structure_2d_list_from_result_list(
+        result = grid.structure_2d_list_from(
             result_list=[np.array([[1.0, 1.0], [2.0, 2.0]])]
         )
 
@@ -278,13 +266,13 @@ class TestGrid2DIrregularUniform:
 
         assert (grid_upscale == grid_upscale_util).all()
 
-    def test__grid_from_deflection_grid(self):
+    def test__grid_via_deflection_grid_from(self):
 
         grid = aa.Grid2DIrregularUniform(
             grid=[(1.0, 1.0), (2.0, 2.0)], pixel_scales=(1.0, 1.0), shape_native=(3, 3)
         )
 
-        grid = grid.grid_from_deflection_grid(
+        grid = grid.grid_via_deflection_grid_from(
             deflection_grid=np.array([[1.0, 0.0], [1.0, 1.0]])
         )
 
@@ -293,15 +281,13 @@ class TestGrid2DIrregularUniform:
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.shape_native == (3, 3)
 
-    def test__grid_from_grid_slim(self):
+    def test__grid_from(self):
 
         grid = aa.Grid2DIrregularUniform(
             grid=[(1.0, 1.0), (2.0, 2.0)], pixel_scales=(1.0, 1.0), shape_native=(3, 3)
         )
 
-        grid_from_1d = grid.grid_from_grid_slim(
-            grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]])
-        )
+        grid_from_1d = grid.grid_from(grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]]))
 
         assert type(grid_from_1d) == aa.Grid2DIrregularUniform
         assert grid_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0)]
@@ -314,7 +300,7 @@ class TestGrid2DIrregularUniform:
             shape_native=(5, 5),
         )
 
-        grid_from_1d = grid.grid_from_grid_slim(
+        grid_from_1d = grid.grid_from(
             grid_slim=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
         )
 

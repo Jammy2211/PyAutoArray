@@ -591,7 +591,9 @@ class Grid2D(AbstractGrid2D):
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
 
-        sub_grid_2d = array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=0)
+        sub_grid_2d = array_2d_util.numpy_array_2d_via_fits_from(
+            file_path=file_path, hdu=0
+        )
 
         return Grid2D.manual(
             grid=sub_grid_2d,
@@ -601,7 +603,7 @@ class Grid2D(AbstractGrid2D):
         )
 
     @classmethod
-    def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape_native):
+    def blurring_grid_from(cls, mask, kernel_shape_native):
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
         therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
@@ -674,13 +676,11 @@ class Grid2D(AbstractGrid2D):
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
-        blurring_mask = mask.blurring_mask_from_kernel_shape(
-            kernel_shape_native=kernel_shape_native
-        )
+        blurring_mask = mask.blurring_mask_from(kernel_shape_native=kernel_shape_native)
 
         return cls.from_mask(mask=blurring_mask)
 
-    def grid_from_deflection_grid(self, deflection_grid):
+    def grid_via_deflection_grid_from(self, deflection_grid):
         """
         Returns a new Grid2D from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
              termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
@@ -694,11 +694,11 @@ class Grid2D(AbstractGrid2D):
         """
         return Grid2D(grid=self - deflection_grid, mask=self.mask)
 
-    def blurring_grid_from_kernel_shape(self, kernel_shape_native):
+    def blurring_grid_via_kernel_shape_from(self, kernel_shape_native):
         """
         Returns the blurring grid from a grid, via an input 2D kernel shape.
 
-            For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
+            For a full description of blurring grids, checkout *blurring_grid_from*.
 
             Parameters
             ----------
@@ -706,7 +706,7 @@ class Grid2D(AbstractGrid2D):
                 The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
-        return Grid2D.blurring_grid_from_mask_and_kernel_shape(
+        return Grid2D.blurring_grid_from(
             mask=self.mask, kernel_shape_native=kernel_shape_native
         )
 
@@ -733,7 +733,7 @@ class Grid2D(AbstractGrid2D):
 
         for coordinate in coordinates:
 
-            distances = self.distances_from_coordinate(coordinate=coordinate)
+            distances = self.distances_to_coordinate(coordinate=coordinate)
 
             distance_mask += distances.native < distance
 
@@ -746,7 +746,7 @@ class Grid2D(AbstractGrid2D):
 
         return Grid2D.from_mask(mask=mask)
 
-    def structure_2d_from_result(self, result: np.ndarray):
+    def structure_2d_from(self, result: np.ndarray):
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
@@ -777,7 +777,7 @@ class Grid2D(AbstractGrid2D):
                 return Grid2DTransformed(grid=result, mask=self.mask)
             return Grid2D(grid=result, mask=self.mask)
 
-    def structure_2d_list_from_result_list(self, result_list: list):
+    def structure_2d_list_from(self, result_list: list):
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
@@ -793,7 +793,7 @@ class Grid2D(AbstractGrid2D):
         result_list or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        return [self.structure_2d_from_result(result=result) for result in result_list]
+        return [self.structure_2d_from(result=result) for result in result_list]
 
 
 class Grid2DSparse(AbstractGrid2D):

@@ -398,10 +398,8 @@ class Kernel2D(Array2D):
             file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
         )
 
-        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from_fits(
-            file_path=file_path, hdu=hdu
-        )
+        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
         return cls(
             array=array[:],
@@ -410,9 +408,7 @@ class Kernel2D(Array2D):
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
 
-    def rescaled_with_odd_dimensions_from_rescale_factor(
-        self, rescale_factor, normalize=False
-    ):
+    def rescaled_with_odd_dimensions_from(self, rescale_factor, normalize=False):
         """
         If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
         dimensions (odd-sized dimensions are required by a *Convolver*).
@@ -498,7 +494,7 @@ class Kernel2D(Array2D):
         """
         return self.__class__(array=self, mask=self.mask, normalize=True)
 
-    def convolved_array_from_array(self, array):
+    def convolved_array_from(self, array):
         """
         Convolve an array with this Kernel2D
 
@@ -531,7 +527,7 @@ class Kernel2D(Array2D):
 
         return Array2D(array=convolved_array_1d, mask=array_binned_2d.mask)
 
-    def convolved_array_from_array_and_mask(self, array, mask):
+    def convolved_array_with_mask_from(self, array, mask):
         """
         Convolve an array with this Kernel2D
 

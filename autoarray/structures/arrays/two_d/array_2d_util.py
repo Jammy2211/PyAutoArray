@@ -67,7 +67,7 @@ def extracted_array_2d_from(
 
 
 @numba_util.jit()
-def resized_array_2d_from_array_2d(
+def resized_array_2d_from(
     array_2d: np.ndarray,
     resized_shape: Tuple[int, int],
     origin: Tuple[int, int] = (-1, -1),
@@ -397,7 +397,7 @@ def array_2d_native_from(
 
     array_1d = np.array([[2.0, 4.0, 5.0, 6.0, 8.0])
 
-    array_2d = map_masked_1d_array_to_2d_array_from_array_1d_shape_and_slim_to_native(
+    array_2d = map_masked_1d_array_to_2d_array_from(
         array_1d=array_1d, shape=(3,3), slim_to_native=slim_to_native)
     """
 
@@ -510,7 +510,7 @@ def array_2d_slim_complex_from(
     mask = np.array([[True, False],
                      [False, False]])
 
-    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from(
         mask=mask, array_2d=array_2d)
     """
 
@@ -601,7 +601,7 @@ def numpy_array_2d_to_fits(
     hdu.writeto(file_path)
 
 
-def numpy_array_2d_from_fits(
+def numpy_array_2d_via_fits_from(
     file_path: str, hdu: int, do_not_scale_image_data: bool = False
 ):
     """
@@ -626,7 +626,7 @@ def numpy_array_2d_from_fits(
 
     Examples
     --------
-    array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
+    array_2d = numpy_array_2d_via_fits_from(file_path='/path/to/file/filename.fits', hdu=0)
     """
     hdu_list = fits.open(file_path, do_not_scale_image_data=do_not_scale_image_data)
 
@@ -637,7 +637,7 @@ def numpy_array_2d_from_fits(
     return np.array(hdu_list[hdu].data).astype("float64")
 
 
-def header_obj_from_fits(file_path: str, hdu: int):
+def header_obj_from(file_path: str, hdu: int):
     """
     Read a 2D NumPy array from a .fits file.
 
@@ -660,7 +660,7 @@ def header_obj_from_fits(file_path: str, hdu: int):
 
     Examples
     --------
-    array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
+    array_2d = numpy_array_2d_via_fits_from(file_path='/path/to/file/filename.fits', hdu=0)
     """
     hdu_list = fits.open(file_path)
 

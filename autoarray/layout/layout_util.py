@@ -5,7 +5,7 @@ from typing import Union, Tuple
 from autoarray.layout.region import Region2D
 
 
-def rotate_array_from_roe_corner(
+def rotate_array_via_roe_corner_from(
     array: np.ndarray, roe_corner: Tuple[int, int]
 ) -> np.ndarray:
     """
@@ -39,7 +39,7 @@ def rotate_array_from_roe_corner(
         return array[:, ::-1]
 
 
-def rotate_region_from_roe_corner(
+def rotate_region_via_roe_corner_from(
     region: Union[Tuple, Region2D],
     shape_native: Tuple[int, int],
     roe_corner: Tuple[int, int],
@@ -97,7 +97,7 @@ def rotate_region_from_roe_corner(
         )
 
 
-def rotate_pattern_ci_from_roe_corner(
+def rotate_pattern_ci_via_roe_corner_from(
     pattern_ci, shape_native: Tuple[int, int], roe_corner: Tuple[int, int]
 ):
     """
@@ -122,7 +122,7 @@ def rotate_pattern_ci_from_roe_corner(
     new_pattern_ci = deepcopy(pattern_ci)
 
     new_pattern_ci.regions = [
-        rotate_region_from_roe_corner(
+        rotate_region_via_roe_corner_from(
             region=region, shape_native=shape_native, roe_corner=roe_corner
         )
         for region in pattern_ci.regions

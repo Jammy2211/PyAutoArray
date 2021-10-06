@@ -126,7 +126,7 @@ class Interferometer(AbstractDataset):
             file_path=noise_map_path, hdu=noise_map_hdu
         )
 
-        uv_wavelengths = array_2d_util.numpy_array_2d_from_fits(
+        uv_wavelengths = array_2d_util.numpy_array_2d_via_fits_from(
             file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
         )
 
@@ -173,29 +173,19 @@ class Interferometer(AbstractDataset):
 
     @property
     def dirty_image(self):
-        return self.transformer.image_from_visibilities(visibilities=self.visibilities)
+        return self.transformer.image_from(visibilities=self.visibilities)
 
     @property
     def dirty_noise_map(self):
-        return self.transformer.image_from_visibilities(visibilities=self.noise_map)
+        return self.transformer.image_from(visibilities=self.noise_map)
 
     @property
     def dirty_signal_to_noise_map(self):
-        return self.transformer.image_from_visibilities(
-            visibilities=self.signal_to_noise_map
-        )
+        return self.transformer.image_from(visibilities=self.signal_to_noise_map)
 
     @property
     def dirty_inverse_noise_map(self):
-        return self.transformer.image_from_visibilities(
-            visibilities=self.inverse_noise_map
-        )
-
-    def modified_visibilities_from_visibilities(self, visibilities):
-
-        interferometer = copy.deepcopy(self)
-        interferometer.data = Visibilities(visibilities=visibilities)
-        return interferometer
+        return self.transformer.image_from(visibilities=self.inverse_noise_map)
 
     @property
     def signal_to_noise_map(self):
@@ -316,7 +306,7 @@ class AbstractSimulatorInterferometer:
             uv_wavelengths=self.uv_wavelengths, real_space_mask=image.mask
         )
 
-        visibilities = transformer.visibilities_from_image(image=image)
+        visibilities = transformer.visibilities_from(image=image)
 
         if self.noise_sigma is not None:
             visibilities = preprocess.data_with_complex_gaussian_noise_added(

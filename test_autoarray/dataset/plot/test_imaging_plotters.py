@@ -119,7 +119,7 @@ def test__output_as_fits__correct_output_format(
 
     imaging_plotter.figures_2d(image=True, psf=True, absolute_signal_to_noise_map=True)
 
-    image_from_plot = aa.util.array_2d.numpy_array_2d_from_fits(
+    image_from_plot = aa.util.array_2d.numpy_array_2d_via_fits_from(
         file_path=path.join(plot_path, "image_2d.fits"), hdu=0
     )
 

@@ -135,7 +135,7 @@ class Array2DEuclid(Array2D):
         rotations.
         """
 
-        array_electrons = layout_util.rotate_array_from_roe_corner(
+        array_electrons = layout_util.rotate_array_via_roe_corner_from(
             array=array_electrons, roe_corner=(0, 0)
         )
 
@@ -153,7 +153,7 @@ class Array2DEuclid(Array2D):
         rotations.
         """
 
-        array_electrons = layout_util.rotate_array_from_roe_corner(
+        array_electrons = layout_util.rotate_array_via_roe_corner_from(
             array=array_electrons, roe_corner=(0, 1)
         )
 
@@ -171,7 +171,7 @@ class Array2DEuclid(Array2D):
         rotations.
         """
 
-        array_electrons = layout_util.rotate_array_from_roe_corner(
+        array_electrons = layout_util.rotate_array_via_roe_corner_from(
             array=array_electrons, roe_corner=(1, 0)
         )
 
@@ -189,7 +189,7 @@ class Array2DEuclid(Array2D):
         rotations.
         """
 
-        array_electrons = layout_util.rotate_array_from_roe_corner(
+        array_electrons = layout_util.rotate_array_via_roe_corner_from(
             array=array_electrons, roe_corner=(1, 1)
         )
 
@@ -359,7 +359,7 @@ class Layout2DEuclid(Layout2D):
             serial_overscan=serial_overscan,
         )
 
-        return layout_2d.new_rotated_from_roe_corner(roe_corner=(0, 0))
+        return layout_2d.new_rotated_from(roe_corner=(0, 0))
 
     @classmethod
     def top_right(
@@ -401,7 +401,7 @@ class Layout2DEuclid(Layout2D):
             serial_overscan=serial_overscan,
         )
 
-        return layout_2d.new_rotated_from_roe_corner(roe_corner=(0, 1))
+        return layout_2d.new_rotated_from(roe_corner=(0, 1))
 
     @classmethod
     def bottom_left(
@@ -446,7 +446,7 @@ class Layout2DEuclid(Layout2D):
             serial_overscan=serial_overscan,
         )
 
-        return layout_2d.new_rotated_from_roe_corner(roe_corner=(1, 0))
+        return layout_2d.new_rotated_from(roe_corner=(1, 0))
 
     @classmethod
     def bottom_right(
@@ -488,4 +488,4 @@ class Layout2DEuclid(Layout2D):
             serial_overscan=serial_overscan,
         )
 
-        return layout_2d.new_rotated_from_roe_corner(roe_corner=(1, 1))
+        return layout_2d.new_rotated_from(roe_corner=(1, 1))

@@ -46,7 +46,7 @@ class TransformerDFT(pylops.LinearOperator):
         self.dtype = "complex128"
         self.explicit = False
 
-    def visibilities_from_image(self, image):
+    def visibilities_from(self, image):
 
         if self.preload_transform:
 
@@ -66,9 +66,9 @@ class TransformerDFT(pylops.LinearOperator):
 
         return Visibilities(visibilities=visibilities)
 
-    def image_from_visibilities(self, visibilities):
+    def image_from(self, visibilities):
 
-        image_slim = transformer_util.image_from_visibilities_jit(
+        image_slim = transformer_util.image_via_jit_from(
             n_pixels=self.grid.shape[0],
             grid_radians=self.grid,
             uv_wavelengths=self.uv_wavelengths,
@@ -182,7 +182,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
             Jd=interp_kernel,
         )
 
-    def visibilities_from_image(self, image):
+    def visibilities_from(self, image):
         """
         ...
         """
@@ -195,7 +195,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
             )  # flip due to PyNUFFT internal flip
         )
 
-    def image_from_visibilities(self, visibilities):
+    def image_from(self, visibilities):
         image = np.real(self.adjoint(visibilities))
         return Array2D.manual_native(
             array=image, pixel_scales=self.real_space_mask.pixel_scales
@@ -217,7 +217,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
             image = Array2D(array=image_2d, mask=self.grid.mask)
 
-            visibilities = self.visibilities_from_image(image=image)
+            visibilities = self.visibilities_from(image=image)
 
             transformed_mapping_matrix[:, source_pixel_1d_index] = visibilities
 
@@ -255,11 +255,11 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         warnings.filterwarnings("ignore")
 
-        def a_complex_from_a_real_and_a_imag(a_real, a_imag):
+        def a_complex_from(a_real, a_imag):
 
             return a_real + 1j * a_imag
 
-        y = a_complex_from_a_real_and_a_imag(
+        y = a_complex_from(
             a_real=y[: int(self.shape[0] / 2.0)], a_imag=y[int(self.shape[0] / 2.0) :]
         )
 

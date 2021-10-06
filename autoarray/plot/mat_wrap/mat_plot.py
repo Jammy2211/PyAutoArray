@@ -610,8 +610,8 @@ class MatPlot2D(AbstractMatPlot):
             if not bypass:
                 self.setup_subplot()
 
-        aspect = self.figure.aspect_from_shape_native(shape_native=array.shape_native)
-        norm_scale = self.cmap.norm_from_array(array=array)
+        aspect = self.figure.aspect_from(shape_native=array.shape_native)
+        norm_scale = self.cmap.norm_from(array=array)
 
         plt.imshow(
             X=array.native,
@@ -802,7 +802,7 @@ class MatPlot2D(AbstractMatPlot):
             extent if extent is not None else mapper.source_pixelization_grid.extent
         )
 
-        aspect_inv = self.figure.aspect_for_subplot_from_grid(extent=extent)
+        aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
         if not self.is_for_subplot:
             self.figure.open()
@@ -859,7 +859,7 @@ class MatPlot2D(AbstractMatPlot):
             extent if extent is not None else mapper.source_pixelization_grid.extent
         )
 
-        aspect_inv = self.figure.aspect_for_subplot_from_grid(extent=extent)
+        aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
         if not self.is_for_subplot:
             self.figure.open()

@@ -43,7 +43,7 @@ def grid_1d_to_structure(func):
 
         The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
         of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `Grid2DIterate` is
-        input, the function is evaluated using the appropriate iterated_*_from_func* function.
+        input, the function is evaluated using the appropriate `iterated_from` function.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
         `ValuesIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
@@ -92,14 +92,14 @@ def grid_1d_to_structure(func):
 
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_from_result(result=result)
+            return grid.structure_2d_from(result=result)
         elif isinstance(grid, AbstractGrid1D):
             grid_2d_radial = grid.project_to_radial_grid_2d(angle=angle)
             result = func(obj, grid_2d_radial, *args, **kwargs)
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
 
         raise exc.GridException(
-            "You cannot input a NumPy array to a `quantity_1d_from_grid` method."
+            "You cannot input a NumPy array to a `quantity_1d_from` method."
         )
 
     return wrapper
@@ -130,7 +130,7 @@ def grid_1d_output_structure(func):
 
         The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
         of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `Grid2DIterate` is
-        input, the function is evaluated using the appropriate iterated_*_from_func* function.
+        input, the function is evaluated using the appropriate `iterated_from` function.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
         `ValuesIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
@@ -164,12 +164,12 @@ def grid_1d_output_structure(func):
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
 
         elif isinstance(grid, Grid2DIrregular):
-            return grid.structure_2d_from_result(result=result)
+            return grid.structure_2d_from(result=result)
         elif isinstance(grid, AbstractGrid1D):
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
 
         raise exc.GridException(
-            "You cannot input a NumPy array to a `quantity_1d_from_grid` method."
+            "You cannot input a NumPy array to a `quantity_1d_from` method."
         )
 
     return wrapper
@@ -200,7 +200,7 @@ def grid_2d_to_structure(func):
 
         The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
         of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `Grid2DIterate` is
-        input, the function is evaluated using the appropriate iterated_*_from_func* function.
+        input, the function is evaluated using the appropriate `iterated_from` function.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
         `ValuesIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
@@ -229,17 +229,17 @@ def grid_2d_to_structure(func):
         """
 
         if isinstance(grid, Grid2DIterate):
-            return grid.iterated_result_from_func(func=func, cls=obj)
+            return grid.iterated_result_from(func=func, cls=obj)
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_from_result(result=result)
+            return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid2D):
             result = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_from_result(result=result)
+            return grid.structure_2d_from(result=result)
         elif isinstance(grid, AbstractGrid1D):
             grid_2d_radial = grid.project_to_radial_grid_2d()
             result = func(obj, grid_2d_radial, *args, **kwargs)
-            return grid.structure_2d_from_result(result=result)
+            return grid.structure_2d_from(result=result)
 
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)
@@ -289,21 +289,20 @@ def grid_2d_to_structure_list(func):
             grid_compute = Grid2D.from_mask(mask=mask)
             result_list = func(obj, grid_compute, *args, **kwargs)
             result_list = [
-                grid_compute.structure_2d_from_result(result=result)
-                for result in result_list
+                grid_compute.structure_2d_from(result=result) for result in result_list
             ]
             result_list = [result.binned for result in result_list]
-            return grid.grid.structure_2d_list_from_result_list(result_list=result_list)
+            return grid.grid.structure_2d_list_from(result_list=result_list)
         elif isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_list_from_result_list(result_list=result_list)
+            return grid.structure_2d_list_from(result_list=result_list)
         elif isinstance(grid, Grid2D):
             result_list = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_list_from_result_list(result_list=result_list)
+            return grid.structure_2d_list_from(result_list=result_list)
         elif isinstance(grid, AbstractGrid1D):
             grid_2d_radial = grid.project_to_radial_grid_2d()
             result_list = func(obj, grid_2d_radial, *args, **kwargs)
-            return grid.structure_2d_list_from_result_list(result_list=result_list)
+            return grid.structure_2d_list_from(result_list=result_list)
 
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)

@@ -67,7 +67,7 @@ class TestVisiblities:
 
         image = aa.Array2D.ones(shape_native=(1, 1), pixel_scales=1.0)
 
-        visibilities = transformer.visibilities_from_image(image=image)
+        visibilities = transformer.visibilities_from(image=image)
 
         assert visibilities == pytest.approx(
             np.array([1.0 + 0.0j, 1.0 + 0.0j, 1.0 + 0.0j, 1.0 + 0.0j]), 1.0e-4
@@ -89,7 +89,7 @@ class TestVisiblities:
 
         image = aa.Array2D.ones(shape_native=(1, 2), pixel_scales=1.0)
 
-        visibilities = transformer.visibilities_from_image(image=image)
+        visibilities = transformer.visibilities_from(image=image)
 
         assert visibilities == pytest.approx(
             np.array(
@@ -112,7 +112,7 @@ class TestVisiblities:
 
         image = aa.Array2D.manual_native([[2.0]], pixel_scales=1.0)
 
-        visibilities = transformer.visibilities_from_image(image=image)
+        visibilities = transformer.visibilities_from(image=image)
 
         assert visibilities == pytest.approx(
             np.array([2.0 + 0.0j, 2.0 + 0.0j, 2.0 + 0.0j, 2.0 + 0.0j]), 1.0e-4
@@ -133,7 +133,7 @@ class TestVisiblities:
 
         image = aa.Array2D.manual_native([[3.0, 6.0]], pixel_scales=1.0)
 
-        visibilities = transformer.visibilities_from_image(image=image)
+        visibilities = transformer.visibilities_from(image=image)
 
         assert visibilities == pytest.approx(
             np.array([-2.46153 - 6.418822j, -5.14765 - 1.78146j, -3.11681 + 2.48210j]),
@@ -161,10 +161,8 @@ class TestVisiblities:
 
         image = aa.Array2D.manual_native([[2.0, 6.0]], pixel_scales=1.0)
 
-        visibilities_via_preload = transformer_preload.visibilities_from_image(
-            image=image
-        )
-        visibilities = transformer.visibilities_from_image(image=image)
+        visibilities_via_preload = transformer_preload.visibilities_from(image=image)
+        visibilities = transformer.visibilities_from(image=image)
 
         assert (visibilities_via_preload == visibilities).all()
 
@@ -326,7 +324,7 @@ class TestVisiblitiesMappingMatrix:
 
 
 class TestTransformerNUFFT:
-    def test__visibilities_from_image__same_as_direct__include_numerics(self):
+    def test__visibilities_from__same_as_direct__include_numerics(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
@@ -346,7 +344,7 @@ class TestTransformerNUFFT:
             preload_transform=False,
         )
 
-        visibilities_dft = transformer_dft.visibilities_from_image(image=image.native)
+        visibilities_dft = transformer_dft.visibilities_from(image=image.native)
 
         real_space_mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=0.005)
 
@@ -354,9 +352,7 @@ class TestTransformerNUFFT:
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
-        visibilities_nufft = transformer_nufft.visibilities_from_image(
-            image=image.native
-        )
+        visibilities_nufft = transformer_nufft.visibilities_from(image=image.native)
 
         assert visibilities_dft == pytest.approx(visibilities_nufft, 2.0)
         assert visibilities_nufft[0] == pytest.approx(25.02317617953263 + 0.0j, 1.0e-7)

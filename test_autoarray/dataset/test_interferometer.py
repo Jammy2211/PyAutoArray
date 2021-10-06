@@ -31,50 +31,29 @@ class TestInterferometer:
 
         assert interferometer.dirty_image.shape_native == (7, 7)
         assert (
-            interferometer.transformer.image_from_visibilities(
+            interferometer.transformer.image_from(
                 visibilities=interferometer.visibilities
             )
         ).all()
 
         assert interferometer.dirty_noise_map.shape_native == (7, 7)
         assert (
-            interferometer.transformer.image_from_visibilities(
-                visibilities=interferometer.noise_map
-            )
+            interferometer.transformer.image_from(visibilities=interferometer.noise_map)
         ).all()
 
         assert interferometer.dirty_signal_to_noise_map.shape_native == (7, 7)
         assert (
-            interferometer.transformer.image_from_visibilities(
+            interferometer.transformer.image_from(
                 visibilities=interferometer.signal_to_noise_map
             )
         ).all()
 
         assert interferometer.dirty_inverse_noise_map.shape_native == (7, 7)
         assert (
-            interferometer.transformer.image_from_visibilities(
+            interferometer.transformer.image_from(
                 visibilities=interferometer.inverse_noise_map
             )
         ).all()
-
-    def test__new_interferometer_with_with_modified_visibilities(
-        self, sub_mask_2d_7x7, uv_wavelengths_7x2
-    ):
-
-        interferometer = aa.Interferometer(
-            visibilities=np.array([[1, 1]]),
-            noise_map=1,
-            uv_wavelengths=uv_wavelengths_7x2,
-            real_space_mask=sub_mask_2d_7x7,
-        )
-
-        interferometer = interferometer.modified_visibilities_from_visibilities(
-            visibilities=np.array([2 + 2j])
-        )
-
-        assert (interferometer.visibilities == np.array([[2 + 2j]])).all()
-        assert interferometer.noise_map == 1
-        assert (interferometer.uv_wavelengths == uv_wavelengths_7x2).all()
 
     def test__signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
         self, sub_mask_2d_7x7, uv_wavelengths_7x2
@@ -265,7 +244,7 @@ class TestSimulatorInterferometer:
             ),
         )
 
-        visibilities = transformer.visibilities_from_image(image=image)
+        visibilities = transformer.visibilities_from(image=image)
 
         assert interferometer.visibilities == pytest.approx(visibilities, 1.0e-4)
 

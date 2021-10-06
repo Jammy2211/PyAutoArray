@@ -226,7 +226,7 @@ class Mask1D(AbstractMask1d):
         """
 
         return cls.manual(
-            array_1d_util.numpy_array_1d_from_fits(file_path=file_path, hdu=hdu),
+            array_1d_util.numpy_array_1d_via_fits_from(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,

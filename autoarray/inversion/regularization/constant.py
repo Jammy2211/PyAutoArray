@@ -27,7 +27,7 @@ class Constant(AbstractRegularization):
         self.coefficient = coefficient
         super(Constant, self).__init__()
 
-    def regularization_weights_from_mapper(self, mapper):
+    def regularization_weights_from(self, mapper):
         regularization_weights = self.coefficient * np.ones(mapper.pixels)
         return mapper.reconstruction_from(solution_vector=regularization_weights)
 

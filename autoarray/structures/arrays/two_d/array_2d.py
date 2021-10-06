@@ -482,12 +482,12 @@ class Array2D(AbstractArray2D):
         origin
             The (y,x) scaled units origin of the coordinate system.
         """
-        array_2d = array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
-
-        header_sci_obj = array_2d_util.header_obj_from_fits(file_path=file_path, hdu=0)
-        header_hdu_obj = array_2d_util.header_obj_from_fits(
+        array_2d = array_2d_util.numpy_array_2d_via_fits_from(
             file_path=file_path, hdu=hdu
         )
+
+        header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
+        header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
         return cls.manual_native(
             array=array_2d,

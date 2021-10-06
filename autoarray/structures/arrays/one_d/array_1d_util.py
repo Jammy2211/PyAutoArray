@@ -180,7 +180,7 @@ def numpy_array_1d_to_fits(
     hdu.writeto(file_path)
 
 
-def numpy_array_1d_from_fits(file_path: str, hdu: int):
+def numpy_array_1d_via_fits_from(file_path: str, hdu: int):
     """
     Read a 1D NumPy array from a .fits file.
 
@@ -201,7 +201,7 @@ def numpy_array_1d_from_fits(file_path: str, hdu: int):
 
     Examples
     --------
-    array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
+    array_2d = numpy_array_via_fits(file_path='/path/to/file/filename.fits', hdu=0)
     """
     hdu_list = fits.open(file_path)
     return np.array(hdu_list[hdu].data)

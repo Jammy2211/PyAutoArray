@@ -171,7 +171,7 @@ class InversionPlotter(AbstractPlotter):
                     )
                     vmax_custom = True
 
-            mapper_plotter.plot_source_from_values(
+            mapper_plotter.plot_source_from(
                 source_pixelization_values=self.inversion.reconstruction_of_mappers[
                     mapper_index
                 ],
@@ -185,7 +185,7 @@ class InversionPlotter(AbstractPlotter):
 
         if errors:
 
-            mapper_plotter.plot_source_from_values(
+            mapper_plotter.plot_source_from(
                 source_pixelization_values=self.inversion.errors_of_mappers[
                     mapper_index
                 ],
@@ -194,7 +194,7 @@ class InversionPlotter(AbstractPlotter):
 
         if residual_map:
 
-            mapper_plotter.plot_source_from_values(
+            mapper_plotter.plot_source_from(
                 source_pixelization_values=self.inversion.residual_map_of_mappers[
                     mapper_index
                 ],
@@ -203,7 +203,7 @@ class InversionPlotter(AbstractPlotter):
 
         if normalized_residual_map:
 
-            mapper_plotter.plot_source_from_values(
+            mapper_plotter.plot_source_from(
                 source_pixelization_values=self.inversion.normalized_residual_map_of_mappers[
                     mapper_index
                 ],
@@ -214,7 +214,7 @@ class InversionPlotter(AbstractPlotter):
 
         if chi_squared_map:
 
-            mapper_plotter.plot_source_from_values(
+            mapper_plotter.plot_source_from(
                 source_pixelization_values=self.inversion.chi_squared_map_of_mappers[
                     mapper_index
                 ],
@@ -225,7 +225,7 @@ class InversionPlotter(AbstractPlotter):
 
         if regularization_weights:
 
-            mapper_plotter.plot_source_from_values(
+            mapper_plotter.plot_source_from(
                 source_pixelization_values=self.inversion.regularization_weights_of_mappers[
                     mapper_index
                 ],

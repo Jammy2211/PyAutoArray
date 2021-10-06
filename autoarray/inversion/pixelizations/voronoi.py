@@ -98,7 +98,7 @@ class Voronoi(AbstractPixelization):
         of galaxies are heavily demagnified and may trace to outskirts of the source-plane.
         """
         if settings.use_border:
-            return grid.relocated_pixelization_grid_from_pixelization_grid(
+            return grid.relocated_pixelization_grid_from(
                 pixelization_grid=pixelization_grid
             )
         return pixelization_grid
@@ -140,7 +140,7 @@ class VoronoiMagnification(Voronoi):
         self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
 
-    def sparse_grid_from_grid(
+    def sparse_grid_from(
         self,
         grid: Grid2D,
         hyper_image: np.ndarray = None,
@@ -167,7 +167,7 @@ class VoronoiBrightnessImage(Voronoi):
         self.weight_floor = weight_floor
         self.weight_power = weight_power
 
-    def weight_map_from_hyper_image(self, hyper_image: np.ndarray):
+    def weight_map_from(self, hyper_image: np.ndarray):
 
         weight_map = (hyper_image - np.min(hyper_image)) / (
             np.max(hyper_image) - np.min(hyper_image)
@@ -175,11 +175,11 @@ class VoronoiBrightnessImage(Voronoi):
 
         return np.power(weight_map, self.weight_power)
 
-    def sparse_grid_from_grid(
+    def sparse_grid_from(
         self, grid: Grid2D, hyper_image: np.ndarray, settings=SettingsPixelization()
     ):
 
-        weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = self.weight_map_from(hyper_image=hyper_image)
 
         return Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,

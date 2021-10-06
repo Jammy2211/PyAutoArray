@@ -131,7 +131,7 @@ class MapperPlotter(AbstractPlotter):
 
         if self.visuals_2d.pixelization_indexes is not None:
 
-            indexes = self.mapper.slim_indexes_from_pixelization_indexes(
+            indexes = self.mapper.pixelization_indexes_for_slim_indexes(
                 pixelization_indexes=self.visuals_2d.pixelization_indexes
             )
 
@@ -146,7 +146,7 @@ class MapperPlotter(AbstractPlotter):
         )
         self.close_subplot_figure()
 
-    def plot_source_from_values(self, source_pixelization_values, auto_labels):
+    def plot_source_from(self, source_pixelization_values, auto_labels):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,

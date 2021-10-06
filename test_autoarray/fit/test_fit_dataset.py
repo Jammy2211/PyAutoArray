@@ -352,34 +352,34 @@ class TestFitInterferometer:
 
         fit_interferometer_7.dataset.transformer = transformer_7x7_7
 
-        dirty_image = transformer_7x7_7.image_from_visibilities(
+        dirty_image = transformer_7x7_7.image_from(
             visibilities=interferometer_7.visibilities
         )
         assert (fit_interferometer_7.dirty_image == dirty_image).all()
 
-        dirty_noise_map = transformer_7x7_7.image_from_visibilities(
+        dirty_noise_map = transformer_7x7_7.image_from(
             visibilities=interferometer_7.noise_map
         )
         assert (fit_interferometer_7.dirty_noise_map == dirty_noise_map).all()
 
-        dirty_signal_to_noise_map = transformer_7x7_7.image_from_visibilities(
+        dirty_signal_to_noise_map = transformer_7x7_7.image_from(
             visibilities=interferometer_7.signal_to_noise_map
         )
         assert (
             fit_interferometer_7.dirty_signal_to_noise_map == dirty_signal_to_noise_map
         ).all()
 
-        dirty_model_image = transformer_7x7_7.image_from_visibilities(
+        dirty_model_image = transformer_7x7_7.image_from(
             visibilities=fit_interferometer_7.model_visibilities
         )
         assert (fit_interferometer_7.dirty_model_image == dirty_model_image).all()
 
-        dirty_residual_map = transformer_7x7_7.image_from_visibilities(
+        dirty_residual_map = transformer_7x7_7.image_from(
             visibilities=fit_interferometer_7.residual_map
         )
         assert (fit_interferometer_7.dirty_residual_map == dirty_residual_map).all()
 
-        dirty_normalized_residual_map = transformer_7x7_7.image_from_visibilities(
+        dirty_normalized_residual_map = transformer_7x7_7.image_from(
             visibilities=fit_interferometer_7.normalized_residual_map
         )
         assert (
@@ -387,7 +387,7 @@ class TestFitInterferometer:
             == dirty_normalized_residual_map
         ).all()
 
-        dirty_chi_squared_map = transformer_7x7_7.image_from_visibilities(
+        dirty_chi_squared_map = transformer_7x7_7.image_from(
             visibilities=fit_interferometer_7.chi_squared_map
         )
         assert (

@@ -233,7 +233,7 @@ class TestGrid1D:
             1.0e-4,
         )
 
-    def test__structure_2d_from_result__maps_numpy_array_to__auto_array_or_grid(self):
+    def test__structure_2d_from__maps_numpy_array_to__auto_array_or_grid(self):
 
         mask = np.array([True, False, False, True])
 
@@ -241,14 +241,12 @@ class TestGrid1D:
 
         grid_1d = aa.Grid1D.from_mask(mask=mask)
 
-        result = grid_1d.structure_2d_from_result(result=np.array([1.0, 2.0]))
+        result = grid_1d.structure_2d_from(result=np.array([1.0, 2.0]))
 
         assert isinstance(result, aa.Array1D)
         assert (result.native == np.array([0.0, 1.0, 2.0, 0.0])).all()
 
-        result = grid_1d.structure_2d_from_result(
-            result=np.array([[1.0, 1.0], [2.0, 2.0]])
-        )
+        result = grid_1d.structure_2d_from(result=np.array([[1.0, 1.0], [2.0, 2.0]]))
 
         assert isinstance(result, aa.Grid2D)
         assert (
@@ -256,9 +254,7 @@ class TestGrid1D:
             == np.array([[[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]]])
         ).all()
 
-    def test__structure_2d_list_from_result_list__maps_list_to_auto_arrays_or_grids(
-        self
-    ):
+    def test__structure_2d_list_from__maps_list_to_auto_arrays_or_grids(self):
 
         mask = np.array([True, False, False, True])
 
@@ -266,14 +262,12 @@ class TestGrid1D:
 
         grid_1d = aa.Grid1D.from_mask(mask=mask)
 
-        result = grid_1d.structure_2d_list_from_result_list(
-            result_list=[np.array([1.0, 2.0])]
-        )
+        result = grid_1d.structure_2d_list_from(result_list=[np.array([1.0, 2.0])])
 
         assert isinstance(result[0], aa.Array1D)
         assert (result[0].native == np.array([0.0, 1.0, 2.0, 0.0])).all()
 
-        result = grid_1d.structure_2d_list_from_result_list(
+        result = grid_1d.structure_2d_list_from(
             result_list=[np.array([[1.0, 1.0], [2.0, 2.0]])]
         )
 

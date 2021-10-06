@@ -9,13 +9,13 @@ class TestVoronoiMagnification:
 
         assert pixelization.shape == (3, 3)
 
-    def test__sparse_grid_from_grid__returns_same_as_computed_from_grids_module(
+    def test__sparse_grid_from__returns_same_as_computed_from_grids_module(
         self, sub_grid_2d_7x7
     ):
 
         pixelization = aa.pix.VoronoiMagnification(shape=(3, 3))
 
-        sparse_grid = pixelization.sparse_grid_from_grid(grid=sub_grid_2d_7x7)
+        sparse_grid = pixelization.sparse_grid_from(grid=sub_grid_2d_7x7)
 
         pixelization_grid = aa.Grid2DVoronoi(
             grid=sparse_grid,
@@ -34,7 +34,7 @@ class TestVoronoiMagnification:
 
         relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
-        sparse_grid = pixelization.sparse_grid_from_grid(grid=sub_grid_2d_7x7)
+        sparse_grid = pixelization.sparse_grid_from(grid=sub_grid_2d_7x7)
 
         mapper = pixelization.mapper_from(
             grid=relocated_grid,
@@ -47,7 +47,7 @@ class TestVoronoiMagnification:
 
 
 class TestVoronoiBrightness:
-    def test__weight_map_from_hyper_image(self):
+    def test__weight_map_from(self):
 
         hyper_image = np.array([0.0, 1.0, 0.0])
 
@@ -55,7 +55,7 @@ class TestVoronoiBrightness:
             pixels=5, weight_floor=0.0, weight_power=0.0
         )
 
-        weight_map = pixelization.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = pixelization.weight_map_from(hyper_image=hyper_image)
 
         assert (weight_map == np.ones(3)).all()
 
@@ -63,7 +63,7 @@ class TestVoronoiBrightness:
             pixels=5, weight_floor=0.0, weight_power=1.0
         )
 
-        weight_map = pixelization.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = pixelization.weight_map_from(hyper_image=hyper_image)
 
         assert (weight_map == np.array([0.0, 1.0, 0.0])).all()
 
@@ -71,7 +71,7 @@ class TestVoronoiBrightness:
             pixels=5, weight_floor=1.0, weight_power=1.0
         )
 
-        weight_map = pixelization.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = pixelization.weight_map_from(hyper_image=hyper_image)
 
         assert (weight_map == np.array([1.0, 2.0, 1.0])).all()
 
@@ -79,7 +79,7 @@ class TestVoronoiBrightness:
             pixels=5, weight_floor=1.0, weight_power=2.0
         )
 
-        weight_map = pixelization.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = pixelization.weight_map_from(hyper_image=hyper_image)
 
         assert (weight_map == np.array([1.0, 4.0, 1.0])).all()
 
@@ -89,7 +89,7 @@ class TestVoronoiBrightness:
             pixels=5, weight_floor=0.0, weight_power=1.0
         )
 
-        weight_map = pixelization.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = pixelization.weight_map_from(hyper_image=hyper_image)
 
         assert (weight_map == np.array([0.0, 0.5, 1.0])).all()
 
@@ -97,7 +97,7 @@ class TestVoronoiBrightness:
             pixels=5, weight_floor=0.0, weight_power=2.0
         )
 
-        weight_map = pixelization.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = pixelization.weight_map_from(hyper_image=hyper_image)
 
         assert (weight_map == np.array([0.0, 0.25, 1.0])).all()
 
@@ -105,7 +105,7 @@ class TestVoronoiBrightness:
             pixels=5, weight_floor=1.0, weight_power=1.0
         )
 
-        weight_map = pixelization.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = pixelization.weight_map_from(hyper_image=hyper_image)
 
         assert (weight_map == np.array([3.0, 3.5, 4.0])).all()
 
@@ -119,7 +119,7 @@ class TestVoronoiBrightness:
 
         hyper_image = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0])
 
-        weight_map = pixelization.weight_map_from_hyper_image(hyper_image=hyper_image)
+        weight_map = pixelization.weight_map_from(hyper_image=hyper_image)
 
         sparse_grid = aa.Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=pixelization.pixels,
