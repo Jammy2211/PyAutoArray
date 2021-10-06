@@ -275,13 +275,21 @@ class Preloads:
 
     def check_via_fit(self, fit):
 
-        fom_with_preloads = fit.refit_with_new_preloads(preloads=self).figure_of_merit
+        import copy
+
+        settings_inversion = copy.deepcopy(fit.settings_inversion)
+        settings_inversion.use_curvature_matrix_preload = False
+
+        fom_with_preloads = fit.refit_with_new_preloads(
+            preloads=self,
+            settings_inversion=settings_inversion
+        ).figure_of_merit
 
         fom_without_preloads = fit.refit_with_new_preloads(
             preloads=self.__class__(use_w_tilde=False)
         ).figure_of_merit
 
-        if abs(fom_with_preloads - fom_without_preloads) > 1.0e-6:
+        if abs(fom_with_preloads - fom_without_preloads) > 1.0e-8:
 
             raise exc.PreloadsException(
                 f"The log likelihood of fits using and not using preloads are not"

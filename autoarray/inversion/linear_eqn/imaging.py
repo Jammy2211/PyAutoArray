@@ -229,6 +229,7 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
+
         return block_diag(
             *[
                 linear_eqn_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
@@ -413,7 +414,7 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         array of memory.
         """
         return linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=self.operated_mapping_matrix, noise_map=self.noise_map
+            mapping_matrix=self.operated_mapping_matrix, noise_map=self.noise_map,
         )
 
     @profile_func

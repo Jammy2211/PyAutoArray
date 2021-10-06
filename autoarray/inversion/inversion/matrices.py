@@ -65,7 +65,7 @@ class InversionMatrices(AbstractInversion):
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
 
-        if self.preloads.curvature_matrix_preload is None:
+        if self.preloads.curvature_matrix_preload is None or not self.settings.use_curvature_matrix_preload:
             return self.linear_eqn.curvature_matrix
 
         return linear_eqn_util.curvature_matrix_via_sparse_preload_from(
