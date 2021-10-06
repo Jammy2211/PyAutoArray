@@ -24,7 +24,7 @@ class AdaptiveBrightness(AbstractRegularization):
         The regularize weight_list change the B matrix as shown below - we simply multiply each pixel's effective \
         regularization weight by each row of B it has a -1 in, so:
 
-        regularization_weight_list = [1, 2, 3, 4]
+        regularization_weights = [1, 2, 3, 4]
 
         B = [-1, 1, 0 ,0] # [0->1]
             [0, -2, 2 ,0] # [1->2]
@@ -57,19 +57,19 @@ class AdaptiveBrightness(AbstractRegularization):
     def regularization_weights_from_mapper(self, mapper):
         pixel_signals = mapper.pixel_signals_from(signal_scale=self.signal_scale)
 
-        return regularization_util.adaptive_regularization_weight_list_from(
+        return regularization_util.adaptive_regularization_weights_from(
             inner_coefficient=self.inner_coefficient,
             outer_coefficient=self.outer_coefficient,
             pixel_signals=pixel_signals,
         )
 
     def regularization_matrix_from(self, mapper):
-        regularization_weight_list = self.regularization_weights_from_mapper(
+        regularization_weights = self.regularization_weights_from_mapper(
             mapper=mapper
         )
 
         return regularization_util.weighted_regularization_matrix_from(
-            regularization_weight_list=regularization_weight_list,
+            regularization_weights=regularization_weights,
             pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
             pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
         )

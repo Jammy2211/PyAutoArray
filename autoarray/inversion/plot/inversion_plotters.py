@@ -231,7 +231,7 @@ class InversionPlotter(AbstractPlotter):
                 ],
                 auto_labels=AutoLabels(
                     title="Regularization weight_list",
-                    filename="regularization_weight_list",
+                    filename="regularization_weights",
                 ),
             )
 

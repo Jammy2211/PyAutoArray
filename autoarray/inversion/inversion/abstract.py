@@ -76,15 +76,13 @@ class AbstractInversion:
     def reconstruction(self):
         raise NotImplementedError
 
-    @cached_property
-    @profile_func
+    @property
     def reconstruction_of_mappers(self):
         return self.linear_eqn.source_quantity_of_mappers_from(
             source_quantity=self.reconstruction
         )
 
-    @cached_property
-    @profile_func
+    @property
     def mapped_reconstructed_data_of_mappers(
         self
     ) -> List[Union[Array2D, Visibilities]]:
@@ -104,8 +102,7 @@ class AbstractInversion:
             reconstruction=self.reconstruction
         )
 
-    @cached_property
-    @profile_func
+    @property
     def mapped_reconstructed_image_of_mappers(self) -> List[Array2D]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -141,7 +138,6 @@ class AbstractInversion:
         return sum(self.mapped_reconstructed_data_of_mappers)
 
     @cached_property
-    @profile_func
     def mapped_reconstructed_image(self) -> Array2D:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -263,8 +259,7 @@ class AbstractInversion:
 
         return brightest_reconstruction_pixel_centre_list
 
-    @cached_property
-    @profile_func
+    @property
     def errors_of_mappers(self):
         return self.linear_eqn.source_quantity_of_mappers_from(
             source_quantity=self.errors

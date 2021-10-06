@@ -57,7 +57,6 @@ from autoarray.mock.mock import MockInversion
 #
 #     curvature_preload, indexes, lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
 #         noise_map_native=fit_0.noise_map.native,
-#         signal_to_noise_map_native=fit_0.signal_to_noise_map.native,
 #         kernel_native=fit_0.dataset.psf.native,
 #         native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
 #     )

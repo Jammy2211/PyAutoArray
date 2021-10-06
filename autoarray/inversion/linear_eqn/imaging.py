@@ -62,6 +62,7 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         )
 
     @cached_property
+    @profile_func
     def blurred_mapping_matrix(self) -> np.ndarray:
         """
         For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
@@ -94,11 +95,9 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         )
 
     @property
-    @profile_func
     def operated_mapping_matrix(self) -> np.ndarray:
         return self.blurred_mapping_matrix
 
-    @profile_func
     def mapped_reconstructed_image_of_mappers_from(
         self, reconstruction: np.ndarray
     ) -> List[Array2D]:
@@ -181,7 +180,8 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
             ]
         )
 
-    @cached_property
+    @property
+    @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
         The `curvature_matrix` F is the second matrix, given by equation (4)
@@ -349,7 +349,8 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
         profiling_dict: Optional[Dict] = None,
     ):
-        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
+        """
+        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
         The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
@@ -396,7 +397,7 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
             noise_map=self.noise_map,
         )
 
-    @cached_property
+    @property
     @profile_func
     def curvature_matrix(self):
         """

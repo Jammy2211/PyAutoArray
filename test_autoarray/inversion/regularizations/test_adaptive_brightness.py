@@ -14,7 +14,7 @@ def test__weight_list__matches_util():
 
     weight_list = reg.regularization_weights_from_mapper(mapper=mapper)
 
-    weight_list_util = aa.util.regularization.adaptive_regularization_weight_list_from(
+    weight_list_util = aa.util.regularization.adaptive_regularization_weights_from(
         inner_coefficient=10.0, outer_coefficient=15.0, pixel_signals=pixel_signals
     )
 
@@ -51,12 +51,12 @@ def test__regularization_matrix__matches_util():
 
     regularization_matrix = reg.regularization_matrix_from(mapper=mapper)
 
-    regularization_weight_list = aa.util.regularization.adaptive_regularization_weight_list_from(
+    regularization_weights = aa.util.regularization.adaptive_regularization_weights_from(
         pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
     )
 
     regularization_matrix_util = aa.util.regularization.weighted_regularization_matrix_from(
-        regularization_weight_list=regularization_weight_list,
+        regularization_weights=regularization_weights,
         pixel_neighbors=pixel_neighbors,
         pixel_neighbors_sizes=pixel_neighbors_sizes,
     )

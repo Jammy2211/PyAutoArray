@@ -16,7 +16,6 @@ from autoarray.inversion.inversion import inversion_util
 
 class InversionMatrices(AbstractInversion):
     @cached_property
-    @profile_func
     def mapping_matrix(self) -> np.ndarray:
         """
         For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
@@ -30,8 +29,7 @@ class InversionMatrices(AbstractInversion):
 
         return self.linear_eqn.mapping_matrix
 
-    @cached_property
-    @profile_func
+    @property
     def operated_mapping_matrix(self) -> np.ndarray:
         """
         For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
@@ -48,7 +46,6 @@ class InversionMatrices(AbstractInversion):
         return self.preloads.operated_mapping_matrix
 
     @cached_property
-    @profile_func
     def data_vector(self) -> np.ndarray:
         """
         To solve for the source pixel fluxes we now pose the problem as a linear inversion which we use the NumPy
@@ -64,7 +61,7 @@ class InversionMatrices(AbstractInversion):
         """
         return self.linear_eqn.data_vector_from(data=self.data)
 
-    @property
+    @cached_property
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
 

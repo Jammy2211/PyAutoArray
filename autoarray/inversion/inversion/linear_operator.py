@@ -10,6 +10,7 @@ from autoarray.inversion.inversion.abstract import AbstractInversion
 
 class InversionLinearOperator(AbstractInversion):
     @cached_property
+    @profile_func
     def preconditioner_matrix(self):
 
         curvature_matrix_approx = np.multiply(
@@ -20,6 +21,7 @@ class InversionLinearOperator(AbstractInversion):
         return np.add(curvature_matrix_approx, self.regularization_matrix)
 
     @cached_property
+    @profile_func
     def preconditioner_matrix_inverse(self):
         return np.linalg.inv(self.preconditioner_matrix)
 
@@ -57,6 +59,7 @@ class InversionLinearOperator(AbstractInversion):
         )
 
     @cached_property
+    @profile_func
     def log_det_curvature_reg_matrix_term(self):
         return 2.0 * np.sum(
             np.log(np.diag(np.linalg.cholesky(self.preconditioner_matrix)))

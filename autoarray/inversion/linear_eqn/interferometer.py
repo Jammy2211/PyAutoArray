@@ -31,6 +31,7 @@ class AbstractLinearEqnInterferometer(AbstractLinearEqn):
         self.transformer = transformer
 
     @cached_property
+    @profile_func
     def transformed_mapping_matrix(self) -> np.ndarray:
         return np.hstack(
             [
@@ -45,13 +46,13 @@ class AbstractLinearEqnInterferometer(AbstractLinearEqn):
         )
 
     @property
-    @profile_func
     def operated_mapping_matrix(self) -> np.ndarray:
         return self.transformed_mapping_matrix
 
     def mapped_reconstructed_data_of_mappers_from(self, reconstruction: np.ndarray):
         raise NotImplementedError
 
+    @profile_func
     def mapped_reconstructed_image_of_mappers_from(self, reconstruction: np.ndarray):
 
         mapped_reconstructed_image_of_mappers = []
@@ -131,6 +132,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
             profiling_dict=profiling_dict,
         )
 
+    @profile_func
     def data_vector_from(self, data: Visibilities) -> np.ndarray:
 
         return linear_eqn_util.data_vector_via_transformed_mapping_matrix_from(
@@ -140,6 +142,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
         )
 
     @cached_property
+    @profile_func
     def curvature_matrix(self) -> np.ndarray:
 
         real_curvature_matrix = linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
@@ -154,6 +157,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
 
         return np.add(real_curvature_matrix, imag_curvature_matrix)
 
+    @profile_func
     def mapped_reconstructed_data_of_mappers_from(
         self, reconstruction: np.ndarray
     ) -> List[Visibilities]:
@@ -234,6 +238,7 @@ class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
             profiling_dict=profiling_dict,
         )
 
+    @profile_func
     def mapped_reconstructed_data_of_mappers_from(
         self, reconstruction: np.ndarray
     ) -> List[Visibilities]:

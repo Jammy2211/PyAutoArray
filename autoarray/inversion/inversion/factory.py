@@ -73,6 +73,10 @@ def inversion_imaging_unpacked_from(
     else:
         use_w_tilde = settings.use_w_tilde
 
+    if preloads.w_tilde is not None:
+
+        w_tilde = preloads.w_tilde
+
     if use_w_tilde:
 
         linear_eqn = LinearEqnImagingWTilde(

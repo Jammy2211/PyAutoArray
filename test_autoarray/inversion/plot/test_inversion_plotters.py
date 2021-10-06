@@ -51,7 +51,7 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
-    assert path.join(plot_path, "regularization_weight_list.png") in plot_patch.paths
+    assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
     plot_patch.paths = []
 
@@ -78,7 +78,7 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
-    assert path.join(plot_path, "regularization_weight_list.png") in plot_patch.paths
+    assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
     plot_patch.paths = []
 

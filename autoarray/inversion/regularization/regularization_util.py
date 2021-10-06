@@ -47,7 +47,7 @@ def constant_regularization_matrix_from(
     return regularization_matrix
 
 
-def adaptive_regularization_weight_list_from(
+def adaptive_regularization_weights_from(
     inner_coefficient: float, outer_coefficient: float, pixel_signals: np.ndarray
 ) -> np.ndarray:
     """
@@ -81,7 +81,7 @@ def adaptive_regularization_weight_list_from(
 
 @numba_util.jit()
 def weighted_regularization_matrix_from(
-    regularization_weight_list: np.ndarray,
+    regularization_weights: np.ndarray,
     pixel_neighbors: np.ndarray,
     pixel_neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
@@ -90,7 +90,7 @@ def weighted_regularization_matrix_from(
 
     Parameters
     ----------
-    regularization_weight_list
+    regularization_weights
         The regularization_ weight of each pixel, which governs how much smoothing is applied to that individual pixel.
     pixel_neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
@@ -106,11 +106,11 @@ def weighted_regularization_matrix_from(
         coefficient of every source pixel is different.
     """
 
-    pixels = len(regularization_weight_list)
+    pixels = len(regularization_weights)
 
     regularization_matrix = np.zeros(shape=(pixels, pixels))
 
-    regularization_weight = regularization_weight_list ** 2.0
+    regularization_weight = regularization_weights ** 2.0
 
     for i in range(pixels):
         regularization_matrix[i, i] += 1e-8

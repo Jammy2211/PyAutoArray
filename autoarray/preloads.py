@@ -74,7 +74,6 @@ class Preloads:
 
             preload, indexes, lengths = linear_eqn_util.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=fit_0.noise_map.native,
-                signal_to_noise_map_native=fit_0.signal_to_noise_map.native,
                 kernel_native=fit_0.dataset.psf.native,
                 native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
             )
@@ -282,7 +281,7 @@ class Preloads:
             preloads=self.__class__(use_w_tilde=False)
         ).figure_of_merit
 
-        if abs(fom_with_preloads - fom_without_preloads) > 1.0e-8:
+        if abs(fom_with_preloads - fom_without_preloads) > 1.0e-6:
 
             raise exc.PreloadsException(
                 f"The log likelihood of fits using and not using preloads are not"

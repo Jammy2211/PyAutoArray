@@ -24,7 +24,7 @@ class AbstractLinearEqn:
 
         self.profiling_dict = profiling_dict
 
-    @cached_property
+    @property
     @profile_func
     def mapping_matrix(self) -> np.ndarray:
         """
