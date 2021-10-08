@@ -235,7 +235,7 @@ class TestSimulatorInterferometer:
             noise_sigma=None,
         )
 
-        interferometer = simulator.from_image(image=image)
+        interferometer = simulator.via_image_from(image=image)
 
         transformer = simulator.transformer_class(
             uv_wavelengths=uv_wavelengths_7x2,
@@ -263,7 +263,7 @@ class TestSimulatorInterferometer:
             noise_seed=1,
         )
 
-        interferometer = simulator.from_image(image=image)
+        interferometer = simulator.via_image_from(image=image)
 
         assert interferometer.visibilities[0] == pytest.approx(
             -0.005364 - 2.36682j, 1.0e-4

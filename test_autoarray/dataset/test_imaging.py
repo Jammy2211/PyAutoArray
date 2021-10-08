@@ -350,7 +350,7 @@ class TestSimulatorImaging:
 
         simulator = aa.SimulatorImaging(exposure_time=1.0, add_poisson_noise=False)
 
-        imaging = simulator.from_image(image=image)
+        imaging = simulator.via_image_from(image=image)
 
         assert (
             imaging.image.native
@@ -372,7 +372,7 @@ class TestSimulatorImaging:
             noise_seed=1,
         )
 
-        imaging = simulator.from_image(image=image)
+        imaging = simulator.via_image_from(image=image)
 
         assert (
             imaging.image.native
@@ -396,7 +396,7 @@ class TestSimulatorImaging:
             exposure_time=1.0, psf=psf, add_poisson_noise=False, normalize_psf=False
         )
 
-        imaging = simulator.from_image(image=image)
+        imaging = simulator.via_image_from(image=image)
 
         assert (
             imaging.image.native
@@ -414,7 +414,7 @@ class TestSimulatorImaging:
             exposure_time=20.0, add_poisson_noise=True, noise_seed=1
         )
 
-        imaging = simulator.from_image(image=image)
+        imaging = simulator.via_image_from(image=image)
 
         assert imaging.image.native == pytest.approx(
             np.array([[0.0, 0.0, 0.0], [0.0, 1.05, 0.0], [0.0, 0.0, 0.0]]), 1e-2
@@ -443,7 +443,7 @@ class TestSimulatorImaging:
             noise_seed=1,
         )
 
-        imaging = simulator.from_image(image=image)
+        imaging = simulator.via_image_from(image=image)
 
         assert (
             imaging.image.native
@@ -471,7 +471,7 @@ class TestSimulatorImaging:
             normalize_psf=False,
         )
 
-        imaging = simulator.from_image(image=image)
+        imaging = simulator.via_image_from(image=image)
 
         assert imaging.image.native == pytest.approx(
             np.array([[0.0, 1.05, 0.0], [1.3, 2.35, 1.05], [0.0, 1.05, 0.0]]), 1e-2

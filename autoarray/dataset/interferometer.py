@@ -280,7 +280,7 @@ class AbstractSimulatorInterferometer:
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
-    def from_image(self, image, name=None):
+    def via_image_from(self, image, name=None):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 

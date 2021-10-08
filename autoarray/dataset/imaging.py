@@ -432,7 +432,7 @@ class AbstractSimulatorImaging:
 
 
 class SimulatorImaging(AbstractSimulatorImaging):
-    def from_image(self, image: Array2D, name: str = None):
+    def via_image_from(self, image: Array2D, name: str = None):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
