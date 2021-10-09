@@ -1,4 +1,5 @@
 from . import exc
+from . import types
 from . import util
 from .numba_util import profile_func
 from .preloads import Preloads

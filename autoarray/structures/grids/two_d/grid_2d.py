@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.cluster import KMeans
-from typing import Union, Tuple
+from typing import List, Optional, Tuple, Union
 
 from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
 from autoarray.mask.mask_2d import Mask2D
@@ -18,7 +18,7 @@ from autoarray.structures.grids.two_d import sparse_util
 
 
 class Grid2D(AbstractGrid2D):
-    def __new__(cls, grid, mask, *args, **kwargs):
+    def __new__(cls, grid: np.ndarray, mask: Mask2D, *args, **kwargs):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the grid corresponds to the (y,x) coordinates at the centre of a sub-pixel of an unmasked pixel.
@@ -214,8 +214,9 @@ class Grid2D(AbstractGrid2D):
 
         return obj
 
-    def _new_structure(self, grid, mask):
-        """Conveninence method for creating a new instance of the Grid2D class from this grid.
+    def _new_structure(self, grid: "Grid2D", mask: Mask2D) -> "Grid2D":
+        """
+        Conveninence method for creating a new instance of the Grid2D class from this grid.
 
         This method is over-written by other grids (e.g. Grid2DIterate) such that the slim and native methods return
         instances of that Grid2D's type.
@@ -232,9 +233,15 @@ class Grid2D(AbstractGrid2D):
 
     @classmethod
     def manual_slim(
-        cls, grid, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0)
-    ):
-        """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D, for example:
+        cls,
+        grid: Union[np.ndarray, List],
+        shape_native: Tuple[int, int],
+        pixel_scales: Tuple[float, float],
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Grid2D":
+        """
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D, for example:
 
         grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
@@ -273,8 +280,15 @@ class Grid2D(AbstractGrid2D):
         return Grid2D(grid=grid, mask=mask)
 
     @classmethod
-    def manual_native(cls, grid, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
-        """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 2D, for example:
+    def manual_native(
+        cls,
+        grid: Union[np.ndarray, List],
+        pixel_scales: Tuple[float, float],
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Grid2D":
+        """
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 2D, for example:
 
         grid=np.ndarray([[[1.0, 1.0], [2.0, 2.0]],
                          [[3.0, 3.0], [4.0, 4.0]]])
@@ -318,9 +332,15 @@ class Grid2D(AbstractGrid2D):
 
     @classmethod
     def manual(
-        cls, grid, pixel_scales, shape_native=None, sub_size=1, origin=(0.0, 0.0)
-    ):
-        """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D or 2D, automatically
+        cls,
+        grid: Union[np.ndarray, List],
+        pixel_scales: Tuple[float, float],
+        shape_native: Tuple[int, int] = None,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Grid2D":
+        """
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D or 2D, automatically
         determining whether to use the 'manual_slim' or 'manual_native' methods.
 
         See the manual_slim and manual_native methods for examples.
@@ -353,7 +373,7 @@ class Grid2D(AbstractGrid2D):
         )
 
     @classmethod
-    def manual_mask(cls, grid, mask):
+    def manual_mask(cls, grid: Union[np.ndarray, List], mask: Mask2D) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in their native or slimmed format with
         their corresponding mask, automatically determining whether to use the 'manual_slim' or 'manual_native' methods.
@@ -378,9 +398,16 @@ class Grid2D(AbstractGrid2D):
 
     @classmethod
     def manual_yx_1d(
-        cls, y, x, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0)
-    ):
-        """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values, for example:
+        cls,
+        y: Union[np.ndarray, List],
+        x: np.ndarray,
+        shape_native: Tuple[int, int],
+        pixel_scales: Tuple[float, float],
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Grid2D":
+        """
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values, for example:
 
         y = np.array([1.0, 2.0, 3.0, 4.0])
         x = np.array([1.0, 2.0, 3.0, 4.0])
@@ -421,8 +448,16 @@ class Grid2D(AbstractGrid2D):
         )
 
     @classmethod
-    def manual_yx_2d(cls, y, x, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
-        """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values, for example:
+    def manual_yx_2d(
+        cls,
+        y: Union[np.ndarray, List],
+        x: Union[np.ndarray, List],
+        pixel_scales: Tuple[float, float],
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Grid2D":
+        """
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values, for example:
 
         y = np.array([[1.0, 2.0],
                      [3.0, 4.0]])
@@ -506,9 +541,14 @@ class Grid2D(AbstractGrid2D):
 
     @classmethod
     def bounding_box(
-        cls, bounding_box, shape_native, sub_size=1, buffer_around_corners=False
-    ):
-        """Create a Grid2D (see *Grid2D.__new__*) from an input bounding box with coordinates [y_min, y_max, x_min, x_max],
+        cls,
+        bounding_box: np.ndarray,
+        shape_native: Tuple[int, int],
+        sub_size: int = 1,
+        buffer_around_corners: bool = False,
+    ) -> "Grid2D":
+        """
+        Create a Grid2D (see *Grid2D.__new__*) from an input bounding box with coordinates [y_min, y_max, x_min, x_max],
         where the shape_native is used to compute the (y,x) grid values within this bounding box.
 
         If buffer_around_corners=True, the grid's (y,x) values fully align with the input bounding box values. This
@@ -556,7 +596,7 @@ class Grid2D(AbstractGrid2D):
         )
 
     @classmethod
-    def from_mask(cls, mask):
+    def from_mask(cls, mask: Mask2D) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
         grid is represented in its native 2D masked values are (0.0, 0.0)).
@@ -579,8 +619,15 @@ class Grid2D(AbstractGrid2D):
         return Grid2D(grid=sub_grid_1d, mask=mask)
 
     @classmethod
-    def from_fits(cls, file_path, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
-        """Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
+    def from_fits(
+        cls,
+        file_path: str,
+        pixel_scales: Tuple[float, float],
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Grid2D":
+        """
+        Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
         grid is represented in its native 2D masked values are (0.0, 0.0)).
 
         The mask's pixel_scales, sub_size and origin properties are used to compute the grid (y,x) coordinates.
@@ -603,7 +650,9 @@ class Grid2D(AbstractGrid2D):
         )
 
     @classmethod
-    def blurring_grid_from(cls, mask, kernel_shape_native):
+    def blurring_grid_from(
+        cls, mask: Mask2D, kernel_shape_native: Tuple[int, int]
+    ) -> "Grid2D":
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
         therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
@@ -680,7 +729,7 @@ class Grid2D(AbstractGrid2D):
 
         return cls.from_mask(mask=blurring_mask)
 
-    def grid_via_deflection_grid_from(self, deflection_grid):
+    def grid_via_deflection_grid_from(self, deflection_grid: "Grid2D") -> "Grid2D":
         """
         Returns a new Grid2D from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
              termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
@@ -694,7 +743,9 @@ class Grid2D(AbstractGrid2D):
         """
         return Grid2D(grid=self - deflection_grid, mask=self.mask)
 
-    def blurring_grid_via_kernel_shape_from(self, kernel_shape_native):
+    def blurring_grid_via_kernel_shape_from(
+        self, kernel_shape_native: Tuple[int, int]
+    ) -> "Grid2D":
         """
         Returns the blurring grid from a grid, via an input 2D kernel shape.
 
@@ -711,7 +762,7 @@ class Grid2D(AbstractGrid2D):
         )
 
     def grid_with_coordinates_within_distance_removed(
-        self, coordinates, distance
+        self, coordinates: Union[np.ndarray, List], distance: float
     ) -> "Grid2D":
         """Remove all coordinates from this Grid2D which are within a certain distance of an input list of coordinates.
 
@@ -746,7 +797,7 @@ class Grid2D(AbstractGrid2D):
 
         return Grid2D.from_mask(mask=mask)
 
-    def structure_2d_from(self, result: np.ndarray):
+    def structure_2d_from(self, result: np.ndarray) -> Union["a2d.Array2D", "Grid2D"]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
@@ -777,7 +828,9 @@ class Grid2D(AbstractGrid2D):
                 return Grid2DTransformed(grid=result, mask=self.mask)
             return Grid2D(grid=result, mask=self.mask)
 
-    def structure_2d_list_from(self, result_list: list):
+    def structure_2d_list_from(
+        self, result_list: List
+    ) -> List[Union["a2d.Array2D", "Grid2D"]]:
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
@@ -797,7 +850,7 @@ class Grid2D(AbstractGrid2D):
 
 
 class Grid2DSparse(AbstractGrid2D):
-    def __new__(cls, grid, sparse_index_for_slim_index):
+    def __new__(cls, grid: np.ndarray, sparse_index_for_slim_index: np.ndarray):
         """
         A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such
@@ -838,7 +891,9 @@ class Grid2DSparse(AbstractGrid2D):
             self.sparse_index_for_slim_index = obj.sparse_index_for_slim_index
 
     @classmethod
-    def from_grid_and_unmasked_2d_grid_shape(cls, grid, unmasked_sparse_shape):
+    def from_grid_and_unmasked_2d_grid_shape(
+        cls, grid: Union[np.ndarray, List], unmasked_sparse_shape: Tuple[int, int]
+    ) -> "Grid2DSparse":
         """Calculate a Grid2DSparse a Grid2D from the unmasked 2D shape of the sparse grid.
 
         This is performed by overlaying the 2D sparse grid (computed from the unmaksed sparse shape) over the edge
@@ -923,14 +978,14 @@ class Grid2DSparse(AbstractGrid2D):
     @classmethod
     def from_total_pixels_grid_and_weight_map(
         cls,
-        total_pixels,
-        grid,
-        weight_map,
-        n_iter=1,
-        max_iter=5,
-        seed=None,
-        stochastic=False,
-    ):
+        total_pixels: int,
+        grid: "Grid2D",
+        weight_map: np.ndarray,
+        n_iter: int = 1,
+        max_iter: int = 5,
+        seed: Optional[int] = None,
+        stochastic: bool = False,
+    ) -> "Grid2DSparse":
         """
         Calculate a Grid2DSparse from a Grid2D and weight map.
 
@@ -982,5 +1037,5 @@ class Grid2DSparse(AbstractGrid2D):
         )
 
     @property
-    def total_sparse_pixels(self):
+    def total_sparse_pixels(self) -> int:
         return len(self)

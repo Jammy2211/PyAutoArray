@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union
 
 from autoarray.structures.abstract_structure import AbstractStructure1D
 from autoarray.structures.grids.one_d import grid_1d as g1d
@@ -10,7 +11,7 @@ from autoarray.structures.grids.one_d import grid_1d_util
 
 class AbstractGrid1D(AbstractStructure1D):
     @property
-    def slim(self):
+    def slim(self) -> Union["AbstractGrid1D", "g1d.Grid1D"]:
         """
         Return a `Grid1D` where the data is stored its `slim` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size, 2].
@@ -29,7 +30,7 @@ class AbstractGrid1D(AbstractStructure1D):
         return g1d.Grid1D(grid=grid, mask=self.mask)
 
     @property
-    def native(self):
+    def native(self) -> Union["AbstractGrid1D", "g1d.Grid1D"]:
         """
         Return a `Grid1D` where the data is stored in its `native` representation, which is an ndarray of shape
         [sub_size*total_x_pixels, 2].
@@ -48,7 +49,7 @@ class AbstractGrid1D(AbstractStructure1D):
         return g1d.Grid1D(grid=grid, mask=self.mask)
 
     @property
-    def binned(self):
+    def binned(self) -> "g1d.Grid1D":
         """
         Convenience method to access the binned-up grid in its 1D representation, which is a Grid2D stored as an
         ndarray of shape [total_unmasked_pixels, 2].

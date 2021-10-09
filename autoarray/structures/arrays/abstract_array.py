@@ -1,7 +1,7 @@
 import logging
 from astropy import time
 import numpy as np
-from typing import Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Union
 
 from autoarray.dataset import preprocess
 
@@ -10,7 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-def convert_array(array):
+def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     """
     If the input array input a convert is of type list, convert it to type NumPy array.
 
@@ -29,9 +29,9 @@ def convert_array(array):
 class Header:
     def __init__(
         self,
-        header_sci_obj=None,
-        header_hdu_obj=None,
-        original_roe_corner=None,
+        header_sci_obj: Dict = None,
+        header_hdu_obj: Dict = None,
+        original_roe_corner: Tuple[int, int] = None,
         readout_offsets: Optional[Tuple] = None,
     ):
 
@@ -41,19 +41,19 @@ class Header:
         self.readout_offsets = readout_offsets
 
     @property
-    def date_of_observation(self):
+    def date_of_observation(self) -> str:
         return self.header_sci_obj["DATE-OBS"]
 
     @property
-    def time_of_observation(self):
+    def time_of_observation(self) -> str:
         return self.header_sci_obj["TIME-OBS"]
 
     @property
-    def exposure_time(self):
+    def exposure_time(self) -> str:
         return self.header_sci_obj["EXPTIME"]
 
     @property
-    def modified_julian_date(self):
+    def modified_julian_date(self) -> Optional[str]:
         if (
             self.date_of_observation is not None
             and self.time_of_observation is not None

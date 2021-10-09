@@ -117,7 +117,8 @@ class Kernel2D(Array2D):
     def manual(
         cls, array, pixel_scales, shape_native=None, origin=(0.0, 0.0), normalize=False
     ):
-        """Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
+        """
+        Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
         determining whether to use the 'manual_slim' or 'manual_native' methods.
 
         See the manual_slim and manual_native methods for examples.
@@ -156,7 +157,7 @@ class Kernel2D(Array2D):
         fill_value,
         shape_native,
         pixel_scales,
-        sub_size=1,
+        sub_size: int = 1,
         origin=(0.0, 0.0),
         normalize=False,
     ):

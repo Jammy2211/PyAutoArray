@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Union, Tuple
+from typing import List, Union, Tuple
 
 from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
 
@@ -13,7 +13,7 @@ from autoarray.geometry import geometry_util
 
 
 class Grid1D(AbstractGrid1D):
-    def __new__(cls, grid, mask, *args, **kwargs):
+    def __new__(cls, grid: np.ndarray, mask: m1d.Mask1D, *args, **kwargs):
         """
         A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
         on the grid corresponds to the (x) coordinates at the centre of a sub-pixel of an unmasked pixel.
@@ -164,7 +164,13 @@ class Grid1D(AbstractGrid1D):
         return obj
 
     @classmethod
-    def manual_slim(cls, grid, pixel_scales, sub_size=1, origin=(0.0,)):
+    def manual_slim(
+        cls,
+        grid: Union[np.ndarray, List],
+        pixel_scales: Tuple[float],
+        sub_size: int = 1,
+        origin: Tuple[float] = (0.0,),
+    ) -> "Grid1D":
         """
         Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D, for example:
 
@@ -200,7 +206,13 @@ class Grid1D(AbstractGrid1D):
         return Grid1D(grid=grid, mask=mask)
 
     @classmethod
-    def manual_native(cls, grid, pixel_scales, sub_size=1, origin=(0.0,)):
+    def manual_native(
+        cls,
+        grid: Union[np.ndarray, List],
+        pixel_scales: Tuple[float],
+        sub_size: int = 1,
+        origin: Tuple[float] = (0.0,),
+    ) -> "Grid1D":
         """
         Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D, for example:
 
@@ -226,7 +238,7 @@ class Grid1D(AbstractGrid1D):
         )
 
     @classmethod
-    def manual_mask(cls, grid, mask):
+    def manual_mask(cls, grid: Union[np.ndarray, List], mask: m1d.Mask1D) -> "Grid1D":
         """
         Create a Grid1D (see `Grid1D.__new__`) by inputting the grid coordinates in 1D with their corresponding mask.
 
@@ -258,7 +270,7 @@ class Grid1D(AbstractGrid1D):
         return Grid1D(grid=grid, mask=mask)
 
     @classmethod
-    def from_mask(cls, mask):
+    def from_mask(cls, mask: m1d.Mask1D) -> "Grid1D":
         """
         Create a Grid1D (see *Grid1D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
         grid is represented in its native 1D masked values are 0.0).
@@ -351,7 +363,9 @@ class Grid1D(AbstractGrid1D):
             grid=grid_slim, pixel_scales=pixel_scales, sub_size=sub_size
         )
 
-    def structure_2d_from(self, result: np.ndarray):
+    def structure_2d_from(
+        self, result: np.ndarray
+    ) -> Union["Grid2D", "Grid2DTransformed", "Grid2DTransformedNumpy"]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
@@ -380,7 +394,9 @@ class Grid1D(AbstractGrid1D):
             return Grid2DTransformed(grid=result, mask=self.mask)
         return Grid2D(grid=result, mask=self.mask.to_mask_2d)
 
-    def structure_2d_list_from(self, result_list: list):
+    def structure_2d_list_from(
+        self, result_list: List
+    ) -> List[Union["Grid2D", "Grid2DTransformed", "Grid2DTransformedNumpy"]]:
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:

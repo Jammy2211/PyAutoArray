@@ -197,7 +197,7 @@ class Array2D(AbstractArray2D):
         array,
         shape_native,
         pixel_scales,
-        sub_size=1,
+        sub_size: int = 1,
         origin=(0.0, 0.0),
         header=None,
     ):
@@ -247,9 +247,10 @@ class Array2D(AbstractArray2D):
 
     @classmethod
     def manual_native(
-        cls, array, pixel_scales, sub_size=1, origin=(0.0, 0.0), header=None
+        cls, array, pixel_scales, sub_size: int = 1, origin=(0.0, 0.0), header=None
     ):
-        """Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 2D, for example:
+        """
+        Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 2D, for example:
 
         array=np.ndarray([[1.0, 2.0],
                          [3.0, 4.0]])
@@ -297,11 +298,12 @@ class Array2D(AbstractArray2D):
         array,
         pixel_scales,
         shape_native=None,
-        sub_size=1,
+        sub_size: int = 1,
         origin=(0.0, 0.0),
         header=None,
     ):
-        """Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D, automatically
+        """
+        Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D, automatically
         determining whether to use the 'manual_slim' or 'manual_native' methods.
 
         See the manual_slim and manual_native methods for examples.
@@ -341,7 +343,8 @@ class Array2D(AbstractArray2D):
 
     @classmethod
     def manual_mask(cls, array, mask, header=None):
-        """Create an `Array2D` (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D with its mask,
+        """
+        Create an `Array2D` (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D with its mask,
         for example:
 
         mask = Mask2D([[True, False, False, False])
@@ -364,7 +367,7 @@ class Array2D(AbstractArray2D):
         fill_value,
         shape_native,
         pixel_scales,
-        sub_size=1,
+        sub_size: int = 1,
         origin=(0.0, 0.0),
         header=None,
     ):
@@ -402,9 +405,15 @@ class Array2D(AbstractArray2D):
 
     @classmethod
     def ones(
-        cls, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0), header=None
+        cls,
+        shape_native,
+        pixel_scales,
+        sub_size: int = 1,
+        origin=(0.0, 0.0),
+        header=None,
     ):
-        """Create an Array2D (see `AbstractArray2D.__new__`) where all values are filled with ones, analogous to the
+        """
+        Create an Array2D (see `AbstractArray2D.__new__`) where all values are filled with ones, analogous to the
         method np.ones().
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
@@ -433,9 +442,15 @@ class Array2D(AbstractArray2D):
 
     @classmethod
     def zeros(
-        cls, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0), header=None
+        cls,
+        shape_native,
+        pixel_scales,
+        sub_size: int = 1,
+        origin=(0.0, 0.0),
+        header=None,
     ):
-        """Create an Array2D (see `AbstractArray2D.__new__`) where all values are filled with zeros, analogous to the
+        """
+        Create an Array2D (see `AbstractArray2D.__new__`) where all values are filled with zeros, analogous to the
         method np.ones().
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
@@ -463,7 +478,9 @@ class Array2D(AbstractArray2D):
         )
 
     @classmethod
-    def from_fits(cls, file_path, pixel_scales, hdu=0, sub_size=1, origin=(0.0, 0.0)):
+    def from_fits(
+        cls, file_path, pixel_scales, hdu=0, sub_size: int = 1, origin=(0.0, 0.0)
+    ):
         """
         Create an Array2D (see `AbstractArray2D.__new__`) by loading the array values from a .fits file.
 
@@ -501,9 +518,10 @@ class Array2D(AbstractArray2D):
 
     @classmethod
     def manual_yx_and_values(
-        cls, y, x, values, shape_native, pixel_scales, sub_size=1, header=None
+        cls, y, x, values, shape_native, pixel_scales, sub_size: int = 1, header=None
     ):
-        """Create an `Array2D` (see `AbstractArray2D.__new__`) by inputting the y and x pixel values where the array is filled
+        """
+        Create an `Array2D` (see `AbstractArray2D.__new__`) by inputting the y and x pixel values where the array is filled
         and the values to fill the array, for example:
 
         y = np.array([0, 0, 0, 1])

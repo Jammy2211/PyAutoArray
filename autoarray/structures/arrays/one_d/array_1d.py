@@ -1,4 +1,6 @@
 import numpy as np
+from typing import Optional
+
 from autoarray.structures.arrays.abstract_array import Header
 from autoarray.structures.arrays.one_d.abstract_array_1d import AbstractArray1D
 
@@ -14,7 +16,14 @@ from typing import Union, Tuple, List
 
 
 class Array1D(AbstractArray1D):
-    def __new__(cls, array: np.ndarray, mask: np.ndarray, header=None, *args, **kwargs):
+    def __new__(
+        cls,
+        array: np.ndarray,
+        mask: np.ndarray,
+        header: Optional[Header] = None,
+        *args,
+        **kwargs
+    ):
 
         obj = array.view(cls)
         obj.mask = mask
@@ -29,7 +38,7 @@ class Array1D(AbstractArray1D):
         pixel_scales: Union[float, Tuple[float]],
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
-        header=None,
+        header: Optional[Header] = None,
     ) -> "Array1D":
         """
         Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:
@@ -70,7 +79,7 @@ class Array1D(AbstractArray1D):
         pixel_scales: Union[float, Tuple[float]],
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
-        header=None,
+        header: Optional[Header] = None,
     ) -> "Array1D":
         """
         Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:
@@ -103,7 +112,7 @@ class Array1D(AbstractArray1D):
         cls,
         array: Union[np.ndarray, Tuple[float], List[float]],
         mask: np.ndarray,
-        header=None,
+        header: Optional[Header] = None,
     ) -> "Array1D":
         """
         Create a Line (see `Line.__new__`) by inputting the native line values in 1D and including the mask that is
@@ -142,7 +151,7 @@ class Array1D(AbstractArray1D):
         pixel_scales: Union[float, Tuple[float]],
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
-        header=None,
+        header: Optional[Header] = None,
     ) -> "Array1D":
         """
         Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with an input fill value,
@@ -185,7 +194,7 @@ class Array1D(AbstractArray1D):
         pixel_scales: Union[float, Tuple[float]],
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
-        header=None,
+        header: Optional[Header] = None,
     ) -> "Array1D":
         """
         Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with zeros, analogous to the
@@ -222,7 +231,7 @@ class Array1D(AbstractArray1D):
         pixel_scales: Union[float, Tuple[float]],
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
-        header=None,
+        header: Optional[Header] = None,
     ) -> "Array1D":
         """
         Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with ones, analogous to the
@@ -253,7 +262,14 @@ class Array1D(AbstractArray1D):
         )
 
     @classmethod
-    def from_fits(cls, file_path, pixel_scales, hdu=0, sub_size=1, origin=(0.0, 0.0)):
+    def from_fits(
+        cls,
+        file_path: str,
+        pixel_scales: Union[float, Tuple[float]],
+        hdu: int = 0,
+        sub_size: int = 1,
+        origin: Tuple[float] = (0.0, 0.0),
+    ) -> "Array1D":
         """
         Create an Array1D (see `AbstractArray1D.__new__`) by loading the array values from a .fits file.
 
@@ -290,7 +306,7 @@ class Array1D(AbstractArray1D):
         )
 
     @property
-    def grid_radial(self):
+    def grid_radial(self) -> Grid1D:
         return Grid1D.uniform_from_zero(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,

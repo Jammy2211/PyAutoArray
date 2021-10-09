@@ -5,6 +5,7 @@ from autoconf import conf
 from autoconf import cached_property
 
 from autoarray.structures.abstract_structure import AbstractStructure2D
+
 from autoarray.structures.arrays.two_d import array_2d as a2d
 from autoarray.structures.arrays.values import ValuesIrregular
 from autoarray.structures.grids.two_d import grid_2d as g2d
@@ -18,7 +19,7 @@ from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 
 
-def check_grid_2d(grid_2d):
+def check_grid_2d(grid_2d: np.ndarray):
 
     if grid_2d.shape[-1] != 2:
         raise exc.GridException(
@@ -29,7 +30,7 @@ def check_grid_2d(grid_2d):
         raise exc.GridException("The dimensions of the input grid array is not 2 or 3")
 
 
-def check_grid_2d_and_mask_2d(grid_2d, mask_2d):
+def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: m2d.Mask2D):
 
     if len(grid_2d.shape) == 2:
 
@@ -48,7 +49,9 @@ def check_grid_2d_and_mask_2d(grid_2d, mask_2d):
             )
 
 
-def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d) -> np.ndarray:
+def convert_grid_2d(
+    grid_2d: Union[np.ndarray, List], mask_2d: m2d.Mask2D
+) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
     
@@ -77,7 +80,9 @@ def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d) -> np.ndarray:
     return convert_grid_2d_to_native(grid_2d=grid_2d, mask_2d=mask_2d)
 
 
-def convert_grid_2d_to_slim(grid_2d: Union[np.ndarray, List], mask_2d) -> np.ndarray:
+def convert_grid_2d_to_slim(
+    grid_2d: Union[np.ndarray, List], mask_2d: m2d.Mask2D
+) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
 
@@ -99,7 +104,9 @@ def convert_grid_2d_to_slim(grid_2d: Union[np.ndarray, List], mask_2d) -> np.nda
     )
 
 
-def convert_grid_2d_to_native(grid_2d: Union[np.ndarray, List], mask_2d) -> np.ndarray:
+def convert_grid_2d_to_native(
+    grid_2d: Union[np.ndarray, List], mask_2d: m2d.Mask2D
+) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
 
@@ -123,7 +130,7 @@ def convert_grid_2d_to_native(grid_2d: Union[np.ndarray, List], mask_2d) -> np.n
 
 class AbstractGrid2D(AbstractStructure2D):
     @property
-    def slim(self):
+    def slim(self) -> Union[AbstractStructure2D, "g2d.Grid2D"]:
         """
         Return a `Grid2D` where the data is stored its `slim` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size**2, 2].
@@ -142,7 +149,7 @@ class AbstractGrid2D(AbstractStructure2D):
         return self._new_structure(grid=grid_2d_slim, mask=self.mask)
 
     @property
-    def native(self):
+    def native(self) -> Union[AbstractStructure2D, "g2d.Grid2D"]:
         """
         Return a `Grid2D` where the data is stored in its `native` representation, which is an ndarray of shape
         [sub_size*total_y_pixels, sub_size*total_x_pixels, 2].
@@ -191,7 +198,7 @@ class AbstractGrid2D(AbstractStructure2D):
         )
 
     @property
-    def flipped(self) -> np.ndarray:
+    def flipped(self) -> "g2d.Grid2D":
         """
         Return the grid as an ndarray of shape [total_unmasked_pixels, 2] with flipped values such that coordinates
         are given as (x,y) values.
@@ -201,7 +208,7 @@ class AbstractGrid2D(AbstractStructure2D):
         return np.fliplr(self)
 
     @property
-    def in_radians(self):
+    def in_radians(self) -> "g2d.Grid2D":
         """
         Return the grid as an ndarray where all (y,x) values are converted to Radians.
 
@@ -209,7 +216,7 @@ class AbstractGrid2D(AbstractStructure2D):
         """
         return (self * np.pi) / 648000.0
 
-    def values_from(self, array_slim):
+    def values_from(self, array_slim: np.ndarray) -> ValuesIrregular:
         """
         Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *ValuesIrregular* are structured following this `Grid2DIrregular` instance.
@@ -218,7 +225,7 @@ class AbstractGrid2D(AbstractStructure2D):
 
     def squared_distances_to_coordinate(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
-    ):
+    ) -> "a2d.Array2D":
         """
         Returns the squared distance of every coordinate on the grid from an input coordinate.
 
@@ -232,7 +239,9 @@ class AbstractGrid2D(AbstractStructure2D):
         )
         return a2d.Array2D.manual_mask(array=squared_distances, mask=self.mask)
 
-    def distances_to_coordinate(self, coordinate: Tuple[float, float] = (0.0, 0.0)):
+    def distances_to_coordinate(
+        self, coordinate: Tuple[float, float] = (0.0, 0.0)
+    ) -> "a2d.Array2D":
         """
         Returns the distance of every coordinate on the grid from an input (y,x) coordinate.
 
@@ -369,7 +378,7 @@ class AbstractGrid2D(AbstractStructure2D):
             ]
         )
 
-    def extent_with_buffer(self, buffer=1.0e-8) -> List[float]:
+    def extent_with_buffer(self, buffer: float = 1.0e-8) -> List[float]:
         """
         The extent of the grid in scaled units returned as a list [x_min, x_max, y_min, y_max], where all values are
         buffed such that their extent is further than the grid's extent..
@@ -384,7 +393,9 @@ class AbstractGrid2D(AbstractStructure2D):
             self.scaled_maxima[0] + buffer,
         ]
 
-    def padded_grid_from(self, kernel_shape_native: Tuple[float, float]):
+    def padded_grid_from(
+        self, kernel_shape_native: Tuple[float, float]
+    ) -> "g2d.Grid2D":
         """
         When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will
         be 'missing' if the grid is used to evaluate the signal via an analytic function.
@@ -413,7 +424,7 @@ class AbstractGrid2D(AbstractStructure2D):
         return g2d.Grid2D.from_mask(mask=padded_mask)
 
     @cached_property
-    def sub_border_grid(self):
+    def sub_border_grid(self) -> np.ndarray:
         """
         The (y,x) grid of all sub-pixels which are at the border of the mask.
 
@@ -422,7 +433,7 @@ class AbstractGrid2D(AbstractStructure2D):
         """
         return self[self.mask.sub_border_flat_indexes]
 
-    def relocated_grid_from(self, grid):
+    def relocated_grid_from(self, grid: "g2d.Grid2D") -> "g2d.Grid2D":
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
         border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
@@ -457,7 +468,9 @@ class AbstractGrid2D(AbstractStructure2D):
             sub_size=grid.mask.sub_size,
         )
 
-    def relocated_pixelization_grid_from(self, pixelization_grid):
+    def relocated_pixelization_grid_from(
+        self, pixelization_grid: "g2d.Grid2DSparse"
+    ) -> "g2d.Grid2DSparse":
         """
         Relocate the coordinates of a pixelization grid to the border of this grid, see the method
         *relocated_grid_from* for a full description of grid relocation.

@@ -1,10 +1,12 @@
 import numpy as np
 from functools import wraps
-from typing import Union
+from typing import List, Union
 
 from autoconf import conf
 from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
+from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_transformed import Grid2DTransformed
 from autoarray.structures.grids.two_d.grid_transformed import Grid2DTransformedNumpy
@@ -25,7 +27,7 @@ def grid_1d_to_structure(func):
 
     Parameters
     ----------
-    func : (obj, grid, *args, **kwargs) -> Object
+    func
         A function which computes a set of values from a 2D grid of (y,x) coordinates.
 
     Returns
@@ -34,34 +36,36 @@ def grid_1d_to_structure(func):
     """
 
     @wraps(func)
-    def wrapper(obj, grid, *args, **kwargs) -> Union[Array1D, ValuesIrregular]:
+    def wrapper(
+        obj: object,
+        grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
+        *args,
+        **kwargs
+    ) -> Union[Array1D, ValuesIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
         `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
-        The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
-        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `Grid2DIterate` is
-        input, the function is evaluated using the appropriate `iterated_from` function.
+        If the `Grid2DLike` objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy
+        array of shape [total_coordinates, 2] they are projected into 1D and evaluated on this 1D grid. If the
+        decorator is wrapping an object with a `centre` or `angle`, the projected give aligns the angle at a 90
+        degree offset, which for an ellipse is its major-axis.
 
-        The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
-        `ValuesIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
+        The outputs of the function are converted from a 1D ndarray to an `Array1D` or `ValuesIrregular`,
+        whichever is applicable as follows:
 
-        - If the function returns (y,x) coordinates at every input point, the returned results are a `Grid2D`
-        or `Grid2DIrregular` structure, the same structure as the input.
+        - If an object where the coordinates are on a uniformly spaced grid is input (e.g. `Grid1D`, the radially
+        projected grid computed from a `Grid2D`) the returns values using an `Array1D` object which assumes
+        uniform spacing.
 
-        - If the function returns scalar values at every input point and a `Grid2D` is input, the returned results are
-        an `Array2D` structure which uses the same dimensions and mask as the `Grid2D`.
-
-        - If the function returns scalar values at every input point and `Grid2DIrregular` are input, the returned
-        results are a `ValuesIrregular` object with structure resembling that of the `Grid2DIrregular`.
-
-        If the input array is not a `Grid2D` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
+        - If an object where the coordinates are on an irregular grid is input (e.g. `Grid2DIrregular`)`the function
+        returns a `ValuesIrregular` object which is also irregular.
 
         Parameters
         ----------
-        obj : object
+        obj
             An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
         grid : Grid2D or Grid2DIrregular
             A grid_like object of (y,x) coordinates on which the function values are evaluated.
@@ -112,7 +116,7 @@ def grid_1d_output_structure(func):
 
     Parameters
     ----------
-    func : (obj, grid, *args, **kwargs) -> Object
+    func
         A function which computes a set of values from a 2D grid of (y,x) coordinates.
 
     Returns
@@ -121,36 +125,22 @@ def grid_1d_output_structure(func):
     """
 
     @wraps(func)
-    def wrapper(obj, grid, *args, **kwargs) -> Union[Array1D, ValuesIrregular]:
+    def wrapper(
+        obj: object,
+        grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
+        *args,
+        **kwargs
+    ) -> Union[Array1D, ValuesIrregular]:
         """
-        This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
-        `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
-        interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
-        coordinates of the grid using specific functionality of the input grid.
-
-        The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
-        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `Grid2DIterate` is
-        input, the function is evaluated using the appropriate `iterated_from` function.
-
-        The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
-        `ValuesIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
-
-        - If the function returns (y,x) coordinates at every input point, the returned results are a `Grid2D`
-        or `Grid2DIrregular` structure, the same structure as the input.
-
-        - If the function returns scalar values at every input point and a `Grid2D` is input, the returned results are
-        an `Array2D` structure which uses the same dimensions and mask as the `Grid2D`.
-
-        - If the function returns scalar values at every input point and `Grid2DIrregular` are input, the returned
-        results are a `ValuesIrregular` object with structure resembling that of the `Grid2DIrregular`.
-
-        If the input array is not a `Grid2D` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
+        This decorator homogenizes the output of functions which compute a 1D result, by inspecting the output
+        and converting the result to an `Array1D` object if it is uniformly spaced and a `ValuesIrregular` object if
+        it is irregular. "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
 
         Parameters
         ----------
-        obj : object
+        obj
             An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
-        grid : Grid2D or Grid2DIrregular
+        grid
             A grid_like object of (y,x) coordinates on which the function values are evaluated.
 
         Returns
@@ -182,7 +172,7 @@ def grid_2d_to_structure(func):
 
     Parameters
     ----------
-    func : (obj, grid, *args, **kwargs) -> Object
+    func
         A function which computes a set of values from a 2D grid of (y,x) coordinates.
 
     Returns
@@ -191,7 +181,12 @@ def grid_2d_to_structure(func):
     """
 
     @wraps(func)
-    def wrapper(obj, grid, *args, **kwargs):
+    def wrapper(
+        obj: object,
+        grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
+        *args,
+        **kwargs
+    ) -> Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
         `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
@@ -218,7 +213,7 @@ def grid_2d_to_structure(func):
 
         Parameters
         ----------
-        obj : object
+        obj
             An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
         grid : Grid2D or Grid2DIrregular
             A grid_like object of (y,x) coordinates on which the function values are evaluated.
@@ -254,7 +249,7 @@ def grid_2d_to_structure_list(func):
 
     Parameters
     ----------
-    func : (obj, grid, *args, **kwargs) -> Object
+    func
         A function which computes a set of values from a 2D grid of (y,x) coordinates.
 
     Returns
@@ -263,15 +258,20 @@ def grid_2d_to_structure_list(func):
     """
 
     @wraps(func)
-    def wrapper(obj, grid, *args, **kwargs):
+    def wrapper(
+        obj: object,
+        grid: List[Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D]],
+        *args,
+        **kwargs
+    ) -> List[Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]]:
         """
-        This decorator serves the same purpose as the `grid_2d_to_structure` decorator, but it deals with functions whose
-        output is a list of results as opposed to a single NumPy array. It simply iterates over these lists to perform
-        the same conversions as `grid_2d_to_structure`.
+        This decorator serves the same purpose as the `grid_2d_to_structure` decorator, but it deals with functions
+        whose output is a list of results as opposed to a single NumPy array. It simply iterates over these lists to
+        perform the same conversions as `grid_2d_to_structure`.
 
         Parameters
         ----------
-        obj : object
+        obj
             An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
         grid : Grid2D or Grid2DIrregular
             A grid_like object of (y,x) coordinates on which the function values are evaluated.
@@ -311,7 +311,8 @@ def grid_2d_to_structure_list(func):
 
 
 def transform(func):
-    """Checks whether the input Grid2D of (y,x) coordinates have previously been transformed. If they have not \
+    """
+    Checks whether the input Grid2D of (y,x) coordinates have previously been transformed. If they have not \
     been transformed then they are transformed.
 
     Parameters
@@ -325,7 +326,28 @@ def transform(func):
     """
 
     @wraps(func)
-    def wrapper(cls, grid, *args, **kwargs):
+    def wrapper(
+        cls,
+        grid: Union[
+            np.ndarray,
+            Grid2D,
+            Grid2DIrregular,
+            Grid2DIterate,
+            Grid2DTransformed,
+            Grid2DTransformedNumpy,
+            Grid2DIrregularTransformed,
+        ],
+        *args,
+        **kwargs
+    ) -> Union[
+        np.ndarray,
+        Grid2D,
+        Grid2DIrregular,
+        Grid2DIterate,
+        Grid2DTransformed,
+        Grid2DTransformedNumpy,
+        Grid2DIrregularTransformed,
+    ]:
         """
 
         Parameters
@@ -375,7 +397,12 @@ def relocate_to_radial_minimum(func):
     """
 
     @wraps(func)
-    def wrapper(cls, grid, *args, **kwargs):
+    def wrapper(
+        cls,
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid2DIterate],
+        *args,
+        **kwargs
+    ) -> Union[np.ndarray, Grid2D, Grid2DIrregular, Grid2DIterate]:
         """
 
         Parameters

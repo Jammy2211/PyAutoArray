@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from typing import List, Tuple, Union
 
 from autoconf import conf
 
@@ -13,13 +14,12 @@ from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.layout import layout_util
 
-from typing import List, Union
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-def check_array_2d(array_2d: Union[np.ndarray, List]):
+def check_array_2d(array_2d: np.ndarray):
     if len(array_2d.shape) != 1:
         raise exc.ArrayException(
             "An array input into the Array2D.__new__ method is not of shape 1."
@@ -56,7 +56,7 @@ def convert_array_2d(array_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.n
     return convert_array_2d_to_native(array_2d=array_2d, mask_2d=mask_2d)
 
 
-def convert_array_2d_to_slim(array_2d, mask_2d) -> np.ndarray:
+def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
@@ -96,9 +96,7 @@ def convert_array_2d_to_slim(array_2d, mask_2d) -> np.ndarray:
     )
 
 
-def convert_array_2d_to_native(
-    array_2d: Union[np.ndarray, List], mask_2d
-) -> np.ndarray:
+def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
@@ -142,11 +140,13 @@ class AbstractArray2D(AbstractStructure2D):
 
     header = None
 
-    def _new_structure(self, array, mask):
+    def _new_structure(
+        self, array: "AbstractArray2D", mask: Mask2D
+    ) -> "AbstractArray2D":
         return self.__class__(array=array, mask=mask, header=self.header)
 
     @property
-    def slim(self):
+    def slim(self) -> Union["AbstractArray2D", "Array2D"]:
         """
         Return an `Array2D` where the data is stored its `slim` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size**2].
@@ -165,7 +165,7 @@ class AbstractArray2D(AbstractStructure2D):
         return self._new_structure(array=sub_array_1d, mask=self.mask)
 
     @property
-    def native(self):
+    def native(self) -> Union["AbstractArray2D", "Array2D"]:
         """
         Return a `Array2D` where the data is stored in its `native` representation, which is an ndarray of shape
         [sub_size*total_y_pixels, sub_size*total_x_pixels].
@@ -183,7 +183,7 @@ class AbstractArray2D(AbstractStructure2D):
         return self._new_structure(array=sub_array_2d, mask=self.mask)
 
     @property
-    def binned(self):
+    def binned(self) -> Union["AbstractArray2D", "Array2D"]:
         """
         Convenience method to access the binned-up array in its 1D representation, which is a Grid2D stored as an
         ndarray of shape [total_unmasked_pixels, 2].
@@ -205,65 +205,45 @@ class AbstractArray2D(AbstractStructure2D):
         return self._new_structure(array=binned_array_1d, mask=self.mask.mask_sub_1)
 
     @property
-    def extent(self):
+    def extent(self) -> np.ndarray:
         return self.mask.extent
 
     @property
-    def in_counts(self):
+    def in_counts(self) -> "AbstractArray2D":
         return self.header.array_eps_to_counts(array_eps=self)
 
     @property
-    def in_counts_per_second(self):
+    def in_counts_per_second(self) -> "AbstractArray2D":
         return self.header.array_counts_to_counts_per_second(
             array_counts=self.in_counts
         )
 
     @property
-    def original_orientation(self):
+    def original_orientation(self) -> Union[np.ndarray, "AbstractArray2D"]:
         return layout_util.rotate_array_via_roe_corner_from(
             array=self, roe_corner=self.header.original_roe_corner
         )
 
     @property
-    def readout_offsets(self):
+    def readout_offsets(self) -> Tuple[int, int]:
         if self.header is not None:
             if self.header.readout_offsets is not None:
                 return self.header.readout_offsets
         return (0, 0)
 
     @property
-    def binned_across_rows(self):
+    def binned_across_rows(self) -> Array1D:
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=0)
         return Array1D.manual_native(array=binned_array, pixel_scales=self.pixel_scale)
 
     @property
-    def binned_across_columns(self):
+    def binned_across_columns(self) -> Array1D:
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=1)
         return Array1D.manual_native(array=binned_array, pixel_scales=self.pixel_scale)
 
-    def new_with_array(self, array):
+    def zoomed_around_mask(self, buffer: int = 1) -> "AbstractArray2D":
         """
-        Parameters
-        ----------
-        array: np.ndarray
-            An ndarray
-
-        Returns
-        -------
-        new_array: Array2D
-            A new instance of this class that shares all of this instances attributes with a new ndarray.
-        """
-        arguments = vars(self)
-        arguments.update({"array": array})
-        return self.__class__(**arguments)
-
-    def map(self, func):
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-                func(y, x)
-
-    def zoomed_around_mask(self, buffer=1):
-        """Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
+        Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
 
         This is used to extract and visualize only the region of an image that is used in an analysis.
 
@@ -292,8 +272,9 @@ class AbstractArray2D(AbstractStructure2D):
 
         return self._new_structure(array=array, mask=mask)
 
-    def extent_of_zoomed_array(self, buffer=1):
-        """For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled
+    def extent_of_zoomed_array(self, buffer: int = 1) -> np.ndarray:
+        """
+        For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled
         coordinates.
 
         The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
@@ -322,7 +303,9 @@ class AbstractArray2D(AbstractStructure2D):
 
         return mask.extent
 
-    def resized_from(self, new_shape, mask_pad_value: int = 0.0):
+    def resized_from(
+        self, new_shape: Tuple[int, int], mask_pad_value: int = 0.0
+    ) -> "AbstractArray2D":
         """
         Resize the array around its centre to a new input shape.
 
@@ -350,8 +333,11 @@ class AbstractArray2D(AbstractStructure2D):
 
         return self._new_structure(array=array, mask=resized_mask)
 
-    def padded_before_convolution_from(self, kernel_shape, mask_pad_value: int = 0.0):
-        """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
+    def padded_before_convolution_from(
+        self, kernel_shape: Tuple[int, int], mask_pad_value: int = 0.0
+    ) -> "AbstractArray2D":
+        """
+        When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
         To ensure this signal is included the array can be padded, where it is 'buffed' such that it includes all
@@ -369,8 +355,11 @@ class AbstractArray2D(AbstractStructure2D):
         )
         return self.resized_from(new_shape=new_shape, mask_pad_value=mask_pad_value)
 
-    def trimmed_after_convolution_from(self, kernel_shape):
-        """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
+    def trimmed_after_convolution_from(
+        self, kernel_shape: Tuple[int, int]
+    ) -> "AbstractArray2D":
+        """
+        When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
         To ensure this signal is included the array can be padded, a padded array can be computed via the method

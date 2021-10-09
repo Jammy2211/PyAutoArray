@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import os
 from os import path
+from typing import List
 
 from autoarray.structures.grids.two_d import grid_2d_irregular as g2d_irr
 
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class ValuesIrregular(np.ndarray):
-    def __new__(cls, values):
+    def __new__(cls, values: np.ndarray):
         """
         A collection of values which are structured as follows:
 
@@ -54,17 +55,18 @@ class ValuesIrregular(np.ndarray):
         return obj
 
     @property
-    def slim(self):
+    def slim(self) -> "ValuesIrregular":
         """The ValuesIrregular in their 1D representation, an ndarray of shape [total_values]."""
         return self
 
     @property
-    def in_list(self):
+    def in_list(self) -> List:
         """Return the values in a list."""
         return [value for value in self]
 
-    def values_from(self, array_slim):
-        """Create a *ValuesIrregular* object from a 1D ndarray of values of shape [total_values].
+    def values_from(self, array_slim: np.ndarray) -> "ValuesIrregular":
+        """
+        Create a *ValuesIrregular* object from a 1D ndarray of values of shape [total_values].
 
         The *ValuesIrregular* are structured following this `ValuesIrregular` instance.
 
@@ -74,8 +76,9 @@ class ValuesIrregular(np.ndarray):
             The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregular* object."""
         return ValuesIrregular(values=array_slim)
 
-    def grid_from(self, grid_slim):
-        """Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
+    def grid_from(self, grid_slim: np.ndarray) -> "g2d_irr.Grid2DIrregular":
+        """
+        Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
 
         The `Grid2DIrregular` are structured following this *ValuesIrregular* instance.
 
@@ -87,8 +90,9 @@ class ValuesIrregular(np.ndarray):
         return g2d_irr.Grid2DIrregular(grid=grid_slim)
 
     @classmethod
-    def from_file(cls, file_path):
-        """Create a `Grid2DIrregular` object from a file which stores the coordinates as a list of list of tuples.
+    def from_file(cls, file_path: str) -> "ValuesIrregular":
+        """
+        Create a `Grid2DIrregular` object from a file which stores the coordinates as a list of list of tuples.
 
         Parameters
         ----------
@@ -101,7 +105,7 @@ class ValuesIrregular(np.ndarray):
 
         return ValuesIrregular(values=values)
 
-    def output_to_json(self, file_path, overwrite=False):
+    def output_to_json(self, file_path: str, overwrite: bool = False):
         """
         Output this instance of the `Grid2DIrregular` object to a list of list of tuples.
 

@@ -24,7 +24,7 @@ class SettingsInterferometer(AbstractSettingsDataset):
         self,
         grid_class=Grid2D,
         grid_inversion_class=Grid2D,
-        sub_size=1,
+        sub_size: int = 1,
         sub_size_inversion=1,
         fractional_accuracy: float = 0.9999,
         sub_steps: List[int] = None,

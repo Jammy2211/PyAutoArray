@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.spatial
 import scipy.spatial.qhull as qhull
-from typing import Tuple
+from typing import Optional, List, Union, Tuple
 
 from autoconf import cached_property
 
@@ -14,7 +14,7 @@ from autoarray.inversion.pixelizations import pixelization_util
 
 
 class PixelNeighbors(np.ndarray):
-    def __new__(cls, arr, sizes):
+    def __new__(cls, arr: np.ndarray, sizes: np.ndarray):
 
         obj = arr.view(cls)
         obj.sizes = sizes
@@ -24,7 +24,13 @@ class PixelNeighbors(np.ndarray):
 
 class Grid2DRectangular(AbstractStructure2D):
     def __new__(
-        cls, grid, shape_native, pixel_scales, origin=(0.0, 0.0), *args, **kwargs
+        cls,
+        grid: np.ndarray,
+        shape_native: Tuple[int, int],
+        pixel_scales: Tuple[float, float],
+        origin: Tuple[float, float] = (0.0, 0.0),
+        *args,
+        **kwargs
     ):
         """
         A grid of (y,x) coordinates which reprsent a rectangular grid of pixels which are used to form the pixel centres of adaptive pixelizations in the \
@@ -59,7 +65,9 @@ class Grid2DRectangular(AbstractStructure2D):
         return obj
 
     @classmethod
-    def overlay_grid(cls, shape_native, grid, buffer=1e-8):
+    def overlay_grid(
+        cls, shape_native: Tuple[int, int], grid: np.ndarray, buffer: float = 1e-8
+    ) -> "Grid2DRectangular":
         """
         The geometry of a rectangular grid.
 
@@ -108,7 +116,7 @@ class Grid2DRectangular(AbstractStructure2D):
         )
 
     @cached_property
-    def pixel_neighbors(self):
+    def pixel_neighbors(self) -> PixelNeighbors:
 
         neighbors, sizes = pixelization_util.rectangular_neighbors_from(
             shape_native=self.shape_native
@@ -117,11 +125,11 @@ class Grid2DRectangular(AbstractStructure2D):
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @property
-    def pixels(self):
+    def pixels(self) -> int:
         return self.shape_native[0] * self.shape_native[1]
 
     @property
-    def shape_native_scaled(self):
+    def shape_native_scaled(self) -> Tuple[float, float]:
         return (
             (self.shape_native[0] * self.pixel_scales[0]),
             (self.shape_native[1] * self.pixel_scales[1]),
@@ -187,7 +195,11 @@ class Grid2DVoronoi(AbstractStructure2D):
     """
 
     def __new__(
-        cls, grid, nearest_pixelization_index_for_slim_index=None, *args, **kwargs
+        cls,
+        grid: Union[np.ndarray, List],
+        nearest_pixelization_index_for_slim_index: Optional[np.ndarray] = None,
+        *args,
+        **kwargs
     ):
         """
         A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
@@ -219,7 +231,7 @@ class Grid2DVoronoi(AbstractStructure2D):
 
         return obj
 
-    def __array_finalize__(self, obj):
+    def __array_finalize__(self, obj: object):
 
         if hasattr(obj, "nearest_pixelization_index_for_slim_index"):
             self.nearest_pixelization_index_for_slim_index = (
@@ -236,7 +248,7 @@ class Grid2DVoronoi(AbstractStructure2D):
             raise exc.PixelizationException() from e
 
     @cached_property
-    def pixel_neighbors(self):
+    def pixel_neighbors(self) -> PixelNeighbors:
 
         neighbors, sizes = pixelization_util.voronoi_neighbors_from(
             pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
@@ -245,15 +257,15 @@ class Grid2DVoronoi(AbstractStructure2D):
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @property
-    def origin(self):
+    def origin(self) -> Tuple[float, float]:
         return 0.0, 0.0
 
     @property
-    def pixels(self):
+    def pixels(self) -> int:
         return self.shape[0]
 
     @property
-    def sub_border_grid(self):
+    def sub_border_grid(self) -> np.ndarray:
         """
         The (y,x) grid of all sub-pixels which are at the border of the mask.
 
@@ -263,32 +275,32 @@ class Grid2DVoronoi(AbstractStructure2D):
         return self[self.mask.sub_border_flat_indexes]
 
     @classmethod
-    def manual_slim(cls, grid):
+    def manual_slim(cls, grid) -> "Grid2DVoronoi":
         return Grid2DVoronoi(grid=grid)
 
     @property
-    def shape_native_scaled(self):
+    def shape_native_scaled(self) -> Tuple[float, float]:
         return (
             np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
         )
 
     @property
-    def scaled_maxima(self):
+    def scaled_maxima(self) -> Tuple[float, float]:
         return (
             np.amax(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float"),
         )
 
     @property
-    def scaled_minima(self):
+    def scaled_minima(self) -> Tuple[float, float]:
         return (
             np.amin(self[:, 0]).astype("float"),
             np.amin(self[:, 1]).astype("float"),
         )
 
     @property
-    def extent(self):
+    def extent(self) -> np.ndarray:
         return np.array(
             [
                 self.scaled_minima[1],
