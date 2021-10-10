@@ -114,7 +114,7 @@ class Grid2DIterate(AbstractGrid2D):
         cls,
         grid: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         origin: Tuple[float, float] = (0.0, 0.0),
         fractional_accuracy: float = 0.9999,
         sub_steps: Optional[List[int]] = None,
@@ -169,7 +169,7 @@ class Grid2DIterate(AbstractGrid2D):
     def uniform(
         cls,
         shape_native: Tuple[int, int],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         origin: Tuple[float, float] = (0.0, 0.0),
         fractional_accuracy: float = 0.9999,
         sub_steps: Optional[List[int]] = None,

@@ -236,7 +236,7 @@ class Grid2D(AbstractGrid2D):
         cls,
         grid: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -283,7 +283,7 @@ class Grid2D(AbstractGrid2D):
     def manual_native(
         cls,
         grid: Union[np.ndarray, List],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -334,7 +334,7 @@ class Grid2D(AbstractGrid2D):
     def manual(
         cls,
         grid: Union[np.ndarray, List],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         shape_native: Tuple[int, int] = None,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
@@ -402,7 +402,7 @@ class Grid2D(AbstractGrid2D):
         y: Union[np.ndarray, List],
         x: np.ndarray,
         shape_native: Tuple[int, int],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -452,7 +452,7 @@ class Grid2D(AbstractGrid2D):
         cls,
         y: Union[np.ndarray, List],
         x: Union[np.ndarray, List],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -622,7 +622,7 @@ class Grid2D(AbstractGrid2D):
     def from_fits(
         cls,
         file_path: str,
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":

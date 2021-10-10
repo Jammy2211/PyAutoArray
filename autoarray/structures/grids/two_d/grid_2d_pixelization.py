@@ -27,7 +27,7 @@ class Grid2DRectangular(AbstractStructure2D):
         cls,
         grid: np.ndarray,
         shape_native: Tuple[int, int],
-        pixel_scales: Tuple[float, float],
+        pixel_scales: Union[Tuple[float, float], float],
         origin: Tuple[float, float] = (0.0, 0.0),
         *args,
         **kwargs

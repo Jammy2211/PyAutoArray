@@ -417,10 +417,13 @@ class AbstractSimulatorImaging:
             The random seed used to add random noise, where -1 corresponds to a random seed every run.
         """
 
-        if psf is not None and normalize_psf:
-            psf = psf.normalized
 
-        self.psf = psf
+        if psf is not None:
+            if psf is not None and normalize_psf:
+                psf = psf.normalized
+            self.psf = psf
+        else:
+            self.psf = Kernel2D.no_blur(pixel_scales=1.0)
 
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
@@ -454,12 +457,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
             pixel_scales=image.pixel_scales,
         )
 
-        if self.psf is not None:
-            psf = self.psf
-        else:
-            psf = Kernel2D.no_blur(pixel_scales=image.pixel_scales)
-
-        image = psf.convolved_array_from(array=image)
+        image = self.psf.convolved_array_from(array=image)
 
         image = image + background_sky_map
 
