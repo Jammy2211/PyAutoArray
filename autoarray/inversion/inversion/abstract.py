@@ -43,6 +43,12 @@ class AbstractInversion:
         self.profiling_dict = profiling_dict
 
     @property
+    def has_one_mapper(self):
+        if len(self.mapper_list) == 1:
+            return True
+        return False
+
+    @property
     def noise_map(self):
         return self.linear_eqn.noise_map
 
@@ -60,9 +66,18 @@ class AbstractInversion:
 
         A complete description of regularization is given in the `regularization.py` and `regularization_util.py`
         modules.
+
+        For multiple mappers, the regularization matrix is computed as the block diagonal of each individual mapper.
+        The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
+        regularization it is bypassed.
         """
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
+
+        if self.has_one_mapper:
+            return self.regularization_list[0].regularization_matrix_from(
+                mapper=self.mapper_list[0]
+            )
 
         return block_diag(
             *[

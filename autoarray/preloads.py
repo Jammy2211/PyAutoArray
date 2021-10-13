@@ -2,6 +2,8 @@ import logging
 import numpy as np
 from typing import List
 
+from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
+
 from autoarray import exc
 from autoarray.inversion.linear_eqn import linear_eqn_util
 
@@ -216,12 +218,15 @@ class Preloads:
             ):
 
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
-                self.curvature_matrix_preload = (
-                    inversion_0.curvature_matrix_preload
-                ).astype("int")
-                self.curvature_matrix_counts = (
-                    inversion_0.curvature_matrix_counts
-                ).astype("int")
+
+                if isinstance(inversion_0.linear_eqn, AbstractLinearEqnImaging):
+
+                    self.curvature_matrix_preload = (
+                        inversion_0.curvature_matrix_preload
+                    ).astype("int")
+                    self.curvature_matrix_counts = (
+                        inversion_0.curvature_matrix_counts
+                    ).astype("int")
 
                 logger.info(
                     "PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit."

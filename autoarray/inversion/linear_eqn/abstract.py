@@ -25,6 +25,12 @@ class AbstractLinearEqn:
         self.profiling_dict = profiling_dict
 
     @property
+    def has_one_mapper(self):
+        if len(self.mapper_list) == 1:
+            return True
+        return False
+
+    @property
     @profile_func
     def mapping_matrix(self) -> np.ndarray:
         """

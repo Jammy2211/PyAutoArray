@@ -84,10 +84,28 @@ class InversionMatrices(AbstractInversion):
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
 
-        This function overwrites the `curvature_matrix`, because for large matrices this avoids overhead. The
-        `curvature_matrix` is not a cached property as a result, to ensure if we access it after computing the
-        `curvature_reg_matrix` it is correctly recalculated in a new array of memory.
+        For a single mapper, this function overwrites the cached `curvature_matrix`, because for large matrices this
+        avoids overheads in memory allocation. The `curvature_matrix` is removed as a cached property as a result,
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
         """
+        if self.has_one_mapper:
+
+            curvature_reg_matrix = inversion_util.curvature_reg_matrix_from(
+                curvature_matrix=self.curvature_matrix,
+                regularization_matrix=self.regularization_matrix,
+                pixel_neighbors=self.mapper_list[
+                    0
+                ].source_pixelization_grid.pixel_neighbors,
+                pixel_neighbors_sizes=self.mapper_list[
+                    0
+                ].source_pixelization_grid.pixel_neighbors.sizes,
+            )
+
+            del self.__dict__["curvature_matrix"]
+
+            return curvature_reg_matrix
+
         return np.add(self.curvature_matrix, self.regularization_matrix)
 
     @cached_property

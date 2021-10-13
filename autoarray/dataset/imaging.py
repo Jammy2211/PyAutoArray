@@ -417,7 +417,6 @@ class AbstractSimulatorImaging:
             The random seed used to add random noise, where -1 corresponds to a random seed every run.
         """
 
-
         if psf is not None:
             if psf is not None and normalize_psf:
                 psf = psf.normalized

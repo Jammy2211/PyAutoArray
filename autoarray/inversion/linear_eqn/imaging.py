@@ -228,7 +228,25 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
+
+        For multiple mappers, the curvature matrix is computed using the block diagonal of the diagonal curvature
+        matrix of each individual mapper. The scipy function `block_diag` has an overhead associated with it and if
+        there is only one mapper and regularization it is bypassed.
         """
+
+        if self.has_one_mapper:
+
+            return linear_eqn_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+                curvature_preload=self.w_tilde.curvature_preload,
+                curvature_indexes=self.w_tilde.indexes,
+                curvature_lengths=self.w_tilde.lengths,
+                data_to_pix_unique=self.mapper_list[
+                    0
+                ].data_unique_mappings.data_to_pix_unique,
+                data_weights=self.mapper_list[0].data_unique_mappings.data_weights,
+                pix_lengths=self.mapper_list[0].data_unique_mappings.pix_lengths,
+                pix_pixels=self.mapper_list[0].pixels,
+            )
 
         return block_diag(
             *[
