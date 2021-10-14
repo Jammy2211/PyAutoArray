@@ -293,7 +293,7 @@ class Preloads:
             preloads=self.__class__(use_w_tilde=False)
         ).figure_of_merit
 
-        if abs(fom_with_preloads - fom_without_preloads) > 1.0e-8:
+        if abs(fom_with_preloads - fom_without_preloads) > 1.0e-4:
 
             raise exc.PreloadsException(
                 f"The log likelihood of fits using and not using preloads are not"
