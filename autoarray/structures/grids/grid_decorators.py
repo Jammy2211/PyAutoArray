@@ -1,6 +1,6 @@
 import numpy as np
 from functools import wraps
-from typing import List, Union
+from typing import List, Optional, Union
 
 from autoconf import conf
 from autoarray.structures.arrays.one_d.array_1d import Array1D
@@ -39,6 +39,7 @@ def grid_1d_to_structure(func):
     def wrapper(
         obj: object,
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
+        radial_grid_shape_slim: Optional[int] = None,
         *args,
         **kwargs
     ) -> Union[Array1D, ValuesIrregular]:
@@ -89,7 +90,9 @@ def grid_1d_to_structure(func):
 
         if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIterate):
             grid_2d_projected = grid.grid_2d_radial_projected_from(
-                centre=centre, angle=angle
+                centre=centre,
+                angle=angle,
+                radial_grid_shape_slim=radial_grid_shape_slim,
             )
             result = func(obj, grid_2d_projected, *args, **kwargs)
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)

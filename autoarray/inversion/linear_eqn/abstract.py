@@ -50,7 +50,7 @@ class AbstractLinearEqn:
         raise NotImplementedError
 
     @profile_func
-    def data_vector_from(self, data):
+    def data_vector_from(self, data, preloads):
         raise NotImplementedError
 
     @property

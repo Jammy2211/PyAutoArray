@@ -26,7 +26,6 @@ class InversionMatrices(AbstractInversion):
         of our  dataset via 2D convolution. This uses the methods
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
-
         return self.linear_eqn.mapping_matrix
 
     @property
@@ -41,9 +40,10 @@ class InversionMatrices(AbstractInversion):
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
 
-        if self.preloads.operated_mapping_matrix is None:
-            return self.linear_eqn.operated_mapping_matrix
-        return self.preloads.operated_mapping_matrix
+        if self.preloads.operated_mapping_matrix is not None:
+            return self.preloads.operated_mapping_matrix
+
+        return self.linear_eqn.operated_mapping_matrix
 
     @cached_property
     def data_vector(self) -> np.ndarray:
@@ -59,7 +59,7 @@ class InversionMatrices(AbstractInversion):
 
         The calculation is performed by the method `w_tilde_data_imaging_from`.
         """
-        return self.linear_eqn.data_vector_from(data=self.data)
+        return self.linear_eqn.data_vector_from(data=self.data, preloads=self.preloads)
 
     @cached_property
     @profile_func

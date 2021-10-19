@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from autoconf import conf
 from autoconf import cached_property
@@ -254,7 +254,10 @@ class AbstractGrid2D(AbstractStructure2D):
         return a2d.Array2D.manual_mask(array=distances, mask=self.mask)
 
     def grid_2d_radial_projected_from(
-        self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0
+        self,
+        centre: Tuple[float, float] = (0.0, 0.0),
+        angle: float = 0.0,
+        radial_grid_shape_slim: Optional[int] = None,
     ) -> "g2d_irr.Grid2DIrregular":
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
@@ -303,7 +306,9 @@ class AbstractGrid2D(AbstractStructure2D):
             positive x-axis.
         """
 
-        if hasattr(self, "radial_projected_shape_slim"):
+        if radial_grid_shape_slim is not None:
+            shape_slim = radial_grid_shape_slim
+        elif hasattr(self, "radial_projected_shape_slim"):
             shape_slim = self.radial_projected_shape_slim
         else:
             shape_slim = 0

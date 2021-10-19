@@ -133,7 +133,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
         )
 
     @profile_func
-    def data_vector_from(self, data: Visibilities) -> np.ndarray:
+    def data_vector_from(self, data: Visibilities, preloads) -> np.ndarray:
 
         return linear_eqn_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=self.transformed_mapping_matrix,

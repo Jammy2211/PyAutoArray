@@ -146,7 +146,7 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         )
 
     @profile_func
-    def data_vector_from(self, data: Array2D) -> np.ndarray:
+    def data_vector_from(self, data: Array2D, preloads) -> np.ndarray:
         """
         To solve for the source pixel fluxes we now pose the problem as a linear inversion which we use the NumPy
         linear  algebra libraries to solve. The linear algebra is based on
@@ -396,7 +396,7 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         )
 
     @profile_func
-    def data_vector_from(self, data: Array2D) -> np.ndarray:
+    def data_vector_from(self, data: Array2D, preloads) -> np.ndarray:
         """
         __Data Vector (D)__
 
@@ -410,8 +410,14 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         The `data_vector` D is the first such matrix, which is given by equation (4)
         in https://arxiv.org/pdf/astro-ph/0302587.pdf.
         """
+
+        if preloads.operated_mapping_matrix is not None:
+            blurred_mapping_matrix = preloads.operated_mapping_matrix
+        else:
+            blurred_mapping_matrix = self.blurred_mapping_matrix
+
         return linear_eqn_util.data_vector_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=self.blurred_mapping_matrix,
+            blurred_mapping_matrix=blurred_mapping_matrix,
             image=data,
             noise_map=self.noise_map,
         )

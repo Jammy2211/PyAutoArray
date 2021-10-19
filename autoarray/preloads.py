@@ -21,6 +21,7 @@ class Preloads:
         sparse_image_plane_grid_list_of_planes=None,
         relocated_grid=None,
         mapper_list=None,
+        mapping_matrix=None,
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
