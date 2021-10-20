@@ -20,6 +20,9 @@ class AbstractPixelization:
     ):
         raise NotImplementedError("pixelization_mapper_from should be overridden")
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__ and self.__class__ is other.__class__
+
     @profile_func
     def relocate_grid_via_border(
         self,
