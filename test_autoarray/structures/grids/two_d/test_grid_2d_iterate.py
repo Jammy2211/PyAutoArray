@@ -157,7 +157,7 @@ class TestObj:
 
 
 class TestIteratedArray:
-    def test__fractional_mask_from(self):
+    def test__threshold_mask_from(self):
 
         mask = aa.Mask2D.manual(
             mask=[
@@ -181,12 +181,12 @@ class TestIteratedArray:
             mask=mask,
         )
 
-        fractional_mask = grid.fractional_mask_via_arrays_from(
+        threshold_mask = grid.threshold_mask_via_arrays_from(
             array_lower_sub_2d=arr.binned.native, array_higher_sub_2d=arr.binned.native
         )
 
         assert (
-            fractional_mask
+            threshold_mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -217,13 +217,13 @@ class TestIteratedArray:
             mask=mask,
         )
 
-        fractional_mask = grid.fractional_mask_via_arrays_from(
+        threshold_mask = grid.threshold_mask_via_arrays_from(
             array_lower_sub_2d=result_array_lower_sub.binned.native,
             array_higher_sub_2d=result_array_higher_sub.binned.native,
         )
 
         assert (
-            fractional_mask
+            threshold_mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -256,13 +256,13 @@ class TestIteratedArray:
             mask=mask,
         )
 
-        fractional_mask = grid.fractional_mask_via_arrays_from(
+        threshold_mask = grid.threshold_mask_via_arrays_from(
             array_lower_sub_2d=result_array_lower_sub.binned.native,
             array_higher_sub_2d=result_array_higher_sub.binned.native,
         )
 
         assert (
-            fractional_mask
+            threshold_mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -273,7 +273,7 @@ class TestIteratedArray:
             )
         ).all()
 
-    def test__fractional_mask_from__uses_higher_sub_grids_mask(self):
+    def test__threshold_mask_from__uses_higher_sub_grids_mask(self):
 
         mask_lower_sub = aa.Mask2D.manual(
             mask=[
@@ -317,13 +317,13 @@ class TestIteratedArray:
             mask=mask_higher_sub,
         )
 
-        fractional_mask = grid.fractional_mask_via_arrays_from(
+        threshold_mask = grid.threshold_mask_via_arrays_from(
             array_lower_sub_2d=array_lower_sub.binned.native,
             array_higher_sub_2d=array_higher_sub.binned.native,
         )
 
         assert (
-            fractional_mask
+            threshold_mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -478,7 +478,7 @@ class TestIteratedArray:
 
 
 class TestIteratedGrid:
-    def test__fractional_mask_from(self):
+    def test__threshold_mask_from(self):
 
         mask = aa.Mask2D.manual(
             mask=[
@@ -502,12 +502,12 @@ class TestIteratedGrid:
             mask=mask,
         )
 
-        fractional_mask = iterate.fractional_mask_via_grids_from(
+        threshold_mask = iterate.threshold_mask_via_grids_from(
             grid_lower_sub_2d=grid.binned.native, grid_higher_sub_2d=grid.binned.native
         )
 
         assert (
-            fractional_mask
+            threshold_mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -538,13 +538,13 @@ class TestIteratedGrid:
             mask=mask,
         )
 
-        fractional_mask = iterate.fractional_mask_via_grids_from(
+        threshold_mask = iterate.threshold_mask_via_grids_from(
             grid_lower_sub_2d=grid_lower_sub.binned.native,
             grid_higher_sub_2d=grid_higher_sub.binned.native,
         )
 
         assert (
-            fractional_mask
+            threshold_mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -577,13 +577,13 @@ class TestIteratedGrid:
             mask=mask,
         )
 
-        fractional_mask = iterate.fractional_mask_via_grids_from(
+        threshold_mask = iterate.threshold_mask_via_grids_from(
             grid_lower_sub_2d=grid_lower_sub.binned.native,
             grid_higher_sub_2d=grid_higher_sub.binned.native,
         )
 
         assert (
-            fractional_mask
+            threshold_mask
             == np.array(
                 [
                     [True, True, True, True],
@@ -594,7 +594,7 @@ class TestIteratedGrid:
             )
         ).all()
 
-    def test__fractional_mask_from__uses_higher_sub_grids_mask(self):
+    def test__threshold_mask_from__uses_higher_sub_grids_mask(self):
 
         mask_lower_sub = aa.Mask2D.manual(
             mask=[
@@ -640,13 +640,13 @@ class TestIteratedGrid:
             mask=mask_higher_sub,
         )
 
-        fractional_mask = iterate.fractional_mask_via_grids_from(
+        threshold_mask = iterate.threshold_mask_via_grids_from(
             grid_lower_sub_2d=grid_lower_sub.binned.native,
             grid_higher_sub_2d=grid_higher_sub.binned.native,
         )
 
         assert (
-            fractional_mask
+            threshold_mask
             == np.array(
                 [
                     [True, True, True, True],

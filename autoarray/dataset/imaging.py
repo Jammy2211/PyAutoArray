@@ -40,6 +40,7 @@ class SettingsImaging(AbstractSettingsDataset):
         sub_size: int = 1,
         sub_size_inversion=4,
         fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
         sub_steps: List[int] = None,
         signal_to_noise_limit: Optional[float] = None,
         signal_to_noise_limit_radii: Optional[float] = None,
@@ -65,7 +66,12 @@ class SettingsImaging(AbstractSettingsDataset):
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
-            uses when evaluating functions.
+            uses when evaluating functions, where the fraction accuracy is the ratio of the values computed using
+            two grids at a higher and lower sub-grid size.
+        relative_accuracy
+            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the relative accuracy it
+            uses when evaluating functions, where the relative accuracy is the absolute difference of the values
+            computed using two grids at a higher and lower sub-grid size.
         sub_steps : [int]
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
@@ -83,6 +89,7 @@ class SettingsImaging(AbstractSettingsDataset):
             sub_size=sub_size,
             sub_size_inversion=sub_size_inversion,
             fractional_accuracy=fractional_accuracy,
+            relative_accuracy=relative_accuracy,
             sub_steps=sub_steps,
             signal_to_noise_limit=signal_to_noise_limit,
             signal_to_noise_limit_radii=signal_to_noise_limit_radii,

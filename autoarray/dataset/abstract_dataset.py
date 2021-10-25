@@ -39,8 +39,9 @@ def grid_via_grid_class_from(
     mask: Union[Mask1D, Mask2D],
     grid_class: Union[Type[Grid1D], Type[Grid2D]],
     fractional_accuracy: float,
+    relative_accuracy: Optional[float],
     sub_steps: List[int],
-) -> Optional[Union[Grid1D, Grid2D]]:
+) -> Optional[Union[Grid1D, Grid2D, Grid2DIterate]]:
 
     if mask.pixel_scales is None:
         return None
@@ -62,7 +63,10 @@ def grid_via_grid_class_from(
     elif grid_class is Grid2DIterate:
 
         return Grid2DIterate.from_mask(
-            mask=mask, fractional_accuracy=fractional_accuracy, sub_steps=sub_steps
+            mask=mask,
+            fractional_accuracy=fractional_accuracy,
+            relative_accuracy=relative_accuracy,
+            sub_steps=sub_steps,
         )
 
 
@@ -74,6 +78,7 @@ class AbstractSettingsDataset:
         sub_size: int = 2,
         sub_size_inversion: int = 2,
         fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
         sub_steps: Optional[List[int]] = None,
         signal_to_noise_limit: Optional[float] = None,
         signal_to_noise_limit_radii: Optional[float] = None,
@@ -98,7 +103,12 @@ class AbstractSettingsDataset:
             If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
-            uses when evaluating functions.
+            uses when evaluating functions, where the fraction accuracy is the ratio of the values computed using
+            two grids at a higher and lower sub-grid size.
+        relative_accuracy
+            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the relative accuracy it
+            uses when evaluating functions, where the relative accuracy is the absolute difference of the values
+            computed using two grids at a higher and lower sub-grid size.
         sub_steps : [int]
             If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
@@ -112,6 +122,7 @@ class AbstractSettingsDataset:
         self.sub_size = sub_size
         self.sub_size_inversion = sub_size_inversion
         self.fractional_accuracy = fractional_accuracy
+        self.relative_accuracy = relative_accuracy
 
         if sub_steps is None:
             sub_steps = [2, 4, 8, 16]
@@ -126,6 +137,7 @@ class AbstractSettingsDataset:
             mask=mask,
             grid_class=self.grid_class,
             fractional_accuracy=self.fractional_accuracy,
+            relative_accuracy=self.relative_accuracy,
             sub_steps=self.sub_steps,
         )
 
@@ -135,6 +147,7 @@ class AbstractSettingsDataset:
             mask=mask,
             grid_class=self.grid_inversion_class,
             fractional_accuracy=self.fractional_accuracy,
+            relative_accuracy=self.relative_accuracy,
             sub_steps=self.sub_steps,
         )
 

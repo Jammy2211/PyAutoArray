@@ -28,6 +28,7 @@ class Grid2DIterate(AbstractGrid2D):
         grid: np.ndarray,
         mask: Mask2D,
         fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
         sub_steps: List[int] = None,
         *args,
         **kwargs
@@ -59,7 +60,12 @@ class Grid2DIterate(AbstractGrid2D):
             originates from.
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
-            of the value at a higher sub_size to othe value computed using the previous sub_size.
+            of the value at a higher sub size to the value computed using the previous sub_size. The fractional
+            accuracy does not depend on the units or magnitude of the function being evaluated.
+        relative_accuracy
+            The relative accuracy the function evaluted must meet to be accepted, where this value is the absolute
+            difference of the values computed using the higher sub size and lower sub size grids. The relative
+            accuracy depends on the units / magnitude of the function being evaluated.
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
@@ -71,6 +77,7 @@ class Grid2DIterate(AbstractGrid2D):
         obj.mask = mask
         obj.grid = Grid2D.manual_mask(grid=np.asarray(obj), mask=mask)
         obj.fractional_accuracy = fractional_accuracy
+        obj.relative_accuracy = relative_accuracy
         obj.sub_steps = sub_steps
         return obj
 
@@ -83,6 +90,9 @@ class Grid2DIterate(AbstractGrid2D):
 
         if hasattr(obj, "fractional_accuracy"):
             self.fractional_accuracy = obj.fractional_accuracy
+
+        if hasattr(obj, "relative_accuracy"):
+            self.relative_accuracy = obj.relative_accuracy
 
         if hasattr(obj, "sub_steps"):
             self.sub_steps = obj.sub_steps
@@ -117,6 +127,7 @@ class Grid2DIterate(AbstractGrid2D):
         pixel_scales: Union[Tuple[float, float], float],
         origin: Tuple[float, float] = (0.0, 0.0),
         fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
         sub_steps: Optional[List[int]] = None,
     ) -> "Grid2DIterate":
         """
@@ -141,7 +152,12 @@ class Grid2DIterate(AbstractGrid2D):
             it is converted to a (float, float) structure.
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
-            of the value at a higher sub_size to othe value computed using the previous sub_size.
+            of the value at a higher sub size to the value computed using the previous sub_size. The fractional
+            accuracy does not depend on the units or magnitude of the function being evaluated.
+        relative_accuracy
+            The relative accuracy the function evaluted must meet to be accepted, where this value is the absolute
+            difference of the values computed using the higher sub size and lower sub size grids. The relative
+            accuracy depends on the units / magnitude of the function being evaluated.
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
@@ -162,6 +178,7 @@ class Grid2DIterate(AbstractGrid2D):
             grid=grid,
             mask=mask,
             fractional_accuracy=fractional_accuracy,
+            relative_accuracy=relative_accuracy,
             sub_steps=sub_steps,
         )
 
@@ -172,6 +189,7 @@ class Grid2DIterate(AbstractGrid2D):
         pixel_scales: Union[Tuple[float, float], float],
         origin: Tuple[float, float] = (0.0, 0.0),
         fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
         sub_steps: Optional[List[int]] = None,
     ) -> "Grid2DIterate":
         """
@@ -187,7 +205,12 @@ class Grid2DIterate(AbstractGrid2D):
             it is converted to a (float, float) structure.
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
-            of the value at a higher sub_size to othe value computed using the previous sub_size.
+            of the value at a higher sub size to the value computed using the previous sub_size. The fractional
+            accuracy does not depend on the units or magnitude of the function being evaluated.
+        relative_accuracy
+            The relative accuracy the function evaluted must meet to be accepted, where this value is the absolute
+            difference of the values computed using the higher sub size and lower sub size grids. The relative
+            accuracy depends on the units / magnitude of the function being evaluated.
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
@@ -209,6 +232,7 @@ class Grid2DIterate(AbstractGrid2D):
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             fractional_accuracy=fractional_accuracy,
+            relative_accuracy=relative_accuracy,
             sub_steps=sub_steps,
             origin=origin,
         )
@@ -218,6 +242,7 @@ class Grid2DIterate(AbstractGrid2D):
         cls,
         mask: Mask2D,
         fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
         sub_steps: Optional[List[int]] = None,
     ) -> "Grid2DIterate":
         """
@@ -232,7 +257,12 @@ class Grid2DIterate(AbstractGrid2D):
             The mask whose masked pixels are used to setup the sub-pixel grid.
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
-            of the value at a higher sub_size to othe value computed using the previous sub_size.
+            of the value at a higher sub size to the value computed using the previous sub_size. The fractional
+            accuracy does not depend on the units or magnitude of the function being evaluated.
+        relative_accuracy
+            The relative accuracy the function evaluted must meet to be accepted, where this value is the absolute
+            difference of the values computed using the higher sub size and lower sub size grids. The relative
+            accuracy depends on the units / magnitude of the function being evaluated.
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
@@ -246,6 +276,7 @@ class Grid2DIterate(AbstractGrid2D):
             grid=grid_slim,
             mask=mask.mask_sub_1,
             fractional_accuracy=fractional_accuracy,
+            relative_accuracy=relative_accuracy,
             sub_steps=sub_steps,
         )
 
@@ -255,6 +286,7 @@ class Grid2DIterate(AbstractGrid2D):
         mask: Mask2D,
         kernel_shape_native: Tuple[int, int],
         fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
         sub_steps: Optional[List[int]] = None,
     ) -> "Grid2DIterate":
         """
@@ -274,7 +306,12 @@ class Grid2DIterate(AbstractGrid2D):
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
-            of the value at a higher sub_size to othe value computed using the previous sub_size.
+            of the value at a higher sub size to the value computed using the previous sub_size. The fractional
+            accuracy does not depend on the units or magnitude of the function being evaluated.
+        relative_accuracy
+            The relative accuracy the function evaluted must meet to be accepted, where this value is the absolute
+            difference of the values computed using the higher sub size and lower sub size grids. The relative
+            accuracy depends on the units / magnitude of the function being evaluated.
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
@@ -285,6 +322,7 @@ class Grid2DIterate(AbstractGrid2D):
         return cls.from_mask(
             mask=blurring_mask,
             fractional_accuracy=fractional_accuracy,
+            relative_accuracy=relative_accuracy,
             sub_steps=sub_steps,
         )
 
@@ -382,7 +420,7 @@ class Grid2DIterate(AbstractGrid2D):
         grid_higher_sub = func(cls, grid_compute)
         return grid_compute.structure_2d_from(result=grid_higher_sub).binned.native
 
-    def fractional_mask_via_arrays_from(
+    def threshold_mask_via_arrays_from(
         self, array_lower_sub_2d: a2d.Array2D, array_higher_sub_2d: a2d.Array2D
     ) -> Mask2D:
         """
@@ -403,31 +441,33 @@ class Grid2DIterate(AbstractGrid2D):
             The results computed by a function using a higher sub-grid size.
         """
 
-        fractional_mask = Mask2D.unmasked(
+        threshold_mask = Mask2D.unmasked(
             shape_native=array_lower_sub_2d.shape_native,
             pixel_scales=array_lower_sub_2d.pixel_scales,
             invert=True,
         )
 
-        fractional_mask = self.fractional_mask_via_arrays_jit_from(
+        threshold_mask = self.threshold_mask_via_arrays_jit_from(
             fractional_accuracy_threshold=self.fractional_accuracy,
-            fractional_mask=fractional_mask,
+            relative_accuracy_threshold=self.relative_accuracy,
+            threshold_mask=threshold_mask,
             array_higher_sub_2d=array_higher_sub_2d,
             array_lower_sub_2d=array_lower_sub_2d,
             array_higher_mask=array_higher_sub_2d.mask,
         )
 
         return Mask2D(
-            mask=fractional_mask,
+            mask=threshold_mask,
             pixel_scales=array_higher_sub_2d.pixel_scales,
             origin=array_higher_sub_2d.origin,
         )
 
     @staticmethod
     @numba_util.jit()
-    def fractional_mask_via_arrays_jit_from(
+    def threshold_mask_via_arrays_jit_from(
         fractional_accuracy_threshold: float,
-        fractional_mask: Mask2D,
+        relative_accuracy_threshold: Optional[float],
+        threshold_mask: Mask2D,
         array_higher_sub_2d: a2d.Array2D,
         array_lower_sub_2d: a2d.Array2D,
         array_higher_mask: Mask2D,
@@ -435,34 +475,48 @@ class Grid2DIterate(AbstractGrid2D):
         """
         Jitted functioon to determine the fractional mask, which is a mask where:
 
-        - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
+        - `True` entries signify the function has been evaluated in that pixel to desired accuracy and
            therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
         - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
            therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
         """
 
-        for y in range(fractional_mask.shape[0]):
-            for x in range(fractional_mask.shape[1]):
-                if not array_higher_mask[y, x]:
+        if fractional_accuracy_threshold is not None:
 
-                    if array_lower_sub_2d[y, x] > 0:
+            for y in range(threshold_mask.shape[0]):
+                for x in range(threshold_mask.shape[1]):
+                    if not array_higher_mask[y, x]:
 
-                        fractional_accuracy = (
-                            array_lower_sub_2d[y, x] / array_higher_sub_2d[y, x]
-                        )
+                        if array_lower_sub_2d[y, x] > 0:
 
-                        if fractional_accuracy > 1.0:
-                            fractional_accuracy = 1.0 / fractional_accuracy
+                            fractional_accuracy = (
+                                array_lower_sub_2d[y, x] / array_higher_sub_2d[y, x]
+                            )
 
-                    else:
+                            if fractional_accuracy > 1.0:
+                                fractional_accuracy = 1.0 / fractional_accuracy
 
-                        fractional_accuracy = 0.0
+                        else:
 
-                    if fractional_accuracy < fractional_accuracy_threshold:
-                        fractional_mask[y, x] = False
+                            fractional_accuracy = 0.0
 
-        return fractional_mask
+                        if fractional_accuracy < fractional_accuracy_threshold:
+                            threshold_mask[y, x] = False
+
+        if relative_accuracy_threshold is not None:
+
+            for y in range(threshold_mask.shape[0]):
+                for x in range(threshold_mask.shape[1]):
+                    if not array_higher_mask[y, x]:
+
+                        if (
+                            abs(array_lower_sub_2d[y, x] - array_higher_sub_2d[y, x])
+                            > relative_accuracy_threshold
+                        ):
+                            threshold_mask[y, x] = False
+
+        return threshold_mask
 
     def iterated_array_from(
         self, func: Callable, cls: object, array_lower_sub_2d: a2d.Array2D
@@ -500,25 +554,25 @@ class Grid2DIterate(AbstractGrid2D):
 
         iterated_array = np.zeros(shape=self.shape_native)
 
-        fractional_mask_lower_sub = self.mask
+        threshold_mask_lower_sub = self.mask
 
         for sub_size in self.sub_steps[:-1]:
 
             array_higher_sub = self.array_at_sub_size_from(
-                func=func, cls=cls, mask=fractional_mask_lower_sub, sub_size=sub_size
+                func=func, cls=cls, mask=threshold_mask_lower_sub, sub_size=sub_size
             )
 
             try:
 
-                fractional_mask_higher_sub = self.fractional_mask_via_arrays_from(
+                threshold_mask_higher_sub = self.threshold_mask_via_arrays_from(
                     array_lower_sub_2d=array_lower_sub_2d,
                     array_higher_sub_2d=array_higher_sub,
                 )
 
                 iterated_array = self.iterated_array_jit_from(
                     iterated_array=iterated_array,
-                    fractional_mask_higher_sub=fractional_mask_higher_sub,
-                    fractional_mask_lower_sub=fractional_mask_lower_sub,
+                    threshold_mask_higher_sub=threshold_mask_higher_sub,
+                    threshold_mask_lower_sub=threshold_mask_lower_sub,
                     array_higher_sub_2d=array_higher_sub,
                 )
 
@@ -526,17 +580,17 @@ class Grid2DIterate(AbstractGrid2D):
 
                 return self.return_iterated_array_result(iterated_array=iterated_array)
 
-            if fractional_mask_higher_sub.is_all_true:
+            if threshold_mask_higher_sub.is_all_true:
 
                 return self.return_iterated_array_result(iterated_array=iterated_array)
 
             array_lower_sub_2d = array_higher_sub
-            fractional_mask_lower_sub = fractional_mask_higher_sub
+            threshold_mask_lower_sub = threshold_mask_higher_sub
 
         array_higher_sub = self.array_at_sub_size_from(
             func=func,
             cls=cls,
-            mask=fractional_mask_lower_sub,
+            mask=threshold_mask_lower_sub,
             sub_size=self.sub_steps[-1],
         )
 
@@ -568,8 +622,8 @@ class Grid2DIterate(AbstractGrid2D):
     @numba_util.jit()
     def iterated_array_jit_from(
         iterated_array: a2d.Array2D,
-        fractional_mask_higher_sub: Mask2D,
-        fractional_mask_lower_sub: Mask2D,
+        threshold_mask_higher_sub: Mask2D,
+        threshold_mask_lower_sub: Mask2D,
         array_higher_sub_2d: a2d.Array2D,
     ) -> a2d.Array2D:
         """
@@ -581,14 +635,14 @@ class Grid2DIterate(AbstractGrid2D):
         for y in range(iterated_array.shape[0]):
             for x in range(iterated_array.shape[1]):
                 if (
-                    fractional_mask_higher_sub[y, x]
-                    and not fractional_mask_lower_sub[y, x]
+                    threshold_mask_higher_sub[y, x]
+                    and not threshold_mask_lower_sub[y, x]
                 ):
                     iterated_array[y, x] = array_higher_sub_2d[y, x]
 
         return iterated_array
 
-    def fractional_mask_via_grids_from(
+    def threshold_mask_via_grids_from(
         self, grid_lower_sub_2d: Grid2D, grid_higher_sub_2d: Grid2D
     ) -> Mask2D:
         """
@@ -609,31 +663,33 @@ class Grid2DIterate(AbstractGrid2D):
             The results computed by a function using a higher sub-grid size.
         """
 
-        fractional_mask = Mask2D.unmasked(
+        threshold_mask = Mask2D.unmasked(
             shape_native=grid_lower_sub_2d.shape_native,
             pixel_scales=grid_lower_sub_2d.pixel_scales,
             invert=True,
         )
 
-        fractional_mask = self.fractional_mask_via_grids_jit_from(
+        threshold_mask = self.threshold_mask_via_grids_jit_from(
             fractional_accuracy_threshold=self.fractional_accuracy,
-            fractional_mask=fractional_mask,
+            relative_accuracy_threshold=self.relative_accuracy,
+            threshold_mask=threshold_mask,
             grid_higher_sub_2d=grid_higher_sub_2d,
             grid_lower_sub_2d=grid_lower_sub_2d,
             grid_higher_mask=grid_higher_sub_2d.mask,
         )
 
         return Mask2D(
-            mask=fractional_mask,
+            mask=threshold_mask,
             pixel_scales=grid_higher_sub_2d.pixel_scales,
             origin=grid_higher_sub_2d.origin,
         )
 
     @staticmethod
     @numba_util.jit()
-    def fractional_mask_via_grids_jit_from(
+    def threshold_mask_via_grids_jit_from(
         fractional_accuracy_threshold: float,
-        fractional_mask: Mask2D,
+        relative_accuracy_threshold: float,
+        threshold_mask: Mask2D,
         grid_higher_sub_2d: Grid2D,
         grid_lower_sub_2d: Grid2D,
         grid_higher_mask: Mask2D,
@@ -648,8 +704,8 @@ class Grid2DIterate(AbstractGrid2D):
            therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
         """
 
-        for y in range(fractional_mask.shape[0]):
-            for x in range(fractional_mask.shape[1]):
+        for y in range(threshold_mask.shape[0]):
+            for x in range(threshold_mask.shape[1]):
                 if not grid_higher_mask[y, x]:
 
                     if abs(grid_higher_sub_2d[y, x, 0]) > 0:
@@ -682,9 +738,29 @@ class Grid2DIterate(AbstractGrid2D):
                     )
 
                     if fractional_accuracy < fractional_accuracy_threshold:
-                        fractional_mask[y, x] = False
+                        threshold_mask[y, x] = False
 
-        return fractional_mask
+        if relative_accuracy_threshold is not None:
+
+            for y in range(threshold_mask.shape[0]):
+                for x in range(threshold_mask.shape[1]):
+                    if not grid_higher_mask[y, x]:
+
+                        relative_accuracy_y = abs(
+                            grid_lower_sub_2d[y, x, 0] - grid_higher_sub_2d[y, x, 0]
+                        )
+                        relative_accuracy_x = abs(
+                            grid_lower_sub_2d[y, x, 1] - grid_higher_sub_2d[y, x, 1]
+                        )
+
+                        relative_accuracy = max(
+                            relative_accuracy_y, relative_accuracy_x
+                        )
+
+                        if relative_accuracy > relative_accuracy_threshold:
+                            threshold_mask[y, x] = False
+
+        return threshold_mask
 
     def iterated_grid_from(
         self, func: Callable, cls: object, grid_lower_sub_2d: Grid2D
@@ -722,26 +798,26 @@ class Grid2DIterate(AbstractGrid2D):
 
         iterated_grid = np.zeros(shape=(self.shape_native[0], self.shape_native[1], 2))
 
-        fractional_mask_lower_sub = self.mask
+        threshold_mask_lower_sub = self.mask
 
         for sub_size in self.sub_steps[:-1]:
 
             grid_higher_sub = self.grid_at_sub_size_from(
-                func=func, cls=cls, mask=fractional_mask_lower_sub, sub_size=sub_size
+                func=func, cls=cls, mask=threshold_mask_lower_sub, sub_size=sub_size
             )
 
-            fractional_mask_higher_sub = self.fractional_mask_via_grids_from(
+            threshold_mask_higher_sub = self.threshold_mask_via_grids_from(
                 grid_lower_sub_2d=grid_lower_sub_2d, grid_higher_sub_2d=grid_higher_sub
             )
 
             iterated_grid = self.iterated_grid_jit_from(
                 iterated_grid=iterated_grid,
-                fractional_mask_higher_sub=fractional_mask_higher_sub,
-                fractional_mask_lower_sub=fractional_mask_lower_sub,
+                threshold_mask_higher_sub=threshold_mask_higher_sub,
+                threshold_mask_lower_sub=threshold_mask_lower_sub,
                 grid_higher_sub_2d=grid_higher_sub,
             )
 
-            if fractional_mask_higher_sub.is_all_true:
+            if threshold_mask_higher_sub.is_all_true:
 
                 iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
                     mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
@@ -750,12 +826,12 @@ class Grid2DIterate(AbstractGrid2D):
                 return Grid2D(grid=iterated_grid_1d, mask=self.mask.mask_sub_1)
 
             grid_lower_sub_2d = grid_higher_sub
-            fractional_mask_lower_sub = fractional_mask_higher_sub
+            threshold_mask_lower_sub = threshold_mask_higher_sub
 
         grid_higher_sub = self.grid_at_sub_size_from(
             func=func,
             cls=cls,
-            mask=fractional_mask_lower_sub,
+            mask=threshold_mask_lower_sub,
             sub_size=self.sub_steps[-1],
         )
 
@@ -771,8 +847,8 @@ class Grid2DIterate(AbstractGrid2D):
     @numba_util.jit()
     def iterated_grid_jit_from(
         iterated_grid: Grid2D,
-        fractional_mask_higher_sub: Mask2D,
-        fractional_mask_lower_sub: Mask2D,
+        threshold_mask_higher_sub: Mask2D,
+        threshold_mask_lower_sub: Mask2D,
         grid_higher_sub_2d: Grid2D,
     ) -> Grid2D:
         """
@@ -784,8 +860,8 @@ class Grid2DIterate(AbstractGrid2D):
         for y in range(iterated_grid.shape[0]):
             for x in range(iterated_grid.shape[1]):
                 if (
-                    fractional_mask_higher_sub[y, x]
-                    and not fractional_mask_lower_sub[y, x]
+                    threshold_mask_higher_sub[y, x]
+                    and not threshold_mask_lower_sub[y, x]
                 ):
                     iterated_grid[y, x, :] = grid_higher_sub_2d[y, x, :]
 
