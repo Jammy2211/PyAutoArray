@@ -34,24 +34,6 @@ class InterferometerPlotter(AbstractPlotter):
             visuals_2d=visuals_2d,
         )
 
-    @property
-    def visuals_with_include_2d(self) -> Visuals2D:
-        return self.visuals_2d + self.visuals_2d.__class__()
-
-    @property
-    def visuals_with_include_2d_real_space(self) -> Visuals2D:
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin",
-                Grid2DIrregular(grid=[self.interferometer.real_space_mask.origin]),
-            ),
-            mask=self.extract_2d("mask", self.interferometer.real_space_mask),
-            border=self.extract_2d(
-                "border", self.interferometer.real_space_mask.border_grid_sub_1.binned
-            ),
-        )
-
     def figures_2d(
         self,
         visibilities: bool = False,
@@ -84,7 +66,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_grid(
                 grid=self.interferometer.visibilities.in_grid,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Visibilities", filename="visibilities"),
             )
 
@@ -92,7 +74,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_grid(
                 grid=self.interferometer.visibilities.in_grid,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.visuals_2d,
                 color_array=self.interferometer.noise_map.real,
                 auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
             )
@@ -132,7 +114,7 @@ class InterferometerPlotter(AbstractPlotter):
                     y=self.interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
                     x=self.interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
                 ),
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="UV-Wavelengths", filename="uv_wavelengths"
                 ),
@@ -172,7 +154,9 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_image,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
             )
 
@@ -180,7 +164,9 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_noise_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map_2d"
                 ),
@@ -190,7 +176,9 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_signal_to_noise_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map_2d",
@@ -201,7 +189,9 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_inverse_noise_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Inverse Noise Map",
                     filename="dirty_inverse_noise_map_2d",

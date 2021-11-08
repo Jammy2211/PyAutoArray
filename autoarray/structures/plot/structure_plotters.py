@@ -12,7 +12,6 @@ from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 
 class Array2DPlotter(AbstractPlotter):
@@ -54,17 +53,13 @@ class Array2DPlotter(AbstractPlotter):
         Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d("origin", Grid2DIrregular(grid=[self.array.origin])),
-            mask=self.extract_2d("mask", self.array.mask),
-            border=self.extract_2d("border", self.array.mask.border_grid_sub_1.binned),
-        )
+        return self.extractor_2d.via_mask_from(mask=self.array.mask)
 
     def figure_2d(self):
 
         self.mat_plot_2d.plot_array(
             array=self.array,
-            visuals_2d=self.visuals_with_include_2d,
+            visuals_2d=self.extractor_2d.via_mask_from(mask=self.array.mask),
             auto_labels=AutoLabels(title="Array2D", filename="array"),
         )
 
@@ -83,41 +78,11 @@ class Grid2DPlotter(AbstractPlotter):
 
         self.grid = grid
 
-    @property
-    def visuals_with_include_2d(self) -> Visuals2D:
-        """
-        Extracts from a `Grid2D` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From a `Grid2D` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the grid's coordinate system.
-        - mask: the mask of the grid.
-        - border: the border of the grid's mask.
-
-        Parameters
-        ----------
-        grid : abstract_grid_2d.AbstractGrid2D
-            The grid whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-        if not isinstance(self.grid, Grid2D):
-            return self.visuals_2d
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d("origin", Grid2DIrregular(grid=[self.grid.origin]))
-        )
-
     def figure_2d(self, color_array: np.ndarray = None):
 
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
-            visuals_2d=self.visuals_with_include_2d,
+            visuals_2d=self.extractor_2d.via_grid_from(grid=self.grid),
             auto_labels=AutoLabels(title="Grid2D", filename="grid"),
             color_array=color_array,
         )
@@ -142,11 +107,7 @@ class YX1DPlotter(AbstractPlotter):
 
     @property
     def visuals_with_include_1d(self) -> Visuals1D:
-
-        return self.visuals_1d + self.visuals_1d.__class__(
-            origin=self.extract_1d("origin", self.x.origin),
-            mask=self.extract_1d("mask", self.x.mask),
-        )
+        return self.extractor_1d.via_array_1d_from(array_1d=self.x)
 
     def figure_1d(self):
 

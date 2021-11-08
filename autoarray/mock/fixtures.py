@@ -315,7 +315,7 @@ def make_imaging_fit_x1_plane_7x7():
         use_mask_in_fit=False,
     )
 
-    return FitImaging(imaging=imaging_7x7, fit=fit)
+    return FitImaging(dataset=imaging_7x7, fit=fit)
 
 
 def make_fit_interferometer_7():
@@ -329,7 +329,7 @@ def make_fit_interferometer_7():
         use_mask_in_fit=False,
     )
 
-    fit_interferometer = FitInterferometer(interferometer=interferometer_7, fit=fit)
+    fit_interferometer = FitInterferometer(dataset=interferometer_7, fit=fit)
 
     return fit_interferometer
 

@@ -76,9 +76,9 @@ class SettingsInterferometer(AbstractSettingsDataset):
 class Interferometer(AbstractDataset):
     def __init__(
         self,
-        visibilities,
-        noise_map,
-        uv_wavelengths,
+        visibilities: Visibilities,
+        noise_map: VisibilitiesNoiseMap,
+        uv_wavelengths: np.ndarray,
         real_space_mask,
         settings=SettingsInterferometer(),
         name=None,

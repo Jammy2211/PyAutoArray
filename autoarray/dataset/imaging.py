@@ -119,8 +119,8 @@ class Imaging(AbstractDataset):
             An array describing the RMS standard deviation error in each pixel in units of electrons per second.
         psf
             An array describing the Point Spread Function kernel of the image.
-        mask:Mask2D
-            The 2D mask that is applied to the image.
+        settings
+            Controls settings of how the dataset is set up (e.g. the types of grids used to perform calculations).
         """
 
         self.unmasked = None
@@ -298,8 +298,19 @@ class Imaging(AbstractDataset):
 
         return Imaging(image=image, noise_map=noise_map, psf=psf, name=name)
 
-    def apply_mask(self, mask):
+    def apply_mask(self, mask: Mask2D) -> "Imaging":
+        """
+        Apply a mask to the imaging dataset, whereby the mask is applied to the image data and noise-map one-by-one.
 
+        The original unmasked imaging data is stored as the `self.unmasked` attribute. This is used to ensure that if
+        the `apply_mask` function is called multiple times, every mask is always applied to the original unmasked
+        imaging dataset.
+
+        Parameters
+        ----------
+        mask
+            The 2D mask that is applied to the image.
+        """
         if self.image.mask.is_all_false:
             unmasked_imaging = self
         else:
@@ -330,8 +341,18 @@ class Imaging(AbstractDataset):
 
         return imaging
 
-    def apply_settings(self, settings):
+    def apply_settings(self, settings: SettingsImaging) -> "Imaging":
+        """
+        Returns a new instance of the imaging with the input `SettingsImaging` applied to them.
 
+        This can be used to update settings like the types of grids associated with the dataset that are used
+        to perform calculations or putting a limit of the dataset's signal-to-noise.
+
+        Parameters
+        ----------
+        settings
+            The settings for the imaging data that control things like the grids used for calculations.
+        """
         return Imaging(
             image=self.image,
             noise_map=self.noise_map,

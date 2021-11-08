@@ -12,6 +12,9 @@ from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 
+from autoarray.plot.mat_wrap.visuals_extractor import VisualsExtractor1D
+from autoarray.plot.mat_wrap.visuals_extractor import VisualsExtractor2D
+
 
 class AbstractPlotter:
     def __init__(
@@ -27,76 +30,14 @@ class AbstractPlotter:
         self.visuals_1d = visuals_1d
         self.include_1d = include_1d
         self.mat_plot_1d = mat_plot_1d
+        self.extractor_1d = VisualsExtractor1D(visuals=visuals_1d, include=include_1d)
+
         self.visuals_2d = visuals_2d
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
+        self.extractor_2d = VisualsExtractor2D(visuals=visuals_2d, include=include_2d)
+
         self.subplot_figsize = None
-
-    def extract_1d(self, name, value, include_name=None):
-        """
-        Extracts an attribute for plotting in a `Visuals1D` object based on the following criteria:
-
-        1) If `visuals_1d` already has a value for the attribute this is returned, over-riding the input `value` of
-          that attribute.
-
-        2) If `visuals_1d` do not contain the attribute, the input `value` is returned provided its corresponding
-          entry in the `Include1D` class is `True`.
-
-        3) If the `Include1D` entry is `False` a None is returned and the attribute is therefore plotted.
-
-        Parameters
-        ----------
-        name : str
-            The name of the attribute which is to be extracted.
-        value :
-            The `value` of the attribute, which is used when criteria 2) above is met.
-
-        Returns
-        -------
-            The collection of attributes that can be plotted by a `Plotter1D` object.
-        """
-
-        if include_name is None:
-            include_name = name
-
-        if getattr(self.visuals_1d, name) is not None:
-            return getattr(self.visuals_1d, name)
-        else:
-            if getattr(self.include_1d, include_name):
-                return value
-
-    def extract_2d(self, name, value, include_name=None):
-        """
-        Extracts an attribute for plotting in a `Visuals2D` object based on the following criteria:
-
-        1) If `visuals_2d` already has a value for the attribute this is returned, over-riding the input `value` of
-          that attribute.
-
-        2) If `visuals_2d` do not contain the attribute, the input `value` is returned provided its corresponding
-          entry in the `Include2D` class is `True`.
-
-        3) If the `Include2D` entry is `False` a None is returned and the attribute is therefore plotted.
-
-        Parameters
-        ----------
-        name : str
-            The name of the attribute which is to be extracted.
-        value :
-            The `value` of the attribute, which is used when criteria 2) above is met.
-
-        Returns
-        -------
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
-        if include_name is None:
-            include_name = name
-
-        if getattr(self.visuals_2d, name) is not None:
-            return getattr(self.visuals_2d, name)
-        else:
-            if getattr(self.include_2d, include_name):
-                return value
 
     def set_title(self, label):
 

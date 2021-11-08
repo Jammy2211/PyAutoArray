@@ -9,7 +9,6 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.fit.fit_dataset import FitInterferometer
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 
 class AbstractFitInterferometerPlotter(AbstractPlotter):
@@ -34,25 +33,6 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
         )
 
         self.fit = fit
-
-    @property
-    def visuals_with_include_2d(self) -> Visuals2D:
-        return self.visuals_2d + self.visuals_2d.__class__()
-
-    @property
-    def visuals_with_include_2d_real_space(self) -> Visuals2D:
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin",
-                Grid2DIrregular(grid=[self.fit.interferometer.real_space_mask.origin]),
-            ),
-            mask=self.extract_2d("mask", self.fit.interferometer.real_space_mask),
-            border=self.extract_2d(
-                "border",
-                self.fit.interferometer.real_space_mask.border_grid_sub_1.binned,
-            ),
-        )
 
     def figures_2d(
         self,
@@ -211,7 +191,9 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_image,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.fit.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
             )
 
@@ -219,7 +201,9 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_noise_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.fit.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map_2d"
                 ),
@@ -229,7 +213,9 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_signal_to_noise_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.fit.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map_2d",
@@ -240,7 +226,9 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_model_image,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.fit.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Model Image", filename="dirty_model_image_2d"
                 ),
@@ -250,7 +238,9 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_residual_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.fit.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Residual Map", filename="dirty_residual_map_2d"
                 ),
@@ -260,7 +250,9 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_normalized_residual_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.fit.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Normalized Residual Map",
                     filename="dirty_normalized_residual_map_2d",
@@ -271,7 +263,9 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_chi_squared_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.extractor_2d.via_mask_from(
+                    mask=self.fit.interferometer.real_space_mask
+                ),
                 auto_labels=AutoLabels(
                     title="Dirty Chi-Squared Map", filename="dirty_chi_squared_map_2d"
                 ),

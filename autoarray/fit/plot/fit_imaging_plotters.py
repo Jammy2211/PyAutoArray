@@ -4,7 +4,6 @@ from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.fit.fit_dataset import FitImaging
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 
 class AbstractFitImagingPlotter(AbstractPlotter):
@@ -16,17 +15,6 @@ class AbstractFitImagingPlotter(AbstractPlotter):
         )
 
         self.fit = fit
-
-    @property
-    def visuals_with_include_2d(self) -> Visuals2D:
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin", Grid2DIrregular(grid=[self.fit.mask.origin])
-            ),
-            mask=self.extract_2d("mask", self.fit.mask),
-            border=self.extract_2d("border", self.fit.mask.border_grid_sub_1.binned),
-        )
 
     def figures_2d(
         self,
@@ -57,7 +45,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_fit_from(fit=self.fit),
                 auto_labels=AutoLabels(title="Image", filename="image_2d"),
             )
 
@@ -65,7 +53,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_fit_from(fit=self.fit),
                 auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
             )
 
@@ -73,7 +61,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_fit_from(fit=self.fit),
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
@@ -83,7 +71,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_fit_from(fit=self.fit),
                 auto_labels=AutoLabels(title="Model Image", filename="model_image"),
             )
 
@@ -91,7 +79,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_fit_from(fit=self.fit),
                 auto_labels=AutoLabels(title="Residual Map", filename="residual_map"),
             )
 
@@ -99,7 +87,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_fit_from(fit=self.fit),
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map", filename="normalized_residual_map"
                 ),
@@ -109,7 +97,7 @@ class AbstractFitImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_fit_from(fit=self.fit),
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", filename="chi_squared_map"
                 ),

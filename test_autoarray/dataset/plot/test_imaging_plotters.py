@@ -25,21 +25,28 @@ def test__visuals_in_constructor_use_imaging_and_include(imaging_7x7):
     )
 
     assert imaging_plotter.visuals_2d.origin == (1.0, 1.0)
-    assert imaging_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+    assert imaging_plotter.extractor_2d.via_mask_from(mask=imaging_7x7.mask).origin == (
+        1.0,
+        1.0,
+    )
 
     assert imaging_plotter.visuals_2d.mask == None
     assert (
-        imaging_plotter.visuals_with_include_2d.mask == imaging_7x7.image.mask
+        imaging_plotter.extractor_2d.via_mask_from(mask=imaging_7x7.mask).mask
+        == imaging_7x7.image.mask
     ).all()
 
     assert imaging_plotter.visuals_2d.border == None
     assert (
-        imaging_plotter.visuals_with_include_2d.border
+        imaging_plotter.extractor_2d.via_mask_from(mask=imaging_7x7.mask).border
         == imaging_7x7.image.mask.border_grid_sub_1.binned
     ).all()
 
     assert imaging_plotter.visuals_2d.vector_field == 2
-    assert imaging_plotter.visuals_with_include_2d.vector_field == 2
+    assert (
+        imaging_plotter.extractor_2d.via_mask_from(mask=imaging_7x7.mask).vector_field
+        == 2
+    )
 
     include = aplt.Include2D(origin=False, mask=False, border=False)
 
@@ -47,10 +54,20 @@ def test__visuals_in_constructor_use_imaging_and_include(imaging_7x7):
         imaging=imaging_7x7, visuals_2d=visuals_2d, include_2d=include
     )
 
-    assert imaging_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
-    assert imaging_plotter.visuals_with_include_2d.mask == None
-    assert imaging_plotter.visuals_with_include_2d.border == None
-    assert imaging_plotter.visuals_with_include_2d.vector_field == 2
+    assert imaging_plotter.extractor_2d.via_mask_from(mask=imaging_7x7.mask).origin == (
+        1.0,
+        1.0,
+    )
+    assert (
+        imaging_plotter.extractor_2d.via_mask_from(mask=imaging_7x7.mask).mask == None
+    )
+    assert (
+        imaging_plotter.extractor_2d.via_mask_from(mask=imaging_7x7.mask).border == None
+    )
+    assert (
+        imaging_plotter.extractor_2d.via_mask_from(mask=imaging_7x7.mask).vector_field
+        == 2
+    )
 
 
 def test__individual_attributes_are_output(

@@ -22,19 +22,6 @@ class AbstractImagingPlotter(AbstractPlotter):
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
-    @property
-    def visuals_with_include_2d(self) -> Visuals2D:
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin", Grid2DIrregular(grid=[self.imaging.image.origin])
-            ),
-            mask=self.extract_2d("mask", self.imaging.image.mask),
-            border=self.extract_2d(
-                "border", self.imaging.image.mask.border_grid_sub_1.binned
-            ),
-        )
-
     def figures_2d(
         self,
         image: bool = False,
@@ -62,7 +49,7 @@ class AbstractImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.image,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_mask_from(mask=self.imaging.mask),
                 auto_labels=AutoLabels(title="Image", filename="image_2d"),
             )
 
@@ -70,7 +57,7 @@ class AbstractImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.noise_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_mask_from(mask=self.imaging.mask),
                 auto_labels=AutoLabels("Noise-Map", filename="noise_map"),
             )
 
@@ -78,7 +65,7 @@ class AbstractImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.psf,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_mask_from(mask=self.imaging.mask),
                 auto_labels=AutoLabels(title="Point Spread Function", filename="psf"),
             )
 
@@ -86,7 +73,7 @@ class AbstractImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.inverse_noise_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_mask_from(mask=self.imaging.mask),
                 auto_labels=AutoLabels(
                     title="Inverse Noise-Map", filename="inverse_noise_map"
                 ),
@@ -96,7 +83,7 @@ class AbstractImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.signal_to_noise_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_mask_from(mask=self.imaging.mask),
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
@@ -106,7 +93,7 @@ class AbstractImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.absolute_signal_to_noise_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_mask_from(mask=self.imaging.mask),
                 auto_labels=AutoLabels(
                     title="Absolute Signal-To-Noise Map",
                     filename="absolute_signal_to_noise_map",
@@ -117,7 +104,7 @@ class AbstractImagingPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.potential_chi_squared_map,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.extractor_2d.via_mask_from(mask=self.imaging.mask),
                 auto_labels=AutoLabels(
                     title="Potential Chi-Squared Map",
                     filename="potential_chi_squared_map",

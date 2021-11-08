@@ -6,7 +6,6 @@ import pickle
 from typing import List, Optional, Tuple, Union
 import json
 
-
 from autoarray.structures.arrays.values import ValuesIrregular
 
 from autoarray import exc
@@ -16,7 +15,7 @@ from autoarray.geometry import geometry_util
 
 
 class Grid2DIrregular(np.ndarray):
-    def __new__(cls, grid: np.ndarray):
+    def __new__(cls, grid: Union[np.ndarray, List]):
         """
         An irregular grid of (y,x) coordinates.
 

@@ -111,7 +111,7 @@ class TestAbstractPlotter:
         abstract_plotter = abstract_plotters.AbstractPlotter(
             visuals_2d=visuals_2d, include_2d=include_2d
         )
-        attr = abstract_plotter.extract_2d(name="origin", value=1)
+        attr = abstract_plotter.extractor_2d.extract(name="origin", value=1)
 
         assert attr == None
 
@@ -119,7 +119,7 @@ class TestAbstractPlotter:
         abstract_plotter = abstract_plotters.AbstractPlotter(
             visuals_2d=visuals_2d, include_2d=include_2d
         )
-        attr = abstract_plotter.extract_2d(name="origin", value=1)
+        attr = abstract_plotter.extractor_2d.extract(name="origin", value=1)
 
         assert attr == 1
 
@@ -129,7 +129,7 @@ class TestAbstractPlotter:
         abstract_plotter = abstract_plotters.AbstractPlotter(
             visuals_2d=visuals_2d, include_2d=include_2d
         )
-        attr = abstract_plotter.extract_2d(name="origin", value=2)
+        attr = abstract_plotter.extractor_2d.extract(name="origin", value=2)
 
         assert attr == 10
 
@@ -137,7 +137,7 @@ class TestAbstractPlotter:
         abstract_plotter = abstract_plotters.AbstractPlotter(
             visuals_2d=visuals_2d, include_2d=include_2d
         )
-        attr = abstract_plotter.extract_2d(name="origin", value=2)
+        attr = abstract_plotter.extractor_2d.extract(name="origin", value=2)
 
         assert attr == 10
 
