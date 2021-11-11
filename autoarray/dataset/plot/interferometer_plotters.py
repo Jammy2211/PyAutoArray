@@ -1,4 +1,4 @@
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include1D
@@ -11,7 +11,7 @@ from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 import numpy as np
 
 
-class InterferometerPlotter(AbstractPlotter):
+class InterferometerPlotter(Plotter):
     def __init__(
         self,
         interferometer: Interferometer,
@@ -154,7 +154,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_image,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
@@ -164,7 +164,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_noise_map,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(
@@ -176,7 +176,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_signal_to_noise_map,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(
@@ -189,7 +189,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_inverse_noise_map,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(

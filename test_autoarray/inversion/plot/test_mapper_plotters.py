@@ -26,17 +26,17 @@ class TestMapperPlotter:
             mapper=rectangular_mapper_7x7_3x3, include_2d=include
         )
 
-        assert mapper_plotter.extractor_2d.via_mapper_for_data_from(
+        assert mapper_plotter.get_2d.via_mapper_for_data_from(
             mapper=rectangular_mapper_7x7_3x3
         ).origin.in_list == [(0.0, 0.0)]
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).mask
             == rectangular_mapper_7x7_3x3.source_grid_slim.mask
         ).all()
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).grid
             == None
@@ -52,25 +52,25 @@ class TestMapperPlotter:
         )
 
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).origin
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).mask
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).grid
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).border
             == None
@@ -86,17 +86,17 @@ class TestMapperPlotter:
             mapper=voronoi_mapper_9_3x3, include_2d=include
         )
 
-        assert mapper_plotter.extractor_2d.via_mapper_for_data_from(
+        assert mapper_plotter.get_2d.via_mapper_for_data_from(
             mapper=voronoi_mapper_9_3x3
         ).origin.in_list == [(0.0, 0.0)]
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=voronoi_mapper_9_3x3
             ).mask
             == voronoi_mapper_9_3x3.source_grid_slim.mask
         ).all()
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=voronoi_mapper_9_3x3
             ).pixelization_grid
             == aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=0.1)
@@ -112,31 +112,31 @@ class TestMapperPlotter:
         )
 
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=voronoi_mapper_9_3x3
             ).origin
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=voronoi_mapper_9_3x3
             ).mask
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=voronoi_mapper_9_3x3
             ).grid
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=voronoi_mapper_9_3x3
             ).pixelization_grid
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_data_from(
+            mapper_plotter.get_2d.via_mapper_for_data_from(
                 mapper=voronoi_mapper_9_3x3
             ).border
             == None
@@ -158,23 +158,23 @@ class TestMapperPlotter:
         )
 
         assert mapper_plotter.visuals_2d.origin == None
-        assert mapper_plotter.extractor_2d.via_mapper_for_source_from(
+        assert mapper_plotter.get_2d.via_mapper_for_source_from(
             mapper=rectangular_mapper_7x7_3x3
         ).origin.in_list == [(0.0, 0.0)]
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).grid
             == rectangular_mapper_7x7_3x3.source_grid_slim
         ).all()
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).pixelization_grid
             == rectangular_mapper_7x7_3x3.source_pixelization_grid
         ).all()
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).border
             == rectangular_mapper_7x7_3x3.source_grid_slim.sub_border_grid
@@ -192,25 +192,25 @@ class TestMapperPlotter:
         )
 
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).origin
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).grid
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).pixelization_grid
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=rectangular_mapper_7x7_3x3
             ).border
             == None
@@ -230,23 +230,23 @@ class TestMapperPlotter:
         )
 
         assert mapper_plotter.visuals_2d.origin == None
-        assert mapper_plotter.extractor_2d.via_mapper_for_source_from(
+        assert mapper_plotter.get_2d.via_mapper_for_source_from(
             mapper=voronoi_mapper_9_3x3
         ).origin.in_list == [(0.0, 0.0)]
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=voronoi_mapper_9_3x3
             ).grid
             == voronoi_mapper_9_3x3.source_grid_slim
         ).all()
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=voronoi_mapper_9_3x3
             ).pixelization_grid
             == voronoi_mapper_9_3x3.source_pixelization_grid
         ).all()
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=voronoi_mapper_9_3x3
             ).border
             == voronoi_mapper_9_3x3.source_grid_slim.sub_border_grid
@@ -261,19 +261,19 @@ class TestMapperPlotter:
         )
 
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=voronoi_mapper_9_3x3
             ).origin
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=voronoi_mapper_9_3x3
             ).grid
             == None
         )
         assert (
-            mapper_plotter.extractor_2d.via_mapper_for_source_from(
+            mapper_plotter.get_2d.via_mapper_for_source_from(
                 mapper=voronoi_mapper_9_3x3
             ).border
             == None

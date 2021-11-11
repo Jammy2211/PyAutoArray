@@ -1,6 +1,6 @@
 from typing import Union
 
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
@@ -10,7 +10,7 @@ from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
 
-class MapperPlotter(AbstractPlotter):
+class MapperPlotter(Plotter):
     def __init__(
         self,
         mapper: Union[MapperRectangular, MapperVoronoi],
@@ -28,7 +28,7 @@ class MapperPlotter(AbstractPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
-            visuals_2d=self.extractor_2d.via_mapper_for_source_from(mapper=self.mapper),
+            visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
             source_pixelilzation_values=solution_vector,
             auto_labels=AutoLabels(title="Mapper", filename="mapper"),
         )
@@ -39,7 +39,7 @@ class MapperPlotter(AbstractPlotter):
 
         self.mat_plot_2d.plot_array(
             array=image,
-            visuals_2d=self.extractor_2d.via_mapper_for_data_from(mapper=self.mapper),
+            visuals_2d=self.get_2d.via_mapper_for_data_from(mapper=self.mapper),
             auto_labels=AutoLabels(title="Image"),
         )
 
@@ -64,7 +64,7 @@ class MapperPlotter(AbstractPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
-            visuals_2d=self.extractor_2d.via_mapper_for_source_from(mapper=self.mapper),
+            visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
             auto_labels=auto_labels,
             source_pixelilzation_values=self.mapper.reconstruction_from(
                 source_pixelization_values

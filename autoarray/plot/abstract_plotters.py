@@ -11,9 +11,8 @@ from autoarray.plot.mat_wrap.include import Include1D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
-
-from autoarray.plot.mat_wrap.visuals_extractor import VisualsExtractor1D
-from autoarray.plot.mat_wrap.visuals_extractor import VisualsExtractor2D
+from autoarray.plot.mat_wrap.get_visuals import GetVisuals1D
+from autoarray.plot.mat_wrap.get_visuals import GetVisuals2D
 
 
 class AbstractPlotter:
@@ -30,12 +29,10 @@ class AbstractPlotter:
         self.visuals_1d = visuals_1d
         self.include_1d = include_1d
         self.mat_plot_1d = mat_plot_1d
-        self.extractor_1d = VisualsExtractor1D(visuals=visuals_1d, include=include_1d)
 
         self.visuals_2d = visuals_2d
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
-        self.extractor_2d = VisualsExtractor2D(visuals=visuals_2d, include=include_2d)
 
         self.subplot_figsize = None
 
@@ -208,3 +205,13 @@ class AbstractPlotter:
         self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_{name}")
 
         self.close_subplot_figure()
+
+
+class Plotter(AbstractPlotter):
+    @property
+    def get_1d(self):
+        return GetVisuals1D(visuals=self.visuals_1d, include=self.include_1d)
+
+    @property
+    def get_2d(self):
+        return GetVisuals2D(visuals=self.visuals_2d, include=self.include_2d)

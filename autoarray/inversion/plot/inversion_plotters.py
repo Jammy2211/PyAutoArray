@@ -2,7 +2,7 @@ import numpy as np
 from typing import Union
 
 from autoconf import conf
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
@@ -12,7 +12,7 @@ from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 
 
-class InversionPlotter(AbstractPlotter):
+class InversionPlotter(Plotter):
     def __init__(
         self,
         inversion: AbstractInversion,
@@ -58,7 +58,7 @@ class InversionPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.inversion.mapped_reconstructed_image,
-                visuals_2d=self.extractor_2d.via_mapper_for_data_from(
+                visuals_2d=self.get_2d.via_mapper_for_data_from(
                     mapper=self.inversion.mapper_list[0]
                 ),
                 auto_labels=AutoLabels(
@@ -101,7 +101,7 @@ class InversionPlotter(AbstractPlotter):
                 array=self.inversion.mapped_reconstructed_image_of_mappers[
                     mapper_index
                 ],
-                visuals_2d=self.extractor_2d.via_mapper_for_data_from(
+                visuals_2d=self.get_2d.via_mapper_for_data_from(
                     mapper=self.inversion.mapper_list[0]
                 ),
                 auto_labels=AutoLabels(

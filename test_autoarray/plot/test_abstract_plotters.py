@@ -103,41 +103,43 @@ class TestAbstractPlotter:
         assert plotter.mat_plot_2d.cmap.config_dict["cmap"] == "jet"
         assert plotter.mat_plot_2d.cmap.config_dict["norm"] == "linear"
 
+
+class TestPlotter:
     def test__attribute_for_visuals(self):
 
         visuals_2d = aplt.Visuals2D()
         include_2d = aplt.Include2D(origin=False)
 
-        abstract_plotter = abstract_plotters.AbstractPlotter(
+        plotter = abstract_plotters.Plotter(
             visuals_2d=visuals_2d, include_2d=include_2d
         )
-        attr = abstract_plotter.extractor_2d.extract(name="origin", value=1)
+        attr = plotter.get_2d.get(name="origin", value=1)
 
         assert attr == None
 
         include_2d = aplt.Include2D(origin=True)
-        abstract_plotter = abstract_plotters.AbstractPlotter(
+        plotter = abstract_plotters.Plotter(
             visuals_2d=visuals_2d, include_2d=include_2d
         )
-        attr = abstract_plotter.extractor_2d.extract(name="origin", value=1)
+        attr = plotter.get_2d.get(name="origin", value=1)
 
         assert attr == 1
 
         visuals_2d = aplt.Visuals2D(origin=10)
 
         include_2d = aplt.Include2D(origin=False)
-        abstract_plotter = abstract_plotters.AbstractPlotter(
+        plotter = abstract_plotters.Plotter(
             visuals_2d=visuals_2d, include_2d=include_2d
         )
-        attr = abstract_plotter.extractor_2d.extract(name="origin", value=2)
+        attr = plotter.get_2d.get(name="origin", value=2)
 
         assert attr == 10
 
         include_2d = aplt.Include2D(origin=True)
-        abstract_plotter = abstract_plotters.AbstractPlotter(
+        plotter = abstract_plotters.Plotter(
             visuals_2d=visuals_2d, include_2d=include_2d
         )
-        attr = abstract_plotter.extractor_2d.extract(name="origin", value=2)
+        attr = plotter.get_2d.get(name="origin", value=2)
 
         assert attr == 10
 

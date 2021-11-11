@@ -70,22 +70,14 @@ class TestArray2DPlotter:
             array=array_2d_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
-        assert array_plotter.extractor_2d.via_mask_from(
-            mask=array_2d_7x7.mask
-        ).origin == (1.0, 1.0)
-        assert (
-            array_plotter.extractor_2d.via_mask_from(mask=array_2d_7x7.mask).mask
-            == None
+        assert array_plotter.get_2d.via_mask_from(mask=array_2d_7x7.mask).origin == (
+            1.0,
+            1.0,
         )
+        assert array_plotter.get_2d.via_mask_from(mask=array_2d_7x7.mask).mask == None
+        assert array_plotter.get_2d.via_mask_from(mask=array_2d_7x7.mask).border == None
         assert (
-            array_plotter.extractor_2d.via_mask_from(mask=array_2d_7x7.mask).border
-            == None
-        )
-        assert (
-            array_plotter.extractor_2d.via_mask_from(
-                mask=array_2d_7x7.mask
-            ).vector_field
-            == 2
+            array_plotter.get_2d.via_mask_from(mask=array_2d_7x7.mask).vector_field == 2
         )
 
     def test__works_with_all_extras_included(
@@ -178,10 +170,7 @@ class TestGrid2DPlotter:
         )
 
         assert grid_plotter.visuals_2d.origin == (1.0, 1.0)
-        assert grid_plotter.extractor_2d.via_grid_from(grid=grid_2d_7x7).origin == (
-            1.0,
-            1.0,
-        )
+        assert grid_plotter.get_2d.via_grid_from(grid=grid_2d_7x7).origin == (1.0, 1.0)
 
         include = aplt.Include2D(origin=False)
 
@@ -189,13 +178,8 @@ class TestGrid2DPlotter:
             grid=grid_2d_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
-        assert grid_plotter.extractor_2d.via_grid_from(grid=grid_2d_7x7).origin == (
-            1.0,
-            1.0,
-        )
-        assert (
-            grid_plotter.extractor_2d.via_grid_from(grid=grid_2d_7x7).vector_field == 2
-        )
+        assert grid_plotter.get_2d.via_grid_from(grid=grid_2d_7x7).origin == (1.0, 1.0)
+        assert grid_plotter.get_2d.via_grid_from(grid=grid_2d_7x7).vector_field == 2
 
     def test__works_with_all_extras_included(
         self,

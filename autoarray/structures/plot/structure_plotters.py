@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Union
 
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include1D
@@ -14,7 +14,7 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
 
-class Array2DPlotter(AbstractPlotter):
+class Array2DPlotter(Plotter):
     def __init__(
         self,
         array: Array2D,
@@ -53,18 +53,18 @@ class Array2DPlotter(AbstractPlotter):
         Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        return self.extractor_2d.via_mask_from(mask=self.array.mask)
+        return self.get_2d.via_mask_from(mask=self.array.mask)
 
     def figure_2d(self):
 
         self.mat_plot_2d.plot_array(
             array=self.array,
-            visuals_2d=self.extractor_2d.via_mask_from(mask=self.array.mask),
+            visuals_2d=self.get_2d.via_mask_from(mask=self.array.mask),
             auto_labels=AutoLabels(title="Array2D", filename="array"),
         )
 
 
-class Grid2DPlotter(AbstractPlotter):
+class Grid2DPlotter(Plotter):
     def __init__(
         self,
         grid: Grid2D,
@@ -82,13 +82,13 @@ class Grid2DPlotter(AbstractPlotter):
 
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
-            visuals_2d=self.extractor_2d.via_grid_from(grid=self.grid),
+            visuals_2d=self.get_2d.via_grid_from(grid=self.grid),
             auto_labels=AutoLabels(title="Grid2D", filename="grid"),
             color_array=color_array,
         )
 
 
-class YX1DPlotter(AbstractPlotter):
+class YX1DPlotter(Plotter):
     def __init__(
         self,
         y: Union[np.ndarray, List, Array1D],
@@ -107,7 +107,7 @@ class YX1DPlotter(AbstractPlotter):
 
     @property
     def visuals_with_include_1d(self) -> Visuals1D:
-        return self.extractor_1d.via_array_1d_from(array_1d=self.x)
+        return self.get_1d.via_array_1d_from(array_1d=self.x)
 
     def figure_1d(self):
 

@@ -1,10 +1,11 @@
-from typing import Union
+from typing import Optional, Union
 
 from autoarray.plot.mat_wrap.include import Include1D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
@@ -17,9 +18,9 @@ class AbstractExtractor:
         self.include = include
         self.visuals = visuals
 
-    def extract(self, name, value, include_name=None):
+    def get(self, name: str, value, include_name: Optional[str] = None):
         """
-        Extracts an attribute for plotting in a `Visuals1D` object based on the following criteria:
+        Get an attribute for plotting in a `Visuals1D` object based on the following criteria:
 
         1) If `visuals_1d` already has a value for the attribute this is returned, over-riding the input `value` of
           that attribute.
@@ -31,7 +32,7 @@ class AbstractExtractor:
 
         Parameters
         ----------
-        name : str
+        name
             The name of the attribute which is to be extracted.
         value :
             The `value` of the attribute, which is used when criteria 2) above is met.
@@ -51,33 +52,33 @@ class AbstractExtractor:
                 return value
 
 
-class VisualsExtractor1D(AbstractExtractor):
+class GetVisuals1D(AbstractExtractor):
     def __init__(self, include: Include1D, visuals: Visuals1D):
         super().__init__(include=include, visuals=visuals)
 
-    def via_array_1d_from(self, array_1d):
+    def via_array_1d_from(self, array_1d: Mask2D) -> Visuals1D:
         return self.visuals + self.visuals.__class__(
-            origin=self.extract("origin", array_1d.origin),
-            mask=self.extract("mask", array_1d.mask),
+            origin=self.get("origin", array_1d.origin),
+            mask=self.get("mask", array_1d.mask),
         )
 
 
-class VisualsExtractor2D(AbstractExtractor):
+class GetVisuals2D(AbstractExtractor):
     def __init__(self, include: Include2D, visuals: Visuals2D):
 
         super().__init__(include=include, visuals=visuals)
 
-    def origin_via_mask_from(self, mask):
-        return self.extract("origin", Grid2DIrregular(grid=[mask.origin]))
+    def origin_via_mask_from(self, mask) -> Grid2DIrregular:
+        return self.get("origin", Grid2DIrregular(grid=[mask.origin]))
 
-    def via_array_1d_from(self, array_1d):
+    def via_array_1d_from(self, array_1d) -> Visuals2D:
 
         return self.visuals + self.visuals.__class__(
-            origin=self.extract("origin", array_1d.origin),
-            mask=self.extract("mask", array_1d.mask),
+            origin=self.get("origin", array_1d.origin),
+            mask=self.get("mask", array_1d.mask),
         )
 
-    def via_mask_from(self, mask):
+    def via_mask_from(self, mask) -> Visuals2D:
         """
         Extracts from an `Array2D` attributes that can be plotted and returns them in a `Visuals` object.
 
@@ -101,14 +102,14 @@ class VisualsExtractor2D(AbstractExtractor):
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
         origin = self.origin_via_mask_from(mask=mask)
-        mask_visuals = self.extract("mask", mask)
-        border = self.extract("border", mask.border_grid_sub_1.binned)
+        mask_visuals = self.get("mask", mask)
+        border = self.get("border", mask.border_grid_sub_1.binned)
 
         return self.visuals + self.visuals.__class__(
             origin=origin, mask=mask_visuals, border=border
         )
 
-    def via_grid_from(self, grid):
+    def via_grid_from(self, grid) -> Visuals2D:
         """
         Extracts from a `Grid2D` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -135,7 +136,7 @@ class VisualsExtractor2D(AbstractExtractor):
 
         return self.visuals + self.visuals.__class__(origin=origin)
 
-    def via_mapper_for_data_from(self, mapper):
+    def via_mapper_for_data_from(self, mapper) -> Visuals2D:
         """
         Extracts from a `Mapper` attributes that can be plotted for figures in its data-plane (e.g. the reconstructed
         data) and return them in a `Visuals` object.
@@ -162,7 +163,7 @@ class VisualsExtractor2D(AbstractExtractor):
 
         visuals_via_mask = self.via_mask_from(mask=mapper.source_grid_slim.mask)
 
-        pixelization_grid = self.extract(
+        pixelization_grid = self.get(
             "pixelization_grid",
             mapper.data_pixelization_grid,
             "mapper_data_pixelization_grid",
@@ -174,7 +175,7 @@ class VisualsExtractor2D(AbstractExtractor):
             + self.visuals.__class__(pixelization_grid=pixelization_grid)
         )
 
-    def via_mapper_for_source_from(self, mapper):
+    def via_mapper_for_source_from(self, mapper) -> Visuals2D:
         """
         Extracts from a `Mapper` attributes that can be plotted for figures in its source-plane (e.g. the reconstruction
         and return them in a `Visuals` object.
@@ -199,15 +200,15 @@ class VisualsExtractor2D(AbstractExtractor):
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
 
-        origin = self.extract(
+        origin = self.get(
             "origin", Grid2DIrregular(grid=[mapper.source_pixelization_grid.origin])
         )
 
-        grid = self.extract("grid", mapper.source_grid_slim, "mapper_source_grid_slim")
+        grid = self.get("grid", mapper.source_grid_slim, "mapper_source_grid_slim")
 
-        border = self.extract("border", mapper.source_grid_slim.sub_border_grid)
+        border = self.get("border", mapper.source_grid_slim.sub_border_grid)
 
-        pixelization_grid = self.extract(
+        pixelization_grid = self.get(
             "pixelization_grid",
             mapper.source_pixelization_grid,
             "mapper_source_pixelization_grid",
@@ -217,6 +218,6 @@ class VisualsExtractor2D(AbstractExtractor):
             origin=origin, grid=grid, border=border, pixelization_grid=pixelization_grid
         )
 
-    def via_fit_from(self, fit):
+    def via_fit_from(self, fit) -> Visuals2D:
 
         return self.via_mask_from(mask=fit.mask)

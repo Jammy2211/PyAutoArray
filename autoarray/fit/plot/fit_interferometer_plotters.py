@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include1D
@@ -11,7 +11,7 @@ from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.fit.fit_dataset import FitInterferometer
 
 
-class AbstractFitInterferometerPlotter(AbstractPlotter):
+class AbstractFitInterferometerPlotter(Plotter):
     def __init__(
         self,
         fit: FitInterferometer,
@@ -191,7 +191,7 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_image,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.fit.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
@@ -201,7 +201,7 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_noise_map,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.fit.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(
@@ -213,7 +213,7 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_signal_to_noise_map,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.fit.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(
@@ -226,7 +226,7 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_model_image,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.fit.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(
@@ -238,7 +238,7 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_residual_map,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.fit.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(
@@ -250,7 +250,7 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_normalized_residual_map,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.fit.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(
@@ -263,7 +263,7 @@ class AbstractFitInterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_chi_squared_map,
-                visuals_2d=self.extractor_2d.via_mask_from(
+                visuals_2d=self.get_2d.via_mask_from(
                     mask=self.fit.interferometer.real_space_mask
                 ),
                 auto_labels=AutoLabels(
