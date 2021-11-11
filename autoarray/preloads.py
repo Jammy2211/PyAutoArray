@@ -21,7 +21,6 @@ class Preloads:
         sparse_image_plane_grid_list_of_planes=None,
         relocated_grid=None,
         mapper_list=None,
-        mapping_matrix=None,
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
@@ -160,6 +159,13 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
+        from autoarray.inversion.inversion.linear_operator import (
+            InversionLinearOperator,
+        )
+
+        if isinstance(fit_0.inversion, InversionLinearOperator):
+            return
+
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
 
@@ -196,6 +202,13 @@ class Preloads:
         self.operated_mapping_matrix = None
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
+
+        from autoarray.inversion.inversion.linear_operator import (
+            InversionLinearOperator,
+        )
+
+        if isinstance(fit_0.inversion, InversionLinearOperator):
+            return
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
