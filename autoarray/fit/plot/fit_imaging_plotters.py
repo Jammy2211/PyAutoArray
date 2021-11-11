@@ -6,15 +6,24 @@ from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.fit.fit_dataset import FitImaging
 
 
-class AbstractFitImagingPlotter(Plotter):
+class FitImagingPlotter(Plotter):
     def __init__(
-        self, fit, mat_plot_2d: MatPlot2D, visuals_2d: Visuals2D, include_2d: Include2D
+        self,
+        fit: FitImaging,
+        mat_plot_2d: MatPlot2D = MatPlot2D(),
+        visuals_2d: Visuals2D = Visuals2D(),
+        include_2d: Include2D = Include2D(),
     ):
+
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
         self.fit = fit
+
+    @property
+    def get_visuals_2d(self) -> Visuals2D:
+        return self.get_2d.via_fit_from(fit=self.fit)
 
     def figures_2d(
         self,
@@ -45,7 +54,7 @@ class AbstractFitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
-                visuals_2d=self.get_2d.via_fit_from(fit=self.fit),
+                visuals_2d=self.get_visuals_2d,
                 auto_labels=AutoLabels(title="Image", filename="image_2d"),
             )
 
@@ -53,7 +62,7 @@ class AbstractFitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
-                visuals_2d=self.get_2d.via_fit_from(fit=self.fit),
+                visuals_2d=self.get_visuals_2d,
                 auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
             )
 
@@ -61,7 +70,7 @@ class AbstractFitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
-                visuals_2d=self.get_2d.via_fit_from(fit=self.fit),
+                visuals_2d=self.get_visuals_2d,
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
@@ -71,7 +80,7 @@ class AbstractFitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
-                visuals_2d=self.get_2d.via_fit_from(fit=self.fit),
+                visuals_2d=self.get_visuals_2d,
                 auto_labels=AutoLabels(title="Model Image", filename="model_image"),
             )
 
@@ -79,7 +88,7 @@ class AbstractFitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
-                visuals_2d=self.get_2d.via_fit_from(fit=self.fit),
+                visuals_2d=self.get_visuals_2d,
                 auto_labels=AutoLabels(title="Residual Map", filename="residual_map"),
             )
 
@@ -87,7 +96,7 @@ class AbstractFitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
-                visuals_2d=self.get_2d.via_fit_from(fit=self.fit),
+                visuals_2d=self.get_visuals_2d,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map", filename="normalized_residual_map"
                 ),
@@ -97,7 +106,7 @@ class AbstractFitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
-                visuals_2d=self.get_2d.via_fit_from(fit=self.fit),
+                visuals_2d=self.get_visuals_2d,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", filename="chi_squared_map"
                 ),
@@ -134,21 +143,4 @@ class AbstractFitImagingPlotter(Plotter):
             residual_map=True,
             normalized_residual_map=True,
             chi_squared_map=True,
-        )
-
-
-class FitImagingPlotter(AbstractFitImagingPlotter):
-    def __init__(
-        self,
-        fit: FitImaging,
-        mat_plot_2d: MatPlot2D = MatPlot2D(),
-        visuals_2d: Visuals2D = Visuals2D(),
-        include_2d: Include2D = Include2D(),
-    ):
-
-        super().__init__(
-            fit=fit,
-            mat_plot_2d=mat_plot_2d,
-            include_2d=include_2d,
-            visuals_2d=visuals_2d,
         )

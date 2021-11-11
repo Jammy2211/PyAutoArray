@@ -26,6 +26,12 @@ class InversionPlotter(Plotter):
 
         self.inversion = inversion
 
+    @property
+    def get_visuals_2d_for_data(self):
+        return self.get_2d.via_mapper_for_data_from(
+            mapper=self.inversion.mapper_list[0]
+        )
+
     def as_mapper(self, solution_vector) -> Array2D:
         return self.inversion.mapper_list[0].reconstruction_from(solution_vector)
 
@@ -58,9 +64,7 @@ class InversionPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.inversion.mapped_reconstructed_image,
-                visuals_2d=self.get_2d.via_mapper_for_data_from(
-                    mapper=self.inversion.mapper_list[0]
-                ),
+                visuals_2d=self.get_visuals_2d_for_data,
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
@@ -101,9 +105,7 @@ class InversionPlotter(Plotter):
                 array=self.inversion.mapped_reconstructed_image_of_mappers[
                     mapper_index
                 ],
-                visuals_2d=self.get_2d.via_mapper_for_data_from(
-                    mapper=self.inversion.mapper_list[0]
-                ),
+                visuals_2d=self.get_visuals_2d_for_data,
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),

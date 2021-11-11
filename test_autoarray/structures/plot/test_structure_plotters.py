@@ -27,8 +27,8 @@ class TestYX1DPlotter:
         )
 
         yx_1d_plotter = aplt.YX1DPlotter(
-            y=np.array([1.0, 2.0, 3.0]),
-            x=np.array([0.5, 1.0, 1.5]),
+            y=aa.Array1D.manual_native([1.0, 2.0, 3.0], pixel_scales=1.0),
+            x=aa.Array1D.manual_native([0.5, 1.0, 1.5], pixel_scales=0.5),
             mat_plot_1d=mat_plot_1d,
             visuals_1d=visuals_1d,
         )
@@ -50,19 +50,19 @@ class TestArray2DPlotter:
         )
 
         assert array_plotter.visuals_2d.origin == (1.0, 1.0)
-        assert array_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+        assert array_plotter.get_visuals_2d.origin == (1.0, 1.0)
 
         assert array_plotter.visuals_2d.mask == None
-        assert (array_plotter.visuals_with_include_2d.mask == array_2d_7x7.mask).all()
+        assert (array_plotter.get_visuals_2d.mask == array_2d_7x7.mask).all()
 
         assert array_plotter.visuals_2d.border == None
         assert (
-            array_plotter.visuals_with_include_2d.border
+            array_plotter.get_visuals_2d.border
             == array_2d_7x7.mask.border_grid_sub_1.binned
         ).all()
 
         assert array_plotter.visuals_2d.vector_field == 2
-        assert array_plotter.visuals_with_include_2d.vector_field == 2
+        assert array_plotter.get_visuals_2d.vector_field == 2
 
         include = aplt.Include2D(origin=False, mask=False, border=False)
 

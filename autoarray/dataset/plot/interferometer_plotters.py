@@ -8,7 +8,6 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.dataset.interferometer import Interferometer
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-import numpy as np
 
 
 class InterferometerPlotter(Plotter):
@@ -33,6 +32,10 @@ class InterferometerPlotter(Plotter):
             include_2d=include_2d,
             visuals_2d=visuals_2d,
         )
+
+    @property
+    def get_visuals_2d_real_space(self):
+        return self.get_2d.via_mask_from(mask=self.interferometer.real_space_mask)
 
     def figures_2d(
         self,
@@ -154,9 +157,7 @@ class InterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_image,
-                visuals_2d=self.get_2d.via_mask_from(
-                    mask=self.interferometer.real_space_mask
-                ),
+                visuals_2d=self.get_visuals_2d_real_space,
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
             )
 
@@ -164,9 +165,7 @@ class InterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_noise_map,
-                visuals_2d=self.get_2d.via_mask_from(
-                    mask=self.interferometer.real_space_mask
-                ),
+                visuals_2d=self.get_visuals_2d_real_space,
                 auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map_2d"
                 ),
@@ -176,9 +175,7 @@ class InterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_signal_to_noise_map,
-                visuals_2d=self.get_2d.via_mask_from(
-                    mask=self.interferometer.real_space_mask
-                ),
+                visuals_2d=self.get_visuals_2d_real_space,
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map_2d",
@@ -189,9 +186,7 @@ class InterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_inverse_noise_map,
-                visuals_2d=self.get_2d.via_mask_from(
-                    mask=self.interferometer.real_space_mask
-                ),
+                visuals_2d=self.get_visuals_2d_real_space,
                 auto_labels=AutoLabels(
                     title="Dirty Inverse Noise Map",
                     filename="dirty_inverse_noise_map_2d",

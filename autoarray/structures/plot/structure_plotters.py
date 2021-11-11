@@ -30,36 +30,14 @@ class Array2DPlotter(Plotter):
         self.array = array
 
     @property
-    def visuals_with_include_2d(self) -> Visuals2D:
-        """
-        Extracts from an `Array2D` attributes that can be plotted and returns them in a `Visuals` object.
-
-        Only attributes already in `self.visuals_2d` or with `True` entries in the `Include` object are extracted
-        for plotting.
-
-        From an `Array2D` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-
-        Parameters
-        ----------
-        array : Array2D
-            The array whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
+    def get_visuals_2d(self) -> Visuals2D:
         return self.get_2d.via_mask_from(mask=self.array.mask)
 
     def figure_2d(self):
 
         self.mat_plot_2d.plot_array(
             array=self.array,
-            visuals_2d=self.get_2d.via_mask_from(mask=self.array.mask),
+            visuals_2d=self.get_visuals_2d,
             auto_labels=AutoLabels(title="Array2D", filename="array"),
         )
 
@@ -78,11 +56,15 @@ class Grid2DPlotter(Plotter):
 
         self.grid = grid
 
+    @property
+    def get_visuals_2d(self) -> Visuals2D:
+        return self.get_2d.via_grid_from(grid=self.grid)
+
     def figure_2d(self, color_array: np.ndarray = None):
 
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
-            visuals_2d=self.get_2d.via_grid_from(grid=self.grid),
+            visuals_2d=self.get_visuals_2d,
             auto_labels=AutoLabels(title="Grid2D", filename="grid"),
             color_array=color_array,
         )
@@ -106,11 +88,11 @@ class YX1DPlotter(Plotter):
         self.x = x
 
     @property
-    def visuals_with_include_1d(self) -> Visuals1D:
+    def get_visuals_1d(self) -> Visuals1D:
         return self.get_1d.via_array_1d_from(array_1d=self.x)
 
     def figure_1d(self):
 
         self.mat_plot_1d.plot_yx(
-            y=self.y, x=self.x, visuals_1d=self.visuals_1d, auto_labels=AutoLabels()
+            y=self.y, x=self.x, visuals_1d=self.get_visuals_1d, auto_labels=AutoLabels()
         )

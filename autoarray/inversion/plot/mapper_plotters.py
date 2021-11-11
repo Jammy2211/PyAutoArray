@@ -24,6 +24,14 @@ class MapperPlotter(Plotter):
 
         self.mapper = mapper
 
+    @property
+    def get_visuals_2d_for_data(self):
+        return self.get_2d.via_mapper_for_data_from(mapper=self.mapper)
+
+    @property
+    def get_visuals_2d_for_source(self):
+        return self.get_2d.via_mapper_for_source_from(mapper=self.mapper)
+
     def figure_2d(self, solution_vector: bool = None):
 
         self.mat_plot_2d.plot_mapper(
@@ -39,7 +47,7 @@ class MapperPlotter(Plotter):
 
         self.mat_plot_2d.plot_array(
             array=image,
-            visuals_2d=self.get_2d.via_mapper_for_data_from(mapper=self.mapper),
+            visuals_2d=self.get_visuals_2d_for_data,
             auto_labels=AutoLabels(title="Image"),
         )
 
@@ -64,7 +72,7 @@ class MapperPlotter(Plotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
-            visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
+            visuals_2d=self.get_visuals_2d_for_source,
             auto_labels=auto_labels,
             source_pixelilzation_values=self.mapper.reconstruction_from(
                 source_pixelization_values
