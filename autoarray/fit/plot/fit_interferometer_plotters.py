@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Callable
 
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals1D
@@ -11,13 +12,14 @@ from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.fit.fit_dataset import FitInterferometer
 
 
-class FitInterferometerPlotter(Plotter):
+class FitInterferometerPlotterMeta(Plotter):
     def __init__(
         self,
-        fit: FitInterferometer,
-        mat_plot_1d: MatPlot1D = MatPlot1D(),
-        visuals_1d: Visuals1D = Visuals1D(),
-        include_1d: Include1D = Include1D(),
+        fit,
+        get_visuals_2d_real_space: Callable,
+        mat_plot_1d: MatPlot1D,
+        visuals_1d: Visuals1D,
+        include_1d: Include1D,
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
@@ -33,10 +35,7 @@ class FitInterferometerPlotter(Plotter):
         )
 
         self.fit = fit
-
-    @property
-    def get_visuals_2d_real_space(self) -> Visuals2D:
-        return self.get_2d.via_mask_from(mask=self.fit.interferometer.real_space_mask)
+        self.get_visuals_2d_real_space = get_visuals_2d_real_space
 
     def figures_2d(
         self,
@@ -98,6 +97,7 @@ class FitInterferometerPlotter(Plotter):
                 ),
                 color_array=np.real(self.fit.signal_to_noise_map),
             )
+
         if model_visibilities:
             self.mat_plot_2d.plot_grid(
                 grid=self.fit.visibilities.in_grid,
@@ -195,7 +195,7 @@ class FitInterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_image,
-                visuals_2d=self.get_visuals_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
             )
 
@@ -203,7 +203,7 @@ class FitInterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_noise_map,
-                visuals_2d=self.get_visuals_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map_2d"
                 ),
@@ -213,7 +213,7 @@ class FitInterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map_2d",
@@ -224,7 +224,7 @@ class FitInterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_model_image,
-                visuals_2d=self.get_visuals_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Model Image", filename="dirty_model_image_2d"
                 ),
@@ -234,7 +234,7 @@ class FitInterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_residual_map,
-                visuals_2d=self.get_visuals_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Residual Map", filename="dirty_residual_map_2d"
                 ),
@@ -244,7 +244,7 @@ class FitInterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_normalized_residual_map,
-                visuals_2d=self.get_visuals_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Normalized Residual Map",
                     filename="dirty_normalized_residual_map_2d",
@@ -255,7 +255,7 @@ class FitInterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.dirty_chi_squared_map,
-                visuals_2d=self.get_visuals_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Chi-Squared Map", filename="dirty_chi_squared_map_2d"
                 ),
@@ -326,3 +326,50 @@ class FitInterferometerPlotter(Plotter):
             dirty_chi_squared_map=True,
             auto_filename="subplot_fit_dirty_images",
         )
+
+
+class FitInterferometerPlotter(Plotter):
+    def __init__(
+        self,
+        fit: FitInterferometer,
+        mat_plot_1d: MatPlot1D = MatPlot1D(),
+        visuals_1d: Visuals1D = Visuals1D(),
+        include_1d: Include1D = Include1D(),
+        mat_plot_2d: MatPlot2D = MatPlot2D(),
+        visuals_2d: Visuals2D = Visuals2D(),
+        include_2d: Include2D = Include2D(),
+    ):
+
+        super().__init__(
+            mat_plot_1d=mat_plot_1d,
+            include_1d=include_1d,
+            visuals_1d=visuals_1d,
+            mat_plot_2d=mat_plot_2d,
+            include_2d=include_2d,
+            visuals_2d=visuals_2d,
+        )
+
+        self.fit = fit
+
+        self._fit_interferometer_meta_plotter = FitInterferometerPlotterMeta(
+            fit=self.fit,
+            get_visuals_2d_real_space=self.get_visuals_2d_real_space,
+            mat_plot_1d=self.mat_plot_1d,
+            include_1d=self.include_1d,
+            visuals_1d=self.visuals_1d,
+            mat_plot_2d=self.mat_plot_2d,
+            include_2d=self.include_2d,
+            visuals_2d=self.visuals_2d,
+        )
+
+        self.figures_2d = self._fit_interferometer_meta_plotter.figures_2d
+        self.subplot = self._fit_interferometer_meta_plotter.subplot
+        self.subplot_fit_interferometer = (
+            self._fit_interferometer_meta_plotter.subplot_fit_interferometer
+        )
+        self.subplot_fit_dirty_images = (
+            self._fit_interferometer_meta_plotter.subplot_fit_dirty_images
+        )
+
+    def get_visuals_2d_real_space(self) -> Visuals2D:
+        return self.get_2d.via_mask_from(mask=self.fit.interferometer.real_space_mask)

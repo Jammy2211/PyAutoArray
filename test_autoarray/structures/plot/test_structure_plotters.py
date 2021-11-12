@@ -50,19 +50,19 @@ class TestArray2DPlotter:
         )
 
         assert array_plotter.visuals_2d.origin == (1.0, 1.0)
-        assert array_plotter.get_visuals_2d.origin == (1.0, 1.0)
+        assert array_plotter.get_visuals_2d().origin == (1.0, 1.0)
 
         assert array_plotter.visuals_2d.mask == None
-        assert (array_plotter.get_visuals_2d.mask == array_2d_7x7.mask).all()
+        assert (array_plotter.get_visuals_2d().mask == array_2d_7x7.mask).all()
 
         assert array_plotter.visuals_2d.border == None
         assert (
-            array_plotter.get_visuals_2d.border
+            array_plotter.get_visuals_2d().border
             == array_2d_7x7.mask.border_grid_sub_1.binned
         ).all()
 
         assert array_plotter.visuals_2d.vector_field == 2
-        assert array_plotter.get_visuals_2d.vector_field == 2
+        assert array_plotter.get_visuals_2d().vector_field == 2
 
         include = aplt.Include2D(origin=False, mask=False, border=False)
 

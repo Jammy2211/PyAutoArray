@@ -1,3 +1,5 @@
+from typing import Callable
+
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
@@ -6,10 +8,11 @@ from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.fit.fit_dataset import FitImaging
 
 
-class FitImagingPlotter(Plotter):
+class FitImagingPlotterMeta(Plotter):
     def __init__(
         self,
-        fit: FitImaging,
+        fit,
+        get_visuals_2d: Callable,
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
@@ -20,10 +23,7 @@ class FitImagingPlotter(Plotter):
         )
 
         self.fit = fit
-
-    @property
-    def get_visuals_2d(self) -> Visuals2D:
-        return self.get_2d.via_fit_from(fit=self.fit)
+        self.get_visuals_2d = get_visuals_2d
 
     def figures_2d(
         self,
@@ -54,7 +54,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(title="Image", filename="image_2d"),
             )
 
@@ -62,7 +62,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
             )
 
@@ -70,7 +70,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
@@ -80,7 +80,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(title="Model Image", filename="model_image"),
             )
 
@@ -88,7 +88,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(title="Residual Map", filename="residual_map"),
             )
 
@@ -96,7 +96,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map", filename="normalized_residual_map"
                 ),
@@ -106,7 +106,7 @@ class FitImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map", filename="chi_squared_map"
                 ),
@@ -144,3 +144,33 @@ class FitImagingPlotter(Plotter):
             normalized_residual_map=True,
             chi_squared_map=True,
         )
+
+
+class FitImagingPlotter(Plotter):
+    def __init__(
+        self,
+        fit: FitImaging,
+        mat_plot_2d: MatPlot2D = MatPlot2D(),
+        visuals_2d: Visuals2D = Visuals2D(),
+        include_2d: Include2D = Include2D(),
+    ):
+
+        super().__init__(
+            mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
+        )
+
+        self.fit = fit
+        self._fit_imaging_meta_plotter = FitImagingPlotterMeta(
+            fit=self.fit,
+            get_visuals_2d=self.get_visuals_2d,
+            mat_plot_2d=self.mat_plot_2d,
+            include_2d=self.include_2d,
+            visuals_2d=self.visuals_2d,
+        )
+
+        self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
+        self.subplot = self._fit_imaging_meta_plotter.subplot
+        self.subplot_fit_imaging = self._fit_imaging_meta_plotter.subplot_fit_imaging
+
+    def get_visuals_2d(self) -> Visuals2D:
+        return self.get_2d.via_fit_from(fit=self.fit)

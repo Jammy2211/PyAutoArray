@@ -29,7 +29,6 @@ class Array2DPlotter(Plotter):
 
         self.array = array
 
-    @property
     def get_visuals_2d(self) -> Visuals2D:
         return self.get_2d.via_mask_from(mask=self.array.mask)
 
@@ -37,7 +36,7 @@ class Array2DPlotter(Plotter):
 
         self.mat_plot_2d.plot_array(
             array=self.array,
-            visuals_2d=self.get_visuals_2d,
+            visuals_2d=self.get_visuals_2d(),
             auto_labels=AutoLabels(title="Array2D", filename="array"),
         )
 
@@ -56,7 +55,6 @@ class Grid2DPlotter(Plotter):
 
         self.grid = grid
 
-    @property
     def get_visuals_2d(self) -> Visuals2D:
         return self.get_2d.via_grid_from(grid=self.grid)
 
@@ -64,7 +62,7 @@ class Grid2DPlotter(Plotter):
 
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
-            visuals_2d=self.get_visuals_2d,
+            visuals_2d=self.get_visuals_2d(),
             auto_labels=AutoLabels(title="Grid2D", filename="grid"),
             color_array=color_array,
         )
@@ -87,12 +85,14 @@ class YX1DPlotter(Plotter):
         self.y = y
         self.x = x
 
-    @property
     def get_visuals_1d(self) -> Visuals1D:
         return self.get_1d.via_array_1d_from(array_1d=self.x)
 
     def figure_1d(self):
 
         self.mat_plot_1d.plot_yx(
-            y=self.y, x=self.x, visuals_1d=self.get_visuals_1d, auto_labels=AutoLabels()
+            y=self.y,
+            x=self.x,
+            visuals_1d=self.get_visuals_1d(),
+            auto_labels=AutoLabels(),
         )

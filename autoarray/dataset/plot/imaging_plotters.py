@@ -22,7 +22,6 @@ class ImagingPlotter(Plotter):
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
-    @property
     def get_visuals_2d(self):
         return self.get_2d.via_mask_from(mask=self.imaging.mask)
 
@@ -53,7 +52,7 @@ class ImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.image,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(title="Image", filename="image_2d"),
             )
 
@@ -61,7 +60,7 @@ class ImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.noise_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels("Noise-Map", filename="noise_map"),
             )
 
@@ -69,7 +68,7 @@ class ImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.psf,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(title="Point Spread Function", filename="psf"),
             )
 
@@ -77,7 +76,7 @@ class ImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.inverse_noise_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title="Inverse Noise-Map", filename="inverse_noise_map"
                 ),
@@ -87,7 +86,7 @@ class ImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
@@ -97,7 +96,7 @@ class ImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.absolute_signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title="Absolute Signal-To-Noise Map",
                     filename="absolute_signal_to_noise_map",
@@ -108,7 +107,7 @@ class ImagingPlotter(Plotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.imaging.potential_chi_squared_map,
-                visuals_2d=self.get_visuals_2d,
+                visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title="Potential Chi-Squared Map",
                     filename="potential_chi_squared_map",
