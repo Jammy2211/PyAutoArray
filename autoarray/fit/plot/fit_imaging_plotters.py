@@ -160,6 +160,7 @@ class FitImagingPlotter(Plotter):
         )
 
         self.fit = fit
+
         self._fit_imaging_meta_plotter = FitImagingPlotterMeta(
             fit=self.fit,
             get_visuals_2d=self.get_visuals_2d,
