@@ -23,7 +23,7 @@ class ImagingPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Array2D` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
+        the `Imaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
         object or the `config/visualize/include.ini` file.
 
         Parameters
@@ -31,11 +31,11 @@ class ImagingPlotter(Plotter):
         imaging
             The imaging dataset the plotter plots.
         mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make the plot.
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
-            Contains visuals that can be overlaid on the plot.
+            Contains 2D visuals that can be overlaid on 2D plots.
         include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
+            Specifies which attributes of the `Imaging` are extracted and plotted as visuals for 2D plots.
         """
         self.imaging = imaging
 

@@ -39,11 +39,11 @@ class Array2DPlotter(Plotter):
         array
             The 2D array the plotter plot.
         mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make the plot.
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
-            Contains visuals that can be overlaid on the plot.
+            Contains 2D visuals that can be overlaid on 2D plots.
         include_2d
-            Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
+            Specifies which attributes of the `Array2D` are extracted and plotted as visuals for 2D plots.
         """
         super().__init__(
             visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
@@ -90,11 +90,11 @@ class Grid2DPlotter(Plotter):
         grid
             The 2D grid the plotter plot.
         mat_plot_2d
-            Contains objects which wrap the matplotlib function calls that make the plot.
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
         visuals_2d
-            Contains visuals that can be overlaid on the plot.
+            Contains 2D visuals that can be overlaid on 2D plots.
         include_2d
-            Specifies which attributes of the `Grid2D` are extracted and plotted as visuals.
+            Specifies which attributes of the `Grid2D` are extracted and plotted as visuals for 2D plots.
         """
         super().__init__(
             visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
@@ -150,11 +150,11 @@ class YX1DPlotter(Plotter):
         x
             The 1D x values the plotter plot.
         mat_plot_1d
-            Contains objects which wrap the matplotlib function calls that make the plot.
+            Contains objects which wrap the matplotlib function calls that make 1D plots.
         visuals_1d
-            Contains visuals that can be overlaid on the plot.
+            Contains 1D visuals that can be overlaid on 1D plots.
         include_1d
-            Specifies which attributes of the `Array1D` are extracted and plotted as visuals.
+            Specifies which attributes of the `Array1D` are extracted and plotted as visuals for 1D plots.
         """
         super().__init__(
             visuals_1d=visuals_1d, include_1d=include_1d, mat_plot_1d=mat_plot_1d
