@@ -157,7 +157,29 @@ class ImagingPlotter(Plotter):
         potential_chi_squared_map: bool = False,
         auto_filename: str = "subplot_imaging",
     ):
+        """
+        Plots the individual attributes of the plotter's `Imaging` object in 2D on a subplot.
 
+        The API is such that every plottable attribute of the `Imaging` object is an input parameter of type bool of 
+        the function, which if switched to `True` means that it is included on the subplot.
+
+        Parameters
+        ----------
+        image
+            Whether or not to include a 2D plot (via `imshow`) of the image data.
+        noise_map
+            Whether or not to include a 2D plot (via `imshow`) noise map.
+        psf
+            Whether or not to include a 2D plot (via `imshow`) psf.          
+        inverse_noise_map
+            Whether or not to include a 2D plot (via `imshow`) inverse noise map.
+        signal_to_noise_map
+            Whether or not to include a 2D plot (via `imshow`) signal-to-noise map.
+        absolute_signal_to_noise_map
+            Whether or not to include a 2D plot (via `imshow`) absolute signal to noise map.  
+        potential_chi_squared_map
+            Whether or not to include a 2D plot (via `imshow`) potential chi squared map.
+        """
         self._subplot_custom_plot(
             image=image,
             noise_map=noise_map,
@@ -170,6 +192,9 @@ class ImagingPlotter(Plotter):
         )
 
     def subplot_imaging(self):
+        """
+        Standard subplot of the attributes of the plotter's `Imaging` object.
+        """
         self.subplot(
             image=True,
             noise_map=True,

@@ -1,3 +1,4 @@
+import numpy as np
 from typing import Union
 
 from autoarray.plot.abstract_plotters import Plotter
@@ -70,7 +71,18 @@ class MapperPlotter(Plotter):
         )
 
     def subplot_image_and_mapper(self, image: Array2D):
+        """
+        Make a subplot of an input image and the `Mapper`'s source-plane reconstruction.
 
+        This function can include colored points that mark the mappings between the image pixels and their
+        corresponding locations in the `Mapper` source-plane and reconstruction. This therefore visually illustrates
+        the mapping process.
+
+        Parameters
+        ----------
+        image
+            The image which is plotted on the subplot.
+        """
         self.open_subplot_figure(number_subplots=2)
 
         self.mat_plot_2d.plot_array(
@@ -96,8 +108,19 @@ class MapperPlotter(Plotter):
         )
         self.close_subplot_figure()
 
-    def plot_source_from(self, source_pixelization_values, auto_labels):
+    def plot_source_from(
+        self, source_pixelization_values: np.ndarray, auto_labels: AutoLabels
+    ):
+        """
+        Plot the source of the `Mapper` where the coloring is specified by an input set of values.
 
+        Parameters
+        ----------
+        source_pixelization_values
+            The values of the mapper's source pixels used for coloring the figure.
+        auto_labels
+            The labels given to the figure.
+        """
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
             visuals_2d=self.get_visuals_2d_for_source(),

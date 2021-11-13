@@ -57,19 +57,28 @@ class FitImagingPlotterMeta(Plotter):
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
     ):
-        """Plot the model data of an analysis, using the *Fitter* class object.
+        """
+        Plots the individual attributes of the plotter's `FitImaging` object in 2D.
 
-        The visualization and output type can be fully customized.
+        The API is such that every plottable attribute of the `FitImaging` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
 
         Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the data is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data \
-            in the python interpreter window.
+        ----------
+        image
+            Whether or not to make a 2D plot (via `imshow`) of the image data.
+        noise_map
+            Whether or not to make a 2D plot (via `imshow`) noise map.
+        psf
+            Whether or not to make a 2D plot (via `imshow`) psf.
+        signal_to_noise_map
+            Whether or not to make a 2D plot (via `imshow`) signal-to-noise map.
+        residual_map
+            Whether or not to make a 2D plot (via `imshow`) residual map.
+        normalized_residual_map
+            Whether or not to make a 2D plot (via `imshow`) normalized residual map.
+        chi_squared_map
+            Whether or not to make a 2D plot (via `imshow`) chi-squared map.
         """
 
         if image:
@@ -145,7 +154,31 @@ class FitImagingPlotterMeta(Plotter):
         chi_squared_map: bool = False,
         auto_filename: str = "subplot_fit_imaging",
     ):
+        """
+        Plots the individual attributes of the plotter's `FitImaging` object in 2D on a subplot.
 
+        The API is such that every plottable attribute of the `FitImaging` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is included on the subplot.
+
+        Parameters
+        ----------
+        image
+            Whether or not to make a 2D plot (via `imshow`) of the image data.
+        noise_map
+            Whether or not to make a 2D plot (via `imshow`) noise map.
+        psf
+            Whether or not to make a 2D plot (via `imshow`) psf.
+        signal_to_noise_map
+            Whether or not to make a 2D plot (via `imshow`) signal-to-noise map.
+        residual_map
+            Whether or not to make a 2D plot (via `imshow`) residual map.
+        normalized_residual_map
+            Whether or not to make a 2D plot (via `imshow`) normalized residual map.
+        chi_squared_map
+            Whether or not to make a 2D plot (via `imshow`) chi-squared map.
+        auto_filename
+            The default filename of the output subplot if written to hard-disk.
+        """
         self._subplot_custom_plot(
             image=image,
             noise_map=noise_map,
@@ -158,6 +191,9 @@ class FitImagingPlotterMeta(Plotter):
         )
 
     def subplot_fit_imaging(self):
+        """
+        Standard subplot of the attributes of the plotter's `FitImaging` object.
+        """
         return self.subplot(
             image=True,
             signal_to_noise_map=True,

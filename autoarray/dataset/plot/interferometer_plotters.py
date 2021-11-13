@@ -245,7 +245,35 @@ class InterferometerPlotter(Plotter):
         dirty_inverse_noise_map: bool = False,
         auto_filename: str = "subplot_interferometer",
     ):
+        """
+        Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D on a subplot.
 
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type 
+        bool of the function, which if switched to `True` means that it is included on the subplot.
+
+        Parameters
+        ----------
+        visibilities
+            Whether or not to include a 2D plot (via `scatter`) of the visibility data.
+        noise_map
+            Whether or not to include a 2D plot (via `scatter`) of the noise-map.
+        u_wavelengths
+            Whether or not to include a 1D plot (via `plot`) of the u-wavelengths.          
+        v_wavelengths
+            Whether or not to include a 1D plot (via `plot`) of the v-wavelengths.      
+        amplitudes_vs_uv_distances
+            Whether or not to include a 1D plot (via `plot`) of the amplitudes versis the uv distances.   
+        phases_vs_uv_distances
+            Whether or not to include a 1D plot (via `plot`) of the phases versis the uv distances.
+        dirty_image
+            Whether or not to include a 2D plot (via `imshow`) of the dirty image.
+        dirty_noise_map
+            Whether or not to include a 2D plot (via `imshow`) of the dirty noise map.
+        dirty_signal_to_noise_map
+            Whether or not to include a 2D plot (via `imshow`) of the dirty signal-to-noise map.
+        dirty_inverse_noise_map
+            Whether or not to include a 2D plot (via `imshow`) of the dirty inverse noise map.
+        """
         self._subplot_custom_plot(
             visibilities=visibilities,
             noise_map=noise_map,
@@ -262,23 +290,8 @@ class InterferometerPlotter(Plotter):
         )
 
     def subplot_interferometer(self):
-        """Plot the interferometer data_type as a sub-mat_plot_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
-         etc).
-
-        Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-
-        Parameters
-        -----------
-        interferometer : data_type.UVPlaneData
-            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
-        origin : True
-            If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-        image_plane_pix_grid or data_type.array.grid_stacks.PixGrid
-            If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
-            over the immage.
-        ignore_config : bool
-            If `False`, the config file general.ini is used to determine whether the subpot is plotted. If `True`, the \
-            config file is ignored.
+        """
+        Standard subplot of the attributes of the plotter's `Interferometer` object.
         """
         return self.subplot(
             visibilities=True,
@@ -289,23 +302,8 @@ class InterferometerPlotter(Plotter):
         )
 
     def subplot_dirty_images(self):
-        """Plot the interferometer data_type as a sub-mat_plot_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
-         etc).
-
-        Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-
-        Parameters
-        -----------
-        interferometer : data_type.UVPlaneData
-            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
-        origin : True
-            If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-        image_plane_pix_grid or data_type.array.grid_stacks.PixGrid
-            If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
-            over the immage.
-        ignore_config : bool
-            If `False`, the config file general.ini is used to determine whether the subpot is plotted. If `True`, the \
-            config file is ignored.
+        """
+        Standard subplot of the dirty attributes of the plotter's `Interferometer` object.
         """
         return self.subplot(
             dirty_image=True,

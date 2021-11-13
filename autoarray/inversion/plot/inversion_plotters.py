@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Union
 
 from autoconf import conf
 from autoarray.plot.abstract_plotters import Plotter
@@ -57,7 +56,21 @@ class InversionPlotter(Plotter):
     def as_mapper(self, solution_vector) -> Array2D:
         return self.inversion.mapper_list[0].reconstruction_from(solution_vector)
 
-    def mapper_plotter_from(self, mapper_index):
+    def mapper_plotter_from(self, mapper_index: int) -> MapperPlotter:
+        """
+        Returns a `MapperPlotter` corresponding to the `Mapper` in the `Inversion`'s `mapper_list` given an input
+        `mapper_index`.
+
+        Parameters
+        ----------
+        mapper_index
+            The index of the mapper in the inversion which is used to create the `MapperPlotter`.
+
+        Returns
+        -------
+        MapperPlotter
+            An object that plots mappers which is used for plotting attributes of the inversion.
+        """
         return MapperPlotter(
             mapper=self.inversion.mapper_list[mapper_index],
             mat_plot_2d=self.mat_plot_2d,
@@ -224,7 +237,16 @@ class InversionPlotter(Plotter):
     def subplot_of_mapper(
         self, mapper_index: int = 0, auto_filename: str = "subplot_inversion"
     ):
+        """
+        Plots the individual attributes of a specific `Mapper` of the plotter's `Inversion` object in 2D on a subplot.
 
+        Parameters
+        ----------
+        mapper_index
+            The index of the `Mapper` in the `Inversion`'s `mapper_list` that is plotted.
+        auto_filename
+            The default filename of the output subplot if written to hard-disk.
+        """
         self.open_subplot_figure(number_subplots=6)
 
         self.figures_2d_of_mapper(mapper_index=mapper_index, reconstructed_image=True)

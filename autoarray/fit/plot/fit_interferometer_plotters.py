@@ -331,6 +331,49 @@ class FitInterferometerPlotterMeta(Plotter):
         dirty_chi_squared_map: bool = False,
         auto_filename: str = "subplot_fit_interferometer",
     ):
+        """
+        Plots the individual attributes of the plotter's `FitInterferometer` object in 1D and 2D on a subplot.
+
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type
+        bool of the function, which if switched to `True` means that it is included on the subplot.
+
+        Parameters
+        ----------
+        visibilities
+            Whether or not to make a 2D plot (via `scatter`) of the visibility data.
+        noise_map
+            Whether or not to make a 2D plot (via `scatter`) of the noise-map.
+        signal_to_noise_map
+            Whether or not to make a 2D plot (via `scatter`) of the signal-to-noise-map.
+        model_visibilities
+            Whether or not to make a 2D plot (via `scatter`) of the model visibility data.
+        residual_map_real
+            Whether or not to make a 1D plot (via `plot`) of the real component of the residual map.
+        residual_map_imag
+            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the residual map.
+        normalized_residual_map_real
+            Whether or not to make a 1D plot (via `plot`) of the real component of the normalized residual map.
+        normalized_residual_map_imag
+            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the normalized residual map.
+        chi_squared_map_real
+            Whether or not to make a 1D plot (via `plot`) of the real component of the chi-squared map.
+        chi_squared_map_imag
+            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the chi-squared map.
+        dirty_image
+            Whether or not to make a 2D plot (via `imshow`) of the dirty image.
+        dirty_noise_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty noise map.
+        dirty_model_image
+            Whether or not to make a 2D plot (via `imshow`) of the dirty model image.
+        dirty_residual_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty residual map.
+        dirty_normalized_residual_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty normalized residual map.
+        dirty_chi_squared_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty chi-squared map.
+        auto_filename
+            The default filename of the output subplot if written to hard-disk.
+        """
 
         self._subplot_custom_plot(
             visibilities=visibilities,
@@ -354,6 +397,9 @@ class FitInterferometerPlotterMeta(Plotter):
         )
 
     def subplot_fit_interferometer(self):
+        """
+        Standard subplot of the attributes of the plotter's `FitInterferometer` object.
+        """
         return self.subplot(
             residual_map_real=True,
             normalized_residual_map_real=True,
@@ -365,7 +411,9 @@ class FitInterferometerPlotterMeta(Plotter):
         )
 
     def subplot_fit_dirty_images(self):
-
+        """
+        Standard subplot of the dirty attributes of the plotter's `FitInterferometer` object.
+        """
         return self.subplot(
             dirty_image=True,
             dirty_signal_to_noise_map=True,
