@@ -64,6 +64,11 @@ def make_mask_2d_7x7_1_pix():
     return fixtures.make_mask_2d_7x7_1_pix()
 
 
+@pytest.fixture(name="array_1d_7")
+def make_array_1d_7():
+    return fixtures.make_array_1d_7()
+
+
 @pytest.fixture(name="array_2d_7x7")
 def make_array_2d_7x7():
     return fixtures.make_array_2d_7x7()
@@ -72,11 +77,6 @@ def make_array_2d_7x7():
 @pytest.fixture(name="layout_2d_7x7")
 def make_layout_2d_7x7():
     return fixtures.make_layout_2d_7x7()
-
-
-@pytest.fixture(name="array_2d_layout_7x7")
-def make_array_2d_layout_7x7():
-    return fixtures.make_array_2d_layout_7x7()
 
 
 @pytest.fixture(name="grid_1d_7")

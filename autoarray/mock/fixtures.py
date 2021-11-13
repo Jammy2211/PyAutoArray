@@ -1,5 +1,6 @@
 import numpy as np
 
+from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.dataset.interferometer import SettingsInterferometer
 from autoarray.inversion.regularization.constant import Constant
@@ -111,6 +112,10 @@ def make_blurring_mask_2d_7x7():
 ### arrays ###
 
 
+def make_array_1d_7():
+    return Array1D.ones(shape_native=(7,), pixel_scales=(1.0,))
+
+
 def make_array_2d_7x7():
     return Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
@@ -122,12 +127,6 @@ def make_layout_2d_7x7():
         serial_overscan=(0, 6, 6, 7),
         serial_prescan=(0, 7, 0, 1),
         parallel_overscan=(6, 7, 1, 6),
-    )
-
-
-def make_array_2d_layout_7x7():
-    return Array2D.ones(
-        shape_native=(7, 7), pixel_scales=(1.0, 1.0), layout=make_layout_2d_7x7()
     )
 
 
@@ -342,6 +341,7 @@ def make_rectangular_mapper_7x7_3x3():
     return MapperRectangular(
         source_grid_slim=make_grid_2d_7x7(),
         source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
+        data_pixelization_grid=make_grid_2d_irregular_7x7(),
     )
 
 
