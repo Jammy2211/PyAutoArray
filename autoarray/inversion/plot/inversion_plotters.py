@@ -67,21 +67,16 @@ class InversionPlotter(Plotter):
 
     def figures_2d(self, reconstructed_image: bool = False):
         """
-        Plot the model data of an analysis, using the *Fitter* class object.
+        Plots the individual attributes of the plotter's `Inversion` object in 2D.
 
-        The visualization and output type can be fully customized.
+        The API is such that every plottable attribute of the `Inversion` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
 
         Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the data is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data
-            in the python interpreter window.
+        ----------
+        reconstructed_image
+            Whether or not to make a 2D plot (via `imshow`) of the reconstructed image data.
         """
-
         if reconstructed_image:
 
             self.mat_plot_2d.plot_array(
@@ -104,19 +99,31 @@ class InversionPlotter(Plotter):
         regularization_weights: bool = False,
     ):
         """
-        Plot the model data of an analysis, using the *Fitter* class object.
+        Plots the individual attributes of a specific `Mapper` of the plotter's `Inversion` object in 2D.
 
-        The visualization and output type can be fully customized.
+        The API is such that every plottable attribute of the `Mapper` and `Inversion` object is an input parameter of
+        type bool of the function, which if switched to `True` means that it is plotted.
 
         Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the data is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data
-            in the python interpreter window.
+        ----------
+        mapper_index
+            The index of the `Mapper` in the `Inversion`'s `mapper_list` that is plotted.
+        reconstructed_image
+            Whether or not to make a 2D plot (via `imshow`) of the mapper's reconstructed image data.
+        reconstruction
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
+        errors
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
+        residual_map
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane residual map.
+        normalized_residual_map
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane normalized residual
+            map.
+        chi_squared_map
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane chi-squared map.
+        residual_map
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane regularization
+            weights.
         """
 
         mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)

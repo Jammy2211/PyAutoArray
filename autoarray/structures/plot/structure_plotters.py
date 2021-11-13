@@ -56,7 +56,7 @@ class Array2DPlotter(Plotter):
 
     def figure_2d(self):
         """
-        Plots the `Array2D` object in 2D.
+        Plots the plotter's `Array2D` object in 2D.
         """
         self.mat_plot_2d.plot_array(
             array=self.array,
@@ -106,7 +106,14 @@ class Grid2DPlotter(Plotter):
         return self.get_2d.via_grid_from(grid=self.grid)
 
     def figure_2d(self, color_array: np.ndarray = None):
+        """
+        Plots the plotter's `Grid2D` object in 2D.
 
+        Parameters
+        ----------
+        color_array
+            An array of RGB color values which can be used to give the plotted 2D grid a colorscale (w/ colorbar).
+        """
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
             visuals_2d=self.get_visuals_2d(),
@@ -160,7 +167,9 @@ class YX1DPlotter(Plotter):
         return self.get_1d.via_array_1d_from(array_1d=self.x)
 
     def figure_1d(self):
-
+        """
+        Plots the plotter's y and x values in 1D.
+        """
         self.mat_plot_1d.plot_yx(
             y=self.y,
             x=self.x,

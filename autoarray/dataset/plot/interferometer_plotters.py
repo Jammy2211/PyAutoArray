@@ -73,17 +73,33 @@ class InterferometerPlotter(Plotter):
         dirty_inverse_noise_map: bool = False,
     ):
         """
-        Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
-         Signal-to_noise-map, etc).
+        Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D.
 
-        Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type 
+        bool of the function, which if switched to `True` means that it is plotted.
 
         Parameters
-        -----------
-        interferometer : data_type.UVPlaneData
-            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
-        origin : True
-            If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+        ----------
+        visibilities
+            Whether or not to make a 2D plot (via `scatter`) of the visibility data.
+        noise_map
+            Whether or not to make a 2D plot (via `scatter`) of the noise-map.
+        u_wavelengths
+            Whether or not to make a 1D plot (via `plot`) of the u-wavelengths.          
+        v_wavelengths
+            Whether or not to make a 1D plot (via `plot`) of the v-wavelengths.      
+        amplitudes_vs_uv_distances
+            Whether or not to make a 1D plot (via `plot`) of the amplitudes versis the uv distances.   
+        phases_vs_uv_distances
+            Whether or not to make a 1D plot (via `plot`) of the phases versis the uv distances.
+        dirty_image
+            Whether or not to make a 2D plot (via `imshow`) of the dirty image.
+        dirty_noise_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty noise map.
+        dirty_signal_to_noise_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty signal-to-noise map.
+        dirty_inverse_noise_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
 
         if visibilities:

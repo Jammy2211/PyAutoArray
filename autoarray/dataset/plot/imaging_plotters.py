@@ -4,7 +4,6 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.dataset.imaging import Imaging
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 
 class ImagingPlotter(Plotter):
@@ -57,17 +56,28 @@ class ImagingPlotter(Plotter):
         absolute_signal_to_noise_map: bool = False,
         potential_chi_squared_map: bool = False,
     ):
-        """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
-         Signal-to_noise-map, etc).
-
-        Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-
+        """
+        Plots the individual attributes of the plotter's `Imaging` object in 2D.
+        
+        The API is such that every plottable attribute of the `Imaging` object is an input parameter of type bool of 
+        the function, which if switched to `True` means that it is plotted.
+        
         Parameters
-        -----------
-        imaging : data_type.ImagingData
-            The imaging data_type, which includes the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
-        include_origin : True
-            If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
+        ----------
+        image
+            Whether or not to make a 2D plot (via `imshow`) of the image data.
+        noise_map
+            Whether or not to make a 2D plot (via `imshow`) noise map.
+        psf
+            Whether or not to make a 2D plot (via `imshow`) psf.          
+        inverse_noise_map
+            Whether or not to make a 2D plot (via `imshow`) inverse noise map.
+        signal_to_noise_map
+            Whether or not to make a 2D plot (via `imshow`) signal-to-noise map.
+        absolute_signal_to_noise_map
+            Whether or not to make a 2D plot (via `imshow`) absolute signal to noise map.  
+        potential_chi_squared_map
+            Whether or not to make a 2D plot (via `imshow`) potential chi squared map.
         """
 
         if image:

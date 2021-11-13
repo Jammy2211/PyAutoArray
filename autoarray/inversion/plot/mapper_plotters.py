@@ -54,7 +54,14 @@ class MapperPlotter(Plotter):
         return self.get_2d.via_mapper_for_source_from(mapper=self.mapper)
 
     def figure_2d(self, solution_vector: bool = None):
+        """
+        Plots the plotter's `Mapper` object in 2D.
 
+        Parameters
+        ----------
+        solution_vector
+            A vector of values which can culor the pixels of the mapper's source pixels.
+        """
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
             visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
