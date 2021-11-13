@@ -21,8 +21,7 @@ class AbstractGetVisuals:
         self, include: Union[Include1D, Include2D], visuals: Union[Visuals1D, Visuals2D]
     ):
         """
-        Abstract class which gets attributes that are plotted on figures and adds them to `Visuals` objects, such that
-        they are plotted
+        Class which gets attributes and adds them to a `Visuals` objects, such that they are plotted on figures.
 
         For a visual to be extracted and added for plotting, it must have a `True` value in its corresponding entry in
         the `Include` object. If this entry is `False`, the `GetVisuals.get` method returns a None and the attribute
@@ -79,8 +78,7 @@ class AbstractGetVisuals:
 class GetVisuals1D(AbstractGetVisuals):
     def __init__(self, include: Include1D, visuals: Visuals1D):
         """
-        Class which gets 1D attributes that are plotted on 1D figures and adds them to `Visuals1D` objects, such that
-        they are plotted
+        Class which gets 1D attributes and adds them to a `Visuals1D` objects, such that they are plotted on 1D figures.
 
         For a visual to be extracted and added for plotting, it must have a `True` value in its corresponding entry in
         the `Include1D` object. If this entry is `False`, the `GetVisuals1D.get` method returns a None and the attribute
@@ -130,8 +128,7 @@ class GetVisuals1D(AbstractGetVisuals):
 class GetVisuals2D(AbstractGetVisuals):
     def __init__(self, include: Include2D, visuals: Visuals2D):
         """
-        Class which gets 2D attributes that are plotted on 2D figures and adds them to `Visuals2D` objects, such that
-        they are plotted
+        Class which gets 2D attributes and adds them to a `Visuals2D` objects, such that they are plotted on 2D figures.
 
         For a visual to be extracted and added for plotting, it must have a `True` value in its corresponding entry in
         the `Include2D` object. If this entry is `False`, the `GetVisuals2D.get` method returns a None and the
