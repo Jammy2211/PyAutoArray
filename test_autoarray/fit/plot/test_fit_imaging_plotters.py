@@ -27,21 +27,23 @@ def test__visuals_in_constructor_use_imaging_and_include(fit_imaging_7x7):
     )
 
     assert fit_imaging_plotter.visuals_2d.origin == (1.0, 1.0)
-    assert fit_imaging_plotter.get_2d.via_fit_from(fit=fit_imaging_7x7).origin == (
-        1.0,
-        1.0,
-    )
+    assert fit_imaging_plotter.get_2d.via_fit_imaging_from(
+        fit=fit_imaging_7x7
+    ).origin == (1.0, 1.0)
 
     assert (
-        fit_imaging_plotter.get_2d.via_fit_from(fit=fit_imaging_7x7).mask
+        fit_imaging_plotter.get_2d.via_fit_imaging_from(fit=fit_imaging_7x7).mask
         == fit_imaging_7x7.image.mask
     ).all()
     assert (
-        fit_imaging_plotter.get_2d.via_fit_from(fit=fit_imaging_7x7).border
+        fit_imaging_plotter.get_2d.via_fit_imaging_from(fit=fit_imaging_7x7).border
         == fit_imaging_7x7.image.mask.border_grid_sub_1.binned
     ).all()
     assert (
-        fit_imaging_plotter.get_2d.via_fit_from(fit=fit_imaging_7x7).vector_field == 2
+        fit_imaging_plotter.get_2d.via_fit_imaging_from(
+            fit=fit_imaging_7x7
+        ).vector_field
+        == 2
     )
 
     include = aplt.Include2D(origin=False, mask=False, border=False)
@@ -50,14 +52,22 @@ def test__visuals_in_constructor_use_imaging_and_include(fit_imaging_7x7):
         fit=fit_imaging_7x7, visuals_2d=visuals_2d, include_2d=include
     )
 
-    assert fit_imaging_plotter.get_2d.via_fit_from(fit=fit_imaging_7x7).origin == (
-        1.0,
-        1.0,
-    )
-    assert fit_imaging_plotter.get_2d.via_fit_from(fit=fit_imaging_7x7).mask == None
-    assert fit_imaging_plotter.get_2d.via_fit_from(fit=fit_imaging_7x7).border == None
+    assert fit_imaging_plotter.get_2d.via_fit_imaging_from(
+        fit=fit_imaging_7x7
+    ).origin == (1.0, 1.0)
     assert (
-        fit_imaging_plotter.get_2d.via_fit_from(fit=fit_imaging_7x7).vector_field == 2
+        fit_imaging_plotter.get_2d.via_fit_imaging_from(fit=fit_imaging_7x7).mask
+        == None
+    )
+    assert (
+        fit_imaging_plotter.get_2d.via_fit_imaging_from(fit=fit_imaging_7x7).border
+        == None
+    )
+    assert (
+        fit_imaging_plotter.get_2d.via_fit_imaging_from(
+            fit=fit_imaging_7x7
+        ).vector_field
+        == 2
     )
 
 
