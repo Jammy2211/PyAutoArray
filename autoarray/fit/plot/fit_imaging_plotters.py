@@ -26,7 +26,7 @@ class FitImagingPlotterMeta(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Array2D` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
+        the `FitImaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
         object or the `config/visualize/include.ini` file.
 
         Parameters
@@ -163,19 +163,19 @@ class FitImagingPlotterMeta(Plotter):
         Parameters
         ----------
         image
-            Whether or not to make a 2D plot (via `imshow`) of the image data.
+            Whether or not to include a 2D plot (via `imshow`) of the image data.
         noise_map
-            Whether or not to make a 2D plot (via `imshow`) noise map.
+            Whether or not to include a 2D plot (via `imshow`) noise map.
         psf
-            Whether or not to make a 2D plot (via `imshow`) psf.
+            Whether or not to include a 2D plot (via `imshow`) psf.
         signal_to_noise_map
-            Whether or not to make a 2D plot (via `imshow`) signal-to-noise map.
+            Whether or not to include a 2D plot (via `imshow`) signal-to-noise map.
         residual_map
-            Whether or not to make a 2D plot (via `imshow`) residual map.
+            Whether or not to include a 2D plot (via `imshow`) residual map.
         normalized_residual_map
-            Whether or not to make a 2D plot (via `imshow`) normalized residual map.
+            Whether or not to include a 2D plot (via `imshow`) normalized residual map.
         chi_squared_map
-            Whether or not to make a 2D plot (via `imshow`) chi-squared map.
+            Whether or not to include a 2D plot (via `imshow`) chi-squared map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
@@ -221,7 +221,7 @@ class FitImagingPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Array2D` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
+        the `FitImaging` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
         object or the `config/visualize/include.ini` file.
 
         Parameters

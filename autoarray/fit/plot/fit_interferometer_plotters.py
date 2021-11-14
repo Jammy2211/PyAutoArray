@@ -34,7 +34,7 @@ class FitInterferometerPlotterMeta(Plotter):
         customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
-        extracted from the `LightProfile` and plotted via the visuals object, if the corresponding entry is `True` in
+        extracted from the `FitInterferometer` and plotted via the visuals object, if the corresponding entry is `True` in
         the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
 
         Parameters
@@ -452,7 +452,7 @@ class FitInterferometerPlotter(Plotter):
         but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
 
         Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
-        the `Array2D` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
+        the `FitInterferometer` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
         object or the `config/visualize/include.ini` file.
 
         Parameters
