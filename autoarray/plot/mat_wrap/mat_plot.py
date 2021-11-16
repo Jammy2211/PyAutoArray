@@ -4,7 +4,7 @@ set_backend()
 
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import Optional, List, Union
+from typing import Iterable, Optional, List, Union
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -319,7 +319,7 @@ class MatPlot1D(AbstractMatPlot):
         y: Union[np.ndarray, List, Array1D],
         visuals_1d: Visuals1D,
         auto_labels: AutoLabels,
-        x: Optional[Union[np.ndarray, List, Array1D]] = None,
+        x: Optional[Union[np.ndarray, Iterable, List, Array1D]] = None,
         plot_axis_type_override: Optional[str] = None,
         y_errors=None,
         x_errors=None,

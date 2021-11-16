@@ -70,17 +70,17 @@ class FitImagingPlotterMeta(Plotter):
         image
             Whether or not to make a 2D plot (via `imshow`) of the image data.
         noise_map
-            Whether or not to make a 2D plot (via `imshow`) noise map.
+            Whether or not to make a 2D plot (via `imshow`) of the noise map.
         psf
-            Whether or not to make a 2D plot (via `imshow`) psf.
+            Whether or not to make a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
-            Whether or not to make a 2D plot (via `imshow`) signal-to-noise map.
+            Whether or not to make a 2D plot (via `imshow`) of the signal-to-noise map.
         residual_map
-            Whether or not to make a 2D plot (via `imshow`) residual map.
+            Whether or not to make a 2D plot (via `imshow`) of the residual map.
         normalized_residual_map
-            Whether or not to make a 2D plot (via `imshow`) normalized residual map.
+            Whether or not to make a 2D plot (via `imshow`) of the normalized residual map.
         chi_squared_map
-            Whether or not to make a 2D plot (via `imshow`) chi-squared map.
+            Whether or not to make a 2D plot (via `imshow`) of the chi-squared map.
         """
 
         if image:
@@ -167,17 +167,19 @@ class FitImagingPlotterMeta(Plotter):
         image
             Whether or not to include a 2D plot (via `imshow`) of the image data.
         noise_map
-            Whether or not to include a 2D plot (via `imshow`) noise map.
+            Whether or not to include a 2D plot (via `imshow`) of the noise map.
         psf
-            Whether or not to include a 2D plot (via `imshow`) psf.
+            Whether or not to include a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
-            Whether or not to include a 2D plot (via `imshow`) signal-to-noise map.
+            Whether or not to include a 2D plot (via `imshow`) of the signal-to-noise map.
+        model_image
+            Whether or not to include a 2D plot (via `imshow`) of the model image.
         residual_map
-            Whether or not to include a 2D plot (via `imshow`) residual map.
+            Whether or not to include a 2D plot (via `imshow`) of the residual map.
         normalized_residual_map
-            Whether or not to include a 2D plot (via `imshow`) normalized residual map.
+            Whether or not to include a 2D plot (via `imshow`) of the normalized residual map.
         chi_squared_map
-            Whether or not to include a 2D plot (via `imshow`) chi-squared map.
+            Whether or not to include a 2D plot (via `imshow`) of the chi-squared map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
