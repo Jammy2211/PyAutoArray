@@ -41,6 +41,8 @@ class FitInterferometerPlotterMeta(Plotter):
         ----------
         fit
             The fit to an interferometer dataset the plotter plots.
+        get_visuals_2d
+            A function which extracts from the `FitInterferometer` the 2D visuals which are plotted on figures.
         mat_plot_1d
             Contains objects which wrap the matplotlib function calls that make 1D plots.
         visuals_1d

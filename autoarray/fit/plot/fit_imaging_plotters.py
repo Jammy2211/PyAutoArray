@@ -33,6 +33,8 @@ class FitImagingPlotterMeta(Plotter):
         ----------
         fit
             The fit to an imaging dataset the plotter plots.
+        get_visuals_2d
+            A function which extracts from the `FitImaging` the 2D visuals which are plotted on figures.
         mat_plot_2d
             Contains objects which wrap the matplotlib function calls that make the plot.
         visuals_2d
