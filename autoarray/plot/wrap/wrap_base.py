@@ -844,10 +844,10 @@ class Output:
         self.path = path
 
         if path is not None and path:
-            try:
-                os.makedirs(path)
-            except FileExistsError:
-                pass
+            os.makedirs(
+                path,
+                exist_ok=True
+            )
 
         self.filename = filename
         self._format = format

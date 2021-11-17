@@ -118,27 +118,6 @@ class TestArray2DPlotter:
 
 
 class TestGrid2DPlotter:
-    def test___visuals_in_constructor_use_grid_and_include(self, grid_2d_7x7):
-
-        visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
-
-        include = aplt.Include2D(origin=True)
-
-        grid_plotter = aplt.Grid2DPlotter(
-            grid=grid_2d_7x7, visuals_2d=visuals_2d, include_2d=include
-        )
-
-        assert grid_plotter.visuals_2d.origin == (1.0, 1.0)
-        assert grid_plotter.get_2d.via_grid_from(grid=grid_2d_7x7).origin == (1.0, 1.0)
-
-        include = aplt.Include2D(origin=False)
-
-        grid_plotter = aplt.Grid2DPlotter(
-            grid=grid_2d_7x7, visuals_2d=visuals_2d, include_2d=include
-        )
-
-        assert grid_plotter.get_2d.via_grid_from(grid=grid_2d_7x7).origin == (1.0, 1.0)
-        assert grid_plotter.get_2d.via_grid_from(grid=grid_2d_7x7).vector_field == 2
 
     def test__works_with_all_extras_included(
         self,
