@@ -10,6 +10,8 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
+from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 
@@ -155,8 +157,8 @@ class AbstractSettingsDataset:
 class AbstractDataset:
     def __init__(
         self,
-        data: AbstractStructure,
-        noise_map: AbstractStructure,
+        data: Union[Array2D, Visibilities],
+        noise_map: Union[Array2D, VisibilitiesNoiseMap],
         settings=AbstractSettingsDataset(),
         name: str = None,
     ):

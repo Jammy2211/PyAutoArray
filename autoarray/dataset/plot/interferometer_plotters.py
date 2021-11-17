@@ -1,4 +1,4 @@
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include1D
@@ -8,10 +8,9 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.dataset.interferometer import Interferometer
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-import numpy as np
 
 
-class InterferometerPlotter(AbstractPlotter):
+class InterferometerPlotter(Plotter):
     def __init__(
         self,
         interferometer: Interferometer,
@@ -22,7 +21,36 @@ class InterferometerPlotter(AbstractPlotter):
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
     ):
+        """
+        Plots the attributes of `Interferometer` objects using the matplotlib methods `plot()`, `scatter()` and
+        `imshow()` and other matplotlib functions which customize the plot's appearance.
 
+        The `mat_plot_1d` and `mat_plot_2d` attributes wrap matplotlib function calls to make the figure. By default,
+        the settings passed to every matplotlib function called are those specified in
+        the `config/visualize/mat_wrap/*.ini` files, but a user can manually input values into `MatPlot2d` to
+        customize the figure's appearance.
+
+        Overlaid on the figure are visuals, contained in the `Visuals1D` and `Visuals2D` objects. Attributes may be
+        extracted from the `LightProfile` and plotted via the visuals object, if the corresponding entry is `True` in
+        the `Include1D` or `Include2D` object or the `config/visualize/include.ini` file.
+
+        Parameters
+        ----------
+        interferometer
+            The interferometer dataset the plotter plots.
+        mat_plot_1d
+            Contains objects which wrap the matplotlib function calls that make 1D plots.
+        visuals_1d
+            Contains 1D visuals that can be overlaid on 1D plots.
+        include_1d
+            Specifies which attributes of the `Interferometer` are extracted and plotted as visuals for 1D plots.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
+        visuals_2d
+            Contains 2D visuals that can be overlaid on 2D plots.
+        include_2d
+            Specifies which attributes of the `Interferometer` are extracted and plotted as visuals for 2D plots.
+        """
         self.interferometer = interferometer
 
         super().__init__(
@@ -34,23 +62,8 @@ class InterferometerPlotter(AbstractPlotter):
             visuals_2d=visuals_2d,
         )
 
-    @property
-    def visuals_with_include_2d(self) -> Visuals2D:
-        return self.visuals_2d + self.visuals_2d.__class__()
-
-    @property
-    def visuals_with_include_2d_real_space(self) -> Visuals2D:
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin",
-                Grid2DIrregular(grid=[self.interferometer.real_space_mask.origin]),
-            ),
-            mask=self.extract_2d("mask", self.interferometer.real_space_mask),
-            border=self.extract_2d(
-                "border", self.interferometer.real_space_mask.border_grid_sub_1.binned
-            ),
-        )
+    def get_visuals_2d_real_space(self):
+        return self.get_2d.via_mask_from(mask=self.interferometer.real_space_mask)
 
     def figures_2d(
         self,
@@ -67,24 +80,40 @@ class InterferometerPlotter(AbstractPlotter):
         dirty_inverse_noise_map: bool = False,
     ):
         """
-        Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
-         Signal-to_noise-map, etc).
+        Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D.
 
-        Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type 
+        bool of the function, which if switched to `True` means that it is plotted.
 
         Parameters
-        -----------
-        interferometer : data_type.UVPlaneData
-            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
-        origin : True
-            If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+        ----------
+        visibilities
+            Whether or not to make a 2D plot (via `scatter`) of the visibility data.
+        noise_map
+            Whether or not to make a 2D plot (via `scatter`) of the noise-map.
+        u_wavelengths
+            Whether or not to make a 1D plot (via `plot`) of the u-wavelengths.          
+        v_wavelengths
+            Whether or not to make a 1D plot (via `plot`) of the v-wavelengths.      
+        amplitudes_vs_uv_distances
+            Whether or not to make a 1D plot (via `plot`) of the amplitudes versis the uv distances.   
+        phases_vs_uv_distances
+            Whether or not to make a 1D plot (via `plot`) of the phases versis the uv distances.
+        dirty_image
+            Whether or not to make a 2D plot (via `imshow`) of the dirty image.
+        dirty_noise_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty noise map.
+        dirty_signal_to_noise_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty signal-to-noise map.
+        dirty_inverse_noise_map
+            Whether or not to make a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
 
         if visibilities:
 
             self.mat_plot_2d.plot_grid(
                 grid=self.interferometer.visibilities.in_grid,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Visibilities", filename="visibilities"),
             )
 
@@ -92,7 +121,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_grid(
                 grid=self.interferometer.visibilities.in_grid,
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.visuals_2d,
                 color_array=self.interferometer.noise_map.real,
                 auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
             )
@@ -132,7 +161,7 @@ class InterferometerPlotter(AbstractPlotter):
                     y=self.interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
                     x=self.interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
                 ),
-                visuals_2d=self.visuals_with_include_2d,
+                visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
                     title="UV-Wavelengths", filename="uv_wavelengths"
                 ),
@@ -172,7 +201,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_image,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
             )
 
@@ -180,7 +209,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_noise_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map_2d"
                 ),
@@ -190,7 +219,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_signal_to_noise_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map_2d",
@@ -201,7 +230,7 @@ class InterferometerPlotter(AbstractPlotter):
 
             self.mat_plot_2d.plot_array(
                 array=self.interferometer.dirty_inverse_noise_map,
-                visuals_2d=self.visuals_with_include_2d_real_space,
+                visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Inverse Noise Map",
                     filename="dirty_inverse_noise_map_2d",
@@ -223,7 +252,35 @@ class InterferometerPlotter(AbstractPlotter):
         dirty_inverse_noise_map: bool = False,
         auto_filename: str = "subplot_interferometer",
     ):
+        """
+        Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D on a subplot.
 
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type 
+        bool of the function, which if switched to `True` means that it is included on the subplot.
+
+        Parameters
+        ----------
+        visibilities
+            Whether or not to include a 2D plot (via `scatter`) of the visibility data.
+        noise_map
+            Whether or not to include a 2D plot (via `scatter`) of the noise-map.
+        u_wavelengths
+            Whether or not to include a 1D plot (via `plot`) of the u-wavelengths.          
+        v_wavelengths
+            Whether or not to include a 1D plot (via `plot`) of the v-wavelengths.      
+        amplitudes_vs_uv_distances
+            Whether or not to include a 1D plot (via `plot`) of the amplitudes versis the uv distances.   
+        phases_vs_uv_distances
+            Whether or not to include a 1D plot (via `plot`) of the phases versis the uv distances.
+        dirty_image
+            Whether or not to include a 2D plot (via `imshow`) of the dirty image.
+        dirty_noise_map
+            Whether or not to include a 2D plot (via `imshow`) of the dirty noise map.
+        dirty_signal_to_noise_map
+            Whether or not to include a 2D plot (via `imshow`) of the dirty signal-to-noise map.
+        dirty_inverse_noise_map
+            Whether or not to include a 2D plot (via `imshow`) of the dirty inverse noise map.
+        """
         self._subplot_custom_plot(
             visibilities=visibilities,
             noise_map=noise_map,
@@ -240,23 +297,8 @@ class InterferometerPlotter(AbstractPlotter):
         )
 
     def subplot_interferometer(self):
-        """Plot the interferometer data_type as a sub-mat_plot_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
-         etc).
-
-        Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-
-        Parameters
-        -----------
-        interferometer : data_type.UVPlaneData
-            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
-        origin : True
-            If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-        image_plane_pix_grid or data_type.array.grid_stacks.PixGrid
-            If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
-            over the immage.
-        ignore_config : bool
-            If `False`, the config file general.ini is used to determine whether the subpot is plotted. If `True`, the \
-            config file is ignored.
+        """
+        Standard subplot of the attributes of the plotter's `Interferometer` object.
         """
         return self.subplot(
             visibilities=True,
@@ -267,23 +309,8 @@ class InterferometerPlotter(AbstractPlotter):
         )
 
     def subplot_dirty_images(self):
-        """Plot the interferometer data_type as a sub-mat_plot_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
-         etc).
-
-        Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-
-        Parameters
-        -----------
-        interferometer : data_type.UVPlaneData
-            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
-        origin : True
-            If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-        image_plane_pix_grid or data_type.array.grid_stacks.PixGrid
-            If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
-            over the immage.
-        ignore_config : bool
-            If `False`, the config file general.ini is used to determine whether the subpot is plotted. If `True`, the \
-            config file is ignored.
+        """
+        Standard subplot of the dirty attributes of the plotter's `Interferometer` object.
         """
         return self.subplot(
             dirty_image=True,

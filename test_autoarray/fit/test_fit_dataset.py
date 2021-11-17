@@ -30,7 +30,7 @@ class TestFitImaging:
             use_mask_in_fit=False,
         )
 
-        fit = aa.FitImaging(imaging=masked_imaging, fit=fit)
+        fit = aa.FitImaging(dataset=masked_imaging, fit=fit)
 
         assert (fit.mask == np.array([[False, False], [False, False]])).all()
 
@@ -92,7 +92,7 @@ class TestFitImaging:
             use_mask_in_fit=False,
         )
 
-        fit = aa.FitImaging(imaging=imaging, fit=fit)
+        fit = aa.FitImaging(dataset=imaging, fit=fit)
 
         assert (fit.mask == np.array([[False, False], [True, False]])).all()
 
@@ -158,7 +158,7 @@ class TestFitImaging:
             use_mask_in_fit=False,
         )
 
-        fit = aa.FitImaging(imaging=masked_imaging, fit=fit)
+        fit = aa.FitImaging(dataset=masked_imaging, fit=fit)
 
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
@@ -206,7 +206,7 @@ class TestFitInterferometer:
             use_mask_in_fit=False,
         )
 
-        fit = aa.FitInterferometer(interferometer=interferometer, fit=fit)
+        fit = aa.FitInterferometer(dataset=interferometer, fit=fit)
 
         assert (fit.visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
 
@@ -264,7 +264,7 @@ class TestFitInterferometer:
             use_mask_in_fit=False,
         )
 
-        fit = aa.FitInterferometer(interferometer=interferometer, fit=fit)
+        fit = aa.FitInterferometer(dataset=interferometer, fit=fit)
 
         assert (fit.visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
 
@@ -329,7 +329,7 @@ class TestFitInterferometer:
             use_mask_in_fit=False,
         )
 
-        fit = aa.FitInterferometer(interferometer=interferometer, fit=fit)
+        fit = aa.FitInterferometer(dataset=interferometer, fit=fit)
 
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
@@ -423,7 +423,7 @@ class TestProfilingDict:
         )
 
         fit = aa.FitImaging(
-            imaging=masked_imaging, fit=fit, profiling_dict=profiling_dict
+            dataset=masked_imaging, fit=fit, profiling_dict=profiling_dict
         )
         fit.figure_of_merit
 

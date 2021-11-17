@@ -1,19 +1,17 @@
 import numpy as np
-from typing import Union
 
 from autoconf import conf
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 
 
-class InversionPlotter(AbstractPlotter):
+class InversionPlotter(Plotter):
     def __init__(
         self,
         inversion: AbstractInversion,
@@ -21,16 +19,58 @@ class InversionPlotter(AbstractPlotter):
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
     ):
+        """
+        Plots the attributes of `Inversion` objects using the matplotlib method `imshow()` and many other matplotlib
+        functions which customize the plot's appearance.
+
+        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
+        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
+        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
+
+        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
+        the `Inversion` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
+        object or the `config/visualize/include.ini` file.
+
+        Parameters
+        ----------
+        inversion
+            The inversion the plotter plots.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
+        visuals_2d
+            Contains 2D visuals that can be overlaid on 2D plots.
+        include_2d
+            Specifies which attributes of the `Inversion` are extracted and plotted as visuals for 2D plots.
+        """
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
         self.inversion = inversion
 
+    def get_visuals_2d_for_data(self) -> Visuals2D:
+        return self.get_2d.via_mapper_for_data_from(
+            mapper=self.inversion.mapper_list[0]
+        )
+
     def as_mapper(self, solution_vector) -> Array2D:
         return self.inversion.mapper_list[0].reconstruction_from(solution_vector)
 
-    def mapper_plotter_from(self, mapper_index):
+    def mapper_plotter_from(self, mapper_index: int) -> MapperPlotter:
+        """
+        Returns a `MapperPlotter` corresponding to the `Mapper` in the `Inversion`'s `mapper_list` given an input
+        `mapper_index`.
+
+        Parameters
+        ----------
+        mapper_index
+            The index of the mapper in the inversion which is used to create the `MapperPlotter`.
+
+        Returns
+        -------
+        MapperPlotter
+            An object that plots mappers which is used for plotting attributes of the inversion.
+        """
         return MapperPlotter(
             mapper=self.inversion.mapper_list[mapper_index],
             mat_plot_2d=self.mat_plot_2d,
@@ -38,76 +78,23 @@ class InversionPlotter(AbstractPlotter):
             include_2d=self.include_2d,
         )
 
-    @property
-    def visuals_data_with_include_2d(self) -> Visuals2D:
+    def figures_2d(self, reconstructed_image: bool = False):
         """
-        Extracts from a `Mapper` attributes that can be plotted for figures in its data-plane (e.g. the reconstructed
-        data) and return them in a `Visuals` object.
+        Plots the individual attributes of the plotter's `Inversion` object in 2D.
 
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From a `Mapper` the following attributes can be extracted for plotting in the data-plane:
-
-        - origin: the (y,x) origin of the `Array2D`'s coordinate system in the data plane.
-        - mask : the `Mask` defined in the data-plane containing the data that is used by the `Mapper`.
-        - mapper_data_pixelization_grid: the `Mapper`'s pixelization grid in the data-plane.
-        - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
+        The API is such that every plottable attribute of the `Inversion` object is an input parameter of type bool of
+        the function, which if switched to `True` means that it is plotted.
 
         Parameters
         ----------
-        mapper : Mapper
-            The mapper whose data-plane attributes are extracted for plotting.
-
-        Returns
-        -------
-        Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
+        reconstructed_image
+            Whether or not to make a 2D plot (via `imshow`) of the reconstructed image data.
         """
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin",
-                Grid2DIrregular(
-                    grid=[self.inversion.mapper_list[0].source_grid_slim.mask.origin]
-                ),
-            ),
-            mask=self.extract_2d(
-                "mask", self.inversion.mapper_list[0].source_grid_slim.mask
-            ),
-            border=self.extract_2d(
-                "border",
-                self.inversion.mapper_list[
-                    0
-                ].source_grid_slim.mask.border_grid_sub_1.binned,
-            ),
-            pixelization_grid=self.extract_2d(
-                "pixelization_grid",
-                self.inversion.mapper_list[0].data_pixelization_grid,
-                "mapper_data_pixelization_grid",
-            ),
-        )
-
-    def figures_2d(self, reconstructed_image: bool = False):
-        """
-        Plot the model data of an analysis, using the *Fitter* class object.
-
-        The visualization and output type can be fully customized.
-
-        Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the data is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data
-            in the python interpreter window.
-        """
-
         if reconstructed_image:
 
             self.mat_plot_2d.plot_array(
                 array=self.inversion.mapped_reconstructed_image,
-                visuals_2d=self.visuals_data_with_include_2d,
+                visuals_2d=self.get_visuals_2d_for_data(),
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
@@ -125,19 +112,31 @@ class InversionPlotter(AbstractPlotter):
         regularization_weights: bool = False,
     ):
         """
-        Plot the model data of an analysis, using the *Fitter* class object.
+        Plots the individual attributes of a specific `Mapper` of the plotter's `Inversion` object in 2D.
 
-        The visualization and output type can be fully customized.
+        The API is such that every plottable attribute of the `Mapper` and `Inversion` object is an input parameter of
+        type bool of the function, which if switched to `True` means that it is plotted.
 
         Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model data and observed lens data (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the data is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the data is output. File formats (e.g. png, fits) output the data to harddisk. 'show' displays the data
-            in the python interpreter window.
+        ----------
+        mapper_index
+            The index of the `Mapper` in the `Inversion`'s `mapper_list` that is plotted.
+        reconstructed_image
+            Whether or not to make a 2D plot (via `imshow`) of the mapper's reconstructed image data.
+        reconstruction
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
+        errors
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
+        residual_map
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane residual map.
+        normalized_residual_map
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane normalized residual
+            map.
+        chi_squared_map
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane chi-squared map.
+        residual_map
+            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane regularization
+            weights.
         """
 
         mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)
@@ -148,7 +147,7 @@ class InversionPlotter(AbstractPlotter):
                 array=self.inversion.mapped_reconstructed_image_of_mappers[
                     mapper_index
                 ],
-                visuals_2d=self.visuals_data_with_include_2d,
+                visuals_2d=self.get_visuals_2d_for_data(),
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
@@ -238,7 +237,16 @@ class InversionPlotter(AbstractPlotter):
     def subplot_of_mapper(
         self, mapper_index: int = 0, auto_filename: str = "subplot_inversion"
     ):
+        """
+        Plots the individual attributes of a specific `Mapper` of the plotter's `Inversion` object in 2D on a subplot.
 
+        Parameters
+        ----------
+        mapper_index
+            The index of the `Mapper` in the `Inversion`'s `mapper_list` that is plotted.
+        auto_filename
+            The default filename of the output subplot if written to hard-disk.
+        """
         self.open_subplot_figure(number_subplots=6)
 
         self.figures_2d_of_mapper(mapper_index=mapper_index, reconstructed_image=True)

@@ -16,40 +16,6 @@ def make_plot_path_setup():
     )
 
 
-def test__visuals_in_constructor_use_imaging_and_include(fit_imaging_7x7):
-
-    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
-
-    include = aplt.Include2D(origin=True, mask=True, border=True)
-
-    fit_imaging_plotter = aplt.FitImagingPlotter(
-        fit=fit_imaging_7x7, visuals_2d=visuals_2d, include_2d=include
-    )
-
-    assert fit_imaging_plotter.visuals_2d.origin == (1.0, 1.0)
-    assert fit_imaging_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
-
-    assert (
-        fit_imaging_plotter.visuals_with_include_2d.mask == fit_imaging_7x7.image.mask
-    ).all()
-    assert (
-        fit_imaging_plotter.visuals_with_include_2d.border
-        == fit_imaging_7x7.image.mask.border_grid_sub_1.binned
-    ).all()
-    assert fit_imaging_plotter.visuals_with_include_2d.vector_field == 2
-
-    include = aplt.Include2D(origin=False, mask=False, border=False)
-
-    fit_imaging_plotter = aplt.FitImagingPlotter(
-        fit=fit_imaging_7x7, visuals_2d=visuals_2d, include_2d=include
-    )
-
-    assert fit_imaging_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
-    assert fit_imaging_plotter.visuals_with_include_2d.mask == None
-    assert fit_imaging_plotter.visuals_with_include_2d.border == None
-    assert fit_imaging_plotter.visuals_with_include_2d.vector_field == 2
-
-
 def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(

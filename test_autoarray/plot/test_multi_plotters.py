@@ -1,5 +1,6 @@
 from os import path
 import pytest
+import autoarray as aa
 import autoarray.plot as aplt
 
 import numpy as np
@@ -70,14 +71,14 @@ class TestMultiYX1DPlotter:
         mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(plot_path, format="png"))
 
         plotter_0 = MockYX1DPlotter(
-            y=np.array([1.0, 2.0, 3.0]),
-            x=np.array([0.5, 1.0, 1.5]),
+            y=aa.Array1D.manual_native([1.0, 2.0, 3.0], pixel_scales=1.0),
+            x=aa.Array1D.manual_native([0.5, 1.0, 1.5], pixel_scales=0.5),
             mat_plot_1d=mat_plot_1d,
         )
 
         plotter_1 = MockYX1DPlotter(
-            y=np.array([1.0, 2.0, 4.0]),
-            x=np.array([0.5, 1.0, 1.5]),
+            y=aa.Array1D.manual_native([1.0, 2.0, 4.0], pixel_scales=1.0),
+            x=aa.Array1D.manual_native([0.5, 1.0, 1.5], pixel_scales=0.5),
             mat_plot_1d=mat_plot_1d,
         )
 

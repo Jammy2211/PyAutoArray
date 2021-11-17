@@ -83,12 +83,12 @@ class FitDataset:
 
 
 class FitImaging(FitDataset):
-    def __init__(self, imaging, fit: FitData, profiling_dict: Optional[Dict] = None):
+    def __init__(self, dataset, fit: FitData, profiling_dict: Optional[Dict] = None):
         """Class to fit a masked imaging dataset.
 
         Parameters
         -----------
-        imaging : MaskedImaging
+        dataset : MaskedImaging
             The masked imaging dataset that is fitted.
         model_image : Array2D
             The model image the masked imaging is fitted with.
@@ -116,7 +116,7 @@ class FitImaging(FitDataset):
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 
-        super().__init__(dataset=imaging, fit=fit, profiling_dict=profiling_dict)
+        super().__init__(dataset=dataset, fit=fit, profiling_dict=profiling_dict)
 
     @property
     def mask(self):
@@ -137,13 +137,13 @@ class FitImaging(FitDataset):
 
 class FitInterferometer(FitDataset):
     def __init__(
-        self, interferometer, fit: FitDataComplex, profiling_dict: Optional[Dict] = None
+        self, dataset, fit: FitDataComplex, profiling_dict: Optional[Dict] = None
     ):
         """Class to fit a masked interferometer dataset.
 
         Parameters
         -----------
-        interferometer : MaskedInterferometer
+        dataset : MaskedInterferometer
             The masked interferometer dataset that is fitted.
         model_visibilities : Visibilities
             The model visibilities the masked imaging is fitted with.
@@ -171,7 +171,7 @@ class FitInterferometer(FitDataset):
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 
-        super().__init__(dataset=interferometer, fit=fit, profiling_dict=profiling_dict)
+        super().__init__(dataset=dataset, fit=fit, profiling_dict=profiling_dict)
 
     @property
     def mask(self):

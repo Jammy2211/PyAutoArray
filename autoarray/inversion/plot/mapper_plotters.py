@@ -1,17 +1,17 @@
+import numpy as np
 from typing import Union
 
-from autoarray.plot.abstract_plotters import AbstractPlotter
+from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
 
-class MapperPlotter(AbstractPlotter):
+class MapperPlotter(Plotter):
     def __init__(
         self,
         mapper: Union[MapperRectangular, MapperVoronoi],
@@ -19,113 +19,75 @@ class MapperPlotter(AbstractPlotter):
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
     ):
+        """
+        Plots the attributes of `Mapper` objects using the matplotlib method `imshow()` and many other matplotlib
+        functions which customize the plot's appearance.
+
+        The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
+        passed to every matplotlib function called are those specified in the `config/visualize/mat_wrap/*.ini` files,
+        but a user can manually input values into `MatPlot2d` to customize the figure's appearance.
+
+        Overlaid on the figure are visuals, contained in the `Visuals2D` object. Attributes may be extracted from
+        the `Mapper` and plotted via the visuals object, if the corresponding entry is `True` in the `Include2D`
+        object or the `config/visualize/include.ini` file.
+
+        Parameters
+        ----------
+        mapper
+            The mapper the plotter plots.
+        mat_plot_2d
+            Contains objects which wrap the matplotlib function calls that make 2D plots.
+        visuals_2d
+            Contains 2D visuals that can be overlaid on 2D plots.
+        include_2d
+            Specifies which attributes of the `Mapper` are extracted and plotted as visuals for 2D plots.
+        """
         super().__init__(
             visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
         )
 
         self.mapper = mapper
 
-    @property
-    def visuals_data_with_include_2d(self) -> Visuals2D:
-        """
-        Extracts from a `Mapper` attributes that can be plotted for figures in its data-plane (e.g. the reconstructed
-        data) and return them in a `Visuals` object.
+    def get_visuals_2d_for_data(self) -> Visuals2D:
+        return self.get_2d.via_mapper_for_data_from(mapper=self.mapper)
 
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From a `Mapper` the following attributes can be extracted for plotting in the data-plane:
-
-        - origin: the (y,x) origin of the `Array2D`'s coordinate system in the data plane.
-        - mask : the `Mask` defined in the data-plane containing the data that is used by the `Mapper`.
-        - mapper_data_pixelization_grid: the `Mapper`'s pixelization grid in the data-plane.
-        - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
-
-        Parameters
-        ----------
-        mapper : Mapper
-            The mapper whose data-plane attributes are extracted for plotting.
-
-        Returns
-        -------
-        Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin",
-                Grid2DIrregular(grid=[self.mapper.source_grid_slim.mask.origin]),
-            ),
-            mask=self.extract_2d("mask", self.mapper.source_grid_slim.mask),
-            border=self.extract_2d(
-                "border", self.mapper.source_grid_slim.mask.border_grid_sub_1.binned
-            ),
-            pixelization_grid=self.extract_2d(
-                "pixelization_grid",
-                self.mapper.data_pixelization_grid,
-                "mapper_data_pixelization_grid",
-            ),
-        )
-
-    @property
-    def visuals_source_with_include_2d(self) -> Visuals2D:
-        """
-        Extracts from a `Mapper` attributes that can be plotted for figures in its source-plane (e.g. the reconstruction
-        and return them in a `Visuals` object.
-
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
-
-        From a `Mapper` the following attributes can be extracted for plotting in the source-plane:
-
-        - origin: the (y,x) origin of the coordinate system in the source plane.
-        - mapper_source_pixelization_grid: the `Mapper`'s pixelization grid in the source-plane.
-        - mapper_source_grid_slim: the `Mapper`'s full grid in the source-plane.
-        - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
-
-        Parameters
-        ----------
-        mapper : Mapper
-            The mapper whose source-plane attributes are extracted for plotting.
-
-        Returns
-        -------
-        Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin",
-                Grid2DIrregular(grid=[self.mapper.source_pixelization_grid.origin]),
-            ),
-            grid=self.extract_2d(
-                "grid", self.mapper.source_grid_slim, "mapper_source_grid_slim"
-            ),
-            border=self.extract_2d(
-                "border", self.mapper.source_grid_slim.sub_border_grid
-            ),
-            pixelization_grid=self.extract_2d(
-                "pixelization_grid",
-                self.mapper.source_pixelization_grid,
-                "mapper_source_pixelization_grid",
-            ),
-        )
+    def get_visuals_2d_for_source(self) -> Visuals2D:
+        return self.get_2d.via_mapper_for_source_from(mapper=self.mapper)
 
     def figure_2d(self, solution_vector: bool = None):
+        """
+        Plots the plotter's `Mapper` object in 2D.
 
+        Parameters
+        ----------
+        solution_vector
+            A vector of values which can culor the pixels of the mapper's source pixels.
+        """
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
-            visuals_2d=self.visuals_source_with_include_2d,
+            visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
             source_pixelilzation_values=solution_vector,
             auto_labels=AutoLabels(title="Mapper", filename="mapper"),
         )
 
     def subplot_image_and_mapper(self, image: Array2D):
+        """
+        Make a subplot of an input image and the `Mapper`'s source-plane reconstruction.
 
+        This function can include colored points that mark the mappings between the image pixels and their
+        corresponding locations in the `Mapper` source-plane and reconstruction. This therefore visually illustrates
+        the mapping process.
+
+        Parameters
+        ----------
+        image
+            The image which is plotted on the subplot.
+        """
         self.open_subplot_figure(number_subplots=2)
 
         self.mat_plot_2d.plot_array(
             array=image,
-            visuals_2d=self.visuals_data_with_include_2d,
+            visuals_2d=self.get_visuals_2d_for_data(),
             auto_labels=AutoLabels(title="Image"),
         )
 
@@ -146,11 +108,22 @@ class MapperPlotter(AbstractPlotter):
         )
         self.close_subplot_figure()
 
-    def plot_source_from(self, source_pixelization_values, auto_labels):
+    def plot_source_from(
+        self, source_pixelization_values: np.ndarray, auto_labels: AutoLabels
+    ):
+        """
+        Plot the source of the `Mapper` where the coloring is specified by an input set of values.
 
+        Parameters
+        ----------
+        source_pixelization_values
+            The values of the mapper's source pixels used for coloring the figure.
+        auto_labels
+            The labels given to the figure.
+        """
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
-            visuals_2d=self.visuals_source_with_include_2d,
+            visuals_2d=self.get_visuals_2d_for_source(),
             auto_labels=auto_labels,
             source_pixelilzation_values=self.mapper.reconstruction_from(
                 source_pixelization_values

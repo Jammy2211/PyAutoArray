@@ -89,7 +89,7 @@ class Include2D(AbstractInclude):
         serial_overscan: Optional[bool] = None,
     ):
         """
-        Sets which `Visuals2D` are included on a figure plotting 2D data that is plotted using a `Plotter2D`.
+        Sets which `Visuals2D` are included on a figure plotting 2D data that is plotted using a `Plotter`.
 
         The `Include` object is used to extract the visuals of the plotted 2D data structures so they can be used in 
         plot functions. Only visuals with a `True` entry in the `Include` object are extracted and plotted.

@@ -14,45 +14,6 @@ def make_plot_path_setup():
     )
 
 
-def test__visuals_in_constructor_use_imaging_and_include(imaging_7x7):
-
-    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
-
-    include = aplt.Include2D(origin=True, mask=True, border=True)
-
-    imaging_plotter = aplt.ImagingPlotter(
-        imaging=imaging_7x7, visuals_2d=visuals_2d, include_2d=include
-    )
-
-    assert imaging_plotter.visuals_2d.origin == (1.0, 1.0)
-    assert imaging_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
-
-    assert imaging_plotter.visuals_2d.mask == None
-    assert (
-        imaging_plotter.visuals_with_include_2d.mask == imaging_7x7.image.mask
-    ).all()
-
-    assert imaging_plotter.visuals_2d.border == None
-    assert (
-        imaging_plotter.visuals_with_include_2d.border
-        == imaging_7x7.image.mask.border_grid_sub_1.binned
-    ).all()
-
-    assert imaging_plotter.visuals_2d.vector_field == 2
-    assert imaging_plotter.visuals_with_include_2d.vector_field == 2
-
-    include = aplt.Include2D(origin=False, mask=False, border=False)
-
-    imaging_plotter = aplt.ImagingPlotter(
-        imaging=imaging_7x7, visuals_2d=visuals_2d, include_2d=include
-    )
-
-    assert imaging_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
-    assert imaging_plotter.visuals_with_include_2d.mask == None
-    assert imaging_plotter.visuals_with_include_2d.border == None
-    assert imaging_plotter.visuals_with_include_2d.vector_field == 2
-
-
 def test__individual_attributes_are_output(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
