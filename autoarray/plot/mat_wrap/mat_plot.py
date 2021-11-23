@@ -64,7 +64,7 @@ class AbstractMatPlot:
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `VoronoiMapper`: using `plt.fill`.
+        - `MapperVoronoi`: using `plt.fill`.
         
         Parameters
         ----------
@@ -451,7 +451,7 @@ class MatPlot2D(AbstractMatPlot):
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `VoronoiMapper`: using `plt.fill`.
+        - `MapperVoronoi`: using `plt.fill`.
 
         Parameters
         ----------

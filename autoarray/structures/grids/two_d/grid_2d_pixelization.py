@@ -15,7 +15,40 @@ from autoarray.inversion.pixelizations import pixelization_util
 
 class PixelNeighbors(np.ndarray):
     def __new__(cls, arr: np.ndarray, sizes: np.ndarray):
+        """
+        Class packaging ndarrays describing the neighbors of every pixel in a pixelization (e.g. `Rectangular`,
+        `Voronoi`).
 
+        The array `arr` contains the pixel indexes of the neighbors of every pixel. Its has shape [total_pixels,
+        max_neighbors_in_single_pixel].
+
+        The array `sizes` contains the number of neighbors of every pixel in the pixelixzation.
+
+        For example, for a 3x3 `Rectangular` grid:
+
+        - `total_pixels=9` and `max_neighbors_in_single_pixel=4` (because the central pixel has 4 neighbors whereas
+        edge / corner pixels have 3 and 2).
+
+        - The shape of `arr` is therefore [9, 4], with entries where there is no neighbor (e.g. arr[0, 3]) containing
+        values of -1.
+
+        - Pixel 0 is at the top-left of the rectangular pixelization and has two neighbors, the pixel to its right
+        (with index 1) and the pixel below it (with index 3). Therefore, `arr[0,:] = [1, 3, -1, -1]` and `sizes[0] = 2`.
+
+        - Pixel 1 is at the top-middle and has three neighbors, to its left (index 0, right (index 2) and below it
+        (index 4). Therefore, pixel_neighbors[1,:] = [0, 2, 4, 1] and pixel_neighbors_sizes[1] = 3.
+
+        - For pixel 4, the central pixel, pixel_neighbors[4,:] = [1, 3, 5, 7] and pixel_neighbors_sizes[4] = 4.
+
+        The same arrays can be generalized for other pixelizations, for example a `Voronoi` grid.
+
+        Parameters
+        ----------
+        arr
+            An array which maps every pixelization pixel to the indexes of its neighbors.
+        sizes
+            An array containing the number of neighbors of every pixelization pixel.
+        """
         obj = arr.view(cls)
         obj.sizes = sizes
 
@@ -33,21 +66,31 @@ class Grid2DRectangular(AbstractStructure2D):
         **kwargs
     ):
         """
-        A grid of (y,x) coordinates which reprsent a rectangular grid of pixels which are used to form the pixel centres of adaptive pixelizations in the \
-        *pixelizations* module.
+        A grid of (y,x) coordinates which represent a uniform rectangular pixelization.
 
-        A `Grid2DRectangular` is ordered such pixels begin from the top-row of the mask and go rightwards and then \
-        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
-        thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
+        A `Grid2DRectangular` is ordered such pixels begin from the top-row and go rightwards and then downwards.
+        It is an ndarray of shape [total_pixels, 2], where the first dimension of the ndarray corresponds to the
+        pixelization's pixel index and second element whether it is a y or x arc-second coordinate.
 
-        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
-        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
+        For example:
+
+        - grid[3,0] = the y-coordinate of the 4th pixel in the rectangular pixelization.
+        - grid[6,1] = the x-coordinate of the 7th pixel in the rectangular pixelization.
+
+        This class is used in conjuction with the `inversion/pixelizations` package to create rectangular pixelizations
+        and mappers that perform an `Inversion`.
 
         Parameters
         -----------
-        pix_grid
-            The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
-            -plane pixelizations.
+        grid
+            The grid of (y,x) coordinates corresponding to the centres of each pixel in the rectangular pixelization.
+        shape_native
+            The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
+            it is converted to a (float, float) structure.
+        origin
+            The (y,x) origin of the pixelization.
         nearest_pixelization_index_for_slim_index
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
@@ -69,24 +112,24 @@ class Grid2DRectangular(AbstractStructure2D):
         cls, shape_native: Tuple[int, int], grid: np.ndarray, buffer: float = 1e-8
     ) -> "Grid2DRectangular":
         """
-        The geometry of a rectangular grid.
+        Creates a `Grid2DRecntagular` by overlaying the rectangular pixelization over an input grid of (y,x)
+        coordinates.
 
-        This is used to map grid of (y,x) scaled coordinates to the pixels on the rectangular grid.
+        This is performed by first computing the minimum and maximum y and x coordinates of the input grid. A
+        rectangular pixelization with dimensions `shape_native` is then laid over the grid using these coordinates,
+        such that the extreme edges of this rectangular pixelization overlap these maximum and minimum (y,x) coordinates.
+
+        A a `buffer` can be included which increases the size of the rectangular pixelization, placing additional
+        spacing beyond these maximum and minimum coordinates.
 
         Parameters
         -----------
         shape_native
-            The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
-        pixel_scales
-            The pixel conversion scale of a pixel in the y and x directions.
-        origin
-            The scaled origin of the rectangular pixelization's coordinate system.
-        pixel_neighbors
-            An array of length (y_pixels*x_pixels) which provides the index of all neighbors of every pixel in \
-            the rectangular grid (entries of -1 correspond to no neighbor).
-        pixel_neighbors.sizes
-            An array of length (y_pixels*x_pixels) which gives the number of neighbors of every pixel in the \
-            rectangular grid.
+            The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
+        grid
+            A grid of (y,x) coordinates which the rectangular pixelization is laid-over.
+        buffer
+            The size of the extra spacing placed between the edges of the rectangular pixelization and input grid.
         """
 
         y_min = np.min(grid[:, 0]) - buffer
@@ -117,7 +160,13 @@ class Grid2DRectangular(AbstractStructure2D):
 
     @cached_property
     def pixel_neighbors(self) -> PixelNeighbors:
+        """
+        A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
+        `PixelNeighbors` for a complete description of the neighboring scheme).
 
+        The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
+        rectangular grid, as described in the method `pixelization_util.rectangular_neighbors_from`.
+        """
         neighbors, sizes = pixelization_util.rectangular_neighbors_from(
             shape_native=self.shape_native
         )
@@ -126,10 +175,17 @@ class Grid2DRectangular(AbstractStructure2D):
 
     @property
     def pixels(self) -> int:
+        """
+        The total number of pixels in the rectangular pixelization.
+        """
         return self.shape_native[0] * self.shape_native[1]
 
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
+        """
+        The (y,x) 2D shape of the rectangular pixelization in scaled units, computed from the 2D `shape_native` (units
+        pixels) and the `pixel_scales` (units scaled/pixels) conversion factor.
+        """
         return (
             (self.shape_native[0] * self.pixel_scales[0]),
             (self.shape_native[1] * self.pixel_scales[1]),
@@ -138,7 +194,8 @@ class Grid2DRectangular(AbstractStructure2D):
     @property
     def scaled_maxima(self) -> Tuple[float, float]:
         """
-        The maximum values of the grid in scaled coordinates returned as a tuple (y_max, x_max).
+        The maximum (y,x) values of the rectangular pixelization in scaled coordinates returned as a
+        tuple (y_max, x_max).
         """
         return (
             self.origin[0] + (self.shape_native_scaled[0] / 2.0),
@@ -148,7 +205,8 @@ class Grid2DRectangular(AbstractStructure2D):
     @property
     def scaled_minima(self) -> Tuple[float, float]:
         """
-        The minium values of the grid in scaled coordinates returned as a tuple (y_min, x_min).
+        The minimum (y,x) values of the rectangular pixelization in scaled coordinates returned as a
+        tuple (y_min, x_min).
         """
         return (
             (self.origin[0] - (self.shape_native_scaled[0] / 2.0)),
@@ -161,7 +219,8 @@ class Grid2DRectangular(AbstractStructure2D):
         The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
 
         This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module.
+        is used for visualization in the plot module, which is why the x and y coordinates are swapped compared to
+        the normal PyAutoArray convention.
         """
         return np.asarray(
             [
@@ -202,23 +261,22 @@ class Grid2DVoronoi(AbstractStructure2D):
         **kwargs
     ):
         """
-        A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
-        *pixelizations* module.
+        A grid of (y,x) coordinates which represent a Voronoi pixelization.
 
-        A `Grid2DRectangular` is ordered such pixels begin from the top-row of the mask and go rightwards and then \
-        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
-        thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
+        A `Grid2DVoronoi` is ordered arbitrarily, given that there is no regular pattern for a Voronoi mesh's indexing
+        to follow.
 
-        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
-        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
+        This class is used in conjuction with the `inversion/pixelizations` package to create Voronoi pixelizations
+        and mappers that perform an `Inversion`.
 
         Parameters
         -----------
-        pix_grid
-            The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
-            -plane pixelizations.
+        grid
+            The grid of (y,x) coordinates corresponding to the centres of each pixel in the Voronoi pixelization.
         nearest_pixelization_index_for_slim_index
-            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
+            When a Voronoi grid is used to create a mapper and inversion, there are mappings between the `data` pixels
+            and Voronoi pixelization. This array contains these mappings and it is used to speed up the creation of the
+            mapper.
         """
 
         if type(grid) is list:
@@ -232,7 +290,10 @@ class Grid2DVoronoi(AbstractStructure2D):
         return obj
 
     def __array_finalize__(self, obj: object):
-
+        """
+        Ensures that the attribute `nearest_pixelization_index_for_slim_index` which is used to speed up the
+        computation of a mapper from the Voronoi grid is not lost in various calculations.
+        """
         if hasattr(obj, "nearest_pixelization_index_for_slim_index"):
             self.nearest_pixelization_index_for_slim_index = (
                 obj.nearest_pixelization_index_for_slim_index
@@ -240,6 +301,17 @@ class Grid2DVoronoi(AbstractStructure2D):
 
     @cached_property
     def voronoi(self) -> scipy.spatial.Voronoi:
+        """
+        Returns a `scipy.spatial.Voronoi` object from the (y,x) grid of coordinates which correspond to the centre
+        of every cell of the Voronoi pixelization.
+
+        This object contains numerous attributes describing a Voronoi pixelization, however only the `ridge_points`
+        attribute is used by PyAutoArray (see the Scipy documentation for a description of this attribute).
+
+        There are numerous exceptions that `scipy.spatial.Voronoi` may raise when the input grid of coordinates used
+        to compute the Voronoi pixelization are ill posed. These exceptions are caught and combined into a single
+        `PixelizationException`, which helps exception handling in the `inversion` package.
+        """
         try:
             return scipy.spatial.Voronoi(
                 np.asarray([self[:, 1], self[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
@@ -249,7 +321,13 @@ class Grid2DVoronoi(AbstractStructure2D):
 
     @cached_property
     def pixel_neighbors(self) -> PixelNeighbors:
+        """
+        A class packing the ndarrays describing the neighbors of every pixel in the Voronoi pixelization (see
+        `PixelNeighbors` for a complete description of the neighboring scheme).
 
+        The neighbors of a Voronoi pixelization are using the `ridge_points` attribute of the scipy `Voronoi` object,
+        as described in the method `pixelization_util.voronoi_neighbors_from`.
+        """
         neighbors, sizes = pixelization_util.voronoi_neighbors_from(
             pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
         )
@@ -258,28 +336,31 @@ class Grid2DVoronoi(AbstractStructure2D):
 
     @property
     def origin(self) -> Tuple[float, float]:
+        """
+        The (y,x) origin of the Voronoi grid, which is fixed to (0.0, 0.0) for simplicity.
+        """
         return 0.0, 0.0
 
     @property
     def pixels(self) -> int:
+        """
+        The total number of pixels in the Voronoi pixelization.
+        """
         return self.shape[0]
-
-    @property
-    def sub_border_grid(self) -> np.ndarray:
-        """
-        The (y,x) grid of all sub-pixels which are at the border of the mask.
-
-        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border.
-        """
-        return self[self.mask.sub_border_flat_indexes]
 
     @classmethod
     def manual_slim(cls, grid) -> "Grid2DVoronoi":
+        """
+        Convenience method which mimicks the API of other `Grid2D` objects in PyAutoArray.
+        """
         return Grid2DVoronoi(grid=grid)
 
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
+        """
+        The (y,x) 2D shape of the Voronoi pixelization in scaled units, computed from the minimum and maximum y and x v
+        alues of the pixelization.
+        """
         return (
             np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
@@ -287,6 +368,9 @@ class Grid2DVoronoi(AbstractStructure2D):
 
     @property
     def scaled_maxima(self) -> Tuple[float, float]:
+        """
+        The maximum (y,x) values of the Voronoi pixelization in scaled coordinates returned as a tuple (y_max, x_max).
+        """
         return (
             np.amax(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float"),
@@ -294,6 +378,9 @@ class Grid2DVoronoi(AbstractStructure2D):
 
     @property
     def scaled_minima(self) -> Tuple[float, float]:
+        """
+        The minimum (y,x) values of the Voronoi pixelization in scaled coordinates returned as a tuple (y_min, x_min).
+        """
         return (
             np.amin(self[:, 0]).astype("float"),
             np.amin(self[:, 1]).astype("float"),

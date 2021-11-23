@@ -12,7 +12,7 @@ from autoarray.numba_util import profile_func
 class AbstractPixelization:
     def __init__(self):
         """
-        Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
+        Abstract base class for a pixelization, which discretizes a grid of (y,x) coordinates into pixels.
         """
 
     def mapper_from(
@@ -31,11 +31,18 @@ class AbstractPixelization:
         preloads: Preloads = Preloads(),
     ):
         """
-        Return all coordinates that are outside the pixelization border to the edge of the border. The pixelization
-        border is defined as the border of pixels in the original data's mask.
+        Relocates all coordinates of an input grid that are outside the pixelization's border to the edge of the
+        border (see `abstract_grid_2d.relocated_grid_from()` for a full description of how relocation works.
 
-        This is used in the project PyAutoLens because the coordinates that are ray-traced near the centre of mass
-        of galaxies are heavily demagnified and may trace to outskirts of the source-plane.
+        This is used in the project PyAutoLens to relocate the coordinates that are ray-traced near the centre of mass
+        of galaxies, which are heavily demagnified and may trace to outskirts of the source-plane well beyond the
+        border.
+
+        Parameters
+        ----------
+        grid
+            A 2D (y,x) grid of coordinates, whose coordinates outside the pixelization's border are relocated
+            to the edge of this border.
         """
         if preloads.relocated_grid is None:
 

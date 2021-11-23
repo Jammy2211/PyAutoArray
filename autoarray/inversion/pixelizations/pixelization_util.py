@@ -345,8 +345,8 @@ def voronoi_neighbors_from(
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Returns the adjacent neighbors of every pixel on a Voronoi array or grid as an ndarray of shape
-    [total_pixels, voronoi_pixel_with_max_neighbors], using the ridge_points output from the ``scipy.spatial.Voronoi()
-    method.
+    [total_pixels, voronoi_pixel_with_max_neighbors], using the `ridge_points` output from
+    the ``scipy.spatial.Voronoi() method.
 
     Entries with values of ``-1`` signify edge pixels which do not have neighbors (they are required as the ndarray size
     is set by the Voronoi pixel with the most neighbors). This function therefore also returns an ndarray of with the

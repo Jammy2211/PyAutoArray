@@ -1,6 +1,5 @@
-import copy
 import numpy as np
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
@@ -15,16 +14,17 @@ from autoarray.numba_util import profile_func
 
 
 class Rectangular(AbstractPixelization):
-    def __init__(self, shape=(3, 3)):
-        """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape \
+    def __init__(self, shape: Tuple[int, int] = (3, 3)):
+        """
+        A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape
         (total_y_pixels, total_x_pixels).
 
-        Like structures, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        The indexing of a rectangular grid begins in the top-left corner and goes rightwards and downwards.
 
         Parameters
         -----------
         shape
-            The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
+            The 2D dimensions of the rectangular grid of pixels (y_pixels, x_pixel).
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
@@ -47,20 +47,37 @@ class Rectangular(AbstractPixelization):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        Setup a rectangular mapper from a rectangular pixelization, as follows:
+        Mapper objects describe the mappings between pixels in masked 2D data and 2D pixels in a pixelization.
 
-        1) If a border is supplied, relocate all of the grid's and sub grid pixels beyond the border.
-        2) Determine the rectangular pixelization's geometry, by laying the pixelization over the sub-grid.
+        This function returns a rectangular mapper from a rectangular pixelization, as follows:
+
+        1) If `settings.use_border=True`, the border of the input `grid` is used to relocate all of the grid (y,x)
+        coordintes beyond the border to the edge of the border.
+
+        2) Determine the rectangular pixelization's (y,x) pixel coordinates, by laying it over this 2D grid of
+        relocated (y,x) coordinates.
+
         3) Setup the rectangular mapper from the relocated grid and rectangular pixelization.
 
         Parameters
         ----------
-        grid : aa.Grid2D
-            A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : aa.GridBorder I None
-            The border of the grid's grid.
+        grid
+            A 2D grid of (y,x) coordinates associated with the centres of every pixel in the 2D `data`. This could be a
+            uniform grid which overlaps the data's pixels, but it may also have had transformation operations performed
+            on it.
+        sparse_grid
+            Not used for a rectangular pixelization.
+        sparse_image_plane_grid
+            Not used for a rectangular pixelization.
         hyper_image
-            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            Not used for a rectangular pixelization.
+        settings
+            Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
+        preloads
+            Object which may contain preloaded arrays of quantities computed in the pixelization, which are passed via
+            this object speed up the calculation.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         self.profiling_dict = profiling_dict
@@ -80,11 +97,29 @@ class Rectangular(AbstractPixelization):
     @profile_func
     def make_pixelization_grid(
         self,
-        relocated_grid=None,
-        relocated_pixelization_grid=None,
-        sparse_index_for_slim_index=None,
-    ):
+        relocated_grid: Optional[Grid2D] = None,
+        relocated_pixelization_grid: Optional[Grid2D] = None,
+        sparse_index_for_slim_index: Optional[np.ndarray] = None,
+    ) -> Grid2DRectangular:
+        """
+        Returns the rectangular pixelization grid.
 
+        A specific function is used to do this so that it can be profiled via the `@profile_func` decorator, whereby
+        the time this function takes to run is stored in the `profiling_dict`.
+
+        Parameters
+        ----------
+        relocated_grid
+            The (y,x) grid of coordinates over which the rectangular pixelization is overlaid, where this grid may have
+            had exterior pixels relocated to its edge via the border.
+        relocated_pixelization_grid
+            Not used for a rectangular pixelization.
+        sparse_index_for_slim_index
+            Not used for a rectangular pixelization.
+        Returns
+        -------
+
+        """
         return Grid2DRectangular.overlay_grid(
             shape_native=self.shape, grid=relocated_grid
         )
@@ -95,4 +130,7 @@ class Rectangular(AbstractPixelization):
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
+        """
+        Not used for rectangular pixelization.
+        """
         return None

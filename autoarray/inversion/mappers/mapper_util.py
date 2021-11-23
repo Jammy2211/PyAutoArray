@@ -117,6 +117,7 @@ def mapping_matrix_from(
     mapping_matrix = np.zeros((total_mask_pixels, pixels))
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
+
         mapping_matrix[
             slim_index_for_sub_slim_index[sub_slim_index],
             pixelization_index_for_sub_slim_index[sub_slim_index],
@@ -145,7 +146,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
 
     Parameters
     ----------
-    grid : Grid2D
+    grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
     nearest_pixelization_index_for_slim_index

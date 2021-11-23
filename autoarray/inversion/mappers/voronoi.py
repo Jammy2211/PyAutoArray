@@ -1,3 +1,4 @@
+import numpy as np
 from typing import Dict, Optional
 
 from autoconf import cached_property
@@ -47,11 +48,23 @@ class MapperVoronoi(AbstractMapper):
 
     @cached_property
     @profile_func
-    def pixelization_index_for_sub_slim_index(self):
+    def pixelization_index_for_sub_slim_index(self) -> np.ndarray:
         """
-        The 1D index mappings between the sub pixels and Voronoi pixelization pixels.
-        """
+        An array describing the pairing of every image-pixel coordinate to every source-pixel.
 
+        A `pixelization_index` refers to the index of each source pixel index and a `sub_slim_index` refers to the
+        index of each sub-pixel in the masked data.
+
+        For example:
+
+        - If the data's first sub-pixel maps to the source pixelization's third pixel then
+        pixelization_index_for_sub_slim_index[0] = 2
+        - If the data's second sub-pixel maps to the source pixelization's fifth pixel then
+        pixelization_index_for_sub_slim_index[1] = 4
+
+        For a Voronoi pixelization, we perform a graph search to map each coordinate of the mappers traced grid
+        of (y,x) coordinates (`source_grid_slim`) to each Voronoi pixel based on its centre (`source_pixelization_grid`).
+        """
         return mapper_util.pixelization_index_for_voronoi_sub_slim_index_from(
             grid=self.source_grid_slim,
             nearest_pixelization_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,

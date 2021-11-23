@@ -52,17 +52,22 @@ class MapperRectangular(AbstractMapper):
 
     @cached_property
     @profile_func
-    def pixelization_index_for_sub_slim_index(self):
+    def pixelization_index_for_sub_slim_index(self) -> np.ndarray:
         """
-        The `Mapper` contains:
+        An array describing the pairing of every image-pixel coordinate to every source-pixel.
 
-         1) The traced grid of (y,x) source pixel coordinate centres.
-         2) The traced grid of (y,x) image pixel coordinates.
+        A `pixelization_index` refers to the index of each source pixel index and a `sub_slim_index` refers to the
+        index of each sub-pixel in the masked data.
 
-        The function below pairs every image-pixel coordinate to every source-pixel centre.
+        For example:
 
-        In the API, the `pixelization_index` refers to the source pixel index (e.g. source pixel 0, 1, 2 etc.) whereas
-        the sub_slim index refers to the index of a sub-gridded image pixel (e.g. sub pixel 0, 1, 2 etc.).
+        - If the data's first sub-pixel maps to the source pixelization's third pixel then
+        pixelization_index_for_sub_slim_index[0] = 2
+        - If the data's second sub-pixel maps to the source pixelization's fifth pixel then
+        pixelization_index_for_sub_slim_index[1] = 4
+
+        For a rectangular pixelization, we use its uniform properties to map each coordinate of the mappers traced
+        grid of (y,x) coordinates (`source_grid_slim`) to each rectangular pixel of the pixelization.
         """
         return grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=self.source_grid_slim,
