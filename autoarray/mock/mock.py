@@ -78,9 +78,9 @@ class MockPixelization(AbstractPixelization):
     # noinspection PyUnusedLocal,PyShadowingNames
     def mapper_from(
         self,
-        grid,
-        sparse_grid,
-        sparse_image_plane_grid=None,
+        source_grid_slim,
+        source_pixelization_grid,
+        data_pixelization_grid=None,
         hyper_image=None,
         settings=None,
         preloads=None,

@@ -13,10 +13,35 @@ class AbstractPixelization:
     def __init__(self):
         """
         Abstract base class for a pixelization, which discretizes a grid of (y,x) coordinates into pixels.
+
+        The pixelization grid, and the grids they are used to discretize, have coordinates in one or both of the
+        following two reference frames:
+
+        - `data`: the original reference from of the masked data.
+
+        - `source`: a reference frame where the grids in the `data` reference frame are transformed to create new grids
+        of (y,x) coordinates. The transformation does not change the indexing, such that one can easily pair
+        coordinates in the `source` frame to the `data` frame.
+
+        The pixelization itself has its own (y,x) grid of coordinates, titled the `pixelization_grid`, which is
+        typically much sparser than the grid associated with the original masked data. The `pixelization_grid` always
+        has coordinates in the `source` reference frame but may also have coordinates in the `data` reference frame.
+
+        For example, in the project PyAutoLens, we have a 2D image which is typically masked with a circular mask.
+        Its `data_grid_slim` is a 2D grid aligned with this circle, where each (y,x) coordinate is aligned with the
+        centre of an image pixel. A "lensing transformation" is performed which maps this circular grid of (y,x)
+        coordinates to a new grid of coordinates in the `source` frame, where the pixelization is applied.
         """
 
     def mapper_from(
-        self, grid: Grid2D, border: np.ndarray, profiling_dict: Optional[Dict] = None
+        self,
+        source_grid_slim: Grid2D,
+        source_pixelization_grid: Grid2D = None,
+        data_pixelization_grid: Grid2D = None,
+        hyper_image: np.ndarray = None,
+        settings: SettingsPixelization = SettingsPixelization(),
+        preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None,
     ):
         raise NotImplementedError("pixelization_mapper_from should be overridden")
 
@@ -26,13 +51,20 @@ class AbstractPixelization:
     @profile_func
     def relocate_grid_via_border(
         self,
-        grid: Grid2D,
+        source_grid_slim: Grid2D,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
-    ):
+    ) -> Grid2D:
         """
-        Relocates all coordinates of an input grid that are outside the pixelization's border to the edge of the
-        border (see `abstract_grid_2d.relocated_grid_from()` for a full description of how relocation works.
+        Relocates all coordinates of an input grid that are outside of a border defined by a grid of (y,x) coordinates
+        to the edge of this border.
+
+        The border is determined from the mask of the 2D data before any transformations of the data's grid are
+        performed. The border is all pixels in this mask that are pixels at its extreme edge. These pixel indexes
+        are used to then determine a grid of (y,x) coordinates in the transformed grid's reference frame, which
+        points located outside are relocated to the edge of.
+
+        A full description of relocation is given in the method abstract_grid_2d.relocated_grid_from()`.
 
         This is used in the project PyAutoLens to relocate the coordinates that are ray-traced near the centre of mass
         of galaxies, which are heavily demagnified and may trace to outskirts of the source-plane well beyond the
@@ -40,30 +72,32 @@ class AbstractPixelization:
 
         Parameters
         ----------
-        grid
-            A 2D (y,x) grid of coordinates, whose coordinates outside the pixelization's border are relocated
-            to the edge of this border.
+        source_grid_slim
+            A 2D (y,x) grid of coordinates, whose coordinates outside the border are relocated to its edge.
         """
         if preloads.relocated_grid is None:
 
             if settings.use_border:
-                return grid.relocated_grid_from(grid=grid)
-            return grid
+                return source_grid_slim.relocated_grid_from(grid=source_grid_slim)
+            return source_grid_slim
 
         else:
 
             return preloads.relocated_grid
 
-    def relocate_pixelization_grid_via_border(
+    def relocate_pixelization_grid_via_border_from(
         self,
-        grid: Grid2D,
-        pixelization_grid: Grid2DSparse,
+        source_grid_slim: Grid2D,
+        source_pixelization_grid: Grid2DSparse,
         settings: SettingsPixelization = SettingsPixelization(),
     ):
         raise NotImplementedError
 
-    def make_pixelization_grid(
-        self, relocated_grid=None, relocated_pixelization_grid=None
+    def make_pixelization_grid_from(
+        self,
+        source_grid_slim=None,
+        source_pixelization_grid=None,
+        sparse_index_for_slim_index=None,
     ):
         raise NotImplementedError
 

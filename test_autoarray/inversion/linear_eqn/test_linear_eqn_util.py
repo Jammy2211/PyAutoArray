@@ -273,7 +273,7 @@ class TestDataVectorFromData:
 
             grid = aa.Grid2D.from_mask(mask=mask_sub)
 
-            mapper = pixelization.mapper_from(grid=grid)
+            mapper = pixelization.mapper_from(source_grid_slim=grid)
 
             mapping_matrix = mapper.mapping_matrix
 
@@ -465,7 +465,7 @@ class TestCurvatureMatrixImaging:
 
         pixelization = aa.pix.Rectangular(shape=(20, 20))
 
-        mapper = pixelization.mapper_from(grid=mask.masked_grid_sub_1)
+        mapper = pixelization.mapper_from(source_grid_slim=mask.masked_grid_sub_1)
 
         mapping_matrix = mapper.mapping_matrix
 
@@ -514,7 +514,7 @@ class TestCurvatureMatrixImaging:
 
             grid = aa.Grid2D.from_mask(mask=mask_sub)
 
-            mapper = pixelization.mapper_from(grid=grid)
+            mapper = pixelization.mapper_from(source_grid_slim=grid)
 
             mapping_matrix = mapper.mapping_matrix
 

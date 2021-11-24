@@ -15,13 +15,13 @@ class TestRegression:
 
         grid = aa.Grid2D.from_mask(mask=mask)
 
-        sparse_grid = pixelization.sparse_grid_from(grid=grid)
+        sparse_grid = pixelization.data_pixelization_grid_from(data_grid_slim=grid)
 
         grid[8, 0] = 100.0
 
         mapper = pixelization.mapper_from(
-            grid=grid,
-            sparse_grid=sparse_grid,
+            source_grid_slim=grid,
+            source_pixelization_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
         )
 
@@ -32,8 +32,8 @@ class TestRegression:
         sparse_grid[0, 0] = 100.0
 
         mapper = pixelization.mapper_from(
-            grid=grid,
-            sparse_grid=sparse_grid,
+            source_grid_slim=grid,
+            source_pixelization_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
         )
 
