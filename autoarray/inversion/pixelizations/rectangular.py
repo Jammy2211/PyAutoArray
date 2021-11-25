@@ -30,16 +30,17 @@ class Rectangular(AbstractPixelization):
         of (y,x) coordinates. The transformation does not change the indexing, such that one can easily pair
         coordinates in the `source` frame to the `data` frame.
 
-        The pixelization itself has its own (y,x) grid of coordinates, titled the `pixelization_grid`, which is
-        typically much sparser than the grid associated with the original masked data. A `Rectangular` pixelization
-        does not have a grid in the `data` frame but only the `source` frame. The grid of coordinates it is applied too
-        has coordinates in both frames.
+        The pixelization itself has its own (y,x) grid of coordinates, the `pixelization_grid`, which is typically
+        much sparser than the grid associated with the original masked data. A `Rectangular` pixelization does not
+        have a grid in the `data` frame but only the `source` frame. The grid of coordinates it is applied too has
+        coordinates in both frames.
 
         For example, in the project PyAutoLens, we have a 2D image which is typically masked with a circular mask.
         Its `data_grid_slim` is a 2D grid aligned with this circle, where each (y,x) coordinate is aligned with the
         centre of an image pixel. A "lensing transformation" is performed which maps this circular grid of (y,x)
         coordinates to a new grid of coordinates in the `source` frame, where the rectangular pixelization may be
-        overlaid.
+        overlaid. Thus, in lensing terminology, the `data` frame is the `image-plane` and `source` frame the
+        `source-plane`.
 
         Parameters
         -----------
@@ -67,27 +68,28 @@ class Rectangular(AbstractPixelization):
         profiling_dict: Optional[Dict] = None,
     ) -> MapperRectangular:
         """
-        Mapper objects describe the mappings between pixels in the untransformed masked 2D data and the pixels in a
-        pixelization.
+        Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
+        in both the `data` and `source` frames.
 
         This function returns a `MapperRectangular` as follows:
 
-        1) If `settings.use_border=True`, the border of the input `grid` is used to relocate all of the grid's (y,x)
-        coordinates beyond the border to the edge of the border.
+        1) If `settings.use_border=True`, the border of the input `source_grid_slim` is used to relocate all of the
+        grid's (y,x) coordinates beyond the border to the edge of the border.
 
         2) Determine the (y,x) coordinates of the pixelization's rectangular pixels, by laying this rectangular grid
-        over the 2D grid of relocated (y,x) coordinates computed in step 1).
+        over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_grid_slim` if step 1
+        is bypassed).
 
         3) Return the `MapperRectangular`.
 
         Parameters
         ----------
         source_grid_slim
-            A 2D grid of (y,x) coordinates associated with the centres of every pixel in the 2D `data`. This could be a
-            uniform grid which overlaps the data's pixels, but it may also have had transformation operations performed
-            on it.
+            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
+            `source` reference frame.
         source_pixelization_grid
-            Not used for a rectangular pixelization.
+            Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
+            by overlaying the `source_grid_slim` with the rectangular pixelization.
         data_pixelization_grid
             Not used for a rectangular pixelization.
         hyper_image
@@ -125,10 +127,8 @@ class Rectangular(AbstractPixelization):
         sparse_index_for_slim_index: Optional[np.ndarray] = None,
     ) -> Grid2DRectangular:
         """
-        Returns the rectangular pixelization grid.
-
-        A specific function is used to do this so that it can be profiled via the `@profile_func` decorator, whereby
-        the time this function takes to run is stored in the `profiling_dict`.
+        Return the rectangular `source_pixelization_grid` as a `Grid2DRectangular` object, which provides additional
+        functionality for perform operatons that exploit the geometry of a rectangular pixelization.
 
         Parameters
         ----------
@@ -136,12 +136,10 @@ class Rectangular(AbstractPixelization):
             The (y,x) grid of coordinates over which the rectangular pixelization is overlaid, where this grid may have
             had exterior pixels relocated to its edge via the border.
         source_pixelization_grid
-            Not used for a rectangular pixelization.
+            Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
+            by overlaying the `source_grid_slim` with the rectangular pixelization.
         sparse_index_for_slim_index
             Not used for a rectangular pixelization.
-        Returns
-        -------
-
         """
         return Grid2DRectangular.overlay_grid(
             shape_native=self.shape, grid=source_grid_slim

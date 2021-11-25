@@ -17,20 +17,21 @@ class AbstractPixelization:
         The pixelization grid, and the grids they are used to discretize, have coordinates in one or both of the
         following two reference frames:
 
-        - `data`: the original reference from of the masked data.
+        - `data`: the original reference frame of the masked data.
 
         - `source`: a reference frame where the grids in the `data` reference frame are transformed to create new grids
         of (y,x) coordinates. The transformation does not change the indexing, such that one can easily pair
         coordinates in the `source` frame to the `data` frame.
 
-        The pixelization itself has its own (y,x) grid of coordinates, titled the `pixelization_grid`, which is
-        typically much sparser than the grid associated with the original masked data. The `pixelization_grid` always
-        has coordinates in the `source` reference frame but may also have coordinates in the `data` reference frame.
+        The pixelization itself has its own (y,x) grid of coordinates, the `pixelization_grid`, which is typically
+        much sparser than the grid associated with the original masked data. The `pixelization_grid` always has
+        coordinates in the `source` reference frame but may also have coordinates in the `data` reference frame.
 
         For example, in the project PyAutoLens, we have a 2D image which is typically masked with a circular mask.
         Its `data_grid_slim` is a 2D grid aligned with this circle, where each (y,x) coordinate is aligned with the
         centre of an image pixel. A "lensing transformation" is performed which maps this circular grid of (y,x)
-        coordinates to a new grid of coordinates in the `source` frame, where the pixelization is applied.
+        coordinates to a new grid of coordinates in the `source` frame, where the pixelization is applied. Thus, in
+        lensing terminology, the `data` frame is the `image-plane` and `source` frame the `source-plane`.
         """
 
     def mapper_from(
@@ -56,13 +57,13 @@ class AbstractPixelization:
         preloads: Preloads = Preloads(),
     ) -> Grid2D:
         """
-        Relocates all coordinates of an input grid that are outside of a border defined by a grid of (y,x) coordinates
-        to the edge of this border.
+        Relocates all coordinates of the input `source_grid_slim` that are outside of a
+        border (which is defined by a grid of (y,x) coordinates) to the edge of this border.
 
-        The border is determined from the mask of the 2D data before any transformations of the data's grid are
-        performed. The border is all pixels in this mask that are pixels at its extreme edge. These pixel indexes
-        are used to then determine a grid of (y,x) coordinates in the transformed grid's reference frame, which
-        points located outside are relocated to the edge of.
+        The border is determined from the mask of the 2D data in the `data` frame before any transformations of the
+        data's grid are performed. The border is all pixels in this mask that are pixels at its extreme edge. These
+        pixel indexes are used to then determine a grid of (y,x) coordinates from the transformed `source_grid_grid` in
+        the `source` reference frame, whereby points located outside of it are relocated to the border's edge.
 
         A full description of relocation is given in the method abstract_grid_2d.relocated_grid_from()`.
 
