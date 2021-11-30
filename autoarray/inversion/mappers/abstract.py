@@ -48,63 +48,27 @@ class AbstractMapper:
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array in the form of
-        a grid, see the *hyper_galaxies.array.grid* module to discretized pixels in a pixelization.
+        To understand a `Mapper`, one must first be familiar with `Pixelization` objects in the `pixelization` package.
+        This introduces the following four grids: `data_grid_slim`, `source_grid_slim`, `data_pixelization_grid` and
+        `source_pixelization_grid`, whereby the pixelization grid is used to discretize the data grid in the `source`
+        frame. If this description is unclear, revert back to the `pixelization` package for further details.
 
-        1D structures are used to represent these mappings, for example between the different grid in a grid
-        (e.g. the / sub grid). This follows the syntax grid_to_grid, whereby the index of a value on one grid
-        equals that of another grid, for example:
+        A `Mapper` provides the index mappings between the pixels on masked data grid (`grid_slim`) and the
+        pxelization's pixels (`pixelization_grid`). Indexing of these two grids is the same in both the `data` and
+        `source` frames (e.g. the transformation does not change the indexing), meaning that the mapper only needs to
+        provide the index mappings between the `data_grid` and `pixelization_grid`, which are derived based on how the
+        latter discretizes the former in the `source` frame.
 
-        - data_to_pix[2] = 1  tells us that the 3rd pixel on a grid maps to the 2nd pixel of a pixelization.
-        - sub_to_pix4] = 2  tells us that the 5th sub-pixel of a sub-grid maps to the 3rd pixel of a pixelization.
-        - pix_to_data[2] = 5 tells us that the 3rd pixel of a pixelization maps to the 6th (unmasked) pixel of a
-                            grid.
+        These mappings are represented in the 1D ndarray `pixelization_index_for_sub_slim_index`, whereby the index of
+        a pixel on the `pixelization_grid` maps to the index of a pixel on the `grid_slim` as follows:
 
-        Mapping Matrix:
+        - pixelization_index_for_sub_slim_index[0] = 0: the data's 1st sub-pixel maps to the pixelization's 1st pixel.
+        - pixelization_index_for_sub_slim_index[1] = 3: the data's 2nd sub-pixel maps to the pixelization's 4th pixel.
+        - pixelization_index_for_sub_slim_index[2] = 1: the data's 3rd sub-pixel maps to the pixelization's 2nd pixel.
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
-        unmasked pixel of a grid and the pixels of a pixelization. Non-zero entries signify a mapping, whereas zeros
-        signify no mapping.
-
-        For example, if the grid has 5 pixels and the pixelization 3 pixels, with the following mappings:
-
-        pixel 0 -> pixelization pixel 0
-        pixel 1 -> pixelization pixel 0
-        pixel 2 -> pixelization pixel 1
-        pixel 3 -> pixelization pixel 1
-        pixel 4 -> pixelization pixel 2
-
-        The mapping matrix (which is of dimensions regular_pixels x pixelization_pixels) would appear as follows:
-
-        [1, 0, 0] [0->0]
-        [1, 0, 0] [1->0]
-        [0, 1, 0] [2->1]
-        [0, 1, 0] [3->1]
-        [0, 0, 1] [4->2]
-
-        The mapping matrix is in fact built using the sub-grid of the grid, whereby each pixel is
-        divided into a grid of sub-pixels which are all paired to pixels in the pixelization. The entries
-        in the mapping matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2
-        sub-grid in each pixel which means the fraction value is 1.0/(2.0^2) = 0.25, if we have the following mappings:
-
-        pixel 0 -> sub pixel 0 -> pixelization pixel 0
-        pixel 0 -> sub pixel 1 -> pixelization pixel 1
-        pixel 0 -> sub pixel 2 -> pixelization pixel 1
-        pixel 0 -> sub pixel 3 -> pixelization pixel 1
-        pixel 1 -> sub pixel 0 -> pixelization pixel 1
-        pixel 1 -> sub pixel 1 -> pixelization pixel 1
-        pixel 1 -> sub pixel 2 -> pixelization pixel 1
-        pixel 1 -> sub pixel 3 -> pixelization pixel 1
-        pixel 2 -> sub pixel 0 -> pixelization pixel 2
-        pixel 2 -> sub pixel 1 -> pixelization pixel 2
-        pixel 2 -> sub pixel 2 -> pixelization pixel 3
-        pixel 2 -> sub pixel 3 -> pixelization pixel 3
-
-        The mapping matrix (which is still of dimensions regular_pixels x source_pixels) would appear as follows:
-
-        [0.25, 0.75, 0.0, 0.0] [1 sub-pixel maps to pixel 0, 3 map to pixel 1]
-        [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
-        [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
+        unmasked pixel of a grid and the pixels of a pixelization. This matrix is the basis of performing an
+        `Inversion`, which reconstructed the data using the `source_pixelization_grid`.
 
         Parameters
         ----------
@@ -187,7 +151,7 @@ class AbstractMapper:
         return mapper_util.mapping_matrix_from(
             pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
             pixels=self.pixels,
-            total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
+            total_mask_sub_pixels=self.source_grid_slim.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )

@@ -47,7 +47,7 @@ class TestMappingMatrix:
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
             pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=6,
-            total_mask_pixels=3,
+            total_mask_sub_pixels=3,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=1.0,
         )
@@ -71,7 +71,7 @@ class TestMappingMatrix:
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
             pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=8,
-            total_mask_pixels=5,
+            total_mask_sub_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=1.0,
         )
@@ -120,7 +120,7 @@ class TestMappingMatrix:
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
             pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=8,
-            total_mask_pixels=5,
+            total_mask_sub_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=0.25,
         )
@@ -152,7 +152,7 @@ class TestMappingMatrix:
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
             pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=8,
-            total_mask_pixels=5,
+            total_mask_sub_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=0.25,
         )
@@ -281,7 +281,7 @@ class TestMappingMatrix:
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
             pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pixels=6,
-            total_mask_pixels=3,
+            total_mask_sub_pixels=3,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=1.0 / 16.0,
         )

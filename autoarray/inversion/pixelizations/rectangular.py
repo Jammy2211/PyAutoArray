@@ -24,23 +24,32 @@ class Rectangular(AbstractPixelization):
         The rectangular pixelization grid, and the grids it is used to discretize, have coordinates in one or both of
         the following two reference frames:
 
-        - `data`: the original reference from of the masked data.
+        - `data`: the original reference frame of the masked data.
 
         - `source`: a reference frame where the grids in the `data` reference frame are transformed to create new grids
-        of (y,x) coordinates. The transformation does not change the indexing, such that one can easily pair
-        coordinates in the `source` frame to the `data` frame.
+        of (y,x) coordinates.
 
-        The pixelization itself has its own (y,x) grid of coordinates, the `pixelization_grid`, which is typically
-        much sparser than the grid associated with the original masked data. A `Rectangular` pixelization does not
-        have a grid in the `data` frame but only the `source` frame. The grid of coordinates it is applied too has
-        coordinates in both frames.
+        The pixelization class deals with the following two types of grids:
 
-        For example, in the project PyAutoLens, we have a 2D image which is typically masked with a circular mask.
-        Its `data_grid_slim` is a 2D grid aligned with this circle, where each (y,x) coordinate is aligned with the
-        centre of an image pixel. A "lensing transformation" is performed which maps this circular grid of (y,x)
-        coordinates to a new grid of coordinates in the `source` frame, where the rectangular pixelization may be
-        overlaid. Thus, in lensing terminology, the `data` frame is the `image-plane` and `source` frame the
-        `source-plane`.
+        - `grid_slim`: the (y,x) grid of coordinates associated with the original masked data.
+
+        - `pixelization_grid`: the (y,x) grid of coordinates which are used to discretize the `grid_slim` (this
+        discretization is always performed in the `source` reference frame).
+
+        A rectangular pixelization has three grids associated with it: `data_grid_slim`, `source_grid_slim`,
+        and `source_pixelization_grid`
+
+        A `Rectangular` pixelization is constructed by overlaying a grid of rectangular over the `source_grid_slim`.
+        It therefore does not have a `data_pixelization_grid` because it is constructed in the `source` frame.
+
+        If a transformation of coordinates is not applied, then the `data` frame and `source` frame are identical,
+        as are their associated `grid_slim` and `pixelization_grid`.
+
+        In the project PyAutoLens, we have a 2D image which is masked with a circular mask. Its `data_grid_slim` is a
+        2D grid aligned with this circle, where each (y,x) coordinate is aligned with the centre of an image pixel.
+        A "lensing transformation" is performed which maps this circular grid of (y,x) coordinates to a new grid of
+        coordinates in the `source` frame, where the rectangular pixelization may be overlaid. Thus, in lensing
+        terminology, the `data` frame is the `image-plane` and `source` frame the `source-plane`.
 
         Parameters
         -----------

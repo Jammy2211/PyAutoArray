@@ -12,26 +12,35 @@ from autoarray.numba_util import profile_func
 class AbstractPixelization:
     def __init__(self):
         """
-        Abstract base class for a pixelization, which discretizes a grid of (y,x) coordinates into pixels.
+        Abstract base class for a pixelization, which discretizes a grid of transformed (y,x) coordinates into pixels.
 
-        The pixelization grid, and the grids they are used to discretize, have coordinates in one or both of the
-        following two reference frames:
+        The grids associated with a pixelization have coordinates in one or both of the following two reference frames:
 
         - `data`: the original reference frame of the masked data.
 
         - `source`: a reference frame where the grids in the `data` reference frame are transformed to create new grids
-        of (y,x) coordinates. The transformation does not change the indexing, such that one can easily pair
-        coordinates in the `source` frame to the `data` frame.
+        of (y,x) coordinates.
 
-        The pixelization itself has its own (y,x) grid of coordinates, the `pixelization_grid`, which is typically
-        much sparser than the grid associated with the original masked data. The `pixelization_grid` always has
-        coordinates in the `source` reference frame but may also have coordinates in the `data` reference frame.
+        The pixelization class deals with the following two types of grids:
 
-        For example, in the project PyAutoLens, we have a 2D image which is typically masked with a circular mask.
-        Its `data_grid_slim` is a 2D grid aligned with this circle, where each (y,x) coordinate is aligned with the
-        centre of an image pixel. A "lensing transformation" is performed which maps this circular grid of (y,x)
-        coordinates to a new grid of coordinates in the `source` frame, where the pixelization is applied. Thus, in
-        lensing terminology, the `data` frame is the `image-plane` and `source` frame the `source-plane`.
+        - `grid_slim`: the (y,x) grid of coordinates associated with the original masked data.
+
+        - `pixelization_grid`: the (y,x) grid of coordinates which are used to discretize the `grid_slim` (this
+        discretization is always performed in the `source` reference frame).
+
+        A pixelization therefore has up to four grids associated with it: `data_grid_slim`, `source_grid_slim`,
+        `data_pixelization_grid` and `source_pixelization_grid`.
+
+        If a transformation of coordinates is not applied, then the `data` frame and `source` frame are identical,
+        as are their associated `grid_slim` and `pixelization_grid`.
+
+        In the project PyAutoLens, we have a 2D image which is masked with a circular mask. Its `data_grid_slim` is a
+        2D grid aligned with this circle, where each (y,x) coordinate is aligned with the centre of an image pixel.
+        A "lensing transformation" is performed which maps this circular grid of (y,x) coordinates to a new grid of
+        coordinates in the `source` frame, where the pixelization is applied. Thus, in lensing terminology, the `data`
+        frame is the `image-plane` and `source` frame the `source-plane`.
+
+
         """
 
     def mapper_from(
