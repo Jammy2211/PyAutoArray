@@ -146,7 +146,7 @@ class AbstractMapper:
         The `mapping_matrix` is a matrix that represents the image-pixel to pixelization-pixel mappings above in a
         2D matrix. It in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf.
 
-        A full description is given in `mapping_matrix_from`.
+        A full description is given in `mapper_util.mapping_matrix_from()`.
         """
         return mapper_util.mapping_matrix_from(
             pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,

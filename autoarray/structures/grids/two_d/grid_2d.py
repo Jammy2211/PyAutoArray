@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.cluster import KMeans
 from typing import List, Optional, Tuple, Union
+import warnings
 
 from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
 from autoarray.mask.mask_2d import Mask2D
@@ -1012,6 +1013,8 @@ class Grid2DSparse(AbstractGrid2D):
             If True, the random number seed is randommly chosen every time the function is called, ensuring every
             pixel-grid is randomly determined and thus stochastic.
         """
+
+        warnings.filterwarnings("ignore")
 
         if stochastic:
             seed = np.random.randint(low=1, high=2 ** 31)

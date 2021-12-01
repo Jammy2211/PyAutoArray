@@ -39,8 +39,6 @@ class AbstractPixelization:
         A "lensing transformation" is performed which maps this circular grid of (y,x) coordinates to a new grid of
         coordinates in the `source` frame, where the pixelization is applied. Thus, in lensing terminology, the `data`
         frame is the `image-plane` and `source` frame the `source-plane`.
-
-
         """
 
     def mapper_from(
