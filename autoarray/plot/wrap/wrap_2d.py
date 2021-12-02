@@ -390,8 +390,8 @@ class GridErrorbar(AbstractMatWrap2D):
                 plt.errorbar(
                     y=grid[:, 0],
                     x=grid[:, 1],
-                    yerr=y_errors,
-                    xerr=x_errors,
+                    yerr=np.asarray(y_errors),
+                    xerr=np.asarray(x_errors),
                     c=next(color),
                     **config_dict,
                 )
