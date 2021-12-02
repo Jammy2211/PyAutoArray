@@ -2,22 +2,21 @@ import numpy as np
 from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
-from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
-from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.dataset.interferometer import WTildeInterferometer
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.linear_eqn import linear_eqn_util
-
-from autoarray.dataset.interferometer_secret import WTildeInterferometer
-from autoarray.inversion.inversion.settings import SettingsInversion
-
 from autoarray.inversion.inversion import inversion_interferometer_util
+
 from autoarray.numba_util import profile_func
 
 
@@ -193,8 +192,6 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
         return mapped_reconstructed_data_of_mappers
 
 
-
-
 class LinearEqnInterferometerWTilde(AbstractLinearEqnInterferometer):
     def __init__(
         self,
@@ -269,7 +266,7 @@ class LinearEqnInterferometerWTilde(AbstractLinearEqnInterferometer):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
+        return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
             curvature_preload=self.w_tilde.curvature_preload,
             pixelization_index_for_sub_slim_index=self.mapper_list[
                 0
@@ -297,7 +294,6 @@ class LinearEqnInterferometerWTilde(AbstractLinearEqnInterferometer):
                 reconstruction=reconstruction
             )
         )
-
 
 
 class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):

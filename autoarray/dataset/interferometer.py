@@ -29,6 +29,7 @@ class WTildeInterferometer(AbstractWTilde):
             curvature_preload=curvature_preload, noise_map_value=noise_map_value
         )
 
+
 class SettingsInterferometer(AbstractSettingsDataset):
     def __init__(
         self,
