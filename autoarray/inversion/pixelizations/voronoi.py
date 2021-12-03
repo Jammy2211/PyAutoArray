@@ -295,7 +295,7 @@ class VoronoiMagnification(Voronoi):
 
 class VoronoiBrightnessImage(Voronoi):
     def __init__(
-        self, pixels: int = 10, weight_floor: float = 0.0, weight_power: float = 0.0
+        self, pixels = 10, weight_floor: float = 0.0, weight_power: float = 0.0
     ):
         """
         A Voronoi pixelization, which represents pixels as an irregular grid of Voronoi cells which can form any
