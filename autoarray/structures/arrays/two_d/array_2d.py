@@ -575,3 +575,6 @@ class Array2D(AbstractArray2D):
             sub_size=sub_size,
             header=header,
         )
+
+    def apply_mask(self, mask: Mask2D):
+        return Array2D.manual_mask(array=self.native, mask=mask, header=self.header)
