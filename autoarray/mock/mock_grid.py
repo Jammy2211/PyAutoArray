@@ -126,6 +126,13 @@ class MockGridLikeIteratorObj:
             grid=grid, radius=np.full(grid.shape[0], 2.0)
         )
 
+    @grid_decorators.grid_2d_to_vector_yx
+    @grid_decorators.grid_2d_to_structure
+    def ndarray_yx_2d_from(self, grid):
+        return self.grid_to_grid_cartesian(
+            grid=grid, radius=np.full(grid.shape[0], 2.0)
+        )
+
     @grid_decorators.grid_2d_to_structure_list
     def ndarray_1d_list_from(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
@@ -180,15 +187,10 @@ class MockGrid2DLikeObj:
     def ndarray_2d_from(self, grid):
         return np.multiply(2.0, grid)
 
+    @grid_decorators.grid_2d_to_vector_yx
     @grid_decorators.grid_2d_to_structure
-    def ndarray_3d_from(self, grid):
-
-        ndarray = np.zeros((grid.shape[0], grid.shape[1], 2))
-
-        ndarray[:, :, 0] = 2.0 * grid
-        ndarray[:, :, 1] = 2.0 * grid
-
-        return ndarray
+    def ndarray_yx_2d_from(self, grid):
+        return 2.0 * grid
 
     @grid_decorators.grid_2d_to_structure_list
     def ndarray_1d_list_from(self, grid):
