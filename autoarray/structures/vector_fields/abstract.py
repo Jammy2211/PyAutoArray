@@ -1,20 +1,16 @@
 import logging
 import numpy as np
-from typing import List, Tuple, Union
 
-from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.abstract_structure import AbstractStructure2D
+
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.arrays.values import ValuesIrregular
-
-from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractVectorField2D(np.ndarray):
+class AbstractVectorField2D(AbstractStructure2D):
     def __array_finalize__(self, obj):
 
         if hasattr(obj, "mask"):
@@ -59,7 +55,7 @@ class AbstractVectorField2D(np.ndarray):
         `slim` to `native` and returned as a new `Grid2D`.
         """
 
-        if len(self.shape) != 3:
+        if len(self.shape) != 2:
             return self
 
         vector_field_2d_native = grid_2d_util.grid_2d_native_from(
@@ -98,21 +94,11 @@ class AbstractVectorField2D(np.ndarray):
             self.slim[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        grid_2d_slim_binned_y = np.multiply(
-            self.mask.sub_fraction,
-            self.grid.slim[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
-        grid_2d_slim_binned_x = np.multiply(
-            self.mask.sub_fraction,
-            self.grid.slim[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
         return self.__class__(
             vectors=np.stack(
                 (vector_2d_slim_binned_y, vector_2d_slim_binned_x), axis=-1
             ),
-            grid=np.stack((grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1),
+            grid=self.grid.binned,
             mask=self.mask.mask_sub_1,
         )
 
