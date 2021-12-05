@@ -265,7 +265,7 @@ def grid_2d_to_structure_list(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: List[Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D]],
+        grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
         **kwargs
     ) -> List[Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]]:
@@ -401,7 +401,7 @@ def grid_2d_to_vector_yx_list(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: List[Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D]],
+        grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
         **kwargs
     ) -> List[Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]]:
@@ -423,30 +423,18 @@ def grid_2d_to_vector_yx_list(func):
             of NumPy arrays.
         """
 
-        if isinstance(grid, Grid2DIterate):
-            mask = grid.mask.mask_new_sub_size_from(
-                mask=grid.mask, sub_size=max(grid.sub_steps)
-            )
-            grid_compute = Grid2D.from_mask(mask=mask)
-            result_list = func(obj, grid_compute, *args, **kwargs)
-            result_list = [
-                grid_compute.vector_yx_2d_from(result=result) for result in result_list
-            ]
-            result_list = [result.binned for result in result_list]
-            return grid.grid.vector_yx_2d_list_from(result_list=result_list)
-        elif isinstance(grid, Grid2DIrregular):
-            result_list = func(obj, grid, *args, **kwargs)
-            return grid.vector_yx_2d_list_from(result_list=result_list)
-        elif isinstance(grid, Grid2D):
-            result_list = func(obj, grid, *args, **kwargs)
-            return grid.vector_yx_2d_list_from(result_list=result_list)
-        elif isinstance(grid, AbstractGrid1D):
-            grid_2d_radial = grid.project_to_radial_grid_2d()
-            result_list = func(obj, grid_2d_radial, *args, **kwargs)
-            return grid.vector_yx_2d_list_from(result_list=result_list)
+        vector_yx_2d_list = func(obj, grid, *args, **kwargs)
 
-        if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
-            return func(obj, grid, *args, **kwargs)
+        if isinstance(grid, Grid2DIrregular):
+            return [
+                VectorYX2DIrregular(vectors=vectors, grid=grid)
+                for vectors in vector_yx_2d_list
+            ]
+        else:
+            return [
+                VectorYX2D(vectors=vectors, grid=grid, mask=grid.mask)
+                for vectors in vector_yx_2d_list
+            ]
 
     return wrapper
 
