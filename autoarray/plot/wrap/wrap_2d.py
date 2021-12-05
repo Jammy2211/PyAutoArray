@@ -15,9 +15,7 @@ from autoarray.plot.wrap.wrap_base import AbstractMatWrap
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.structures.vector_fields.vector_field_irregular import (
-    VectorField2DIrregular,
-)
+from autoarray.structures.vector_fields.irregular import VectorField2DIrregular
 
 from autoarray import exc
 

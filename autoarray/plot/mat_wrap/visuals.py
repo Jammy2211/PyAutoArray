@@ -10,9 +10,7 @@ from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.vector_fields.vector_field_irregular import (
-    VectorField2DIrregular,
-)
+from autoarray.structures.vector_fields.irregular import VectorField2DIrregular
 from autoarray.plot.mat_wrap.include import Include1D
 
 

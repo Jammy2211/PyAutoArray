@@ -27,7 +27,7 @@ class Array2D(AbstractArray2D):
         The array can be stored in 1D or 2D, as detailed below.
 
         Case 1: [sub-size=1, slim]:
-        -----------------------------------------
+        ---------------------------
 
         The Array2D is an ndarray of shape [total_unmasked_pixels].
 
