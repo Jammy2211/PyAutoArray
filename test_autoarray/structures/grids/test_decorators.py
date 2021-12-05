@@ -165,6 +165,21 @@ class TestGrid2DToStructure:
             )
         ).all()
 
+        # vectors_output = grid_like_object.ndarray_3d_from(grid=grid_2d)
+        #
+        # assert isinstance(grid_output, aa.VectorYX2D)
+        # assert (
+        #     grid_output.native
+        #     == np.array(
+        #         [
+        #             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+        #             [[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [0.0, 0.0]],
+        #             [[0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0]],
+        #             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+        #         ]
+        #     )
+        # ).all()
+
     def test__grid_2d_in__output_is_list__list_of_same_format(self):
 
         mask = aa.Mask2D.manual(

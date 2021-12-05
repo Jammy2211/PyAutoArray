@@ -10,7 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractVectorField2D(AbstractStructure2D):
+class AbstractVectorYX2D(AbstractStructure2D):
     def __array_finalize__(self, obj):
 
         if hasattr(obj, "mask"):
@@ -20,9 +20,9 @@ class AbstractVectorField2D(AbstractStructure2D):
             self.grid = obj.grid
 
     @property
-    def slim(self) -> "VectorField2D":
+    def slim(self) -> "VectorYX2D":
         """
-        Return a `VectorField2D` where the data is stored its `slim` representation, which is an ndarray of shape
+        Return a `VectorYX2D` where the data is stored its `slim` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size**2, 2].
 
         If it is already stored in its `slim` representation it is returned as it is. If not, it is  mapped from
@@ -31,7 +31,7 @@ class AbstractVectorField2D(AbstractStructure2D):
         if len(self.shape) == 2:
             return self
 
-        vector_field_2d_slim = grid_2d_util.grid_2d_slim_from(
+        vectors_2d_slim = grid_2d_util.grid_2d_slim_from(
             grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
@@ -42,13 +42,13 @@ class AbstractVectorField2D(AbstractStructure2D):
         grid_2d_slim = Grid2D.manual_mask(grid=grid_2d_slim, mask=self.mask)
 
         return self.__class__(
-            vectors=vector_field_2d_slim, grid=grid_2d_slim, mask=self.mask
+            vectors=vectors_2d_slim, grid=grid_2d_slim, mask=self.mask
         )
 
     @property
-    def native(self) -> "VectorField2D":
+    def native(self) -> "VectorYX2D":
         """
-        Return a `VectorField2D` where the data is stored in its `native` representation, which is an ndarray of shape
+        Return a `VectorYX2D` where the data is stored in its `native` representation, which is an ndarray of shape
         [sub_size*total_y_pixels, sub_size*total_x_pixels, 2].
 
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
@@ -58,7 +58,7 @@ class AbstractVectorField2D(AbstractStructure2D):
         if len(self.shape) != 2:
             return self
 
-        vector_field_2d_native = grid_2d_util.grid_2d_native_from(
+        vectors_2d_native = grid_2d_util.grid_2d_native_from(
             grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
@@ -69,11 +69,11 @@ class AbstractVectorField2D(AbstractStructure2D):
         grid_2d_native = Grid2D.manual_mask(grid=grid_2d_native, mask=self.mask)
 
         return self.__class__(
-            vectors=vector_field_2d_native, grid=grid_2d_native, mask=self.mask
+            vectors=vectors_2d_native, grid=grid_2d_native, mask=self.mask
         )
 
     @property
-    def binned(self) -> "VectorField2D":
+    def binned(self) -> "VectorYX2D":
         """
         Convenience method to access the binned-up vectors as a Vector2D stored in its `slim` or `native` format.
 

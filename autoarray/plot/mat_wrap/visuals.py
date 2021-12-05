@@ -10,7 +10,7 @@ from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.vector_fields.irregular import VectorField2DIrregular
+from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.plot.mat_wrap.include import Include1D
 
 
@@ -111,7 +111,7 @@ class Visuals2D(AbstractVisuals):
         positions: Union[Grid2DIrregular, List[Grid2DIrregular]] = None,
         grid: Grid2D = None,
         pixelization_grid: Grid2D = None,
-        vector_field: VectorField2DIrregular = None,
+        vectors: VectorYX2DIrregular = None,
         patches: List[ptch.Patch] = None,
         array_overlay: Array2D = None,
         parallel_overscan=None,
@@ -128,7 +128,7 @@ class Visuals2D(AbstractVisuals):
         self.positions = positions
         self.grid = grid
         self.pixelization_grid = pixelization_grid
-        self.vector_field = vector_field
+        self.vectors = vectors
         self.patches = patches
         self.array_overlay = array_overlay
         self.parallel_overscan = parallel_overscan
@@ -157,10 +157,8 @@ class Visuals2D(AbstractVisuals):
         if self.positions is not None:
             plotter.positions_scatter.scatter_grid(grid=self.positions)
 
-        if self.vector_field is not None:
-            plotter.vector_field_quiver.quiver_vector_field(
-                vector_field=self.vector_field
-            )
+        if self.vectors is not None:
+            plotter.vectors_quiver.quiver_vectors(vectors=self.vectors)
 
         if self.patches is not None:
             plotter.patch_overlay.overlay_patches(patches=self.patches)

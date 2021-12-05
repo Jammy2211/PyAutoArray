@@ -180,6 +180,16 @@ class MockGrid2DLikeObj:
     def ndarray_2d_from(self, grid):
         return np.multiply(2.0, grid)
 
+    @grid_decorators.grid_2d_to_structure
+    def ndarray_3d_from(self, grid):
+
+        ndarray = np.zeros((grid.shape[0], grid.shape[1], 2))
+
+        ndarray[:, :, 0] = 2.0 * grid
+        ndarray[:, :, 1] = 2.0 * grid
+
+        return ndarray
+
     @grid_decorators.grid_2d_to_structure_list
     def ndarray_1d_list_from(self, grid):
         return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]

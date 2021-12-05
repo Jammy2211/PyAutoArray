@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.vector_fields.abstract import AbstractVectorField2D
+from autoarray.structures.vectors.abstract import AbstractVectorYX2D
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids import abstract_grid
@@ -15,7 +15,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class VectorField2D(AbstractVectorField2D):
+class VectorYX2D(AbstractVectorYX2D):
     def __new__(
         cls,
         vectors: Union[np.ndarray, List[Tuple[float, float]]],
@@ -28,7 +28,7 @@ class VectorField2D(AbstractVectorField2D):
         The vectors are paired to a uniform 2D mask of pixels and sub-pixels. Each vector corresponds to a value at 
         the centre of a sub-pixel in an unmasked pixel.
 
-        The `VectorField2D` is ordered such that pixels begin from the top-row of the corresponding mask and go right 
+        The `VectorYX2D` is ordered such that pixels begin from the top-row of the corresponding mask and go right
         and down. The positive y-axis is upwards and positive x-axis to the right.
 
         The (y,x) vectors are stored as a NumPy array which has the `slim` and `native shapes described below. 
@@ -232,14 +232,14 @@ class VectorField2D(AbstractVectorField2D):
         pixel_scales: Union[Tuple[float, float], float],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-    ) -> "VectorField2D":
+    ) -> "VectorYX2D":
         """
-        Create a VectorField2D (see *VectorField2D.__new__*) by inputting the vector in 1D, for example:
+        Create a VectorYX2D (see *VectorYX2D.__new__*) by inputting the vector in 1D, for example:
 
         vectors=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
         vectors=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
-        The `VectorField2D` object assumes a uniform `Grid2D` which is computed from the input `shape_native`,
+        The `VectorYX2D` object assumes a uniform `Grid2D` which is computed from the input `shape_native`,
         `pixel_scales` and `origin`.
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the `shape_native` must be
@@ -278,7 +278,7 @@ class VectorField2D(AbstractVectorField2D):
 
         vectors = abstract_grid_2d.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
 
-        return VectorField2D(vectors=vectors, grid=grid, mask=mask)
+        return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
     @classmethod
     def manual_native(
@@ -287,9 +287,9 @@ class VectorField2D(AbstractVectorField2D):
         pixel_scales: Union[Tuple[float, float], float],
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-    ) -> "VectorField2D":
+    ) -> "VectorYX2D":
         """
-        Create a VectorField2D (see *VectorField2D.__new__*) by inputting the grid coordinates in 2D, for example:
+        Create a VectorYX2D (see *VectorYX2D.__new__*) by inputting the grid coordinates in 2D, for example:
 
         vectors=np.ndarray([[[1.0, 1.0], [2.0, 2.0]],
                          [[3.0, 3.0], [4.0, 4.0]]])
@@ -297,7 +297,7 @@ class VectorField2D(AbstractVectorField2D):
         vectors=[[[1.0, 1.0], [2.0, 2.0]],
                 [[3.0, 3.0], [4.0, 4.0]]]
 
-        The `VectorField2D` object assumes a uniform `Grid2D` which is computed from the mask's `shape_native`,
+        The `VectorYX2D` object assumes a uniform `Grid2D` which is computed from the mask's `shape_native`,
         `pixel_scales` and `origin`.
 
         The 2D shape of the grid and its mask are determined from the input grid and the mask is setup as an
@@ -342,7 +342,7 @@ class VectorField2D(AbstractVectorField2D):
 
         vectors = abstract_grid_2d.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
 
-        return VectorField2D(vectors=vectors, grid=grid, mask=mask)
+        return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
     @property
     def magnitudes(self) -> Array2D:

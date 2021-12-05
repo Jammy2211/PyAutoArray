@@ -424,7 +424,7 @@ class MatPlot2D(AbstractMatPlot):
         grid_scatter: w2d.GridScatter = w2d.GridScatter(),
         grid_plot: w2d.GridPlot = w2d.GridPlot(),
         grid_errorbar: w2d.GridErrorbar = w2d.GridErrorbar(),
-        vector_field_quiver: w2d.VectorFieldQuiver = w2d.VectorFieldQuiver(),
+        vectors_quiver: w2d.VectorFieldQuiver = w2d.VectorFieldQuiver(),
         patch_overlay: w2d.PatchOverlay = w2d.PatchOverlay(),
         voronoi_drawer: w2d.VoronoiDrawer = w2d.VoronoiDrawer(),
         origin_scatter: w2d.OriginScatter = w2d.OriginScatter(),
@@ -494,7 +494,7 @@ class MatPlot2D(AbstractMatPlot):
             Scatters a `Grid2D` of (y,x) coordinates over the figure using `plt.scatter`.
         grid_plot
             Plots lines of data (e.g. a y versus x plot via `plt.plot`, vertical lines via `plt.avxline`, etc.)
-        vector_field_quiver
+        vectors_quiver
             Plots a `VectorField` object using the matplotlib function `plt.quiver`.
         patch_overlay
             Overlays matplotlib `patches.Patch` objects over the figure, such as an `Ellipse`.
@@ -547,7 +547,7 @@ class MatPlot2D(AbstractMatPlot):
         self.positions_scatter = positions_scatter
         self.index_scatter = index_scatter
         self.pixelization_grid_scatter = pixelization_grid_scatter
-        self.vector_field_quiver = vector_field_quiver
+        self.vectors_quiver = vectors_quiver
         self.patch_overlay = patch_overlay
         self.array_overlay = array_overlay
         self.voronoi_drawer = voronoi_drawer

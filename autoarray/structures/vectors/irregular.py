@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from typing import List, Tuple, Union
 
-from autoarray.structures.vector_fields.abstract import AbstractVectorField2D
+from autoarray.structures.vectors.abstract import AbstractVectorYX2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.arrays.values import ValuesIrregular
 
@@ -12,7 +12,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class VectorField2DIrregular(AbstractVectorField2D):
+class VectorYX2DIrregular(AbstractVectorYX2D):
     def __new__(
         cls,
         vectors: Union[
@@ -100,9 +100,9 @@ class VectorField2DIrregular(AbstractVectorField2D):
 
     def vectors_within_radius(
         self, radius: float, centre: Tuple[float, float] = (0.0, 0.0)
-    ) -> "VectorField2DIrregular":
+    ) -> "VectorYX2DIrregular":
         """
-        Returns a new `VectorField2DIrregular` object which has had all vectors outside of a circle of input radius
+        Returns a new `VectorYX2DIrregular` object which has had all vectors outside of a circle of input radius
         around an  input (y,x) centre removed.
 
         Parameters
@@ -114,7 +114,7 @@ class VectorField2DIrregular(AbstractVectorField2D):
 
         Returns
         -------
-        VectorField2DIrregular
+        VectorYX2DIrregular
             The vector field where all vectors outside of the input radius are removed.
 
         """
@@ -126,7 +126,7 @@ class VectorField2DIrregular(AbstractVectorField2D):
                 "The input radius removed all vectors / points on the grid."
             )
 
-        return VectorField2DIrregular(
+        return VectorYX2DIrregular(
             vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )
 
@@ -135,7 +135,7 @@ class VectorField2DIrregular(AbstractVectorField2D):
         inner_radius: float,
         outer_radius: float,
         centre: Tuple[float, float] = (0.0, 0.0),
-    ) -> "VectorField2DIrregular":
+    ) -> "VectorYX2DIrregular":
         """
         Returns a new `VectorFieldIrregular` object which has had all vectors outside of a circle of input radius
         around an  input (y,x) centre removed.
@@ -161,6 +161,6 @@ class VectorField2DIrregular(AbstractVectorField2D):
                 "The input radius removed all vectors / points on the grid."
             )
 
-        return VectorField2DIrregular(
+        return VectorYX2DIrregular(
             vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )
