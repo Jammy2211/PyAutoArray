@@ -415,7 +415,7 @@ class TestGridRadialMinimum:
         grid = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_2d_from(grid=grid)
+        deflections = mock_profile.deflections_yx_2d_from(grid=grid)
         assert (deflections == grid).all()
 
     def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(
@@ -424,7 +424,7 @@ class TestGridRadialMinimum:
         grid = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_2d_from(grid=grid)
+        deflections = mock_profile.deflections_yx_2d_from(grid=grid)
 
         assert (deflections == np.array([[2.5, 0.0], [2.5, 0.0], [6.0, 0.0]])).all()
 
@@ -439,7 +439,7 @@ class TestGridRadialMinimum:
 
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_2d_from(grid=grid)
+        deflections = mock_profile.deflections_yx_2d_from(grid=grid)
 
         assert deflections == pytest.approx(
             np.array(

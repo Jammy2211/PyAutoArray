@@ -779,7 +779,7 @@ class Grid2DIterate(AbstractGrid2D):
         If the function return all zeros, the iteration is terminated early given that all levels of sub-gridding will
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
-        An example use case of this function is when a "deflections_2d_from" methods in **PyAutoLens**'s `MassProfile`
+        An example use case of this function is when a "deflections_yx_2d_from" methods in **PyAutoLens**'s `MassProfile`
         module is computed, which by evaluating the function on a higher resolution sub-grid samples the analytic
         mass profile at more points and thus more precisely.
 

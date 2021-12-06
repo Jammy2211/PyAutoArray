@@ -3,6 +3,7 @@ from functools import wraps
 from typing import List, Optional, Union
 
 from autoconf import conf
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
@@ -377,8 +378,10 @@ def grid_2d_to_vector_yx(func):
 
         if isinstance(grid, Grid2DIrregular):
             return VectorYX2DIrregular(vectors=vector_yx_2d, grid=grid)
-        else:
+        try:
             return VectorYX2D(vectors=vector_yx_2d, grid=grid, mask=grid.mask)
+        except AttributeError:
+            return vector_yx_2d
 
     return wrapper
 

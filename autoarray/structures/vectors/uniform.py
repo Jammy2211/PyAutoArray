@@ -278,7 +278,7 @@ class VectorYX2D(AbstractVectorYX2D):
 
         vectors = abstract_grid_2d.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
 
-        return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
+        return cls(vectors=vectors, grid=grid, mask=mask)
 
     @classmethod
     def manual_native(
