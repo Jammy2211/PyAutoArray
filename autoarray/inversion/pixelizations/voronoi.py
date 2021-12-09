@@ -155,7 +155,7 @@ class Voronoi(AbstractPixelization):
         A full description of relocation is given in the method abstract_grid_2d.relocated_grid_from()`.
 
         This is used in the project PyAutoLens to relocate the coordinates that are ray-traced near the centre of mass
-        of galaxies, which are heavily demagnified and may trace to outskirts of the source-plane well beyond the
+        of galaxy_list, which are heavily demagnified and may trace to outskirts of the source-plane well beyond the
         border.
 
         Parameters

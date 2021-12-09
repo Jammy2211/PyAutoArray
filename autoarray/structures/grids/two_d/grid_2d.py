@@ -19,6 +19,7 @@ from autoarray.structures.grids.two_d import sparse_util
 
 from autoarray import type as ty
 
+
 class Grid2D(AbstractGrid2D):
     def __new__(cls, grid: np.ndarray, mask: Mask2D, *args, **kwargs):
         """

@@ -31,9 +31,7 @@ class Preloads:
         self.w_tilde = w_tilde
         self.use_w_tilde = use_w_tilde
 
-        self.sparse_image_plane_grid_pg_list = (
-            sparse_image_plane_grid_pg_list
-        )
+        self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
         self.relocated_grid = relocated_grid
         self.mapper_list = mapper_list
         self.operated_mapping_matrix = operated_mapping_matrix

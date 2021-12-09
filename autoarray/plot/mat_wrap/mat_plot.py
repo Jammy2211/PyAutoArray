@@ -34,21 +34,21 @@ class AutoLabels:
 class AbstractMatPlot:
     def __init__(
         self,
-        units: Optional[wb.Units] = None, 
-        figure: Optional[wb.Figure] = None, 
-        axis: Optional[wb.Axis] = None, 
-        cmap: Optional[wb.Cmap] = None, 
-        colorbar: Optional[wb.Colorbar] = None, 
-        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None, 
-        tickparams: Optional[wb.TickParams] = None, 
-        yticks: Optional[wb.YTicks] = None, 
-        xticks: Optional[wb.XTicks] = None, 
-        title: Optional[wb.Title] = None, 
+        units: Optional[wb.Units] = None,
+        figure: Optional[wb.Figure] = None,
+        axis: Optional[wb.Axis] = None,
+        cmap: Optional[wb.Cmap] = None,
+        colorbar: Optional[wb.Colorbar] = None,
+        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
+        tickparams: Optional[wb.TickParams] = None,
+        yticks: Optional[wb.YTicks] = None,
+        xticks: Optional[wb.XTicks] = None,
+        title: Optional[wb.Title] = None,
         ylabel: Optional[wb.YLabel] = None,
-        xlabel: Optional[wb.XLabel] = None, 
-        text: Optional[wb.Text] = None, 
-        legend: Optional[wb.Legend] = None, 
-        output: Optional[wb.Output] = None, 
+        xlabel: Optional[wb.XLabel] = None,
+        text: Optional[wb.Text] = None,
+        legend: Optional[wb.Legend] = None,
+        output: Optional[wb.Output] = None,
     ):
         """
         Visualizes data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -106,12 +106,12 @@ class AbstractMatPlot:
         self.units = units or wb.Units()
         self.figure = figure or wb.Figure()
         self.axis = axis or wb.Axis()
-    
+
         self.cmap = cmap or wb.Cmap()
-    
+
         self.colorbar = colorbar or wb.Colorbar()
         self.colorbar_tickparams = colorbar_tickparams or wb.ColorbarTickParams()
-    
+
         self.tickparams = tickparams or wb.TickParams()
         self.yticks = yticks or wb.YTicks()
         self.xticks = xticks or wb.XTicks()
@@ -119,7 +119,7 @@ class AbstractMatPlot:
         self.title = title or wb.Title()
         self.ylabel = ylabel or wb.YLabel()
         self.xlabel = xlabel or wb.XLabel()
-    
+
         self.text = text or wb.Text()
         self.legend = legend or wb.Legend()
         self.output = output or wb.Output()
@@ -200,25 +200,25 @@ class AbstractMatPlot:
 class MatPlot1D(AbstractMatPlot):
     def __init__(
         self,
-        units: Optional[wb.Units] = None, 
-        figure: Optional[wb.Figure] = None, 
-        axis: Optional[wb.Axis] = None, 
-        cmap: Optional[wb.Cmap] = None, 
-        colorbar: Optional[wb.Colorbar] = None, 
-        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None, 
-        tickparams: Optional[wb.TickParams] = None, 
-        yticks: Optional[wb.YTicks] = None, 
-        xticks: Optional[wb.XTicks] = None, 
-        title: Optional[wb.Title] = None, 
+        units: Optional[wb.Units] = None,
+        figure: Optional[wb.Figure] = None,
+        axis: Optional[wb.Axis] = None,
+        cmap: Optional[wb.Cmap] = None,
+        colorbar: Optional[wb.Colorbar] = None,
+        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
+        tickparams: Optional[wb.TickParams] = None,
+        yticks: Optional[wb.YTicks] = None,
+        xticks: Optional[wb.XTicks] = None,
+        title: Optional[wb.Title] = None,
         ylabel: Optional[wb.YLabel] = None,
-        xlabel: Optional[wb.XLabel] = None, 
-        text: Optional[wb.Text] = None, 
-        legend: Optional[wb.Legend] = None, 
-        output: Optional[wb.Output] = None, 
-        yx_plot: Optional[w1d.YXPlot] = None, 
-        vertical_line_axvline: Optional[w1d.AXVLine] = None, 
-        yx_scatter: Optional[w1d.YXPlot] = None, 
-        fill_between: Optional[w1d.FillBetween] = None, 
+        xlabel: Optional[wb.XLabel] = None,
+        text: Optional[wb.Text] = None,
+        legend: Optional[wb.Legend] = None,
+        output: Optional[wb.Output] = None,
+        yx_plot: Optional[w1d.YXPlot] = None,
+        vertical_line_axvline: Optional[w1d.AXVLine] = None,
+        yx_scatter: Optional[w1d.YXPlot] = None,
+        fill_between: Optional[w1d.FillBetween] = None,
     ):
         """
         Visualizes 1D data structures (e.g a `Line`, etc.) using Matplotlib.
@@ -410,37 +410,37 @@ class MatPlot1D(AbstractMatPlot):
 class MatPlot2D(AbstractMatPlot):
     def __init__(
         self,
-        units: Optional[wb.Units] = None, 
-        figure: Optional[wb.Figure] = None, 
-        axis: Optional[wb.Axis] = None, 
-        cmap: Optional[wb.Cmap] = None, 
-        colorbar: Optional[wb.Colorbar] = None, 
-        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None, 
-        tickparams: Optional[wb.TickParams] = None, 
-        yticks: Optional[wb.YTicks] = None, 
-        xticks: Optional[wb.XTicks] = None, 
-        title: Optional[wb.Title] = None, 
+        units: Optional[wb.Units] = None,
+        figure: Optional[wb.Figure] = None,
+        axis: Optional[wb.Axis] = None,
+        cmap: Optional[wb.Cmap] = None,
+        colorbar: Optional[wb.Colorbar] = None,
+        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
+        tickparams: Optional[wb.TickParams] = None,
+        yticks: Optional[wb.YTicks] = None,
+        xticks: Optional[wb.XTicks] = None,
+        title: Optional[wb.Title] = None,
         ylabel: Optional[wb.YLabel] = None,
-        xlabel: Optional[wb.XLabel] = None, 
-        text: Optional[wb.Text] = None, 
-        legend: Optional[wb.Legend] = None, 
-        output: Optional[wb.Output] = None, 
-        array_overlay: Optional[w2d.ArrayOverlay] = None, 
-        grid_scatter: Optional[w2d.GridScatter] = None, 
-        grid_plot: Optional[w2d.GridPlot] = None, 
-        grid_errorbar: Optional[w2d.GridErrorbar] = None, 
+        xlabel: Optional[wb.XLabel] = None,
+        text: Optional[wb.Text] = None,
+        legend: Optional[wb.Legend] = None,
+        output: Optional[wb.Output] = None,
+        array_overlay: Optional[w2d.ArrayOverlay] = None,
+        grid_scatter: Optional[w2d.GridScatter] = None,
+        grid_plot: Optional[w2d.GridPlot] = None,
+        grid_errorbar: Optional[w2d.GridErrorbar] = None,
         vector_yx_quiver: Optional[w2d.VectorYXQuiver] = None,
-        patch_overlay: Optional[w2d.PatchOverlay] = None, 
-        voronoi_drawer: Optional[w2d.VoronoiDrawer] = None, 
-        origin_scatter: Optional[w2d.OriginScatter] = None, 
-        mask_scatter: Optional[w2d.MaskScatter] = None, 
-        border_scatter: Optional[w2d.BorderScatter] = None, 
-        positions_scatter: Optional[w2d.PositionsScatter] = None, 
-        index_scatter: Optional[w2d.IndexScatter] = None, 
-        pixelization_grid_scatter: Optional[w2d.PixelizationGridScatter] = None, 
-        parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None, 
-        serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None, 
-        serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None, 
+        patch_overlay: Optional[w2d.PatchOverlay] = None,
+        voronoi_drawer: Optional[w2d.VoronoiDrawer] = None,
+        origin_scatter: Optional[w2d.OriginScatter] = None,
+        mask_scatter: Optional[w2d.MaskScatter] = None,
+        border_scatter: Optional[w2d.BorderScatter] = None,
+        positions_scatter: Optional[w2d.PositionsScatter] = None,
+        index_scatter: Optional[w2d.IndexScatter] = None,
+        pixelization_grid_scatter: Optional[w2d.PixelizationGridScatter] = None,
+        parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
+        serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
+        serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -543,7 +543,6 @@ class MatPlot2D(AbstractMatPlot):
             output=output,
         )
 
-
         self.array_overlay = array_overlay or w2d.ArrayOverlay()
 
         self.grid_scatter = grid_scatter or w2d.GridScatter()
@@ -560,9 +559,13 @@ class MatPlot2D(AbstractMatPlot):
         self.border_scatter = border_scatter or w2d.BorderScatter()
         self.positions_scatter = positions_scatter or w2d.PositionsScatter()
         self.index_scatter = index_scatter or w2d.IndexScatter()
-        self.pixelization_grid_scatter = pixelization_grid_scatter or w2d.PixelizationGridScatter()
+        self.pixelization_grid_scatter = (
+            pixelization_grid_scatter or w2d.PixelizationGridScatter()
+        )
 
-        self.parallel_overscan_plot = parallel_overscan_plot or w2d.ParallelOverscanPlot()
+        self.parallel_overscan_plot = (
+            parallel_overscan_plot or w2d.ParallelOverscanPlot()
+        )
         self.serial_prescan_plot = serial_prescan_plot or w2d.SerialPrescanPlot()
         self.serial_overscan_plot = serial_overscan_plot or w2d.SerialOverscanPlot()
 

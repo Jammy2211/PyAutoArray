@@ -14,6 +14,7 @@ from autoarray.inversion.pixelizations import pixelization_util
 
 from autoarray import type as ty
 
+
 class PixelNeighbors(np.ndarray):
     def __new__(cls, arr: np.ndarray, sizes: np.ndarray):
         """
