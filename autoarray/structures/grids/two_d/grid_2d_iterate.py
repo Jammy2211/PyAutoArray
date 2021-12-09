@@ -14,6 +14,7 @@ from autoarray import numba_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids.two_d import grid_2d_util
 
+from autoarray import type as ty
 
 def sub_steps_from(sub_steps):
 
@@ -124,7 +125,7 @@ class Grid2DIterate(AbstractGrid2D):
         cls,
         grid: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
@@ -186,7 +187,7 @@ class Grid2DIterate(AbstractGrid2D):
     def uniform(
         cls,
         shape_native: Tuple[int, int],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,

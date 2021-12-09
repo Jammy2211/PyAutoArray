@@ -11,6 +11,8 @@ from autoarray.structures.grids import abstract_grid
 from autoarray.structures.grids.two_d import abstract_grid_2d
 from autoarray.geometry import geometry_util
 
+from autoarray import type as ty
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
@@ -229,7 +231,7 @@ class VectorYX2D(AbstractVectorYX2D):
         cls,
         vectors: Union[np.ndarray, List[List], List[Tuple]],
         shape_native: Tuple[int, int],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "VectorYX2D":
@@ -284,7 +286,7 @@ class VectorYX2D(AbstractVectorYX2D):
     def manual_native(
         cls,
         vectors: Union[np.ndarray, List],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "VectorYX2D":

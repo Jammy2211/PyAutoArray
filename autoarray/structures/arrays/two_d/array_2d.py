@@ -11,6 +11,8 @@ from autoarray.geometry import geometry_util
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 
+from autoarray import type as ty
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
