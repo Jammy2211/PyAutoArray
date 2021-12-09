@@ -330,7 +330,7 @@ class AbstractSimulatorInterferometer:
         ----------
         name
         real_space_image
-            The image before simulating (e.g. the lens and source galaxy_list before optics blurring and UVPlane read-out).
+            The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
         real_space_pixel_scales: float
             The scale of each pixel in scaled units
         exposure_time_map
