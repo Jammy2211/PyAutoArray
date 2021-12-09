@@ -280,30 +280,30 @@ class TestGridErrorbar:
         )
 
 
-class TestVectorFieldQuiver:
+class TestVectorYXQuiver:
     def test__from_config_or_via_manual_input(self):
 
-        vectors_quiver = aplt.VectorFieldQuiver()
+        vector_yx_quiver = aplt.VectorYXQuiver()
 
-        assert vectors_quiver.config_dict["headlength"] == 0
+        assert vector_yx_quiver.config_dict["headlength"] == 0
 
-        vectors_quiver = aplt.VectorFieldQuiver(headlength=1)
+        vector_yx_quiver = aplt.VectorYXQuiver(headlength=1)
 
-        assert vectors_quiver.config_dict["headlength"] == 1
+        assert vector_yx_quiver.config_dict["headlength"] == 1
 
-        vectors_quiver = aplt.VectorFieldQuiver()
-        vectors_quiver.is_for_subplot = True
+        vector_yx_quiver = aplt.VectorYXQuiver()
+        vector_yx_quiver.is_for_subplot = True
 
-        assert vectors_quiver.config_dict["headlength"] == 0.1
+        assert vector_yx_quiver.config_dict["headlength"] == 0.1
 
-        vectors_quiver = aplt.VectorFieldQuiver(headlength=12)
-        vectors_quiver.is_for_subplot = True
+        vector_yx_quiver = aplt.VectorYXQuiver(headlength=12)
+        vector_yx_quiver.is_for_subplot = True
 
-        assert vectors_quiver.config_dict["headlength"] == 12
+        assert vector_yx_quiver.config_dict["headlength"] == 12
 
     def test__quiver_vectors(self):
 
-        quiver = aplt.VectorFieldQuiver(
+        quiver = aplt.VectorYXQuiver(
             headlength=5,
             pivot="middle",
             linewidth=3,

@@ -104,16 +104,16 @@ class Visuals1D(AbstractVisuals):
 class Visuals2D(AbstractVisuals):
     def __init__(
         self,
-        origin: Grid2D = None,
-        mask: Mask2D = None,
-        border: Grid2D = None,
-        lines: List[Array1D] = None,
-        positions: Union[Grid2DIrregular, List[Grid2DIrregular]] = None,
-        grid: Grid2D = None,
-        pixelization_grid: Grid2D = None,
-        vectors: VectorYX2DIrregular = None,
-        patches: List[ptch.Patch] = None,
-        array_overlay: Array2D = None,
+        origin: Optional[Grid2D] = None,
+        mask: Optional[Mask2D] = None,
+        border: Optional[Grid2D] = None,
+        lines: Optional[List[Array1D]] = None,
+        positions: Optional[Union[Grid2DIrregular, List[Grid2DIrregular]]] = None,
+        grid: Optional[Grid2D] = None,
+        pixelization_grid: Optional[Grid2D] = None,
+        vectors: Optional[VectorYX2DIrregular] = None,
+        patches: Optional[List[ptch.Patch]] = None,
+        array_overlay: Optional[Array2D] = None,
         parallel_overscan=None,
         serial_prescan=None,
         serial_overscan=None,
@@ -158,7 +158,7 @@ class Visuals2D(AbstractVisuals):
             plotter.positions_scatter.scatter_grid(grid=self.positions)
 
         if self.vectors is not None:
-            plotter.vectors_quiver.quiver_vectors(vectors=self.vectors)
+            plotter.vector_yx_quiver.quiver_vectors(vectors=self.vectors)
 
         if self.patches is not None:
             plotter.patch_overlay.overlay_patches(patches=self.patches)

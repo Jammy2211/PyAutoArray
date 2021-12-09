@@ -434,7 +434,7 @@ class GridErrorbar(AbstractMatWrap2D):
         )
 
 
-class VectorFieldQuiver(AbstractMatWrap2D):
+class VectorYXQuiver(AbstractMatWrap2D):
     """
     Plots a `VectorField` data structure. A vector field is a set of 2D vectors on a grid of 2d (y,x) coordinates.
     These are plotted as arrows representing the (y,x) components of each vector at each (y,x) coordinate of it
