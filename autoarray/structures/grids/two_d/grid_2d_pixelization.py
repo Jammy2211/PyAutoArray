@@ -12,6 +12,7 @@ from autoarray import exc
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.inversion.pixelizations import pixelization_util
 
+from autoarray import type as ty
 
 class PixelNeighbors(np.ndarray):
     def __new__(cls, arr: np.ndarray, sizes: np.ndarray):
@@ -60,7 +61,7 @@ class Grid2DRectangular(AbstractStructure2D):
         cls,
         grid: np.ndarray,
         shape_native: Tuple[int, int],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         *args,
         **kwargs

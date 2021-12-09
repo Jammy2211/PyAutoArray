@@ -15,9 +15,7 @@ from autoarray.plot.wrap.wrap_base import AbstractMatWrap
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.structures.vector_fields.vector_field_irregular import (
-    VectorField2DIrregular,
-)
+from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 
 from autoarray import exc
 
@@ -436,7 +434,7 @@ class GridErrorbar(AbstractMatWrap2D):
         )
 
 
-class VectorFieldQuiver(AbstractMatWrap2D):
+class VectorYXQuiver(AbstractMatWrap2D):
     """
     Plots a `VectorField` data structure. A vector field is a set of 2D vectors on a grid of 2d (y,x) coordinates.
     These are plotted as arrows representing the (y,x) components of each vector at each (y,x) coordinate of it
@@ -447,21 +445,21 @@ class VectorFieldQuiver(AbstractMatWrap2D):
     https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.quiver.html
     """
 
-    def quiver_vector_field(self, vector_field: VectorField2DIrregular):
+    def quiver_vectors(self, vectors: VectorYX2DIrregular):
         """
          Plot a vector field using the matplotlib method `plt.quiver` such that each vector appears as an arrow whose
          direction depends on the y and x magnitudes of the vector.
 
          Parameters
          ----------
-         vector_field : VectorField2DIrregular
+         vectors : VectorYX2DIrregular
              The vector field that is plotted using `plt.quiver`.
          """
         plt.quiver(
-            vector_field.grid[:, 1],
-            vector_field.grid[:, 0],
-            vector_field[:, 1],
-            vector_field[:, 0],
+            vectors.grid[:, 1],
+            vectors.grid[:, 0],
+            vectors[:, 1],
+            vectors[:, 0],
             **self.config_dict,
         )
 

@@ -23,7 +23,7 @@ from autoarray.plot.wrap.wrap_2d import ArrayOverlay
 from autoarray.plot.wrap.wrap_2d import GridScatter
 from autoarray.plot.wrap.wrap_2d import GridPlot
 from autoarray.plot.wrap.wrap_2d import GridErrorbar
-from autoarray.plot.wrap.wrap_2d import VectorFieldQuiver
+from autoarray.plot.wrap.wrap_2d import VectorYXQuiver
 from autoarray.plot.wrap.wrap_2d import PatchOverlay
 from autoarray.plot.wrap.wrap_2d import VoronoiDrawer
 from autoarray.plot.wrap.wrap_2d import OriginScatter

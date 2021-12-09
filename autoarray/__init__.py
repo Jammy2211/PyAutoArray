@@ -52,7 +52,8 @@ from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
-from .structures.vector_fields.vector_field_irregular import VectorField2DIrregular
+from .structures.vectors.uniform import VectorYX2D
+from .structures.vectors.irregular import VectorYX2DIrregular
 from .structures.grids import grid_decorators as grid_dec
 from .layout.region import Region1D
 from .layout.region import Region2D

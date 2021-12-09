@@ -164,7 +164,7 @@ class Imaging(AbstractDataset):
         return self.psf_unormalized
 
     @cached_property
-    def blurring_grid(self):
+    def blurring_grid(self) -> Grid2D:
         """
         Returns a blurring-grid from a mask and the 2D shape of the PSF kernel.
 
