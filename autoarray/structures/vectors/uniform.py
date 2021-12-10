@@ -369,6 +369,118 @@ class VectorYX2D(AbstractVectorYX2D):
         vectors = abstract_grid_2d.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
         return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
+    @classmethod
+    def full(
+        cls,
+        fill_value,
+        shape_native,
+        pixel_scales: ty.PixelScales,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ):
+        """
+        Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with an input fill value,
+        analogous to the method np.full().
+
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
+
+        Parameters
+        ----------
+        fill_value
+            The value all array elements are filled with.
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        origin
+            The origin of the grid's mask.
+        origin
+            The (y,x) scaled units origin of the mask's coordinate system.
+        """
+        if sub_size is not None:
+            shape_native = (shape_native[0] * sub_size, shape_native[1] * sub_size)
+
+        return cls.manual_native(
+            vectors=np.full(
+                fill_value=fill_value, shape=(shape_native[0], shape_native[1], 2)
+            ),
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+    @classmethod
+    def ones(
+        cls,
+        shape_native,
+        pixel_scales: ty.PixelScales,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ):
+        """
+        Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with 1.0, analogous to 
+        the method np.ones().
+
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
+
+        Parameters
+        ----------
+        fill_value
+            The value all array elements are filled with.
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        origin
+            The (y,x) scaled units origin of the mask's coordinate system.
+        """
+        return cls.full(
+            fill_value=1.0,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+    @classmethod
+    def zeros(
+        cls,
+        shape_native,
+        pixel_scales: ty.PixelScales,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ):
+        """
+        Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with 1.0, analogous to 
+        the method np.zeros().
+
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
+
+        Parameters
+        ----------
+        fill_value
+            The value all array elements are filled with.
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        origin
+            The (y,x) scaled units origin of the mask's coordinate system.
+        """
+        return cls.full(
+            fill_value=0.0,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
     def apply_mask(self, mask: Mask2D):
         return VectorYX2D.manual_mask(vectors=self.native, mask=mask)
 
