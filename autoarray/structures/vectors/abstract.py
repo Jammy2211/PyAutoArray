@@ -35,14 +35,8 @@ class AbstractVectorYX2D(AbstractStructure2D):
             grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
-        grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-            grid_2d_native=self.grid, mask=self.mask, sub_size=self.mask.sub_size
-        )
-
-        grid_2d_slim = Grid2D.manual_mask(grid=grid_2d_slim, mask=self.mask)
-
         return self.__class__(
-            vectors=vectors_2d_slim, grid=grid_2d_slim, mask=self.mask
+            vectors=vectors_2d_slim, grid=self.grid.slim, mask=self.mask
         )
 
     @property
@@ -62,14 +56,8 @@ class AbstractVectorYX2D(AbstractStructure2D):
             grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
-        grid_2d_native = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=self.grid, mask_2d=self.mask, sub_size=self.mask.sub_size
-        )
-
-        grid_2d_native = Grid2D.manual_mask(grid=grid_2d_native, mask=self.mask)
-
         return self.__class__(
-            vectors=vectors_2d_native, grid=grid_2d_native, mask=self.mask
+            vectors=vectors_2d_native, grid=self.grid.native, mask=self.mask
         )
 
     @property

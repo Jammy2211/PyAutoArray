@@ -346,6 +346,32 @@ class VectorYX2D(AbstractVectorYX2D):
 
         return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
+    @classmethod
+    def manual_mask(cls, vectors, mask) -> "VectorYX2D":
+        """
+        Create a VectorYX2D (see *VectorYX2D.__new__*) by inputting the vectors in 1D or 2D with its mask,
+        for example:
+
+        mask = Mask2D([[True, False, False, False])
+        array=np.array([1.0, 2.0, 3.0])
+
+        Parameters
+        ----------
+        array
+            The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
+            lists.
+        mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        """
+
+        grid = Grid2D.from_mask(mask=mask)
+
+        vectors = abstract_grid_2d.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
+        return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
+
+    def apply_mask(self, mask: Mask2D):
+        return VectorYX2D.manual_mask(vectors=self.native, mask=mask)
+
     @property
     def magnitudes(self) -> Array2D:
         """
