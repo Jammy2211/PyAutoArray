@@ -858,6 +858,9 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
         for j in range(reconstruction.shape[0]):
             mapped_reconstructed_data[i] += reconstruction[j] * mapping_matrix[i, j]
 
+    #print('mapped_reconstructed_data shape !!!:')
+    #print(np.shape(mapped_reconstructed_data))
+
     return mapped_reconstructed_data
 
 

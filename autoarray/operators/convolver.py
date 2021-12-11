@@ -401,6 +401,28 @@ class Convolver:
 
         return Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
 
+    def convolve_image_no_blurring_interpolation(self, image):
+        """For a given 1D array and blurring array, convolve the two using this convolver.
+
+        Parameters
+        -----------
+        image
+            1D array of the values which are to be blurred with the convolver's PSF.
+        blurring_image
+            1D array of the blurring values which blur into the array after PSF convolution.
+        """
+
+        convolved_image = self.convolve_no_blurring_jit(
+            image_1d_array=image,
+            image_frame_1d_indexes=self.image_frame_1d_indexes,
+            image_frame_1d_kernels=self.image_frame_1d_kernels,
+            image_frame_1d_lengths=self.image_frame_1d_lengths,
+        )
+
+        return Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
+
+
+
     @staticmethod
     @numba_util.jit()
     def convolve_no_blurring_jit(

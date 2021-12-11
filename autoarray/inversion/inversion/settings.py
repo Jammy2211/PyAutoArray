@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 class SettingsInversion:
     def __init__(
         self,
-        use_w_tilde: bool = True,
+        use_w_tilde: bool = False,
         use_linear_operators: bool = False,
         tolerance: float = 1e-8,
         maxiter: int = 250,

@@ -309,3 +309,166 @@ class Grid2DVoronoi(AbstractStructure2D):
                 self.scaled_maxima[0],
             ]
         )
+
+
+class Grid2DDelaunay(AbstractStructure2D):
+    """
+    Returns the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
+    grid plus a small buffer.
+
+    Parameters
+    -----------
+    grid
+        The (y,x) grid of coordinates which determine the Voronoi pixelization's
+    pixelization_grid
+        The (y,x) centre of every Voronoi pixel in scaleds.
+    origin
+        The scaled origin of the Voronoi pixelization's coordinate system.
+    pixel_neighbors
+        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors.sizes
+        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
+        Voronoi grid.
+    """
+
+    def __new__(
+        cls,
+        grid: Union[np.ndarray, List],
+        nearest_pixelization_index_for_slim_index: Optional[np.ndarray] = None,
+        *args,
+        **kwargs
+    ):
+        """
+        A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
+        *pixelizations* module.
+
+        A `Grid2DRectangular` is ordered such pixels begin from the top-row of the mask and go rightwards and then \
+        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
+        thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
+
+        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
+        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
+
+        Parameters
+        -----------
+        pix_grid
+            The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
+            -plane pixelizations.
+        nearest_pixelization_index_for_slim_index
+            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
+        """
+
+        if type(grid) is list:
+            grid = np.asarray(grid)
+
+        obj = grid.view(cls)
+        obj.nearest_pixelization_index_for_slim_index = (
+            nearest_pixelization_index_for_slim_index
+        )
+
+        return obj
+
+    def __array_finalize__(self, obj: object):
+
+        if hasattr(obj, "nearest_pixelization_index_for_slim_index"):
+            self.nearest_pixelization_index_for_slim_index = (
+                obj.nearest_pixelization_index_for_slim_index
+            )
+
+    @cached_property
+    def Delaunay(self) -> scipy.spatial.Delaunay:
+        try:
+            return scipy.spatial.Delaunay(
+                np.asarray([self[:, 0], self[:, 1]]).T
+            )
+        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
+            raise exc.PixelizationException() from e
+
+    @cached_property
+    def pixel_neighbors(self) -> PixelNeighbors:
+    
+        #neighbors, sizes = pixelization_util.voronoi_neighbors_from(
+        #    pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
+        #)
+
+        '''
+        see https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.vertex_neighbor_vertices.html#scipy.spatial.Delaunay.vertex_neighbor_vertices
+        '''
+
+        indptr, indices = self.Delaunay.vertex_neighbor_vertices
+
+        #print(indptr)
+
+
+        sizes = indptr[1:] - indptr[:-1]
+
+        #print(sizes)
+
+        neighbors = -1 * np.ones(shape=(self.pixels, int(np.max(sizes))), dtype='int')
+
+        #print('Delaunay neighbors:')
+        #print(neighbors)
+
+        #print('Delaunay neighbor shape:')
+        #print(np.shape(neighbors))
+
+        for k in range(self.pixels):
+            neighbors[k][0:sizes[k]] = indices[indptr[k]:indptr[k + 1]]
+
+
+        return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+
+    @property
+    def origin(self) -> Tuple[float, float]:
+        return 0.0, 0.0
+
+    @property
+    def pixels(self) -> int:
+        return self.shape[0]
+
+    @property
+    def sub_border_grid(self) -> np.ndarray:
+        """
+        The (y,x) grid of all sub-pixels which are at the border of the mask.
+
+        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
+        within these border pixels which are at the extreme edge of the border.
+        """
+        return self[self.mask.sub_border_flat_indexes]
+
+    @classmethod
+    def manual_slim(cls, grid) -> "Grid2DVoronoi":
+        return Grid2DVoronoi(grid=grid)
+
+    @property
+    def shape_native_scaled(self) -> Tuple[float, float]:
+        return (
+            np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
+        )
+
+    @property
+    def scaled_maxima(self) -> Tuple[float, float]:
+        return (
+            np.amax(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float"),
+        )
+
+    @property
+    def scaled_minima(self) -> Tuple[float, float]:
+        return (
+            np.amin(self[:, 0]).astype("float"),
+            np.amin(self[:, 1]).astype("float"),
+        )
+
+    @property
+    def extent(self) -> np.ndarray:
+        return np.array(
+            [
+                self.scaled_minima[1],
+                self.scaled_maxima[1],
+                self.scaled_minima[0],
+                self.scaled_maxima[0],
+            ]
+        )

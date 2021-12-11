@@ -9,6 +9,7 @@ from typing import Iterable, Optional, List, Union
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
@@ -427,6 +428,7 @@ class MatPlot2D(AbstractMatPlot):
         vector_field_quiver: w2d.VectorFieldQuiver = w2d.VectorFieldQuiver(),
         patch_overlay: w2d.PatchOverlay = w2d.PatchOverlay(),
         voronoi_drawer: w2d.VoronoiDrawer = w2d.VoronoiDrawer(),
+        delaunay_drawer: w2d.DelaunayDrawer = w2d.DelaunayDrawer(),
         origin_scatter: w2d.OriginScatter = w2d.OriginScatter(),
         mask_scatter: w2d.MaskScatter = w2d.MaskScatter(),
         border_scatter: w2d.BorderScatter = w2d.BorderScatter(),
@@ -500,6 +502,8 @@ class MatPlot2D(AbstractMatPlot):
             Overlays matplotlib `patches.Patch` objects over the figure, such as an `Ellipse`.
         voronoi_drawer
             Draws a colored Voronoi mesh of pixels using `plt.fill`.
+        delaunay_drawer
+            Draws a colored Delaunay mesh of pixels using `plt.fill`.
         origin_scatter
             Scatters the (y,x) origin of the data structure on the figure.
         mask_scatter
@@ -551,6 +555,7 @@ class MatPlot2D(AbstractMatPlot):
         self.patch_overlay = patch_overlay
         self.array_overlay = array_overlay
         self.voronoi_drawer = voronoi_drawer
+        self.delaunay_drawer = delaunay_drawer
         self.parallel_overscan_plot = parallel_overscan_plot
         self.serial_prescan_plot = serial_prescan_plot
         self.serial_overscan_plot = serial_overscan_plot
@@ -780,6 +785,14 @@ class MatPlot2D(AbstractMatPlot):
                 source_pixelilzation_values=source_pixelilzation_values,
             )
 
+        elif isinstance(mapper, MapperDelaunay):
+            self._plot_delaunay_mapper(
+                mapper=mapper,
+                visuals_2d=visuals_2d,
+                auto_labels=auto_labels,
+                source_pixelilzation_values=source_pixelilzation_values
+            )
+
         else:
 
             self._plot_voronoi_mapper(
@@ -881,6 +894,60 @@ class MatPlot2D(AbstractMatPlot):
         self.text.set()
 
         self.voronoi_drawer.draw_voronoi_pixels(
+            mapper=mapper,
+            values=source_pixelilzation_values,
+            cmap=self.cmap,
+            colorbar=self.colorbar,
+            colorbar_tickparams=self.colorbar_tickparams,
+        )
+
+        self.title.set(auto_title=auto_labels.title)
+        self.ylabel.set(units=self.units, include_brackets=True)
+        self.xlabel.set(units=self.units, include_brackets=True)
+
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=mapper.source_grid_slim, mapper=mapper
+        )
+
+        if not self.is_for_subplot:
+            self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
+            self.figure.close()
+
+    def _plot_delaunay_mapper(
+        self,
+        mapper: MapperDelaunay,
+        visuals_2d: Visuals2D,
+        auto_labels: AutoLabels,
+        source_pixelilzation_values=None,
+    ):
+
+        extent = self.axis.config_dict.get("extent")
+        extent = (
+            extent if extent is not None else mapper.source_pixelization_grid.extent
+        )
+
+        aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
+
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+            self.setup_subplot(aspect=aspect_inv)
+
+        self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
+
+        plt.gca().set_aspect(aspect_inv)
+
+        self.tickparams.set()
+        self.yticks.set(
+            array=None, min_value=extent[2], max_value=extent[3], units=self.units
+        )
+        self.xticks.set(
+            array=None, min_value=extent[0], max_value=extent[1], units=self.units
+        )
+
+        self.text.set()
+
+        self.delaunay_drawer.draw_delaunay_pixels(
             mapper=mapper,
             values=source_pixelilzation_values,
             cmap=self.cmap,

@@ -4,6 +4,7 @@ import pytest
 import autoarray as aa
 
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.mappers.delaunay import MapperDelaunay
 
 
 def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper():
@@ -224,6 +225,116 @@ def test__inversion_matrices__linear_eqns_mapping__voronoi_mapper():
 
     assert (inversion.regularization_matrix == regularization_matrix).all()
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
+def test__inversion_matrices__linear_eqns_mapping__delaunay_mapper():
+
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True, True],
+            [True, True, False, True, True],
+            [True, False, False, False, True],
+            [True, True, False, True, True],
+            [True, True, True, True, True],
+        ],
+        pixel_scales=1.0,
+        sub_size=2,
+    )
+
+    grid = np.array(
+        [
+            [1.01, 0.0],
+            [1.01, 0.0],
+            [1.01, 0.0],
+            [0.01, 0.0],
+            [0.0, -1.0],
+            [0.0, -1.0],
+            [0.0, -1.0],
+            [0.01, 0.0],
+            [0.01, 0.0],
+            [0.01, 0.0],
+            [0.01, 0.0],
+            [0.01, 0.0],
+            [0.0, 1.01],
+            [0.0, 1.01],
+            [0.0, 1.01],
+            [0.01, 0.0],
+            [-1.01, 0.0],
+            [-1.01, 0.0],
+            [-1.01, 0.0],
+            [0.01, 0.0],
+        ]
+    )
+
+    grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
+
+    pix = aa.pix.DelaunayMagnification(shape=(3, 3))
+    sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+        grid=grid, unmasked_sparse_shape=pix.shape
+    )
+
+    mapper = pix.mapper_from(
+        grid=grid,
+        sparse_grid=sparse_grid,
+        settings=aa.SettingsPixelization(use_border=False),
+    )
+
+    assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
+        (2.02, 2.01), 1.0e-4
+    )
+    assert (mapper.source_pixelization_grid == sparse_grid).all()
+    #    assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.005), 1.0e-4)
+
+    assert isinstance(mapper, MapperDelaunay)
+
+    #assert (
+    #    mapper.mapping_matrix
+    #    == np.array(
+    #        [
+    #            [0.75, 0.0, 0.25, 0.0, 0.0],
+    #            [0.0, 0.75, 0.25, 0.0, 0.0],
+    #            [0.0, 0.0, 1.0, 0.0, 0.0],
+    #            [0.0, 0.0, 0.25, 0.75, 0.0],
+    #            [0.0, 0.0, 0.25, 0.0, 0.75],
+    #        ]
+    #    )
+    #).all()
+
+    reg = aa.reg.Constant(coefficient=1.0)
+    regularization_matrix = reg.regularization_matrix_from(mapper=mapper)
+
+    assert (
+        regularization_matrix
+        == np.array(
+            [
+                [3.00000001, -1.0, -1.0, -1.0, 0.0],
+                [-1.0, 3.00000001, -1.0, 0.0, -1.0],
+                [-1.0, -1.0, 4.00000001, -1.0, -1.0],
+                [-1.0, 0.0, -1.0, 3.00000001, -1.0],
+                [0.0, -1.0, -1.0, -1.0, 3.00000001],
+            ]
+        )
+    ).all()
+
+    image = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+    noise_map = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+    psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
+
+    imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
+
+    masked_imaging = imaging.apply_mask(mask=mask)
+
+    inversion = aa.Inversion(
+        dataset=masked_imaging,
+        mapper_list=[mapper],
+        regularization_list=[reg],
+        settings=aa.SettingsInversion(check_solution=False),
+    )
+
+    assert (inversion.regularization_matrix == regularization_matrix).all()
+    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
+
+
 
 
 def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eqns_mapping():
@@ -545,6 +656,62 @@ def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formal
     )
     assert (np.imag(inversion.mapped_reconstructed_data) < 0.0001).all()
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
+
+def test__inversion_matirces__linear_eqns_mapping__delaunay_mapper__matrix_formalism():
+
+    real_space_mask = aa.Mask2D.unmasked(
+        shape_native=(7, 7), pixel_scales=0.1, sub_size=1
+    )
+
+    grid = aa.Grid2D.from_mask(mask=real_space_mask)
+
+    pix = aa.pix.DelaunayMagnification(shape=(7, 7))
+
+    sparse_grid = pix.sparse_grid_from(grid=grid)
+
+    mapper = pix.mapper_from(
+        grid=grid,
+        sparse_grid=sparse_grid,
+        settings=aa.SettingsPixelization(use_border=False),
+    )
+
+    reg = aa.reg.Constant(coefficient=0.0)
+
+    visibilities = aa.Visibilities.manual_slim(
+        visibilities=[
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+            1.0 + 0.0j,
+        ]
+    )
+    noise_map = aa.VisibilitiesNoiseMap.ones(shape_slim=(7,))
+    uv_wavelengths = np.ones(shape=(7, 2))
+
+    interferometer = aa.Interferometer(
+        visibilities=visibilities,
+        noise_map=noise_map,
+        uv_wavelengths=uv_wavelengths,
+        real_space_mask=real_space_mask,
+    )
+
+    inversion = aa.Inversion(
+        dataset=interferometer,
+        mapper_list=[mapper],
+        regularization_list=[reg],
+        settings=aa.SettingsInversion(check_solution=False),
+    )
+
+    assert inversion.mapped_reconstructed_data == pytest.approx(
+        1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
+    )
+    assert (np.imag(inversion.mapped_reconstructed_data) < 0.0001).all()
+    assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
+
+
 
 
 def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():
