@@ -492,3 +492,17 @@ class VectorYX2D(AbstractVectorYX2D):
         return Array2D(
             array=np.sqrt(self[:, 0] ** 2.0 + self[:, 1] ** 2.0), mask=self.mask
         )
+
+    @property
+    def y(self) -> Array2D:
+        """
+        Returns the y vector values as an `Array2D` object.
+        """
+        return Array2D(array=self.slim[:, 0], mask=self.mask)
+
+    @property
+    def x(self) -> Array2D:
+        """
+        Returns the y vector values as an `Array2D` object.
+        """
+        return Array2D(array=self.slim[:, 1], mask=self.mask)

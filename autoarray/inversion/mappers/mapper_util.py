@@ -287,14 +287,20 @@ def adaptive_pixel_signals_from(
 
     The pixel signals are computed as follows:
 
-    1) Divide by the number of mappe data points in the pixel, to ensure all pixels have the same
+    1) Divide by the number of mapped data points in the pixel, to ensure all pixels have the same
     'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
 
-    2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
-    regularization weight_list are defined identically for any data quantity or signal-to-noise_map ratio.
+    2) Divide by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
+    regularization weights are defined identically for any data quantity or signal-to-noise_map ratio.
 
-    3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative
-    contribution regularization in different regions of pixelization.
+    3) Raise to the power of the hyper-parameter `signal_scale`, so the method can control the relative
+    contribution of regularization in different regions of pixelization.
+
+    Expressed differently, this function quantifies the expected value of flux every source pixel will reconstruct in
+    an inversion, before the inversion is performed. Properties of the inversion associated with each source pixel
+    can then be adapted to the reconstructed source's surface brightness, notably an adaptive regularization scheme
+    which regularizes the brightest source pixels least (these pixels may otherwise be over smoothed and fail to
+    reconstruct the data accurately).
 
     Parameters
     -----------
@@ -303,8 +309,12 @@ def adaptive_pixel_signals_from(
     signal_scale
         A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
         low signal regions.
-    regular_to_pix
-        A 1D array util every pixel on the grid to a pixel on the pixelization.
+    pixelization_index_for_sub_slim_index
+        A 1D array mapping every pixel on the grid to a pixel on the pixelization.
+    slim_index_for_sub_slim_index
+        The mappings between the data's sub-pixels and their indexes without sub-pixel divisions (e.g. for
+        a `sub_size=1). This is used for efficiently mapping each sub pixel with its host image pixel in order to
+        extract the correct value from the `hyper_image`.
     hyper_image
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """

@@ -266,3 +266,30 @@ class TestAPI:
         assert vectors.pixel_scales == (1.0, 1.0)
         assert vectors.origin == (0.0, 1.0)
         assert vectors.sub_size == 2
+
+    def test__y_x(self):
+
+        vectors = aa.VectorYX2D.manual_native(
+            vectors=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+            pixel_scales=1.0,
+            sub_size=1,
+        )
+
+        assert isinstance(vectors.y, aa.Array2D)
+        assert (vectors.y.native == np.array([[1.0, 3.0], [5.0, 7.0]])).all()
+
+        assert isinstance(vectors.x, aa.Array2D)
+        assert (vectors.x.native == np.array([[2.0, 4.0], [6.0, 8.0]])).all()
+
+    def test__magnitudes(self):
+
+        vectors = aa.VectorYX2D.manual_native(
+            vectors=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]],
+            pixel_scales=1.0,
+            sub_size=1,
+        )
+
+        assert isinstance(vectors.magnitudes, aa.Array2D)
+        assert vectors.magnitudes.native == pytest.approx(
+            np.array([[np.sqrt(2), np.sqrt(8)], [np.sqrt(18), np.sqrt(32)]]), 1.0e-4
+        )
