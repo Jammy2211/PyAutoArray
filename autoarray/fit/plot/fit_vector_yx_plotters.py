@@ -84,7 +84,7 @@ class FitVectorYXPlotterMeta(Plotter):
             Whether or not to make a 2D plot (via `imshow`) of the chi-squared map.
         """
 
-        fit_plotter_y = FitVectorYXPlotterMeta(self.fit.data.y_array)
+        fit_plotter_y = FitImaging(self.fit.data.y_array)
 
         if image:
 
