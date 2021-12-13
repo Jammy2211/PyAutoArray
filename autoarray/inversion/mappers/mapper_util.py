@@ -95,8 +95,8 @@ def data_slim_to_pixelization_unique_from(
 def data_slim_to_pixelization_unique_2_from(
     data_pixels,
     pixelization_indexes_for_sub_slim_index: np.ndarray,
-    pixelization_indexes_for_sub_slim_sizes_sizes: np.ndarray,
-    pixel_weights,
+    pixelization_indexes_for_sub_slim_sizes: np.ndarray,
+    pixel_weights_for_sub_slim_index,
     sub_size: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -143,8 +143,10 @@ def data_slim_to_pixelization_unique_2_from(
 
     sub_fraction = 1.0 / (sub_size ** 2.0)
 
-    data_to_pix_unique = -1 * np.ones((data_pixels, sub_size ** 2))
-    data_weights = np.zeros((data_pixels, sub_size ** 2))
+    max_pix_mappings = int(np.max(pixelization_indexes_for_sub_slim_sizes))
+
+    data_to_pix_unique = -1 * np.ones((data_pixels, max_pix_mappings * sub_size ** 2))
+    data_weights = np.zeros((data_pixels, max_pix_mappings * sub_size ** 2))
     pix_lengths = np.zeros(data_pixels)
 
     for ip in range(data_pixels):
@@ -156,12 +158,14 @@ def data_slim_to_pixelization_unique_2_from(
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
 
-            for pix_to_slim_index in pixelization_indexes_for_sub_slim_sizes_sizes[
-                ip_sub
-            ]:
+            for pix_to_slim_index in range(
+                pixelization_indexes_for_sub_slim_sizes[ip_sub]
+            ):
 
                 pix = pixelization_indexes_for_sub_slim_index[ip_sub, pix_to_slim_index]
-                pixel_weight = pixel_weights[ip_sub_end, pix_to_slim_index]
+                pixel_weight = pixel_weights_for_sub_slim_index[
+                    ip_sub, pix_to_slim_index
+                ]
 
                 stored_already = False
 
@@ -173,6 +177,8 @@ def data_slim_to_pixelization_unique_2_from(
                         stored_already = True
 
                 if not stored_already:
+
+                    print(ip, pix_size, pix)
 
                     data_to_pix_unique[ip, pix_size] = pix
                     data_weights[ip, pix_size] += sub_fraction * pixel_weight

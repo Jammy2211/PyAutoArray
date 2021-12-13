@@ -112,6 +112,17 @@ class AbstractMapper:
         )
 
     @property
+    def pixelization_indexes_for_sub_slim_index(self) -> "PixForSub":
+        raise NotImplementedError(
+            "pixelization_index_for_sub_slim_index should be overridden"
+        )
+
+    @cached_property
+    @profile_func
+    def pixelization_weights_for_sub_slim_index(self) -> np.ndarray:
+        raise NotImplementedError
+
+    @property
     def all_sub_slim_indexes_for_pixelization_index(self):
         """
         Returns the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings
@@ -145,14 +156,11 @@ class AbstractMapper:
             )
         except NotImplementedError:
 
-            pixelization_indexes_for_sub_slim_sizes_sizes = np.zeros(
-                shape=self.pixelization_index_for_sub_slim_index.shape[0]
-            )
-
             data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_2_from(
                 data_pixels=self.source_grid_slim.shape_slim,
-                pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index,
-                pixelization_indexes_for_sub_slim_sizes_sizes=pixelization_indexes_for_sub_slim_sizes_sizes,
+                pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+                pixelization_indexes_for_sub_slim_sizes=self.pixelization_indexes_for_sub_slim_index.sizes,
+                pixel_weights_for_sub_slim_index=self.pixelization_weights_for_sub_slim_index,
                 sub_size=self.source_grid_slim.sub_size,
             )
 
