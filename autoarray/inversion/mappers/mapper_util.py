@@ -91,7 +91,7 @@ def data_slim_to_pixelization_unique_from(
     return data_to_pix_unique, data_weights, pix_lengths
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def data_slim_to_pixelization_unique_2_from(
     data_pixels,
     pixelization_indexes_for_sub_slim_index: np.ndarray,
