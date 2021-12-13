@@ -302,12 +302,32 @@ class TestDataToPixUnique:
     def test__data_to_pix_unique_from(self):
 
         image_pixels = 2
-        pixelization_index_for_sub_slim_index = np.array([0, 0, 0, 1, 2, 1, 0, 2])
         sub_size = 2
 
-        data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
+        pixelization_index_for_sub_slim_index = np.array(
+            [[0, -1], [0, -1], [0, -1], [1, -1], [2, -1], [1, -1], [0, -1], [2, -1]]
+        ).astype("int")
+        pixelization_indexes_for_sub_slim_sizes = np.array(
+            [1, 1, 1, 1, 1, 1, 1, 1]
+        ).astype("int")
+        pixelization_weights_for_sub_slim_index = np.array(
+            [
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+            ]
+        )
+
+        data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_2_from(
             data_pixels=image_pixels,
-            pixelization_index_for_sub_slim_index=pixelization_index_for_sub_slim_index,
+            pixelization_indexes_for_sub_slim_index=pixelization_index_for_sub_slim_index,
+            pixelization_indexes_for_sub_slim_sizes=pixelization_indexes_for_sub_slim_sizes,
+            pixel_weights_for_sub_slim_index=pixelization_weights_for_sub_slim_index,
             sub_size=sub_size,
         )
 
@@ -317,34 +337,38 @@ class TestDataToPixUnique:
         assert (data_weights[1, :] == np.array([0.5, 0.25, 0.25, 0.0])).all()
         assert (pix_lengths == np.array([2, 3])).all()
 
-    # def test__data_to_pix_unique_2_from(self):
-    #
-    #     image_pixels = 2
-    #     pixelization_indexes_for_sub_slim_index = np.array([
-    #         [0, 1],
-    #         [0, 2],
-    #         [0, 1],
-    #         [1, -1],
-    #         [2, 1],
-    #         [1, -1],
-    #         [0, 2],
-    #         [2, -1]])
-    #     pixelization_indexes_for_sub_slim_sizes_sizes = np.array([2, 2, 2, 1, 2, 1, 2, 1])
-    #     sub_size = 2
-    #
-    #     data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
-    #         data_pixels=image_pixels,
-    #         pixelization_index_for_sub_slim_index=pixelization_indexes_for_sub_slim_index,
-    #         pixelization_indexes_for_sub_slim_sizes_sizes=pixelization_indexes_for_sub_slim_sizes_sizes,
-    #         sub_size=sub_size,
-    #     )
-    #
-    #     assert (data_to_pix_unique[0, :] == np.array([0, 1, -1, -1])).all()
-    #     assert (data_weights[0, :] == np.array([0.75, 0.25, 0.0, 0.0])).all()
-    #     assert (data_to_pix_unique[1, :] == np.array([2, 1, 0, -1])).all()
-    #     assert (data_weights[1, :] == np.array([0.5, 0.25, 0.25, 0.0])).all()
-    #     assert (pix_lengths == np.array([2, 3])).all()
+        pixelization_index_for_sub_slim_index = np.array(
+            [[0, 1], [0, 1], [0, 2], [1, -1], [2, -1], [1, -1], [0, -1], [2, -1]]
+        ).astype("int")
+        pixelization_indexes_for_sub_slim_sizes = np.array(
+            [2, 2, 2, 1, 1, 1, 1, 1]
+        ).astype("int")
+        pixelization_weights_for_sub_slim_index = np.array(
+            [
+                [0.5,0.5],
+                [0.25, 0.75],
+                [0.75, 0.25],
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+                [1.0, -1],
+            ]
+        )
 
+        data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_2_from(
+            data_pixels=image_pixels,
+            pixelization_indexes_for_sub_slim_index=pixelization_index_for_sub_slim_index,
+            pixelization_indexes_for_sub_slim_sizes=pixelization_indexes_for_sub_slim_sizes,
+            pixel_weights_for_sub_slim_index=pixelization_weights_for_sub_slim_index,
+            sub_size=sub_size,
+        )
+
+        assert (data_to_pix_unique[0, :] == np.array([0, 1, 2, -1, -1, -1, -1, -1])).all()
+        assert (data_weights[0, :] == np.array([0.375, 0.5625, 0.0625, 0.0, 0.0, 0.0, 0.0, 0.0])).all()
+        assert (data_to_pix_unique[1, :] == np.array([2, 1, 0, -1, -1, -1, -1, -1])).all()
+        assert (data_weights[1, :] == np.array([0.5, 0.25, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0])).all()
+        assert (pix_lengths == np.array([3, 3])).all()
 
 class TestPixelizationIndexesVoronoi:
     def test__grid_to_pixel_pixels_via_nearest_neighbour(self):
