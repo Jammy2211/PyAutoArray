@@ -228,6 +228,7 @@ def test__inversion_matrices__linear_eqns_mapping__voronoi_mapper():
     assert (inversion.regularization_matrix == regularization_matrix).all()
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
+
 def test__inversion_matrices__linear_eqns_mapping__delaunay_mapper():
 
     mask = aa.Mask2D.manual(
@@ -275,8 +276,8 @@ def test__inversion_matrices__linear_eqns_mapping__delaunay_mapper():
     )
 
     mapper = pix.mapper_from(
-        grid=grid,
-        sparse_grid=sparse_grid,
+        source_grid_slim=grid,
+        source_pixelization_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -288,7 +289,7 @@ def test__inversion_matrices__linear_eqns_mapping__delaunay_mapper():
 
     assert isinstance(mapper, MapperDelaunay)
 
-    #assert (
+    # assert (
     #    mapper.mapping_matrix
     #    == np.array(
     #        [
@@ -299,7 +300,7 @@ def test__inversion_matrices__linear_eqns_mapping__delaunay_mapper():
     #            [0.0, 0.0, 0.25, 0.0, 0.75],
     #        ]
     #    )
-    #).all()
+    # ).all()
 
     reg = aa.reg.Constant(coefficient=1.0)
     regularization_matrix = reg.regularization_matrix_from(mapper=mapper)
@@ -334,9 +335,6 @@ def test__inversion_matrices__linear_eqns_mapping__delaunay_mapper():
 
     assert (inversion.regularization_matrix == regularization_matrix).all()
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
-
-
-
 
 
 def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eqns_mapping():
@@ -667,6 +665,7 @@ def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formal
     assert (np.imag(inversion.mapped_reconstructed_data) < 0.0001).all()
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
 
+
 def test__inversion_matirces__linear_eqns_mapping__delaunay_mapper__matrix_formalism():
 
     real_space_mask = aa.Mask2D.unmasked(
@@ -677,11 +676,11 @@ def test__inversion_matirces__linear_eqns_mapping__delaunay_mapper__matrix_forma
 
     pix = aa.pix.DelaunayMagnification(shape=(7, 7))
 
-    sparse_grid = pix.sparse_grid_from(grid=grid)
+    sparse_grid = pix.sparse_grid_from(data_grid_slim=grid)
 
     mapper = pix.mapper_from(
-        grid=grid,
-        sparse_grid=sparse_grid,
+        source_grid_slim=grid,
+        source_pixelization_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -720,8 +719,6 @@ def test__inversion_matirces__linear_eqns_mapping__delaunay_mapper__matrix_forma
     )
     assert (np.imag(inversion.mapped_reconstructed_data) < 0.0001).all()
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
-
-
 
 
 def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():

@@ -25,9 +25,9 @@ class Delaunay(AbstractPixelization):
 
     def mapper_from(
         self,
-        grid: Grid2D,
-        sparse_grid: Grid2DSparse = None,
-        sparse_image_plane_grid: Grid2DSparse = None,
+        source_grid_slim: Grid2D,
+        source_pixelization_grid: Grid2DSparse = None,
+        data_pixelization_grid: Grid2DSparse = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
@@ -47,7 +47,7 @@ class Delaunay(AbstractPixelization):
 
         Parameters
         ----------
-        grid : aa.Grid2D
+        source_grid_slim : aa.Grid2D
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : aa.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
@@ -58,24 +58,26 @@ class Delaunay(AbstractPixelization):
         self.profiling_dict = profiling_dict
 
         relocated_grid = self.relocate_grid_via_border(
-            source_grid_slim=grid, settings=settings, preloads=preloads
+            source_grid_slim=source_grid_slim, settings=settings, preloads=preloads
         )
         relocated_pixelization_grid = self.relocate_pixelization_grid_via_border(
-            grid=grid, pixelization_grid=sparse_grid, settings=settings
+            source_grid_slim=source_grid_slim,
+            source_pixelization_grid=source_pixelization_grid,
+            settings=settings,
         )
 
         try:
 
             pixelization_grid = self.make_pixelization_grid(
-                relocated_grid=relocated_grid,
-                relocated_pixelization_grid=relocated_pixelization_grid,
-                sparse_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
+                source_grid_slim=relocated_grid,
+                source_pixelization_grid=relocated_pixelization_grid,
+                sparse_index_for_slim_index=source_pixelization_grid.sparse_index_for_slim_index,
             )
 
             return MapperDelaunay(
                 source_grid_slim=relocated_grid,
                 source_pixelization_grid=pixelization_grid,
-                data_pixelization_grid=sparse_image_plane_grid,
+                data_pixelization_grid=data_pixelization_grid,
                 hyper_image=hyper_image,
                 profiling_dict=profiling_dict,
             )
@@ -86,8 +88,8 @@ class Delaunay(AbstractPixelization):
     @profile_func
     def relocate_pixelization_grid_via_border(
         self,
-        grid: Grid2D,
-        pixelization_grid: Grid2DSparse,
+        source_grid_slim: Grid2D,
+        source_pixelization_grid: Grid2DSparse,
         settings: SettingsPixelization = SettingsPixelization(),
     ):
         """
@@ -98,16 +100,16 @@ class Delaunay(AbstractPixelization):
         of galaxies are heavily demagnified and may trace to outskirts of the source-plane.
         """
         if settings.use_border:
-            return grid.relocated_pixelization_grid_from(
-                pixelization_grid=pixelization_grid
+            return source_grid_slim.relocated_pixelization_grid_from(
+                pixelization_grid=source_pixelization_grid
             )
-        return pixelization_grid
+        return source_pixelization_grid
 
     @profile_func
     def make_pixelization_grid(
         self,
-        relocated_grid=None,
-        relocated_pixelization_grid=None,
+        source_grid_slim=None,
+        source_pixelization_grid=None,
         sparse_index_for_slim_index=None,
     ):
         """
@@ -120,8 +122,8 @@ class Delaunay(AbstractPixelization):
         """
 
         return Grid2DDelaunay(
-            grid=relocated_pixelization_grid,
-            #nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
+            grid=source_pixelization_grid,
+            # nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
         )
 
 
@@ -142,13 +144,13 @@ class DelaunayMagnification(Delaunay):
 
     def sparse_grid_from(
         self,
-        grid: Grid2D,
+        data_grid_slim: Grid2D,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
 
         return Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=self.shape
+            grid=data_grid_slim, unmasked_sparse_shape=self.shape
         )
 
 
@@ -176,14 +178,17 @@ class DelaunayBrightnessImage(Delaunay):
         return np.power(weight_map, self.weight_power)
 
     def sparse_grid_from(
-        self, grid: Grid2D, hyper_image: np.ndarray, settings=SettingsPixelization()
+        self,
+        data_grid_slim: Grid2D,
+        hyper_image: np.ndarray,
+        settings=SettingsPixelization(),
     ):
 
         weight_map = self.weight_map_from(hyper_image=hyper_image)
 
         return Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,
-            grid=grid,
+            grid=data_grid_slim,
             weight_map=weight_map,
             seed=settings.kmeans_seed,
             stochastic=settings.is_stochastic,

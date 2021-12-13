@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from autoconf import cached_property
 
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DDelaunay
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 
 from autoarray.numba_util import profile_func
@@ -22,6 +23,15 @@ def mapper(
         from autoarray.inversion.mappers.rectangular import MapperRectangular
 
         return MapperRectangular(
+            source_grid_slim=source_grid_slim,
+            source_pixelization_grid=source_pixelization_grid,
+            data_pixelization_grid=data_pixelization_grid,
+            hyper_image=hyper_data,
+        )
+    elif isinstance(source_pixelization_grid, Grid2DDelaunay):
+        from autoarray.inversion.mappers.delaunay import MapperDelaunay
+
+        return MapperDelaunay(
             source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
@@ -127,11 +137,24 @@ class AbstractMapper:
         every image pixel to their corresponding pixelization pixels.
         """
 
-        data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
-            data_pixels=self.source_grid_slim.shape_slim,
-            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
-            sub_size=self.source_grid_slim.sub_size,
-        )
+        try:
+            data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
+                data_pixels=self.source_grid_slim.shape_slim,
+                pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+                sub_size=self.source_grid_slim.sub_size,
+            )
+        except NotImplementedError:
+
+            pixelization_indexes_for_sub_slim_sizes_sizes = np.zeros(
+                shape=self.pixelization_index_for_sub_slim_index.shape[0]
+            )
+
+            data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_2_from(
+                data_pixels=self.source_grid_slim.shape_slim,
+                pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index,
+                pixelization_indexes_for_sub_slim_sizes_sizes=pixelization_indexes_for_sub_slim_sizes_sizes,
+                sub_size=self.source_grid_slim.sub_size,
+            )
 
         return UniqueMappings(
             data_to_pix_unique=data_to_pix_unique,
@@ -197,6 +220,13 @@ class AbstractMapper:
         pixelization of the rectangular pixelization by using the mapper.
         """
         raise NotImplementedError()
+
+
+class PixForSub:
+    def __init__(self, mappings, sizes):
+
+        self.mappings = mappings
+        self.sizes = sizes
 
 
 class UniqueMappings:

@@ -707,13 +707,14 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
         print(dir(mapper))
 
-        #tri = 
+        # tri =
 
         pixel_points, simplices = self.delaunay_triangles(delaunay=mapper.delaunay)
         interpolating_values = self.delaunay_interpolation(
-                delaunay=mapper.delaunay,
-                interpolating_yx=np.vstack((ys_grid_1d, xs_grid_1d)).T,
-                pixel_values=values)
+            delaunay=mapper.delaunay,
+            interpolating_yx=np.vstack((ys_grid_1d, xs_grid_1d)).T,
+            pixel_values=values,
+        )
 
         if values is not None:
 
@@ -740,16 +741,20 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
         else:
             cmap = plt.get_cmap("Greys")
-            #color_array = np.zeros(shape=mapper.pixels)
+            # color_array = np.zeros(shape=mapper.pixels)
 
-        #for region, index in zip(regions, range(mapper.pixels)):
+        # for region, index in zip(regions, range(mapper.pixels)):
         #    polygon = vertices[region]
         #    col = cmap(color_array[index])
         #    plt.fill(*zip(*polygon), facecolor=col, zorder=-1, **self.config_dict)
 
-        plt.imshow(interpolating_values.reshape((nnn, nnn)), cmap=cmap, extent=[x0, x1, y0, y1],
-                origin='lower')
-        #plt.triplot(pixel_points[:, 0], pixel_points[:, 1], simplices)
+        plt.imshow(
+            interpolating_values.reshape((nnn, nnn)),
+            cmap=cmap,
+            extent=[x0, x1, y0, y1],
+            origin="lower",
+        )
+        # plt.triplot(pixel_points[:, 0], pixel_points[:, 1], simplices)
 
     def delaunay_triangles(self, delaunay):
         """
@@ -790,34 +795,30 @@ class DelaunayDrawer(AbstractMatWrap2D):
             interpolating_point = interpolating_yx[i]
 
             if simplex_index == -1:
-                cloest_pixel_index = np.argmin(np.sum((pixel_points - interpolating_point)**2.0, axis=1))
+                cloest_pixel_index = np.argmin(
+                    np.sum((pixel_points - interpolating_point) ** 2.0, axis=1)
+                )
                 interpolating_values[i] = pixel_values[cloest_pixel_index]
             else:
                 triangle_points = pixel_points[simplices[simplex_index]]
                 triangle_values = pixel_values[simplices[simplex_index]]
 
                 term0 = triangle_area(
-                    pa=triangle_points[1],
-                    pb=triangle_points[2],
-                    pc=interpolating_point)
+                    pa=triangle_points[1], pb=triangle_points[2], pc=interpolating_point
+                )
                 term1 = triangle_area(
-                    pa=triangle_points[0],
-                    pb=triangle_points[2],
-                    pc=interpolating_point)
+                    pa=triangle_points[0], pb=triangle_points[2], pc=interpolating_point
+                )
                 term2 = triangle_area(
-                    pa=triangle_points[0],
-                    pb=triangle_points[1],
-                    pc=interpolating_point)
+                    pa=triangle_points[0], pb=triangle_points[1], pc=interpolating_point
+                )
                 norm = term0 + term1 + term2
-                
+
                 weight_abc = np.array([term0, term1, term2]) / norm
 
                 interpolating_values[i] = np.sum(weight_abc * triangle_values)
 
         return interpolating_values
-                
-
-
 
 
 class OriginScatter(GridScatter):

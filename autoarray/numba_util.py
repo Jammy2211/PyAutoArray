@@ -23,7 +23,7 @@ try:
     nopython = conf.instance["general"]["numba"]["nopython"]
     cache = conf.instance["general"]["numba"]["cache"]
     parallel = conf.instance["general"]["numba"]["parallel"]
-    print('numba parallel:')
+    print("numba parallel:")
     print(parallel)
 except Exception:
     nopython = True

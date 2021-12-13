@@ -65,7 +65,7 @@ class MapperVoronoi(AbstractMapper):
         For a Voronoi pixelization, we perform a graph search to map each coordinate of the mappers traced grid
         of (y,x) coordinates (`source_grid_slim`) to each Voronoi pixel based on its centre (`source_pixelization_grid`).
         """
-        return mapper_util.pixelization_index_for_voronoi_sub_slim_index_from(
+        return mapper_util.pixelization_index_for_sub_slim_index_voronoi_from(
             grid=self.source_grid_slim,
             nearest_pixelization_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,

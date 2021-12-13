@@ -804,7 +804,7 @@ class MatPlot2D(AbstractMatPlot):
                 mapper=mapper,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
-                source_pixelilzation_values=source_pixelilzation_values
+                source_pixelilzation_values=source_pixelilzation_values,
             )
 
         else:

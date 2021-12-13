@@ -15,7 +15,7 @@ class TestDelaunayMagnification:
 
         pixelization = aa.pix.DelaunayMagnification(shape=(3, 3))
 
-        sparse_grid = pixelization.sparse_grid_from(grid=sub_grid_2d_7x7)
+        sparse_grid = pixelization.sparse_grid_from(data_grid_slim=sub_grid_2d_7x7)
 
         pixelization_grid = aa.Grid2DDelaunay(
             grid=sparse_grid,
@@ -34,11 +34,11 @@ class TestDelaunayMagnification:
 
         relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
-        sparse_grid = pixelization.sparse_grid_from(grid=sub_grid_2d_7x7)
+        sparse_grid = pixelization.sparse_grid_from(data_grid_slim=sub_grid_2d_7x7)
 
         mapper = pixelization.mapper_from(
-            grid=relocated_grid,
-            sparse_grid=sparse_grid,
+            source_grid_slim=relocated_grid,
+            source_pixelization_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
             preloads=aa.Preloads(relocated_grid=relocated_grid),
         )

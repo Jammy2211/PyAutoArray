@@ -3,6 +3,7 @@ from typing import Dict, Optional
 from autoconf import cached_property
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.mappers.abstract import PixForSub
 
 from autoarray.numba_util import profile_func
 from autoarray.inversion.mappers import mapper_util
@@ -10,6 +11,7 @@ from autoarray.inversion.mappers import mapper_util
 import numpy as np
 
 import time
+
 
 class MapperDelaunay(AbstractMapper):
     def __init__(
@@ -53,27 +55,20 @@ class MapperDelaunay(AbstractMapper):
         """
         The indexes mappings between the sub pixels and Voronoi pixelization pixels.
         For Delaunay tessellation, most sub pixels should have contribution of 3 pixelization pixels. However,
-        for those ones not belonging to any triangle, we link its value to its closest point. 
+        for those ones not belonging to any triangle, we link its value to its closest point.
 
         The returning result is a matrix of (len(sub_pixels, 3)) where the entries mark the relevant source pixel indexes.
         A row like [A, -1, -1] means that sub pixel only links to source pixel A.
         """
 
-        simplex_index_for_sub_slim_index = self.delaunay.find_simplex(self.source_grid_slim)
-        pixelization_indexes_for_simplex_index = self.delaunay.simplices
+        pixelization_indexes_for_sub_slim_index, sizes = mapper_util.pixelization_indexes_for_sub_slim_index_delaunay_from(
+            delaunay=self.delaunay, source_grid_slim=self.source_grid_slim
+        )
 
-        tem_list = -1 * np.ones((len(self.source_grid_slim), 3), dtype='int')
-
-        for i in range(len(self.source_grid_slim)):
-            simplex_index = simplex_index_for_sub_slim_index[i]
-            if simplex_index != -1:
-                tem_list[i] = pixelization_indexes_for_simplex_index[simplex_index_for_sub_slim_index[i]]
-            else:
-                tem_list[i][0] = np.argmin(np.sum((self.delaunay.points - self.source_grid_slim[i])**2.0, axis=1))
-                #print(tem_list[i])
-
-        return tem_list
-
+        return PixForSub(
+            mappings=pixelization_indexes_for_sub_slim_index.astype("int"),
+            sizes=sizes.astype("int"),
+        )
 
     @cached_property
     @profile_func
@@ -83,25 +78,24 @@ class MapperDelaunay(AbstractMapper):
         It has the same shape as the 'pixelization_indexes_for_sub_slim_index'.
         """
         return mapper_util.pixel_weights_from(
-                source_grid_slim=self.source_grid_slim,
-                source_pixelization_grid=self.source_pixelization_grid,
-                slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-                pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index
-                )
+            source_grid_slim=self.source_grid_slim,
+            source_pixelization_grid=self.source_pixelization_grid,
+            slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
+            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+        )
 
     @cached_property
     @profile_func
     def mapping_matrix(self):
 
         return mapper_util.mapping_matrix_Delaunay_baricentric_interpolation_from(
-                pixel_weights=self.pixelization_weights_for_sub_slim_index,
-                pixels=self.pixels,
-                total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
-                slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-                pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index,
-                sub_fraction=self.source_grid_slim.mask.sub_fraction
-                )
-
+            pixel_weights=self.pixelization_weights_for_sub_slim_index,
+            pixels=self.pixels,
+            total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
+            slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
+            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+            sub_fraction=self.source_grid_slim.mask.sub_fraction,
+        )
 
     @property
     def delaunay(self):
@@ -113,10 +107,10 @@ class MapperDelaunay(AbstractMapper):
     def pixel_signals_from(self, signal_scale):
 
         return mapper_util.adaptive_pixel_signals_Delaunay_version_from(
-                pixels=self.pixels,
-                pixel_weights=self.pixelization_weights_for_sub_slim_index,
-                signal_scale=signal_scale,
-                pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index,
-                slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
-                hyper_image=self.hyper_image
-                )
+            pixels=self.pixels,
+            pixel_weights=self.pixelization_weights_for_sub_slim_index,
+            signal_scale=signal_scale,
+            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+            slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
+            hyper_image=self.hyper_image,
+        )

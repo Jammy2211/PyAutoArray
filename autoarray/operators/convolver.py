@@ -421,8 +421,6 @@ class Convolver:
 
         return Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
 
-
-
     @staticmethod
     @numba_util.jit()
     def convolve_no_blurring_jit(

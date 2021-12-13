@@ -468,43 +468,39 @@ class Grid2DDelaunay(AbstractStructure2D):
     @cached_property
     def Delaunay(self) -> scipy.spatial.Delaunay:
         try:
-            return scipy.spatial.Delaunay(
-                np.asarray([self[:, 0], self[:, 1]]).T
-            )
+            return scipy.spatial.Delaunay(np.asarray([self[:, 0], self[:, 1]]).T)
         except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
             raise exc.PixelizationException() from e
 
     @cached_property
     def pixel_neighbors(self) -> PixelNeighbors:
-    
-        #neighbors, sizes = pixelization_util.voronoi_neighbors_from(
-        #    pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
-        #)
 
-        '''
+        # neighbors, sizes = pixelization_util.voronoi_neighbors_from(
+        #    pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
+        # )
+
+        """
         see https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.vertex_neighbor_vertices.html#scipy.spatial.Delaunay.vertex_neighbor_vertices
-        '''
+        """
 
         indptr, indices = self.Delaunay.vertex_neighbor_vertices
 
-        #print(indptr)
-
+        # print(indptr)
 
         sizes = indptr[1:] - indptr[:-1]
 
-        #print(sizes)
+        # print(sizes)
 
-        neighbors = -1 * np.ones(shape=(self.pixels, int(np.max(sizes))), dtype='int')
+        neighbors = -1 * np.ones(shape=(self.pixels, int(np.max(sizes))), dtype="int")
 
-        #print('Delaunay neighbors:')
-        #print(neighbors)
+        # print('Delaunay neighbors:')
+        # print(neighbors)
 
-        #print('Delaunay neighbor shape:')
-        #print(np.shape(neighbors))
+        # print('Delaunay neighbor shape:')
+        # print(np.shape(neighbors))
 
         for k in range(self.pixels):
-            neighbors[k][0:sizes[k]] = indices[indptr[k]:indptr[k + 1]]
-
+            neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]
 
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
