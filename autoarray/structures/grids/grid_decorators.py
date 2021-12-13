@@ -3,6 +3,7 @@ from functools import wraps
 from typing import List, Optional, Union
 
 from autoconf import conf
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
@@ -15,6 +16,8 @@ from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.grids.two_d.grid_2d_irregular import (
     Grid2DIrregularTransformed,
 )
+from autoarray.structures.vectors.uniform import VectorYX2D
+from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.arrays.values import ValuesIrregular
 
 from autoarray import exc
@@ -32,7 +35,7 @@ def grid_1d_to_structure(func):
 
     Returns
     -------
-        A function that can except cartesian or transformed coordinates
+        A function that can accept cartesian or transformed coordinates
     """
 
     @wraps(func)
@@ -124,7 +127,7 @@ def grid_1d_output_structure(func):
 
     Returns
     -------
-        A function that can except cartesian or transformed coordinates
+        A function that can accept cartesian or transformed coordinates
     """
 
     @wraps(func)
@@ -180,7 +183,7 @@ def grid_2d_to_structure(func):
 
     Returns
     -------
-        A function that can except cartesian or transformed coordinates
+        A function that can accept cartesian or transformed coordinates
     """
 
     @wraps(func)
@@ -257,13 +260,13 @@ def grid_2d_to_structure_list(func):
 
     Returns
     -------
-        A function that can except cartesian or transformed coordinates
+        A function that can accept cartesian or transformed coordinates
     """
 
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: List[Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D]],
+        grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
         **kwargs
     ) -> List[Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]]:
@@ -313,6 +316,132 @@ def grid_2d_to_structure_list(func):
     return wrapper
 
 
+def grid_2d_to_vector_yx(func):
+    """
+    Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates that return the results
+    as a NumPy array which represents a (y,x) 2D vectors.
+
+    Parameters
+    ----------
+    func
+        A function which computes (y,x) 2D vectors from a 2D grid of (y,x) coordinates.
+
+    Returns
+    -------
+        A function that can accept cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(
+        obj: object,
+        grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
+        *args,
+        **kwargs
+    ) -> Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]:
+        """
+        This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`, `Grid2DIterate`,
+        `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
+        interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
+        coordinates of the grid using specific functionality of the input grid.
+
+        The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
+        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `Grid2DIterate` is
+        input, the function is evaluated using the appropriate `iterated_from` function.
+
+        The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
+        `ValuesIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
+
+        - If the function returns (y,x) coordinates at every input point, the returned results are a `Grid2D`
+        or `Grid2DIrregular` vector_yx, the same vector_yx as the input.
+
+        - If the function returns scalar values at every input point and a `Grid2D` is input, the returned results are
+        an `Array2D` vector_yx which uses the same dimensions and mask as the `Grid2D`.
+
+        - If the function returns scalar values at every input point and `Grid2DIrregular` are input, the returned
+        results are a `ValuesIrregular` object with vector_yx resembling that of the `Grid2DIrregular`.
+
+        If the input array is not a `Grid2D` vector_yx (e.g. it is a 2D NumPy array) the output is a NumPy array.
+
+        Parameters
+        ----------
+        obj
+            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid : Grid2D or Grid2DIrregular
+            A grid_like object of (y,x) coordinates on which the function values are evaluated.
+
+        Returns
+        -------
+            The function values evaluated on the grid with the same vector_yx as the input grid_like object.
+        """
+
+        vector_yx_2d = func(obj, grid, *args, **kwargs)
+
+        if isinstance(grid, Grid2DIrregular):
+            return VectorYX2DIrregular(vectors=vector_yx_2d, grid=grid)
+        try:
+            return VectorYX2D(vectors=vector_yx_2d, grid=grid, mask=grid.mask)
+        except AttributeError:
+            return vector_yx_2d
+
+    return wrapper
+
+
+def grid_2d_to_vector_yx_list(func):
+    """
+    Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates and return the results as
+    a list of NumPy arrays.
+
+    Parameters
+    ----------
+    func
+        A function which computes a set of values from a 2D grid of (y,x) coordinates.
+
+    Returns
+    -------
+        A function that can accept cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(
+        obj: object,
+        grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
+        *args,
+        **kwargs
+    ) -> List[Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]]:
+        """
+        This decorator serves the same purpose as the `grid_2d_to_vector_yx` decorator, but it deals with functions
+        whose output is a list of results as opposed to a single NumPy array. It simply iterates over these lists to
+        perform the same conversions as `grid_2d_to_vector_yx`.
+
+        Parameters
+        ----------
+        obj
+            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid : Grid2D or Grid2DIrregular
+            A grid_like object of (y,x) coordinates on which the function values are evaluated.
+
+        Returns
+        -------
+            The function values evaluated on the grid with the same vector_yx as the input grid_like object in a list
+            of NumPy arrays.
+        """
+
+        vector_yx_2d_list = func(obj, grid, *args, **kwargs)
+
+        if isinstance(grid, Grid2DIrregular):
+            return [
+                VectorYX2DIrregular(vectors=vectors, grid=grid)
+                for vectors in vector_yx_2d_list
+            ]
+        else:
+            return [
+                VectorYX2D(vectors=vectors, grid=grid, mask=grid.mask)
+                for vectors in vector_yx_2d_list
+            ]
+
+    return wrapper
+
+
 def transform(func):
     """
     Checks whether the input Grid2D of (y,x) coordinates have previously been transformed. If they have not \
@@ -325,7 +454,7 @@ def transform(func):
 
     Returns
     -------
-        A function that can except cartesian or transformed coordinates
+        A function that can accept cartesian or transformed coordinates
     """
 
     @wraps(func)
@@ -396,7 +525,7 @@ def relocate_to_radial_minimum(func):
 
     Returns
     -------
-        A function that can except cartesian or transformed coordinates
+        A function that can accept cartesian or transformed coordinates
     """
 
     @wraps(func)

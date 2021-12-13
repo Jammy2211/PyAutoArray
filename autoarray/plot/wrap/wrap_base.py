@@ -844,10 +844,7 @@ class Output:
         self.path = path
 
         if path is not None and path:
-            os.makedirs(
-                path,
-                exist_ok=True
-            )
+            os.makedirs(path, exist_ok=True)
 
         self.filename = filename
         self._format = format

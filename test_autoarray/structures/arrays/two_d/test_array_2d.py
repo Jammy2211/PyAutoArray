@@ -109,6 +109,19 @@ class TestAPI:
         assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 2
 
+        mask = aa.Mask2D.manual(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
+        arr = aa.Array2D.manual_slim(
+            array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            shape_native=(2, 1),
+            pixel_scales=2.0,
+            sub_size=2,
+        )
+        arr = arr.apply_mask(mask=mask)
+
+        assert (
+            arr.native == np.array([[1.0, 2.0], [3.0, 4.0], [0.0, 0.0], [0.0, 0.0]])
+        ).all()
+
     def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask(
         self,
     ):

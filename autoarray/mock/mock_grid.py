@@ -111,7 +111,13 @@ class MockGridLikeIteratorObj:
         return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
     @grid_decorators.grid_2d_to_structure
-    def ndarray_1d_from(self, grid):
+    def ndarray_1d_from(self, grid) -> np.ndarray:
+        """
+        Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a 1D ndarray
+        of shape [total_masked_grid_pixels].
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return np.exp(
             np.multiply(
@@ -122,12 +128,37 @@ class MockGridLikeIteratorObj:
 
     @grid_decorators.grid_2d_to_structure
     def ndarray_2d_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
+        of shape [total_masked_grid_pixels, 2].
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
+        return self.grid_to_grid_cartesian(
+            grid=grid, radius=np.full(grid.shape[0], 2.0)
+        )
+
+    @grid_decorators.grid_2d_to_vector_yx
+    @grid_decorators.grid_2d_to_structure
+    def ndarray_yx_2d_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
+        of shape [total_masked_grid_pixels] which represents a vector field.
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
         return self.grid_to_grid_cartesian(
             grid=grid, radius=np.full(grid.shape[0], 2.0)
         )
 
     @grid_decorators.grid_2d_to_structure_list
     def ndarray_1d_list_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a list of 1D
+        ndarrays of shape [total_masked_grid_pixels].
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return [
             np.exp(
@@ -140,6 +171,25 @@ class MockGridLikeIteratorObj:
 
     @grid_decorators.grid_2d_to_structure_list
     def ndarray_2d_list_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D list of
+        ndarrays of shape [total_masked_grid_pixels, 2].
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
+        return [
+            self.grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
+        ]
+
+    @grid_decorators.grid_2d_to_vector_yx
+    @grid_decorators.grid_2d_to_structure_list
+    def ndarray_yx_2d_list_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input grid, returns a list of 2D
+        ndarrays of shape [total_masked_grid_pixels] which represents a vector field.
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
         return [
             self.grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
         ]
@@ -174,18 +224,64 @@ class MockGrid2DLikeObj:
 
     @grid_decorators.grid_2d_to_structure
     def ndarray_1d_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a 1D ndarray
+        of shape [total_masked_grid_pixels].
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
         return np.ones(shape=grid.shape[0])
 
     @grid_decorators.grid_2d_to_structure
     def ndarray_2d_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
+        of shape [total_masked_grid_pixels, 2].
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
         return np.multiply(2.0, grid)
+
+    @grid_decorators.grid_2d_to_vector_yx
+    @grid_decorators.grid_2d_to_structure
+    def ndarray_yx_2d_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
+        of shape [total_masked_grid_pixels] which represents a vector field.
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
+        return 2.0 * grid
 
     @grid_decorators.grid_2d_to_structure_list
     def ndarray_1d_list_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a list of 1D
+        ndarrays of shape [total_masked_grid_pixels].
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
         return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
 
     @grid_decorators.grid_2d_to_structure_list
     def ndarray_2d_list_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D list of
+        ndarrays of shape [total_masked_grid_pixels, 2].
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
+        return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
+
+    @grid_decorators.grid_2d_to_vector_yx
+    @grid_decorators.grid_2d_to_structure_list
+    def ndarray_yx_2d_list_from(self, grid):
+        """
+        Mock function mimicking the behaviour of a class function which given an input grid, returns a list of 2D
+        ndarrays of shape [total_masked_grid_pixels] which represents a vector field.
+
+        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
+        """
         return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
 
@@ -197,5 +293,5 @@ class MockGridRadialMinimum:
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
     @grid_decorators.relocate_to_radial_minimum
-    def deflections_2d_from(self, grid):
+    def deflections_yx_2d_from(self, grid):
         return grid

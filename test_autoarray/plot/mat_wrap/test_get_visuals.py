@@ -42,7 +42,7 @@ def test__via_array_1d_from(array_1d_7):
 
 def test__via_mask_from(mask_2d_7x7):
 
-    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
+    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vectors=2)
     include_2d = aplt.Include2D(origin=True, mask=True, border=True)
 
     get_visuals = GetVisuals2D(include=include_2d, visuals=visuals_2d)
@@ -52,7 +52,7 @@ def test__via_mask_from(mask_2d_7x7):
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert (visuals_2d_via.mask == mask_2d_7x7).all()
     assert (visuals_2d_via.border == mask_2d_7x7.border_grid_sub_1.binned).all()
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(origin=False, mask=False, border=False)
 
@@ -63,7 +63,7 @@ def test__via_mask_from(mask_2d_7x7):
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert visuals_2d_via.mask == None
     assert visuals_2d_via.border == None
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2
 
 
 def test__via_grid_from(grid_2d_7x7):
@@ -176,7 +176,7 @@ def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
 
 def test__via_fit_imaging_from(fit_imaging_7x7):
 
-    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
+    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vectors=2)
     include_2d = aplt.Include2D(origin=True, mask=True, border=True)
 
     get_visuals = GetVisuals2D(include=include_2d, visuals=visuals_2d)
@@ -188,7 +188,7 @@ def test__via_fit_imaging_from(fit_imaging_7x7):
     assert (
         visuals_2d_via.border == fit_imaging_7x7.mask.border_grid_sub_1.binned
     ).all()
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(origin=False, mask=False, border=False)
 
@@ -199,4 +199,4 @@ def test__via_fit_imaging_from(fit_imaging_7x7):
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert visuals_2d_via.mask == None
     assert visuals_2d_via.border == None
-    assert visuals_2d_via.vector_field == 2
+    assert visuals_2d_via.vectors == 2

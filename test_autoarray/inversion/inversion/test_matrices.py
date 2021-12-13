@@ -31,11 +31,15 @@ def test__curvature_matrix__via_w_tilde_identical_to_mapping():
     pix_1 = aa.pix.Rectangular(shape=(4, 4))
 
     mapper_0 = pix_0.mapper_from(
-        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+        source_grid_slim=grid,
+        source_pixelization_grid=None,
+        settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper_1 = pix_1.mapper_from(
-        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+        source_grid_slim=grid,
+        source_pixelization_grid=None,
+        settings=aa.SettingsPixelization(use_border=False),
     )
 
     reg = aa.reg.Constant(coefficient=1.0)

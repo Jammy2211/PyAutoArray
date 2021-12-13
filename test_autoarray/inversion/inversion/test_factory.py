@@ -56,7 +56,9 @@ def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper():
     pix = aa.pix.Rectangular(shape=(3, 3))
 
     mapper = pix.mapper_from(
-        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+        source_grid_slim=grid,
+        source_pixelization_grid=None,
+        settings=aa.SettingsPixelization(use_border=False),
     )
 
     assert mapper.data_pixelization_grid == None
@@ -166,8 +168,8 @@ def test__inversion_matrices__linear_eqns_mapping__voronoi_mapper():
     )
 
     mapper = pix.mapper_from(
-        grid=grid,
-        sparse_grid=sparse_grid,
+        source_grid_slim=grid,
+        source_pixelization_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -360,7 +362,9 @@ def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eq
     pix = aa.pix.Rectangular(shape=(3, 3))
 
     mapper = pix.mapper_from(
-        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+        source_grid_slim=grid,
+        source_pixelization_grid=None,
+        settings=aa.SettingsPixelization(use_border=False),
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
@@ -466,11 +470,15 @@ def test__inversion_matrices__linear_eqns_x2_mapping():
     pix_1 = aa.pix.Rectangular(shape=(4, 4))
 
     mapper_0 = pix_0.mapper_from(
-        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+        source_grid_slim=grid,
+        source_pixelization_grid=None,
+        settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper_1 = pix_1.mapper_from(
-        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+        source_grid_slim=grid,
+        source_pixelization_grid=None,
+        settings=aa.SettingsPixelization(use_border=False),
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
@@ -563,7 +571,9 @@ def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper__matrix_fo
     pix = aa.pix.Rectangular(shape=(7, 7))
 
     mapper = pix.mapper_from(
-        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+        source_grid_slim=grid,
+        source_pixelization_grid=None,
+        settings=aa.SettingsPixelization(use_border=False),
     )
 
     reg = aa.reg.Constant(coefficient=0.0)
@@ -613,11 +623,11 @@ def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formal
 
     pix = aa.pix.VoronoiMagnification(shape=(7, 7))
 
-    sparse_grid = pix.sparse_grid_from(grid=grid)
+    sparse_grid = pix.data_pixelization_grid_from(data_grid_slim=grid)
 
     mapper = pix.mapper_from(
-        grid=grid,
-        sparse_grid=sparse_grid,
+        source_grid_slim=grid,
+        source_pixelization_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -725,7 +735,9 @@ def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():
     pix = aa.pix.Rectangular(shape=(7, 7))
 
     mapper = pix.mapper_from(
-        grid=grid, sparse_grid=None, settings=aa.SettingsPixelization(use_border=False)
+        source_grid_slim=grid,
+        source_pixelization_grid=None,
+        settings=aa.SettingsPixelization(use_border=False),
     )
 
     reg = aa.reg.Constant(coefficient=0.0)

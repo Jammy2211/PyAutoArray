@@ -9,7 +9,6 @@ from autoarray.dataset.imaging import Imaging
 
 
 class ImagingPlotterMeta(Plotter):
-
     def __init__(
         self,
         imaging: Imaging,
@@ -52,14 +51,14 @@ class ImagingPlotterMeta(Plotter):
         self.get_visuals_2d = get_visuals_2d
 
     def figures_2d(
-            self,
-            image: bool = False,
-            noise_map: bool = False,
-            psf: bool = False,
-            inverse_noise_map: bool = False,
-            signal_to_noise_map: bool = False,
-            absolute_signal_to_noise_map: bool = False,
-            potential_chi_squared_map: bool = False,
+        self,
+        image: bool = False,
+        noise_map: bool = False,
+        psf: bool = False,
+        inverse_noise_map: bool = False,
+        signal_to_noise_map: bool = False,
+        absolute_signal_to_noise_map: bool = False,
+        potential_chi_squared_map: bool = False,
     ):
         """
         Plots the individual attributes of the plotter's `Imaging` object in 2D.
@@ -145,15 +144,15 @@ class ImagingPlotterMeta(Plotter):
             )
 
     def subplot(
-            self,
-            image: bool = False,
-            noise_map: bool = False,
-            psf: bool = False,
-            signal_to_noise_map: bool = False,
-            inverse_noise_map: bool = False,
-            absolute_signal_to_noise_map: bool = False,
-            potential_chi_squared_map: bool = False,
-            auto_filename: str = "subplot_imaging",
+        self,
+        image: bool = False,
+        noise_map: bool = False,
+        psf: bool = False,
+        signal_to_noise_map: bool = False,
+        inverse_noise_map: bool = False,
+        absolute_signal_to_noise_map: bool = False,
+        potential_chi_squared_map: bool = False,
+        auto_filename: str = "subplot_imaging",
     ):
         """
         Plots the individual attributes of the plotter's `Imaging` object in 2D on a subplot.
@@ -257,5 +256,3 @@ class ImagingPlotter(Plotter):
 
     def get_visuals_2d(self):
         return self.get_2d.via_mask_from(mask=self.imaging.mask)
-
-

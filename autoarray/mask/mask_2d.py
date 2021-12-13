@@ -218,6 +218,10 @@ class AbstractMask2D(AbstractMask):
 
     @property
     def shape_native_scaled(self):
+        """
+        The (y,x) 2D shape of the mask in scaled units, computed from the 2D `shape` (units pixels) and
+        the `pixel_scales` (units scaled/pixels) conversion factor.
+        """
         return (
             float(self.pixel_scales[0] * self.shape[0]),
             float(self.pixel_scales[1] * self.shape[1]),

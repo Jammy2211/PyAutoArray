@@ -72,8 +72,10 @@ class Grid2DIrregular(np.ndarray):
 
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
-        """The two dimensional shape of the coordinates spain in scaled units, computed by taking the minimum and
-        maximum values of the coordinates."""
+        """
+        The (y,x) 2D shape of the irregular grid in scaled units, computed by taking the minimum and
+        maximum values of (y,x) coordinates on the grid.
+        """
         return (
             np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),

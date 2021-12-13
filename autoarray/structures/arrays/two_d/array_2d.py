@@ -11,6 +11,8 @@ from autoarray.geometry import geometry_util
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 
+from autoarray import type as ty
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ class Array2D(AbstractArray2D):
         The array can be stored in 1D or 2D, as detailed below.
 
         Case 1: [sub-size=1, slim]:
-        -----------------------------------------
+        ---------------------------
 
         The Array2D is an ndarray of shape [total_unmasked_pixels].
 
@@ -575,3 +577,6 @@ class Array2D(AbstractArray2D):
             sub_size=sub_size,
             header=header,
         )
+
+    def apply_mask(self, mask: Mask2D):
+        return Array2D.manual_mask(array=self.native, mask=mask, header=self.header)

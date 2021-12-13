@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.cluster import KMeans
 from typing import List, Optional, Tuple, Union
+import warnings
 
 from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
 from autoarray.mask.mask_2d import Mask2D
@@ -15,6 +16,8 @@ from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.mask.mask_2d import mask_2d_util
 from autoarray.structures.grids.two_d import sparse_util
+
+from autoarray import type as ty
 
 
 class Grid2D(AbstractGrid2D):
@@ -236,7 +239,7 @@ class Grid2D(AbstractGrid2D):
         cls,
         grid: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -283,7 +286,7 @@ class Grid2D(AbstractGrid2D):
     def manual_native(
         cls,
         grid: Union[np.ndarray, List],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -334,7 +337,7 @@ class Grid2D(AbstractGrid2D):
     def manual(
         cls,
         grid: Union[np.ndarray, List],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         shape_native: Tuple[int, int] = None,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
@@ -402,7 +405,7 @@ class Grid2D(AbstractGrid2D):
         y: Union[np.ndarray, List],
         x: np.ndarray,
         shape_native: Tuple[int, int],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -452,7 +455,7 @@ class Grid2D(AbstractGrid2D):
         cls,
         y: Union[np.ndarray, List],
         x: Union[np.ndarray, List],
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -622,7 +625,7 @@ class Grid2D(AbstractGrid2D):
     def from_fits(
         cls,
         file_path: str,
-        pixel_scales: Union[Tuple[float, float], float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
@@ -1012,6 +1015,8 @@ class Grid2DSparse(AbstractGrid2D):
             If True, the random number seed is randommly chosen every time the function is called, ensuring every
             pixel-grid is randomly determined and thus stochastic.
         """
+
+        warnings.filterwarnings("ignore")
 
         if stochastic:
             seed = np.random.randint(low=1, high=2 ** 31)

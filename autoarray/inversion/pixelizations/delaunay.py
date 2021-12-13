@@ -58,7 +58,7 @@ class Delaunay(AbstractPixelization):
         self.profiling_dict = profiling_dict
 
         relocated_grid = self.relocate_grid_via_border(
-            grid=grid, settings=settings, preloads=preloads
+            source_grid_slim=grid, settings=settings, preloads=preloads
         )
         relocated_pixelization_grid = self.relocate_pixelization_grid_via_border(
             grid=grid, pixelization_grid=sparse_grid, settings=settings

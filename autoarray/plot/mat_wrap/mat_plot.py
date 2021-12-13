@@ -35,21 +35,21 @@ class AutoLabels:
 class AbstractMatPlot:
     def __init__(
         self,
-        units: wb.Units = wb.Units(),
-        figure: wb.Figure = wb.Figure(),
-        axis: wb.Axis = wb.Axis(),
-        cmap: wb.Cmap = wb.Cmap(),
-        colorbar: wb.Colorbar = wb.Colorbar(),
-        colorbar_tickparams: wb.ColorbarTickParams = wb.ColorbarTickParams(),
-        tickparams: wb.TickParams = wb.TickParams(),
-        yticks: wb.YTicks = wb.YTicks(),
-        xticks: wb.XTicks = wb.XTicks(),
-        title: wb.Title = wb.Title(),
-        ylabel: wb.YLabel = wb.YLabel(),
-        xlabel: wb.XLabel = wb.XLabel(),
-        text: wb.Text = wb.Text(),
-        legend: wb.Legend = wb.Legend(),
-        output: wb.Output = wb.Output(),
+        units: Optional[wb.Units] = None,
+        figure: Optional[wb.Figure] = None,
+        axis: Optional[wb.Axis] = None,
+        cmap: Optional[wb.Cmap] = None,
+        colorbar: Optional[wb.Colorbar] = None,
+        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
+        tickparams: Optional[wb.TickParams] = None,
+        yticks: Optional[wb.YTicks] = None,
+        xticks: Optional[wb.XTicks] = None,
+        title: Optional[wb.Title] = None,
+        ylabel: Optional[wb.YLabel] = None,
+        xlabel: Optional[wb.XLabel] = None,
+        text: Optional[wb.Text] = None,
+        legend: Optional[wb.Legend] = None,
+        output: Optional[wb.Output] = None,
     ):
         """
         Visualizes data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -65,7 +65,7 @@ class AbstractMatPlot:
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `VoronoiMapper`: using `plt.fill`.
+        - `MapperVoronoi`: using `plt.fill`.
         
         Parameters
         ----------
@@ -104,21 +104,26 @@ class AbstractMatPlot:
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
         """
 
-        self.units = units
-        self.figure = figure
-        self.axis = axis
-        self.cmap = cmap
-        self.colorbar = colorbar
-        self.colorbar_tickparams = colorbar_tickparams
-        self.tickparams = tickparams
-        self.title = title
-        self.yticks = yticks
-        self.xticks = xticks
-        self.ylabel = ylabel
-        self.xlabel = xlabel
-        self.text = text
-        self.legend = legend
-        self.output = output
+        self.units = units or wb.Units()
+        self.figure = figure or wb.Figure()
+        self.axis = axis or wb.Axis()
+
+        self.cmap = cmap or wb.Cmap()
+
+        self.colorbar = colorbar or wb.Colorbar()
+        self.colorbar_tickparams = colorbar_tickparams or wb.ColorbarTickParams()
+
+        self.tickparams = tickparams or wb.TickParams()
+        self.yticks = yticks or wb.YTicks()
+        self.xticks = xticks or wb.XTicks()
+
+        self.title = title or wb.Title()
+        self.ylabel = ylabel or wb.YLabel()
+        self.xlabel = xlabel or wb.XLabel()
+
+        self.text = text or wb.Text()
+        self.legend = legend or wb.Legend()
+        self.output = output or wb.Output()
 
         self.number_subplots = None
         self.subplot_shape = None
@@ -196,25 +201,25 @@ class AbstractMatPlot:
 class MatPlot1D(AbstractMatPlot):
     def __init__(
         self,
-        units: wb.Units = wb.Units(),
-        figure: wb.Figure = wb.Figure(),
-        axis: wb.Axis = wb.Axis(),
-        cmap: wb.Cmap = wb.Cmap(),
-        colorbar: wb.Colorbar = wb.Colorbar(),
-        colorbar_tickparams: wb.ColorbarTickParams = wb.ColorbarTickParams(),
-        tickparams: wb.TickParams = wb.TickParams(),
-        yticks: wb.YTicks = wb.YTicks(),
-        xticks: wb.XTicks = wb.XTicks(),
-        title: wb.Title = wb.Title(),
-        ylabel: wb.YLabel = wb.YLabel(),
-        xlabel: wb.XLabel = wb.XLabel(),
-        text: wb.Text = wb.Text(),
-        legend: wb.Legend = wb.Legend(),
-        output: wb.Output = wb.Output(),
-        yx_plot: w1d.YXPlot = w1d.YXPlot(),
-        vertical_line_axvline: w1d.AXVLine = w1d.AXVLine(),
-        yx_scatter: w1d.YXPlot = w1d.YXScatter(),
-        fill_between: w1d.FillBetween = w1d.FillBetween(),
+        units: Optional[wb.Units] = None,
+        figure: Optional[wb.Figure] = None,
+        axis: Optional[wb.Axis] = None,
+        cmap: Optional[wb.Cmap] = None,
+        colorbar: Optional[wb.Colorbar] = None,
+        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
+        tickparams: Optional[wb.TickParams] = None,
+        yticks: Optional[wb.YTicks] = None,
+        xticks: Optional[wb.XTicks] = None,
+        title: Optional[wb.Title] = None,
+        ylabel: Optional[wb.YLabel] = None,
+        xlabel: Optional[wb.XLabel] = None,
+        text: Optional[wb.Text] = None,
+        legend: Optional[wb.Legend] = None,
+        output: Optional[wb.Output] = None,
+        yx_plot: Optional[w1d.YXPlot] = None,
+        vertical_line_axvline: Optional[w1d.AXVLine] = None,
+        yx_scatter: Optional[w1d.YXPlot] = None,
+        fill_between: Optional[w1d.FillBetween] = None,
     ):
         """
         Visualizes 1D data structures (e.g a `Line`, etc.) using Matplotlib.
@@ -286,10 +291,10 @@ class MatPlot1D(AbstractMatPlot):
             output=output,
         )
 
-        self.yx_plot = yx_plot
-        self.vertical_line_axvline = vertical_line_axvline
-        self.yx_scatter = yx_scatter
-        self.fill_between = fill_between
+        self.yx_plot = yx_plot or w1d.YXPlot()
+        self.vertical_line_axvline = vertical_line_axvline or w1d.AXVLine()
+        self.yx_scatter = yx_scatter or w1d.YXScatter()
+        self.fill_between = fill_between or w1d.FillBetween()
 
         self.is_for_multi_plot = False
         self.is_for_subplot = False
@@ -406,38 +411,38 @@ class MatPlot1D(AbstractMatPlot):
 class MatPlot2D(AbstractMatPlot):
     def __init__(
         self,
-        units: wb.Units = wb.Units(),
-        figure: wb.Figure = wb.Figure(),
-        axis: wb.Axis = wb.Axis(),
-        cmap: wb.Cmap = wb.Cmap(),
-        colorbar: wb.Colorbar = wb.Colorbar(),
-        colorbar_tickparams: wb.ColorbarTickParams = wb.ColorbarTickParams(),
-        tickparams: wb.TickParams = wb.TickParams(),
-        yticks: wb.YTicks = wb.YTicks(),
-        xticks: wb.XTicks = wb.XTicks(),
-        title: wb.Title = wb.Title(),
-        ylabel: wb.YLabel = wb.YLabel(),
-        xlabel: wb.XLabel = wb.XLabel(),
-        legend: wb.Legend = wb.Legend(),
-        text: wb.Text = wb.Text(),
-        output: wb.Output = wb.Output(),
-        array_overlay: w2d.ArrayOverlay = w2d.ArrayOverlay(),
-        grid_scatter: w2d.GridScatter = w2d.GridScatter(),
-        grid_plot: w2d.GridPlot = w2d.GridPlot(),
-        grid_errorbar: w2d.GridErrorbar = w2d.GridErrorbar(),
-        vector_field_quiver: w2d.VectorFieldQuiver = w2d.VectorFieldQuiver(),
-        patch_overlay: w2d.PatchOverlay = w2d.PatchOverlay(),
-        voronoi_drawer: w2d.VoronoiDrawer = w2d.VoronoiDrawer(),
-        delaunay_drawer: w2d.DelaunayDrawer = w2d.DelaunayDrawer(),
-        origin_scatter: w2d.OriginScatter = w2d.OriginScatter(),
-        mask_scatter: w2d.MaskScatter = w2d.MaskScatter(),
-        border_scatter: w2d.BorderScatter = w2d.BorderScatter(),
-        positions_scatter: w2d.PositionsScatter = w2d.PositionsScatter(),
-        index_scatter: w2d.IndexScatter = w2d.IndexScatter(),
-        pixelization_grid_scatter: w2d.PixelizationGridScatter = w2d.PixelizationGridScatter(),
-        parallel_overscan_plot: w2d.ParallelOverscanPlot = w2d.ParallelOverscanPlot(),
-        serial_prescan_plot: w2d.SerialPrescanPlot = w2d.SerialPrescanPlot(),
-        serial_overscan_plot: w2d.SerialOverscanPlot = w2d.SerialOverscanPlot(),
+        units: Optional[wb.Units] = None,
+        figure: Optional[wb.Figure] = None,
+        axis: Optional[wb.Axis] = None,
+        cmap: Optional[wb.Cmap] = None,
+        colorbar: Optional[wb.Colorbar] = None,
+        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
+        tickparams: Optional[wb.TickParams] = None,
+        yticks: Optional[wb.YTicks] = None,
+        xticks: Optional[wb.XTicks] = None,
+        title: Optional[wb.Title] = None,
+        ylabel: Optional[wb.YLabel] = None,
+        xlabel: Optional[wb.XLabel] = None,
+        text: Optional[wb.Text] = None,
+        legend: Optional[wb.Legend] = None,
+        output: Optional[wb.Output] = None,
+        array_overlay: Optional[w2d.ArrayOverlay] = None,
+        grid_scatter: Optional[w2d.GridScatter] = None,
+        grid_plot: Optional[w2d.GridPlot] = None,
+        grid_errorbar: Optional[w2d.GridErrorbar] = None,
+        vector_yx_quiver: Optional[w2d.VectorYXQuiver] = None,
+        patch_overlay: Optional[w2d.PatchOverlay] = None,
+        delaunay_drawer: Optional[w2d.DelaunayDrawer] = None,
+        voronoi_drawer: Optional[w2d.VoronoiDrawer] = None,
+        origin_scatter: Optional[w2d.OriginScatter] = None,
+        mask_scatter: Optional[w2d.MaskScatter] = None,
+        border_scatter: Optional[w2d.BorderScatter] = None,
+        positions_scatter: Optional[w2d.PositionsScatter] = None,
+        index_scatter: Optional[w2d.IndexScatter] = None,
+        pixelization_grid_scatter: Optional[w2d.PixelizationGridScatter] = None,
+        parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
+        serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
+        serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -453,7 +458,7 @@ class MatPlot2D(AbstractMatPlot):
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `VoronoiMapper`: using `plt.fill`.
+        - `MapperVoronoi`: using `plt.fill`.
 
         Parameters
         ----------
@@ -496,7 +501,7 @@ class MatPlot2D(AbstractMatPlot):
             Scatters a `Grid2D` of (y,x) coordinates over the figure using `plt.scatter`.
         grid_plot
             Plots lines of data (e.g. a y versus x plot via `plt.plot`, vertical lines via `plt.avxline`, etc.)
-        vector_field_quiver
+        vector_yx_quiver
             Plots a `VectorField` object using the matplotlib function `plt.quiver`.
         patch_overlay
             Overlays matplotlib `patches.Patch` objects over the figure, such as an `Ellipse`.
@@ -542,23 +547,32 @@ class MatPlot2D(AbstractMatPlot):
             output=output,
         )
 
-        self.origin_scatter = origin_scatter
-        self.mask_scatter = mask_scatter
-        self.border_scatter = border_scatter
-        self.grid_scatter = grid_scatter
-        self.grid_plot = grid_plot
-        self.grid_errorbar = grid_errorbar
-        self.positions_scatter = positions_scatter
-        self.index_scatter = index_scatter
-        self.pixelization_grid_scatter = pixelization_grid_scatter
-        self.vector_field_quiver = vector_field_quiver
-        self.patch_overlay = patch_overlay
-        self.array_overlay = array_overlay
-        self.voronoi_drawer = voronoi_drawer
-        self.delaunay_drawer = delaunay_drawer
-        self.parallel_overscan_plot = parallel_overscan_plot
-        self.serial_prescan_plot = serial_prescan_plot
-        self.serial_overscan_plot = serial_overscan_plot
+        self.array_overlay = array_overlay or w2d.ArrayOverlay()
+
+        self.grid_scatter = grid_scatter or w2d.GridScatter()
+        self.grid_plot = grid_plot or w2d.GridPlot()
+        self.grid_errorbar = grid_errorbar or w2d.GridErrorbar()
+
+        self.vector_yx_quiver = vector_yx_quiver or w2d.VectorYXQuiver()
+        self.patch_overlay = patch_overlay or w2d.PatchOverlay()
+
+        self.delaunay_drawer = delaunay_drawer or w2d.DelaunayDrawer()
+        self.voronoi_drawer = voronoi_drawer or w2d.VoronoiDrawer()
+
+        self.origin_scatter = origin_scatter or w2d.OriginScatter()
+        self.mask_scatter = mask_scatter or w2d.MaskScatter()
+        self.border_scatter = border_scatter or w2d.BorderScatter()
+        self.positions_scatter = positions_scatter or w2d.PositionsScatter()
+        self.index_scatter = index_scatter or w2d.IndexScatter()
+        self.pixelization_grid_scatter = (
+            pixelization_grid_scatter or w2d.PixelizationGridScatter()
+        )
+
+        self.parallel_overscan_plot = (
+            parallel_overscan_plot or w2d.ParallelOverscanPlot()
+        )
+        self.serial_prescan_plot = serial_prescan_plot or w2d.SerialPrescanPlot()
+        self.serial_overscan_plot = serial_overscan_plot or w2d.SerialOverscanPlot()
 
         self.is_for_subplot = False
 

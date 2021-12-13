@@ -53,7 +53,7 @@ def convert_grid_2d(
     grid_2d: Union[np.ndarray, List], mask_2d: m2d.Mask2D
 ) -> np.ndarray:
     """
-    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
+    The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
     
     This function performs the following and checks and conversions on the input:
 
@@ -338,8 +338,8 @@ class AbstractGrid2D(AbstractStructure2D):
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
         """
-        The two dimensional shape of the grid in scaled units, computed by taking the minimum and maximum values of
-        the grid.
+        The (y,x) 2D shape of the grid in scaled units, computed from the minimum and maximum y and x values of the
+        grid.
         """
         return (
             np.amax(self[:, 0]) - np.amin(self[:, 0]),
@@ -477,16 +477,16 @@ class AbstractGrid2D(AbstractStructure2D):
         self, pixelization_grid: "g2d.Grid2DSparse"
     ) -> "g2d.Grid2DSparse":
         """
-        Relocate the coordinates of a pixelization grid to the border of this grid, see the method
-        *relocated_grid_from* for a full description of grid relocation.
+        Relocate the coordinates of a pixelization grid to the border of this grid. See the method
+        `relocated_grid_from()`for a full description of how this grid relocation works.
 
-        This function operates the same as other grid relocation functions by returns the grid as a
-        `Grid2DVoronoi` instance.
+        This function operates the same as other grid relocation functions but instead returns the grid as a
+        `Grid2DSparse` instance, which contains information pairing the grid to a pixelization.
 
         Parameters
         ----------
-        grid : Grid2D
-            The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
+        grid
+            The pixelization grid whose pixels are relocated to the border edge if outside it.
         """
 
         if len(self.sub_border_grid) == 0:

@@ -68,19 +68,19 @@ class MockPixelizationGrid:
 
 
 class MockPixelization(AbstractPixelization):
-    def __init__(self, mapper=None, sparse_grid=None):
+    def __init__(self, mapper=None, data_pixelization_grid=None):
 
         super().__init__()
 
         self.mapper = mapper
-        self.sparse_grid = sparse_grid
+        self.data_pixelization_grid = data_pixelization_grid
 
     # noinspection PyUnusedLocal,PyShadowingNames
     def mapper_from(
         self,
-        grid,
-        sparse_grid,
-        sparse_image_plane_grid=None,
+        source_grid_slim,
+        source_pixelization_grid,
+        data_pixelization_grid=None,
         hyper_image=None,
         settings=None,
         preloads=None,
@@ -88,12 +88,12 @@ class MockPixelization(AbstractPixelization):
     ):
         return self.mapper
 
-    def sparse_grid_from(self, grid, hyper_image, settings=None):
+    def data_pixelization_grid_from(self, data_grid_slim, hyper_image, settings=None):
 
-        if hyper_image is not None and self.sparse_grid is not None:
-            return hyper_image * self.sparse_grid
+        if hyper_image is not None and self.data_pixelization_grid is not None:
+            return hyper_image * self.data_pixelization_grid
 
-        return self.sparse_grid
+        return self.data_pixelization_grid
 
 
 class MockRegularization(AbstractRegularization):

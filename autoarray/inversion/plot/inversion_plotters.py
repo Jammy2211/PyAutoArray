@@ -184,12 +184,18 @@ class InversionPlotter(Plotter):
 
         if errors:
 
-            mapper_plotter.plot_source_from(
-                source_pixelization_values=self.inversion.errors_of_mappers[
-                    mapper_index
-                ],
-                auto_labels=AutoLabels(title="Errors", filename="errors"),
-            )
+            try:
+
+                mapper_plotter.plot_source_from(
+                    source_pixelization_values=self.inversion.errors_of_mappers[
+                        mapper_index
+                    ],
+                    auto_labels=AutoLabels(title="Errors", filename="errors"),
+                )
+
+            except TypeError:
+
+                pass
 
         if residual_map:
 

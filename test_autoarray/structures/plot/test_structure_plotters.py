@@ -118,7 +118,6 @@ class TestArray2DPlotter:
 
 
 class TestGrid2DPlotter:
-
     def test__works_with_all_extras_included(
         self,
         array_2d_7x7,

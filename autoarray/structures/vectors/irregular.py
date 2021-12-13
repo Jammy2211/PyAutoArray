@@ -1,8 +1,8 @@
 import logging
-from matplotlib.patches import Ellipse
 import numpy as np
-import typing
+from typing import List, Tuple, Union
 
+from autoarray.structures.vectors.abstract import AbstractVectorYX2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.arrays.values import ValuesIrregular
 
@@ -12,12 +12,16 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class VectorField2DIrregular(np.ndarray):
+class VectorYX2DIrregular(AbstractVectorYX2D):
     def __new__(
-        cls, vectors: np.ndarray or [(float, float)], grid: Grid2DIrregular or list
+        cls,
+        vectors: Union[
+            np.ndarray, List[np.ndarray], List[List], List[Tuple[float, float]]
+        ],
+        grid: Union[Grid2DIrregular, List],
     ):
         """
-        A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.
+        A collection of (y,x) vectors which are located on a irregular 2D grid of (y,x) coordinates.
 
         The (y,x) vectors are stored as a 2D NumPy array of shape [total_vectors, 2]. This array can be mapped to a
         list of tuples structure.
@@ -34,9 +38,9 @@ class VectorField2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        vectors or [(float, float)]
+        vectors
             The 2D (y,x) vectors on an irregular grid that represent the vector-field.
-        grid : Grid2DIrregular
+        grid
             The irregular grid of (y,x) coordinates where each vector is located.
         """
 
@@ -57,60 +61,6 @@ class VectorField2DIrregular(np.ndarray):
             self.grid = obj.grid
 
     @property
-    def ellipticities(self) -> ValuesIrregular:
-        """
-        If we treat this vector field as a set of weak lensing shear measurements, the galaxy ellipticity each vector
-        corresponds too.
-        """
-        return ValuesIrregular(values=np.sqrt(self[:, 0] ** 2 + self[:, 1] ** 2.0))
-
-    @property
-    def semi_major_axes(self) -> ValuesIrregular:
-        """
-        If we treat this vector field as a set of weak lensing shear measurements, the semi-major axis of each
-        galaxy ellipticity that each vector corresponds too.
-        """
-        return ValuesIrregular(values=3 * (1 + self.ellipticities))
-
-    @property
-    def semi_minor_axes(self) -> ValuesIrregular:
-        """
-        If we treat this vector field as a set of weak lensing shear measurements, the semi-minor axis of each
-        galaxy ellipticity that each vector corresponds too.
-        """
-        return ValuesIrregular(values=3 * (1 - self.ellipticities))
-
-    @property
-    def phis(self) -> ValuesIrregular:
-        """
-        If we treat this vector field as a set of weak lensing shear measurements, the position angle defined
-        counter clockwise from the positive x-axis of each galaxy ellipticity that each vector corresponds too.
-        """
-        return ValuesIrregular(
-            values=np.arctan2(self[:, 0], self[:, 1]) * 180.0 / np.pi / 2.0
-        )
-
-    @property
-    def elliptical_patches(self) -> typing.List[Ellipse]:
-        """
-        If we treat this vector field as a set of weak lensing shear measurements, the elliptical patch representing
-        each galaxy ellipticity. This patch is used for visualizing an ellipse of each galaxy in an image.
-        """
-
-        return [
-            Ellipse(
-                xy=(x, y), width=semi_major_axis, height=semi_minor_axis, angle=angle
-            )
-            for x, y, semi_major_axis, semi_minor_axis, angle in zip(
-                self.grid[:, 1],
-                self.grid[:, 0],
-                self.semi_major_axes,
-                self.semi_minor_axes,
-                self.phis,
-            )
-        ]
-
-    @property
     def slim(self) -> np.ndarray:
         """
         The vector-field in its 1D representation, an ndarray of shape [total_vectors, 2].
@@ -118,12 +68,19 @@ class VectorField2DIrregular(np.ndarray):
         return self
 
     @property
-    def in_list(self) -> typing.List[typing.Tuple]:
+    def in_list(self) -> List[Tuple]:
         """
         The vector-field in its list representation, as list of (y,x) vector tuples in a structure
         [(vector_0_y, vector_0_x), ...].
         """
         return [tuple(vector) for vector in self.slim]
+
+    @property
+    def magnitudes(self) -> ValuesIrregular:
+        """
+        Returns the magnitude of every vector which are computed as sqrt(y**2 + x**2).
+        """
+        return ValuesIrregular(values=np.sqrt(self[:, 0] ** 2.0 + self[:, 1] ** 2.0))
 
     @property
     def average_magnitude(self) -> float:
@@ -142,10 +99,10 @@ class VectorField2DIrregular(np.ndarray):
         )
 
     def vectors_within_radius(
-        self, radius: float, centre: typing.Tuple[float, float] = (0.0, 0.0)
-    ) -> "VectorField2DIrregular":
+        self, radius: float, centre: Tuple[float, float] = (0.0, 0.0)
+    ) -> "VectorYX2DIrregular":
         """
-        Returns a new `VectorField2DIrregular` object which has had all vectors outside of a circle of input radius
+        Returns a new `VectorYX2DIrregular` object which has had all vectors outside of a circle of input radius
         around an  input (y,x) centre removed.
 
         Parameters
@@ -157,7 +114,7 @@ class VectorField2DIrregular(np.ndarray):
 
         Returns
         -------
-        VectorField2DIrregular
+        VectorYX2DIrregular
             The vector field where all vectors outside of the input radius are removed.
 
         """
@@ -169,7 +126,7 @@ class VectorField2DIrregular(np.ndarray):
                 "The input radius removed all vectors / points on the grid."
             )
 
-        return VectorField2DIrregular(
+        return VectorYX2DIrregular(
             vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )
 
@@ -177,8 +134,8 @@ class VectorField2DIrregular(np.ndarray):
         self,
         inner_radius: float,
         outer_radius: float,
-        centre: typing.Tuple[float, float] = (0.0, 0.0),
-    ) -> "VectorField2DIrregular":
+        centre: Tuple[float, float] = (0.0, 0.0),
+    ) -> "VectorYX2DIrregular":
         """
         Returns a new `VectorFieldIrregular` object which has had all vectors outside of a circle of input radius
         around an  input (y,x) centre removed.
@@ -204,6 +161,6 @@ class VectorField2DIrregular(np.ndarray):
                 "The input radius removed all vectors / points on the grid."
             )
 
-        return VectorField2DIrregular(
+        return VectorYX2DIrregular(
             vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )

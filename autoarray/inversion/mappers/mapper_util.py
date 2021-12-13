@@ -41,7 +41,7 @@ def data_slim_to_pixelization_unique_from(
     data_pixels
         The total number of data pixels in the dataset.
     pixelization_index_for_sub_slim_index
-        The mappings between the pixelization grid's pixels and the data's slimmed pixels.
+        Maps an unmasked data sub pixel to its corresponding pixelization pixel.
     sub_size
         The size of the sub-grid defining the number of sub-pixels in every data pixel.
 
@@ -94,30 +94,76 @@ def data_slim_to_pixelization_unique_from(
 def mapping_matrix_from(
     pixelization_index_for_sub_slim_index: np.ndarray,
     pixels: int,
-    total_mask_pixels: int,
+    total_mask_sub_pixels: int,
     slim_index_for_sub_slim_index: np.ndarray,
     sub_fraction: float,
 ) -> np.ndarray:
     """
-    Returns the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
+    The `mapping_matrix` is a matrix that represents mapping between every unmasked pixel in a dataset and the pixels
+    of a pixelization as a 2D matrix. It in the following paper as 
+    matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf.
+
+    If the mappings between pixels in masked data and pixels in a pixelization are as follows:
+    
+    data_pixel_0 -> pixelization_pixel_0
+    data_pixel_1 -> pixelization_pixel_0
+    data_pixel_2 -> pixelization_pixel_1
+    data_pixel_3 -> pixelization_pixel_1
+    data_pixel_4 -> pixelization_pixel_2
+
+    The `mapping_matrix` (which is of dimensions [data_pixels, pixelization_pixels] appears as follows:
+
+    [1, 0, 0] [0->0]
+    [1, 0, 0] [1->0]
+    [0, 1, 0] [2->1]
+    [0, 1, 0] [3->1]
+    [0, 0, 1] [4->2]
+
+    The `mapping_matrix` can be constructed using sub-pixel mappings between the data and pixelization, whereby each 
+    masked data pixel is divided into sub-pixels which are paired to pixels in the pixelization. The entries
+    in the `mapping_matrix` now become fractional values dependent on the sub-pixel sizes. For example, for 2x2
+    sub-pixels each pixel maps with the fractional value is 1.0/(2.0^2) = 0.25. 
+    
+    If the mappings between sub-pixels in masked data and pixels in a pixelization are as follows:
+
+    data_pixel_0 -> data_sub_pixel_0 -> pixelization pixel_0
+    data_pixel_0 -> data_sub_pixel_1 -> pixelization pixel_1
+    data_pixel_0 -> data_sub_pixel_2 -> pixelization pixel_1
+    data_pixel_0 -> data_sub_pixel_3 -> pixelization pixel_1
+    data_pixel_1 -> data_sub_pixel_0 -> pixelization pixel_1
+    data_pixel_1 -> data_sub_pixel_1 -> pixelization pixel_1
+    data_pixel_1 -> data_sub_pixel_2 -> pixelization pixel_1
+    data_pixel_1 -> data_sub_pixel_3 -> pixelization pixel_1
+    data_pixel_2 -> data_sub_pixel_0 -> pixelization pixel_2
+    data_pixel_2 -> data_sub_pixel_1 -> pixelization pixel_2
+    data_pixel_2 -> data_sub_pixel_2 -> pixelization pixel_3
+    data_pixel_2 -> data_sub_pixel_3 -> pixelization pixel_3
+
+    The `mapping_matrix` (which is still of dimensions [data_pixels, pixelization_pixels] appears as follows:
+
+    [0.25, 0.75, 0.0, 0.0] [1 sub-pixel maps to pixel 0, 3 map to pixel 1]
+    [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
+    [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
 
     Parameters
     -----------
     pixelization_index_for_sub_slim_index
-        The mappings between the pixelization grid's pixels and the data's slimmed pixels.
+        Maps an unmasked data sub pixel to its corresponding pixelization pixel.
     pixels
-        The number of pixels in the pixelization.
-    total_mask_pixels
-        The number of datas pixels in the observed datas and thus on the grid.
+        The total number of pixels in the pixelization.
+    total_mask_sub_pixels
+        The number of unmasked sub-pixels in the data all of which map to pixelization pixels.
     slim_index_for_sub_slim_index
-        The mappings between the data's sub slimmed indexes and the slimmed indexes on the non sub-sized indexes.
+        The mappings between the data's sub-pixels and their indexes without sub-pixel divisions (e.g. for
+        a `sub_size=1).
     sub_fraction
         The fractional area each sub-pixel takes up in an pixel.
     """
 
-    mapping_matrix = np.zeros((total_mask_pixels, pixels))
+    mapping_matrix = np.zeros((total_mask_sub_pixels, pixels))
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
+
         mapping_matrix[
             slim_index_for_sub_slim_index[sub_slim_index],
             pixelization_index_for_sub_slim_index[sub_slim_index],
@@ -268,7 +314,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
 
     Parameters
     ----------
-    grid : Grid2D
+    grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
     nearest_pixelization_index_for_slim_index
@@ -364,14 +410,20 @@ def adaptive_pixel_signals_from(
 
     The pixel signals are computed as follows:
 
-    1) Divide by the number of mappe data points in the pixel, to ensure all pixels have the same
+    1) Divide by the number of mapped data points in the pixel, to ensure all pixels have the same
     'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
 
-    2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
-    regularization weight_list are defined identically for any data quantity or signal-to-noise_map ratio.
+    2) Divide by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
+    regularization weights are defined identically for any data quantity or signal-to-noise_map ratio.
 
-    3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative
-    contribution regularization in different regions of pixelization.
+    3) Raise to the power of the hyper-parameter `signal_scale`, so the method can control the relative
+    contribution of regularization in different regions of pixelization.
+
+    Expressed differently, this function quantifies the expected value of flux every source pixel will reconstruct in
+    an inversion, before the inversion is performed. Properties of the inversion associated with each source pixel
+    can then be adapted to the reconstructed source's surface brightness, notably an adaptive regularization scheme
+    which regularizes the brightest source pixels least (these pixels may otherwise be over smoothed and fail to
+    reconstruct the data accurately).
 
     Parameters
     -----------
@@ -380,8 +432,12 @@ def adaptive_pixel_signals_from(
     signal_scale
         A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
         low signal regions.
-    regular_to_pix
-        A 1D array util every pixel on the grid to a pixel on the pixelization.
+    pixelization_index_for_sub_slim_index
+        A 1D array mapping every pixel on the grid to a pixel on the pixelization.
+    slim_index_for_sub_slim_index
+        The mappings between the data's sub-pixels and their indexes without sub-pixel divisions (e.g. for
+        a `sub_size=1). This is used for efficiently mapping each sub pixel with its host image pixel in order to
+        extract the correct value from the `hyper_image`.
     hyper_image
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
