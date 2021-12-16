@@ -75,7 +75,7 @@ class MapperVoronoi(AbstractMapper):
         ).astype("int")
 
         return PixForSub(
-            mappings=mappings, sizes=np.ones(len(self.source_grid_slim), dtype="int")
+            mappings=mappings, sizes=np.ones(self.source_grid_slim.shape[0], dtype="int")
         )
 
     @cached_property
