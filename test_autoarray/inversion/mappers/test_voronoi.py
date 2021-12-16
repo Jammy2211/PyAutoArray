@@ -24,7 +24,7 @@ def test__pix_index_for_sub_slim_index__matches_util(grid_2d_7x7):
         [
             aa.util.mapper.pix_indexes_for_sub_slim_index_voronoi_from(
                 grid=grid_2d_7x7,
-                nearest_pixelization_index_for_slim_index=pixelization_grid.nearest_pixelization_index_for_slim_index,
+                nearest_pix_index_for_slim_index=pixelization_grid.nearest_pixelization_index_for_slim_index,
                 slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
                 pixelization_grid=pixelization_grid,
                 pixel_neighbors=pixelization_grid.pixel_neighbors,

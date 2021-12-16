@@ -67,7 +67,7 @@ class MapperVoronoi(AbstractMapper):
         """
         mappings = mapper_util.pix_indexes_for_sub_slim_index_voronoi_from(
             grid=self.source_grid_slim,
-            nearest_pixelization_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,
+            nearest_pix_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             pixelization_grid=self.source_pixelization_grid,
             pixel_neighbors=self.source_pixelization_grid.pixel_neighbors,
@@ -75,8 +75,7 @@ class MapperVoronoi(AbstractMapper):
         ).astype("int")
 
         return PixForSub(
-            mappings=mappings.reshape((len(self.source_grid_slim), 1)),
-            sizes=np.ones(len(self.source_grid_slim), dtype="int"),
+            mappings=mappings, sizes=np.ones(len(self.source_grid_slim), dtype="int")
         )
 
     @cached_property

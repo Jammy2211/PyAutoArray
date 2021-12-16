@@ -272,7 +272,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 @numba_util.jit()
 def pix_indexes_for_sub_slim_index_voronoi_from(
     grid: np.ndarray,
-    nearest_pixelization_index_for_slim_index: np.ndarray,
+    nearest_pix_index_for_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
     pixelization_grid: np.ndarray,
     pixel_neighbors: np.ndarray,
@@ -292,7 +292,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pixelization_index_for_slim_index
+    nearest_pix_index_for_slim_index
         A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
@@ -306,11 +306,11 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         Voronoi grid.
     """
 
-    pixelization_index_for_voronoi_sub_slim_index = np.zeros(grid.shape[0])
+    pix_index_for_sub_slim_index = np.zeros(shape=(grid.shape[0], 1))
 
     for sub_slim_index in range(grid.shape[0]):
 
-        nearest_pixelization_index = nearest_pixelization_index_for_slim_index[
+        nearest_pix_index = nearest_pix_index_for_slim_index[
             slim_index_for_sub_slim_index[sub_slim_index]
         ]
 
@@ -321,54 +321,43 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
             if whiletime > 1000000:
                 raise exc.PixelizationException
 
-            nearest_pixelization_pixel_center = pixelization_grid[
-                nearest_pixelization_index
-            ]
+            nearest_pix_center = pixelization_grid[nearest_pix_index]
 
-            sub_pixel_to_nearest_pixelization_distance = (
-                (grid[sub_slim_index, 0] - nearest_pixelization_pixel_center[0]) ** 2
-                + (grid[sub_slim_index, 1] - nearest_pixelization_pixel_center[1]) ** 2
-            )
+            sub_pixel_to_nearest_pix_distance = (
+                grid[sub_slim_index, 0] - nearest_pix_center[0]
+            ) ** 2 + (grid[sub_slim_index, 1] - nearest_pix_center[1]) ** 2
 
-            closest_separation_pixelization_to_neighbor = 1.0e8
+            closest_separation_pix_to_neighbor = 1.0e8
 
-            for neighbor_pixelization_index in range(
-                pixel_neighbors_sizes[nearest_pixelization_index]
-            ):
+            for neighbor_pix_index in range(pixel_neighbors_sizes[nearest_pix_index]):
 
-                neighbor = pixel_neighbors[
-                    nearest_pixelization_index, neighbor_pixelization_index
-                ]
+                neighbor = pixel_neighbors[nearest_pix_index, neighbor_pix_index]
 
                 distance_to_neighbor = (
                     grid[sub_slim_index, 0] - pixelization_grid[neighbor, 0]
                 ) ** 2 + (grid[sub_slim_index, 1] - pixelization_grid[neighbor, 1]) ** 2
 
-                if distance_to_neighbor < closest_separation_pixelization_to_neighbor:
-                    closest_separation_pixelization_to_neighbor = distance_to_neighbor
-                    closest_neighbor_pixelization_index = neighbor_pixelization_index
+                if distance_to_neighbor < closest_separation_pix_to_neighbor:
+                    closest_separation_pix_to_neighbor = distance_to_neighbor
+                    closest_neighbor_pix_index = neighbor_pix_index
 
-            neighboring_pixelization_index = pixel_neighbors[
-                nearest_pixelization_index, closest_neighbor_pixelization_index
+            neighboring_pix_index = pixel_neighbors[
+                nearest_pix_index, closest_neighbor_pix_index
             ]
-            sub_pixel_to_neighboring_pixelization_distance = (
-                closest_separation_pixelization_to_neighbor
-            )
+            sub_pixel_to_neighboring_pix_distance = closest_separation_pix_to_neighbor
 
             whiletime += 1
 
             if (
-                sub_pixel_to_nearest_pixelization_distance
-                <= sub_pixel_to_neighboring_pixelization_distance
+                sub_pixel_to_nearest_pix_distance
+                <= sub_pixel_to_neighboring_pix_distance
             ):
-                pixelization_index_for_voronoi_sub_slim_index[
-                    sub_slim_index
-                ] = nearest_pixelization_index
+                pix_index_for_sub_slim_index[sub_slim_index, 0] = nearest_pix_index
                 break
             else:
-                nearest_pixelization_index = neighboring_pixelization_index
+                nearest_pix_index = neighboring_pix_index
 
-    return pixelization_index_for_voronoi_sub_slim_index
+    return pix_index_for_sub_slim_index
 
 
 @numba_util.jit()
