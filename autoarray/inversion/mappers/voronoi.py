@@ -75,7 +75,8 @@ class MapperVoronoi(AbstractMapper):
         ).astype("int")
 
         return PixForSub(
-            mappings=mappings, sizes=np.ones(self.source_grid_slim.shape[0], dtype="int")
+            mappings=mappings,
+            sizes=np.ones(self.source_grid_slim.shape[0], dtype="int"),
         )
 
     @cached_property
@@ -85,7 +86,7 @@ class MapperVoronoi(AbstractMapper):
         Weights for source pixels to sub pixels. Used for creating the mapping matrix and 'pixel_signals_from'
         It has the same shape as the 'pix_indexes_for_sub_slim_index'.
         """
-        return np.ones((len(self.source_pixelization_grid), 1), dtype="int")
+        return np.ones((self.source_grid_slim.shape[0], 1), dtype="int")
 
     @property
     def voronoi(self):
