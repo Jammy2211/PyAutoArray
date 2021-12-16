@@ -142,7 +142,7 @@ class DelaunayMagnification(Delaunay):
         self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
 
-    def sparse_grid_from(
+    def data_pixelization_grid_from(
         self,
         data_grid_slim: Grid2D,
         hyper_image: np.ndarray = None,
@@ -177,7 +177,7 @@ class DelaunayBrightnessImage(Delaunay):
 
         return np.power(weight_map, self.weight_power)
 
-    def sparse_grid_from(
+    def data_pixelization_grid_from(
         self,
         data_grid_slim: Grid2D,
         hyper_image: np.ndarray,

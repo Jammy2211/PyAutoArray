@@ -196,7 +196,10 @@ class InversionMatrices(AbstractInversion):
 
     @property
     def curvature_matrix_preload(self) -> np.ndarray:
-        curvature_matrix_preload, curvature_matrix_counts = linear_eqn_util.curvature_matrix_preload_from(
+        (
+            curvature_matrix_preload,
+            curvature_matrix_counts,
+        ) = linear_eqn_util.curvature_matrix_preload_from(
             mapping_matrix=self.operated_mapping_matrix
         )
 
@@ -204,7 +207,10 @@ class InversionMatrices(AbstractInversion):
 
     @property
     def curvature_matrix_counts(self) -> np.ndarray:
-        curvature_matrix_preload, curvature_matrix_counts = linear_eqn_util.curvature_matrix_preload_from(
+        (
+            curvature_matrix_preload,
+            curvature_matrix_counts,
+        ) = linear_eqn_util.curvature_matrix_preload_from(
             mapping_matrix=self.operated_mapping_matrix
         )
 

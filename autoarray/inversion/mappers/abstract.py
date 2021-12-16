@@ -133,12 +133,48 @@ class AbstractMapper:
         """
         all_sub_slim_indexes_for_pixelization_index = [[] for _ in range(self.pixels)]
 
-        for slim_index, pix_index in enumerate(
-            self.pixelization_index_for_sub_slim_index
-        ):
-            all_sub_slim_indexes_for_pixelization_index[pix_index].append(slim_index)
+        pixelization_indexes_for_sub_slim_index = (
+            self.pixelization_indexes_for_sub_slim_index.mappings
+        )
+        sizes = self.pixelization_indexes_for_sub_slim_index.sizes
+
+        for slim_index, pix_index in enumerate(pixelization_indexes_for_sub_slim_index):
+            for k in range(sizes[slim_index]):
+                all_sub_slim_indexes_for_pixelization_index[pix_index[k]].append(
+                    slim_index
+                )
 
         return all_sub_slim_indexes_for_pixelization_index
+
+    # @cached_property
+    # @profile_func
+    # def data_unique_mappings(self):
+    #    """
+    #    The w_tilde formalism requires us to compute an array that gives the unique mappings between the sub-pixels of
+    #    every image pixel to their corresponding pixelization pixels.
+    #    """
+
+    #    try:
+    #        data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
+    #            data_pixels=self.source_grid_slim.shape_slim,
+    #            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+    #            sub_size=self.source_grid_slim.sub_size,
+    #        )
+    #    except NotImplementedError:
+
+    #        data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_2_from(
+    #            data_pixels=self.source_grid_slim.shape_slim,
+    #            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+    #            pixelization_indexes_for_sub_slim_sizes=self.pixelization_indexes_for_sub_slim_index.sizes,
+    #            pixel_weights_for_sub_slim_index=self.pixelization_weights_for_sub_slim_index,
+    #            sub_size=self.source_grid_slim.sub_size,
+    #        )
+
+    #    return UniqueMappings(
+    #        data_to_pix_unique=data_to_pix_unique,
+    #        data_weights=data_weights,
+    #        pix_lengths=pix_lengths,
+    #    )
 
     @cached_property
     @profile_func
@@ -148,27 +184,40 @@ class AbstractMapper:
         every image pixel to their corresponding pixelization pixels.
         """
 
-        try:
-            data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
-                data_pixels=self.source_grid_slim.shape_slim,
-                pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
-                sub_size=self.source_grid_slim.sub_size,
-            )
-        except NotImplementedError:
-
-            data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_2_from(
-                data_pixels=self.source_grid_slim.shape_slim,
-                pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
-                pixelization_indexes_for_sub_slim_sizes=self.pixelization_indexes_for_sub_slim_index.sizes,
-                pixel_weights_for_sub_slim_index=self.pixelization_weights_for_sub_slim_index,
-                sub_size=self.source_grid_slim.sub_size,
-            )
+        (
+            data_to_pix_unique,
+            data_weights,
+            pix_lengths,
+        ) = mapper_util.data_slim_to_pixelization_unique_2_from(
+            data_pixels=self.source_grid_slim.shape_slim,
+            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+            pixelization_indexes_for_sub_slim_sizes=self.pixelization_indexes_for_sub_slim_index.sizes,
+            pixelization_weights_for_sub_slim_index=self.pixelization_weights_for_sub_slim_index,
+            sub_size=self.source_grid_slim.sub_size,
+        )
 
         return UniqueMappings(
             data_to_pix_unique=data_to_pix_unique,
             data_weights=data_weights,
             pix_lengths=pix_lengths,
         )
+
+    # @cached_property
+    # @profile_func
+    # def mapping_matrix(self):
+    #    """
+    #    The `mapping_matrix` is a matrix that represents the image-pixel to pixelization-pixel mappings above in a
+    #    2D matrix. It in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf.
+    #
+    #    A full description is given in `mapper_util.mapping_matrix_from()`.
+    #    """
+    #    return mapper_util.mapping_matrix_from(
+    #        pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+    #        pixels=self.pixels,
+    #        total_mask_sub_pixels=self.source_grid_slim.mask.pixels_in_mask,
+    #        slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
+    #        sub_fraction=self.source_grid_slim.mask.sub_fraction,
+    #    )
 
     @cached_property
     @profile_func
@@ -180,10 +229,12 @@ class AbstractMapper:
         A full description is given in `mapper_util.mapping_matrix_from()`.
         """
         return mapper_util.mapping_matrix_from(
-            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+            pixel_weights=self.pixelization_weights_for_sub_slim_index,
             pixels=self.pixels,
             total_mask_sub_pixels=self.source_grid_slim.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
+            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+            pixelization_size_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.sizes,
             sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )
 
@@ -192,7 +243,9 @@ class AbstractMapper:
         return mapper_util.adaptive_pixel_signals_from(
             pixels=self.pixels,
             signal_scale=signal_scale,
-            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+            pixel_weights=self.pixelization_weights_for_sub_slim_index,
+            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+            pixelization_size_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.sizes,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             hyper_image=self.hyper_image,
         )
@@ -200,6 +253,8 @@ class AbstractMapper:
     def pixelization_indexes_for_slim_indexes(self, pixelization_indexes):
 
         image_for_source = self.all_sub_slim_indexes_for_pixelization_index
+
+        print(image_for_source)
 
         if not any(isinstance(i, list) for i in pixelization_indexes):
             return list(

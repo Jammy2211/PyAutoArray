@@ -96,7 +96,7 @@ def data_slim_to_pixelization_unique_2_from(
     data_pixels,
     pixelization_indexes_for_sub_slim_index: np.ndarray,
     pixelization_indexes_for_sub_slim_sizes: np.ndarray,
-    pixel_weights_for_sub_slim_index,
+    pixelization_weights_for_sub_slim_index,
     sub_size: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -163,7 +163,7 @@ def data_slim_to_pixelization_unique_2_from(
             ):
 
                 pix = pixelization_indexes_for_sub_slim_index[ip_sub, pix_to_slim_index]
-                pixel_weight = pixel_weights_for_sub_slim_index[
+                pixel_weight = pixelization_weights_for_sub_slim_index[
                     ip_sub, pix_to_slim_index
                 ]
 
@@ -186,88 +186,6 @@ def data_slim_to_pixelization_unique_2_from(
         pix_lengths[ip] = pix_size
 
     return data_to_pix_unique, data_weights, pix_lengths
-
-
-@numba_util.jit()
-def mapping_matrix_from(
-    pixelization_index_for_sub_slim_index: np.ndarray,
-    pixels: int,
-    total_mask_sub_pixels: int,
-    slim_index_for_sub_slim_index: np.ndarray,
-    sub_fraction: float,
-) -> np.ndarray:
-    """
-    The `mapping_matrix` is a matrix that represents mapping between every unmasked pixel in a dataset and the pixels
-    of a pixelization as a 2D matrix. It in the following paper as 
-    matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf.
-
-    If the mappings between pixels in masked data and pixels in a pixelization are as follows:
-    
-    data_pixel_0 -> pixelization_pixel_0
-    data_pixel_1 -> pixelization_pixel_0
-    data_pixel_2 -> pixelization_pixel_1
-    data_pixel_3 -> pixelization_pixel_1
-    data_pixel_4 -> pixelization_pixel_2
-
-    The `mapping_matrix` (which is of dimensions [data_pixels, pixelization_pixels] appears as follows:
-
-    [1, 0, 0] [0->0]
-    [1, 0, 0] [1->0]
-    [0, 1, 0] [2->1]
-    [0, 1, 0] [3->1]
-    [0, 0, 1] [4->2]
-
-    The `mapping_matrix` can be constructed using sub-pixel mappings between the data and pixelization, whereby each 
-    masked data pixel is divided into sub-pixels which are paired to pixels in the pixelization. The entries
-    in the `mapping_matrix` now become fractional values dependent on the sub-pixel sizes. For example, for 2x2
-    sub-pixels each pixel maps with the fractional value is 1.0/(2.0^2) = 0.25. 
-    
-    If the mappings between sub-pixels in masked data and pixels in a pixelization are as follows:
-
-    data_pixel_0 -> data_sub_pixel_0 -> pixelization pixel_0
-    data_pixel_0 -> data_sub_pixel_1 -> pixelization pixel_1
-    data_pixel_0 -> data_sub_pixel_2 -> pixelization pixel_1
-    data_pixel_0 -> data_sub_pixel_3 -> pixelization pixel_1
-    data_pixel_1 -> data_sub_pixel_0 -> pixelization pixel_1
-    data_pixel_1 -> data_sub_pixel_1 -> pixelization pixel_1
-    data_pixel_1 -> data_sub_pixel_2 -> pixelization pixel_1
-    data_pixel_1 -> data_sub_pixel_3 -> pixelization pixel_1
-    data_pixel_2 -> data_sub_pixel_0 -> pixelization pixel_2
-    data_pixel_2 -> data_sub_pixel_1 -> pixelization pixel_2
-    data_pixel_2 -> data_sub_pixel_2 -> pixelization pixel_3
-    data_pixel_2 -> data_sub_pixel_3 -> pixelization pixel_3
-
-    The `mapping_matrix` (which is still of dimensions [data_pixels, pixelization_pixels] appears as follows:
-
-    [0.25, 0.75, 0.0, 0.0] [1 sub-pixel maps to pixel 0, 3 map to pixel 1]
-    [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
-    [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
-
-    Parameters
-    -----------
-    pixelization_index_for_sub_slim_index
-        Maps an unmasked data sub pixel to its corresponding pixelization pixel.
-    pixels
-        The total number of pixels in the pixelization.
-    total_mask_sub_pixels
-        The number of unmasked sub-pixels in the data all of which map to pixelization pixels.
-    slim_index_for_sub_slim_index
-        The mappings between the data's sub-pixels and their indexes without sub-pixel divisions (e.g. for
-        a `sub_size=1).
-    sub_fraction
-        The fractional area each sub-pixel takes up in an pixel.
-    """
-
-    mapping_matrix = np.zeros((total_mask_sub_pixels, pixels))
-
-    for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
-
-        mapping_matrix[
-            slim_index_for_sub_slim_index[sub_slim_index],
-            pixelization_index_for_sub_slim_index[sub_slim_index],
-        ] += sub_fraction
-
-    return mapping_matrix
 
 
 @numba_util.jit()
@@ -357,12 +275,13 @@ def pixel_weights_from(
 
 
 @numba_util.jit()
-def mapping_matrix_Delaunay_baricentric_interpolation_from(
+def mapping_matrix_from(
     pixel_weights,
     pixels: int,
-    total_mask_pixels: int,
+    total_mask_sub_pixels: int,
     slim_index_for_sub_slim_index: np.ndarray,
     pixelization_indexes_for_sub_slim_index,
+    pixelization_size_for_sub_slim_index,
     sub_fraction: float,
 ) -> np.ndarray:
     """
@@ -382,13 +301,13 @@ def mapping_matrix_Delaunay_baricentric_interpolation_from(
         The fractional area each sub-pixel takes up in an pixel.
     """
 
-    mapping_matrix = np.zeros((total_mask_pixels, pixels))
+    mapping_matrix = np.zeros((total_mask_sub_pixels, pixels))
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
 
         vertices_indexes = pixelization_indexes_for_sub_slim_index[sub_slim_index]
 
-        if vertices_indexes[1] != -1:
+        if pixelization_size_for_sub_slim_index[sub_slim_index] > 1:
             mapping_matrix[slim_index_for_sub_slim_index[sub_slim_index]][
                 vertices_indexes
             ] += (sub_fraction * pixel_weights[sub_slim_index])
@@ -407,7 +326,7 @@ def pixelization_indexes_for_sub_slim_index_delaunay_from(
     """
     The indexes mappings between the sub pixels and Voronoi pixelization pixels.
     For Delaunay tessellation, most sub pixels should have contribution of 3 pixelization pixels. However,
-    for those ones not belonging to any triangle, we link its value to its closest point. 
+    for those ones not belonging to any triangle, we link its value to its closest point.
 
     The returning result is a matrix of (len(sub_pixels, 3)) where the entries mark the relevant source pixel indexes.
     A row like [A, -1, -1] means that sub pixel only links to source pixel A.
@@ -428,19 +347,8 @@ def pixelization_indexes_for_sub_slim_index_delaunay_from(
             tem_list[i][0] = np.argmin(
                 np.sum((delaunay.points - source_grid_slim[i]) ** 2.0, axis=1)
             )
-            # print(tem_list[i])
 
-    # TODO : This can be much more cleanly combined with the for loop above, I just cant figure out how...
-
-    pixelization_indexes_for_sub_slim_index_sizes = np.zeros(len(source_grid_slim))
-
-    for i in range(len(source_grid_slim)):
-
-        for pix_index in range(0, 3):
-
-            if tem_list[i, pix_index] >= 0:
-
-                pixelization_indexes_for_sub_slim_index_sizes[i] += 1
+    pixelization_indexes_for_sub_slim_index_sizes = np.sum(tem_list >= 0, axis=1)
 
     return tem_list, pixelization_indexes_for_sub_slim_index_sizes
 
@@ -502,9 +410,10 @@ def pixelization_index_for_sub_slim_index_voronoi_from(
             ]
 
             sub_pixel_to_nearest_pixelization_distance = (
-                (grid[sub_slim_index, 0] - nearest_pixelization_pixel_center[0]) ** 2
-                + (grid[sub_slim_index, 1] - nearest_pixelization_pixel_center[1]) ** 2
-            )
+                grid[sub_slim_index, 0] - nearest_pixelization_pixel_center[0]
+            ) ** 2 + (
+                grid[sub_slim_index, 1] - nearest_pixelization_pixel_center[1]
+            ) ** 2
 
             closest_separation_pixelization_to_neighbor = 1.0e8
 
@@ -547,6 +456,7 @@ def pixelization_index_for_sub_slim_index_voronoi_from(
     return pixelization_index_for_voronoi_sub_slim_index
 
 
+'''
 @numba_util.jit()
 def adaptive_pixel_signals_from(
     pixels: int,
@@ -608,6 +518,7 @@ def adaptive_pixel_signals_from(
     pixel_signals /= np.max(pixel_signals)
 
     return pixel_signals ** signal_scale
+'''
 
 
 @numba_util.jit()
@@ -657,6 +568,70 @@ def adaptive_pixel_signals_Delaunay_version_from(
         mask_1d_index = slim_index_for_sub_slim_index[sub_slim_index]
 
         if vertices_indexes[1] != -1:
+
+            pixel_signals[vertices_indexes] += (
+                hyper_image[mask_1d_index] * pixel_weights[sub_slim_index]
+            )
+            pixel_sizes[vertices_indexes] += 1
+        else:
+            pixel_signals[vertices_indexes[0]] += hyper_image[mask_1d_index]
+            pixel_sizes[vertices_indexes[0]] += 1
+
+    pixel_sizes[pixel_sizes == 0] = 1
+    pixel_signals /= pixel_sizes
+    pixel_signals /= np.max(pixel_signals)
+
+    return pixel_signals ** signal_scale
+
+
+@numba_util.jit()
+def adaptive_pixel_signals_from(
+    pixels: int,
+    pixel_weights: float,
+    signal_scale: float,
+    pixelization_indexes_for_sub_slim_index: np.ndarray,
+    pixelization_size_for_sub_slim_index: np.ndarray,
+    slim_index_for_sub_slim_index: np.ndarray,
+    hyper_image: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the (hyper) signal in each pixel, where the signal is the sum of its mapped data values.
+    These pixel-signals are used to compute the effective regularization weight of each pixel.
+
+    The pixel signals are computed as follows:
+
+    1) Divide by the number of mappe data points in the pixel, to ensure all pixels have the same
+    'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
+
+    2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
+    regularization weight_list are defined identically for any data quantity or signal-to-noise_map ratio.
+
+    3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative
+    contribution regularization in different regions of pixelization.
+
+    Parameters
+    -----------
+    pixels
+        The total number of pixels in the pixelization the regularization scheme is applied to.
+    signal_scale
+        A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
+        low signal regions.
+    regular_to_pix
+        A 1D array util every pixel on the grid to a pixel on the pixelization.
+    hyper_image
+        The image of the galaxy which is used to compute the weigghted pixel signals.
+    """
+
+    pixel_signals = np.zeros((pixels,))
+    pixel_sizes = np.zeros((pixels,))
+
+    for sub_slim_index in range(len(pixelization_indexes_for_sub_slim_index)):
+
+        vertices_indexes = pixelization_indexes_for_sub_slim_index[sub_slim_index]
+
+        mask_1d_index = slim_index_for_sub_slim_index[sub_slim_index]
+
+        if pixelization_size_for_sub_slim_index[sub_slim_index] > 1:
 
             pixel_signals[vertices_indexes] += (
                 hyper_image[mask_1d_index] * pixel_weights[sub_slim_index]

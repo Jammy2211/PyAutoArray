@@ -99,7 +99,7 @@ class AbstractInversion:
 
     @property
     def mapped_reconstructed_data_of_mappers(
-        self
+        self,
     ) -> List[Union[Array2D, Visibilities]]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
@@ -288,7 +288,9 @@ class AbstractInversion:
         ]
 
     @property
-    def residual_map_of_mappers(self,) -> List[np.ndarray]:
+    def residual_map_of_mappers(
+        self,
+    ) -> List[np.ndarray]:
 
         residual_map_of_mappers = []
 

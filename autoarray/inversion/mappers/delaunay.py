@@ -61,7 +61,10 @@ class MapperDelaunay(AbstractMapper):
         A row like [A, -1, -1] means that sub pixel only links to source pixel A.
         """
 
-        pixelization_indexes_for_sub_slim_index, sizes = mapper_util.pixelization_indexes_for_sub_slim_index_delaunay_from(
+        (
+            pixelization_indexes_for_sub_slim_index,
+            sizes,
+        ) = mapper_util.pixelization_indexes_for_sub_slim_index_delaunay_from(
             delaunay=self.delaunay, source_grid_slim=self.source_grid_slim
         )
 
@@ -84,18 +87,18 @@ class MapperDelaunay(AbstractMapper):
             pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
         )
 
-    @cached_property
-    @profile_func
-    def mapping_matrix(self):
+    # @cached_property
+    # @profile_func
+    # def mapping_matrix(self):
 
-        return mapper_util.mapping_matrix_Delaunay_baricentric_interpolation_from(
-            pixel_weights=self.pixelization_weights_for_sub_slim_index,
-            pixels=self.pixels,
-            total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
-            slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
-            sub_fraction=self.source_grid_slim.mask.sub_fraction,
-        )
+    #    return mapper_util.mapping_matrix_Delaunay_baricentric_interpolation_from(
+    #        pixel_weights=self.pixelization_weights_for_sub_slim_index,
+    #        pixels=self.pixels,
+    #        total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
+    #        slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
+    #        pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+    #        sub_fraction=self.source_grid_slim.mask.sub_fraction,
+    #    )
 
     @property
     def delaunay(self):
@@ -104,13 +107,13 @@ class MapperDelaunay(AbstractMapper):
     def reconstruction_from(self, solution_vector):
         return solution_vector
 
-    def pixel_signals_from(self, signal_scale):
+    # def pixel_signals_from(self, signal_scale):
 
-        return mapper_util.adaptive_pixel_signals_Delaunay_version_from(
-            pixels=self.pixels,
-            pixel_weights=self.pixelization_weights_for_sub_slim_index,
-            signal_scale=signal_scale,
-            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
-            slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            hyper_image=self.hyper_image,
-        )
+    #    return mapper_util.adaptive_pixel_signals_Delaunay_version_from(
+    #        pixels=self.pixels,
+    #        pixel_weights=self.pixelization_weights_for_sub_slim_index,
+    #        signal_scale=signal_scale,
+    #        pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
+    #        slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
+    #        hyper_image=self.hyper_image,
+    #    )

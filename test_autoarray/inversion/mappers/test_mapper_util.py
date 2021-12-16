@@ -41,11 +41,13 @@ def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
 class TestMappingMatrix:
     def test__3_image_pixels__6_pixel_pixels__sub_grid_1x1(self, three_pixels):
 
-        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([[0], [1], [2]])
         slim_index_for_sub_slim_index = np.array([0, 1, 2])
 
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixel_weights=np.ones((3, 1), dtype='int'),
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_size_for_sub_slim_index=np.ones(3, dtype='int'),
             pixels=6,
             total_mask_sub_pixels=3,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -65,11 +67,13 @@ class TestMappingMatrix:
 
     def test__5_image_pixels__8_pixel_pixels__sub_grid_1x1(self, five_pixels):
 
-        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2, 7, 6])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([[0], [1], [2], [7], [6]])
         slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4])
 
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixel_weights=np.ones((5, 1), dtype='int'),
+            pixelization_size_for_sub_slim_index=np.ones(3, dtype='int'),
             pixels=8,
             total_mask_sub_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -112,13 +116,15 @@ class TestMappingMatrix:
     ):
 
         pixelization_1d_index_for_sub_mask_1d_index = np.array(
-            [0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2]
-        )
+            [[0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2]]
+        ).T
         slim_index_for_sub_slim_index = np.array(
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixel_weights=np.ones((20, 1), dtype='int'),
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_size_for_sub_slim_index=np.ones(20, dtype='int'),
             pixels=8,
             total_mask_sub_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -143,14 +149,16 @@ class TestMappingMatrix:
     ):
 
         pixelization_1d_index_for_sub_mask_1d_index = np.array(
-            [0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2]
-        )
+            [[0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2]]
+        ).T
         slim_index_for_sub_slim_index = np.array(
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
 
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixel_weights=np.ones((20, 1), dtype='int'),
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_size_for_sub_slim_index=np.ones(20, dtype='int'),
             pixels=8,
             total_mask_sub_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -173,7 +181,7 @@ class TestMappingMatrix:
     def test__3_image_pixels__6_pixel_pixels__sub_grid_4x4(self, three_pixels):
 
         pixelization_1d_index_for_sub_mask_1d_index = np.array(
-            [
+            [[
                 0,
                 0,
                 0,
@@ -222,8 +230,8 @@ class TestMappingMatrix:
                 1,
                 2,
                 3,
-            ]
-        )
+            ]]
+        ).T
 
         slim_index_for_sub_slim_index = np.array(
             [
@@ -279,7 +287,9 @@ class TestMappingMatrix:
         )
 
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixel_weights=np.ones((48, 1), dtype='int'),
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_size_for_sub_slim_index=np.ones(48, dtype='int'),
             pixels=6,
             total_mask_sub_pixels=3,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
@@ -327,7 +337,7 @@ class TestDataToPixUnique:
             data_pixels=image_pixels,
             pixelization_indexes_for_sub_slim_index=pixelization_index_for_sub_slim_index,
             pixelization_indexes_for_sub_slim_sizes=pixelization_indexes_for_sub_slim_sizes,
-            pixel_weights_for_sub_slim_index=pixelization_weights_for_sub_slim_index,
+            pixelization_weights_for_sub_slim_index=pixelization_weights_for_sub_slim_index,
             sub_size=sub_size,
         )
 
@@ -360,7 +370,7 @@ class TestDataToPixUnique:
             data_pixels=image_pixels,
             pixelization_indexes_for_sub_slim_index=pixelization_index_for_sub_slim_index,
             pixelization_indexes_for_sub_slim_sizes=pixelization_indexes_for_sub_slim_sizes,
-            pixel_weights_for_sub_slim_index=pixelization_weights_for_sub_slim_index,
+            pixelization_weights_for_sub_slim_index=pixelization_weights_for_sub_slim_index,
             sub_size=sub_size,
         )
 
@@ -447,9 +457,9 @@ class TestPixelizationIndexesVoronoi:
             pixel_scales=1.0,
         )
 
-        sub_to_pix_nearest_neighbour = grid_to_pixel_pixels_via_nearest_neighbour(
+        sub_to_pix_nearest_neighbour = np.array([grid_to_pixel_pixels_via_nearest_neighbour(
             grid_2d_7x7, pixelization_grid
-        )
+        )]).T
 
         nearest_pixelization_index_for_slim_index = np.array(
             [0, 0, 1, 0, 0, 1, 2, 2, 3]
@@ -465,21 +475,25 @@ class TestPixelizationIndexesVoronoi:
         )
 
         assert (
-            mapper.pixelization_index_for_sub_slim_index == sub_to_pix_nearest_neighbour
+            mapper.pixelization_indexes_for_sub_slim_index.mappings == sub_to_pix_nearest_neighbour
         ).all()
 
 
 class TestPixelSignals:
     def test__x3_image_pixels_signals_1s__pixel_scale_1__pixel_signals_all_1s(self):
 
-        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([[0], [1], [2]])
+        pixel_weights = np.ones((3, 1), dtype='int')
+        pixel_sizes = np.ones(3, dtype='int')
         slim_index_for_sub_slim_index = np.array([0, 1, 2])
         galaxy_image = np.array([1.0, 1.0, 1.0])
 
         pixel_signals = aa.util.mapper.adaptive_pixel_signals_from(
             pixels=3,
             signal_scale=1.0,
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_size_for_sub_slim_index=pixel_sizes,
+            pixel_weights=pixel_weights,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             hyper_image=galaxy_image,
         )
@@ -488,14 +502,18 @@ class TestPixelSignals:
 
     def test__x4_image_pixels_signals_1s__pixel_signals_still_all_1s(self):
 
-        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2, 0])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([[0], [1], [2], [0]])
+        pixel_weights = np.ones((4, 1), dtype='int')
+        pixel_sizes = np.ones(4, dtype='int')
         slim_index_for_sub_slim_index = np.array([0, 1, 2, 0])
         galaxy_image = np.array([1.0, 1.0, 1.0, 1.0])
 
         pixel_signals = aa.util.mapper.adaptive_pixel_signals_from(
             pixels=3,
             signal_scale=1.0,
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_size_for_sub_slim_index=pixel_sizes,
+            pixel_weights=pixel_weights,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             hyper_image=galaxy_image,
         )
@@ -506,14 +524,18 @@ class TestPixelSignals:
         self,
     ):
 
-        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([[0], [1], [2]])
+        pixel_weights = np.ones((3, 1), dtype='int')
+        pixel_sizes = np.ones(3, dtype='int')
         slim_index_for_sub_slim_index = np.array([0, 1, 2])
         galaxy_image = np.array([2.0, 1.0, 1.0])
 
         pixel_signals = aa.util.mapper.adaptive_pixel_signals_from(
             pixels=3,
             signal_scale=1.0,
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_size_for_sub_slim_index=pixel_sizes,
+            pixel_weights=pixel_weights,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             hyper_image=galaxy_image,
         )
@@ -522,14 +544,18 @@ class TestPixelSignals:
 
     def test__same_as_above_but_pixel_scale_2__scales_pixel_signals(self):
 
-        pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])
+        pixelization_1d_index_for_sub_mask_1d_index = np.array([[0], [1], [2]])
+        pixel_weights = np.ones((3, 1), dtype='int')
+        pixel_sizes = np.ones(3, dtype='int')
         slim_index_for_sub_slim_index = np.array([0, 1, 2])
         galaxy_image = np.array([2.0, 1.0, 1.0])
 
         pixel_signals = aa.util.mapper.adaptive_pixel_signals_from(
             pixels=3,
             signal_scale=2.0,
-            pixelization_index_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
+            pixelization_size_for_sub_slim_index=pixel_sizes,
+            pixel_weights=pixel_weights,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             hyper_image=galaxy_image,
         )

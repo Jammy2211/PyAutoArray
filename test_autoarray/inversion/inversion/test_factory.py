@@ -676,7 +676,7 @@ def test__inversion_matirces__linear_eqns_mapping__delaunay_mapper__matrix_forma
 
     pix = aa.pix.DelaunayMagnification(shape=(7, 7))
 
-    sparse_grid = pix.sparse_grid_from(data_grid_slim=grid)
+    sparse_grid = pix.data_pixelization_grid_from(data_grid_slim=grid)
 
     mapper = pix.mapper_from(
         source_grid_slim=grid,
@@ -773,3 +773,4 @@ def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():
     )
     assert (np.imag(inversion.mapped_reconstructed_data) < 0.0001).all()
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
+
