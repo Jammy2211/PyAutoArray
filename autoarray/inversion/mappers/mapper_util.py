@@ -231,9 +231,12 @@ def mapping_matrix_from(
     return mapping_matrix
 
 
-#  @numba_util.jit()
+@numba_util.jit()
 def pix_indexes_for_sub_slim_index_delaunay_from(
-    delaunay, source_grid_slim
+    source_grid_slim,
+    simplex_index_for_sub_slim_index,
+    pix_indexes_for_simplex_index,
+    delaunay_points,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     The indexes mappings between the sub pixels and Voronoi pixelization pixels.
@@ -244,12 +247,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     A row like [A, -1, -1] means that sub pixel only links to source pixel A.
     """
 
-    simplex_index_for_sub_slim_index = delaunay.find_simplex(source_grid_slim)
-    pix_indexes_for_simplex_index = delaunay.simplices
-
-    pix_indexes_for_sub_slim_index = -1 * np.ones(
-        (len(source_grid_slim), 3), dtype="int"
-    )
+    pix_indexes_for_sub_slim_index = -1 * np.ones(shape=(source_grid_slim.shape[0], 3))
 
     for i in range(len(source_grid_slim)):
         simplex_index = simplex_index_for_sub_slim_index[i]
@@ -259,7 +257,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
             ]
         else:
             pix_indexes_for_sub_slim_index[i][0] = np.argmin(
-                np.sum((delaunay.points - source_grid_slim[i]) ** 2.0, axis=1)
+                np.sum((delaunay_points - source_grid_slim[i]) ** 2.0, axis=1)
             )
 
     pix_indexes_for_sub_slim_index_sizes = np.sum(

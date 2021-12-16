@@ -60,9 +60,16 @@ class MapperDelaunay(AbstractMapper):
         The returning result is a matrix of (len(sub_pixels, 3)) where the entries mark the relevant source pixel indexes.
         A row like [A, -1, -1] means that sub pixel only links to source pixel A.
         """
+        delaunay = self.delaunay
+
+        simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_grid_slim)
+        pix_indexes_for_simplex_index = delaunay.simplices
 
         mappings, sizes = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
-            delaunay=self.delaunay, source_grid_slim=self.source_grid_slim
+            source_grid_slim=self.source_grid_slim,
+            simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
+            pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
+            delaunay_points=delaunay.points,
         )
 
         return PixForSub(mappings=mappings.astype("int"), sizes=sizes.astype("int"))
