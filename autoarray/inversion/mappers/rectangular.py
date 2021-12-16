@@ -50,35 +50,9 @@ class MapperRectangular(AbstractMapper):
     def shape_native(self):
         return self.source_pixelization_grid.shape_native
 
-    # @cached_property
-    # @profile_func
-    # def pixelization_index_for_sub_slim_index(self) -> np.ndarray:
-    #    """
-    #    An array describing the pairing of every image-pixel coordinate to every source-pixel.
-
-    #    A `pixelization_index` refers to the index of each source pixel index and a `sub_slim_index` refers to the
-    #    index of each sub-pixel in the masked data.
-
-    #    For example:
-
-    #    - If the data's first sub-pixel maps to the source pixelization's third pixel then
-    #    pixelization_index_for_sub_slim_index[0] = 2
-    #    - If the data's second sub-pixel maps to the source pixelization's fifth pixel then
-    #    pixelization_index_for_sub_slim_index[1] = 4
-
-    #    For a rectangular pixelization, we use its uniform properties to map each coordinate of the mappers traced
-    #    grid of (y,x) coordinates (`source_grid_slim`) to each rectangular pixel of the pixelization.
-    #    """
-    #    return grid_2d_util.grid_pixel_indexes_2d_slim_from(
-    #        grid_scaled_2d_slim=self.source_grid_slim,
-    #        shape_native=self.source_pixelization_grid.shape_native,
-    #        pixel_scales=self.source_pixelization_grid.pixel_scales,
-    #        origin=self.source_pixelization_grid.origin,
-    #    ).astype("int")
-
     @cached_property
     @profile_func
-    def pixelization_indexes_for_sub_slim_index(self) -> np.ndarray:
+    def pix_indexes_for_sub_slim_index(self) -> PixForSub:
         """
         An array describing the pairing of every image-pixel coordinate to every source-pixel.
 
@@ -88,34 +62,36 @@ class MapperRectangular(AbstractMapper):
         For example:
 
         - If the data's first sub-pixel maps to the source pixelization's third pixel then
-        pixelization_index_for_sub_slim_index[0] = 2
+        pix_index_for_sub_slim_index[0] = 2
         - If the data's second sub-pixel maps to the source pixelization's fifth pixel then
-        pixelization_index_for_sub_slim_index[1] = 4
+        pix_index_for_sub_slim_index[1] = 4
 
         For a rectangular pixelization, we use its uniform properties to map each coordinate of the mappers traced
         grid of (y,x) coordinates (`source_grid_slim`) to each rectangular pixel of the pixelization.
         """
 
-        mappings_transverse = grid_2d_util.grid_pixel_indexes_2d_slim_from(
+        mappings = grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=self.source_grid_slim,
             shape_native=self.source_pixelization_grid.shape_native,
             pixel_scales=self.source_pixelization_grid.pixel_scales,
             origin=self.source_pixelization_grid.origin,
         ).astype("int")
 
+        mappings = mappings.reshape((len(mappings), 1))
+
         return PixForSub(
-            mappings=mappings_transverse.reshape((len(mappings_transverse), 1)),
-            sizes=np.ones(len(mappings_transverse), dtype="int"),
+            mappings=mappings.reshape((len(mappings), 1)),
+            sizes=np.ones(len(mappings), dtype="int"),
         )
 
     @cached_property
     @profile_func
-    def pixelization_weights_for_sub_slim_index(self):
+    def pix_weights_for_sub_slim_index(self) -> np.ndarray:
         """
         Weights for source pixels to sub pixels. Used for creating the mapping matrix and 'pixel_signals_from'
-        It has the same shape as the 'pixelization_indexes_for_sub_slim_index'.
+        It has the same shape as the 'pix_indexes_for_sub_slim_index'.
         """
-        return np.ones((len(self.source_pixelization_grid), 1), dtype="int")
+        return np.ones((len(self.source_grid_slim), 1), dtype="int")
 
     def reconstruction_from(self, solution_vector):
         """

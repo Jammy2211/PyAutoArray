@@ -69,12 +69,12 @@ class AbstractMapper:
         provide the index mappings between the `data_grid` and `pixelization_grid`, which are derived based on how the
         latter discretizes the former in the `source` frame.
 
-        These mappings are represented in the 1D ndarray `pixelization_index_for_sub_slim_index`, whereby the index of
+        These mappings are represented in the 1D ndarray `pix_index_for_sub_slim_index`, whereby the index of
         a pixel on the `pixelization_grid` maps to the index of a pixel on the `grid_slim` as follows:
 
-        - pixelization_index_for_sub_slim_index[0] = 0: the data's 1st sub-pixel maps to the pixelization's 1st pixel.
-        - pixelization_index_for_sub_slim_index[1] = 3: the data's 2nd sub-pixel maps to the pixelization's 4th pixel.
-        - pixelization_index_for_sub_slim_index[2] = 1: the data's 3rd sub-pixel maps to the pixelization's 2nd pixel.
+        - pix_index_for_sub_slim_index[0] = 0: the data's 1st sub-pixel maps to the pixelization's 1st pixel.
+        - pix_index_for_sub_slim_index[1] = 3: the data's 2nd sub-pixel maps to the pixelization's 4th pixel.
+        - pix_index_for_sub_slim_index[2] = 1: the data's 3rd sub-pixel maps to the pixelization's 2nd pixel.
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
         unmasked pixel of a grid and the pixels of a pixelization. This matrix is the basis of performing an
@@ -106,24 +106,16 @@ class AbstractMapper:
         return self.source_grid_slim.mask.slim_index_for_sub_slim_index
 
     @property
-    def pixelization_index_for_sub_slim_index(self):
-        raise NotImplementedError(
-            "pixelization_index_for_sub_slim_index should be overridden"
-        )
-
-    @property
-    def pixelization_indexes_for_sub_slim_index(self) -> "PixForSub":
-        raise NotImplementedError(
-            "pixelization_index_for_sub_slim_index should be overridden"
-        )
+    def pix_indexes_for_sub_slim_index(self) -> "PixForSub":
+        raise NotImplementedError("pix_index_for_sub_slim_index should be overridden")
 
     @cached_property
     @profile_func
-    def pixelization_weights_for_sub_slim_index(self) -> np.ndarray:
+    def pix_weights_for_sub_slim_index(self) -> np.ndarray:
         raise NotImplementedError
 
     @property
-    def all_sub_slim_indexes_for_pixelization_index(self):
+    def all_sub_slim_indexes_for_pix_index(self):
         """
         Returns the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings
         are determined after the grid is used to determine the pixelization.
@@ -131,50 +123,16 @@ class AbstractMapper:
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to
         represent these mappings.
         """
-        all_sub_slim_indexes_for_pixelization_index = [[] for _ in range(self.pixels)]
+        all_sub_slim_indexes_for_pix_index = [[] for _ in range(self.pixels)]
 
-        pixelization_indexes_for_sub_slim_index = (
-            self.pixelization_indexes_for_sub_slim_index.mappings
-        )
-        sizes = self.pixelization_indexes_for_sub_slim_index.sizes
+        pix_indexes_for_sub_slim_index = self.pix_indexes_for_sub_slim_index.mappings
+        sizes = self.pix_indexes_for_sub_slim_index.sizes
 
-        for slim_index, pix_index in enumerate(pixelization_indexes_for_sub_slim_index):
+        for slim_index, pix_index in enumerate(pix_indexes_for_sub_slim_index):
             for k in range(sizes[slim_index]):
-                all_sub_slim_indexes_for_pixelization_index[pix_index[k]].append(
-                    slim_index
-                )
+                all_sub_slim_indexes_for_pix_index[pix_index[k]].append(slim_index)
 
-        return all_sub_slim_indexes_for_pixelization_index
-
-    # @cached_property
-    # @profile_func
-    # def data_unique_mappings(self):
-    #    """
-    #    The w_tilde formalism requires us to compute an array that gives the unique mappings between the sub-pixels of
-    #    every image pixel to their corresponding pixelization pixels.
-    #    """
-
-    #    try:
-    #        data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_from(
-    #            data_pixels=self.source_grid_slim.shape_slim,
-    #            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
-    #            sub_size=self.source_grid_slim.sub_size,
-    #        )
-    #    except NotImplementedError:
-
-    #        data_to_pix_unique, data_weights, pix_lengths = mapper_util.data_slim_to_pixelization_unique_2_from(
-    #            data_pixels=self.source_grid_slim.shape_slim,
-    #            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
-    #            pixelization_indexes_for_sub_slim_sizes=self.pixelization_indexes_for_sub_slim_index.sizes,
-    #            pixel_weights_for_sub_slim_index=self.pixelization_weights_for_sub_slim_index,
-    #            sub_size=self.source_grid_slim.sub_size,
-    #        )
-
-    #    return UniqueMappings(
-    #        data_to_pix_unique=data_to_pix_unique,
-    #        data_weights=data_weights,
-    #        pix_lengths=pix_lengths,
-    #    )
+        return all_sub_slim_indexes_for_pix_index
 
     @cached_property
     @profile_func
@@ -188,11 +146,11 @@ class AbstractMapper:
             data_to_pix_unique,
             data_weights,
             pix_lengths,
-        ) = mapper_util.data_slim_to_pixelization_unique_2_from(
+        ) = mapper_util.data_slim_to_pixelization_unique_from(
             data_pixels=self.source_grid_slim.shape_slim,
-            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
-            pixelization_indexes_for_sub_slim_sizes=self.pixelization_indexes_for_sub_slim_index.sizes,
-            pixelization_weights_for_sub_slim_index=self.pixelization_weights_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
+            pix_indexes_for_sub_slim_sizes=self.pix_indexes_for_sub_slim_index.sizes,
+            pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             sub_size=self.source_grid_slim.sub_size,
         )
 
@@ -201,23 +159,6 @@ class AbstractMapper:
             data_weights=data_weights,
             pix_lengths=pix_lengths,
         )
-
-    # @cached_property
-    # @profile_func
-    # def mapping_matrix(self):
-    #    """
-    #    The `mapping_matrix` is a matrix that represents the image-pixel to pixelization-pixel mappings above in a
-    #    2D matrix. It in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf.
-    #
-    #    A full description is given in `mapper_util.mapping_matrix_from()`.
-    #    """
-    #    return mapper_util.mapping_matrix_from(
-    #        pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
-    #        pixels=self.pixels,
-    #        total_mask_sub_pixels=self.source_grid_slim.mask.pixels_in_mask,
-    #        slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-    #        sub_fraction=self.source_grid_slim.mask.sub_fraction,
-    #    )
 
     @cached_property
     @profile_func
@@ -229,12 +170,12 @@ class AbstractMapper:
         A full description is given in `mapper_util.mapping_matrix_from()`.
         """
         return mapper_util.mapping_matrix_from(
-            pixel_weights=self.pixelization_weights_for_sub_slim_index,
+            pixel_weights=self.pix_weights_for_sub_slim_index,
             pixels=self.pixels,
             total_mask_sub_pixels=self.source_grid_slim.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
-            pixelization_size_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.sizes,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
+            pix_size_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.sizes,
             sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )
 
@@ -243,28 +184,26 @@ class AbstractMapper:
         return mapper_util.adaptive_pixel_signals_from(
             pixels=self.pixels,
             signal_scale=signal_scale,
-            pixel_weights=self.pixelization_weights_for_sub_slim_index,
-            pixelization_indexes_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.mappings,
-            pixelization_size_for_sub_slim_index=self.pixelization_indexes_for_sub_slim_index.sizes,
+            pixel_weights=self.pix_weights_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
+            pix_size_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.sizes,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             hyper_image=self.hyper_image,
         )
 
-    def pixelization_indexes_for_slim_indexes(self, pixelization_indexes):
+    def pix_indexes_for_slim_indexes(self, pix_indexes):
 
-        image_for_source = self.all_sub_slim_indexes_for_pixelization_index
+        image_for_source = self.all_sub_slim_indexes_for_pix_index
 
-        print(image_for_source)
-
-        if not any(isinstance(i, list) for i in pixelization_indexes):
+        if not any(isinstance(i, list) for i in pix_indexes):
             return list(
                 itertools.chain.from_iterable(
-                    [image_for_source[index] for index in pixelization_indexes]
+                    [image_for_source[index] for index in pix_indexes]
                 )
             )
         else:
             indexes = []
-            for source_pixel_index_list in pixelization_indexes:
+            for source_pixel_index_list in pix_indexes:
                 indexes.append(
                     list(
                         itertools.chain.from_iterable(

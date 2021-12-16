@@ -288,9 +288,7 @@ class AbstractInversion:
         ]
 
     @property
-    def residual_map_of_mappers(
-        self,
-    ) -> List[np.ndarray]:
+    def residual_map_of_mappers(self,) -> List[np.ndarray]:
 
         residual_map_of_mappers = []
 
@@ -303,7 +301,7 @@ class AbstractInversion:
                 reconstruction=reconstruction_of_mapper,
                 data=self.data,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-                all_sub_slim_indexes_for_pixelization_index=mapper.all_sub_slim_indexes_for_pixelization_index,
+                all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
             )
 
             residual_map_of_mappers.append(residual_map)
@@ -325,7 +323,7 @@ class AbstractInversion:
                 data=self.data,
                 noise_map_1d=self.noise_map.slim,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-                all_sub_slim_indexes_for_pixelization_index=mapper.all_sub_slim_indexes_for_pixelization_index,
+                all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
             )
 
             normalized_map_of_mappers.append(normalized_map)
@@ -347,7 +345,7 @@ class AbstractInversion:
                 data=self.data,
                 noise_map_1d=self.noise_map.slim,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-                all_sub_slim_indexes_for_pixelization_index=mapper.all_sub_slim_indexes_for_pixelization_index,
+                all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
             )
 
             chi_squared_map_of_mappers.append(chi_squared_map)

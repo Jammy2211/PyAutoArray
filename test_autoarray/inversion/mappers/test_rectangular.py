@@ -3,7 +3,7 @@ import numpy as np
 import autoarray as aa
 
 
-def test__pixelization_index_for_sub_slim_index__matches_util():
+def test__pix_index_for_sub_slim_index__matches_util():
 
     grid = aa.Grid2D.manual_slim(
         [
@@ -29,18 +29,20 @@ def test__pixelization_index_for_sub_slim_index__matches_util():
         source_grid_slim=grid, source_pixelization_grid=pixelization_grid
     )
 
-    pixelization_index_for_sub_slim_index_util = np.array([aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
-        grid_scaled_2d_slim=grid,
-        shape_native=pixelization_grid.shape_native,
-        pixel_scales=pixelization_grid.pixel_scales,
-        origin=pixelization_grid.origin,
-    ).astype(
-        "int"
-    )]).T
+    pix_index_for_sub_slim_index_util = np.array(
+        [
+            aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
+                grid_scaled_2d_slim=grid,
+                shape_native=pixelization_grid.shape_native,
+                pixel_scales=pixelization_grid.pixel_scales,
+                origin=pixelization_grid.origin,
+            ).astype("int")
+        ]
+    ).T
 
     assert (
-        mapper.pixelization_indexes_for_sub_slim_index.mappings
-        == pixelization_index_for_sub_slim_index_util
+        mapper.pix_indexes_for_sub_slim_index.mappings
+        == pix_index_for_sub_slim_index_util
     ).all()
 
 
@@ -106,9 +108,9 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
     pixel_signals_util = aa.util.mapper.adaptive_pixel_signals_from(
         pixels=9,
         signal_scale=2.0,
-        pixelization_indexes_for_sub_slim_index=mapper.pixelization_indexes_for_sub_slim_index.mappings,
-        pixelization_size_for_sub_slim_index=mapper.pixelization_indexes_for_sub_slim_index.sizes,
-        pixel_weights=mapper.pixelization_weights_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index.mappings,
+        pix_size_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index.sizes,
+        pixel_weights=mapper.pix_weights_for_sub_slim_index,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
         hyper_image=image_7x7,
     )

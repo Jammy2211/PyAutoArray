@@ -294,11 +294,11 @@ class TestDataVectorFromData:
                 native_index_for_slim_index=mask.native_index_for_slim_index,
             )
 
-            data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_2_from(
+            data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
                 data_pixels=w_tilde_data.shape[0],
-                pixelization_indexes_for_sub_slim_index=mapper.pixelization_indexes_for_sub_slim_index.mappings,
-                pixelization_indexes_for_sub_slim_sizes=mapper.pixelization_indexes_for_sub_slim_index.sizes,
-                pixelization_weights_for_sub_slim_index=mapper.pixelization_weights_for_sub_slim_index,
+                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index.mappings,
+                pix_indexes_for_sub_slim_sizes=mapper.pix_indexes_for_sub_slim_index.sizes,
+                pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
                 sub_size=sub_size,
             )
 
@@ -310,8 +310,8 @@ class TestDataVectorFromData:
                 pix_pixels=pixelization.pixels,
             )
 
-            #print(data_vector_via_w_tilde)
-            #print(data_vector)
+            # print(data_vector_via_w_tilde)
+            # print(data_vector)
 
             assert data_vector_via_w_tilde == pytest.approx(data_vector, 1.0e-4)
 
@@ -529,11 +529,11 @@ class TestCurvatureMatrixImaging:
                 native_index_for_slim_index=mask.native_index_for_slim_index,
             )
 
-            data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_2_from(
+            data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
                 data_pixels=w_tilde_lengths.shape[0],
-                pixelization_indexes_for_sub_slim_index=mapper.pixelization_indexes_for_sub_slim_index.mappings,
-                pixelization_indexes_for_sub_slim_sizes=mapper.pixelization_indexes_for_sub_slim_index.sizes,
-                pixelization_weights_for_sub_slim_index=mapper.pixelization_weights_for_sub_slim_index,
+                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index.mappings,
+                pix_indexes_for_sub_slim_sizes=mapper.pix_indexes_for_sub_slim_index.sizes,
+                pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
                 sub_size=sub_size,
             )
 
@@ -587,11 +587,15 @@ class TestMappedReconstructedDataFrom:
 
     def test__mapped_reconstructed_data_via_image_to_pix_unique_from(self):
 
-        pixelization_index_for_sub_slim_index = np.array([0, 1, 2])
+        pix_index_for_sub_slim_index = np.array([[0], [1], [2]])
+        pix_index_for_sub_slim_index_sizes = np.array([1, 1, 1]).astype("int")
+        pix_weights_for_sub_slim_index = np.array([[1.0], [1.0], [1.0]])
 
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=3,
-            pixelization_index_for_sub_slim_index=pixelization_index_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=pix_index_for_sub_slim_index,
+            pix_indexes_for_sub_slim_sizes=pix_index_for_sub_slim_index_sizes,
+            pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=1,
         )
 
@@ -606,13 +610,17 @@ class TestMappedReconstructedDataFrom:
 
         assert (mapped_reconstructed_data == np.array([1.0, 1.0, 2.0])).all()
 
-        pixelization_index_for_sub_slim_index = np.array(
-            [0, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2]
+        pix_index_for_sub_slim_index = np.array(
+            [[0], [1], [1], [2], [1], [1], [1], [1], [1], [2], [2], [2]]
         )
+        pix_index_for_sub_slim_index_sizes = np.ones(shape=(12,)).astype("int")
+        pix_weights_for_sub_slim_index = np.ones(shape=(12, 1))
 
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=3,
-            pixelization_index_for_sub_slim_index=pixelization_index_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=pix_index_for_sub_slim_index,
+            pix_indexes_for_sub_slim_sizes=pix_index_for_sub_slim_index_sizes,
+            pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=2,
         )
 

@@ -286,7 +286,7 @@ class TestMapperPlotter:
         mapper_plotter = aplt.MapperPlotter(
             mapper=rectangular_mapper_7x7_3x3,
             visuals_2d=aplt.Visuals2D(
-                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
             ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper1", format="png")
@@ -300,7 +300,7 @@ class TestMapperPlotter:
         mapper_plotter = aplt.MapperPlotter(
             mapper=rectangular_mapper_7x7_3x3,
             visuals_2d=aplt.Visuals2D(
-                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
             ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper2", format="png")
@@ -314,7 +314,7 @@ class TestMapperPlotter:
         mapper_plotter = aplt.MapperPlotter(
             mapper=rectangular_mapper_7x7_3x3,
             visuals_2d=aplt.Visuals2D(
-                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
             ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
@@ -335,7 +335,7 @@ class TestMapperPlotter:
         mapper_plotter = aplt.MapperPlotter(
             mapper=voronoi_mapper_9_3x3,
             visuals_2d=aplt.Visuals2D(
-                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
             ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper1", format="png")
@@ -348,7 +348,7 @@ class TestMapperPlotter:
 
         mapper_plotter = aplt.MapperPlotter(
             visuals_2d=aplt.Visuals2D(
-                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
             ),
             mapper=voronoi_mapper_9_3x3,
             mat_plot_2d=aplt.MatPlot2D(
@@ -362,7 +362,7 @@ class TestMapperPlotter:
 
         mapper_plotter = aplt.MapperPlotter(
             visuals_2d=aplt.Visuals2D(
-                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
             ),
             mapper=voronoi_mapper_9_3x3,
             mat_plot_2d=aplt.MatPlot2D(
@@ -386,7 +386,7 @@ class TestMapperPlotter:
         mapper_plotter = aplt.MapperPlotter(
             mapper=rectangular_mapper_7x7_3x3,
             visuals_2d=aplt.Visuals2D(
-                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
             ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, format="png")

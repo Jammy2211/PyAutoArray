@@ -680,10 +680,7 @@ class MatPlot2D(AbstractMatPlot):
 
         grid_indexes = None
 
-        if (
-            visuals_2d.indexes is not None
-            or visuals_2d.pixelization_indexes is not None
-        ):
+        if visuals_2d.indexes is not None or visuals_2d.pix_indexes is not None:
             grid_indexes = array.mask.masked_grid
 
         visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid_indexes)

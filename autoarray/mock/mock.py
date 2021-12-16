@@ -119,8 +119,8 @@ class MockMapper(AbstractMapper):
         source_grid_slim=None,
         source_pixelization_grid=None,
         hyper_image=None,
-        pixelization_indexes_for_sub_slim_index=None,
-        pixelization_weights_for_sub_slim_index=None,
+        pix_indexes_for_sub_slim_index=None,
+        pix_weights_for_sub_slim_index=None,
         mapping_matrix=None,
         pixel_signals=None,
         pixels=None,
@@ -132,13 +132,9 @@ class MockMapper(AbstractMapper):
             hyper_image=hyper_image,
         )
 
-        self._pixelization_indexes_for_sub_slim_index = (
-            pixelization_indexes_for_sub_slim_index
-        )
+        self._pix_indexes_for_sub_slim_index = pix_indexes_for_sub_slim_index
 
-        self._pixelization_weights_for_sub_slim_index = (
-            pixelization_weights_for_sub_slim_index
-        )
+        self._pix_weights_for_sub_slim_index = pix_weights_for_sub_slim_index
 
         self._mapping_matrix = mapping_matrix
 
@@ -158,12 +154,12 @@ class MockMapper(AbstractMapper):
         return self._pixels
 
     @property
-    def pixelization_indexes_for_sub_slim_index(self):
-        return self._pixelization_indexes_for_sub_slim_index
+    def pix_indexes_for_sub_slim_index(self):
+        return self._pix_indexes_for_sub_slim_index
 
     @property
-    def pixelization_weights_for_sub_slim_index(self):
-        return self._pixelization_weights_for_sub_slim_index
+    def pix_weights_for_sub_slim_index(self):
+        return self._pix_weights_for_sub_slim_index
 
     @property
     def mapping_matrix(self):

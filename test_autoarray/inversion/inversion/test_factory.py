@@ -773,4 +773,3 @@ def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():
     )
     assert (np.imag(inversion.mapped_reconstructed_data) < 0.0001).all()
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
-

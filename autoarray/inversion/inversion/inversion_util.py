@@ -136,7 +136,7 @@ def inversion_residual_map_from(
     reconstruction: np.ndarray,
     data: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
-    all_sub_slim_indexes_for_pixelization_index: [list],
+    all_sub_slim_indexes_for_pix_index: [list],
 ):
     """
     Returns the residual-map of the `reconstruction` of an `LinearEqn` on its pixel-grid.
@@ -157,7 +157,7 @@ def inversion_residual_map_from(
         The array of `data` that the `LinearEqn` fits.
     slim_index_for_sub_slim_index
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-    all_sub_slim_indexes_for_pixelization_index
+    all_sub_slim_indexes_for_pix_index
         The mapping of every pixel on the `LinearEqn`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
@@ -166,11 +166,9 @@ def inversion_residual_map_from(
         The residuals of the `LinearEqn`'s `reconstruction` on its pixel-grid, computed by mapping the `residual_map`
         from the fit to the data.
     """
-    residual_map = np.zeros(shape=len(all_sub_slim_indexes_for_pixelization_index))
+    residual_map = np.zeros(shape=len(all_sub_slim_indexes_for_pix_index))
 
-    for pix_index, sub_slim_indexes in enumerate(
-        all_sub_slim_indexes_for_pixelization_index
-    ):
+    for pix_index, sub_slim_indexes in enumerate(all_sub_slim_indexes_for_pix_index):
 
         sub_mask_total = 0
         for sub_mask_1d_index in sub_slim_indexes:
@@ -191,7 +189,7 @@ def inversion_normalized_residual_map_from(
     data,
     noise_map_1d,
     slim_index_for_sub_slim_index,
-    all_sub_slim_indexes_for_pixelization_index,
+    all_sub_slim_indexes_for_pix_index,
 ):
     """
     Returns the normalized residual-map of the `reconstruction` of an `LinearEqn` on its pixel-grid.
@@ -212,7 +210,7 @@ def inversion_normalized_residual_map_from(
         The array of `data` that the `LinearEqn` fits.
     slim_index_for_sub_slim_index
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-    all_sub_slim_indexes_for_pixelization_index
+    all_sub_slim_indexes_for_pix_index
         The mapping of every pixel on the `LinearEqn`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
@@ -221,13 +219,9 @@ def inversion_normalized_residual_map_from(
         The normalized residuals of the `LinearEqn`'s `reconstruction` on its pixel-grid, computed by mapping the
         `normalized_residual_map` from the fit to the data.
     """
-    normalized_residual_map = np.zeros(
-        shape=len(all_sub_slim_indexes_for_pixelization_index)
-    )
+    normalized_residual_map = np.zeros(shape=len(all_sub_slim_indexes_for_pix_index))
 
-    for pix_index, sub_slim_indexes in enumerate(
-        all_sub_slim_indexes_for_pixelization_index
-    ):
+    for pix_index, sub_slim_indexes in enumerate(all_sub_slim_indexes_for_pix_index):
         sub_mask_total = 0
         for sub_mask_1d_index in sub_slim_indexes:
             sub_mask_total += 1
@@ -249,7 +243,7 @@ def inversion_chi_squared_map_from(
     data,
     noise_map_1d,
     slim_index_for_sub_slim_index,
-    all_sub_slim_indexes_for_pixelization_index,
+    all_sub_slim_indexes_for_pix_index,
 ):
     """
     Returns the chi-squared-map of the `reconstruction` of an `LinearEqn` on its pixel-grid.
@@ -270,7 +264,7 @@ def inversion_chi_squared_map_from(
         The array of `data` that the `LinearEqn` fits.
     slim_index_for_sub_slim_index
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-    all_sub_slim_indexes_for_pixelization_index
+    all_sub_slim_indexes_for_pix_index
         The mapping of every pixel on the `LinearEqn`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
@@ -279,11 +273,9 @@ def inversion_chi_squared_map_from(
         The chi-squareds of the `LinearEqn`'s `reconstruction` on its pixel-grid, computed by mapping the `chi-squared_map`
         from the fit to the data.
     """
-    chi_squared_map = np.zeros(shape=len(all_sub_slim_indexes_for_pixelization_index))
+    chi_squared_map = np.zeros(shape=len(all_sub_slim_indexes_for_pix_index))
 
-    for pix_index, sub_slim_indexes in enumerate(
-        all_sub_slim_indexes_for_pixelization_index
-    ):
+    for pix_index, sub_slim_indexes in enumerate(all_sub_slim_indexes_for_pix_index):
         sub_mask_total = 0
         for sub_mask_1d_index in sub_slim_indexes:
             sub_mask_total += 1

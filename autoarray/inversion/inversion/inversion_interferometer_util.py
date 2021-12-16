@@ -76,7 +76,7 @@ def w_tilde_curvature_interferometer_via_preload_from(
 @numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
     curvature_preload: np.ndarray,
-    pixelization_index_for_sub_slim_index: np.ndarray,
+    pix_index_for_sub_slim_index: np.ndarray,
     native_index_for_slim_index: np.ndarray,
     pixelization_pixels: int,
 ) -> np.ndarray:
