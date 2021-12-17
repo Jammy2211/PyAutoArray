@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
 
-from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
+from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLinearEqn
 from autoarray.dataset.interferometer import WTildeInterferometer
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi

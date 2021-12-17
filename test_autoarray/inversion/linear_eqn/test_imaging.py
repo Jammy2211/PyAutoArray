@@ -1,6 +1,6 @@
 import autoarray as aa
 from autoarray.dataset.imaging import WTildeImaging
-from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingWTilde
+from autoarray.inversion.linear_eqn.mapper.imaging import LinearEqnImagingWTilde
 
 from autoarray.mock.mock import MockConvolver, MockLinearEqnImaging, MockMapper
 

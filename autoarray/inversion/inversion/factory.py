@@ -7,12 +7,14 @@ from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingWTilde
-from autoarray.inversion.linear_eqn.imaging import LinearEqnImagingMapping
+from autoarray.inversion.linear_eqn.mapper.imaging import LinearEqnImagingWTilde
+from autoarray.inversion.linear_eqn.mapper.imaging import LinearEqnImagingMapping
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.linear_operator import InversionLinearOperator
-from autoarray.inversion.linear_eqn.interferometer import LinearEqnInterferometerMapping
-from autoarray.inversion.linear_eqn.interferometer import (
+from autoarray.inversion.linear_eqn.mapper.interferometer import (
+    LinearEqnInterferometerMapping,
+)
+from autoarray.inversion.linear_eqn.mapper.interferometer import (
     LinearEqnInterferometerLinearOperator,
 )
 from autoarray.inversion.regularization.abstract import AbstractRegularization

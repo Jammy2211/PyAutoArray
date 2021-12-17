@@ -10,8 +10,8 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
-from autoarray.inversion.linear_eqn.imaging import AbstractLinearEqnImaging
-from autoarray.inversion.linear_eqn.interferometer import (
+from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLinearEqnImaging
+from autoarray.inversion.linear_eqn.mapper.interferometer import (
     AbstractLinearEqnInterferometer,
 )
 from autoarray.inversion.regularization.abstract import AbstractRegularization
