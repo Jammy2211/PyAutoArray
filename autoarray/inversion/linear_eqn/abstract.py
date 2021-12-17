@@ -3,9 +3,13 @@ from typing import Dict, List, Optional, Union
 
 from autoarray.numba_util import profile_func
 
+from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj import LinearObj
+from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.structures.arrays.two_d.array_2d import Array2D
+
+from autoarray.exc import InversionException
 
 
 class AbstractLEq:
@@ -22,10 +26,32 @@ class AbstractLEq:
         self.profiling_dict = profiling_dict
 
     @property
+    def mapper_list(self):
+
+        mapper_list = [
+            linear_obj if isinstance(linear_obj, AbstractMapper) else None
+            for linear_obj in self.linear_obj_list
+        ]
+
+        return list(filter(None, mapper_list))
+
+    @property
+    def has_mapper(self):
+        return len(self.mapper_list) > 0
+
+    @property
     def has_one_mapper(self):
-        if len(self.linear_obj_list) == 1:
-            return True
-        return False
+        return len(self.mapper_list) == 1
+
+    @property
+    def no_mapper_list(self):
+
+        mapper_list = [
+            linear_obj if not isinstance(linear_obj, AbstractMapper) else None
+            for linear_obj in self.linear_obj_list
+        ]
+
+        return list(filter(None, mapper_list))
 
     @property
     @profile_func
@@ -54,9 +80,9 @@ class AbstractLEq:
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
-    def source_quantity_of_mappers_from(
+    def source_quantity_dict_from(
         self, source_quantity: np.ndarray
-    ) -> List[np.ndarray]:
+    ) -> Dict[LinearObj, np.ndarray]:
         """
         Certain results in an `Inversion` are stored as a ndarray which contains the values of that quantity for
         every mapper. For example, the `reconstruction` of an inversion is a ndarray which has the source flux
@@ -75,31 +101,32 @@ class AbstractLEq:
         The list of ndarrays of values for each individual mapper.
 
         """
-        source_quantity_of_mappers = []
+        source_quantity_dict = {}
 
         index = 0
 
-        for mapper in self.linear_obj_list:
-            source_quantity_of_mappers.append(
-                source_quantity[index : index + mapper.pixels]
-            )
+        for linear_obj in self.linear_obj_list:
 
-            index += mapper.pixels
+            source_quantity_dict[linear_obj] = source_quantity[
+                index : index + linear_obj.pixels
+            ]
 
-        return source_quantity_of_mappers
+            index += linear_obj.pixels
+
+        return source_quantity_dict
 
     @profile_func
-    def mapped_reconstructed_data_of_mappers_from(
+    def mapped_reconstructed_data_dict_from(
         self, reconstruction
-    ) -> List[Array2D]:
+    ) -> Dict[LinearObj, Union[Array2D, Visibilities]]:
         raise NotImplementedError
 
     @profile_func
-    def mapped_reconstructed_image_of_mappers_from(
+    def mapped_reconstructed_image_dict_from(
         self, reconstruction
-    ) -> List[Array2D]:
+    ) -> Dict[LinearObj, Union[Array2D, Visibilities]]:
         raise NotImplementedError
 
     @property
     def total_mappers(self):
-        return len(self.linear_obj_list)
+        return len(self.mapper_list)

@@ -36,54 +36,57 @@ class AbstractLEqInterferometer(AbstractLEq):
 
         self.transformer = transformer
 
+    @property
+    def mask(self):
+        return self.transformer.real_space_mask
+
     @cached_property
     @profile_func
     def transformed_mapping_matrix(self) -> np.ndarray:
-        return np.hstack(
-            [
-                self.transformed_mapping_matrix_of_mapper(mapper_index=mapper_index)
-                for mapper_index in range(self.total_mappers)
-            ]
-        )
+        return np.hstack(self.transformed_mapping_matrix_list)
 
-    def transformed_mapping_matrix_of_mapper(self, mapper_index: int) -> np.ndarray:
-        return self.transformer.transform_mapping_matrix(
-            mapping_matrix=self.linear_obj_list[mapper_index].mapping_matrix
-        )
+    @property
+    def transformed_mapping_matrix_list(self) -> List[np.ndarray]:
+        return [
+            self.transformer.transform_mapping_matrix(
+                mapping_matrix=linear_obj.mapping_matrix
+            )
+            for linear_obj in self.linear_obj_list
+        ]
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
         return self.transformed_mapping_matrix
 
-    def mapped_reconstructed_data_of_mappers_from(self, reconstruction: np.ndarray):
+    def mapped_reconstructed_data_dict_from(self, reconstruction: np.ndarray):
         raise NotImplementedError
 
     @profile_func
-    def mapped_reconstructed_image_of_mappers_from(self, reconstruction: np.ndarray):
+    def mapped_reconstructed_image_dict_from(
+        self, reconstruction: np.ndarray
+    ) -> Dict[LinearObj, Array2D]:
 
-        mapped_reconstructed_image_of_mappers = []
+        mapped_reconstructed_image_dict = {}
 
-        reconstruction_of_mappers = self.source_quantity_of_mappers_from(
+        reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=reconstruction
         )
 
-        for mapper_index in range(self.total_mappers):
+        for linear_obj in self.linear_obj_list:
 
-            mapper = self.linear_obj_list[mapper_index]
-            reconstruction = reconstruction_of_mappers[mapper_index]
+            reconstruction = reconstruction_dict[linear_obj]
 
             mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix, reconstruction=reconstruction
+                mapping_matrix=linear_obj.mapping_matrix, reconstruction=reconstruction
             )
 
             mapped_reconstructed_image = Array2D(
-                array=mapped_reconstructed_image,
-                mask=mapper.source_grid_slim.mask.mask_sub_1,
+                array=mapped_reconstructed_image, mask=self.mask.mask_sub_1
             )
 
-            mapped_reconstructed_image_of_mappers.append(mapped_reconstructed_image)
+            mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image
 
-        return mapped_reconstructed_image_of_mappers
+        return mapped_reconstructed_image_dict
 
 
 class LEqInterferometerMapping(AbstractLEqInterferometer):
@@ -164,33 +167,32 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         return np.add(real_curvature_matrix, imag_curvature_matrix)
 
     @profile_func
-    def mapped_reconstructed_data_of_mappers_from(
+    def mapped_reconstructed_data_dict_from(
         self, reconstruction: np.ndarray
-    ) -> List[Visibilities]:
+    ) -> Dict[LinearObj, Visibilities]:
 
-        mapped_reconstructed_data_of_mappers = []
+        mapped_reconstructed_data_dict = {}
 
-        reconstruction_of_mappers = self.source_quantity_of_mappers_from(
+        reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=reconstruction
         )
 
-        for mapper_index in range(self.total_mappers):
+        transformed_mapping_matrix_list = self.transformed_mapping_matrix_list
 
-            reconstruction = reconstruction_of_mappers[mapper_index]
-            transformed_mapping_matrix = self.transformed_mapping_matrix_of_mapper(
-                mapper_index=mapper_index
-            )
+        for index, linear_obj in enumerate(self.linear_obj_list):
+
+            reconstruction = reconstruction_dict[linear_obj]
 
             visibilities = leq_util.mapped_reconstructed_visibilities_from(
-                transformed_mapping_matrix=transformed_mapping_matrix,
+                transformed_mapping_matrix=transformed_mapping_matrix_list[index],
                 reconstruction=reconstruction,
             )
 
             visibilities = Visibilities(visibilities=visibilities)
 
-            mapped_reconstructed_data_of_mappers.append(visibilities)
+            mapped_reconstructed_data_dict[linear_obj] = visibilities
 
-        return mapped_reconstructed_data_of_mappers
+        return mapped_reconstructed_data_dict
 
 
 class LEqInterferometerWTilde(AbstractLEqInterferometer):
@@ -277,7 +279,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         )
 
     @profile_func
-    def mapped_reconstructed_data_of_mappers_from(
+    def mapped_reconstructed_data_dict_from(
         self, reconstruction: np.ndarray
     ) -> Visibilities:
         """
@@ -291,7 +293,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
             The reconstructed visibilities which the inversion fits.
         """
         return self.transformer.visibilities_from(
-            image=self.mapped_reconstructed_data_of_mappers_from(
+            image=self.mapped_reconstructed_data_dict_from(
                 reconstruction=reconstruction
             )
         )
@@ -349,9 +351,9 @@ class LEqInterferometerMapperPyLops(AbstractLEqInterferometer):
         )
 
     @profile_func
-    def mapped_reconstructed_data_of_mappers_from(
+    def mapped_reconstructed_data_dict_from(
         self, reconstruction: np.ndarray
-    ) -> List[Visibilities]:
+    ) -> Dict[LinearObj, Visibilities]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane to
         reconstruct the image in real-space. We then apply the Fourier Transform to map this to the reconstructed
@@ -363,11 +365,11 @@ class LEqInterferometerMapperPyLops(AbstractLEqInterferometer):
             The reconstructed visibilities which the inversion fits.
         """
 
-        mapped_reconstructed_image_of_mappers = self.mapped_reconstructed_image_of_mappers_from(
+        mapped_reconstructed_image_dict = self.mapped_reconstructed_image_dict_from(
             reconstruction=reconstruction
         )
 
-        return [
-            self.transformer.visibilities_from(image=mapped_reconstructed_image)
-            for mapped_reconstructed_image in mapped_reconstructed_image_of_mappers
-        ]
+        return {
+            linear_obj: self.transformer.visibilities_from(image=image)
+            for linear_obj, image in mapped_reconstructed_image_dict.items()
+        }

@@ -578,20 +578,20 @@ def test__inversion_matrices__leqs_x2_mapping():
     reconstruction_0 = 0.64 * np.ones(9)
     reconstruction_1 = 0.36 * np.ones(16)
 
-    assert inversion.reconstruction_of_mappers[0] == pytest.approx(
+    assert inversion.reconstruction_dict[mapper_0] == pytest.approx(
         reconstruction_0, 1.0e-4
     )
-    assert inversion.reconstruction_of_mappers[1] == pytest.approx(
+    assert inversion.reconstruction_dict[mapper_1] == pytest.approx(
         reconstruction_1, 1.0e-4
     )
     assert inversion.reconstruction == pytest.approx(
         np.concatenate([reconstruction_0, reconstruction_1]), 1.0e-4
     )
 
-    assert inversion.mapped_reconstructed_data_of_mappers[0] == pytest.approx(
+    assert inversion.mapped_reconstructed_data_dict[mapper_0] == pytest.approx(
         0.64 * np.ones(5), 1.0e-4
     )
-    assert inversion.mapped_reconstructed_data_of_mappers[1] == pytest.approx(
+    assert inversion.mapped_reconstructed_data_dict[mapper_1] == pytest.approx(
         0.36 * np.ones(5), 1.0e-4
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)

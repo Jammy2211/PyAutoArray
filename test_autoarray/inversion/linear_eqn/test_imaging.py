@@ -68,10 +68,3 @@ class TestLEqImaging:
                     mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
                 ),
             )
-
-
-# class TestLEqImagingWTilde:
-#
-#     def test__data_vector_from(self):
-#
-#

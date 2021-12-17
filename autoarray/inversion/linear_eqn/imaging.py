@@ -62,6 +62,10 @@ class AbstractLEqImaging(AbstractLEq):
             profiling_dict=profiling_dict,
         )
 
+    @property
+    def mask(self):
+        return self.noise_map.mask
+
     @cached_property
     @profile_func
     def blurred_mapping_matrix(self) -> np.ndarray:
@@ -74,14 +78,10 @@ class AbstractLEqImaging(AbstractLEq):
         of our  dataset via 2D convolution. This uses the methods
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
-        return np.hstack(
-            [
-                self.blurred_mapping_matrix_of_mapper(mapper_index=mapper_index)
-                for mapper_index in range(self.total_mappers)
-            ]
-        )
+        return np.hstack(self.blurred_mapping_matrix_list)
 
-    def blurred_mapping_matrix_of_mapper(self, mapper_index: int) -> np.ndarray:
+    @property
+    def blurred_mapping_matrix_list(self) -> List[np.ndarray]:
         """
         For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
         image  plane. This therefore creates a 'image' of the source pixel (which corresponds to a set of values that
@@ -91,20 +91,21 @@ class AbstractLEqImaging(AbstractLEq):
         of our  dataset via 2D convolution. This uses the methods
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
-        return self.convolver.convolve_mapping_matrix(
-            mapping_matrix=self.linear_obj_list[mapper_index].mapping_matrix
-        )
+        return [
+            self.convolver.convolve_mapping_matrix(
+                mapping_matrix=linear_obj.mapping_matrix
+            )
+            for linear_obj in self.linear_obj_list
+        ]
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
         return self.blurred_mapping_matrix
 
-    def mapped_reconstructed_image_of_mappers_from(
+    def mapped_reconstructed_image_dict_from(
         self, reconstruction: np.ndarray
-    ) -> List[Array2D]:
-        return self.mapped_reconstructed_data_of_mappers_from(
-            reconstruction=reconstruction
-        )
+    ) -> Dict[LinearObj, Array2D]:
+        return self.mapped_reconstructed_data_dict_from(reconstruction=reconstruction)
 
 
 class LEqImagingWTilde(AbstractLEqImaging):
@@ -313,9 +314,9 @@ class LEqImagingWTilde(AbstractLEqImaging):
         return curvature_matrix_off_diag_0 + curvature_matrix_off_diag_1.T
 
     @profile_func
-    def mapped_reconstructed_data_of_mappers_from(
+    def mapped_reconstructed_data_dict_from(
         self, reconstruction: np.ndarray
-    ) -> List[Array2D]:
+    ) -> Dict[LinearObj, Array2D]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
         reconstruct the image data.
@@ -329,36 +330,34 @@ class LEqImagingWTilde(AbstractLEqImaging):
             The reconstructed image data which the inversion fits.
         """
 
-        mapped_reconstructed_image_of_mappers = []
+        mapped_reconstructed_image_dict = {}
 
-        reconstruction_of_mappers = self.source_quantity_of_mappers_from(
+        reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=reconstruction
         )
 
-        for mapper_index in range(self.total_mappers):
+        for linear_obj in self.linear_obj_list:
 
-            mapper = self.linear_obj_list[mapper_index]
-            reconstruction = reconstruction_of_mappers[mapper_index]
+            reconstruction = reconstruction_dict[linear_obj]
 
             mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
-                data_to_pix_unique=mapper.data_unique_mappings.data_to_pix_unique,
-                data_weights=mapper.data_unique_mappings.data_weights,
-                pix_lengths=mapper.data_unique_mappings.pix_lengths,
+                data_to_pix_unique=linear_obj.data_unique_mappings.data_to_pix_unique,
+                data_weights=linear_obj.data_unique_mappings.data_weights,
+                pix_lengths=linear_obj.data_unique_mappings.pix_lengths,
                 reconstruction=reconstruction,
             )
 
             mapped_reconstructed_image = Array2D(
-                array=mapped_reconstructed_image,
-                mask=mapper.source_grid_slim.mask.mask_sub_1,
+                array=mapped_reconstructed_image, mask=self.mask.mask_sub_1
             )
 
             mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
                 image=mapped_reconstructed_image
             )
 
-            mapped_reconstructed_image_of_mappers.append(mapped_reconstructed_image)
+            mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image
 
-        return mapped_reconstructed_image_of_mappers
+        return mapped_reconstructed_image_dict
 
 
 class LEqImagingMapping(AbstractLEqImaging):
@@ -443,9 +442,9 @@ class LEqImagingMapping(AbstractLEqImaging):
         )
 
     @profile_func
-    def mapped_reconstructed_data_of_mappers_from(
+    def mapped_reconstructed_data_dict_from(
         self, reconstruction: np.ndarray
-    ) -> List[Array2D]:
+    ) -> Dict[LinearObj, Array2D]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane (via
         the blurred mapping_matrix) and reconstruct the image data.
@@ -459,28 +458,27 @@ class LEqImagingMapping(AbstractLEqImaging):
             The reconstructed image data which the inversion fits.
         """
 
-        mapped_reconstructed_image_of_mappers = []
+        mapped_reconstructed_image_dict = {}
 
-        reconstruction_of_mappers = self.source_quantity_of_mappers_from(
+        reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=reconstruction
         )
 
-        for mapper_index in range(self.total_mappers):
+        blurred_mapping_matrix_list = self.blurred_mapping_matrix_list
 
-            reconstruction = reconstruction_of_mappers[mapper_index]
-            mapper = self.linear_obj_list[mapper_index]
-            blurred_mapping_matrix = self.blurred_mapping_matrix_of_mapper(
-                mapper_index=mapper_index
-            )
+        for index, linear_obj in enumerate(self.linear_obj_list):
+
+            reconstruction = reconstruction_dict[linear_obj]
 
             mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                mapping_matrix=blurred_mapping_matrix, reconstruction=reconstruction
+                mapping_matrix=blurred_mapping_matrix_list[index],
+                reconstruction=reconstruction,
             )
 
             mapped_reconstructed_image = Array2D(
-                array=mapped_reconstructed_image, mask=self.noise_map.mask.mask_sub_1
+                array=mapped_reconstructed_image, mask=self.mask.mask_sub_1
             )
 
-            mapped_reconstructed_image_of_mappers.append(mapped_reconstructed_image)
+            mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image
 
-        return mapped_reconstructed_image_of_mappers
+        return mapped_reconstructed_image_dict

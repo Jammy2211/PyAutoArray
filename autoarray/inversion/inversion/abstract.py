@@ -10,7 +10,7 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.linear_eqn.imaging import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.interferometer import AbstractLEqInterferometer
@@ -47,21 +47,15 @@ class AbstractInversion:
 
     @property
     def mapper_list(self):
-
-        mapper_list = [
-            linear_obj if isinstance(linear_obj, AbstractMapper) else None
-            for linear_obj in self.linear_obj_list
-        ]
-
-        return list(filter(None, mapper_list))
+        return self.leq.mapper_list
 
     @property
     def has_mapper(self):
-        return len(self.mapper_list) > 0
+        return self.leq.has_mapper
 
     @property
     def has_one_mapper(self):
-        return len(self.mapper_list) == 1
+        return self.leq.has_one_mapper
 
     @property
     def noise_map(self):
@@ -106,15 +100,13 @@ class AbstractInversion:
         raise NotImplementedError
 
     @property
-    def reconstruction_of_mappers(self):
-        return self.leq.source_quantity_of_mappers_from(
-            source_quantity=self.reconstruction
-        )
+    def reconstruction_dict(self) -> Dict[LinearObj, np.ndarray]:
+        return self.leq.source_quantity_dict_from(source_quantity=self.reconstruction)
 
     @property
-    def mapped_reconstructed_data_of_mappers(
-        self,
-    ) -> List[Union[Array2D, Visibilities]]:
+    def mapped_reconstructed_data_dict(
+        self
+    ) -> Dict[LinearObj, Union[Array2D, Visibilities]]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
         reconstruct the image data.
@@ -127,12 +119,12 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.leq.mapped_reconstructed_data_of_mappers_from(
+        return self.leq.mapped_reconstructed_data_dict_from(
             reconstruction=self.reconstruction
         )
 
     @property
-    def mapped_reconstructed_image_of_mappers(self) -> List[Array2D]:
+    def mapped_reconstructed_image_dict(self) -> Dict[LinearObj, Array2D]:
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
         reconstruct the image data.
@@ -145,7 +137,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.leq.mapped_reconstructed_image_of_mappers_from(
+        return self.leq.mapped_reconstructed_image_dict_from(
             reconstruction=self.reconstruction
         )
 
@@ -164,7 +156,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return sum(self.mapped_reconstructed_data_of_mappers)
+        return sum(self.mapped_reconstructed_data_dict.values())
 
     @cached_property
     def mapped_reconstructed_image(self) -> Array2D:
@@ -180,7 +172,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return sum(self.mapped_reconstructed_image_of_mappers)
+        return sum(self.mapped_reconstructed_image_dict.values())
 
     @cached_property
     @profile_func
@@ -263,9 +255,11 @@ class AbstractInversion:
 
         brightest_reconstruction_pixel_list = []
 
-        for reconstruction in self.reconstruction_of_mappers:
+        for mapper in self.mapper_list:
 
-            brightest_reconstruction_pixel_list.append(np.argmax(reconstruction))
+            brightest_reconstruction_pixel_list.append(
+                np.argmax(self.reconstruction_dict[mapper])
+            )
 
         return brightest_reconstruction_pixel_list
 
@@ -274,11 +268,9 @@ class AbstractInversion:
 
         brightest_reconstruction_pixel_centre_list = []
 
-        for mapper, reconstruction in zip(
-            self.linear_obj_list, self.reconstruction_of_mappers
-        ):
+        for mapper in self.mapper_list:
 
-            brightest_reconstruction_pixel = np.argmax(reconstruction)
+            brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
 
             centre = Grid2DIrregular(
                 grid=[mapper.source_pixelization_grid[brightest_reconstruction_pixel]]
@@ -289,81 +281,63 @@ class AbstractInversion:
         return brightest_reconstruction_pixel_centre_list
 
     @property
-    def errors_of_mappers(self):
-        return self.leq.source_quantity_of_mappers_from(source_quantity=self.errors)
+    def error_dict(self) -> Dict[LinearObj, np.ndarray]:
+        return self.leq.source_quantity_dict_from(source_quantity=self.errors)
 
     @property
-    def regularization_weights_of_mappers(self):
-        return [
-            regularization.regularization_weights_from(mapper=self.linear_obj_list[0])
-            for regularization in self.regularization_list
-        ]
+    def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
+
+        regularization_weights_dict = {}
+
+        for mapper, reg in zip(self.mapper_list, self.regularization_list):
+
+            regularization_weights = reg.regularization_weights_from(mapper=mapper)
+
+            regularization_weights_dict[mapper] = regularization_weights
+
+        return regularization_weights_dict
 
     @property
-    def residual_map_of_mappers(self) -> List[np.ndarray]:
+    def residual_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
 
-        residual_map_of_mappers = []
-
-        for mapper_index in range(self.leq.total_mappers):
-
-            mapper = self.linear_obj_list[mapper_index]
-            reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
-
-            residual_map = inversion_util.inversion_residual_map_from(
-                reconstruction=reconstruction_of_mapper,
+        return {
+            mapper: inversion_util.inversion_residual_map_from(
+                reconstruction=self.reconstruction_dict[mapper],
                 data=self.data,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
                 all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
             )
-
-            residual_map_of_mappers.append(residual_map)
-
-        return residual_map_of_mappers
+            for mapper in self.mapper_list
+        }
 
     @property
-    def normalized_residual_map_of_mappers(self) -> List[np.ndarray]:
+    def normalized_residual_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
 
-        normalized_map_of_mappers = []
-
-        for mapper_index in range(self.leq.total_mappers):
-
-            mapper = self.linear_obj_list[mapper_index]
-            reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
-
-            normalized_map = inversion_util.inversion_normalized_residual_map_from(
-                reconstruction=reconstruction_of_mapper,
+        return {
+            mapper: inversion_util.inversion_normalized_residual_map_from(
+                reconstruction=self.reconstruction_dict[mapper],
                 data=self.data,
                 noise_map_1d=self.noise_map.slim,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
                 all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
             )
-
-            normalized_map_of_mappers.append(normalized_map)
-
-        return normalized_map_of_mappers
+            for mapper in self.mapper_list
+        }
 
     @property
-    def chi_squared_map_of_mappers(self) -> List[np.ndarray]:
+    def chi_squared_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
 
-        chi_squared_map_of_mappers = []
-
-        for mapper_index in range(self.leq.total_mappers):
-
-            mapper = self.linear_obj_list[mapper_index]
-            reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
-
-            chi_squared_map = inversion_util.inversion_chi_squared_map_from(
-                reconstruction=reconstruction_of_mapper,
+        return {
+            mapper: inversion_util.inversion_chi_squared_map_from(
+                reconstruction=self.reconstruction_dict[mapper],
                 data=self.data,
                 noise_map_1d=self.noise_map.slim,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
                 all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
             )
-
-            chi_squared_map_of_mappers.append(chi_squared_map)
-
-        return chi_squared_map_of_mappers
+            for mapper in self.mapper_list
+        }
 
     @property
     def total_mappers(self):
-        return len(self.linear_obj_list)
+        return len(self.mapper_list)

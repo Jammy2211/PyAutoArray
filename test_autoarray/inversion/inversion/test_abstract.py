@@ -88,78 +88,104 @@ def test__preload_of_regularization_matrix__overwrites_calculation():
     assert (inversion.regularization_matrix == np.ones((2, 2))).all()
 
 
-def test__reconstruction_of_mappers():
+def test__reconstruction_dict():
 
-    reconstruction = np.ones(3)
+    reconstruction = np.array([0.0, 1.0, 1.0, 1.0])
+
+    linear_obj = MockLinearObj()
+    mapper = MockMapper(pixels=3)
 
     inversion = MockInversion(
-        leq=MockLEq(linear_obj_list=[MockMapper(pixels=3)]),
+        leq=MockLEq(linear_obj_list=[linear_obj, mapper]), reconstruction=reconstruction
+    )
+
+    assert (inversion.reconstruction_dict[mapper] == np.ones(3)).all()
+
+    reconstruction = np.array([0.0, 1.0, 1.0, 2.0, 2.0, 2.0])
+
+    linear_obj = MockLinearObj()
+    mapper_0 = MockMapper(pixels=2)
+    mapper_1 = MockMapper(pixels=3)
+
+    inversion = MockInversion(
+        leq=MockLEq(linear_obj_list=[linear_obj, mapper_0, mapper_1]),
         reconstruction=reconstruction,
     )
 
-    assert (inversion.reconstruction_of_mappers[0] == np.ones(3)).all()
-
-    reconstruction = np.array([1.0, 1.0, 2.0, 2.0, 2.0])
-
-    inversion = MockInversion(
-        leq=MockLEq(linear_obj_list=[MockMapper(pixels=2), MockMapper(pixels=3)]),
-        reconstruction=reconstruction,
-    )
-
-    assert (inversion.reconstruction_of_mappers[0] == np.ones(2)).all()
-    assert (inversion.reconstruction_of_mappers[1] == 2.0 * np.ones(3)).all()
+    assert (inversion.reconstruction_dict[mapper_0] == np.ones(2)).all()
+    assert (inversion.reconstruction_dict[mapper_1] == 2.0 * np.ones(3)).all()
 
 
 def test__mapped_reconstructed_data():
 
+    linear_obj_0 = MockLinearObj()
+
+    mapped_reconstructed_data_dict = {linear_obj_0: np.ones(3)}
+
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        leq=MockLEq(mapped_reconstructed_data_of_mappers=[np.ones(3)]),
+        leq=MockLEq(mapped_reconstructed_data_dict=mapped_reconstructed_data_dict),
         reconstruction=np.ones(3),
-        reconstruction_of_mappers=[None],
+        reconstruction_dict=[None],
     )
 
-    assert (inversion.mapped_reconstructed_data_of_mappers[0] == np.ones(3)).all()
+    assert (inversion.mapped_reconstructed_data_dict[linear_obj_0] == np.ones(3)).all()
     assert (inversion.mapped_reconstructed_data == np.ones(3)).all()
 
+    linear_obj_1 = MockLinearObj()
+
+    mapped_reconstructed_data_dict = {
+        linear_obj_0: np.ones(2),
+        linear_obj_1: 2.0 * np.ones(2),
+    }
+
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        leq=MockLEq(
-            mapped_reconstructed_data_of_mappers=[np.ones(2), 2.0 * np.ones(2)]
-        ),
+        leq=MockLEq(mapped_reconstructed_data_dict=mapped_reconstructed_data_dict),
         reconstruction=np.array([1.0, 1.0, 2.0, 2.0]),
-        reconstruction_of_mappers=[None, None],
+        reconstruction_dict=[None, None],
     )
 
-    assert (inversion.mapped_reconstructed_data_of_mappers[0] == np.ones(2)).all()
-    assert (inversion.mapped_reconstructed_data_of_mappers[1] == 2.0 * np.ones(2)).all()
+    assert (inversion.mapped_reconstructed_data_dict[linear_obj_0] == np.ones(2)).all()
+    assert (
+        inversion.mapped_reconstructed_data_dict[linear_obj_1] == 2.0 * np.ones(2)
+    ).all()
     assert (inversion.mapped_reconstructed_data == 3.0 * np.ones(2)).all()
 
 
 def test__mapped_reconstructed_image():
 
+    linear_obj_0 = MockLinearObj()
+
+    mapped_reconstructed_image_dict = {linear_obj_0: np.ones(3)}
+
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        leq=MockLEq(mapped_reconstructed_image_of_mappers=[np.ones(3)]),
+        leq=MockLEq(mapped_reconstructed_image_dict=mapped_reconstructed_image_dict),
         reconstruction=np.ones(3),
-        reconstruction_of_mappers=[None],
+        reconstruction_dict=[None],
     )
 
-    assert (inversion.mapped_reconstructed_image_of_mappers[0] == np.ones(3)).all()
+    assert (inversion.mapped_reconstructed_image_dict[linear_obj_0] == np.ones(3)).all()
     assert (inversion.mapped_reconstructed_image == np.ones(3)).all()
 
+    linear_obj_1 = MockLinearObj()
+
+    mapped_reconstructed_image_dict = {
+        linear_obj_0: np.ones(2),
+        linear_obj_1: 2.0 * np.ones(2),
+    }
+
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        leq=MockLEq(
-            mapped_reconstructed_image_of_mappers=[np.ones(2), 2.0 * np.ones(2)]
-        ),
+        leq=MockLEq(mapped_reconstructed_image_dict=mapped_reconstructed_image_dict),
         reconstruction=np.array([1.0, 1.0, 2.0, 2.0]),
-        reconstruction_of_mappers=[None, None],
+        reconstruction_dict=[None, None],
     )
 
-    assert (inversion.mapped_reconstructed_image_of_mappers[0] == np.ones(2)).all()
+    assert (inversion.mapped_reconstructed_image_dict[linear_obj_0] == np.ones(2)).all()
     assert (
-        inversion.mapped_reconstructed_image_of_mappers[1] == 2.0 * np.ones(2)
+        inversion.mapped_reconstructed_image_dict[linear_obj_1] == 2.0 * np.ones(2)
     ).all()
     assert (inversion.mapped_reconstructed_image == 3.0 * np.ones(2)).all()
 

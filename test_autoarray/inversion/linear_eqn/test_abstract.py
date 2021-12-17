@@ -3,7 +3,6 @@ from os import path
 import pytest
 
 
-import autoarray as aa
 from autoarray.mock.mock import MockMapper, MockLEq
 
 directory = path.dirname(path.realpath(__file__))
