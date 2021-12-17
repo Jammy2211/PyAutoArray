@@ -6,11 +6,11 @@ from scipy.sparse.linalg import splu
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqImaging
+from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImaging
 from autoarray.inversion.inversion.abstract import AbstractInversion
 
 from autoarray import exc
-from autoarray.inversion.linear_eqn import linear_eqn_util
+from autoarray.inversion.linear_eqn import leq_util
 from autoarray.inversion.inversion import inversion_util
 
 
@@ -26,7 +26,7 @@ class InversionMatrices(AbstractInversion):
         of our  dataset via 2D convolution. This uses the methods
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
-        return self.linear_eqn.mapping_matrix
+        return self.leq.mapping_matrix
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
@@ -43,7 +43,7 @@ class InversionMatrices(AbstractInversion):
         if self.preloads.operated_mapping_matrix is not None:
             return self.preloads.operated_mapping_matrix
 
-        return self.linear_eqn.operated_mapping_matrix
+        return self.leq.operated_mapping_matrix
 
     @cached_property
     def data_vector(self) -> np.ndarray:
@@ -59,7 +59,7 @@ class InversionMatrices(AbstractInversion):
 
         The calculation is performed by the method `w_tilde_data_imaging_from`.
         """
-        return self.linear_eqn.data_vector_from(data=self.data, preloads=self.preloads)
+        return self.leq.data_vector_from(data=self.data, preloads=self.preloads)
 
     @cached_property
     @profile_func
@@ -69,9 +69,9 @@ class InversionMatrices(AbstractInversion):
             self.preloads.curvature_matrix_preload is None
             or not self.settings.use_curvature_matrix_preload
         ):
-            return self.linear_eqn.curvature_matrix
+            return self.leq.curvature_matrix
 
-        return linear_eqn_util.curvature_matrix_via_sparse_preload_from(
+        return leq_util.curvature_matrix_via_sparse_preload_from(
             mapping_matrix=self.operated_mapping_matrix,
             noise_map=self.noise_map,
             curvature_matrix_preload=self.preloads.curvature_matrix_preload,
@@ -199,7 +199,7 @@ class InversionMatrices(AbstractInversion):
         (
             curvature_matrix_preload,
             curvature_matrix_counts,
-        ) = linear_eqn_util.curvature_matrix_preload_from(
+        ) = leq_util.curvature_matrix_preload_from(
             mapping_matrix=self.operated_mapping_matrix
         )
 
@@ -210,7 +210,7 @@ class InversionMatrices(AbstractInversion):
         (
             curvature_matrix_preload,
             curvature_matrix_counts,
-        ) = linear_eqn_util.curvature_matrix_preload_from(
+        ) = leq_util.curvature_matrix_preload_from(
             mapping_matrix=self.operated_mapping_matrix
         )
 

@@ -18,22 +18,22 @@ class TestLEqImaging:
         self, convolver_7x7, rectangular_mapper_7x7_3x3
     ):
 
-        linear_eqn = MockLEqImaging(
+        leq = MockLEqImaging(
             convolver=convolver_7x7, mapper_list=[rectangular_mapper_7x7_3x3]
         )
 
-        assert linear_eqn.blurred_mapping_matrix[0, 0] == pytest.approx(1.0, 1e-4)
+        assert leq.blurred_mapping_matrix[0, 0] == pytest.approx(1.0, 1e-4)
 
         convolver = MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
 
-        linear_eqn = MockLEqImaging(
+        leq = MockLEqImaging(
             convolver=convolver,
             mapper_list=[rectangular_mapper_7x7_3x3, rectangular_mapper_7x7_3x3],
         )
 
         blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]])
 
-        assert linear_eqn.blurred_mapping_matrix == pytest.approx(
+        assert leq.blurred_mapping_matrix == pytest.approx(
             blurred_mapping_matrix, 1.0e-4
         )
 

@@ -10,9 +10,9 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqImaging
+from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImaging
 from autoarray.inversion.linear_eqn.mapper.interferometer import (
-    AbstractLEqInterferometer,
+    AbstractLEqMapperInterferometer,
 )
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -26,7 +26,7 @@ class AbstractInversion:
     def __init__(
         self,
         data: Union[Visibilities, Array2D],
-        linear_eqn: Union[AbstractLEqImaging, AbstractLEqInterferometer],
+        leq: Union[AbstractLEqMapperImaging, AbstractLEqMapperInterferometer],
         regularization_list: [AbstractRegularization],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -35,7 +35,7 @@ class AbstractInversion:
 
         self.data = data
 
-        self.linear_eqn = linear_eqn
+        self.leq = leq
         self.regularization_list = regularization_list
 
         self.settings = settings
@@ -50,11 +50,11 @@ class AbstractInversion:
 
     @property
     def noise_map(self):
-        return self.linear_eqn.noise_map
+        return self.leq.noise_map
 
     @property
     def mapper_list(self):
-        return self.linear_eqn.mapper_list
+        return self.leq.mapper_list
 
     @cached_property
     @profile_func
@@ -93,7 +93,7 @@ class AbstractInversion:
 
     @property
     def reconstruction_of_mappers(self):
-        return self.linear_eqn.source_quantity_of_mappers_from(
+        return self.leq.source_quantity_of_mappers_from(
             source_quantity=self.reconstruction
         )
 
@@ -113,7 +113,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.linear_eqn.mapped_reconstructed_data_of_mappers_from(
+        return self.leq.mapped_reconstructed_data_of_mappers_from(
             reconstruction=self.reconstruction
         )
 
@@ -131,7 +131,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.linear_eqn.mapped_reconstructed_image_of_mappers_from(
+        return self.leq.mapped_reconstructed_image_of_mappers_from(
             reconstruction=self.reconstruction
         )
 
@@ -276,9 +276,7 @@ class AbstractInversion:
 
     @property
     def errors_of_mappers(self):
-        return self.linear_eqn.source_quantity_of_mappers_from(
-            source_quantity=self.errors
-        )
+        return self.leq.source_quantity_of_mappers_from(source_quantity=self.errors)
 
     @property
     def regularization_weights_of_mappers(self):
@@ -292,7 +290,7 @@ class AbstractInversion:
 
         residual_map_of_mappers = []
 
-        for mapper_index in range(self.linear_eqn.total_mappers):
+        for mapper_index in range(self.leq.total_mappers):
 
             mapper = self.mapper_list[mapper_index]
             reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
@@ -313,7 +311,7 @@ class AbstractInversion:
 
         normalized_map_of_mappers = []
 
-        for mapper_index in range(self.linear_eqn.total_mappers):
+        for mapper_index in range(self.leq.total_mappers):
 
             mapper = self.mapper_list[mapper_index]
             reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
@@ -335,7 +333,7 @@ class AbstractInversion:
 
         chi_squared_map_of_mappers = []
 
-        for mapper_index in range(self.linear_eqn.total_mappers):
+        for mapper_index in range(self.leq.total_mappers):
 
             mapper = self.mapper_list[mapper_index]
             reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]

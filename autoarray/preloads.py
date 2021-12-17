@@ -2,10 +2,10 @@ import logging
 import numpy as np
 from typing import List
 
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqImaging
+from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImaging
 
 from autoarray import exc
-from autoarray.inversion.linear_eqn import linear_eqn_util
+from autoarray.inversion.linear_eqn import leq_util
 
 
 logger = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ class Preloads:
 
             from autoarray.dataset.imaging import WTildeImaging
 
-            preload, indexes, lengths = linear_eqn_util.w_tilde_curvature_preload_imaging_from(
+            preload, indexes, lengths = leq_util.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=fit_0.noise_map.native,
                 kernel_native=fit_0.dataset.psf.native,
                 native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
@@ -231,7 +231,7 @@ class Preloads:
 
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
 
-                if isinstance(inversion_0.linear_eqn, AbstractLEqImaging):
+                if isinstance(inversion_0.leq, AbstractLEqMapperImaging):
 
                     self.curvature_matrix_preload = (
                         inversion_0.curvature_matrix_preload

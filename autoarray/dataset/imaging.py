@@ -15,7 +15,7 @@ from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
-from autoarray.inversion.linear_eqn import linear_eqn_util
+from autoarray.inversion.linear_eqn import leq_util
 from autoarray.dataset import preprocess
 
 logger = logging.getLogger(__name__)
@@ -223,7 +223,7 @@ class Imaging(AbstractDataset):
 
         logger.info("IMAGING - Computing W-Tilde... May take a moment.")
 
-        curvature_preload, indexes, lengths = linear_eqn_util.w_tilde_curvature_preload_imaging_from(
+        curvature_preload, indexes, lengths = leq_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=self.noise_map.native,
             kernel_native=self.psf.native,
             native_index_for_slim_index=self.mask.native_index_for_slim_index,

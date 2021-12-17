@@ -5,17 +5,17 @@ from typing import Dict, List, Optional, Union
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEq
+from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEqMapper
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.dataset.imaging import WTildeImaging
 
-from autoarray.inversion.linear_eqn import linear_eqn_util
+from autoarray.inversion.linear_eqn import leq_util
 
 
-class AbstractLEqImaging(AbstractLEq):
+class AbstractLEqMapperImaging(AbstractLEqMapper):
     def __init__(
         self,
         noise_map: Array2D,
@@ -106,7 +106,7 @@ class AbstractLEqImaging(AbstractLEq):
         )
 
 
-class LEqImagingWTilde(AbstractLEqImaging):
+class LEqImagingWTilde(AbstractLEqMapperImaging):
     def __init__(
         self,
         noise_map: Array2D,
@@ -160,7 +160,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         The calculation is performed by the method `w_tilde_data_imaging_from`.
         """
 
-        w_tilde_data = linear_eqn_util.w_tilde_data_imaging_from(
+        w_tilde_data = leq_util.w_tilde_data_imaging_from(
             image_native=data.native,
             noise_map_native=self.noise_map.native,
             kernel_native=self.convolver.kernel.native,
@@ -169,7 +169,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
 
         return np.concatenate(
             [
-                linear_eqn_util.data_vector_via_w_tilde_data_imaging_from(
+                leq_util.data_vector_via_w_tilde_data_imaging_from(
                     w_tilde_data=w_tilde_data,
                     data_to_pix_unique=mapper.data_unique_mappings.data_to_pix_unique,
                     data_weights=mapper.data_unique_mappings.data_weights,
@@ -236,7 +236,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
 
         if self.has_one_mapper:
 
-            return linear_eqn_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+            return leq_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                 curvature_preload=self.w_tilde.curvature_preload,
                 curvature_indexes=self.w_tilde.indexes,
                 curvature_lengths=self.w_tilde.lengths,
@@ -250,7 +250,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
 
         return block_diag(
             *[
-                linear_eqn_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+                leq_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                     curvature_preload=self.w_tilde.curvature_preload,
                     curvature_indexes=self.w_tilde.indexes,
                     curvature_lengths=self.w_tilde.lengths,
@@ -281,7 +281,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         mapper_0 = self.mapper_list[mapper_index_0]
         mapper_1 = self.mapper_list[mapper_index_1]
 
-        curvature_matrix_off_diag_0 = linear_eqn_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
+        curvature_matrix_off_diag_0 = leq_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
             curvature_indexes=self.w_tilde.indexes,
             curvature_lengths=self.w_tilde.lengths,
@@ -295,7 +295,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
             pix_pixels_1=mapper_1.pixels,
         )
 
-        curvature_matrix_off_diag_1 = linear_eqn_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
+        curvature_matrix_off_diag_1 = leq_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
             curvature_indexes=self.w_tilde.indexes,
             curvature_lengths=self.w_tilde.lengths,
@@ -339,7 +339,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
             mapper = self.mapper_list[mapper_index]
             reconstruction = reconstruction_of_mappers[mapper_index]
 
-            mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
+            mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
                 data_to_pix_unique=mapper.data_unique_mappings.data_to_pix_unique,
                 data_weights=mapper.data_unique_mappings.data_weights,
                 pix_lengths=mapper.data_unique_mappings.pix_lengths,
@@ -360,7 +360,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         return mapped_reconstructed_image_of_mappers
 
 
-class LEqImagingMapping(AbstractLEqImaging):
+class LEqImagingMapping(AbstractLEqMapperImaging):
     def __init__(
         self,
         noise_map: Array2D,
@@ -416,7 +416,7 @@ class LEqImagingMapping(AbstractLEqImaging):
         else:
             blurred_mapping_matrix = self.blurred_mapping_matrix
 
-        return linear_eqn_util.data_vector_via_blurred_mapping_matrix_from(
+        return leq_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image=data,
             noise_map=self.noise_map,
@@ -437,7 +437,7 @@ class LEqImagingMapping(AbstractLEqImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        return linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
+        return leq_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix, noise_map=self.noise_map
         )
 
@@ -472,7 +472,7 @@ class LEqImagingMapping(AbstractLEqImaging):
                 mapper_index=mapper_index
             )
 
-            mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_mapping_matrix_from(
                 mapping_matrix=blurred_mapping_matrix, reconstruction=reconstruction
             )
 

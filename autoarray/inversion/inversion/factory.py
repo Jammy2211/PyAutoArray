@@ -81,7 +81,7 @@ def inversion_imaging_unpacked_from(
 
     if use_w_tilde:
 
-        linear_eqn = LEqImagingWTilde(
+        leq = LEqImagingWTilde(
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
@@ -91,7 +91,7 @@ def inversion_imaging_unpacked_from(
 
     else:
 
-        linear_eqn = LEqImagingMapping(
+        leq = LEqImagingMapping(
             noise_map=noise_map,
             convolver=convolver,
             mapper_list=mapper_list,
@@ -100,7 +100,7 @@ def inversion_imaging_unpacked_from(
 
     return InversionMatrices(
         data=image,
-        linear_eqn=linear_eqn,
+        leq=leq,
         regularization_list=regularization_list,
         settings=settings,
         preloads=preloads,
@@ -120,7 +120,7 @@ def inversion_interferometer_unpacked_from(
 ):
     if not settings.use_linear_operators:
 
-        linear_eqn = LEqInterferometerMapping(
+        leq = LEqInterferometerMapping(
             noise_map=noise_map,
             transformer=transformer,
             mapper_list=mapper_list,
@@ -129,7 +129,7 @@ def inversion_interferometer_unpacked_from(
 
     else:
 
-        linear_eqn = LEqInterferometerLinearOperator(
+        leq = LEqInterferometerLinearOperator(
             noise_map=noise_map,
             transformer=transformer,
             mapper_list=mapper_list,
@@ -140,7 +140,7 @@ def inversion_interferometer_unpacked_from(
 
         return InversionMatrices(
             data=visibilities,
-            linear_eqn=linear_eqn,
+            leq=leq,
             regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
@@ -149,7 +149,7 @@ def inversion_interferometer_unpacked_from(
 
     return InversionLinearOperator(
         data=visibilities,
-        linear_eqn=linear_eqn,
+        leq=leq,
         regularization_list=regularization_list,
         settings=settings,
         profiling_dict=profiling_dict,

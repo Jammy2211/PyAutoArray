@@ -14,12 +14,12 @@ directory = path.dirname(path.realpath(__file__))
 
 def test__regularization_matrix():
 
-    linear_eqn = MockLEq(mapper_list=[MockMapper(), MockMapper()])
+    leq = MockLEq(mapper_list=[MockMapper(), MockMapper()])
 
     reg_0 = MockRegularization(regularization_matrix=np.ones((2, 2)))
     reg_1 = MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
 
-    inversion = MockInversion(regularization_list=[reg_0, reg_1], linear_eqn=linear_eqn)
+    inversion = MockInversion(regularization_list=[reg_0, reg_1], leq=leq)
 
     regularization_matrix = np.array(
         [
@@ -38,7 +38,7 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
 
     operated_mapping_matrix = 2.0 * np.ones((9, 3))
 
-    curvature_matrix_preload, curvature_matrix_counts = aa.util.linear_eqn.curvature_matrix_preload_from(
+    curvature_matrix_preload, curvature_matrix_counts = aa.util.leq.curvature_matrix_preload_from(
         mapping_matrix=operated_mapping_matrix
     )
 
@@ -49,9 +49,9 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
     )
 
     # noinspection PyTypeChecker
-    linear_eqn = MockLEq(noise_map=np.ones(9), mapper_list=MockMapper())
+    leq = MockLEq(noise_map=np.ones(9), mapper_list=MockMapper())
 
-    inversion = MockInversion(linear_eqn=linear_eqn, preloads=preloads)
+    inversion = MockInversion(leq=leq, preloads=preloads)
 
     assert inversion.operated_mapping_matrix[0, 0] == 2.0
     assert inversion.curvature_matrix[0, 0] == 36.0
@@ -71,8 +71,7 @@ def test__reconstruction_of_mappers():
     reconstruction = np.ones(3)
 
     inversion = MockInversion(
-        linear_eqn=MockLEq(mapper_list=[MockMapper(pixels=3)]),
-        reconstruction=reconstruction,
+        leq=MockLEq(mapper_list=[MockMapper(pixels=3)]), reconstruction=reconstruction
     )
 
     assert (inversion.reconstruction_of_mappers[0] == np.ones(3)).all()
@@ -80,7 +79,7 @@ def test__reconstruction_of_mappers():
     reconstruction = np.array([1.0, 1.0, 2.0, 2.0, 2.0])
 
     inversion = MockInversion(
-        linear_eqn=MockLEq(mapper_list=[MockMapper(pixels=2), MockMapper(pixels=3)]),
+        leq=MockLEq(mapper_list=[MockMapper(pixels=2), MockMapper(pixels=3)]),
         reconstruction=reconstruction,
     )
 
@@ -92,7 +91,7 @@ def test__mapped_reconstructed_data():
 
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        linear_eqn=MockLEq(mapped_reconstructed_data_of_mappers=[np.ones(3)]),
+        leq=MockLEq(mapped_reconstructed_data_of_mappers=[np.ones(3)]),
         reconstruction=np.ones(3),
         reconstruction_of_mappers=[None],
     )
@@ -102,7 +101,7 @@ def test__mapped_reconstructed_data():
 
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        linear_eqn=MockLEq(
+        leq=MockLEq(
             mapped_reconstructed_data_of_mappers=[np.ones(2), 2.0 * np.ones(2)]
         ),
         reconstruction=np.array([1.0, 1.0, 2.0, 2.0]),
@@ -118,7 +117,7 @@ def test__mapped_reconstructed_image():
 
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        linear_eqn=MockLEq(mapped_reconstructed_image_of_mappers=[np.ones(3)]),
+        leq=MockLEq(mapped_reconstructed_image_of_mappers=[np.ones(3)]),
         reconstruction=np.ones(3),
         reconstruction_of_mappers=[None],
     )
@@ -128,7 +127,7 @@ def test__mapped_reconstructed_image():
 
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        linear_eqn=MockLEq(
+        leq=MockLEq(
             mapped_reconstructed_image_of_mappers=[np.ones(2), 2.0 * np.ones(2)]
         ),
         reconstruction=np.array([1.0, 1.0, 2.0, 2.0]),
@@ -223,23 +222,19 @@ def test__determinant_of_positive_definite_matrix_via_cholesky():
 
     matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
-    linear_eqn = MockInversion(curvature_reg_matrix=matrix)
+    leq = MockInversion(curvature_reg_matrix=matrix)
 
     log_determinant = np.log(np.linalg.det(matrix))
 
-    assert log_determinant == pytest.approx(
-        linear_eqn.log_det_curvature_reg_matrix_term, 1e-4
-    )
+    assert log_determinant == pytest.approx(leq.log_det_curvature_reg_matrix_term, 1e-4)
 
     matrix = np.array([[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]])
 
-    linear_eqn = MockInversion(curvature_reg_matrix=matrix)
+    leq = MockInversion(curvature_reg_matrix=matrix)
 
     log_determinant = np.log(np.linalg.det(matrix))
 
-    assert log_determinant == pytest.approx(
-        linear_eqn.log_det_curvature_reg_matrix_term, 1e-4
-    )
+    assert log_determinant == pytest.approx(leq.log_det_curvature_reg_matrix_term, 1e-4)
 
 
 def test__brightest_reconstruction_pixel_and_centre():
@@ -253,11 +248,9 @@ def test__brightest_reconstruction_pixel_and_centre():
         ),
     )
 
-    linear_eqn = MockLEq(mapper_list=[mapper])
+    leq = MockLEq(mapper_list=[mapper])
 
-    inversion = MockInversion(
-        linear_eqn=linear_eqn, reconstruction=np.array([2.0, 3.0, 5.0, 0.0])
-    )
+    inversion = MockInversion(leq=leq, reconstruction=np.array([2.0, 3.0, 5.0, 0.0]))
 
     assert inversion.brightest_reconstruction_pixel_list[0] == 2
 

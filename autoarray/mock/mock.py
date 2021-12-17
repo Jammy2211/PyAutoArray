@@ -6,8 +6,8 @@ from autoarray.inversion.linear_object import LinearObject
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqImaging
-from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEq
+from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImaging
+from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEqMapper
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
@@ -177,7 +177,7 @@ class MockLinearObject(LinearObject):
         return self.mapping_matrix
 
 
-class MockLEq(AbstractLEq):
+class MockLEq(AbstractLEqMapper):
     def __init__(
         self,
         noise_map=None,
@@ -261,7 +261,7 @@ class MockLEq(AbstractLEq):
         return self._mapped_reconstructed_image_of_mappers
 
 
-class MockLEqImaging(AbstractLEqImaging):
+class MockLEqImaging(AbstractLEqMapperImaging):
     def __init__(
         self,
         noise_map=None,
@@ -288,7 +288,7 @@ class MockInversion(InversionMatrices):
     def __init__(
         self,
         data=None,
-        linear_eqn: Union[MockLEq, MockLEqImaging] = None,
+        leq: Union[MockLEq, MockLEqImaging] = None,
         regularization_list: List[MockRegularization] = None,
         data_vector=None,
         regularization_matrix=None,
@@ -311,7 +311,7 @@ class MockInversion(InversionMatrices):
 
         super().__init__(
             data=data,
-            linear_eqn=linear_eqn,
+            leq=leq,
             regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,

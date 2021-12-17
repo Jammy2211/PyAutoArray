@@ -19,7 +19,7 @@ class TestWTildeImaging:
 
         native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-        w_tilde = aa.util.linear_eqn.w_tilde_curvature_imaging_from(
+        w_tilde = aa.util.leq.w_tilde_curvature_imaging_from(
             noise_map_native=noise_map_2d,
             kernel_native=kernel,
             native_index_for_slim_index=native_index_for_slim_index,
@@ -61,7 +61,7 @@ class TestWTildeImaging:
 
         native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-        w_tilde_data = aa.util.linear_eqn.w_tilde_data_imaging_from(
+        w_tilde_data = aa.util.leq.w_tilde_data_imaging_from(
             image_native=image_2d,
             noise_map_native=noise_map_2d,
             kernel_native=kernel,
@@ -85,7 +85,7 @@ class TestWTildeImaging:
 
         native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-        w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.linear_eqn.w_tilde_curvature_preload_imaging_from(
+        w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.leq.w_tilde_curvature_preload_imaging_from(
             noise_map_native=noise_map_2d,
             kernel_native=kernel,
             native_index_for_slim_index=native_index_for_slim_index,
@@ -121,7 +121,7 @@ class TestDataVectorFromData:
         image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        data_vector = aa.util.linear_eqn.data_vector_via_blurred_mapping_matrix_from(
+        data_vector = aa.util.leq.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image=image,
             noise_map=noise_map,
@@ -147,7 +147,7 @@ class TestDataVectorFromData:
         image = np.array([3.0, 1.0, 1.0, 10.0, 1.0, 1.0])
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        data_vector = aa.util.linear_eqn.data_vector_via_blurred_mapping_matrix_from(
+        data_vector = aa.util.leq.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image=image,
             noise_map=noise_map,
@@ -173,7 +173,7 @@ class TestDataVectorFromData:
         image = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector = aa.util.linear_eqn.data_vector_via_blurred_mapping_matrix_from(
+        data_vector = aa.util.leq.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image=image,
             noise_map=noise_map,
@@ -199,7 +199,7 @@ class TestDataVectorFromData:
         data_real = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map_real = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector_real_via_blurred = aa.util.linear_eqn.data_vector_via_blurred_mapping_matrix_from(
+        data_vector_real_via_blurred = aa.util.leq.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=mapping_matrix,
             image=data_real,
             noise_map=noise_map_real,
@@ -208,7 +208,7 @@ class TestDataVectorFromData:
         data_imag = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map_imag = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector_imag_via_blurred = aa.util.linear_eqn.data_vector_via_blurred_mapping_matrix_from(
+        data_vector_imag_via_blurred = aa.util.leq.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=mapping_matrix,
             image=data_imag,
             noise_map=noise_map_imag,
@@ -236,7 +236,7 @@ class TestDataVectorFromData:
             [2.0 + 2.0j, 1.0 + 1.0j, 1.0 + 1.0j, 4.0 + 4.0j, 1.0 + 1.0j, 1.0 + 1.0j]
         )
 
-        data_vector_via_transformed = aa.util.linear_eqn.data_vector_via_transformed_mapping_matrix_from(
+        data_vector_via_transformed = aa.util.leq.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrix,
             visibilities=data,
             noise_map=noise_map,
@@ -281,13 +281,13 @@ class TestDataVectorFromData:
                 mapping_matrix=mapping_matrix
             )
 
-            data_vector = aa.util.linear_eqn.data_vector_via_blurred_mapping_matrix_from(
+            data_vector = aa.util.leq.data_vector_via_blurred_mapping_matrix_from(
                 blurred_mapping_matrix=blurred_mapping_matrix,
                 image=image,
                 noise_map=noise_map,
             )
 
-            w_tilde_data = aa.util.linear_eqn.w_tilde_data_imaging_from(
+            w_tilde_data = aa.util.leq.w_tilde_data_imaging_from(
                 image_native=image.native,
                 noise_map_native=noise_map.native,
                 kernel_native=kernel.native,
@@ -302,7 +302,7 @@ class TestDataVectorFromData:
                 sub_size=sub_size,
             )
 
-            data_vector_via_w_tilde = aa.util.linear_eqn.data_vector_via_w_tilde_data_imaging_from(
+            data_vector_via_w_tilde = aa.util.leq.data_vector_via_w_tilde_data_imaging_from(
                 w_tilde_data=w_tilde_data,
                 data_to_pix_unique=data_to_pix_unique.astype("int"),
                 data_weights=data_weights,
@@ -332,7 +332,7 @@ class TestCurvatureMatrixImaging:
             [[1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
         )
 
-        curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_w_tilde_from(
+        curvature_matrix = aa.util.leq.curvature_matrix_via_w_tilde_from(
             w_tilde=w_tilde, mapping_matrix=mapping_matrix
         )
 
@@ -356,11 +356,11 @@ class TestCurvatureMatrixImaging:
 
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix_preload, curvature_matrix_counts = aa.util.linear_eqn.curvature_matrix_preload_from(
+        curvature_matrix_preload, curvature_matrix_counts = aa.util.leq.curvature_matrix_preload_from(
             mapping_matrix=blurred_mapping_matrix
         )
 
-        curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_sparse_preload_from(
+        curvature_matrix = aa.util.leq.curvature_matrix_via_sparse_preload_from(
             mapping_matrix=blurred_mapping_matrix,
             noise_map=noise_map,
             curvature_matrix_preload=curvature_matrix_preload.astype("int"),
@@ -385,15 +385,15 @@ class TestCurvatureMatrixImaging:
 
         noise_map = np.array([2.0, 1.0, 10.0, 0.5, 3.0, 7.0])
 
-        curvature_matrix_via_mapping_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
+        curvature_matrix_via_mapping_matrix = aa.util.leq.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
-        curvature_matrix_preload, curvature_matrix_counts = aa.util.linear_eqn.curvature_matrix_preload_from(
+        curvature_matrix_preload, curvature_matrix_counts = aa.util.leq.curvature_matrix_preload_from(
             mapping_matrix=blurred_mapping_matrix
         )
 
-        curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_sparse_preload_from(
+        curvature_matrix = aa.util.leq.curvature_matrix_via_sparse_preload_from(
             mapping_matrix=blurred_mapping_matrix,
             noise_map=noise_map,
             curvature_matrix_preload=curvature_matrix_preload.astype("int"),
@@ -417,7 +417,7 @@ class TestCurvatureMatrixImaging:
 
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
+        curvature_matrix = aa.util.leq.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
@@ -441,7 +441,7 @@ class TestCurvatureMatrixImaging:
 
         noise_map = np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
+        curvature_matrix = aa.util.leq.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
@@ -474,13 +474,13 @@ class TestCurvatureMatrixImaging:
 
         mapping_matrix = mapper.mapping_matrix
 
-        w_tilde = aa.util.linear_eqn.w_tilde_curvature_imaging_from(
+        w_tilde = aa.util.leq.w_tilde_curvature_imaging_from(
             noise_map_native=noise_map.native,
             kernel_native=kernel.native,
             native_index_for_slim_index=mask.native_index_for_slim_index,
         )
 
-        curvature_matrix_via_w_tilde = aa.util.linear_eqn.curvature_matrix_via_w_tilde_from(
+        curvature_matrix_via_w_tilde = aa.util.leq.curvature_matrix_via_w_tilde_from(
             w_tilde=w_tilde, mapping_matrix=mapping_matrix
         )
 
@@ -488,7 +488,7 @@ class TestCurvatureMatrixImaging:
             mapping_matrix=mapping_matrix
         )
 
-        curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
+        curvature_matrix = aa.util.leq.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
         assert curvature_matrix_via_w_tilde == pytest.approx(curvature_matrix, 1.0e-4)
@@ -523,7 +523,7 @@ class TestCurvatureMatrixImaging:
 
             mapping_matrix = mapper.mapping_matrix
 
-            w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.linear_eqn.w_tilde_curvature_preload_imaging_from(
+            w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.leq.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=noise_map.native,
                 kernel_native=kernel.native,
                 native_index_for_slim_index=mask.native_index_for_slim_index,
@@ -537,7 +537,7 @@ class TestCurvatureMatrixImaging:
                 sub_size=sub_size,
             )
 
-            curvature_matrix_via_w_tilde = aa.util.linear_eqn.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+            curvature_matrix_via_w_tilde = aa.util.leq.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                 curvature_preload=w_tilde_preload,
                 curvature_indexes=w_tilde_indexes.astype("int"),
                 curvature_lengths=w_tilde_lengths.astype("int"),
@@ -551,7 +551,7 @@ class TestCurvatureMatrixImaging:
                 mapping_matrix=mapping_matrix
             )
 
-            curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
+            curvature_matrix = aa.util.leq.curvature_matrix_via_mapping_matrix_from(
                 mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
             )
 
@@ -567,7 +567,7 @@ class TestMappedReconstructedDataFrom:
 
         reconstruction = np.array([1.0, 1.0, 2.0])
 
-        mapped_reconstructed_data = aa.util.linear_eqn.mapped_reconstructed_data_via_mapping_matrix_from(
+        mapped_reconstructed_data = aa.util.leq.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=mapping_matrix, reconstruction=reconstruction
         )
 
@@ -579,7 +579,7 @@ class TestMappedReconstructedDataFrom:
 
         reconstruction = np.array([1.0, 1.0, 2.0])
 
-        mapped_reconstructed_data = aa.util.linear_eqn.mapped_reconstructed_data_via_mapping_matrix_from(
+        mapped_reconstructed_data = aa.util.leq.mapped_reconstructed_data_via_mapping_matrix_from(
             mapping_matrix=mapping_matrix, reconstruction=reconstruction
         )
 
@@ -601,7 +601,7 @@ class TestMappedReconstructedDataFrom:
 
         reconstruction = np.array([1.0, 1.0, 2.0])
 
-        mapped_reconstructed_data = aa.util.linear_eqn.mapped_reconstructed_data_via_image_to_pix_unique_from(
+        mapped_reconstructed_data = aa.util.leq.mapped_reconstructed_data_via_image_to_pix_unique_from(
             data_to_pix_unique=data_to_pix_unique.astype("int"),
             data_weights=data_weights,
             pix_lengths=pix_lengths.astype("int"),
@@ -626,7 +626,7 @@ class TestMappedReconstructedDataFrom:
 
         reconstruction = np.array([1.0, 1.0, 2.0])
 
-        mapped_reconstructed_data = aa.util.linear_eqn.mapped_reconstructed_data_via_image_to_pix_unique_from(
+        mapped_reconstructed_data = aa.util.leq.mapped_reconstructed_data_via_image_to_pix_unique_from(
             data_to_pix_unique=data_to_pix_unique.astype("int"),
             data_weights=data_weights,
             pix_lengths=pix_lengths.astype("int"),

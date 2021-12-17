@@ -7,7 +7,7 @@ from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 
 
-def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper():
+def test__inversion_matrices__leqs_mapping__rectangular_mapper():
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -121,7 +121,7 @@ def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper():
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
 
-def test__inversion_matrices__linear_eqns_mapping__voronoi_mapper():
+def test__inversion_matrices__leqs_mapping__voronoi_mapper():
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -229,7 +229,7 @@ def test__inversion_matrices__linear_eqns_mapping__voronoi_mapper():
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
 
-def test__inversion_matrices__linear_eqns_mapping__delaunay_mapper():
+def test__inversion_matrices__leqs_mapping__delaunay_mapper():
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -337,7 +337,7 @@ def test__inversion_matrices__linear_eqns_mapping__delaunay_mapper():
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
 
-def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eqns_mapping():
+def test__inversion_matrices__leqs_w_tilde__identical_values_as_leqs_mapping():
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -418,7 +418,7 @@ def test__inversion_matrices__linear_eqns_w_tilde__identical_values_as_linear_eq
     )
 
 
-def test__inversion_matrices__linear_eqns_x2_mapping():
+def test__inversion_matrices__leqs_x2_mapping():
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -518,7 +518,7 @@ def test__inversion_matrices__linear_eqns_x2_mapping():
         blurred_mapping_matrix, 1.0e-4
     )
 
-    curvature_matrix = aa.util.linear_eqn.curvature_matrix_via_mapping_matrix_from(
+    curvature_matrix = aa.util.leq.curvature_matrix_via_mapping_matrix_from(
         mapping_matrix=blurred_mapping_matrix, noise_map=inversion.noise_map
     )
 
@@ -558,7 +558,7 @@ def test__inversion_matrices__linear_eqns_x2_mapping():
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
 
-def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper__matrix_formalism():
+def test__inversion_matrices__leqs_mapping__rectangular_mapper__matrix_formalism():
 
     real_space_mask = aa.Mask2D.unmasked(
         shape_native=(7, 7), pixel_scales=0.1, sub_size=1
@@ -611,7 +611,7 @@ def test__inversion_matrices__linear_eqns_mapping__rectangular_mapper__matrix_fo
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
 
 
-def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formalism():
+def test__inversion_matirces__leqs_mapping__voronoi_mapper__matrix_formalism():
 
     real_space_mask = aa.Mask2D.unmasked(
         shape_native=(7, 7), pixel_scales=0.1, sub_size=1
@@ -666,7 +666,7 @@ def test__inversion_matirces__linear_eqns_mapping__voronoi_mapper__matrix_formal
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
 
 
-def test__inversion_matirces__linear_eqns_mapping__delaunay_mapper__matrix_formalism():
+def test__inversion_matirces__leqs_mapping__delaunay_mapper__matrix_formalism():
 
     real_space_mask = aa.Mask2D.unmasked(
         shape_native=(7, 7), pixel_scales=0.1, sub_size=1
@@ -721,7 +721,7 @@ def test__inversion_matirces__linear_eqns_mapping__delaunay_mapper__matrix_forma
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
 
 
-def test__inversion_linear_operator__linear_eqns_linear_operator_formalism():
+def test__inversion_linear_operator__leqs_linear_operator_formalism():
 
     real_space_mask = aa.Mask2D.unmasked(
         shape_native=(7, 7), pixel_scales=0.1, sub_size=1

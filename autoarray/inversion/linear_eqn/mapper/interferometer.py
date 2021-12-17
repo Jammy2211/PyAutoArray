@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
 
-from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEq
+from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEqMapper
 from autoarray.dataset.interferometer import WTildeInterferometer
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
@@ -14,13 +14,13 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
-from autoarray.inversion.linear_eqn import linear_eqn_util
+from autoarray.inversion.linear_eqn import leq_util
 from autoarray.inversion.inversion import inversion_interferometer_util
 
 from autoarray.numba_util import profile_func
 
 
-class AbstractLEqInterferometer(AbstractLEq):
+class AbstractLEqMapperInterferometer(AbstractLEqMapper):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,
@@ -71,7 +71,7 @@ class AbstractLEqInterferometer(AbstractLEq):
             mapper = self.mapper_list[mapper_index]
             reconstruction = reconstruction_of_mappers[mapper_index]
 
-            mapped_reconstructed_image = linear_eqn_util.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_mapping_matrix_from(
                 mapping_matrix=mapper.mapping_matrix, reconstruction=reconstruction
             )
 
@@ -85,7 +85,7 @@ class AbstractLEqInterferometer(AbstractLEq):
         return mapped_reconstructed_image_of_mappers
 
 
-class LEqInterferometerMapping(AbstractLEqInterferometer):
+class LEqInterferometerMapping(AbstractLEqMapperInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,
@@ -140,7 +140,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
     @profile_func
     def data_vector_from(self, data: Visibilities, preloads) -> np.ndarray:
 
-        return linear_eqn_util.data_vector_via_transformed_mapping_matrix_from(
+        return leq_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=self.transformed_mapping_matrix,
             visibilities=data,
             noise_map=self.noise_map,
@@ -150,12 +150,12 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
 
-        real_curvature_matrix = linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
+        real_curvature_matrix = leq_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.transformed_mapping_matrix.real,
             noise_map=self.noise_map.real,
         )
 
-        imag_curvature_matrix = linear_eqn_util.curvature_matrix_via_mapping_matrix_from(
+        imag_curvature_matrix = leq_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.transformed_mapping_matrix.imag,
             noise_map=self.noise_map.imag,
         )
@@ -180,7 +180,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
                 mapper_index=mapper_index
             )
 
-            visibilities = linear_eqn_util.mapped_reconstructed_visibilities_from(
+            visibilities = leq_util.mapped_reconstructed_visibilities_from(
                 transformed_mapping_matrix=transformed_mapping_matrix,
                 reconstruction=reconstruction,
             )
@@ -192,7 +192,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         return mapped_reconstructed_data_of_mappers
 
 
-class LEqInterferometerWTilde(AbstractLEqInterferometer):
+class LEqInterferometerWTilde(AbstractLEqMapperInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,
@@ -296,7 +296,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         )
 
 
-class LEqInterferometerLinearOperator(AbstractLEqInterferometer):
+class LEqInterferometerLinearOperator(AbstractLEqMapperInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,
