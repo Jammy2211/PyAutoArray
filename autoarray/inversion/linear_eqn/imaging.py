@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Union
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEqMapper
+from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion.mappers.rectangular import MapperRectangular
@@ -15,7 +15,7 @@ from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.linear_eqn import leq_util
 
 
-class AbstractLEqMapperImaging(AbstractLEqMapper):
+class AbstractLEqImaging(AbstractLEq):
     def __init__(
         self,
         noise_map: Array2D,
@@ -106,7 +106,7 @@ class AbstractLEqMapperImaging(AbstractLEqMapper):
         )
 
 
-class LEqImagingMapperWTilde(AbstractLEqMapperImaging):
+class LEqImagingWTilde(AbstractLEqImaging):
     def __init__(
         self,
         noise_map: Array2D,
@@ -360,7 +360,7 @@ class LEqImagingMapperWTilde(AbstractLEqMapperImaging):
         return mapped_reconstructed_image_of_mappers
 
 
-class LEqImagingMapperMapping(AbstractLEqMapperImaging):
+class LEqImagingMapping(AbstractLEqImaging):
     def __init__(
         self,
         noise_map: Array2D,

@@ -9,7 +9,7 @@ from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
 
-class AbstractLEqMapper:
+class AbstractLEq:
     def __init__(
         self,
         noise_map: Union[Array2D, VisibilitiesNoiseMap],

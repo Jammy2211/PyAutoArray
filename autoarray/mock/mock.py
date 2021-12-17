@@ -2,15 +2,14 @@ import numpy as np
 from typing import List, Tuple, Union
 
 from autoarray.preloads import Preloads
-from autoarray.inversion.linear_object import LinearObject
+from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImaging
-from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEqMapper
+from autoarray.inversion.linear_eqn.imaging import AbstractLEqImaging
+from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.inversion.linear_eqn.combine import LEqCombine
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
 from autoarray.type import Grid2DLike
 
@@ -169,16 +168,17 @@ class MockMapper(AbstractMapper):
         return self._mapping_matrix
 
 
-class MockLinearObject(LinearObject):
+class MockLinearObj(LinearObj):
     def __init__(self, mapping_matrix):
 
-        self.mapping_matrix = mapping_matrix
+        self._mapping_matrix = mapping_matrix
 
-    def mapping_matrix_from(self, grid: Grid2DLike) -> np.ndarray:
-        return self.mapping_matrix
+    @property
+    def mapping_matrix_from(self) -> np.ndarray:
+        return self._mapping_matrix
 
 
-class MockLEqMapper(AbstractLEqMapper):
+class MockLEq(AbstractLEq):
     def __init__(
         self,
         noise_map=None,
@@ -262,7 +262,7 @@ class MockLEqMapper(AbstractLEqMapper):
         return self._mapped_reconstructed_image_of_mappers
 
 
-class MockLEqMapperImaging(AbstractLEqMapperImaging):
+class MockLEqImaging(AbstractLEqImaging):
     def __init__(
         self,
         noise_map=None,
@@ -285,16 +285,11 @@ class MockLEqMapperImaging(AbstractLEqMapperImaging):
         return self._blurred_mapping_matrix
 
 
-class MockLEqCombine(LEqCombine):
-
-    pass
-
-
 class MockInversion(InversionMatrices):
     def __init__(
         self,
         data=None,
-        leq: Union[MockLEqCombine] = None,
+        leq: MockLEq = None,
         regularization_list: List[MockRegularization] = None,
         data_vector=None,
         regularization_matrix=None,

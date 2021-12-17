@@ -37,7 +37,7 @@ class InversionLinearOperator(AbstractInversion):
 
         Aop = pylops.MatrixMult(sparse.bsr_matrix(self.mapper_list[0].mapping_matrix))
 
-        Fop = self.leq.leq_mapper.transformer
+        Fop = self.leq.transformer
 
         Op = Fop * Aop
 

@@ -6,7 +6,7 @@ from scipy.sparse.linalg import splu
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImaging
+from autoarray.inversion.linear_eqn.imaging import AbstractLEqImaging
 from autoarray.inversion.inversion.abstract import AbstractInversion
 
 from autoarray import exc

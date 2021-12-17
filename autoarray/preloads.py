@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from typing import List
 
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImaging
+from autoarray.inversion.linear_eqn.imaging import AbstractLEqImaging
 
 from autoarray import exc
 from autoarray.inversion.linear_eqn import leq_util
@@ -231,7 +231,7 @@ class Preloads:
 
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
 
-                if isinstance(inversion_0.leq, AbstractLEqMapperImaging):
+                if isinstance(inversion_0.leq, AbstractLEqImaging):
 
                     self.curvature_matrix_preload = (
                         inversion_0.curvature_matrix_preload
