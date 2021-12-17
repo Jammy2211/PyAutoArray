@@ -5,14 +5,14 @@ import autoarray as aa
 from autoarray.mock.mock import MockMapper
 
 
-def test__pixelization_indexes_for_slim_indexes__different_types_of_lists_input():
+def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
 
     mapper = MockMapper(
         pixelization_index_for_sub_slim_index=[0, 0, 0, 0, 0, 0, 0, 0], pixels=9
     )
 
-    full_indexes = mapper.pixelization_indexes_for_slim_indexes(
-        pixelization_indexes=[0, 1]
+    full_indexes = mapper.pix_indexes_for_slim_indexes(
+        pix_indexes=[0, 1]
     )
 
     assert full_indexes == [0, 1, 2, 3, 4, 5, 6, 7]
@@ -21,8 +21,8 @@ def test__pixelization_indexes_for_slim_indexes__different_types_of_lists_input(
         pixelization_index_for_sub_slim_index=[0, 0, 0, 0, 3, 4, 4, 7], pixels=9
     )
 
-    full_indexes = mapper.pixelization_indexes_for_slim_indexes(
-        pixelization_indexes=[[0], [4]]
+    full_indexes = mapper.pix_indexes_for_slim_indexes(
+        pix_indexes=[[0], [4]]
     )
 
     assert full_indexes == [[0, 1, 2, 3], [5, 6]]

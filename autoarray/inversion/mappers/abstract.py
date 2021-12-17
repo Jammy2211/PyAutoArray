@@ -166,19 +166,19 @@ class AbstractMapper:
             hyper_image=self.hyper_image,
         )
 
-    def pixelization_indexes_for_slim_indexes(self, pixelization_indexes):
+    def pix_indexes_for_slim_indexes(self, pix_indexes):
 
         image_for_source = self.all_sub_slim_indexes_for_pixelization_index
 
-        if not any(isinstance(i, list) for i in pixelization_indexes):
+        if not any(isinstance(i, list) for i in pix_indexes):
             return list(
                 itertools.chain.from_iterable(
-                    [image_for_source[index] for index in pixelization_indexes]
+                    [image_for_source[index] for index in pix_indexes]
                 )
             )
         else:
             indexes = []
-            for source_pixel_index_list in pixelization_indexes:
+            for source_pixel_index_list in pix_indexes:
                 indexes.append(
                     list(
                         itertools.chain.from_iterable(

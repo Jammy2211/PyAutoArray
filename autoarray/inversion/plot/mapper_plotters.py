@@ -91,10 +91,10 @@ class MapperPlotter(Plotter):
             auto_labels=AutoLabels(title="Image"),
         )
 
-        if self.visuals_2d.pixelization_indexes is not None:
+        if self.visuals_2d.pix_indexes is not None:
 
-            indexes = self.mapper.pixelization_indexes_for_slim_indexes(
-                pixelization_indexes=self.visuals_2d.pixelization_indexes
+            indexes = self.mapper.pix_indexes_for_slim_indexes(
+                pix_indexes=self.visuals_2d.pix_indexes
             )
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
