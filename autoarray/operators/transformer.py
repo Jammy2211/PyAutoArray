@@ -196,7 +196,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         )
 
     def image_from(self, visibilities):
-        image = np.real(self.adjoint(visibilities))
+        image = np.real(self.adjoint(visibilities))[::-1, :]
         return Array2D.manual_native(
             array=image, pixel_scales=self.real_space_mask.pixel_scales
         )

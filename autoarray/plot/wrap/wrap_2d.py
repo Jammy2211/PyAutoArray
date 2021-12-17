@@ -705,8 +705,6 @@ class DelaunayDrawer(AbstractMatWrap2D):
         xs_grid_1d = xs_grid.ravel()
         ys_grid_1d = ys_grid.ravel()
 
-        print(dir(mapper))
-
         # tri =
 
         pixel_points, simplices = self.delaunay_triangles(delaunay=mapper.delaunay)
