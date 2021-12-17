@@ -218,7 +218,7 @@ class AbstractMapper:
 
     def reconstruction_from(self, solution_vector):
         """
-        Given the solution vector of an inversion (see *inversions.LinearEqn*), determine the reconstructed
+        Given the solution vector of an inversion (see *inversions.LEq*), determine the reconstructed
         pixelization of the rectangular pixelization by using the mapper.
         """
         raise NotImplementedError()

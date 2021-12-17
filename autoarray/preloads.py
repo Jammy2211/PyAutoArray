@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from typing import List
 
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLinearEqnImaging
+from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqImaging
 
 from autoarray import exc
 from autoarray.inversion.linear_eqn import linear_eqn_util
@@ -231,7 +231,7 @@ class Preloads:
 
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
 
-                if isinstance(inversion_0.linear_eqn, AbstractLinearEqnImaging):
+                if isinstance(inversion_0.linear_eqn, AbstractLEqImaging):
 
                     self.curvature_matrix_preload = (
                         inversion_0.curvature_matrix_preload
@@ -241,7 +241,7 @@ class Preloads:
                     ).astype("int")
 
                 logger.info(
-                    "PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit."
+                    "PRELOADS - LEq linear algebra quantities preloaded for this model-fit."
                 )
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
@@ -287,7 +287,7 @@ class Preloads:
             )
 
             logger.info(
-                "PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit."
+                "PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit."
             )
 
     def check_via_fit(self, fit):

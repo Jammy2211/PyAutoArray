@@ -4,12 +4,7 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.mock.mock import (
-    MockMapper,
-    MockRegularization,
-    MockLinearEqn,
-    MockInversion,
-)
+from autoarray.mock.mock import MockMapper, MockRegularization, MockLEq, MockInversion
 
 from autoarray import exc
 
@@ -19,7 +14,7 @@ directory = path.dirname(path.realpath(__file__))
 
 def test__regularization_matrix():
 
-    linear_eqn = MockLinearEqn(mapper_list=[MockMapper(), MockMapper()])
+    linear_eqn = MockLEq(mapper_list=[MockMapper(), MockMapper()])
 
     reg_0 = MockRegularization(regularization_matrix=np.ones((2, 2)))
     reg_1 = MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
@@ -54,7 +49,7 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
     )
 
     # noinspection PyTypeChecker
-    linear_eqn = MockLinearEqn(noise_map=np.ones(9), mapper_list=MockMapper())
+    linear_eqn = MockLEq(noise_map=np.ones(9), mapper_list=MockMapper())
 
     inversion = MockInversion(linear_eqn=linear_eqn, preloads=preloads)
 
@@ -76,7 +71,7 @@ def test__reconstruction_of_mappers():
     reconstruction = np.ones(3)
 
     inversion = MockInversion(
-        linear_eqn=MockLinearEqn(mapper_list=[MockMapper(pixels=3)]),
+        linear_eqn=MockLEq(mapper_list=[MockMapper(pixels=3)]),
         reconstruction=reconstruction,
     )
 
@@ -85,9 +80,7 @@ def test__reconstruction_of_mappers():
     reconstruction = np.array([1.0, 1.0, 2.0, 2.0, 2.0])
 
     inversion = MockInversion(
-        linear_eqn=MockLinearEqn(
-            mapper_list=[MockMapper(pixels=2), MockMapper(pixels=3)]
-        ),
+        linear_eqn=MockLEq(mapper_list=[MockMapper(pixels=2), MockMapper(pixels=3)]),
         reconstruction=reconstruction,
     )
 
@@ -99,7 +92,7 @@ def test__mapped_reconstructed_data():
 
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        linear_eqn=MockLinearEqn(mapped_reconstructed_data_of_mappers=[np.ones(3)]),
+        linear_eqn=MockLEq(mapped_reconstructed_data_of_mappers=[np.ones(3)]),
         reconstruction=np.ones(3),
         reconstruction_of_mappers=[None],
     )
@@ -109,7 +102,7 @@ def test__mapped_reconstructed_data():
 
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        linear_eqn=MockLinearEqn(
+        linear_eqn=MockLEq(
             mapped_reconstructed_data_of_mappers=[np.ones(2), 2.0 * np.ones(2)]
         ),
         reconstruction=np.array([1.0, 1.0, 2.0, 2.0]),
@@ -125,7 +118,7 @@ def test__mapped_reconstructed_image():
 
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        linear_eqn=MockLinearEqn(mapped_reconstructed_image_of_mappers=[np.ones(3)]),
+        linear_eqn=MockLEq(mapped_reconstructed_image_of_mappers=[np.ones(3)]),
         reconstruction=np.ones(3),
         reconstruction_of_mappers=[None],
     )
@@ -135,7 +128,7 @@ def test__mapped_reconstructed_image():
 
     # noinspection PyTypeChecker
     inversion = MockInversion(
-        linear_eqn=MockLinearEqn(
+        linear_eqn=MockLEq(
             mapped_reconstructed_image_of_mappers=[np.ones(2), 2.0 * np.ones(2)]
         ),
         reconstruction=np.array([1.0, 1.0, 2.0, 2.0]),
@@ -260,7 +253,7 @@ def test__brightest_reconstruction_pixel_and_centre():
         ),
     )
 
-    linear_eqn = MockLinearEqn(mapper_list=[mapper])
+    linear_eqn = MockLEq(mapper_list=[mapper])
 
     inversion = MockInversion(
         linear_eqn=linear_eqn, reconstruction=np.array([2.0, 3.0, 5.0, 0.0])

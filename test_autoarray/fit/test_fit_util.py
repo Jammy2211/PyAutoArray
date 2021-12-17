@@ -494,7 +494,7 @@ class TestLikelihood:
         )
 
 
-class TestLinearEqnEvidence:
+class TestLEqEvidence:
     def test__simple_values(self):
 
         likelihood_with_regularization_terms = aa.util.fit.log_likelihood_with_regularization_from(

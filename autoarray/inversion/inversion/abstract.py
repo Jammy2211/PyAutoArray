@@ -10,9 +10,9 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLinearEqnImaging
+from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.mapper.interferometer import (
-    AbstractLinearEqnInterferometer,
+    AbstractLEqInterferometer,
 )
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -26,7 +26,7 @@ class AbstractInversion:
     def __init__(
         self,
         data: Union[Visibilities, Array2D],
-        linear_eqn: Union[AbstractLinearEqnImaging, AbstractLinearEqnInterferometer],
+        linear_eqn: Union[AbstractLEqImaging, AbstractLEqInterferometer],
         regularization_list: [AbstractRegularization],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),

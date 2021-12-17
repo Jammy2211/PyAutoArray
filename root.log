@@ -1,8 +1,8 @@
 2021-12-10 14:02:37,192 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-10 14:02:37,194 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-10 14:02:37,194 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-10 14:02:37,195 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-10 14:02:37,196 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-10 14:02:37,195 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-10 14:02:37,196 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-10 14:02:40,235 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-10 14:02:40,305 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-10 14:02:40,307 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -48,8 +48,8 @@
 2021-12-13 12:21:13,718 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-13 12:21:13,719 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-13 12:21:13,719 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-13 12:21:13,720 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-13 12:21:13,722 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-13 12:21:13,720 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-13 12:21:13,722 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-13 12:21:15,707 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-13 12:21:15,788 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-13 12:21:15,790 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -87,8 +87,8 @@
 2021-12-13 13:24:50,737 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-13 13:24:50,739 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-13 13:24:50,739 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-13 13:24:50,740 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-13 13:24:50,742 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-13 13:24:50,740 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-13 13:24:50,742 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-13 13:24:53,806 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-13 13:24:53,882 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-13 13:24:53,884 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -128,8 +128,8 @@
 2021-12-13 13:28:07,799 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-13 13:28:07,801 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-13 13:28:07,801 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-13 13:28:07,803 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-13 13:28:07,804 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-13 13:28:07,803 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-13 13:28:07,804 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-13 13:28:09,417 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-13 13:28:09,495 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-13 13:28:09,497 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -169,8 +169,8 @@
 2021-12-13 13:31:11,377 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-13 13:31:11,378 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-13 13:31:11,379 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-13 13:31:11,380 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-13 13:31:11,381 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-13 13:31:11,380 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-13 13:31:11,381 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-13 13:31:12,970 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-13 13:31:13,047 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-13 13:31:13,050 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -210,8 +210,8 @@
 2021-12-13 13:34:45,562 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-13 13:34:45,563 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-13 13:34:45,563 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-13 13:34:45,565 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-13 13:34:45,566 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-13 13:34:45,565 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-13 13:34:45,566 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-13 13:34:47,109 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-13 13:34:47,183 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-13 13:34:47,185 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -251,8 +251,8 @@
 2021-12-13 13:36:43,829 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-13 13:36:43,831 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-13 13:36:43,831 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-13 13:36:43,832 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-13 13:36:43,834 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-13 13:36:43,832 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-13 13:36:43,834 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-13 13:36:46,681 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-13 13:36:46,778 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-13 13:36:46,780 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -312,8 +312,8 @@
 2021-12-13 14:31:52,676 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-13 14:31:52,678 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-13 14:31:52,678 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-13 14:31:52,680 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-13 14:31:52,682 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-13 14:31:52,680 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-13 14:31:52,682 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-13 14:31:56,717 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-13 14:31:56,819 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-13 14:31:56,822 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -355,8 +355,8 @@
 2021-12-13 14:43:55,548 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-13 14:43:55,550 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-13 14:43:55,550 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-13 14:43:55,552 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-13 14:43:55,553 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-13 14:43:55,552 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-13 14:43:55,553 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-13 14:43:57,613 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-13 14:43:57,713 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-13 14:43:57,716 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -398,8 +398,8 @@
 2021-12-16 12:04:38,012 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 12:04:38,014 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 12:04:38,015 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 12:04:38,017 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 12:04:38,018 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 12:04:38,017 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 12:04:38,018 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 12:04:40,271 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 12:04:40,328 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 12:04:40,330 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -549,8 +549,8 @@
 2021-12-16 13:11:54,650 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 13:11:54,652 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 13:11:54,653 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 13:11:54,655 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 13:11:54,657 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 13:11:54,655 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 13:11:54,657 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 13:11:56,974 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 13:11:57,031 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 13:11:57,033 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -592,8 +592,8 @@
 2021-12-16 13:33:18,735 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 13:33:18,737 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 13:33:18,737 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 13:33:18,739 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 13:33:18,741 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 13:33:18,739 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 13:33:18,741 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 13:33:21,023 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 13:33:21,080 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 13:33:21,082 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -635,8 +635,8 @@
 2021-12-16 14:04:11,839 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 14:04:11,840 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 14:04:11,840 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 14:04:11,843 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 14:04:11,845 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 14:04:11,843 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 14:04:11,845 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 14:04:14,132 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 14:04:14,190 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 14:04:14,192 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -678,8 +678,8 @@
 2021-12-16 14:23:14,862 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 14:23:14,864 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 14:23:14,865 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 14:23:14,867 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 14:23:14,868 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 14:23:14,867 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 14:23:14,868 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 14:23:17,175 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 14:23:17,234 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 14:23:17,237 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -721,8 +721,8 @@
 2021-12-16 14:27:19,348 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 14:27:19,350 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 14:27:19,350 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 14:27:19,353 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 14:27:19,357 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 14:27:19,353 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 14:27:19,357 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 14:27:21,641 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 14:27:21,697 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 14:27:21,699 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -764,8 +764,8 @@
 2021-12-16 14:30:05,496 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 14:30:05,497 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 14:30:05,497 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 14:30:05,499 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 14:30:05,500 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 14:30:05,499 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 14:30:05,500 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 14:30:07,932 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 14:30:07,994 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 14:30:07,997 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -807,8 +807,8 @@
 2021-12-16 14:35:52,554 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 14:35:52,556 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 14:35:52,557 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 14:35:52,559 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 14:35:52,560 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 14:35:52,559 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 14:35:52,560 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 14:35:54,898 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 14:35:54,961 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 14:35:54,963 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -850,8 +850,8 @@
 2021-12-16 14:40:11,801 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 14:40:11,802 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 14:40:11,803 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 14:40:11,804 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 14:40:11,805 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 14:40:11,804 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 14:40:11,805 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 14:40:14,132 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 14:40:14,204 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 14:40:14,206 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -893,8 +893,8 @@
 2021-12-16 14:42:11,334 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 14:42:11,337 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 14:42:11,338 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 14:42:11,341 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 14:42:11,346 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 14:42:11,341 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 14:42:11,346 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 14:42:14,117 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 14:42:14,180 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 14:42:14,183 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -936,8 +936,8 @@
 2021-12-16 18:02:20,910 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 18:02:20,913 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 18:02:20,913 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 18:02:20,916 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 18:02:20,918 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 18:02:20,916 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 18:02:20,918 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 18:02:23,741 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 18:02:23,852 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 18:02:23,855 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -979,8 +979,8 @@
 2021-12-16 18:25:06,297 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 18:25:06,299 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 18:25:06,299 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 18:25:06,301 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 18:25:06,303 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 18:25:06,301 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 18:25:06,303 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 18:25:10,666 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 18:25:10,773 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 18:25:10,776 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -1022,8 +1022,8 @@
 2021-12-16 18:37:31,353 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 18:37:31,355 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 18:37:31,356 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 18:37:31,358 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 18:37:31,359 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 18:37:31,358 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 18:37:31,359 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 18:37:33,749 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 18:37:33,853 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 18:37:33,856 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -1115,8 +1115,8 @@
 2021-12-16 19:46:42,085 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-16 19:46:42,089 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-16 19:46:42,089 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-16 19:46:42,092 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-16 19:46:42,095 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-16 19:46:42,092 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-16 19:46:42,095 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-16 19:46:45,633 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-16 19:46:45,793 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-16 19:46:45,799 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -1158,8 +1158,8 @@
 2021-12-17 10:07:19,269 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-17 10:07:19,271 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-17 10:07:19,272 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-17 10:07:19,273 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-17 10:07:19,275 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-17 10:07:19,273 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-17 10:07:19,275 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-17 10:07:21,476 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-17 10:07:21,589 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-17 10:07:21,592 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
@@ -1198,12 +1198,12 @@
 2021-12-17 10:08:09,783 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-17 10:08:09,784 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
 2021-12-17 10:08:13,592 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
-2021-12-17 14:18:17,447 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
+2021-12-17 14:18:17,447 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
 2021-12-17 14:18:45,710 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
 2021-12-17 14:18:45,712 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
 2021-12-17 14:18:45,713 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
-2021-12-17 14:18:45,714 - autoarray.preloads - INFO - PRELOADS - LinearEqn linear algebra quantities preloaded for this model-fit.
-2021-12-17 14:18:45,716 - autoarray.preloads - INFO - PRELOADS - LinearEqn Log Det Regularization Matrix Term preloaded for this model-fit.
+2021-12-17 14:18:45,714 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2021-12-17 14:18:45,716 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
 2021-12-17 14:18:47,742 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
 2021-12-17 14:18:47,849 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2021-12-17 14:18:47,853 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels

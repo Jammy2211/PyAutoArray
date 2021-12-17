@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Union
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLinearEqn
+from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEq
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.inversion.mappers.rectangular import MapperRectangular
@@ -15,7 +15,7 @@ from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.linear_eqn import linear_eqn_util
 
 
-class AbstractLinearEqnImaging(AbstractLinearEqn):
+class AbstractLEqImaging(AbstractLEq):
     def __init__(
         self,
         noise_map: Array2D,
@@ -106,7 +106,7 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         )
 
 
-class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
+class LEqImagingWTilde(AbstractLEqImaging):
     def __init__(
         self,
         noise_map: Array2D,
@@ -275,7 +275,7 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         in https://arxiv.org/pdf/astro-ph/0302587.pdf.
 
         This function computes the off-diagonal terms of F using the w_tilde formalism for the mapper of this
-        `LinearEqn` and an input second mapper.
+        `LEq` and an input second mapper.
         """
 
         mapper_0 = self.mapper_list[mapper_index_0]
@@ -360,7 +360,7 @@ class LinearEqnImagingWTilde(AbstractLinearEqnImaging):
         return mapped_reconstructed_image_of_mappers
 
 
-class LinearEqnImagingMapping(AbstractLinearEqnImaging):
+class LEqImagingMapping(AbstractLEqImaging):
     def __init__(
         self,
         noise_map: Array2D,

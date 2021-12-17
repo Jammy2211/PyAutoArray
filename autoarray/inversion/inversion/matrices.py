@@ -6,7 +6,7 @@ from scipy.sparse.linalg import splu
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLinearEqnImaging
+from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqImaging
 from autoarray.inversion.inversion.abstract import AbstractInversion
 
 from autoarray import exc
@@ -113,7 +113,7 @@ class InversionMatrices(AbstractInversion):
     def curvature_reg_matrix_cholesky(self):
         """
         Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
-        linear system of equations of the `LinearEqn`.
+        linear system of equations of the `LEq`.
 
         The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
         to speed up the calculation of `log_det_curvature_reg_matrix_term`.

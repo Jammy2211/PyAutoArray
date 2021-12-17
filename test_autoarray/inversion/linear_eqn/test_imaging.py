@@ -1,8 +1,8 @@
 import autoarray as aa
 from autoarray.dataset.imaging import WTildeImaging
-from autoarray.inversion.linear_eqn.mapper.imaging import LinearEqnImagingWTilde
+from autoarray.inversion.linear_eqn.mapper.imaging import LEqImagingWTilde
 
-from autoarray.mock.mock import MockConvolver, MockLinearEqnImaging, MockMapper
+from autoarray.mock.mock import MockConvolver, MockLEqImaging, MockMapper
 
 from autoarray import exc
 
@@ -13,12 +13,12 @@ import pytest
 directory = path.dirname(path.realpath(__file__))
 
 
-class TestLinearEqnImaging:
+class TestLEqImaging:
     def test__blurred_mapping_matrix_property(
         self, convolver_7x7, rectangular_mapper_7x7_3x3
     ):
 
-        linear_eqn = MockLinearEqnImaging(
+        linear_eqn = MockLEqImaging(
             convolver=convolver_7x7, mapper_list=[rectangular_mapper_7x7_3x3]
         )
 
@@ -26,7 +26,7 @@ class TestLinearEqnImaging:
 
         convolver = MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
 
-        linear_eqn = MockLinearEqnImaging(
+        linear_eqn = MockLEqImaging(
             convolver=convolver,
             mapper_list=[rectangular_mapper_7x7_3x3, rectangular_mapper_7x7_3x3],
         )
@@ -60,7 +60,7 @@ class TestLinearEqnImaging:
         with pytest.raises(exc.InversionException):
 
             # noinspection PyTypeChecker
-            LinearEqnImagingWTilde(
+            LEqImagingWTilde(
                 noise_map=np.ones(9),
                 convolver=MockConvolver(matrix_shape),
                 w_tilde=w_tilde,
@@ -70,7 +70,7 @@ class TestLinearEqnImaging:
             )
 
 
-# class TestLinearEqnImagingWTilde:
+# class TestLEqImagingWTilde:
 #
 #     def test__data_vector_from(self):
 #

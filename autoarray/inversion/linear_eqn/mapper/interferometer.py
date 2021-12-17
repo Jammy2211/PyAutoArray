@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
 
-from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLinearEqn
+from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEq
 from autoarray.dataset.interferometer import WTildeInterferometer
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
@@ -20,7 +20,7 @@ from autoarray.inversion.inversion import inversion_interferometer_util
 from autoarray.numba_util import profile_func
 
 
-class AbstractLinearEqnInterferometer(AbstractLinearEqn):
+class AbstractLEqInterferometer(AbstractLEq):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,
@@ -85,7 +85,7 @@ class AbstractLinearEqnInterferometer(AbstractLinearEqn):
         return mapped_reconstructed_image_of_mappers
 
 
-class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
+class LEqInterferometerMapping(AbstractLEqInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,
@@ -192,7 +192,7 @@ class LinearEqnInterferometerMapping(AbstractLinearEqnInterferometer):
         return mapped_reconstructed_data_of_mappers
 
 
-class LinearEqnInterferometerWTilde(AbstractLinearEqnInterferometer):
+class LEqInterferometerWTilde(AbstractLEqInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,
@@ -296,7 +296,7 @@ class LinearEqnInterferometerWTilde(AbstractLinearEqnInterferometer):
         )
 
 
-class LinearEqnInterferometerLinearOperator(AbstractLinearEqnInterferometer):
+class LEqInterferometerLinearOperator(AbstractLEqInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,

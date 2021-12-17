@@ -139,31 +139,31 @@ def inversion_residual_map_from(
     all_sub_slim_indexes_for_pix_index: [list],
 ):
     """
-    Returns the residual-map of the `reconstruction` of an `LinearEqn` on its pixel-grid.
+    Returns the residual-map of the `reconstruction` of an `LEq` on its pixel-grid.
 
     For this residual-map, each pixel on the `reconstruction`'s pixel-grid corresponds to the sum of absolute residual
     values in the `residual_map` of the reconstructed `data` divided by the number of data-points that it maps too,
     (to normalize its value).
 
-    This provides information on where in the `LinearEqn`'s `reconstruction` it is least able to accurately fit the
+    This provides information on where in the `LEq`'s `reconstruction` it is least able to accurately fit the
     `data`.
 
     Parameters
     ----------
     reconstruction
-        The values computed by the `LinearEqn` for the `reconstruction`, which are used in this function to compute
+        The values computed by the `LEq` for the `reconstruction`, which are used in this function to compute
         the `residual_map` values.
     data
-        The array of `data` that the `LinearEqn` fits.
+        The array of `data` that the `LEq` fits.
     slim_index_for_sub_slim_index
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     all_sub_slim_indexes_for_pix_index
-        The mapping of every pixel on the `LinearEqn`'s `reconstruction`'s pixel-grid to the `data` pixels.
+        The mapping of every pixel on the `LEq`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
     -------
     np.ndarray
-        The residuals of the `LinearEqn`'s `reconstruction` on its pixel-grid, computed by mapping the `residual_map`
+        The residuals of the `LEq`'s `reconstruction` on its pixel-grid, computed by mapping the `residual_map`
         from the fit to the data.
     """
     residual_map = np.zeros(shape=len(all_sub_slim_indexes_for_pix_index))
@@ -192,31 +192,31 @@ def inversion_normalized_residual_map_from(
     all_sub_slim_indexes_for_pix_index,
 ):
     """
-    Returns the normalized residual-map of the `reconstruction` of an `LinearEqn` on its pixel-grid.
+    Returns the normalized residual-map of the `reconstruction` of an `LEq` on its pixel-grid.
 
     For this normalized residual-map, each pixel on the `reconstruction`'s pixel-grid corresponds to the sum of
     absolute normalized residual values in the `normalized residual_map` of the reconstructed `data` divided by the
     number of data-points that it maps too (to normalize its value).
 
-    This provides information on where in the `LinearEqn`'s `reconstruction` it is least able to accurately fit the
+    This provides information on where in the `LEq`'s `reconstruction` it is least able to accurately fit the
     `data`.
 
     Parameters
     ----------
     reconstruction
-        The values computed by the `LinearEqn` for the `reconstruction`, which are used in this function to compute
+        The values computed by the `LEq` for the `reconstruction`, which are used in this function to compute
         the `normalized residual_map` values.
     data
-        The array of `data` that the `LinearEqn` fits.
+        The array of `data` that the `LEq` fits.
     slim_index_for_sub_slim_index
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     all_sub_slim_indexes_for_pix_index
-        The mapping of every pixel on the `LinearEqn`'s `reconstruction`'s pixel-grid to the `data` pixels.
+        The mapping of every pixel on the `LEq`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
     -------
     np.ndarray
-        The normalized residuals of the `LinearEqn`'s `reconstruction` on its pixel-grid, computed by mapping the
+        The normalized residuals of the `LEq`'s `reconstruction` on its pixel-grid, computed by mapping the
         `normalized_residual_map` from the fit to the data.
     """
     normalized_residual_map = np.zeros(shape=len(all_sub_slim_indexes_for_pix_index))
@@ -246,31 +246,31 @@ def inversion_chi_squared_map_from(
     all_sub_slim_indexes_for_pix_index,
 ):
     """
-    Returns the chi-squared-map of the `reconstruction` of an `LinearEqn` on its pixel-grid.
+    Returns the chi-squared-map of the `reconstruction` of an `LEq` on its pixel-grid.
 
     For this chi-squared-map, each pixel on the `reconstruction`'s pixel-grid corresponds to the sum of chi-squared
     values in the `chi_squared_map` of the reconstructed `data` divided by the number of data-points that it maps too,
     (to normalize its value).
 
-    This provides information on where in the `LinearEqn`'s `reconstruction` it is least able to accurately fit the
+    This provides information on where in the `LEq`'s `reconstruction` it is least able to accurately fit the
     `data`.
 
     Parameters
     ----------
     reconstruction
-        The values computed by the `LinearEqn` for the `reconstruction`, which are used in this function to compute
+        The values computed by the `LEq` for the `reconstruction`, which are used in this function to compute
         the `chi_squared_map` values.
     data
-        The array of `data` that the `LinearEqn` fits.
+        The array of `data` that the `LEq` fits.
     slim_index_for_sub_slim_index
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     all_sub_slim_indexes_for_pix_index
-        The mapping of every pixel on the `LinearEqn`'s `reconstruction`'s pixel-grid to the `data` pixels.
+        The mapping of every pixel on the `LEq`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
     -------
     np.ndarray
-        The chi-squareds of the `LinearEqn`'s `reconstruction` on its pixel-grid, computed by mapping the `chi-squared_map`
+        The chi-squareds of the `LEq`'s `reconstruction` on its pixel-grid, computed by mapping the `chi-squared_map`
         from the fit to the data.
     """
     chi_squared_map = np.zeros(shape=len(all_sub_slim_indexes_for_pix_index))

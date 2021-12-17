@@ -7,15 +7,15 @@ from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.inversion.linear_eqn.mapper.imaging import LinearEqnImagingWTilde
-from autoarray.inversion.linear_eqn.mapper.imaging import LinearEqnImagingMapping
+from autoarray.inversion.linear_eqn.mapper.imaging import LEqImagingWTilde
+from autoarray.inversion.linear_eqn.mapper.imaging import LEqImagingMapping
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.linear_operator import InversionLinearOperator
 from autoarray.inversion.linear_eqn.mapper.interferometer import (
-    LinearEqnInterferometerMapping,
+    LEqInterferometerMapping,
 )
 from autoarray.inversion.linear_eqn.mapper.interferometer import (
-    LinearEqnInterferometerLinearOperator,
+    LEqInterferometerLinearOperator,
 )
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.rectangular import MapperRectangular
@@ -81,7 +81,7 @@ def inversion_imaging_unpacked_from(
 
     if use_w_tilde:
 
-        linear_eqn = LinearEqnImagingWTilde(
+        linear_eqn = LEqImagingWTilde(
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
@@ -91,7 +91,7 @@ def inversion_imaging_unpacked_from(
 
     else:
 
-        linear_eqn = LinearEqnImagingMapping(
+        linear_eqn = LEqImagingMapping(
             noise_map=noise_map,
             convolver=convolver,
             mapper_list=mapper_list,
@@ -120,7 +120,7 @@ def inversion_interferometer_unpacked_from(
 ):
     if not settings.use_linear_operators:
 
-        linear_eqn = LinearEqnInterferometerMapping(
+        linear_eqn = LEqInterferometerMapping(
             noise_map=noise_map,
             transformer=transformer,
             mapper_list=mapper_list,
@@ -129,7 +129,7 @@ def inversion_interferometer_unpacked_from(
 
     else:
 
-        linear_eqn = LinearEqnInterferometerLinearOperator(
+        linear_eqn = LEqInterferometerLinearOperator(
             noise_map=noise_map,
             transformer=transformer,
             mapper_list=mapper_list,

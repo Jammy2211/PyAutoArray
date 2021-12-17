@@ -461,7 +461,7 @@ def log_evidence_from(
 ) -> float:
     """
     Returns the log evidence of an inversion's fit to a dataset, where the log evidence includes a number of terms which
-    quantify the complexity of an inversion's reconstruction (see the `LinearEqn` module):
+    quantify the complexity of an inversion's reconstruction (see the `LEq` module):
 
     Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
                            Log(Regularization_Matrix_Term) + Noise_Term]
