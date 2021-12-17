@@ -1,0 +1,3 @@
+class LinearObject:
+
+    pass
