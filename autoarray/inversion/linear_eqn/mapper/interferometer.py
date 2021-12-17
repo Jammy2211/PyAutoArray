@@ -85,7 +85,7 @@ class AbstractLEqMapperInterferometer(AbstractLEqMapper):
         return mapped_reconstructed_image_of_mappers
 
 
-class LEqInterferometerMapping(AbstractLEqMapperInterferometer):
+class LEqInterferometerMapperMapping(AbstractLEqMapperInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,
@@ -296,7 +296,7 @@ class LEqInterferometerWTilde(AbstractLEqMapperInterferometer):
         )
 
 
-class LEqInterferometerLinearOperator(AbstractLEqMapperInterferometer):
+class LEqInterferometerMapperPyLops(AbstractLEqMapperInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,

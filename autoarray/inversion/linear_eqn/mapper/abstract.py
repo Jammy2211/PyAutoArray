@@ -96,7 +96,9 @@ class AbstractLEqMapper:
         raise NotImplementedError
 
     @profile_func
-    def mapped_reconstructed_image_of_mappers_from(self, reconstruction) -> Array2D:
+    def mapped_reconstructed_image_of_mappers_from(
+        self, reconstruction
+    ) -> List[Array2D]:
         raise NotImplementedError
 
     @property

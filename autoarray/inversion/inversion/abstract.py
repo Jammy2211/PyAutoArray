@@ -10,10 +10,7 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
-from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImaging
-from autoarray.inversion.linear_eqn.mapper.interferometer import (
-    AbstractLEqMapperInterferometer,
-)
+from autoarray.inversion.linear_eqn.combine import LEqCombine
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
@@ -26,7 +23,7 @@ class AbstractInversion:
     def __init__(
         self,
         data: Union[Visibilities, Array2D],
-        leq: Union[AbstractLEqMapperImaging, AbstractLEqMapperInterferometer],
+        leq: LEqCombine,
         regularization_list: [AbstractRegularization],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -93,7 +90,7 @@ class AbstractInversion:
 
     @property
     def reconstruction_of_mappers(self):
-        return self.leq.source_quantity_of_mappers_from(
+        return self.leq.leq_mapper.source_quantity_of_mappers_from(
             source_quantity=self.reconstruction
         )
 
@@ -131,7 +128,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.leq.mapped_reconstructed_image_of_mappers_from(
+        return self.leq.leq_mapper.mapped_reconstructed_image_of_mappers_from(
             reconstruction=self.reconstruction
         )
 
@@ -276,7 +273,9 @@ class AbstractInversion:
 
     @property
     def errors_of_mappers(self):
-        return self.leq.source_quantity_of_mappers_from(source_quantity=self.errors)
+        return self.leq.leq_mapper.source_quantity_of_mappers_from(
+            source_quantity=self.errors
+        )
 
     @property
     def regularization_weights_of_mappers(self):
@@ -286,7 +285,7 @@ class AbstractInversion:
         ]
 
     @property
-    def residual_map_of_mappers(self,) -> List[np.ndarray]:
+    def residual_map_of_mappers(self) -> List[np.ndarray]:
 
         residual_map_of_mappers = []
 

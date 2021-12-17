@@ -7,8 +7,8 @@ from autoarray.mock.mock import MockDataset
 from autoarray.mock.mock import MockFit
 from autoarray.mock.mock import MockMapper
 from autoarray.mock.mock import MockRegularization
-from autoarray.mock.mock import MockLEq
-from autoarray.mock.mock import MockLEqImaging
+from autoarray.mock.mock import MockLEqMapper
+from autoarray.mock.mock import MockLEqMapperImaging
 from autoarray.mock.mock import MockInversion
 
 # def test__set_w_tilde():
@@ -82,8 +82,10 @@ def test__set_relocated_grid():
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
-    leq_0 = MockLEq(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
-    leq_1 = MockLEq(mapper_list=[MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))])
+    leq_0 = MockLEqMapper(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
+    leq_1 = MockLEqMapper(
+        mapper_list=[MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))]
+    )
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
@@ -95,8 +97,8 @@ def test__set_relocated_grid():
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
-    leq_0 = MockLEq(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
-    leq_1 = MockLEq(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
+    leq_0 = MockLEqMapper(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
+    leq_1 = MockLEqMapper(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
@@ -121,8 +123,10 @@ def test__set_mapper_list():
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
-    leq_0 = MockLEq(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
-    leq_1 = MockLEq(mapper_list=[MockMapper(mapping_matrix=2.0 * np.ones((3, 2)))])
+    leq_0 = MockLEqMapper(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
+    leq_1 = MockLEqMapper(
+        mapper_list=[MockMapper(mapping_matrix=2.0 * np.ones((3, 2)))]
+    )
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
@@ -134,8 +138,8 @@ def test__set_mapper_list():
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
-    leq_0 = MockLEq(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
-    leq_1 = MockLEq(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
+    leq_0 = MockLEqMapper(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
+    leq_1 = MockLEqMapper(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
@@ -147,13 +151,13 @@ def test__set_mapper_list():
 
     # Multiple mappers pre inversion still preloads full mapper list.
 
-    leq_0 = MockLEq(
+    leq_0 = MockLEqMapper(
         mapper_list=[
             MockMapper(mapping_matrix=np.ones((3, 2))),
             MockMapper(mapping_matrix=np.ones((3, 2))),
         ]
     )
-    leq_1 = MockLEq(
+    leq_1 = MockLEqMapper(
         mapper_list=[
             MockMapper(mapping_matrix=np.ones((3, 2))),
             MockMapper(mapping_matrix=np.ones((3, 2))),
@@ -201,8 +205,8 @@ def test__set_operated_mapping_matrix_with_preloads():
         [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
     )
 
-    leq_0 = MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
-    leq_1 = MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_1)
+    leq_0 = MockLEqMapperImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    leq_1 = MockLEqMapperImaging(blurred_mapping_matrix=blurred_mapping_matrix_1)
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
@@ -220,8 +224,8 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     # LEq's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
-    leq_0 = MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
-    leq_1 = MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    leq_0 = MockLEqMapperImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    leq_1 = MockLEqMapperImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
 
     inversion_0 = MockInversion(
         leq=leq_0,
@@ -288,7 +292,7 @@ def test__set_regularization_matrix_and_term():
 
     fit_0 = MockFit(
         inversion=MockInversion(
-            leq=MockLEq(mapper_list=[MockMapper()]),
+            leq=MockLEqMapper(mapper_list=[MockMapper()]),
             log_det_regularization_matrix_term=1,
             regularization_list=[regularization],
             preloads=preloads,
@@ -296,7 +300,7 @@ def test__set_regularization_matrix_and_term():
     )
     fit_1 = MockFit(
         inversion=MockInversion(
-            leq=MockLEq(mapper_list=[MockMapper()]),
+            leq=MockLEqMapper(mapper_list=[MockMapper()]),
             log_det_regularization_matrix_term=1,
             regularization_list=[regularization],
             preloads=preloads,

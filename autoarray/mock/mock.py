@@ -10,6 +10,7 @@ from autoarray.inversion.linear_eqn.mapper.imaging import AbstractLEqMapperImagi
 from autoarray.inversion.linear_eqn.mapper.abstract import AbstractLEqMapper
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.linear_eqn.combine import LEqCombine
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
 from autoarray.type import Grid2DLike
 
@@ -177,7 +178,7 @@ class MockLinearObject(LinearObject):
         return self.mapping_matrix
 
 
-class MockLEq(AbstractLEqMapper):
+class MockLEqMapper(AbstractLEqMapper):
     def __init__(
         self,
         noise_map=None,
@@ -261,7 +262,7 @@ class MockLEq(AbstractLEqMapper):
         return self._mapped_reconstructed_image_of_mappers
 
 
-class MockLEqImaging(AbstractLEqMapperImaging):
+class MockLEqMapperImaging(AbstractLEqMapperImaging):
     def __init__(
         self,
         noise_map=None,
@@ -284,11 +285,16 @@ class MockLEqImaging(AbstractLEqMapperImaging):
         return self._blurred_mapping_matrix
 
 
+class MockLEqCombine(LEqCombine):
+
+    pass
+
+
 class MockInversion(InversionMatrices):
     def __init__(
         self,
         data=None,
-        leq: Union[MockLEq, MockLEqImaging] = None,
+        leq: Union[MockLEqCombine] = None,
         regularization_list: List[MockRegularization] = None,
         data_vector=None,
         regularization_matrix=None,

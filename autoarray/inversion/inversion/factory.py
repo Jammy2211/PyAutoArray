@@ -7,16 +7,17 @@ from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.inversion.linear_eqn.mapper.imaging import LEqImagingWTilde
-from autoarray.inversion.linear_eqn.mapper.imaging import LEqImagingMapping
+from autoarray.inversion.linear_eqn.mapper.imaging import LEqImagingMapperWTilde
+from autoarray.inversion.linear_eqn.mapper.imaging import LEqImagingMapperMapping
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.linear_operator import InversionLinearOperator
 from autoarray.inversion.linear_eqn.mapper.interferometer import (
-    LEqInterferometerMapping,
+    LEqInterferometerMapperMapping,
 )
 from autoarray.inversion.linear_eqn.mapper.interferometer import (
-    LEqInterferometerLinearOperator,
+    LEqInterferometerMapperPyLops,
 )
+from autoarray.inversion.linear_eqn.combine import LEqCombine
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
@@ -81,7 +82,7 @@ def inversion_imaging_unpacked_from(
 
     if use_w_tilde:
 
-        leq = LEqImagingWTilde(
+        leq_mapper = LEqImagingMapperWTilde(
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
@@ -91,12 +92,14 @@ def inversion_imaging_unpacked_from(
 
     else:
 
-        leq = LEqImagingMapping(
+        leq_mapper = LEqImagingMapperMapping(
             noise_map=noise_map,
             convolver=convolver,
             mapper_list=mapper_list,
             profiling_dict=profiling_dict,
         )
+
+    leq = LEqCombine(leq_mapper=leq_mapper)
 
     return InversionMatrices(
         data=image,
@@ -120,7 +123,7 @@ def inversion_interferometer_unpacked_from(
 ):
     if not settings.use_linear_operators:
 
-        leq = LEqInterferometerMapping(
+        leq_mapper = LEqInterferometerMapperMapping(
             noise_map=noise_map,
             transformer=transformer,
             mapper_list=mapper_list,
@@ -129,12 +132,14 @@ def inversion_interferometer_unpacked_from(
 
     else:
 
-        leq = LEqInterferometerLinearOperator(
+        leq_mapper = LEqInterferometerMapperPyLops(
             noise_map=noise_map,
             transformer=transformer,
             mapper_list=mapper_list,
             profiling_dict=profiling_dict,
         )
+
+    leq = LEqCombine(leq_mapper=leq_mapper)
 
     if not settings.use_linear_operators:
 

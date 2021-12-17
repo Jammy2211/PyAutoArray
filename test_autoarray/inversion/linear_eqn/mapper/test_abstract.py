@@ -4,7 +4,7 @@ import pytest
 
 
 import autoarray as aa
-from autoarray.mock.mock import MockMapper, MockLEq
+from autoarray.mock.mock import MockMapper, MockLEqMapper
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -14,7 +14,7 @@ def test__mapping_matrix():
     mapper_0 = MockMapper(mapping_matrix=np.ones((2, 2)))
     mapper_1 = MockMapper(mapping_matrix=2.0 * np.ones((2, 3)))
 
-    leq = MockLEq(mapper_list=[mapper_0, mapper_1])
+    leq = MockLEqMapper(mapper_list=[mapper_0, mapper_1])
 
     mapping_matrix = np.array([[1.0, 1.0, 2.0, 2.0, 2.0], [1.0, 1.0, 2.0, 2.0, 2.0]])
 

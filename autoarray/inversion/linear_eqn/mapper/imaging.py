@@ -106,7 +106,7 @@ class AbstractLEqMapperImaging(AbstractLEqMapper):
         )
 
 
-class LEqImagingWTilde(AbstractLEqMapperImaging):
+class LEqImagingMapperWTilde(AbstractLEqMapperImaging):
     def __init__(
         self,
         noise_map: Array2D,
@@ -360,7 +360,7 @@ class LEqImagingWTilde(AbstractLEqMapperImaging):
         return mapped_reconstructed_image_of_mappers
 
 
-class LEqImagingMapping(AbstractLEqMapperImaging):
+class LEqImagingMapperMapping(AbstractLEqMapperImaging):
     def __init__(
         self,
         noise_map: Array2D,
