@@ -173,12 +173,12 @@ class LEqImagingWTilde(AbstractLEqImaging):
             [
                 leq_util.data_vector_via_w_tilde_data_imaging_from(
                     w_tilde_data=w_tilde_data,
-                    data_to_pix_unique=mapper.data_unique_mappings.data_to_pix_unique,
-                    data_weights=mapper.data_unique_mappings.data_weights,
-                    pix_lengths=mapper.data_unique_mappings.pix_lengths,
-                    pix_pixels=mapper.pixels,
+                    data_to_pix_unique=linear_obj.data_unique_mappings.data_to_pix_unique,
+                    data_weights=linear_obj.data_unique_mappings.data_weights,
+                    pix_lengths=linear_obj.data_unique_mappings.pix_lengths,
+                    pix_pixels=linear_obj.pixels,
                 )
-                for mapper in self.linear_obj_list
+                for linear_obj in self.linear_obj_list
             ]
         )
 
@@ -236,7 +236,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         there is only one mapper and regularization it is bypassed.
         """
 
-        if self.has_one_mapper:
+        if len(self.linear_obj_list) == 1:
 
             return leq_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                 curvature_preload=self.w_tilde.curvature_preload,

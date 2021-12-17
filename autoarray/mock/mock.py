@@ -2,7 +2,7 @@ import numpy as np
 from typing import List, Tuple, Union
 
 from autoarray.preloads import Preloads
-from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj import LinearObjFunc
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.abstract import AbstractMapper
@@ -57,6 +57,18 @@ class MockConvolver:
 
     def convolve_mapping_matrix(self, mapping_matrix):
         return self.blurred_mapping_matrix
+
+
+class MockLinearObjFunc(LinearObjFunc):
+    def __init__(self, sub_slim_shape=None, sub_size=None, mapping_matrix=None):
+
+        super().__init__(sub_slim_shape=sub_slim_shape, sub_size=sub_size)
+
+        self._mapping_matrix = mapping_matrix
+
+    @property
+    def mapping_matrix(self) -> np.ndarray:
+        return self._mapping_matrix
 
 
 class MockPixelizationGrid:
@@ -164,16 +176,6 @@ class MockMapper(AbstractMapper):
 
     @property
     def mapping_matrix(self):
-        return self._mapping_matrix
-
-
-class MockLinearObj(LinearObj):
-    def __init__(self, mapping_matrix=None):
-
-        self._mapping_matrix = mapping_matrix
-
-    @property
-    def mapping_matrix(self) -> np.ndarray:
         return self._mapping_matrix
 
 

@@ -6,7 +6,10 @@ import autoarray as aa
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 
-from autoarray.mock.mock import MockLinearObj
+from autoarray.mock.mock import MockLinearObjFunc
+
+
+# TODO : NEed to figure out how we blur linear light profile with blurring gird.
 
 
 def test__inversion_matrices__leqs_mapping__linear_obj():
@@ -25,7 +28,7 @@ def test__inversion_matrices__leqs_mapping__linear_obj():
         sub_size=1,
     )
 
-    linear_obj = MockLinearObj(mapping_matrix=np.full(fill_value=0.5, shape=(5, 1)))
+    linear_obj = MockLinearObjFunc(mapping_matrix=np.full(fill_value=0.5, shape=(5, 1)))
 
     image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
     noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
@@ -39,6 +42,45 @@ def test__inversion_matrices__leqs_mapping__linear_obj():
         dataset=masked_imaging,
         linear_obj_list=[linear_obj],
         settings=aa.SettingsInversion(check_solution=False),
+    )
+
+    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
+
+def test__inversion_matrices__leqs_w_tile__linear_obj():
+
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, False, True, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, True, False, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ],
+        pixel_scales=2.0,
+        sub_size=1,
+    )
+
+    linear_obj = MockLinearObjFunc(
+        sub_slim_shape=mask.sub_shape_slim,
+        sub_size=mask.sub_size,
+        mapping_matrix=np.full(fill_value=0.5, shape=(5, 1)),
+    )
+
+    image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+    noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+    psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
+
+    imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
+
+    masked_imaging = imaging.apply_mask(mask=mask)
+
+    inversion = aa.Inversion(
+        dataset=masked_imaging,
+        linear_obj_list=[linear_obj],
+        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)

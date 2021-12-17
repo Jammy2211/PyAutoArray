@@ -32,6 +32,7 @@ from .inversion.inversion.factory import (
 from .inversion.mappers.abstract import mapper as Mapper
 from .inversion.pixelizations.settings import SettingsPixelization
 from .inversion.linear_obj import LinearObj
+from .inversion.linear_obj import LinearObjFunc
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
 from .mock import fixtures

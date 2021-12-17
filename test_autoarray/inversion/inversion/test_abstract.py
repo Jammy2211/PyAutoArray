@@ -5,7 +5,7 @@ import pytest
 import autoarray as aa
 
 from autoarray.mock.mock import (
-    MockLinearObj,
+    MockLinearObjFunc,
     MockMapper,
     MockRegularization,
     MockLEq,
@@ -24,7 +24,7 @@ def test__mapper_list__filters_other_objects():
         leq=MockLEq(
             linear_obj_list=[
                 MockMapper(pixels=1),
-                MockLinearObj(),
+                MockLinearObjFunc(),
                 MockMapper(pixels=2),
             ]
         )
@@ -92,7 +92,7 @@ def test__reconstruction_dict():
 
     reconstruction = np.array([0.0, 1.0, 1.0, 1.0])
 
-    linear_obj = MockLinearObj()
+    linear_obj = MockLinearObjFunc()
     mapper = MockMapper(pixels=3)
 
     inversion = MockInversion(
@@ -103,7 +103,7 @@ def test__reconstruction_dict():
 
     reconstruction = np.array([0.0, 1.0, 1.0, 2.0, 2.0, 2.0])
 
-    linear_obj = MockLinearObj()
+    linear_obj = MockLinearObjFunc()
     mapper_0 = MockMapper(pixels=2)
     mapper_1 = MockMapper(pixels=3)
 
@@ -118,7 +118,7 @@ def test__reconstruction_dict():
 
 def test__mapped_reconstructed_data():
 
-    linear_obj_0 = MockLinearObj()
+    linear_obj_0 = MockLinearObjFunc()
 
     mapped_reconstructed_data_dict = {linear_obj_0: np.ones(3)}
 
@@ -132,7 +132,7 @@ def test__mapped_reconstructed_data():
     assert (inversion.mapped_reconstructed_data_dict[linear_obj_0] == np.ones(3)).all()
     assert (inversion.mapped_reconstructed_data == np.ones(3)).all()
 
-    linear_obj_1 = MockLinearObj()
+    linear_obj_1 = MockLinearObjFunc()
 
     mapped_reconstructed_data_dict = {
         linear_obj_0: np.ones(2),
@@ -155,7 +155,7 @@ def test__mapped_reconstructed_data():
 
 def test__mapped_reconstructed_image():
 
-    linear_obj_0 = MockLinearObj()
+    linear_obj_0 = MockLinearObjFunc()
 
     mapped_reconstructed_image_dict = {linear_obj_0: np.ones(3)}
 
@@ -169,7 +169,7 @@ def test__mapped_reconstructed_image():
     assert (inversion.mapped_reconstructed_image_dict[linear_obj_0] == np.ones(3)).all()
     assert (inversion.mapped_reconstructed_image == np.ones(3)).all()
 
-    linear_obj_1 = MockLinearObj()
+    linear_obj_1 = MockLinearObjFunc()
 
     mapped_reconstructed_image_dict = {
         linear_obj_0: np.ones(2),
