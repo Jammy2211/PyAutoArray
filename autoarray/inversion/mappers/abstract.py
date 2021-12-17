@@ -4,6 +4,8 @@ from typing import Dict, Optional
 
 from autoconf import cached_property
 
+from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj import UniqueMappings
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DDelaunay
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
@@ -48,7 +50,7 @@ def mapper(
         )
 
 
-class AbstractMapper:
+class AbstractMapper(LinearObj):
     def __init__(
         self,
         source_grid_slim,
@@ -229,11 +231,3 @@ class PixForSub:
 
         self.mappings = mappings
         self.sizes = sizes
-
-
-class UniqueMappings:
-    def __init__(self, data_to_pix_unique, data_weights, pix_lengths):
-
-        self.data_to_pix_unique = data_to_pix_unique.astype("int")
-        self.data_weights = data_weights
-        self.pix_lengths = pix_lengths.astype("int")

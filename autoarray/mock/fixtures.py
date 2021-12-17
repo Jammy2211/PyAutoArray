@@ -384,7 +384,7 @@ def make_rectangular_inversion_7x7_3x3():
 
     return inversion_from(
         dataset=make_masked_imaging_7x7(),
-        mapper_list=[make_rectangular_mapper_7x7_3x3()],
+        linear_obj_list=[make_rectangular_mapper_7x7_3x3()],
         regularization_list=[regularization],
     )
 
@@ -395,7 +395,7 @@ def make_voronoi_inversion_9_3x3():
 
     return inversion_from(
         dataset=make_masked_imaging_7x7(),
-        mapper_list=[make_voronoi_mapper_9_3x3()],
+        linear_obj_list=[make_voronoi_mapper_9_3x3()],
         regularization_list=[regularization],
     )
 

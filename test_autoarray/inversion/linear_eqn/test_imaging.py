@@ -19,7 +19,7 @@ class TestLEqImaging:
     ):
 
         leq = MockLEqImaging(
-            convolver=convolver_7x7, mapper_list=[rectangular_mapper_7x7_3x3]
+            convolver=convolver_7x7, linear_obj_list=[rectangular_mapper_7x7_3x3]
         )
 
         assert leq.blurred_mapping_matrix[0, 0] == pytest.approx(1.0, 1e-4)
@@ -28,7 +28,7 @@ class TestLEqImaging:
 
         leq = MockLEqImaging(
             convolver=convolver,
-            mapper_list=[rectangular_mapper_7x7_3x3, rectangular_mapper_7x7_3x3],
+            linear_obj_list=[rectangular_mapper_7x7_3x3, rectangular_mapper_7x7_3x3],
         )
 
         blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]])
@@ -64,7 +64,7 @@ class TestLEqImaging:
                 noise_map=np.ones(9),
                 convolver=MockConvolver(matrix_shape),
                 w_tilde=w_tilde,
-                mapper_list=MockMapper(
+                linear_obj_list=MockMapper(
                     mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
                 ),
             )

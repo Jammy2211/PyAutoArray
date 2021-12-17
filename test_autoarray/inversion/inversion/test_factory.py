@@ -6,6 +6,43 @@ import autoarray as aa
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 
+from autoarray.mock.mock import MockLinearObj
+
+
+def test__inversion_matrices__leqs_mapping__linear_obj():
+
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, False, True, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, True, False, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ],
+        pixel_scales=2.0,
+        sub_size=1,
+    )
+
+    linear_obj = MockLinearObj(mapping_matrix=np.full(fill_value=0.5, shape=(5, 1)))
+
+    image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+    noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+    psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
+
+    imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
+
+    masked_imaging = imaging.apply_mask(mask=mask)
+
+    inversion = aa.Inversion(
+        dataset=masked_imaging,
+        linear_obj_list=[linear_obj],
+        settings=aa.SettingsInversion(check_solution=False),
+    )
+
+    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
 
 def test__inversion_matrices__leqs_mapping__rectangular_mapper():
 
@@ -111,7 +148,7 @@ def test__inversion_matrices__leqs_mapping__rectangular_mapper():
 
     inversion = aa.Inversion(
         dataset=masked_imaging,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
@@ -220,7 +257,7 @@ def test__inversion_matrices__leqs_mapping__voronoi_mapper():
 
     inversion = aa.Inversion(
         dataset=masked_imaging,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
@@ -328,7 +365,7 @@ def test__inversion_matrices__leqs_mapping__delaunay_mapper():
 
     inversion = aa.Inversion(
         dataset=masked_imaging,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
@@ -379,21 +416,23 @@ def test__inversion_matrices__leqs_w_tilde__identical_values_as_leqs_mapping():
 
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping_matrices = aa.Inversion(
         dataset=masked_imaging,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert (inversion_w_tilde.data == inversion_mapping_matrices.data).all()
     assert (inversion_w_tilde.noise_map == inversion_mapping_matrices.noise_map).all()
-    assert inversion_w_tilde.mapper_list == inversion_mapping_matrices.mapper_list
+    assert (
+        inversion_w_tilde.linear_obj_list == inversion_mapping_matrices.linear_obj_list
+    )
     assert (
         inversion_w_tilde.regularization_list
         == inversion_mapping_matrices.regularization_list
@@ -491,7 +530,7 @@ def test__inversion_matrices__leqs_x2_mapping():
 
     inversion = aa.Inversion(
         dataset=masked_imaging,
-        mapper_list=[mapper_0, mapper_1],
+        linear_obj_list=[mapper_0, mapper_1],
         regularization_list=[reg, reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
@@ -599,7 +638,7 @@ def test__inversion_matrices__leqs_mapping__rectangular_mapper__matrix_formalism
 
     inversion = aa.Inversion(
         dataset=interferometer,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
@@ -654,7 +693,7 @@ def test__inversion_matirces__leqs_mapping__voronoi_mapper__matrix_formalism():
 
     inversion = aa.Inversion(
         dataset=interferometer,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
@@ -709,7 +748,7 @@ def test__inversion_matirces__leqs_mapping__delaunay_mapper__matrix_formalism():
 
     inversion = aa.Inversion(
         dataset=interferometer,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(check_solution=False),
     )
@@ -763,7 +802,7 @@ def test__inversion_linear_operator__leqs_linear_operator_formalism():
 
     inversion = aa.Inversion(
         dataset=interferometer,
-        mapper_list=[mapper],
+        linear_obj_list=[mapper],
         regularization_list=[reg],
         settings=aa.SettingsInversion(use_linear_operators=True, check_solution=False),
     )

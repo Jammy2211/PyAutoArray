@@ -50,15 +50,15 @@ class InversionPlotter(Plotter):
 
     def get_visuals_2d_for_data(self) -> Visuals2D:
         return self.get_2d.via_mapper_for_data_from(
-            mapper=self.inversion.mapper_list[0]
+            mapper=self.inversion.linear_obj_list[0]
         )
 
     def as_mapper(self, solution_vector) -> Array2D:
-        return self.inversion.mapper_list[0].reconstruction_from(solution_vector)
+        return self.inversion.linear_obj_list[0].reconstruction_from(solution_vector)
 
     def mapper_plotter_from(self, mapper_index: int) -> MapperPlotter:
         """
-        Returns a `MapperPlotter` corresponding to the `Mapper` in the `Inversion`'s `mapper_list` given an input
+        Returns a `MapperPlotter` corresponding to the `Mapper` in the `Inversion`'s `linear_obj_list` given an input
         `mapper_index`.
 
         Parameters
@@ -72,7 +72,7 @@ class InversionPlotter(Plotter):
             An object that plots mappers which is used for plotting attributes of the inversion.
         """
         return MapperPlotter(
-            mapper=self.inversion.mapper_list[mapper_index],
+            mapper=self.inversion.linear_obj_list[mapper_index],
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
             include_2d=self.include_2d,
@@ -120,7 +120,7 @@ class InversionPlotter(Plotter):
         Parameters
         ----------
         mapper_index
-            The index of the `Mapper` in the `Inversion`'s `mapper_list` that is plotted.
+            The index of the `Mapper` in the `Inversion`'s `linear_obj_list` that is plotted.
         reconstructed_image
             Whether or not to make a 2D plot (via `imshow`) of the mapper's reconstructed image data.
         reconstruction
@@ -249,7 +249,7 @@ class InversionPlotter(Plotter):
         Parameters
         ----------
         mapper_index
-            The index of the `Mapper` in the `Inversion`'s `mapper_list` that is plotted.
+            The index of the `Mapper` in the `Inversion`'s `linear_obj_list` that is plotted.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """

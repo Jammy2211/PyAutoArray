@@ -89,15 +89,18 @@ class InversionMatrices(AbstractInversion):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
+        if not self.has_mapper:
+            return self.curvature_matrix
+
         if self.has_one_mapper:
 
             curvature_reg_matrix = inversion_util.curvature_reg_matrix_from(
                 curvature_matrix=self.curvature_matrix,
                 regularization_matrix=self.regularization_matrix,
-                pixel_neighbors=self.mapper_list[
+                pixel_neighbors=self.linear_obj_list[
                     0
                 ].source_pixelization_grid.pixel_neighbors,
-                pixel_neighbors_sizes=self.mapper_list[
+                pixel_neighbors_sizes=self.linear_obj_list[
                     0
                 ].source_pixelization_grid.pixel_neighbors.sizes,
             )

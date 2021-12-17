@@ -4,7 +4,13 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.mock.mock import MockMapper, MockRegularization, MockLEq, MockInversion
+from autoarray.mock.mock import (
+    MockLinearObj,
+    MockMapper,
+    MockRegularization,
+    MockLEq,
+    MockInversion,
+)
 
 from autoarray import exc
 
@@ -12,9 +18,25 @@ from autoarray import exc
 directory = path.dirname(path.realpath(__file__))
 
 
+def test__mapper_list__filters_other_objects():
+
+    inversion = MockInversion(
+        leq=MockLEq(
+            linear_obj_list=[
+                MockMapper(pixels=1),
+                MockLinearObj(),
+                MockMapper(pixels=2),
+            ]
+        )
+    )
+
+    assert inversion.mapper_list[0].pixels == 1
+    assert inversion.mapper_list[1].pixels == 2
+
+
 def test__regularization_matrix():
 
-    leq = MockLEq(mapper_list=[MockMapper(), MockMapper()])
+    leq = MockLEq(linear_obj_list=[MockMapper(), MockMapper()])
 
     reg_0 = MockRegularization(regularization_matrix=np.ones((2, 2)))
     reg_1 = MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
@@ -49,7 +71,7 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
     )
 
     # noinspection PyTypeChecker
-    leq = MockLEq(noise_map=np.ones(9), mapper_list=MockMapper())
+    leq = MockLEq(noise_map=np.ones(9), linear_obj_list=MockMapper())
 
     inversion = MockInversion(leq=leq, preloads=preloads)
 
@@ -71,7 +93,8 @@ def test__reconstruction_of_mappers():
     reconstruction = np.ones(3)
 
     inversion = MockInversion(
-        leq=MockLEq(mapper_list=[MockMapper(pixels=3)]), reconstruction=reconstruction
+        leq=MockLEq(linear_obj_list=[MockMapper(pixels=3)]),
+        reconstruction=reconstruction,
     )
 
     assert (inversion.reconstruction_of_mappers[0] == np.ones(3)).all()
@@ -79,7 +102,7 @@ def test__reconstruction_of_mappers():
     reconstruction = np.array([1.0, 1.0, 2.0, 2.0, 2.0])
 
     inversion = MockInversion(
-        leq=MockLEq(mapper_list=[MockMapper(pixels=2), MockMapper(pixels=3)]),
+        leq=MockLEq(linear_obj_list=[MockMapper(pixels=2), MockMapper(pixels=3)]),
         reconstruction=reconstruction,
     )
 
@@ -249,7 +272,8 @@ def test__brightest_reconstruction_pixel_and_centre():
     )
 
     inversion = MockInversion(
-        leq=MockLEq(mapper_list=[mapper]), reconstruction=np.array([2.0, 3.0, 5.0, 0.0])
+        leq=MockLEq(linear_obj_list=[mapper]),
+        reconstruction=np.array([2.0, 3.0, 5.0, 0.0]),
     )
 
     assert inversion.brightest_reconstruction_pixel_list[0] == 2

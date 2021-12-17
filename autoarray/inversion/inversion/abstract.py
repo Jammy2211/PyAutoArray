@@ -10,6 +10,7 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
+from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.linear_eqn.imaging import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.interferometer import AbstractLEqInterferometer
@@ -25,7 +26,7 @@ class AbstractInversion:
         self,
         data: Union[Visibilities, Array2D],
         leq: Union[AbstractLEqImaging, AbstractLEqInterferometer],
-        regularization_list: [AbstractRegularization],
+        regularization_list: Optional[List[AbstractRegularization]] = None,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -41,22 +42,34 @@ class AbstractInversion:
         self.profiling_dict = profiling_dict
 
     @property
+    def linear_obj_list(self):
+        return self.leq.linear_obj_list
+
+    @property
+    def mapper_list(self):
+
+        mapper_list = [
+            linear_obj if isinstance(linear_obj, AbstractMapper) else None
+            for linear_obj in self.linear_obj_list
+        ]
+
+        return list(filter(None, mapper_list))
+
+    @property
+    def has_mapper(self):
+        return len(self.mapper_list) > 0
+
+    @property
     def has_one_mapper(self):
-        if len(self.mapper_list) == 1:
-            return True
-        return False
+        return len(self.mapper_list) == 1
 
     @property
     def noise_map(self):
         return self.leq.noise_map
 
-    @property
-    def mapper_list(self):
-        return self.leq.mapper_list
-
     @cached_property
     @profile_func
-    def regularization_matrix(self) -> np.ndarray:
+    def regularization_matrix(self) -> Optional[np.ndarray]:
         """
         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
         linear algebra system we solve for using D and F above and is given by
@@ -72,9 +85,12 @@ class AbstractInversion:
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
 
+        if not self.has_mapper:
+            return None
+
         if self.has_one_mapper:
             return self.regularization_list[0].regularization_matrix_from(
-                mapper=self.mapper_list[0]
+                mapper=self.linear_obj_list[0]
             )
 
         return block_diag(
@@ -259,7 +275,7 @@ class AbstractInversion:
         brightest_reconstruction_pixel_centre_list = []
 
         for mapper, reconstruction in zip(
-            self.mapper_list, self.reconstruction_of_mappers
+            self.linear_obj_list, self.reconstruction_of_mappers
         ):
 
             brightest_reconstruction_pixel = np.argmax(reconstruction)
@@ -279,7 +295,7 @@ class AbstractInversion:
     @property
     def regularization_weights_of_mappers(self):
         return [
-            regularization.regularization_weights_from(mapper=self.mapper_list[0])
+            regularization.regularization_weights_from(mapper=self.linear_obj_list[0])
             for regularization in self.regularization_list
         ]
 
@@ -290,7 +306,7 @@ class AbstractInversion:
 
         for mapper_index in range(self.leq.total_mappers):
 
-            mapper = self.mapper_list[mapper_index]
+            mapper = self.linear_obj_list[mapper_index]
             reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
 
             residual_map = inversion_util.inversion_residual_map_from(
@@ -311,7 +327,7 @@ class AbstractInversion:
 
         for mapper_index in range(self.leq.total_mappers):
 
-            mapper = self.mapper_list[mapper_index]
+            mapper = self.linear_obj_list[mapper_index]
             reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
 
             normalized_map = inversion_util.inversion_normalized_residual_map_from(
@@ -333,7 +349,7 @@ class AbstractInversion:
 
         for mapper_index in range(self.leq.total_mappers):
 
-            mapper = self.mapper_list[mapper_index]
+            mapper = self.linear_obj_list[mapper_index]
             reconstruction_of_mapper = self.reconstruction_of_mappers[mapper_index]
 
             chi_squared_map = inversion_util.inversion_chi_squared_map_from(
@@ -350,4 +366,4 @@ class AbstractInversion:
 
     @property
     def total_mappers(self):
-        return len(self.mapper_list)
+        return len(self.linear_obj_list)

@@ -15,7 +15,8 @@ class InversionLinearOperator(AbstractInversion):
 
         curvature_matrix_approx = np.multiply(
             np.sum(self.leq.noise_map.weight_list_ordered_1d),
-            self.mapper_list[0].mapping_matrix.T @ self.mapper_list[0].mapping_matrix,
+            self.linear_obj_list[0].mapping_matrix.T
+            @ self.linear_obj_list[0].mapping_matrix,
         )
 
         return np.add(curvature_matrix_approx, self.regularization_matrix)
@@ -35,7 +36,9 @@ class InversionLinearOperator(AbstractInversion):
         S is the vector of reconstructed inversion values.
         """
 
-        Aop = pylops.MatrixMult(sparse.bsr_matrix(self.mapper_list[0].mapping_matrix))
+        Aop = pylops.MatrixMult(
+            sparse.bsr_matrix(self.linear_obj_list[0].mapping_matrix)
+        )
 
         Fop = self.leq.transformer
 

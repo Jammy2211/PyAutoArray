@@ -3,28 +3,27 @@ from typing import Dict, List, Optional, Union
 
 from autoarray.numba_util import profile_func
 
+from autoarray.inversion.linear_obj import LinearObj
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.inversion.mappers.rectangular import MapperRectangular
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
 
 class AbstractLEq:
     def __init__(
         self,
         noise_map: Union[Array2D, VisibilitiesNoiseMap],
-        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
 
         self.noise_map = noise_map
-        self.mapper_list = mapper_list
+        self.linear_obj_list = linear_obj_list
 
         self.profiling_dict = profiling_dict
 
     @property
     def has_one_mapper(self):
-        if len(self.mapper_list) == 1:
+        if len(self.linear_obj_list) == 1:
             return True
         return False
 
@@ -41,7 +40,7 @@ class AbstractLEq:
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
 
-        return np.hstack([mapper.mapping_matrix for mapper in self.mapper_list])
+        return np.hstack([mapper.mapping_matrix for mapper in self.linear_obj_list])
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
@@ -80,7 +79,7 @@ class AbstractLEq:
 
         index = 0
 
-        for mapper in self.mapper_list:
+        for mapper in self.linear_obj_list:
             source_quantity_of_mappers.append(
                 source_quantity[index : index + mapper.pixels]
             )
@@ -103,4 +102,4 @@ class AbstractLEq:
 
     @property
     def total_mappers(self):
-        return len(self.mapper_list)
+        return len(self.linear_obj_list)

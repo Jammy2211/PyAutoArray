@@ -82,8 +82,10 @@ def test__set_relocated_grid():
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
-    leq_0 = MockLEq(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
-    leq_1 = MockLEq(mapper_list=[MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))])
+    leq_0 = MockLEq(linear_obj_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
+    leq_1 = MockLEq(
+        linear_obj_list=[MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))]
+    )
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
@@ -95,8 +97,8 @@ def test__set_relocated_grid():
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
-    leq_0 = MockLEq(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
-    leq_1 = MockLEq(mapper_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
+    leq_0 = MockLEq(linear_obj_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
+    leq_1 = MockLEq(linear_obj_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
@@ -107,54 +109,54 @@ def test__set_relocated_grid():
     assert (preloads.relocated_grid == np.ones((3, 2))).all()
 
 
-def test__set_mapper_list():
+def test__set_linear_obj_list():
 
     # LEq is None so there is no mapper, thus preload mapper to None.
 
     fit_0 = MockFit(inversion=None)
     fit_1 = MockFit(inversion=None)
 
-    preloads = aa.Preloads(mapper_list=1)
-    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(linear_obj_list=1)
+    preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.mapper_list is None
+    assert preloads.linear_obj_list is None
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
-    leq_0 = MockLEq(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
-    leq_1 = MockLEq(mapper_list=[MockMapper(mapping_matrix=2.0 * np.ones((3, 2)))])
+    leq_0 = MockLEq(linear_obj_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
+    leq_1 = MockLEq(linear_obj_list=[MockMapper(mapping_matrix=2.0 * np.ones((3, 2)))])
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
 
-    preloads = aa.Preloads(mapper_list=1)
-    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(linear_obj_list=1)
+    preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.mapper_list is None
+    assert preloads.linear_obj_list is None
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
-    leq_0 = MockLEq(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
-    leq_1 = MockLEq(mapper_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
+    leq_0 = MockLEq(linear_obj_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
+    leq_1 = MockLEq(linear_obj_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
 
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
 
-    preloads = aa.Preloads(mapper_list=1)
-    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(linear_obj_list=1)
+    preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert (preloads.mapper_list[0].mapping_matrix == np.ones((3, 2))).all()
+    assert (preloads.linear_obj_list[0].mapping_matrix == np.ones((3, 2))).all()
 
     # Multiple mappers pre inversion still preloads full mapper list.
 
     leq_0 = MockLEq(
-        mapper_list=[
+        linear_obj_list=[
             MockMapper(mapping_matrix=np.ones((3, 2))),
             MockMapper(mapping_matrix=np.ones((3, 2))),
         ]
     )
     leq_1 = MockLEq(
-        mapper_list=[
+        linear_obj_list=[
             MockMapper(mapping_matrix=np.ones((3, 2))),
             MockMapper(mapping_matrix=np.ones((3, 2))),
         ]
@@ -163,11 +165,11 @@ def test__set_mapper_list():
     fit_0 = MockFit(inversion=MockInversion(leq=leq_0))
     fit_1 = MockFit(inversion=MockInversion(leq=leq_1))
 
-    preloads = aa.Preloads(mapper_list=1)
-    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(linear_obj_list=1)
+    preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert (preloads.mapper_list[0].mapping_matrix == np.ones((3, 2))).all()
-    assert (preloads.mapper_list[1].mapping_matrix == np.ones((3, 2))).all()
+    assert (preloads.linear_obj_list[0].mapping_matrix == np.ones((3, 2))).all()
+    assert (preloads.linear_obj_list[1].mapping_matrix == np.ones((3, 2))).all()
 
 
 def test__set_operated_mapping_matrix_with_preloads():
@@ -288,7 +290,7 @@ def test__set_regularization_matrix_and_term():
 
     fit_0 = MockFit(
         inversion=MockInversion(
-            leq=MockLEq(mapper_list=[MockMapper()]),
+            leq=MockLEq(linear_obj_list=[MockMapper()]),
             log_det_regularization_matrix_term=1,
             regularization_list=[regularization],
             preloads=preloads,
@@ -296,7 +298,7 @@ def test__set_regularization_matrix_and_term():
     )
     fit_1 = MockFit(
         inversion=MockInversion(
-            leq=MockLEq(mapper_list=[MockMapper()]),
+            leq=MockLEq(linear_obj_list=[MockMapper()]),
             log_det_regularization_matrix_term=1,
             regularization_list=[regularization],
             preloads=preloads,

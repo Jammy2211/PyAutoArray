@@ -11,7 +11,6 @@ from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
-from autoarray.type import Grid2DLike
 
 
 class MockMask:
@@ -169,12 +168,12 @@ class MockMapper(AbstractMapper):
 
 
 class MockLinearObj(LinearObj):
-    def __init__(self, mapping_matrix):
+    def __init__(self, mapping_matrix=None):
 
         self._mapping_matrix = mapping_matrix
 
     @property
-    def mapping_matrix_from(self) -> np.ndarray:
+    def mapping_matrix(self) -> np.ndarray:
         return self._mapping_matrix
 
 
@@ -182,7 +181,7 @@ class MockLEq(AbstractLEq):
     def __init__(
         self,
         noise_map=None,
-        mapper_list: List[Union[MockMapper]] = None,
+        linear_obj_list: List[Union[MockMapper]] = None,
         operated_mapping_matrix=None,
         data_vector=None,
         curvature_matrix=None,
@@ -190,7 +189,7 @@ class MockLEq(AbstractLEq):
         mapped_reconstructed_image_of_mappers=None,
     ):
 
-        super().__init__(noise_map=noise_map, mapper_list=mapper_list)
+        super().__init__(noise_map=noise_map, linear_obj_list=linear_obj_list)
 
         self._operated_mapping_matrix = operated_mapping_matrix
         self._data_vector = data_vector
@@ -267,12 +266,12 @@ class MockLEqImaging(AbstractLEqImaging):
         self,
         noise_map=None,
         convolver=None,
-        mapper_list=None,
+        linear_obj_list=None,
         blurred_mapping_matrix=None,
     ):
 
         super().__init__(
-            noise_map=noise_map, convolver=convolver, mapper_list=mapper_list
+            noise_map=noise_map, convolver=convolver, linear_obj_list=linear_obj_list
         )
 
         self._blurred_mapping_matrix = blurred_mapping_matrix

@@ -1,15 +1,14 @@
 import numpy as np
 from scipy.linalg import block_diag
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
+from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
-from autoarray.inversion.mappers.rectangular import MapperRectangular
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.dataset.imaging import WTildeImaging
 
 from autoarray.inversion.linear_eqn import leq_util
@@ -20,7 +19,7 @@ class AbstractLEqImaging(AbstractLEq):
         self,
         noise_map: Array2D,
         convolver: Convolver,
-        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -37,7 +36,7 @@ class AbstractLEqImaging(AbstractLEq):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper_list : inversion.Mapper
+        linear_obj_list : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -58,7 +57,9 @@ class AbstractLEqImaging(AbstractLEq):
         self.convolver = convolver
 
         super().__init__(
-            noise_map=noise_map, mapper_list=mapper_list, profiling_dict=profiling_dict
+            noise_map=noise_map,
+            linear_obj_list=linear_obj_list,
+            profiling_dict=profiling_dict,
         )
 
     @cached_property
@@ -91,7 +92,7 @@ class AbstractLEqImaging(AbstractLEq):
         in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
         """
         return self.convolver.convolve_mapping_matrix(
-            mapping_matrix=self.mapper_list[mapper_index].mapping_matrix
+            mapping_matrix=self.linear_obj_list[mapper_index].mapping_matrix
         )
 
     @property
@@ -112,7 +113,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         noise_map: Array2D,
         convolver: Convolver,
         w_tilde: WTildeImaging,
-        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -131,7 +132,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper_list : inversion.Mapper
+        linear_obj_list : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         """
 
@@ -141,7 +142,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         super().__init__(
             noise_map=noise_map,
             convolver=convolver,
-            mapper_list=mapper_list,
+            linear_obj_list=linear_obj_list,
             profiling_dict=profiling_dict,
         )
 
@@ -176,7 +177,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
                     pix_lengths=mapper.data_unique_mappings.pix_lengths,
                     pix_pixels=mapper.pixels,
                 )
-                for mapper in self.mapper_list
+                for mapper in self.linear_obj_list
             ]
         )
 
@@ -195,7 +196,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        if len(self.mapper_list) == 1:
+        if len(self.linear_obj_list) == 1:
             return self.curvature_matrix_diag
 
         curvature_matrix = self.curvature_matrix_diag
@@ -204,7 +205,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
             mapper_index_0=0, mapper_index_1=1
         )
 
-        pixels_diag = self.mapper_list[0].pixels
+        pixels_diag = self.linear_obj_list[0].pixels
 
         curvature_matrix[0:pixels_diag, pixels_diag:] = curvature_matrix_off_diag
 
@@ -240,12 +241,12 @@ class LEqImagingWTilde(AbstractLEqImaging):
                 curvature_preload=self.w_tilde.curvature_preload,
                 curvature_indexes=self.w_tilde.indexes,
                 curvature_lengths=self.w_tilde.lengths,
-                data_to_pix_unique=self.mapper_list[
+                data_to_pix_unique=self.linear_obj_list[
                     0
                 ].data_unique_mappings.data_to_pix_unique,
-                data_weights=self.mapper_list[0].data_unique_mappings.data_weights,
-                pix_lengths=self.mapper_list[0].data_unique_mappings.pix_lengths,
-                pix_pixels=self.mapper_list[0].pixels,
+                data_weights=self.linear_obj_list[0].data_unique_mappings.data_weights,
+                pix_lengths=self.linear_obj_list[0].data_unique_mappings.pix_lengths,
+                pix_pixels=self.linear_obj_list[0].pixels,
             )
 
         return block_diag(
@@ -259,7 +260,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
                     pix_lengths=mapper.data_unique_mappings.pix_lengths,
                     pix_pixels=mapper.pixels,
                 )
-                for mapper in self.mapper_list
+                for mapper in self.linear_obj_list
             ]
         )
 
@@ -278,8 +279,8 @@ class LEqImagingWTilde(AbstractLEqImaging):
         `LEq` and an input second mapper.
         """
 
-        mapper_0 = self.mapper_list[mapper_index_0]
-        mapper_1 = self.mapper_list[mapper_index_1]
+        mapper_0 = self.linear_obj_list[mapper_index_0]
+        mapper_1 = self.linear_obj_list[mapper_index_1]
 
         curvature_matrix_off_diag_0 = leq_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
@@ -336,7 +337,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
 
         for mapper_index in range(self.total_mappers):
 
-            mapper = self.mapper_list[mapper_index]
+            mapper = self.linear_obj_list[mapper_index]
             reconstruction = reconstruction_of_mappers[mapper_index]
 
             mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
@@ -365,7 +366,7 @@ class LEqImagingMapping(AbstractLEqImaging):
         self,
         noise_map: Array2D,
         convolver: Convolver,
-        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -384,14 +385,14 @@ class LEqImagingMapping(AbstractLEqImaging):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper_list : inversion.Mapper
+        linear_obj_list : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         """
 
         super().__init__(
             noise_map=noise_map,
             convolver=convolver,
-            mapper_list=mapper_list,
+            linear_obj_list=linear_obj_list,
             profiling_dict=profiling_dict,
         )
 
@@ -467,7 +468,7 @@ class LEqImagingMapping(AbstractLEqImaging):
         for mapper_index in range(self.total_mappers):
 
             reconstruction = reconstruction_of_mappers[mapper_index]
-            mapper = self.mapper_list[mapper_index]
+            mapper = self.linear_obj_list[mapper_index]
             blurred_mapping_matrix = self.blurred_mapping_matrix_of_mapper(
                 mapper_index=mapper_index
             )
@@ -477,8 +478,7 @@ class LEqImagingMapping(AbstractLEqImaging):
             )
 
             mapped_reconstructed_image = Array2D(
-                array=mapped_reconstructed_image,
-                mask=mapper.source_grid_slim.mask.mask_sub_1,
+                array=mapped_reconstructed_image, mask=self.noise_map.mask.mask_sub_1
             )
 
             mapped_reconstructed_image_of_mappers.append(mapped_reconstructed_image)

@@ -5,8 +5,7 @@ from autoconf import cached_property
 
 from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 from autoarray.dataset.interferometer import WTildeInterferometer
-from autoarray.inversion.mappers.rectangular import MapperRectangular
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 from autoarray.operators.transformer import TransformerNUFFT
@@ -25,12 +24,14 @@ class AbstractLEqInterferometer(AbstractLEq):
         self,
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
-        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
 
         super().__init__(
-            noise_map=noise_map, mapper_list=mapper_list, profiling_dict=profiling_dict
+            noise_map=noise_map,
+            linear_obj_list=linear_obj_list,
+            profiling_dict=profiling_dict,
         )
 
         self.transformer = transformer
@@ -47,7 +48,7 @@ class AbstractLEqInterferometer(AbstractLEq):
 
     def transformed_mapping_matrix_of_mapper(self, mapper_index: int) -> np.ndarray:
         return self.transformer.transform_mapping_matrix(
-            mapping_matrix=self.mapper_list[mapper_index].mapping_matrix
+            mapping_matrix=self.linear_obj_list[mapper_index].mapping_matrix
         )
 
     @property
@@ -68,7 +69,7 @@ class AbstractLEqInterferometer(AbstractLEq):
 
         for mapper_index in range(self.total_mappers):
 
-            mapper = self.mapper_list[mapper_index]
+            mapper = self.linear_obj_list[mapper_index]
             reconstruction = reconstruction_of_mappers[mapper_index]
 
             mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_mapping_matrix_from(
@@ -90,7 +91,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         self,
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
-        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -109,7 +110,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper_list : inversion.Mapper
+        linear_obj_list : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -133,7 +134,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         super().__init__(
             noise_map=noise_map,
             transformer=transformer,
-            mapper_list=mapper_list,
+            linear_obj_list=linear_obj_list,
             profiling_dict=profiling_dict,
         )
 
@@ -198,7 +199,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
         w_tilde: WTildeInterferometer,
-        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
@@ -218,7 +219,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper_list : inversion.Mapper
+        linear_obj_list : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -231,7 +232,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         super().__init__(
             noise_map=noise_map,
             transformer=transformer,
-            mapper_list=mapper_list,
+            linear_obj_list=linear_obj_list,
             profiling_dict=profiling_dict,
         )
 
@@ -268,11 +269,11 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         """
         return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
             curvature_preload=self.w_tilde.curvature_preload,
-            pix_index_for_sub_slim_index=self.mapper_list[
+            pix_index_for_sub_slim_index=self.linear_obj_list[
                 0
             ].pix_index_for_sub_slim_index,
             native_index_for_slim_index=self.transformer.real_space_mask.mask.native_index_for_slim_index,
-            pixelization_pixels=self.mapper_list[0].pixels,
+            pixelization_pixels=self.linear_obj_list[0].pixels,
         )
 
     @profile_func
@@ -301,7 +302,7 @@ class LEqInterferometerMapperPyLops(AbstractLEqInterferometer):
         self,
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
-        mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
@@ -319,7 +320,7 @@ class LEqInterferometerMapperPyLops(AbstractLEqInterferometer):
             Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
-        mapper_list : inversion.Mapper
+        linear_obj_list : inversion.Mapper
             The util between the image-pixels (via its / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
@@ -343,7 +344,7 @@ class LEqInterferometerMapperPyLops(AbstractLEqInterferometer):
         super().__init__(
             noise_map=noise_map,
             transformer=transformer,
-            mapper_list=mapper_list,
+            linear_obj_list=linear_obj_list,
             profiling_dict=profiling_dict,
         )
 
