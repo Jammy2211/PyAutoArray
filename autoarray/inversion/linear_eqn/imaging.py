@@ -8,6 +8,7 @@ from autoarray.numba_util import profile_func
 from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
+from autoarray.inversion.linear_object import LinearObject
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.dataset.imaging import WTildeImaging
@@ -21,6 +22,7 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         noise_map: Array2D,
         convolver: Convolver,
         mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_object_list: List[LinearObject],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -58,7 +60,7 @@ class AbstractLinearEqnImaging(AbstractLinearEqn):
         self.convolver = convolver
 
         super().__init__(
-            noise_map=noise_map, mapper_list=mapper_list, profiling_dict=profiling_dict
+            noise_map=noise_map, mapper_list=mapper_list, linear_object_list=linear_object_list, profiling_dict=profiling_dict
         )
 
     @cached_property
@@ -366,6 +368,7 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
         noise_map: Array2D,
         convolver: Convolver,
         mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_object_list: List[LinearObject],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -392,6 +395,7 @@ class LinearEqnImagingMapping(AbstractLinearEqnImaging):
             noise_map=noise_map,
             convolver=convolver,
             mapper_list=mapper_list,
+            linear_object_list=linear_object_list,
             profiling_dict=profiling_dict,
         )
 

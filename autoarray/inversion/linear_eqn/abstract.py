@@ -7,6 +7,7 @@ from autoarray.numba_util import profile_func
 
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.inversion.linear_object import LinearObject
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
@@ -16,11 +17,13 @@ class AbstractLinearEqn:
         self,
         noise_map: Union[Array2D, VisibilitiesNoiseMap],
         mapper_list: List[Union[MapperRectangular, MapperVoronoi]],
+        linear_object_list: List[LinearObject],
         profiling_dict: Optional[Dict] = None,
     ):
 
         self.noise_map = noise_map
         self.mapper_list = mapper_list
+        self.linear_object_list = linear_object_list
 
         self.profiling_dict = profiling_dict
 

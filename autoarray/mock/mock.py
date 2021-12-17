@@ -1,7 +1,8 @@
 import numpy as np
-from typing import List, Union
+from typing import List, Tuple, Union
 
 from autoarray.preloads import Preloads
+from autoarray.inversion.linear_object import LinearObject
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.mappers.abstract import AbstractMapper
@@ -10,7 +11,7 @@ from autoarray.inversion.linear_eqn.abstract import AbstractLinearEqn
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
-
+from autoarray.type import Grid2DLike
 
 class MockMask:
     def __init__(self, native_index_for_slim_index=None):
@@ -165,6 +166,15 @@ class MockMapper(AbstractMapper):
     def mapping_matrix(self):
         return self._mapping_matrix
 
+
+class MockLinearObject(LinearObject):
+
+    def __init__(self, mapping_matrix):
+
+        self.mapping_matrix = mapping_matrix
+
+    def mapping_matrix_from(self, grid: Grid2DLike) -> np.ndarray:
+        return self.mapping_matrix
 
 class MockLinearEqn(AbstractLinearEqn):
     def __init__(
