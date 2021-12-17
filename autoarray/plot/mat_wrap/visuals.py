@@ -172,6 +172,7 @@ class Visuals2D(AbstractVisuals):
             )
 
         if self.pix_indexes is not None and mapper is not None:
+
             indexes = mapper.pix_indexes_for_slim_indexes(pix_indexes=self.pix_indexes)
 
             plotter.index_scatter.scatter_grid_indexes(
