@@ -15,12 +15,45 @@ from autoarray.numba_util import profile_func
 
 class Delaunay(AbstractPixelization):
     def __init__(self):
-        """Abstract base class for a Voronoi pixelization, which represents pixels as an irgrid of Voronoi \
-         cells which can form any shape, size or tesselation.
+        """
+        A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
+        dataset) with a 2D grid of pixels. The Delaunay pixelization represents pixels as an irregular 2D grid of
+        Delaunay triangles.
 
-         The grid's coordinates are paired to Voronoi pixels as the nearest-neighbors of the Voronoi \
-        pixel-centers.
-         """
+        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay pixelization's pixels)
+        have (y,x) coordinates in in two reference frames:
+
+        - `data`: the original reference frame of the masked data.
+
+        - `source`: a reference frame where grids in the `data` reference frame are transformed to a new reference
+        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
+        on them).
+
+        The grid associated with the masked dataset and Delaunay pixelization have the following variable names:
+
+        - `grid_slim`: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
+        given the variable name `data_grid_slim` or in the transformed source frame with the variable
+        name `source_grid_slim`).
+
+        - `pixelization_grid`: the (y,x) grid of Delaunay pixels which are associated with the `grid_slim` (y,x)
+        coordinates (association is always performed in the `source` reference frame).
+
+        A Delaunay pixelization has four grids associated with it: `data_grid_slim`, `source_grid_slim`,
+        `data_pixelization_grid` and `source_pixelization_grid`.
+
+        If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
+
+        Each (y,x) coordinate in the `source_grid_slim` is associated with the three nearest Delaunay triangle
+        corners (when joined together with straight lines these corners form Delaunay triangles). This association
+        uses weighted interpolation whereby `source_grid_slim` coordinates are associated to the Delaunay corners with
+        a higher weight if they are a closer distance to one another.
+
+        In the project `PyAutoLens`, one's data is a masked 2D image. Its `data_grid_slim` is a 2D grid where every
+        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
+        this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
+        The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
+        the `image-plane` and `source` frame the `source-plane`.
+        """
         super().__init__()
 
     def mapper_from(
@@ -33,17 +66,17 @@ class Delaunay(AbstractPixelization):
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
-        """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
+        """Setup a Delaunay mapper from an adaptive-magnification pixelization, as follows:
 
         1) (before this routine is called), setup the 'pix' grid as part of the grid, which corresponds to a \
            sparse set of pixels in the image-plane which are traced to form the pixel centres.
         2) If a border is supplied, relocate all of the grid's grid, sub and pix grid pixels beyond the border.
         3) Determine the adaptive-magnification pixelization's pixel centres, by extracting them from the relocated \
            pix grid.
-        4) Use these pixelization centres to setup the Voronoi pixelization.
-        5) Determine the neighbors of every Voronoi cell in the Voronoi pixelization.
-        6) Setup the geometry of the pixelizatioon using the relocated sub-grid and Voronoi pixelization.
-        7) Setup a Voronoi mapper from all of the above quantities.
+        4) Use these pixelization centres to setup the Delaunay pixelization.
+        5) Determine the neighbors of every Delaunay cell in the Delaunay pixelization.
+        6) Setup the geometry of the pixelizatioon using the relocated sub-grid and Delaunay pixelization.
+        7) Setup a Delaunay mapper from all of the above quantities.
 
         Parameters
         ----------
@@ -113,7 +146,7 @@ class Delaunay(AbstractPixelization):
         sparse_index_for_slim_index=None,
     ):
         """
-        The relocated pixelization grid is now used to create the pixelization's Voronoi grid using
+        The relocated pixelization grid is now used to create the pixelization's Delaunay grid using
         the scipy.spatial library.
 
         The array `sparse_index_for_slim_index` encodes the closest source pixel of every pixel on the

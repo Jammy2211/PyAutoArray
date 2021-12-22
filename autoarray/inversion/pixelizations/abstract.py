@@ -12,33 +12,37 @@ from autoarray.numba_util import profile_func
 class AbstractPixelization:
     def __init__(self):
         """
-        Abstract base class for a pixelization, which discretizes a grid of transformed (y,x) coordinates into pixels.
+        A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
+        dataset) which are aligned with a masked dataset with a 2D grid of pixels.
 
-        The grids associated with a pixelization have coordinates in one or both of the following two reference frames:
+        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the pixelization's pixels) have (y,x)
+        coordinates in in two reference frames:
 
         - `data`: the original reference frame of the masked data.
 
-        - `source`: a reference frame where the grids in the `data` reference frame are transformed to create new grids
-        of (y,x) coordinates.
+        - `source`: a reference frame where grids in the `data` reference frame are transformed to a new reference
+        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
+        on them).
 
-        The pixelization class deals with the following two types of grids:
+        The grid associated with the masked dataset and pixelization have the following variable names:
 
-        - `grid_slim`: the (y,x) grid of coordinates associated with the original masked data.
+        - `grid_slim`: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
+        given the variable name `data_grid_slim` or in the transformed source frame with the variable
+        name `source_grid_slim`).
 
-        - `pixelization_grid`: the (y,x) grid of coordinates which are used to discretize the `grid_slim` (this
-        discretization is always performed in the `source` reference frame).
+        - `pixelization_grid`: the (y,x) grid of the pixelization's pixels which are associated with
+        the `grid_slim` (y,x)  coordinates (association is always performed in the `source` reference frame).
 
         A pixelization therefore has up to four grids associated with it: `data_grid_slim`, `source_grid_slim`,
         `data_pixelization_grid` and `source_pixelization_grid`.
 
-        If a transformation of coordinates is not applied, then the `data` frame and `source` frame are identical,
-        as are their associated `grid_slim` and `pixelization_grid`.
+        If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
-        In the project PyAutoLens, we have a 2D image which is masked with a circular mask. Its `data_grid_slim` is a
-        2D grid aligned with this circle, where each (y,x) coordinate is aligned with the centre of an image pixel.
-        A "lensing transformation" is performed which maps this circular grid of (y,x) coordinates to a new grid of
-        coordinates in the `source` frame, where the pixelization is applied. Thus, in lensing terminology, the `data`
-        frame is the `image-plane` and `source` frame the `source-plane`.
+        In the project `PyAutoLens`, one's data is a masked 2D image. Its `data_grid_slim` is a 2D grid where every
+        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
+        this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
+        The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
+        the `image-plane` and `source` frame the `source-plane`.
         """
 
     def mapper_from(
