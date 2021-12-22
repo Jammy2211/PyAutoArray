@@ -114,10 +114,10 @@ class Voronoi(AbstractPixelization):
 
         self.profiling_dict = profiling_dict
 
-        relocated_source_grid_slim = self.relocate_grid_via_border(
+        relocated_source_grid_slim = self.relocated_grid_from(
             source_grid_slim=source_grid_slim, settings=settings, preloads=preloads
         )
-        relocated_source_pixelization_grid = self.relocate_pixelization_grid_via_border_from(
+        relocated_source_pixelization_grid = self.relocated_pixelization_grid_from(
             source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
             settings=settings,
@@ -125,7 +125,7 @@ class Voronoi(AbstractPixelization):
 
         try:
 
-            source_pixelization_grid = self.make_pixelization_grid_from(
+            source_pixelization_grid = self.pixelization_grid_from(
                 source_grid_slim=relocated_source_grid_slim,
                 source_pixelization_grid=relocated_source_pixelization_grid,
                 sparse_index_for_slim_index=source_pixelization_grid.sparse_index_for_slim_index,
@@ -143,7 +143,7 @@ class Voronoi(AbstractPixelization):
             raise e
 
     @profile_func
-    def relocate_pixelization_grid_via_border_from(
+    def relocated_pixelization_grid_from(
         self,
         source_grid_slim: Grid2D,
         source_pixelization_grid: Grid2DSparse,
@@ -183,7 +183,7 @@ class Voronoi(AbstractPixelization):
         return source_pixelization_grid
 
     @profile_func
-    def make_pixelization_grid_from(
+    def pixelization_grid_from(
         self,
         source_grid_slim=None,
         source_pixelization_grid=None,

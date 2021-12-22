@@ -61,7 +61,7 @@ class AbstractPixelization:
         return self.__dict__ == other.__dict__ and self.__class__ is other.__class__
 
     @profile_func
-    def relocate_grid_via_border(
+    def relocated_grid_from(
         self,
         source_grid_slim: Grid2D,
         settings: SettingsPixelization = SettingsPixelization(),
@@ -97,7 +97,7 @@ class AbstractPixelization:
 
             return preloads.relocated_grid
 
-    def relocate_pixelization_grid_via_border_from(
+    def relocated_pixelization_grid_from(
         self,
         source_grid_slim: Grid2D,
         source_pixelization_grid: Grid2DSparse,
@@ -105,7 +105,7 @@ class AbstractPixelization:
     ):
         raise NotImplementedError
 
-    def make_pixelization_grid_from(
+    def pixelization_grid_from(
         self,
         source_grid_slim=None,
         source_pixelization_grid=None,

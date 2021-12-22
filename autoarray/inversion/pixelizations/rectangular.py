@@ -119,12 +119,10 @@ class Rectangular(AbstractPixelization):
 
         self.profiling_dict = profiling_dict
 
-        relocated_grid = self.relocate_grid_via_border(
+        relocated_grid = self.relocated_grid_from(
             source_grid_slim=source_grid_slim, settings=settings, preloads=preloads
         )
-        pixelization_grid = self.make_pixelization_grid_from(
-            source_grid_slim=relocated_grid
-        )
+        pixelization_grid = self.pixelization_grid_from(source_grid_slim=relocated_grid)
 
         return MapperRectangular(
             source_grid_slim=relocated_grid,
@@ -134,7 +132,7 @@ class Rectangular(AbstractPixelization):
         )
 
     @profile_func
-    def make_pixelization_grid_from(
+    def pixelization_grid_from(
         self,
         source_grid_slim: Optional[Grid2D] = None,
         source_pixelization_grid: Optional[Grid2D] = None,
