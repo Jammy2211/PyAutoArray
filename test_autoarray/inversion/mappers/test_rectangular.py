@@ -3,7 +3,7 @@ import numpy as np
 import autoarray as aa
 
 
-def test__pix_index_for_sub_slim_index__matches_util():
+def test__pix_indexes_for_sub_slim_index__matches_util():
 
     grid = aa.Grid2D.manual_slim(
         [
@@ -29,7 +29,7 @@ def test__pix_index_for_sub_slim_index__matches_util():
         source_grid_slim=grid, source_pixelization_grid=pixelization_grid
     )
 
-    pix_index_for_sub_slim_index_util = np.array(
+    pix_indexes_for_sub_slim_index_util = np.array(
         [
             aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
                 grid_scaled_2d_slim=grid,
@@ -42,7 +42,7 @@ def test__pix_index_for_sub_slim_index__matches_util():
 
     assert (
         mapper.pix_indexes_for_sub_slim_index.mappings
-        == pix_index_for_sub_slim_index_util
+        == pix_indexes_for_sub_slim_index_util
     ).all()
 
 

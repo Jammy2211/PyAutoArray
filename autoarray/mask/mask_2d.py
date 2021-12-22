@@ -574,7 +574,7 @@ class AbstractMask2D(AbstractMask):
         )
 
     @property
-    def edge_mask(self):
+    def edge_mask(self) -> "Mask2D":
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
@@ -590,7 +590,7 @@ class AbstractMask2D(AbstractMask):
         )
 
     @property
-    def border_mask(self):
+    def border_mask(self) -> "Mask2D":
         """
         The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
@@ -606,7 +606,7 @@ class AbstractMask2D(AbstractMask):
         )
 
     @cached_property
-    def sub_mask_index_for_sub_mask_1d_index(self):
+    def sub_mask_index_for_sub_mask_1d_index(self) -> np.ndarray:
         """
         A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates.
         """
@@ -615,7 +615,7 @@ class AbstractMask2D(AbstractMask):
         ).astype("int")
 
     @cached_property
-    def slim_index_for_sub_slim_index(self):
+    def slim_index_for_sub_slim_index(self) -> np.ndarray:
         """
         The util between every sub-pixel and its host pixel.
 

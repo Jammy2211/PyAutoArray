@@ -318,7 +318,7 @@ class TestDataToPixUnique:
         image_pixels = 2
         sub_size = 2
 
-        pix_index_for_sub_slim_index = np.array(
+        pix_indexes_for_sub_slim_index = np.array(
             [[0, -1], [0, -1], [0, -1], [1, -1], [2, -1], [1, -1], [0, -1], [2, -1]]
         ).astype("int")
         pix_indexes_for_sub_slim_sizes = np.array([1, 1, 1, 1, 1, 1, 1, 1]).astype(
@@ -339,7 +339,7 @@ class TestDataToPixUnique:
 
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=image_pixels,
-            pix_indexes_for_sub_slim_index=pix_index_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
             pix_indexes_for_sub_slim_sizes=pix_indexes_for_sub_slim_sizes,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=sub_size,
@@ -351,7 +351,7 @@ class TestDataToPixUnique:
         assert (data_weights[1, :] == np.array([0.5, 0.25, 0.25, 0.0])).all()
         assert (pix_lengths == np.array([2, 3])).all()
 
-        pix_index_for_sub_slim_index = np.array(
+        pix_indexes_for_sub_slim_index = np.array(
             [[0, 1], [0, 1], [0, 2], [1, -1], [2, -1], [1, -1], [0, -1], [2, -1]]
         ).astype("int")
         pix_indexes_for_sub_slim_sizes = np.array([2, 2, 2, 1, 1, 1, 1, 1]).astype(
@@ -372,7 +372,7 @@ class TestDataToPixUnique:
 
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=image_pixels,
-            pix_indexes_for_sub_slim_index=pix_index_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
             pix_indexes_for_sub_slim_sizes=pix_indexes_for_sub_slim_sizes,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=sub_size,

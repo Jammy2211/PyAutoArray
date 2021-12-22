@@ -268,9 +268,9 @@ class LinearEqnInterferometerWTilde(AbstractLinearEqnInterferometer):
         """
         return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
             curvature_preload=self.w_tilde.curvature_preload,
-            pix_index_for_sub_slim_index=self.mapper_list[
+            pix_indexes_for_sub_slim_index=self.mapper_list[
                 0
-            ].pix_index_for_sub_slim_index,
+            ].pix_indexes_for_sub_slim_index,
             native_index_for_slim_index=self.transformer.real_space_mask.mask.native_index_for_slim_index,
             pixelization_pixels=self.mapper_list[0].pixels,
         )
