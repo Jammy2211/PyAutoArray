@@ -369,10 +369,4 @@ def voronoi_neighbors_from(
         pixel_neighbors_index[pair0] += 1
         pixel_neighbors_index[pair1] += 1
 
-    # print('pixel_neighbors:')
-    # print(pixel_neighbors)
-
-    # print('pixel_neighbors shape:')
-    # print(np.shape(pixel_neighbors))
-
     return pixel_neighbors, pixel_neighbors_sizes

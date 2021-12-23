@@ -2,6 +2,7 @@ import copy
 import numpy as np
 import pickle
 from typing import List, Optional, Type, Union
+import warnings
 
 from autoconf import conf
 from autoarray.structures.abstract_structure import AbstractStructure
@@ -255,7 +256,12 @@ class AbstractDataset:
     def signal_to_noise_map(self) -> Union[Array1D, Array2D]:
         """
         The estimated signal-to-noise_maps mappers of the image.
+
+        Warnings airse when masked native noise-maps are used, whose masked entries are given values of 0.0. We
+        uses the warnings module to surpress these RunTimeWarnings.
         """
+        warnings.filterwarnings("ignore")
+
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map

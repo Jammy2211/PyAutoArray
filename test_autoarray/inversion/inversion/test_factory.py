@@ -28,7 +28,11 @@ def test__inversion_matrices__leqs_mapping__linear_obj():
         sub_size=1,
     )
 
-    linear_obj = MockLinearObjFunc(mapping_matrix=np.full(fill_value=0.5, shape=(5, 1)))
+    linear_obj = MockLinearObjFunc(
+        sub_slim_shape=5,
+        sub_size=1,
+        mapping_matrix=np.full(fill_value=0.5, shape=(5, 1)),
+    )
 
     image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
     noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)

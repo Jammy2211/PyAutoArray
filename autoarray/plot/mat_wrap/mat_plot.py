@@ -14,6 +14,8 @@ from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
+from autoarray.structures.arrays.two_d import array_2d_util
+
 from autoarray import exc
 from autoarray.plot.wrap import wrap_base as wb
 from autoarray.plot.wrap import wrap_1d as w1d
@@ -820,6 +822,23 @@ class MatPlot2D(AbstractMatPlot):
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
     ):
+
+        if source_pixelilzation_values is not None:
+
+            solution_array_2d = array_2d_util.array_2d_native_from(
+                array_2d_slim=source_pixelilzation_values,
+                mask_2d=np.full(
+                    fill_value=False, shape=mapper.source_pixelization_grid.shape_native
+                ),
+                sub_size=1,
+            )
+
+            source_pixelilzation_values = Array2D.manual(
+                array=solution_array_2d,
+                sub_size=1,
+                pixel_scales=mapper.source_pixelization_grid.pixel_scales,
+                origin=mapper.source_pixelization_grid.origin,
+            )
 
         extent = self.axis.config_dict.get("extent")
         extent = (

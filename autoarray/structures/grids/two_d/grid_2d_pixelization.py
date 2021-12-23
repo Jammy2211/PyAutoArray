@@ -485,19 +485,9 @@ class Grid2DDelaunay(AbstractStructure2D):
 
         indptr, indices = self.Delaunay.vertex_neighbor_vertices
 
-        # print(indptr)
-
         sizes = indptr[1:] - indptr[:-1]
 
-        # print(sizes)
-
         neighbors = -1 * np.ones(shape=(self.pixels, int(np.max(sizes))), dtype="int")
-
-        # print('Delaunay neighbors:')
-        # print(neighbors)
-
-        # print('Delaunay neighbor shape:')
-        # print(np.shape(neighbors))
 
         for k in range(self.pixels):
             neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]

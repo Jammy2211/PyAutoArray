@@ -305,7 +305,7 @@ class AbstractInversion:
                 reconstruction=self.reconstruction_dict[mapper],
                 data=self.data,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-                all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
+                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
             for mapper in self.mapper_list
         }
@@ -319,7 +319,7 @@ class AbstractInversion:
                 data=self.data,
                 noise_map_1d=self.noise_map.slim,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-                all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
+                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
             for mapper in self.mapper_list
         }
@@ -333,7 +333,7 @@ class AbstractInversion:
                 data=self.data,
                 noise_map_1d=self.noise_map.slim,
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
-                all_sub_slim_indexes_for_pix_index=mapper.all_sub_slim_indexes_for_pix_index,
+                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
             for mapper in self.mapper_list
         }

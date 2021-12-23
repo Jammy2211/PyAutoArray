@@ -123,7 +123,7 @@ def get_triangle_points_neighbours(relocated_grid, relocated_pixelization_grid):
 
 
 @numba_util.jit()
-def pixel_weights_from(
+def pixel_weights_delaunay_from(
     source_grid_slim,
     source_pixelization_grid,
     slim_index_for_sub_slim_index: np.ndarray,
@@ -304,7 +304,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         Voronoi grid.
     """
 
-    pix_index_for_sub_slim_index = np.zeros(shape=(grid.shape[0], 1))
+    pix_indexes_for_sub_slim_index = np.zeros(shape=(grid.shape[0], 1))
 
     for sub_slim_index in range(grid.shape[0]):
 
@@ -350,12 +350,12 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
                 sub_pixel_to_nearest_pix_distance
                 <= sub_pixel_to_neighboring_pix_distance
             ):
-                pix_index_for_sub_slim_index[sub_slim_index, 0] = nearest_pix_index
+                pix_indexes_for_sub_slim_index[sub_slim_index, 0] = nearest_pix_index
                 break
             else:
                 nearest_pix_index = neighboring_pix_index
 
-    return pix_index_for_sub_slim_index
+    return pix_indexes_for_sub_slim_index
 
 
 @numba_util.jit()

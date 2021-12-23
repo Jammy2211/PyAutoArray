@@ -27,9 +27,8 @@ class Constant(AbstractRegularization):
         self.coefficient = coefficient
         super(Constant, self).__init__()
 
-    def regularization_weights_from(self, mapper):
-        regularization_weights = self.coefficient * np.ones(mapper.pixels)
-        return mapper.reconstruction_from(solution_vector=regularization_weights)
+    def regularization_weights_from(self, mapper) -> np.ndarray:
+        return self.coefficient * np.ones(mapper.pixels)
 
     def regularization_matrix_from(self, mapper):
         return regularization_util.constant_regularization_matrix_from(

@@ -12,7 +12,7 @@ class SettingsPixelization:
         ----------
         use_border
             If `True`, all coordinates of both `source` frame grids have pixels outside their border relocated to
-            their edge (see `relocate_grid_via_border()`).
+            their edge (see `relocated_grid_from()`).
         is_stochastic
             Cetrain pixelizations can create different discretizations using the same parameters / inputs, by changing
             their random seed (e.g. changing the KMeans seed of the `VoronoiBrightnessImage` pixelizaiton). If `True`,
