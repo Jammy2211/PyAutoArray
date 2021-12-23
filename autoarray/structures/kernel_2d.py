@@ -269,7 +269,7 @@ class Kernel2D(Array2D):
             it is converted to a (float, float) structure.
         """
 
-        array = np.array([[1.0]])
+        array = np.array([[0.0, 0.0, 0.0],[0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
         return cls.manual_native(array=array, pixel_scales=pixel_scales)
 

@@ -185,7 +185,7 @@ def make_psf_3x3():
     return Kernel2D.ones(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
 
 
-def make_psf_no_blur_3x3():
+def make_psf_3x3_no_blur():
     return Kernel2D.no_blur(pixel_scales=(1.0, 1.0))
 
 
@@ -216,7 +216,7 @@ def make_imaging_7x7():
 def make_imaging_7x7_no_blur():
     return Imaging(
         image=make_image_7x7(),
-        psf=make_psf_no_blur_3x3(),
+        psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
         name="mock_imaging_7x7",
     )
