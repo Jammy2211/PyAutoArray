@@ -299,7 +299,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         )
 
 
-class LEqInterferometerMapperPyLops(AbstractLEqInterferometer):
+class LEqInterferometerMappingPyLops(AbstractLEqInterferometer):
     def __init__(
         self,
         noise_map: VisibilitiesNoiseMap,

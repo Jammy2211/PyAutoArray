@@ -29,8 +29,15 @@ from .inversion.inversion.factory import (
 from .inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
-from .inversion.mappers.abstract import mapper as Mapper
+from .inversion.mappers.factory import mapper_from as Mapper
+from .inversion.mappers.rectangular import MapperRectangular
+from .inversion.mappers.delaunay import MapperDelaunay
+from .inversion.mappers.voronoi import MapperVoronoi
 from .inversion.pixelizations.settings import SettingsPixelization
+from .inversion.linear_eqn.imaging import LEqImagingMapping
+from .inversion.linear_eqn.imaging import LEqImagingWTilde
+from .inversion.linear_eqn.interferometer import LEqInterferometerMapping
+from .inversion.linear_eqn.interferometer import LEqInterferometerMappingPyLops
 from .inversion.linear_obj import LinearObj
 from .inversion.linear_obj import LinearObjFunc
 from .mask.mask_1d import Mask1D

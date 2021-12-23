@@ -14,12 +14,14 @@ from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DDelaunay
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
 from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.layout.layout import Layout2D
 from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
@@ -211,7 +213,7 @@ def make_imaging_7x7():
     )
 
 
-def make_imaging_no_blur_7x7():
+def make_imaging_7x7_no_blur():
     return Imaging(
         image=make_image_7x7(),
         psf=make_psf_no_blur_3x3(),
@@ -221,9 +223,7 @@ def make_imaging_no_blur_7x7():
 
 
 def make_visibilities_7():
-    visibilities = Visibilities.full(shape_slim=(7,), fill_value=1.0)
-    visibilities[6] = -1.0 - 1.0j
-    return visibilities
+    return Visibilities.full(shape_slim=(7,), fill_value=1.0)
 
 
 def make_visibilities_noise_map_7():
@@ -244,11 +244,27 @@ def make_uv_wavelengths_7x2():
     )
 
 
+def make_uv_wavelengths_7x2_no_fft():
+    return np.ones(shape=(7, 2))
+
+
 def make_interferometer_7():
     return Interferometer(
         visibilities=make_visibilities_7(),
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
+        real_space_mask=make_sub_mask_2d_7x7(),
+        settings=SettingsInterferometer(
+            grid_class=Grid2D, sub_size=1, transformer_class=TransformerDFT
+        ),
+    )
+
+
+def make_interferometer_7_no_fft():
+    return Interferometer(
+        visibilities=make_visibilities_7(),
+        noise_map=make_visibilities_noise_map_7(),
+        uv_wavelengths=make_uv_wavelengths_7x2_no_fft(),
         real_space_mask=make_sub_mask_2d_7x7(),
         settings=SettingsInterferometer(
             grid_class=Grid2D, sub_size=1, transformer_class=TransformerDFT
@@ -295,9 +311,9 @@ def make_masked_imaging_7x7():
     return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
 
 
-def make_masked_imaging_no_blur_7x7():
+def make_masked_imaging_7x7_no_blur():
 
-    imaging_7x7 = make_imaging_no_blur_7x7()
+    imaging_7x7 = make_imaging_7x7_no_blur()
 
     return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
 
@@ -333,16 +349,35 @@ def make_fit_interferometer_7():
     return fit_interferometer
 
 
+def make_regularization_constant():
+    return Constant(coefficient=1.0)
+
+
 def make_rectangular_pixelization_grid_3x3():
-    return Grid2DRectangular.overlay_grid(grid=make_grid_2d_7x7(), shape_native=(3, 3))
-
-
-def make_rectangular_mapper_7x7_3x3():
-    return MapperRectangular(
-        source_grid_slim=make_grid_2d_7x7(),
-        source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
-        data_pixelization_grid=make_grid_2d_irregular_7x7(),
+    return Grid2DRectangular.overlay_grid(
+        grid=make_sub_grid_2d_7x7(), shape_native=(3, 3)
     )
+
+
+def make_delaunay_pixelization_grid_9():
+
+    grid_9 = Grid2D.manual_slim(
+        grid=[
+            [0.6, -0.3],
+            [0.5, -0.8],
+            [0.2, 0.1],
+            [0.0, 0.5],
+            [-0.3, -0.8],
+            [-0.6, -0.5],
+            [-0.4, -1.1],
+            [-1.2, 0.8],
+            [-1.5, 0.9],
+        ],
+        shape_native=(3, 3),
+        pixel_scales=1.0,
+    )
+
+    return Grid2DDelaunay(grid=grid_9)
 
 
 def make_voronoi_pixelization_grid_9():
@@ -371,32 +406,54 @@ def make_voronoi_pixelization_grid_9():
     )
 
 
+def make_rectangular_mapper_7x7_3x3():
+    return MapperRectangular(
+        source_grid_slim=make_sub_grid_2d_7x7(),
+        source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
+        data_pixelization_grid=None,
+    )
+
+
+def make_delaunay_mapper_9_3x3():
+    return MapperDelaunay(
+        source_grid_slim=make_sub_grid_2d_7x7(),
+        source_pixelization_grid=make_delaunay_pixelization_grid_9(),
+        data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
+    )
+
+
 def make_voronoi_mapper_9_3x3():
     return MapperVoronoi(
-        source_grid_slim=make_grid_2d_7x7(),
+        source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_voronoi_pixelization_grid_9(),
-        data_pixelization_grid=Grid2D.uniform(shape_native=(2, 2), pixel_scales=0.1),
+        data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
     )
 
 
 def make_rectangular_inversion_7x7_3x3():
-    regularization = Constant(coefficient=1.0)
 
     return inversion_from(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_rectangular_mapper_7x7_3x3()],
-        regularization_list=[regularization],
+        regularization_list=[make_regularization_constant()],
+    )
+
+
+def make_delaunay_inversion_9_3x3():
+
+    return inversion_from(
+        dataset=make_masked_imaging_7x7(),
+        linear_obj_list=[make_delaunay_mapper_9_3x3()],
+        regularization_list=[make_regularization_constant()],
     )
 
 
 def make_voronoi_inversion_9_3x3():
 
-    regularization = Constant(coefficient=1.0)
-
     return inversion_from(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_voronoi_mapper_9_3x3()],
-        regularization_list=[regularization],
+        regularization_list=[make_regularization_constant()],
     )
 
 

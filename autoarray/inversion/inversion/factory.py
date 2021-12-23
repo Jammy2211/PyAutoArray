@@ -13,7 +13,7 @@ from autoarray.inversion.linear_eqn.imaging import LEqImagingMapping
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.linear_operator import InversionLinearOperator
 from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerMapping
-from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerMapperPyLops
+from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerMappingPyLops
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
@@ -124,7 +124,7 @@ def inversion_interferometer_unpacked_from(
 
     else:
 
-        leq = LEqInterferometerMapperPyLops(
+        leq = LEqInterferometerMappingPyLops(
             noise_map=noise_map,
             transformer=transformer,
             linear_obj_list=linear_obj_list,

@@ -706,32 +706,30 @@ class DelaunayDrawer(AbstractMatWrap2D):
         xs_grid_1d = xs_grid.ravel()
         ys_grid_1d = ys_grid.ravel()
 
-        interpolating_values = self.delaunay_interpolation(
+        if values is None:
+            return
+
+        interpolating_values = self.delaunay_interpolation_from(
             delaunay=mapper.delaunay,
             interpolating_yx=np.vstack((ys_grid_1d, xs_grid_1d)).T,
             pixel_values=values,
         )
 
-        if values is not None:
+        vmin = cmap.vmin_from(array=values)
+        vmax = cmap.vmax_from(array=values)
 
-            vmin = cmap.vmin_from(array=values)
-            vmax = cmap.vmax_from(array=values)
+        color_values = np.where(values > vmax, vmax, values)
+        color_values = np.where(values < vmin, vmin, color_values)
 
-            color_values = np.where(values > vmax, vmax, values)
-            color_values = np.where(values < vmin, vmin, color_values)
+        cmap = plt.get_cmap(cmap.config_dict["cmap"])
 
-            cmap = plt.get_cmap(cmap.config_dict["cmap"])
+        if colorbar is not None:
 
-            if colorbar is not None:
-
-                colorbar = colorbar.set_with_color_values(
-                    cmap=cmap, color_values=color_values
-                )
-                if colorbar is not None and colorbar_tickparams is not None:
-                    colorbar_tickparams.set(cb=colorbar)
-
-        else:
-            cmap = plt.get_cmap("Greys")
+            colorbar = colorbar.set_with_color_values(
+                cmap=cmap, color_values=color_values
+            )
+            if colorbar is not None and colorbar_tickparams is not None:
+                colorbar_tickparams.set(cb=colorbar)
 
         plt.imshow(
             interpolating_values.reshape((nnn, nnn)),
@@ -766,7 +764,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
         return np.vstack((xpts, ypts)).T, delaunay.simplices
 
-    def delaunay_interpolation(self, delaunay, interpolating_yx, pixel_values):
+    def delaunay_interpolation_from(self, delaunay, interpolating_yx, pixel_values):
 
         simplex_index_for_interpolating_points = delaunay.find_simplex(interpolating_yx)
         simplices = delaunay.simplices

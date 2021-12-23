@@ -139,9 +139,19 @@ def make_imaging_7x7():
     return fixtures.make_imaging_7x7()
 
 
+@pytest.fixture(name="imaging_7x7_no_blur")
+def make_imaging_7x7_no_blur():
+    return fixtures.make_imaging_7x7_no_blur()
+
+
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7():
     return fixtures.make_masked_imaging_7x7()
+
+
+@pytest.fixture(name="masked_imaging_7x7_no_blur")
+def make_masked_imaging_7x7_no_blur():
+    return fixtures.make_masked_imaging_7x7_no_blur()
 
 
 @pytest.fixture(name="fit_imaging_7x7")
@@ -174,6 +184,11 @@ def make_interferometer_7():
     return fixtures.make_interferometer_7()
 
 
+@pytest.fixture(name="interferometer_7_no_fft")
+def make_interferometer_7_no_fft():
+    return fixtures.make_interferometer_7_no_fft()
+
+
 @pytest.fixture(name="interferometer_7_lop")
 def make_interferometer_7_lop():
     return fixtures.make_interferometer_7_lop()
@@ -184,9 +199,19 @@ def make_fit_interferometer_7():
     return fixtures.make_fit_interferometer_7()
 
 
+@pytest.fixture(name="regularization_constant")
+def make_regularization_constant():
+    return fixtures.make_regularization_constant()
+
+
 @pytest.fixture(name="rectangular_mapper_7x7_3x3")
 def make_rectangular_mapper_7x7_3x3():
     return fixtures.make_rectangular_mapper_7x7_3x3()
+
+
+@pytest.fixture(name="delaunay_mapper_9_3x3")
+def make_delaunay_mapper_9_3x3():
+    return fixtures.make_delaunay_mapper_9_3x3()
 
 
 @pytest.fixture(name="voronoi_mapper_9_3x3")
@@ -197,6 +222,11 @@ def make_voronoi_mapper_9_3x3():
 @pytest.fixture(name="rectangular_inversion_7x7_3x3")
 def make_rectangular_inversion_7x7_3x3():
     return fixtures.make_rectangular_inversion_7x7_3x3()
+
+
+@pytest.fixture(name="delaunay_inversion_9_3x3")
+def make_delaunay_inversion_9_3x3():
+    return fixtures.make_delaunay_inversion_9_3x3()
 
 
 @pytest.fixture(name="voronoi_inversion_9_3x3")

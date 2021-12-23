@@ -86,7 +86,7 @@ def test__via_grid_from(grid_2d_7x7):
     assert visuals_2d_via.origin == None
 
 
-def test__via_mapper_for_data_from(rectangular_mapper_7x7_3x3):
+def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
 
     visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0))
     include_2d = aplt.Include2D(
@@ -95,21 +95,19 @@ def test__via_mapper_for_data_from(rectangular_mapper_7x7_3x3):
 
     get_visuals = GetVisuals2D(include=include_2d, visuals=visuals_2d)
 
-    visuals_2d_via = get_visuals.via_mapper_for_data_from(
-        mapper=rectangular_mapper_7x7_3x3
-    )
+    visuals_2d_via = get_visuals.via_mapper_for_data_from(mapper=voronoi_mapper_9_3x3)
 
     assert visuals_2d.origin == (1.0, 1.0)
-    assert (
-        visuals_2d_via.mask == rectangular_mapper_7x7_3x3.source_grid_slim.mask
-    ).all()
+    assert (visuals_2d_via.mask == voronoi_mapper_9_3x3.source_grid_slim.mask).all()
     assert (
         visuals_2d_via.border
-        == rectangular_mapper_7x7_3x3.source_grid_slim.mask.border_grid_sub_1.binned
+        == voronoi_mapper_9_3x3.source_grid_slim.mask.border_grid_sub_1.binned
     ).all()
+
+    print(visuals_2d.pixelization_grid)
+    print(voronoi_mapper_9_3x3.source_pixelization_grid)
     assert (
-        visuals_2d_via.pixelization_grid
-        == rectangular_mapper_7x7_3x3.data_pixelization_grid
+        visuals_2d_via.pixelization_grid == voronoi_mapper_9_3x3.data_pixelization_grid
     ).all()
 
     include_2d = aplt.Include2D(
@@ -118,9 +116,7 @@ def test__via_mapper_for_data_from(rectangular_mapper_7x7_3x3):
 
     get_visuals = GetVisuals2D(include=include_2d, visuals=visuals_2d)
 
-    visuals_2d_via = get_visuals.via_mapper_for_data_from(
-        mapper=rectangular_mapper_7x7_3x3
-    )
+    visuals_2d_via = get_visuals.via_mapper_for_data_from(mapper=voronoi_mapper_9_3x3)
 
     assert visuals_2d.origin == (1.0, 1.0)
     assert visuals_2d_via.mask == None
