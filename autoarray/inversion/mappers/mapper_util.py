@@ -101,25 +101,37 @@ def data_slim_to_pixelization_unique_from(
 
 
 @numba_util.jit()
-def triangle_area(pa, pb, pc):
+def triangle_area_from(
+    corner_0: Tuple[float, float],
+    corner_1: Tuple[float, float],
+    corner_2: Tuple[float, float],
+) -> float:
+    """
+    Returns the area within a triangle whose three corners are located at the (x,y) coordinates given by the function
+    inputs `corner_a` `corner_b` and `corner_c`.
 
-    x1 = pa[0]
-    y1 = pa[1]
-    x2 = pb[0]
-    y2 = pb[1]
-    x3 = pc[0]
-    y3 = pc[1]
+    Parameters
+    ----------
+    corner_0
+        The (x,y) coordinates of the triangle's first corner.
+    corner_1
+        The (x,y) coordinates of the triangle's second corner.
+    corner_2
+        The (x,y) coordinates of the triangle's third corner.
+
+    Returns
+    -------
+    The area of the triangle given the input (x,y) corners.
+    """
+
+    x1 = corner_0[0]
+    y1 = corner_0[1]
+    x2 = corner_1[0]
+    y2 = corner_1[1]
+    x3 = corner_2[0]
+    y3 = corner_2[1]
 
     return 0.5 * np.abs(x1 * y2 + x2 * y3 + x3 * y1 - x2 * y1 - x3 * y2 - x1 * y3)
-
-
-def get_triangle_points_neighbours(relocated_grid, relocated_pixelization_grid):
-
-    tri = Delaunay(relocated_pixelization_grid)
-    triangle_ids_of_points = tri.find_simplex(relocated_grid)
-    tri_simplices = tri.simplices
-
-    return triangle_ids_of_points, tri_simplices
 
 
 @numba_util.jit()
@@ -130,48 +142,51 @@ def pixel_weights_delaunay_from(
     pix_indexes_for_sub_slim_index,
 ) -> np.ndarray:
     """
-    Returns the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
+    Returns the weights of the mappings between the masked sub-pixels and the Delaunay pixelization.
+
+    Weights are determiend via a nearest neighbor interpolation scheme, whereby every data-sub pixel maps to three
+    Delaunay pixel vertexes (in the source frame). The weights of these 3 mappings depends on the distance of the
+    coordinate to each vertex, with the highest weight being its closest neighbor,
 
     Parameters
     -----------
-    pixels
-        The number of pixels in the pixelization.
-    total_mask_pixels
-        The number of datas pixels in the observed datas and thus on the grid.
+    source_grid_slim
+        A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
+        `source` reference frame.
+    source_pixelization_grid
+        The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
     slim_index_for_sub_slim_index
         The mappings between the data's sub slimmed indexes and the slimmed indexes on the non sub-sized indexes.
-    pixelizationes_index_for_sub_slim_index
-        The mappings between the pixelization grid's pixels and the data's slimmed pixels.
-    sub_fraction
-        The fractional area each sub-pixel takes up in an pixel.
+    pix_indexes_for_sub_slim_index
+        The mappings from a data sub-pixel index to a pixelization pixel index.
     """
 
     pixel_weights = np.zeros(pix_indexes_for_sub_slim_index.shape)
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
 
-        vertices_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
+        pix_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
 
-        if vertices_indexes[1] != -1:
+        if pix_indexes[1] != -1:
 
-            vertices_of_the_simplex = source_pixelization_grid[vertices_indexes]
+            vertices_of_the_simplex = source_pixelization_grid[pix_indexes]
 
             sub_gird_coordinate_on_source_place = source_grid_slim[sub_slim_index]
 
-            term0 = triangle_area(
-                pa=vertices_of_the_simplex[1],
-                pb=vertices_of_the_simplex[2],
-                pc=sub_gird_coordinate_on_source_place,
+            term0 = triangle_area_from(
+                corner_0=vertices_of_the_simplex[1],
+                corner_1=vertices_of_the_simplex[2],
+                corner_2=sub_gird_coordinate_on_source_place,
             )
-            term1 = triangle_area(
-                pa=vertices_of_the_simplex[0],
-                pb=vertices_of_the_simplex[2],
-                pc=sub_gird_coordinate_on_source_place,
+            term1 = triangle_area_from(
+                corner_0=vertices_of_the_simplex[0],
+                corner_1=vertices_of_the_simplex[2],
+                corner_2=sub_gird_coordinate_on_source_place,
             )
-            term2 = triangle_area(
-                pa=vertices_of_the_simplex[0],
-                pb=vertices_of_the_simplex[1],
-                pc=sub_gird_coordinate_on_source_place,
+            term2 = triangle_area_from(
+                corner_0=vertices_of_the_simplex[0],
+                corner_1=vertices_of_the_simplex[1],
+                corner_2=sub_gird_coordinate_on_source_place,
             )
 
             norm = term0 + term1 + term2
@@ -197,7 +212,58 @@ def mapping_matrix_from(
     sub_fraction: float,
 ) -> np.ndarray:
     """
-    Returns the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
+    Returns the mapping matrix, which is a matrix representing the mapping between every unmasked sub-pixel of the data
+    and the pixels of a pixelization. Non-zero entries signify a mapping, whereas zeros signify no mapping.
+
+    For example, if the data has 5 unmasked pixels (with `sub_size=1` so there are not sub-pixels) and the pixelization
+    3 pixels, with the following mappings:
+
+    data pixel 0 -> pixelization pixel 0
+    data pixel 1 -> pixelization pixel 0
+    data pixel 2 -> pixelization pixel 1
+    data pixel 3 -> pixelization pixel 1
+    data pixel 4 -> pixelization pixel 2
+
+    The mapping matrix (which is of dimensions [data_pixels, pixelization_pixels]) would appear as follows:
+
+    [1, 0, 0] [0->0]
+    [1, 0, 0] [1->0]
+    [0, 1, 0] [2->1]
+    [0, 1, 0] [3->1]
+    [0, 0, 1] [4->2]
+
+    The mapping matrix is actually built using the sub-grid of the grid, whereby each pixel is divided into a grid of
+    sub-pixels which are all paired to pixels in the pixelization. The entries in the mapping matrix now become
+    fractional values dependent on the sub-pixel sizes.
+
+    For example, for a 2x2 sub-pixels in each pixel means the fractional value is 1.0/(2.0^2) = 0.25, if we have the
+    following mappings:
+
+    data pixel 0 -> data sub pixel 0 -> pixelization pixel 0
+    data pixel 0 -> data sub pixel 1 -> pixelization pixel 1
+    data pixel 0 -> data sub pixel 2 -> pixelization pixel 1
+    data pixel 0 -> data sub pixel 3 -> pixelization pixel 1
+    data pixel 1 -> data sub pixel 0 -> pixelization pixel 1
+    data pixel 1 -> data sub pixel 1 -> pixelization pixel 1
+    data pixel 1 -> data sub pixel 2 -> pixelization pixel 1
+    data pixel 1 -> data sub pixel 3 -> pixelization pixel 1
+    data pixel 2 -> data sub pixel 0 -> pixelization pixel 2
+    data pixel 2 -> data sub pixel 1 -> pixelization pixel 2
+    data pixel 2 -> data sub pixel 2 -> pixelization pixel 3
+    data pixel 2 -> data sub pixel 3 -> pixelization pixel 3
+
+    The mapping matrix (which is still of dimensions [data_pixels, pixelization_pixels]) appears as follows:
+
+    [0.25, 0.75, 0.0, 0.0] [1 sub-pixel maps to pixel 0, 3 map to pixel 1]
+    [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
+    [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
+
+    For certain pixelizations each data sub-pixel maps to multiple pixelization pixels in a weighted fashion, for
+    example a Delaunay pixelization where there are 3 mappings per sub-pixel whose weights are determined via a
+    nearest neighbor interpolation scheme.
+
+    In this case, each mapping value is multiplied by this interpolation weight (which are in the array
+    `pix_weights_for_sub_slim_index`) when the mapping matrix is constructed.
 
     Parameters
     -----------
@@ -221,16 +287,14 @@ def mapping_matrix_from(
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
 
-        vertices_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
+        slim_index = slim_index_for_sub_slim_index[sub_slim_index]
 
-        if pix_size_for_sub_slim_index[sub_slim_index] > 1:
-            mapping_matrix[slim_index_for_sub_slim_index[sub_slim_index]][
-                vertices_indexes
-            ] += (sub_fraction * pix_weights_for_sub_slim_index[sub_slim_index])
-        else:
-            mapping_matrix[slim_index_for_sub_slim_index[sub_slim_index]][
-                vertices_indexes[0]
-            ] += sub_fraction
+        for pix_count in range(pix_size_for_sub_slim_index[sub_slim_index]):
+
+            pix_index = pix_indexes_for_sub_slim_index[sub_slim_index, pix_count]
+            pix_weight = pix_weights_for_sub_slim_index[sub_slim_index, pix_count]
+
+            mapping_matrix[slim_index][pix_index] += sub_fraction * pix_weight
 
     return mapping_matrix
 

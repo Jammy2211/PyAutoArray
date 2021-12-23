@@ -965,8 +965,6 @@ class MatPlot2D(AbstractMatPlot):
 
         self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
 
-        plt.gca().set_aspect(aspect_inv)
-
         self.tickparams.set()
         self.yticks.set(
             array=None, min_value=extent[2], max_value=extent[3], units=self.units
@@ -983,6 +981,7 @@ class MatPlot2D(AbstractMatPlot):
             cmap=self.cmap,
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,
+            aspect=aspect_inv,
         )
 
         self.title.set(auto_title=auto_labels.title)

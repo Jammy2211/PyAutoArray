@@ -13,7 +13,7 @@ from autoarray.plot.wrap import wrap_base as wb
 
 from autoarray.plot.wrap.wrap_base import AbstractMatWrap
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.mapper_util import triangle_area
+from autoarray.inversion.mappers.mapper_util import triangle_area_from
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
@@ -662,6 +662,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
         cmap: wb.Cmap,
         colorbar: wb.Colorbar,
         colorbar_tickparams: wb.ColorbarTickParams = None,
+        aspect=None,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 
@@ -705,9 +706,6 @@ class DelaunayDrawer(AbstractMatWrap2D):
         xs_grid_1d = xs_grid.ravel()
         ys_grid_1d = ys_grid.ravel()
 
-        # tri =
-
-        pixel_points, simplices = self.delaunay_triangles(delaunay=mapper.delaunay)
         interpolating_values = self.delaunay_interpolation(
             delaunay=mapper.delaunay,
             interpolating_yx=np.vstack((ys_grid_1d, xs_grid_1d)).T,
@@ -722,11 +720,6 @@ class DelaunayDrawer(AbstractMatWrap2D):
             color_values = np.where(values > vmax, vmax, values)
             color_values = np.where(values < vmin, vmin, color_values)
 
-            if vmax != vmin:
-                color_array = (color_values - vmin) / (vmax - vmin)
-            else:
-                color_array = np.ones(color_values.shape[0])
-
             cmap = plt.get_cmap(cmap.config_dict["cmap"])
 
             if colorbar is not None:
@@ -739,20 +732,14 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
         else:
             cmap = plt.get_cmap("Greys")
-            # color_array = np.zeros(shape=mapper.pixels)
-
-        # for region, index in zip(regions, range(mapper.pixels)):
-        #    polygon = vertices[region]
-        #    col = cmap(color_array[index])
-        #    plt.fill(*zip(*polygon), facecolor=col, zorder=-1, **self.config_dict)
 
         plt.imshow(
             interpolating_values.reshape((nnn, nnn)),
             cmap=cmap,
             extent=[x0, x1, y0, y1],
             origin="lower",
+            aspect=aspect,
         )
-        # plt.triplot(pixel_points[:, 0], pixel_points[:, 1], simplices)
 
     def delaunay_triangles(self, delaunay):
         """
@@ -801,14 +788,20 @@ class DelaunayDrawer(AbstractMatWrap2D):
                 triangle_points = pixel_points[simplices[simplex_index]]
                 triangle_values = pixel_values[simplices[simplex_index]]
 
-                term0 = triangle_area(
-                    pa=triangle_points[1], pb=triangle_points[2], pc=interpolating_point
+                term0 = triangle_area_from(
+                    corner_0=triangle_points[1],
+                    corner_1=triangle_points[2],
+                    corner_2=interpolating_point,
                 )
-                term1 = triangle_area(
-                    pa=triangle_points[0], pb=triangle_points[2], pc=interpolating_point
+                term1 = triangle_area_from(
+                    corner_0=triangle_points[0],
+                    corner_1=triangle_points[2],
+                    corner_2=interpolating_point,
                 )
-                term2 = triangle_area(
-                    pa=triangle_points[0], pb=triangle_points[1], pc=interpolating_point
+                term2 = triangle_area_from(
+                    corner_0=triangle_points[0],
+                    corner_1=triangle_points[1],
+                    corner_2=interpolating_point,
                 )
                 norm = term0 + term1 + term2
 
