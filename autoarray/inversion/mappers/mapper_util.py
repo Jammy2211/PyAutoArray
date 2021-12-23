@@ -123,7 +123,7 @@ def get_triangle_points_neighbours(relocated_grid, relocated_pixelization_grid):
 
 
 @numba_util.jit()
-def pixel_weights_from(
+def pixel_weights_delaunay_from(
     source_grid_slim,
     source_pixelization_grid,
     slim_index_for_sub_slim_index: np.ndarray,

@@ -81,20 +81,24 @@ class MapperVoronoi(AbstractMapper):
     @profile_func
     def pix_indexes_for_sub_slim_index(self) -> PixForSub:
         """
-        An array describing the pairing of every image-pixel coordinate to every source-pixel.
+        Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Voronoi`
+        pixelization.
 
-        A `pixelization_index` refers to the index of each source pixel index and a `sub_slim_index` refers to the
-        index of each sub-pixel in the masked data.
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
+        for example:
 
-        For example:
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Voronoi
+        pixelization's third (index 2) pixel.
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Voronoi
+        pixelization's fifth (index 4) pixel.
 
-        - If the data's first sub-pixel maps to the source pixelization's third pixel then
-        pix_indexes_for_sub_slim_index[0] = 2
-        - If the data's second sub-pixel maps to the source pixelization's fifth pixel then
-        pix_indexes_for_sub_slim_index[1] = 4
+        The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
+        for cases where a data pixel maps to more than one pixelization pixel (for example a `Delaunay` pixelization
+        where each data pixel maps to 3 Delaunay triangles with interpolation). For a Voronoi pixelizaiton each
+        data sub-pixel maps to a single pixelization pixel, thus this dimension is of size 1.
 
-        For a Voronoi pixelization, we perform a graph search to map each coordinate of the mappers traced grid
-        of (y,x) coordinates (`source_grid_slim`) to each Voronoi pixel based on its centre (`source_pixelization_grid`).
+        For the Voronoi pixelization these mappings are calculated using a graph search which finds every data
+        sub-pixel's nearest neighbor Voronoi pixel (see `mapper_util.pix_indexes_for_sub_slim_index_voronoi_from`).
         """
         mappings = mapper_util.pix_indexes_for_sub_slim_index_voronoi_from(
             grid=self.source_grid_slim,
@@ -112,16 +116,18 @@ class MapperVoronoi(AbstractMapper):
 
     @cached_property
     @profile_func
-    def pix_weights_for_sub_slim_index(self):
+    def pix_weights_for_sub_slim_index(self) -> np.ndarray:
         """
-        Weights for source pixels to sub pixels. Used for creating the mapping matrix and 'pixel_signals_from'
-        It has the same shape as the 'pix_indexes_for_sub_slim_index'.
+        Returns an arrays describing the weights of the mappings between of every sub-pixel in the masked data and
+        pixel in the pixelization. Weights are a result of the mappings between data sub-pixels and pixelization
+        pixels using interpolation.
+
+        The `Voronoi` pixelization does not use interpolation therefore all weights are 1.0.
+
+        The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
         """
         return np.ones((self.source_grid_slim.shape[0], 1), dtype="int")
 
     @property
     def voronoi(self):
         return self.source_pixelization_grid.voronoi
-
-    def reconstruction_from(self, solution_vector):
-        return solution_vector

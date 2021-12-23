@@ -76,18 +76,24 @@ class AbstractMapper:
         Mappings are represented in the 2D ndarray `pix_indexes_for_sub_slim_index`, whereby the index of
         a pixel on the `pixelization_grid` maps to the index of a pixel on the `grid_slim` as follows:
 
-        - pix_indexes_for_sub_slim_index[0, 0] = 0: the data's 1st sub-pixel maps to the pixelization's 1st pixel.
-        - pix_indexes_for_sub_slim_index[1, 0] = 3: the data's 2nd sub-pixel maps to the pixelization's 4th pixel.
-        - pix_indexes_for_sub_slim_index[2, 0] = 1: the data's 3rd sub-pixel maps to the pixelization's 2nd pixel.
+        - pix_indexes_for_sub_slim_index[0, 0] = 0: the data's 1st sub-pixel (index 0) maps to the
+        pixelization's 1st pixel (index 0).
+        - pix_indexes_for_sub_slim_index[1, 0] = 3: the data's 2nd sub-pixel (index 1) maps to the
+        pixelization's 4th pixel (index 3).
+        - pix_indexes_for_sub_slim_index[2, 0] = 1: the data's 3rd sub-pixel (index 2) maps to the
+        pixelization's 2nd pixel (index 1).
 
         The second dimension of this array (where all three examples above are 0) is used for cases where a
         single pixel on the `grid_slim` maps to multiple pixels on the `pixelization_grid`. For example, using a
         `Delaunay` pixelization, where every `grid_slim` pixel maps to three Delaunay pixels (the corners of the
         triangles):
 
-        - pix_indexes_for_sub_slim_index[0, 0] = 0: the data's 1st sub-pixel maps to the pixelization's 1st pixel.
-        - pix_indexes_for_sub_slim_index[0, 1] = 3: the data's 1st sub-pixel also maps to the pixelization's 4th pixel.
-        - pix_indexes_for_sub_slim_index[0, 2] = 5: the data's 1st sub-pixel also maps to the pixelization's 6th pixel.
+        - pix_indexes_for_sub_slim_index[0, 0] = 0: the data's 1st sub-pixel (index 0) maps to the
+        pixelization's 1st pixel (index 0).
+        - pix_indexes_for_sub_slim_index[0, 1] = 3: the data's 1st sub-pixel (index 0) also maps to the
+        pixelization's 2nd pixel (index 3).
+        - pix_indexes_for_sub_slim_index[0, 2] = 5: the data's 1st sub-pixel (index 0) also maps to the
+        pixelization's 6th pixel (index 5).
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
         unmasked data pixel annd the pixels of a pixelization. This matrix is the basis of performing an `Inversion`,
@@ -271,6 +277,8 @@ class PixForSub:
 
         The need to store separately the mappings and sizes is so that the `sizes` can be easy iterated over when
         perform calculations for efficiency.
+
+        See the mapper properties `pix_indexes_for_sub_slim_index()` for a description of the mappings array.
 
         Parameters
         ----------

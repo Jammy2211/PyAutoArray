@@ -125,7 +125,5 @@ class MapperPlotter(Plotter):
             mapper=self.mapper,
             visuals_2d=self.get_visuals_2d_for_source(),
             auto_labels=auto_labels,
-            source_pixelilzation_values=self.mapper.reconstruction_from(
-                source_pixelization_values
-            ),
+            source_pixelilzation_values=source_pixelization_values
         )

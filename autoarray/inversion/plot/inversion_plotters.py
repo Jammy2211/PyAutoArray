@@ -53,9 +53,6 @@ class InversionPlotter(Plotter):
             mapper=self.inversion.mapper_list[0]
         )
 
-    def as_mapper(self, solution_vector) -> Array2D:
-        return self.inversion.mapper_list[0].reconstruction_from(solution_vector)
-
     def mapper_plotter_from(self, mapper_index: int) -> MapperPlotter:
         """
         Returns a `MapperPlotter` corresponding to the `Mapper` in the `Inversion`'s `mapper_list` given an input
