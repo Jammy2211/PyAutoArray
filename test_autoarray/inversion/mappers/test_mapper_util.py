@@ -45,7 +45,7 @@ class TestMappingMatrix:
         slim_index_for_sub_slim_index = np.array([0, 1, 2])
 
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixel_weights=np.ones((3, 1), dtype="int"),
+            pix_weights_for_sub_slim_index=np.ones((3, 1), dtype="int"),
             pix_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pix_size_for_sub_slim_index=np.ones(3, dtype="int"),
             pixels=6,
@@ -74,7 +74,7 @@ class TestMappingMatrix:
 
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
             pix_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
-            pixel_weights=np.ones((5, 1), dtype="int"),
+            pix_weights_for_sub_slim_index=np.ones((5, 1), dtype="int"),
             pix_size_for_sub_slim_index=np.ones(3, dtype="int"),
             pixels=8,
             total_mask_sub_pixels=5,
@@ -124,7 +124,7 @@ class TestMappingMatrix:
             [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4]
         )
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixel_weights=np.ones((20, 1), dtype="int"),
+            pix_weights_for_sub_slim_index=np.ones((20, 1), dtype="int"),
             pix_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pix_size_for_sub_slim_index=np.ones(20, dtype="int"),
             pixels=8,
@@ -158,7 +158,7 @@ class TestMappingMatrix:
         )
 
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixel_weights=np.ones((20, 1), dtype="int"),
+            pix_weights_for_sub_slim_index=np.ones((20, 1), dtype="int"),
             pix_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pix_size_for_sub_slim_index=np.ones(20, dtype="int"),
             pixels=8,
@@ -291,7 +291,7 @@ class TestMappingMatrix:
         )
 
         mapping_matrix = aa.util.mapper.mapping_matrix_from(
-            pixel_weights=np.ones((48, 1), dtype="int"),
+            pix_weights_for_sub_slim_index=np.ones((48, 1), dtype="int"),
             pix_indexes_for_sub_slim_index=pixelization_1d_index_for_sub_mask_1d_index,
             pix_size_for_sub_slim_index=np.ones(48, dtype="int"),
             pixels=6,
@@ -321,9 +321,7 @@ class TestDataToPixUnique:
         pix_indexes_for_sub_slim_index = np.array(
             [[0, -1], [0, -1], [0, -1], [1, -1], [2, -1], [1, -1], [0, -1], [2, -1]]
         ).astype("int")
-        pix_indexes_for_sub_slim_sizes = np.array([1, 1, 1, 1, 1, 1, 1, 1]).astype(
-            "int"
-        )
+        pix_size_for_sub_slim_index = np.array([1, 1, 1, 1, 1, 1, 1, 1]).astype("int")
         pix_weights_for_sub_slim_index = np.array(
             [
                 [1.0, -1],
@@ -340,7 +338,7 @@ class TestDataToPixUnique:
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=image_pixels,
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-            pix_indexes_for_sub_slim_sizes=pix_indexes_for_sub_slim_sizes,
+            pix_indexes_for_sub_slim_sizes=pix_size_for_sub_slim_index,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=sub_size,
         )
@@ -354,9 +352,7 @@ class TestDataToPixUnique:
         pix_indexes_for_sub_slim_index = np.array(
             [[0, 1], [0, 1], [0, 2], [1, -1], [2, -1], [1, -1], [0, -1], [2, -1]]
         ).astype("int")
-        pix_indexes_for_sub_slim_sizes = np.array([2, 2, 2, 1, 1, 1, 1, 1]).astype(
-            "int"
-        )
+        pix_size_for_sub_slim_index = np.array([2, 2, 2, 1, 1, 1, 1, 1]).astype("int")
         pix_weights_for_sub_slim_index = np.array(
             [
                 [0.5, 0.5],
@@ -373,7 +369,7 @@ class TestDataToPixUnique:
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=image_pixels,
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-            pix_indexes_for_sub_slim_sizes=pix_indexes_for_sub_slim_sizes,
+            pix_indexes_for_sub_slim_sizes=pix_size_for_sub_slim_index,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=sub_size,
         )

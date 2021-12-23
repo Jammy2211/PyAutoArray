@@ -188,12 +188,12 @@ def pixel_weights_delaunay_from(
 
 @numba_util.jit()
 def mapping_matrix_from(
-    pixel_weights,
+    pix_indexes_for_sub_slim_index: np.ndarray,
+    pix_size_for_sub_slim_index: np.ndarray,
+    pix_weights_for_sub_slim_index: np.ndarray,
     pixels: int,
     total_mask_sub_pixels: int,
     slim_index_for_sub_slim_index: np.ndarray,
-    pix_indexes_for_sub_slim_index,
-    pix_size_for_sub_slim_index,
     sub_fraction: float,
 ) -> np.ndarray:
     """
@@ -202,7 +202,11 @@ def mapping_matrix_from(
     Parameters
     -----------
     pix_indexes_for_sub_slim_index
-        The mappings between the pixelization grid's pixels and the data's slimmed pixels.
+        The mappings from a data sub-pixel index to a pixelization pixel index.
+    pix_size_for_sub_slim_index
+        The number of mappings between each data sub pixel and pixelizaiton pixel.
+    pix_weights_for_sub_slim_index
+        The weights of the mappings of every data sub pixel and pixelizaiton pixel.
     pixels
         The number of pixels in the pixelization.
     total_mask_pixels
@@ -222,7 +226,7 @@ def mapping_matrix_from(
         if pix_size_for_sub_slim_index[sub_slim_index] > 1:
             mapping_matrix[slim_index_for_sub_slim_index[sub_slim_index]][
                 vertices_indexes
-            ] += (sub_fraction * pixel_weights[sub_slim_index])
+            ] += (sub_fraction * pix_weights_for_sub_slim_index[sub_slim_index])
         else:
             mapping_matrix[slim_index_for_sub_slim_index[sub_slim_index]][
                 vertices_indexes[0]
