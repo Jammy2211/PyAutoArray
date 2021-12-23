@@ -182,7 +182,10 @@ def make_image_7x7():
 
 
 def make_psf_3x3():
-    return Kernel2D.ones(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
+
+    psf = np.array([[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]])
+
+    return Kernel2D.manual_native(array=psf, pixel_scales=(1.0, 1.0))
 
 
 def make_psf_3x3_no_blur():

@@ -212,7 +212,7 @@ class TestImaging:
 
 
 class TestImagingApplyMask:
-    def test__apply_mask__masks_dataset(self, imaging_7x7, sub_mask_2d_7x7):
+    def test__apply_mask__masks_dataset(self, imaging_7x7, sub_mask_2d_7x7, psf_3x3):
 
         masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
 
@@ -229,8 +229,7 @@ class TestImagingApplyMask:
             == 2.0 * np.ones((7, 7)) * np.invert(sub_mask_2d_7x7)
         ).all()
 
-        assert (masked_imaging_7x7.psf.slim == (1.0 / 9.0) * np.ones(9)).all()
-        assert (masked_imaging_7x7.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+        assert (masked_imaging_7x7.psf.slim == (1.0 / 3.0) * psf_3x3.slim).all()
 
     def test__grid(
         self,
