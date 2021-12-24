@@ -89,12 +89,18 @@ class TestAPI:
     def test__no_blur__correct_kernel(self):
         kernel = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
-        assert (kernel.native == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])).all()
+        assert (
+            kernel.native
+            == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+        ).all()
         assert kernel.pixel_scales == (1.0, 1.0)
 
         kernel = aa.Kernel2D.no_blur(pixel_scales=2.0)
 
-        assert (kernel.native == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])).all()
+        assert (
+            kernel.native
+            == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+        ).all()
         assert kernel.pixel_scales == (2.0, 2.0)
 
 

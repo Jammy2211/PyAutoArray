@@ -142,7 +142,8 @@ def test__delaunay_mapper():
 
     print(mapper.mapping_matrix)
 
-    assert mapper.mapping_matrix == pytest.approx(np.array(
+    assert mapper.mapping_matrix == pytest.approx(
+        np.array(
             [
                 [0.7524, 0.0, 0.2475, 0.0, 0.0],
                 [0.0025, 0.7475, 0.2500, 0.0, 0.0],
@@ -150,7 +151,9 @@ def test__delaunay_mapper():
                 [0.0025, 0.0, 0.2475, 0.75, 0.0],
                 [0.0025, 0.0, 0.2475, 0.0, 0.75],
             ]
-        ), 1.0e-2)
+        ),
+        1.0e-2,
+    )
 
 
 def test__voronoi_mapper():

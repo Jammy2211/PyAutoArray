@@ -268,8 +268,8 @@ class TestImagingApplyMask:
 
         assert type(masked_imaging_7x7.psf) == aa.Kernel2D
         assert type(masked_imaging_7x7.convolver) == aa.Convolver
-        assert masked_imaging_7x7.w_tilde.curvature_preload.shape == (45,)
-        assert masked_imaging_7x7.w_tilde.indexes.shape == (45,)
+        assert masked_imaging_7x7.w_tilde.curvature_preload.shape == (35,)
+        assert masked_imaging_7x7.w_tilde.indexes.shape == (35,)
         assert masked_imaging_7x7.w_tilde.lengths.shape == (9,)
 
     def test__masked_imaging__uses_signal_to_noise_limit_and_radii(
