@@ -64,7 +64,18 @@ class InversionMatrices(AbstractInversion):
     @cached_property
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
+        """
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
 
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
+
+        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
+        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
+        """
         if (
             self.preloads.curvature_matrix_preload is None
             or not self.settings.use_curvature_matrix_preload

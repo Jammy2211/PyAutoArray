@@ -5,6 +5,7 @@ from autoconf import cached_property
 
 from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 from autoarray.dataset.interferometer import WTildeInterferometer
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
@@ -27,6 +28,28 @@ class AbstractLEqInterferometer(AbstractLEq):
         linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
+        """
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description).
+
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Interferometer` objects, where the data is an
+        an array of visibilities and the mappings include a non-uniform fast Fourier transform operation described by
+        the interferometer dataset's transformer.
+
+        Parameters
+        -----------
+        noise_map
+            The noise-map of the observed interferometer data which values are solved for.
+        transformer
+            The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
+            with the interferometer data's transformer.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
+        """
 
         super().__init__(
             noise_map=noise_map,
@@ -37,16 +60,33 @@ class AbstractLEqInterferometer(AbstractLEq):
         self.transformer = transformer
 
     @property
-    def mask(self):
+    def mask(self) -> Mask2D:
         return self.transformer.real_space_mask
 
     @cached_property
     @profile_func
     def transformed_mapping_matrix(self) -> np.ndarray:
+        """
+        The `transformed_mapping_matrix` of a linear object describes the mappings between the observed data's values
+        and the linear objects model, including a non-uniform fast Fourier transform operation.
+
+        This is used to construct the simultaneous linear equations which reconstruct the data.
+
+        If there are multiple linear objects, the transformed mapping matrices are stacked such that their simultaneous
+        linear equations are solved simultaneously.
+        """
         return np.hstack(self.transformed_mapping_matrix_list)
 
     @property
     def transformed_mapping_matrix_list(self) -> List[np.ndarray]:
+        """
+        The `transformed_mapping_matrix` of a linear object describes the mappings between the observed data's values
+        and the linear objects model, including a non-uniform fast Fourier transform operation.
+
+        This is used to construct the simultaneous linear equations which reconstruct the data.
+
+        This property returns the a list of each linear object's transformed mapping matrix.
+        """
         return [
             self.transformer.transform_mapping_matrix(
                 mapping_matrix=linear_obj.mapping_matrix
@@ -56,16 +96,45 @@ class AbstractLEqInterferometer(AbstractLEq):
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
-        return self.transformed_mapping_matrix
+        """
+        The linear objects whose mapping matrices are used to construct the simultaneous linear equations can have
+        operations applied to them which include this operation in the solution.
 
-    def mapped_reconstructed_data_dict_from(self, reconstruction: np.ndarray):
-        raise NotImplementedError
+        This property returns the final operated-on mapping matrix of every linear object. These are stacked such that
+        their simultaneous linear equations are solved simultaneously
+
+        For the linear equations which solve interferometer data only a non-uniform fast Fourier transform operation
+        is performed.
+        """
+        return self.transformed_mapping_matrix
 
     @profile_func
     def mapped_reconstructed_image_dict_from(
         self, reconstruction: np.ndarray
     ) -> Dict[LinearObj, Array2D]:
+        """
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
+        quantities belong to which linear objects, therefore the linear equation's solutions (which are returned as
+        ndarrays) do not contain information on which linear object(s) they correspond to.
 
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
+
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed images, where the keys are the instances of each mapper in the inversion.
+
+        For the linear equations which fit interferometer datasets, the reconstructed data is its visibilities. Thus,
+        the reconstructed image is computed separately by performing a non-uniform fast Fourier transform which maps
+        the `reconstruction`'s values to real space.
+
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the data frame).
+        """
         mapped_reconstructed_image_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
@@ -98,40 +167,29 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
-        including a convolution that accounts for blurring.
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description).
 
-        The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
-        set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
-        prevent over-fitting noise.
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Interferometer` objects, where the data is an
+        an array of visibilities and the mappings include a non-uniform fast Fourier transform operation described by
+        the interferometer dataset's transformer.
+
+        This class uses the mapping formalism, which constructs the simultaneous linear equations using the
+        `mapping_matrix` of every linear object.
 
         Parameters
         -----------
-        image_1d
-            Flattened 1D array of the observed image the inversion is fitting.
         noise_map
-            Flattened 1D array of the noise-map used by the inversion during the fit.
-        convolver : imaging.convolution.Convolver
-            The convolver used to blur the mapping matrix with the PSF.
-        linear_obj_list : inversion.Mapper
-            The util between the image-pixels (via its / sub-grid) and pixelization pixels.
-        regularization : inversion.regularization.Regularization
-            The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
-            inversion
-
-        Attributes
-        -----------
-        blurred_mapping_matrix
-            The matrix representing the blurred mappings between the image's sub-grid of pixels and the pixelization \
-            pixels.
-        regularization_matrix
-            The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-        curvature_matrix
-            The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
-        curvature_reg_matrix
-            The curvature_matrix + regularization matrix.
-        solution_vector
-            The vector containing the reconstructed fit to the hyper_galaxies.
+            The noise-map of the observed interferometer data which values are solved for.
+        transformer
+            The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
+            with the interferometer data's transformer.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(
@@ -143,7 +201,18 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
 
     @profile_func
     def data_vector_from(self, data: Visibilities, preloads) -> np.ndarray:
+        """
+        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
+        by this object.
 
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
+        data vector is given by equation (4) and the letter D.
+
+        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
+        concatenated ensuring their `data_vector` values are solved for simultaneously.
+
+        The calculation is described in more detail in `leq_util.data_vector_via_transformed_mapping_matrix_from`.
+        """
         return leq_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=self.transformed_mapping_matrix,
             visibilities=data,
@@ -153,7 +222,17 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
     @cached_property
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
+        """
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
 
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
+
+        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
+        concatenated ensuring their `curvature_matrix` values are solved for simultaneously. This includes all
+        diagonal and off-diagonal terms describing the covariances between linear objects.
+        """
         real_curvature_matrix = leq_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.transformed_mapping_matrix.real,
             noise_map=self.noise_map.real,
@@ -170,7 +249,29 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
     def mapped_reconstructed_data_dict_from(
         self, reconstruction: np.ndarray
     ) -> Dict[LinearObj, Visibilities]:
+        """
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
+        quantities belong to which linear objects, therefore the linear equation's solutions (which are returned as
+        ndarrays) do not contain information on which linear object(s) they correspond to.
 
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
+
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed images, where the keys are the instances of each mapper in the inversion.
+
+        To perform this mapping the `mapping_matrix` is used, which straightforwardly describes how every value of
+        the `reconstruction` maps to pixels in the data-frame after the 2D non-uniform fast Fourier transformer
+        operation has been performed.
+
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the data frame).
+        """
         mapped_reconstructed_data_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
@@ -206,26 +307,32 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
-        including a convolution that accounts for blurring.
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description).
 
-        The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
-        set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
-        prevent over-fitting noise.
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Interferometer` objects, where the data is an
+        an array of visibilities and the mappings include a non-uniform fast Fourier transform operation described by
+        the interferometer dataset's transformer.
+
+        This class uses the w-tilde formalism, which speeds up the construction of the simultaneous linear equations by
+        bypassing the construction of a `mapping_matrix`.
 
         Parameters
         -----------
-        image_1d
-            Flattened 1D array of the observed image the inversion is fitting.
         noise_map
-            Flattened 1D array of the noise-map used by the inversion during the fit.
-        convolver : convolution.Convolver
-            The convolver used to blur the mapping matrix with the PSF.
-        linear_obj_list : inversion.Mapper
-            The util between the image-pixels (via its / sub-grid) and pixelization pixels.
-        regularization : inversion.regularization.Regularization
-            The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
-            inversion
+            The noise-map of the observed interferometer data which values are solved for.
+        transformer
+            The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
+            with the interferometer data's transformer.
+        w_tilde
+            An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
+            the mapping matrix.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         self.w_tilde = w_tilde
@@ -241,16 +348,16 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
     @profile_func
     def data_vector_from(self, data: Visibilities, preloads: Preloads) -> np.ndarray:
         """
-        To solve for the source pixel fluxes we now pose the problem as a linear inversion which we use the NumPy
-        linear algebra libraries to solve. The linear algebra is based on
-        the paper https://arxiv.org/pdf/astro-ph/0302587.pdf .
+        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
+        by this object.
 
-        This requires us to convert `w_tilde_data` into a data vector matrices of dimensions [image_pixels].
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
+        data vector is given by equation (4) and the letter D.
 
-        The `data_vector` D is the first such matrix, which is given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
+        for simultaneously.
 
-        The calculation is performed by the method `w_tilde_data_interferometer_from`.
+        The calculation is described in more detail in `leq_util.w_tilde_data_interferometer_from`.
         """
         return None
 
@@ -258,16 +365,13 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
     @profile_func
     def curvature_matrix_diag(self) -> np.ndarray:
         """
-        The `curvature_matrix` F is the second matrix, given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
 
-        This function computes F using the w_tilde formalism, which is faster as it precomputes the Fourier Transform
-        of different visibilities noise-map (see `curvature_matrix_via_w_tilde_curvature_preload_interferometer_from`).
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
 
-        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
-        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
-        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
-        array of memory.
+        This function computes the diagonal terms of F using the w_tilde formalism.
         """
         return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
             curvature_preload=self.w_tilde.curvature_preload,
@@ -283,14 +387,27 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         self, reconstruction: np.ndarray
     ) -> Visibilities:
         """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane to
-        reconstruct the image in real-space. We then apply the Fourier Transform to map this to the reconstructed
-        visibilities.
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
+        quantities belong to which linear objects, therefore the linear equation's solutions (which are returned as
+        ndarrays) do not contain information on which linear object(s) they correspond to.
 
-        Returns
-        -------
-        Visibilities
-            The reconstructed visibilities which the inversion fits.
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
+
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed images, where the keys are the instances of each mapper in the inversion.
+
+        The w-tilde formalism bypasses the calculation of the `mapping_matrix` and it therefore cannot be used to map
+        the reconstruction's values to the data frame. Instead, the unique data-to-pixelization mappings are used,
+        including the 2D non-uniform fast Fourier transform operation after mapping is complete.
+
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the data frame).
         """
         return self.transformer.visibilities_from(
             image=self.mapped_reconstructed_data_dict_from(
@@ -307,40 +424,31 @@ class LEqInterferometerMappingPyLops(AbstractLEqInterferometer):
         linear_obj_list: List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
-        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
-        including a convolution that accounts for blurring.
+        """
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description).
 
-        The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
-        set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
-        prevent over-fitting noise.
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Interferometer` objects, where the data is an
+        an array of visibilities and the mappings include a non-uniform fast Fourier transform operation described by
+        the interferometer dataset's transformer.
+
+        This class uses the mapping formalism, which constructs the simultaneous linear equations using the
+        `mapping_matrix` of every linear object. This is performed using the library PyLops, which uses linear
+        operators to avoid these matrices being created explicitly in memory, making the calculation more efficient.
 
         Parameters
         -----------
-        image_1d
-            Flattened 1D array of the observed image the inversion is fitting.
         noise_map
-            Flattened 1D array of the noise-map used by the inversion during the fit.
-        convolver : imaging.convolution.Convolver
-            The convolver used to blur the mapping matrix with the PSF.
-        linear_obj_list : inversion.Mapper
-            The util between the image-pixels (via its / sub-grid) and pixelization pixels.
-        regularization : inversion.regularization.Regularization
-            The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
-            inversion
-
-        Attributes
-        -----------
-        blurred_mapping_matrix
-            The matrix representing the blurred mappings between the image's sub-grid of pixels and the pixelization \
-            pixels.
-        regularization_matrix
-            The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-        curvature_matrix
-            The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
-        curvature_reg_matrix
-            The curvature_matrix + regularization matrix.
-        solution_vector
-            The vector containing the reconstructed fit to the hyper_galaxies.
+            The noise-map of the observed interferometer data which values are solved for.
+        transformer
+            The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
+            with the interferometer data's transformer.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(
@@ -355,14 +463,27 @@ class LEqInterferometerMappingPyLops(AbstractLEqInterferometer):
         self, reconstruction: np.ndarray
     ) -> Dict[LinearObj, Visibilities]:
         """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane to
-        reconstruct the image in real-space. We then apply the Fourier Transform to map this to the reconstructed
-        visibilities.
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
+        quantities belong to which linear objects, therefore the linear equation's solutions (which are returned as
+        ndarrays) do not contain information on which linear object(s) they correspond to.
 
-        Returns
-        -------
-        Visibilities
-            The reconstructed visibilities which the inversion fits.
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
+
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed images, where the keys are the instances of each mapper in the inversion.
+
+        The PyLops calculation bypasses the calculation of the `mapping_matrix` and it therefore cannot be used to map
+        the reconstruction's values to the data frame. Instead, the unique data-to-pixelization mappings are used,
+        including the 2D non-uniform fast Fourier transform operation after mapping is complete.
+
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the data frame).
         """
 
         mapped_reconstructed_image_dict = self.mapped_reconstructed_image_dict_from(

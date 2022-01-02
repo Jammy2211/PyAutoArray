@@ -162,9 +162,9 @@ class AbstractLEq:
     ) -> Dict[LinearObj, Union[Array2D, Visibilities]]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
-        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
-        which quantities belong to which linear objects, therefore the linear equation's solutions (which are returned
-        as ndarrays) do not contain information on which linear object(s) they correspond to.
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
+        quantities belong to which linear objects, therefore the linear equation's solutions (which are returned as
+        ndarrays) do not contain information on which linear object(s) they correspond to.
 
         For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
         The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
@@ -187,9 +187,9 @@ class AbstractLEq:
     ) -> Dict[LinearObj, Union[Array2D, Visibilities]]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
-        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
-        which quantities belong to which linear objects, therefore the linear equation's solutions (which are returned
-        as ndarrays) do not contain information on which linear object(s) they correspond to.
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
+        quantities belong to which linear objects, therefore the linear equation's solutions (which are returned as
+        ndarrays) do not contain information on which linear object(s) they correspond to.
 
         For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
         The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
