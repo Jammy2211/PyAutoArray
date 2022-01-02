@@ -23,35 +23,24 @@ class AbstractLEqImaging(AbstractLEq):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
-        including a convolution that accounts for blurring.
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description.
 
-        The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
-        set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
-        prevent over-fitting noise.
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
+        and the mappings may include a convolution operation described by the imaging data's PSF..
 
         Parameters
         -----------
         noise_map
-            Flattened 1D array of the noise-map used by the inversion during the fit.
-        convolver : convolution.Convolver
-            The convolver used to blur the mapping matrix with the PSF.
-        linear_obj_list : inversion.Mapper
-            The util between the image-pixels (via its / sub-grid) and pixelization pixels.
-        regularization : inversion.regularization.Regularization
-            The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
-            inversion
-
-        Attributes
-        -----------
-        regularization_matrix
-            The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-        curvature_matrix
-            The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
-        curvature_reg_matrix
-            The curvature_matrix + regularization matrix.
-        solution_vector
-            The vector containing the reconstructed fit to the hyper_galaxies.
+            The noise-map of the observed imaging data which values are solved for.
+        convolver
+            The convolver used to include 2D convolution of the mapping matrix with the imaigng data's PSF.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         self.convolver = convolver
@@ -63,33 +52,30 @@ class AbstractLEqImaging(AbstractLEq):
         )
 
     @property
-    def mask(self):
+    def mask(self) -> Array2D:
         return self.noise_map.mask
 
     @cached_property
     @profile_func
     def blurred_mapping_matrix(self) -> np.ndarray:
         """
-        For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
-        image  plane. This therefore creates a 'image' of the source pixel (which corresponds to a set of values that
-        mostly zeros, but with 1's where mappings occur).
+        The `blurred_mapping_matrix` of a linear object describes the mappings between the observed data's values and
+        the linear objects model which includes a 2D convolution operation. These are used to construct the
+        simultaneous linear equations which reconstruct the data.
 
-        Before reconstructing the source, we blur every one of these source pixel images with the Point Spread Function
-        of our  dataset via 2D convolution. This uses the methods
-        in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
+        If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
+        linear equations are solved simultaneously. This property returns the stacked blurred mapping matrix.
         """
         return np.hstack(self.blurred_mapping_matrix_list)
 
     @property
     def blurred_mapping_matrix_list(self) -> List[np.ndarray]:
         """
-        For a given pixelization pixel on the mapping matrix, we can use it to map it to a set of image-pixels in the
-        image  plane. This therefore creates a 'image' of the source pixel (which corresponds to a set of values that
-        mostly zeros, but with 1's where mappings occur).
+        The `blurred_mapping_matrix` of a linear object describes the mappings between the observed data's values and
+        the linear objects model which includes a 2D convolution operation. These are used to construct the
+        simultaneous linear equations which reconstruct the data.
 
-        Before reconstructing the source, we blur every one of these source pixel images with the Point Spread Function
-        of our  dataset via 2D convolution. This uses the methods
-        in `Convolver.__init__` and `Convolver.convolve_mapping_matrix`:
+        This property returns the a list of each linear object's blurred mapping matrix.
         """
         return [
             self.convolver.convolve_mapping_matrix(
@@ -100,11 +86,42 @@ class AbstractLEqImaging(AbstractLEq):
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
+        """
+        The linear objects whose mapping matrices are used to construct the simultaneous linear equations can have
+        operations applied to them which include this operation in the solution.
+
+        This property returns the final operated-on mapping matrix of every linear object. These are stacked such that
+        their simultaneous linear equations are solved simultaneously
+
+        For the linear equations which solve imaging data only a convolution operation is performed.
+        """
         return self.blurred_mapping_matrix
 
     def mapped_reconstructed_image_dict_from(
         self, reconstruction: np.ndarray
     ) -> Dict[LinearObj, Array2D]:
+        """
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
+        which quantities belong to which linear objects, therefore the linear equation's solutions (which are returned
+        as ndarrays) do not contain information on which linear object(s) they correspond to.
+
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
+
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed images, where the keys are the instances of each mapper in the inversion.
+
+        For the linear equations which fit imaging, the reconstructed data is the reconsturcted image, thus the
+        function `mapped_reconstructed_data_dict_from` can be reused.
+
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the data frame).
+        """
         return self.mapped_reconstructed_data_dict_from(reconstruction=reconstruction)
 
 
@@ -118,23 +135,30 @@ class LEqImagingWTilde(AbstractLEqImaging):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
-        including a convolution that accounts for blurring.
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description.
 
-        The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
-        set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
-        prevent over-fitting noise.
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
+        and the mappings may include a convolution operation described by the imaging data's PSF.
+
+        This class uses the w-tilde formalism, which speeds up the construction of the simultaneous linear equations by
+        bypassing the construction of a `mapping_matrix`.
 
         Parameters
         -----------
-        image_1d
-            Flattened 1D array of the observed image the inversion is fitting.
         noise_map
-            Flattened 1D array of the noise-map used by the inversion during the fit.
-        convolver : convolution.Convolver
-            The convolver used to blur the mapping matrix with the PSF.
-        linear_obj_list : inversion.Mapper
-            The util between the image-pixels (via its / sub-grid) and pixelization pixels.
+            The noise-map of the observed imaging data which values are solved for.
+        convolver
+            The convolver used to include 2D convolution of the mapping matrix with the imaigng data's PSF.
+        w_tilde
+            An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
+            the mapping matrix.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         self.w_tilde = w_tilde
@@ -150,16 +174,18 @@ class LEqImagingWTilde(AbstractLEqImaging):
     @profile_func
     def data_vector_from(self, data: Array2D, preloads) -> np.ndarray:
         """
-        To solve for the source pixel fluxes we now pose the problem as a linear inversion which we use the NumPy
-        linear  algebra libraries to solve. The linear algebra is based on
-        the paper https://arxiv.org/pdf/astro-ph/0302587.pdf .
+        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
+        by this object.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
+        data vector is given by equation (4) and the letter D.
 
         This requires us to convert `w_tilde_data` into a data vector matrices of dimensions [image_pixels].
 
-        The `data_vector` D is the first such matrix, which is given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
+        for simultaneously.
 
-        The calculation is performed by the method `w_tilde_data_imaging_from`.
+        The calculation is described in more detail in `leq_util.w_tilde_data_imaging_from`.
         """
 
         w_tilde_data = leq_util.w_tilde_data_imaging_from(
@@ -186,11 +212,18 @@ class LEqImagingWTilde(AbstractLEqImaging):
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
-        The `curvature_matrix` F is the second matrix, given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
 
         This function computes F using the w_tilde formalism, which is faster as it precomputes the PSF convolution
         of different noise-map pixels (see `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`).
+
+        If there are multiple linear objects the curvature_matrices are combined to ensure their values are solved
+        for simultaneously. In the w-tilde formalism this requires us to consider the mappings between data and every
+        linear object, meaning that the linear alegbra has both on and off diagonal terms.
 
         The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
         because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
@@ -220,20 +253,13 @@ class LEqImagingWTilde(AbstractLEqImaging):
     @profile_func
     def curvature_matrix_diag(self) -> np.ndarray:
         """
-        The `curvature_matrix` F is the second matrix, given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
 
-        This function computes F using the w_tilde formalism, which is faster as it precomputes the PSF convolution
-        of different noise-map pixels (see `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`).
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
 
-        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
-        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
-        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
-        array of memory.
-
-        For multiple mappers, the curvature matrix is computed using the block diagonal of the diagonal curvature
-        matrix of each individual mapper. The scipy function `block_diag` has an overhead associated with it and if
-        there is only one mapper and regularization it is bypassed.
+        This function computes the diagonal terms of F using the w_tilde formalism.
         """
 
         if len(self.linear_obj_list) == 1:
@@ -267,17 +293,16 @@ class LEqImagingWTilde(AbstractLEqImaging):
 
     @profile_func
     def curvature_matrix_off_diag_from(
-        self, mapper_index_0, mapper_index_1
+        self, mapper_index_0: int, mapper_index_1: int
     ) -> np.ndarray:
         """
-        Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) by computing them
-        using `w_tilde_preload` (see `w_tilde_preload_interferometer_from`) for an imaging inversion.
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
 
-        The `curvature_matrix` F is the second matrix, given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
 
-        This function computes the off-diagonal terms of F using the w_tilde formalism for the mapper of this
-        `LEq` and an input second mapper.
+        This function computes the off-diagonal terms of F using the w_tilde formalism.
         """
 
         mapper_0 = self.linear_obj_list[mapper_index_0]
@@ -318,19 +343,30 @@ class LEqImagingWTilde(AbstractLEqImaging):
         self, reconstruction: np.ndarray
     ) -> Dict[LinearObj, Array2D]:
         """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
-        reconstruct the image data.
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
+        which quantities belong to which linear objects, therefore the linear equation's solutions (which are returned
+        as ndarrays) do not contain information on which linear object(s) they correspond to.
 
-        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
-        computed when using the w-tilde formalism.
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
 
-        Returns
-        -------
-        Array2D
-            The reconstructed image data which the inversion fits.
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed data values, where the keys are the instances of each mapper in the inversion.
+
+        The w-tilde formalism bypasses the calculation of the `mapping_matrix` and it therefore cannot be used to map
+        the reconstruction's values to the data frame. Instead, the unique data-to-pixelization mappings are used,
+        including the 2D convolution operation after mapping is complete.
+
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the data frame).
         """
 
-        mapped_reconstructed_image_dict = {}
+        mapped_reconstructed_data_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=reconstruction
@@ -355,9 +391,9 @@ class LEqImagingWTilde(AbstractLEqImaging):
                 image=mapped_reconstructed_image
             )
 
-            mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image
+            mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image
 
-        return mapped_reconstructed_image_dict
+        return mapped_reconstructed_data_dict
 
 
 class LEqImagingMapping(AbstractLEqImaging):
@@ -369,23 +405,27 @@ class LEqImagingMapping(AbstractLEqImaging):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
-        including a convolution that accounts for blurring.
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description.
 
-        The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
-        set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
-        prevent over-fitting noise.
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
+        and the mappings may include a convolution operation described by the imaging data's PSF.
+
+        This class uses the mapping formalism, which constructs the simultaneous linear equations using the
+        `mapping_matrix` of every linear object.
 
         Parameters
         -----------
-        image_1d
-            Flattened 1D array of the observed image the inversion is fitting.
         noise_map
-            Flattened 1D array of the noise-map used by the inversion during the fit.
-        convolver : convolution.Convolver
-            The convolver used to blur the mapping matrix with the PSF.
-        linear_obj_list : inversion.Mapper
-            The util between the image-pixels (via its / sub-grid) and pixelization pixels.
+            The noise-map of the observed imaging data which values are solved for.
+        convolver
+            The convolver used to include 2D convolution of the mapping matrix with the imaigng data's PSF.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(
@@ -398,17 +438,16 @@ class LEqImagingMapping(AbstractLEqImaging):
     @profile_func
     def data_vector_from(self, data: Array2D, preloads) -> np.ndarray:
         """
-        __Data Vector (D)__
+        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
+        by this object.
 
-        To solve for the source pixel fluxes we now pose the problem as a linear inversion which we use the NumPy
-        linear  algebra libraries to solve. The linear algebra is based on the
-        paper https://arxiv.org/pdf/astro-ph/0302587.pdf .
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
+        data vector is given by equation (4) and the letter D.
 
-        This requires us to convert the blurred mapping matrix and our data / noise map into matrices of certain
-        dimensions.
+        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
+        concatenated ensuring their `data_vector` values are solved for simultaneously.
 
-        The `data_vector` D is the first such matrix, which is given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        The calculation is described in more detail in `leq_util.data_vector_via_blurred_mapping_matrix_from`.
         """
 
         if preloads.operated_mapping_matrix is not None:
@@ -426,11 +465,15 @@ class LEqImagingMapping(AbstractLEqImaging):
     @profile_func
     def curvature_matrix(self):
         """
-        The `curvature_matrix` F is the second matrix, given by equation (4)
-        in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
 
-        This function computes F using the mapping matrix formalism, which is slower but must be used in circumstances
-        where the noise-map is varying.
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
+
+        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
+        concatenated ensuring their `curvature_matrix` values are solved for simultaneously. This includes all
+        diagonal and off-diagonal terms describing the covariances between linear objects.
 
         The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
         because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
@@ -446,19 +489,29 @@ class LEqImagingMapping(AbstractLEqImaging):
         self, reconstruction: np.ndarray
     ) -> Dict[LinearObj, Array2D]:
         """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane (via
-        the blurred mapping_matrix) and reconstruct the image data.
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
+        which quantities belong to which linear objects, therefore the linear equation's solutions (which are returned
+        as ndarrays) do not contain information on which linear object(s) they correspond to.
 
-        This uses the blurring mapping matrix which describes the PSF convolved mappings of flux between every
-        source pixel and image pixels, which is a quantity that is already computed when using the mapping formalism.
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
 
-        Returns
-        -------
-        Array2D
-            The reconstructed image data which the inversion fits.
+        This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
+        object's reconstructed data values, where the keys are the instances of each mapper in the inversion.
+
+        To perform this mapping the `mapping_matrix` is used, which straightforwardly describes how every value of
+        the `reconstruction` maps to pixels in the data-frame after the 2D convolution operations has been performed.
+
+        Parameters
+        ----------
+        reconstruction
+            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
+            individual mapper (in the data frame).
         """
 
-        mapped_reconstructed_image_dict = {}
+        mapped_reconstructed_data_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
             source_quantity=reconstruction
@@ -479,6 +532,6 @@ class LEqImagingMapping(AbstractLEqImaging):
                 array=mapped_reconstructed_image, mask=self.mask.mask_sub_1
             )
 
-            mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image
+            mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image
 
-        return mapped_reconstructed_image_dict
+        return mapped_reconstructed_data_dict

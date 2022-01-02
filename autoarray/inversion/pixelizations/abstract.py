@@ -107,9 +107,9 @@ class AbstractPixelization:
 
     def pixelization_grid_from(
         self,
-        source_grid_slim=None,
-        source_pixelization_grid=None,
-        sparse_index_for_slim_index=None,
+        source_grid_slim: Grid2D,
+        source_pixelization_grid: Grid2DSparse,
+        sparse_index_for_slim_index: np.ndarray = None,
     ):
         raise NotImplementedError
 

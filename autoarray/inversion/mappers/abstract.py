@@ -6,9 +6,8 @@ from autoconf import cached_property
 
 from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.linear_obj import UniqueMappings
-from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
-from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DDelaunay
-from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
 from autoarray.numba_util import profile_func
 from autoarray.inversion.mappers import mapper_util
@@ -17,10 +16,10 @@ from autoarray.inversion.mappers import mapper_util
 class AbstractMapper(LinearObj):
     def __init__(
         self,
-        source_grid_slim,
+        source_grid_slim: Grid2D,
         source_pixelization_grid,
-        data_pixelization_grid=None,
-        hyper_image=None,
+        data_pixelization_grid: Grid2D = None,
+        hyper_image: Array2D = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -183,12 +182,18 @@ class AbstractMapper(LinearObj):
             sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )
 
-    def pixel_signals_from(self, signal_scale) -> np.ndarray:
+    def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
         """
         Returns the (hyper) signal in each pixelization pixel, where this signal is an estimate of the expected signal
         each pixelization pixel contains given the data pixels it maps too.
 
         A full description of this is given in the function `mapper_util.adaptive_pixel_signals_from().
+
+        Parameters
+        ----------
+        signal_scale
+            A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
+            low signal regions.
         """
         return mapper_util.adaptive_pixel_signals_from(
             pixels=self.pixels,
@@ -200,7 +205,7 @@ class AbstractMapper(LinearObj):
             hyper_image=self.hyper_image,
         )
 
-    def pix_indexes_for_slim_indexes(self, pix_indexes) -> List[List]:
+    def pix_indexes_for_slim_indexes(self, pix_indexes: List) -> List[List]:
 
         image_for_source = self.sub_slim_indexes_for_pix_index
 
@@ -227,7 +232,7 @@ class AbstractMapper(LinearObj):
 
 
 class PixForSub:
-    def __init__(self, mappings, sizes):
+    def __init__(self, mappings: np.ndarray, sizes: np.ndarray):
         """
         Packages the following two quantities of the ndarray `pix_indexes_for_sub_slim_index`:
 

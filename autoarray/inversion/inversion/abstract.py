@@ -31,7 +31,17 @@ class AbstractInversion:
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
-
+        """
+        An inversion uses linear matrix
+        Parameters
+        ----------
+        data
+        leq
+        regularization_list
+        settings
+        preloads
+        profiling_dict
+        """
         self.data = data
 
         self.leq = leq

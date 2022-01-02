@@ -5,6 +5,8 @@ from autoconf import cached_property
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.mappers.abstract import PixForSub
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
 from autoarray.numba_util import profile_func
 from autoarray.inversion.mappers import mapper_util
@@ -13,10 +15,10 @@ from autoarray.inversion.mappers import mapper_util
 class MapperDelaunay(AbstractMapper):
     def __init__(
         self,
-        source_grid_slim,
+        source_grid_slim: Grid2D,
         source_pixelization_grid,
-        data_pixelization_grid=None,
-        hyper_image=None,
+        data_pixelization_grid: Grid2D = None,
+        hyper_image: Array2D = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
