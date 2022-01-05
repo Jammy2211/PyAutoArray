@@ -336,6 +336,21 @@ class Grid2DVoronoi(AbstractStructure2D):
 
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
+    @cached_property
+    def pixel_areas(self):
+        voronoi_vertices = self.voronoi.vertices
+        voronoi_regions = self.voronoi.regions
+        voronoi_point_region = self.voronoi.point_region
+        region_areas = np.zeros(self.pixels)
+
+        for i in range(self.pixels):
+            region_vertices_indexes = voronoi_regions[voronoi_point_region[i]]
+            if -1 in region_vertices_indexes:
+                region_areas[i] = -1
+            else:
+                region_areas[i] = grid_2d_util.compute_polygon_area(voronoi_vertices[region_vertices_indexes])
+        return region_areas
+
     @property
     def origin(self) -> Tuple[float, float]:
         """
@@ -493,6 +508,32 @@ class Grid2DDelaunay(AbstractStructure2D):
             neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]
 
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+
+    @cached_property
+    def pixel_areas(self):
+        '''
+        Currently I use a Voronoi structure to compute the pixel areas. So the results here should be exactly the same as Voronoi calculation.
+        '''
+
+        try:
+            voronoi = scipy.spatial.Voronoi(
+                np.asarray([self[:, 1], self[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
+            )
+        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
+            raise exc.PixelizationException() from e
+
+        voronoi_vertices = voronoi.vertices
+        voronoi_regions = voronoi.regions
+        voronoi_point_region = voronoi.point_region
+        region_areas = np.zeros(self.pixels)
+
+        for i in range(self.pixels):
+            region_vertices_indexes = voronoi_regions[voronoi_point_region[i]]
+            if -1 in region_vertices_indexes:
+                region_areas[i] = -1
+            else:
+                region_areas[i] = grid_2d_util.compute_polygon_area(voronoi_vertices[region_vertices_indexes])
+        return region_areas
 
     @property
     def origin(self) -> Tuple[float, float]:
