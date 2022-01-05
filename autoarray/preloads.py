@@ -26,6 +26,8 @@ class Preloads:
         curvature_matrix_counts=None,
         regularization_matrix=None,
         log_det_regularization_matrix_term=None,
+        traced_sparse_grids_list_of_planes=None,
+        sparse_image_plane_grid_list=None,
     ):
 
         self.w_tilde = w_tilde
@@ -39,6 +41,9 @@ class Preloads:
         self.curvature_matrix_counts = curvature_matrix_counts
         self.regularization_matrix = regularization_matrix
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
+
+        self.traced_sparse_grids_list_of_planes = traced_sparse_grids_list_of_planes
+        self.sparse_image_plane_grid_list = sparse_image_plane_grid_list
 
     def set_w_tilde_imaging(self, fit_0, fit_1):
         """
