@@ -420,3 +420,4 @@ class DelaunayBrightnessImage(Delaunay):
             seed=settings.kmeans_seed,
             stochastic=settings.is_stochastic,
         )
+
