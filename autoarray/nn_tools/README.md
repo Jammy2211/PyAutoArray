@@ -1,7 +1,7 @@
 ## nn ##
 (Natural Neighbours interpolation for PyAutoLens)
 
-This code is mainly copied from "https://github.com/sakov/nn-c", a c code natural neighboring interpolation code written by Pavel Sakov. Here, to make it run for PyAutoLens, we have slightly modefied it.
+This code is mainly copied from "https://github.com/sakov/nn-c", a natural neighboring interpolation C code written by Pavel Sakov. Here, to make it run for PyAutoLens, we have slightly modefied it.
 
 To install nn for PyAutoLens on a linux machine, follow the steps below:
 
