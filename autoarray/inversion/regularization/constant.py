@@ -39,3 +39,12 @@ class Constant(AbstractRegularization):
             pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
             pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
         )
+        '''
+        return regularization_util.constant_pixel_area_weighted_regularization_matrix_from(
+            coefficient=self.coefficient,
+            pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
+            pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
+            pixel_areas=mapper.source_pixelization_grid.pixel_areas
+        )
+        '''
+        
