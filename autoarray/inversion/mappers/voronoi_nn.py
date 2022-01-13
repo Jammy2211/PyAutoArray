@@ -85,17 +85,13 @@ class MapperVoronoiNN(AbstractMapper):
             pixelization_grid=source_pixelization_grid
         )
 
-        self.tem_pix_indexes_for_sub_slim_index = PixForSub(
+        self._pix_indexes_for_sub_slim_index = PixForSub(
                 mappings=mappings,
-                sizes=sizes)
+                sizes=sizes
+        )
 
-        self.tem_pix_weights_for_sub_slim_index = weights
+        self._pix_weights_for_sub_slim_index = weights
 
-        #print(weights)
-        #print(mappings)
-        #print(sizes)
-
-                                                                                                     
     @cached_property                                                                                 
     def pix_indexes_for_sub_slim_index(self) -> PixForSub:                                           
         """                                                                                          
@@ -117,13 +113,12 @@ class MapperVoronoiNN(AbstractMapper):
                                                                                                      
         For the Voronoi pixelization these mappings are calculated using a graph search which finds every data
         sub-pixel's nearest neighbor Voronoi pixel (see `mapper_util.pix_indexes_for_sub_slim_index_voronoi_from`).
-        """                                                                                          
-                                                                      
-        return self.tem_pix_indexes_for_sub_slim_index                                                                                     
-    @cached_property                                                                                 
-    def pix_weights_for_sub_slim_index(self) -> np.ndarray:                                          
+        """
+        return self._pix_indexes_for_sub_slim_index
 
-        return self.tem_pix_weights_for_sub_slim_index
+    @cached_property                                                                                 
+    def pix_weights_for_sub_slim_index(self) -> np.ndarray:
+        return self._pix_weights_for_sub_slim_index
 
     @property
     def voronoi(self):

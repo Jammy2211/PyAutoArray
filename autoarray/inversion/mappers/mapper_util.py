@@ -6,8 +6,6 @@ from autoarray import exc
 
 from autoarray.nn_tools import nn_c_tools
 
-from scipy.spatial import Delaunay
-
 
 @numba_util.jit()
 def data_slim_to_pixelization_unique_from(
@@ -372,6 +370,7 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
             max_nneighbours=max_nneighbours)
 
     bad_row_indexes = np.argwhere(np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0)
+
     # Seems if a point is outside the whole Voronoi region some of the weights have negative values. 
     # For those kind of points, we reset its neighbor to be its cloest neighbour.
 

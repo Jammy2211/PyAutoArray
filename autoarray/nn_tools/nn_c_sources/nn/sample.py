@@ -36,8 +36,6 @@ neighbor_index = np.zeros(nout * max_nneighbor, dtype=np.intc) - 1
 _file = 'libqiuhan.so'
 _mod = ctypes.cdll.LoadLibrary('./' + _file)
 
-print(dir(_mod))
-
 interpolate_from_input = _mod.interpolate_weights_from_input
 
 interpolate_from_input.argtypes = (
@@ -70,9 +68,6 @@ answer = interpolate_from_input(
 t2 = time.time()
 print('Time cost is {:.2f}'.format(t2 - t1))
 
-#print(zout)
-
-#answer = interpolate_from_input()
 
 
 print(weights_out)
