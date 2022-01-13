@@ -329,8 +329,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
 
 
 def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
-    grid: np.ndarray,
-    pixelization_grid: np.ndarray,
+    grid: np.ndarray, pixelization_grid: np.ndarray
 ) -> np.ndarray:
     """
     Returns the mappings between a set of slimmed sub-grid pixels and pixelization pixels, using information on
@@ -360,34 +359,39 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
         Voronoi grid.
     """
 
-    max_nneighbours = 30
-
     pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_c_tools.natural_interpolation_weights(
-            x_in=pixelization_grid[:, 1],
-            y_in=pixelization_grid[:, 0],
-            x_target=grid[:, 1],
-            y_target=grid[:, 0],
-            max_nneighbours=max_nneighbours)
+        x_in=pixelization_grid[:, 1],
+        y_in=pixelization_grid[:, 0],
+        x_target=grid[:, 1],
+        y_target=grid[:, 0],
+        max_nneighbours=30,
+    )
 
-    bad_row_indexes = np.argwhere(np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0)
+    bad_row_indexes = np.argwhere(
+        np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0
+    )
 
-    # Seems if a point is outside the whole Voronoi region some of the weights have negative values. 
+    # Seems if a point is outside the whole Voronoi region some of the weights have negative values.
     # For those kind of points, we reset its neighbor to be its cloest neighbour.
 
     for item in bad_row_indexes:
         ind = item[0]
         pix_indexes_for_sub_slim_index[ind] = -1
         pix_indexes_for_sub_slim_index[ind][0] = np.argmin(
-                np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
+            np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
         )
         pix_weights_for_sub_slim_index[ind] = 0.0
         pix_weights_for_sub_slim_index[ind][0] = 1.0
-        
-    pix_indexes_for_sub_slim_index_sizes = np.sum(pix_indexes_for_sub_slim_index != -1, axis=1)
 
-    return pix_indexes_for_sub_slim_index, pix_indexes_for_sub_slim_index_sizes, pix_weights_for_sub_slim_index
+    pix_indexes_for_sub_slim_index_sizes = np.sum(
+        pix_indexes_for_sub_slim_index != -1, axis=1
+    )
 
-
+    return (
+        pix_indexes_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index_sizes,
+        pix_weights_for_sub_slim_index,
+    )
 
 
 @numba_util.jit()

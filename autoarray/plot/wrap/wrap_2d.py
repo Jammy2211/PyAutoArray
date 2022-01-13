@@ -744,10 +744,10 @@ class DelaunayDrawer(AbstractMatWrap2D):
         )
 
         # uncomment below if only plot triangle boundaries
-        #d_points, simplices = self.delaunay_triangles(mapper.delaunay)
-        #plt.triplot(d_points[:, 0], d_points[:, 1], simplices)
-        #plt.xlim([-0.6, 0.6])
-        #plt.ylim([-0.6, 0.6])
+        # d_points, simplices = self.delaunay_triangles(mapper.delaunay)
+        # plt.triplot(d_points[:, 0], d_points[:, 1], simplices)
+        # plt.xlim([-0.6, 0.6])
+        # plt.ylim([-0.6, 0.6])
 
     def delaunay_triangles(self, delaunay):
         """
@@ -917,26 +917,24 @@ class VoronoiNNDrawer(AbstractMatWrap2D):
         )
 
         # uncomment below if only plot triangle boundaries
-        #d_points, simplices = self.delaunay_triangles(mapper.delaunay)
-        #plt.triplot(d_points[:, 0], d_points[:, 1], simplices)
-        #plt.xlim([-0.6, 0.6])
-        #plt.ylim([-0.6, 0.6])
-
+        # d_points, simplices = self.delaunay_triangles(mapper.delaunay)
+        # plt.triplot(d_points[:, 0], d_points[:, 1], simplices)
+        # plt.xlim([-0.6, 0.6])
+        # plt.ylim([-0.6, 0.6])
 
     def voronoiNN_interpolation_from(self, voronoi, interpolating_yx, pixel_values):
 
         pixel_points = voronoi.points
 
         interpolating_values = nn_c_tools.natural_interpolation(
-                pixel_points[:, 0],
-                pixel_points[:, 1],
-                pixel_values,
-                interpolating_yx[:, 1],
-                interpolating_yx[:, 0])
+            pixel_points[:, 0],
+            pixel_points[:, 1],
+            pixel_values,
+            interpolating_yx[:, 1],
+            interpolating_yx[:, 0],
+        )
 
         return interpolating_values
-
-
 
 
 class OriginScatter(GridScatter):

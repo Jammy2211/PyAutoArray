@@ -46,9 +46,13 @@ def constant_regularization_matrix_from(
 
     return regularization_matrix
 
+
 @numba_util.jit()
 def constant_pixel_area_weighted_regularization_matrix_from(
-        coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_sizes: np.ndarray, pixel_areas: np.ndarray,
+    coefficient: float,
+    pixel_neighbors: np.ndarray,
+    pixel_neighbors_sizes: np.ndarray,
+    pixel_areas: np.ndarray,
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
@@ -76,7 +80,7 @@ def constant_pixel_area_weighted_regularization_matrix_from(
 
     pixels = len(pixel_neighbors)
 
-    pixels_have_area = (pixel_areas != -1)
+    pixels_have_area = pixel_areas != -1
 
     total_area = np.sum(pixel_areas[pixels_have_area])
 
@@ -93,13 +97,13 @@ def constant_pixel_area_weighted_regularization_matrix_from(
         regularization_matrix[i, i] += 1e-8
         for j in range(pixel_neighbors_sizes[i]):
             neighbor_index = pixel_neighbors[i, j]
-            tem_coefficient = (pixel_area_weights[i] + pixel_area_weights[neighbor_index]) * regularization_coefficient
+            tem_coefficient = (
+                pixel_area_weights[i] + pixel_area_weights[neighbor_index]
+            ) * regularization_coefficient
             regularization_matrix[i, i] += tem_coefficient
             regularization_matrix[i, neighbor_index] -= tem_coefficient
 
     return regularization_matrix
-
-
 
 
 def adaptive_regularization_weights_from(

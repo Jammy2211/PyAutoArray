@@ -814,7 +814,7 @@ class MatPlot2D(AbstractMatPlot):
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 source_pixelilzation_values=source_pixelilzation_values,
-                )
+            )
         else:
 
             self._plot_voronoi_mapper(
@@ -1004,7 +1004,6 @@ class MatPlot2D(AbstractMatPlot):
         if not self.is_for_subplot:
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
             self.figure.close()
-
 
     def _plot_voronoiNN_mapper(
         self,

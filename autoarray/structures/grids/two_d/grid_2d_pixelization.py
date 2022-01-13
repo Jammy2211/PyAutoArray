@@ -348,7 +348,9 @@ class Grid2DVoronoi(AbstractStructure2D):
             if -1 in region_vertices_indexes:
                 region_areas[i] = -1
             else:
-                region_areas[i] = grid_2d_util.compute_polygon_area(voronoi_vertices[region_vertices_indexes])
+                region_areas[i] = grid_2d_util.compute_polygon_area(
+                    voronoi_vertices[region_vertices_indexes]
+                )
         return region_areas
 
     @property
@@ -529,7 +531,9 @@ class Grid2DVoronoiNN(AbstractStructure2D):
             if -1 in region_vertices_indexes:
                 region_areas[i] = -1
             else:
-                region_areas[i] = grid_2d_util.compute_polygon_area(voronoi_vertices[region_vertices_indexes])
+                region_areas[i] = grid_2d_util.compute_polygon_area(
+                    voronoi_vertices[region_vertices_indexes]
+                )
         return region_areas
 
     @property
@@ -594,8 +598,6 @@ class Grid2DVoronoiNN(AbstractStructure2D):
                 self.scaled_maxima[0],
             ]
         )
-
-
 
 
 class Grid2DDelaunay(AbstractStructure2D):
@@ -694,9 +696,9 @@ class Grid2DDelaunay(AbstractStructure2D):
 
     @cached_property
     def pixel_areas(self):
-        '''
+        """
         Currently I use a Voronoi structure to compute the pixel areas. So the results here should be exactly the same as Voronoi calculation.
-        '''
+        """
 
         try:
             voronoi = scipy.spatial.Voronoi(
@@ -715,7 +717,9 @@ class Grid2DDelaunay(AbstractStructure2D):
             if -1 in region_vertices_indexes:
                 region_areas[i] = -1
             else:
-                region_areas[i] = grid_2d_util.compute_polygon_area(voronoi_vertices[region_vertices_indexes])
+                region_areas[i] = grid_2d_util.compute_polygon_area(
+                    voronoi_vertices[region_vertices_indexes]
+                )
         return region_areas
 
     @property

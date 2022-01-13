@@ -80,20 +80,24 @@ class MapperVoronoiNN(AbstractMapper):
             profiling_dict=profiling_dict,
         )
 
-        mappings, sizes, weights = mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
-            grid=source_grid_slim,
-            pixelization_grid=source_pixelization_grid
+        mappings, sizes, weights = (
+            self.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from
         )
 
-        self._pix_indexes_for_sub_slim_index = PixForSub(
-                mappings=mappings,
-                sizes=sizes
-        )
+        self._pix_indexes_for_sub_slim_index = PixForSub(mappings=mappings, sizes=sizes)
 
         self._pix_weights_for_sub_slim_index = weights
 
-    @cached_property                                                                                 
-    def pix_indexes_for_sub_slim_index(self) -> PixForSub:                                           
+    @property
+    @profile_func
+    def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(self):
+
+        return mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+            grid=self.source_grid_slim, pixelization_grid=self.source_pixelization_grid
+        )
+
+    @cached_property
+    def pix_indexes_for_sub_slim_index(self) -> PixForSub:
         """                                                                                          
         Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Voronoi`
         pixelization.                                                                                
@@ -116,12 +120,10 @@ class MapperVoronoiNN(AbstractMapper):
         """
         return self._pix_indexes_for_sub_slim_index
 
-    @cached_property                                                                                 
+    @cached_property
     def pix_weights_for_sub_slim_index(self) -> np.ndarray:
         return self._pix_weights_for_sub_slim_index
 
     @property
     def voronoi(self):
         return self.source_pixelization_grid.voronoi
-        
-
