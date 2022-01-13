@@ -136,13 +136,12 @@ class AbstractMapper(LinearObj):
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
         to their corresponding pixelization pixels (e.g. `pixelization_grid`).
 
+        To perform an `Inversion` efficiently the linear algebra can bypass the calculation of a `mapping_matrix` and
+        instead use the w-tilde formalism, which requires these unique mappings for efficient computation. For
+        convenience, these mappings and associated metadata are packaged into the class `UniqueMappings`.
+
         A full description of these mappings is given in the
         function `mapper_util.data_slim_to_pixelization_unique_from()`.
-
-        For convenience, these mappings and associated metadata are packaged into the class `UniqueMappings`.
-
-        To perform an `Inversion` efficiently the linear algebra can be expressed using what it called the w-tilde
-        formalism, which uses these unique mappings to perform certain calculations efficiently.
         """
 
         (
