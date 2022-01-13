@@ -195,6 +195,27 @@ class TestGrid2DVoronoi:
         assert (pix.pixel_neighbors == pixel_neighbors_util).all()
         assert (pix.pixel_neighbors.sizes == pixel_neighbors_sizes_util).all()
 
+    def test__pixelization_areas(self):
+
+        grid = np.array(
+            [
+                [-2.0, 0.0],
+                [-np.sqrt(2), np.sqrt(2)],
+                [0.0, 0.0],
+                [0.0, 2.0],
+                [np.sqrt(2), np.sqrt(2)],
+                [2.0, 0.0],
+                [np.sqrt(2), -np.sqrt(2)],
+                [0.0, -2.0],
+                [-np.sqrt(2), -np.sqrt(2)],
+            ]
+        )
+
+        pix = aa.Grid2DVoronoi(grid=grid)
+
+        assert (pix.pixel_areas == pytest.approx(
+            np.array([-1, -1, 1.0 * np.tan(22.5 / 180.0 * np.pi) * 0.5 * 16.0, -1, -1, -1, -1, -1, -1]), 1e-6))
+
     def test__pixelization_grid__attributes(self):
 
         pixelization_grid = aa.Grid2DVoronoi(
@@ -365,3 +386,26 @@ class TestGrid2DVoronoi:
 
         with pytest.raises(exc.PixelizationException):
             grid.voronoi
+
+
+class TestGrid2DDelaunay:
+    def test__pixelization_areas(self):
+
+        grid = np.array(
+            [
+                [-2.0, 0.0],
+                [-np.sqrt(2), np.sqrt(2)],
+                [0.0, 0.0],
+                [0.0, 2.0],
+                [np.sqrt(2), np.sqrt(2)],
+                [2.0, 0.0],
+                [np.sqrt(2), -np.sqrt(2)],
+                [0.0, -2.0],
+                [-np.sqrt(2), -np.sqrt(2)],
+            ]
+        )
+
+        pix = aa.Grid2DDelaunay(grid=grid)
+
+        assert (pix.pixel_areas == pytest.approx(
+            np.array([-1, -1, 1.0 * np.tan(22.5 / 180.0 * np.pi) * 0.5 * 16.0, -1, -1, -1, -1, -1, -1]), 1e-6))

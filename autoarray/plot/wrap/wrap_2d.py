@@ -13,12 +13,16 @@ from autoarray.plot.wrap import wrap_base as wb
 
 from autoarray.plot.wrap.wrap_base import AbstractMatWrap
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
+from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.mapper_util import triangle_area_from
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 
 from autoarray import exc
+
+from autoarray.nn_tools import nn_c_tools
 
 
 class AbstractMatWrap2D(AbstractMatWrap):
@@ -657,7 +661,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
     def draw_delaunay_pixels(
         self,
-        mapper: MapperVoronoi,
+        mapper: MapperDelaunay,
         values: np.ndarray,
         cmap: wb.Cmap,
         colorbar: wb.Colorbar,
@@ -739,6 +743,12 @@ class DelaunayDrawer(AbstractMatWrap2D):
             aspect=aspect,
         )
 
+        # uncomment below if only plot triangle boundaries
+        #d_points, simplices = self.delaunay_triangles(mapper.delaunay)
+        #plt.triplot(d_points[:, 0], d_points[:, 1], simplices)
+        #plt.xlim([-0.6, 0.6])
+        #plt.ylim([-0.6, 0.6])
+
     def delaunay_triangles(self, delaunay):
         """
         Reconstruct infinite voronoi regions in a 2D diagram to finite regions.
@@ -808,6 +818,125 @@ class DelaunayDrawer(AbstractMatWrap2D):
                 interpolating_values[i] = np.sum(weight_abc * triangle_values)
 
         return interpolating_values
+
+
+class VoronoiNNDrawer(AbstractMatWrap2D):
+    """
+    Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
+    each Voronoi cell and coloring it according to a color value.
+
+    The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
+
+    This object wraps methods described in below:
+
+    https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill.html
+    """
+
+    def draw_voronoiNN_pixels(
+        self,
+        mapper: MapperVoronoiNN,
+        values: np.ndarray,
+        cmap: wb.Cmap,
+        colorbar: wb.Colorbar,
+        colorbar_tickparams: wb.ColorbarTickParams = None,
+        aspect=None,
+    ):
+        """
+        Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 
+        coordinate of the centre of every Voronoi cell. This uses the method `plt.fill`.
+        
+        Parameters
+        ----------
+        mapper : MapperVoronoi
+            An object which contains the (y,x) grid of Voronoi cell centres.
+        values
+            An array used to compute the color values that every Voronoi cell is plotted using.
+        cmap : str
+            The colormap used to plot each Voronoi cell.
+        colorbar : Colorbar
+            The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
+        """
+
+        extent = mapper.source_pixelization_grid.extent
+
+        y_mean = 0.5 * (extent[2] + extent[3])
+        y_half_length = 0.5 * (extent[3] - extent[2])
+
+        x_mean = 0.5 * (extent[0] + extent[1])
+        x_half_length = 0.5 * (extent[1] - extent[0])
+
+        half_length = np.max([y_half_length, x_half_length])
+
+        y0 = y_mean - half_length
+        y1 = y_mean + half_length
+
+        x0 = x_mean - half_length
+        x1 = x_mean + half_length
+
+        nnn = 401
+
+        ys = np.linspace(y0, y1, nnn)
+        xs = np.linspace(x0, x1, nnn)
+
+        xs_grid, ys_grid = np.meshgrid(xs, ys)
+
+        xs_grid_1d = xs_grid.ravel()
+        ys_grid_1d = ys_grid.ravel()
+
+        if values is None:
+            return
+
+        interpolating_values = self.voronoiNN_interpolation_from(
+            voronoi=mapper.voronoi,
+            interpolating_yx=np.vstack((ys_grid_1d, xs_grid_1d)).T,
+            pixel_values=values,
+        )
+
+        vmin = cmap.vmin_from(array=values)
+        vmax = cmap.vmax_from(array=values)
+
+        color_values = np.where(values > vmax, vmax, values)
+        color_values = np.where(values < vmin, vmin, color_values)
+
+        cmap = plt.get_cmap(cmap.config_dict["cmap"])
+
+        if colorbar is not None:
+
+            colorbar = colorbar.set_with_color_values(
+                cmap=cmap, color_values=color_values
+            )
+            if colorbar is not None and colorbar_tickparams is not None:
+                colorbar_tickparams.set(cb=colorbar)
+
+        plt.imshow(
+            interpolating_values.reshape((nnn, nnn)),
+            cmap=cmap,
+            extent=[x0, x1, y0, y1],
+            origin="lower",
+            aspect=aspect,
+        )
+
+        # uncomment below if only plot triangle boundaries
+        #d_points, simplices = self.delaunay_triangles(mapper.delaunay)
+        #plt.triplot(d_points[:, 0], d_points[:, 1], simplices)
+        #plt.xlim([-0.6, 0.6])
+        #plt.ylim([-0.6, 0.6])
+
+
+    def voronoiNN_interpolation_from(self, voronoi, interpolating_yx, pixel_values):
+
+        pixel_points = voronoi.points
+
+        interpolating_values = nn_c_tools.natural_interpolation(
+                pixel_points[:, 0],
+                pixel_points[:, 1],
+                pixel_values,
+                interpolating_yx[:, 1],
+                interpolating_yx[:, 0])
+
+        return interpolating_values
+
+
 
 
 class OriginScatter(GridScatter):

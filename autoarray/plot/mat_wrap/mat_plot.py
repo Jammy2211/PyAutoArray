@@ -11,6 +11,7 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
@@ -436,6 +437,7 @@ class MatPlot2D(AbstractMatPlot):
         patch_overlay: Optional[w2d.PatchOverlay] = None,
         delaunay_drawer: Optional[w2d.DelaunayDrawer] = None,
         voronoi_drawer: Optional[w2d.VoronoiDrawer] = None,
+        voronoiNN_drawer: Optional[w2d.VoronoiNNDrawer] = None,
         origin_scatter: Optional[w2d.OriginScatter] = None,
         mask_scatter: Optional[w2d.MaskScatter] = None,
         border_scatter: Optional[w2d.BorderScatter] = None,
@@ -560,6 +562,7 @@ class MatPlot2D(AbstractMatPlot):
 
         self.delaunay_drawer = delaunay_drawer or w2d.DelaunayDrawer()
         self.voronoi_drawer = voronoi_drawer or w2d.VoronoiDrawer()
+        self.voronoiNN_drawer = voronoiNN_drawer or w2d.VoronoiNNDrawer()
 
         self.origin_scatter = origin_scatter or w2d.OriginScatter()
         self.mask_scatter = mask_scatter or w2d.MaskScatter()
@@ -805,7 +808,13 @@ class MatPlot2D(AbstractMatPlot):
                 auto_labels=auto_labels,
                 source_pixelilzation_values=source_pixelilzation_values,
             )
-
+        elif isinstance(mapper, MapperVoronoiNN):
+            self._plot_voronoiNN_mapper(
+                mapper=mapper,
+                visuals_2d=visuals_2d,
+                auto_labels=auto_labels,
+                source_pixelilzation_values=source_pixelilzation_values,
+                )
         else:
 
             self._plot_voronoi_mapper(
@@ -976,6 +985,60 @@ class MatPlot2D(AbstractMatPlot):
         self.text.set()
 
         self.delaunay_drawer.draw_delaunay_pixels(
+            mapper=mapper,
+            values=source_pixelilzation_values,
+            cmap=self.cmap,
+            colorbar=self.colorbar,
+            colorbar_tickparams=self.colorbar_tickparams,
+            aspect=aspect_inv,
+        )
+
+        self.title.set(auto_title=auto_labels.title)
+        self.ylabel.set(units=self.units, include_brackets=True)
+        self.xlabel.set(units=self.units, include_brackets=True)
+
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=mapper.source_grid_slim, mapper=mapper
+        )
+
+        if not self.is_for_subplot:
+            self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
+            self.figure.close()
+
+
+    def _plot_voronoiNN_mapper(
+        self,
+        mapper: MapperDelaunay,
+        visuals_2d: Visuals2D,
+        auto_labels: AutoLabels,
+        source_pixelilzation_values=None,
+    ):
+
+        extent = self.axis.config_dict.get("extent")
+        extent = (
+            extent if extent is not None else mapper.source_pixelization_grid.extent
+        )
+
+        aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
+
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+            self.setup_subplot(aspect=aspect_inv)
+
+        self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
+
+        self.tickparams.set()
+        self.yticks.set(
+            array=None, min_value=extent[2], max_value=extent[3], units=self.units
+        )
+        self.xticks.set(
+            array=None, min_value=extent[0], max_value=extent[1], units=self.units
+        )
+
+        self.text.set()
+
+        self.voronoiNN_drawer.draw_voronoiNN_pixels(
             mapper=mapper,
             values=source_pixelilzation_values,
             cmap=self.cmap,

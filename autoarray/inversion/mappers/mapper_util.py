@@ -4,6 +4,8 @@ from typing import Tuple
 from autoarray import numba_util
 from autoarray import exc
 
+from autoarray.nn_tools import nn_c_tools
+
 from scipy.spatial import Delaunay
 
 
@@ -328,6 +330,67 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     return pix_indexes_for_sub_slim_index
 
 
+def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+    grid: np.ndarray,
+    pixelization_grid: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the mappings between a set of slimmed sub-grid pixels and pixelization pixels, using information on
+    how the pixels hosting each sub-pixel map to their closest pixelization pixel on the slim grid in the data-plane
+    and the pixelization's pixel centres.
+
+    To determine the complete set of slim sub-pixel to pixelization pixel mappings, we must pair every sub-pixel to
+    its nearest pixel. Using a full nearest neighbor search to do this is slow, thus the pixel neighbors (derived via
+    the Voronoi grid) are used to localize each nearest neighbor search by using a graph search.
+
+    Parameters
+    ----------
+    grid
+        The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
+        to an irgrid via lens.
+    nearest_pix_index_for_slim_index
+        A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
+    slim_index_for_sub_slim_index
+        The mappings between the data slimmed sub-pixels and their regular pixels.
+    pixelization_grid
+        The (y,x) centre of every Voronoi pixel in arc-seconds.
+    pixel_neighbors
+        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors_sizes
+        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
+        Voronoi grid.
+    """
+
+    max_nneighbours = 30
+
+    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_c_tools.natural_interpolation_weights(
+            x_in=pixelization_grid[:, 1],
+            y_in=pixelization_grid[:, 0],
+            x_target=grid[:, 1],
+            y_target=grid[:, 0],
+            max_nneighbours=max_nneighbours)
+
+    bad_row_indexes = np.argwhere(np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0)
+    # Seems if a point is outside the whole Voronoi region some of the weights have negative values. 
+    # For those kind of points, we reset its neighbor to be its cloest neighbour.
+
+    for item in bad_row_indexes:
+        ind = item[0]
+        pix_indexes_for_sub_slim_index[ind] = -1
+        pix_indexes_for_sub_slim_index[ind][0] = np.argmin(
+                np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
+        )
+        pix_weights_for_sub_slim_index[ind] = 0.0
+        pix_weights_for_sub_slim_index[ind][0] = 1.0
+        
+    pix_indexes_for_sub_slim_index_sizes = np.sum(pix_indexes_for_sub_slim_index != -1, axis=1)
+
+    return pix_indexes_for_sub_slim_index, pix_indexes_for_sub_slim_index_sizes, pix_weights_for_sub_slim_index
+
+
+
+
 @numba_util.jit()
 def adaptive_pixel_signals_from(
     pixels: int,
@@ -375,9 +438,11 @@ def adaptive_pixel_signals_from(
 
         mask_1d_index = slim_index_for_sub_slim_index[sub_slim_index]
 
-        if pix_size_for_sub_slim_index[sub_slim_index] > 1:
+        pix_size_tem = pix_size_for_sub_slim_index[sub_slim_index]
 
-            pixel_signals[vertices_indexes] += (
+        if pix_size_tem > 1:
+
+            pixel_signals[vertices_indexes[:pix_size_tem]] += (
                 hyper_image[mask_1d_index] * pixel_weights[sub_slim_index]
             )
             pixel_sizes[vertices_indexes] += 1

@@ -46,6 +46,61 @@ def constant_regularization_matrix_from(
 
     return regularization_matrix
 
+@numba_util.jit()
+def constant_pixel_area_weighted_regularization_matrix_from(
+        coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_sizes: np.ndarray, pixel_areas: np.ndarray,
+) -> np.ndarray:
+    """
+    From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
+
+    A complete description of regularizatin and the ``regularization_matrix`` can be found in the ``Regularization``
+    class in the module ``autoarray.inversion.regularization``.
+
+    Parameters
+    ----------
+    coefficients
+        The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
+    pixel_neighbors
+        An array of length (total_pixels) which provides the index of all neighbors of every pixel in
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors_sizes
+        An array of length (total_pixels) which gives the number of neighbors of every pixel in the
+        Voronoi grid.
+
+    Returns
+    -------
+    np.ndarray
+        The regularization matrix computed using a constant regularization scheme where the effective regularization
+        coefficient of every source pixel is the same.
+    """
+
+    pixels = len(pixel_neighbors)
+
+    pixels_have_area = (pixel_areas != -1)
+
+    total_area = np.sum(pixel_areas[pixels_have_area])
+
+    pixel_area_weights = pixel_areas / total_area
+
+    pixel_area_weights[~pixels_have_area] = 2.0 * np.max(pixel_area_weights)
+    # I set those ones at boundaries to have times area of the maximum area.
+
+    regularization_matrix = np.zeros(shape=(pixels, pixels))
+
+    regularization_coefficient = coefficient ** 2.0
+
+    for i in range(pixels):
+        regularization_matrix[i, i] += 1e-8
+        for j in range(pixel_neighbors_sizes[i]):
+            neighbor_index = pixel_neighbors[i, j]
+            tem_coefficient = (pixel_area_weights[i] + pixel_area_weights[neighbor_index]) * regularization_coefficient
+            regularization_matrix[i, i] += tem_coefficient
+            regularization_matrix[i, neighbor_index] -= tem_coefficient
+
+    return regularization_matrix
+
+
+
 
 def adaptive_regularization_weights_from(
     inner_coefficient: float, outer_coefficient: float, pixel_signals: np.ndarray

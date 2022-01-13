@@ -33,6 +33,7 @@ from .inversion.mappers.factory import mapper_from as Mapper
 from .inversion.mappers.rectangular import MapperRectangular
 from .inversion.mappers.delaunay import MapperDelaunay
 from .inversion.mappers.voronoi import MapperVoronoi
+from .inversion.mappers.voronoi_nn import MapperVoronoiNN
 from .inversion.pixelizations.settings import SettingsPixelization
 from .inversion.linear_eqn.imaging import LEqImagingMapping
 from .inversion.linear_eqn.imaging import LEqImagingWTilde
@@ -61,6 +62,7 @@ from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
+from .structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoiNN
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DDelaunay
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular
