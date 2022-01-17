@@ -4,9 +4,6 @@ from typing import List, Tuple, Union
 
 from autoarray.mask.abstract_mask import AbstractMask
 
-from autoarray.structures.grids.one_d import grid_1d as g1d
-from autoarray.mask import mask_2d as m2d
-
 from autoarray import exc
 from autoarray.structures.arrays.one_d import array_1d_util
 from autoarray.structures.grids.one_d import grid_1d_util
@@ -90,21 +87,23 @@ class AbstractMask1d(AbstractMask):
         )
 
     @property
-    def unmasked_grid_sub_1(self) -> "g1d.Grid1D":
+    def unmasked_grid_sub_1(self) -> "Grid1D":
         """
         The scaled-grid of (y,x) coordinates of every pixel.
 
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
         value y value in scaled units.
         """
+        from autoarray.structures.grids.one_d.grid_1d import Grid1D
+
         grid_slim = grid_1d_util.grid_1d_slim_via_mask_from(
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
-        return g1d.Grid1D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
+        return Grid1D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
 
     @property
-    def to_mask_2d(self) -> m2d.Mask2D:
+    def to_mask_2d(self) -> "Mask2D":
         """
         Map the Mask1D to a Mask2D of shape [total_mask_1d_pixel, 1].
 
@@ -116,7 +115,9 @@ class AbstractMask1d(AbstractMask):
             The 1D mask mapped to a 2D mask of shape [total_mask_1d_pixel, 1].
         """
 
-        return m2d.Mask2D.manual(
+        from autoarray.mask.mask_2d import Mask2D
+
+        return Mask2D.manual(
             [self],
             pixel_scales=(self.pixel_scale, self.pixel_scale),
             sub_size=self.sub_size,

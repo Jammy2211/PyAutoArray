@@ -5,8 +5,6 @@ import os
 from os import path
 from typing import List
 
-from autoarray.structures.grids.two_d import grid_2d_irregular as g2d_irr
-
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
@@ -76,7 +74,7 @@ class ValuesIrregular(np.ndarray):
             The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregular* object."""
         return ValuesIrregular(values=array_slim)
 
-    def grid_from(self, grid_slim: np.ndarray) -> "g2d_irr.Grid2DIrregular":
+    def grid_from(self, grid_slim: np.ndarray) -> "Grid2DIrregular":
         """
         Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
 
@@ -86,8 +84,12 @@ class ValuesIrregular(np.ndarray):
         ----------
         grid_slim
             The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregular`
-            object."""
-        return g2d_irr.Grid2DIrregular(grid=grid_slim)
+            object.
+        """
+
+        from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+
+        return Grid2DIrregular(grid=grid_slim)
 
     @classmethod
     def from_file(cls, file_path: str) -> "ValuesIrregular":

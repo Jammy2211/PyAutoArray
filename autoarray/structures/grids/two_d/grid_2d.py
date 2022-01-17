@@ -4,9 +4,8 @@ from typing import List, Optional, Tuple, Union
 import warnings
 
 from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.mask.mask_2d import Mask2D
-
-from autoarray.structures.arrays.two_d import array_2d as a2d
 
 from autoarray import exc
 from autoarray.structures.grids import abstract_grid
@@ -800,7 +799,7 @@ class Grid2D(AbstractGrid2D):
 
         return Grid2D.from_mask(mask=mask)
 
-    def structure_2d_from(self, result: np.ndarray) -> Union["a2d.Array2D", "Grid2D"]:
+    def structure_2d_from(self, result: np.ndarray) -> Union["Array2D", "Grid2D"]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
@@ -817,7 +816,7 @@ class Grid2D(AbstractGrid2D):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result.shape) == 1:
-            return a2d.Array2D(array=result, mask=self.mask)
+            return Array2D(array=result, mask=self.mask)
         else:
 
             from autoarray.structures.grids.two_d.grid_transformed import (
@@ -833,7 +832,7 @@ class Grid2D(AbstractGrid2D):
 
     def structure_2d_list_from(
         self, result_list: List
-    ) -> List[Union["a2d.Array2D", "Grid2D"]]:
+    ) -> List[Union["Array2D", "Grid2D"]]:
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
