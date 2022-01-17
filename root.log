@@ -949,3 +949,44 @@
 2022-01-13 16:43:04,935 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
 2022-01-13 16:43:04,936 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
 2022-01-13 16:43:07,465 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:31,946 - autoarray.preloads - INFO - PRELOADS - Relocated grid of pxielization preloaded for this model-fit.
+2022-01-17 14:09:31,948 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
+2022-01-17 14:09:31,949 - autoarray.preloads - INFO - PRELOADS - Mappers of planes preloaded for this model-fit.
+2022-01-17 14:09:31,950 - autoarray.preloads - INFO - PRELOADS - LEq linear algebra quantities preloaded for this model-fit.
+2022-01-17 14:09:31,951 - autoarray.preloads - INFO - PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit.
+2022-01-17 14:09:33,562 - autoarray.dataset.imaging - INFO - The image and noise map of the `Imaging` objected have been padded to the dimensions(9,). This is because the blurring region around the mask (which defines wherePSF flux may be convolved into the masked region) extended beyond the edge of the image.This can be prevented by using a smaller mask, smaller PSF kernel size or manually paddingthe image and noise-map yourself.
+2022-01-17 14:09:33,643 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:33,645 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:33,646 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:33,648 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:33,652 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:09:33,656 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:33,657 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:33,661 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 1 image-pixels
+2022-01-17 14:09:35,015 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 4 image-pixels
+2022-01-17 14:09:35,019 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 4 image-pixels
+2022-01-17 14:09:35,034 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 4 image-pixels
+2022-01-17 14:09:35,068 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:35,374 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:09:35,851 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:00,596 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:00,607 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:00,665 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:00,682 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:00,772 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:00,774 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:00,805 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:00,808 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:00,872 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 5 image-pixels
+2022-01-17 14:10:00,873 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:01,100 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 5 image-pixels
+2022-01-17 14:10:01,101 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:02,453 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:02,454 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:02,454 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:02,456 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:03,204 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:03,204 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:03,205 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels
+2022-01-17 14:10:03,205 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
+2022-01-17 14:10:05,511 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 9 image-pixels

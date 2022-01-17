@@ -5,8 +5,7 @@ import os
 
 try:
     _file = (
-        os.path.realpath(os.path.dirname(__file__))
-        + "/src/nn/libnnhpi_customized.so"
+        os.path.realpath(os.path.dirname(__file__)) + "/src/nn/libnnhpi_customized.so"
     )
     _mod = ctypes.cdll.LoadLibrary(_file)
 

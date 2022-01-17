@@ -4,6 +4,7 @@ from typing import Tuple
 from autoarray import numba_util
 from autoarray import exc
 
+
 @numba_util.jit()
 def data_slim_to_pixelization_unique_from(
     data_pixels,
@@ -356,7 +357,15 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
         Voronoi grid.
     """
 
-    from autoarray.util.nn import nn_py
+    try:
+        from autoarray.util.nn import nn_py
+    except ImportError as e:
+        raise ImportError(
+            "In order to use the VoronoiNN pixelization you must install the "
+            "Natural Neighbor Interpolation c package.\n\n"
+            ""
+            "See: "
+        ) from e
 
     pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_py.natural_interpolation_weights(
         x_in=pixelization_grid[:, 1],
