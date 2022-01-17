@@ -4,9 +4,6 @@ from typing import Tuple
 from autoarray import numba_util
 from autoarray import exc
 
-from autoarray.nn_tools import nn_c_tools
-
-
 @numba_util.jit()
 def data_slim_to_pixelization_unique_from(
     data_pixels,
@@ -359,7 +356,9 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
         Voronoi grid.
     """
 
-    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_c_tools.natural_interpolation_weights(
+    from autoarray.util.nn import nn_py
+
+    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_py.natural_interpolation_weights(
         x_in=pixelization_grid[:, 1],
         y_in=pixelization_grid[:, 0],
         x_target=grid[:, 1],

@@ -22,7 +22,7 @@ from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 
 from autoarray import exc
 
-from autoarray.nn_tools import nn_c_tools
+from autoarray.util.nn import nn_py
 
 
 class AbstractMatWrap2D(AbstractMatWrap):
@@ -926,7 +926,7 @@ class VoronoiNNDrawer(AbstractMatWrap2D):
 
         pixel_points = voronoi.points
 
-        interpolating_values = nn_c_tools.natural_interpolation(
+        interpolating_values = nn_py.natural_interpolation(
             pixel_points[:, 0],
             pixel_points[:, 1],
             pixel_values,
