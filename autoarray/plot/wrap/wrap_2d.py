@@ -929,7 +929,7 @@ class VoronoiNNDrawer(AbstractMatWrap2D):
                 "In order to use the VoronoiNN pixelization you must install the "
                 "Natural Neighbor Interpolation c package.\n\n"
                 ""
-                "See: "
+                "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
             ) from e
 
         pixel_points = voronoi.points

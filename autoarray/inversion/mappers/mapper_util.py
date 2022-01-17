@@ -364,7 +364,7 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
             "In order to use the VoronoiNN pixelization you must install the "
             "Natural Neighbor Interpolation c package.\n\n"
             ""
-            "See: "
+            "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
         ) from e
 
     pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_py.natural_interpolation_weights(
