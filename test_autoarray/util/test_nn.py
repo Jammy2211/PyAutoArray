@@ -1,6 +1,6 @@
 import autoarray as aa
 import numpy as np
-from autoarray.nn_tools import nn_c_tools
+from autoarray.util.nn import nn_py
 
 
 def test__returning_weights_correct():
@@ -27,7 +27,7 @@ def test__returning_weights_correct():
 
     max_nneighbours = int(30)
 
-    weights, neighbour_indexes = nn_c_tools.natural_interpolation_weights(
+    weights, neighbour_indexes = nn_py.natural_interpolation_weights(
         pixelization_grid[:, 1],
         pixelization_grid[:, 0],
         interpolate_grid[:, 1],
@@ -79,9 +79,7 @@ def test__nn_interpolation_correct():
         [[0.5, 0.5], [-0.5, 0.5], [2.0, 2.0]], shape_native=(3, 1), pixel_scales=1.0
     )
 
-    max_nneighbours = int(30)
-
-    interpolated_values = nn_c_tools.natural_interpolation(
+    interpolated_values = nn_py.natural_interpolation(
         pixelization_grid[:, 1],
         pixelization_grid[:, 0],
         input_values,

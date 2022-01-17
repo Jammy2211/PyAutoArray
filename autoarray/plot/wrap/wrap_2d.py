@@ -22,8 +22,6 @@ from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 
 from autoarray import exc
 
-from autoarray.nn_tools import nn_c_tools
-
 
 class AbstractMatWrap2D(AbstractMatWrap):
     """
@@ -924,9 +922,19 @@ class VoronoiNNDrawer(AbstractMatWrap2D):
 
     def voronoiNN_interpolation_from(self, voronoi, interpolating_yx, pixel_values):
 
+        try:
+            from autoarray.util.nn import nn_py
+        except ImportError as e:
+            raise ImportError(
+                "In order to use the VoronoiNN pixelization you must install the "
+                "Natural Neighbor Interpolation c package.\n\n"
+                ""
+                "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
+            ) from e
+
         pixel_points = voronoi.points
 
-        interpolating_values = nn_c_tools.natural_interpolation(
+        interpolating_values = nn_py.natural_interpolation(
             pixel_points[:, 0],
             pixel_points[:, 1],
             pixel_values,
