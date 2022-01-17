@@ -23,12 +23,8 @@ from .inversion import pixelizations as pix
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.factory import inversion_from as Inversion
-from .inversion.inversion.factory import (
-    inversion_imaging_unpacked_from as InversionImaging,
-)
-from .inversion.inversion.factory import (
-    inversion_interferometer_unpacked_from as InversionInterferometer,
-)
+from .inversion.inversion.factory import inversion_imaging_unpacked_from as InversionImaging
+from .inversion.inversion.factory import inversion_interferometer_unpacked_from as InversionInterferometer
 from .inversion.mappers.factory import mapper_from as Mapper
 from .inversion.mappers.rectangular import MapperRectangular
 from .inversion.mappers.delaunay import MapperDelaunay
