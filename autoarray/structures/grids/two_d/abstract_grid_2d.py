@@ -49,9 +49,7 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
             )
 
 
-def convert_grid_2d(
-    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
-) -> np.ndarray:
+def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.ndarray:
     """
     The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
     
@@ -398,9 +396,7 @@ class AbstractGrid2D(AbstractStructure2D):
             self.scaled_maxima[0] + buffer,
         ]
 
-    def padded_grid_from(
-        self, kernel_shape_native: Tuple[float, float]
-    ) -> "Grid2D":
+    def padded_grid_from(self, kernel_shape_native: Tuple[float, float]) -> "Grid2D":
         """
         When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will
         be 'missing' if the grid is used to evaluate the signal via an analytic function.

@@ -403,9 +403,7 @@ class Grid2DIterate(AbstractGrid2D):
         )
 
     @staticmethod
-    def array_at_sub_size_from(
-        func: Callable, cls, mask: Mask2D, sub_size
-    ) -> Array2D:
+    def array_at_sub_size_from(func: Callable, cls, mask: Mask2D, sub_size) -> Array2D:
 
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 

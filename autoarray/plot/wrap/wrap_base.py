@@ -816,7 +816,7 @@ class Output:
         path: Optional[str] = None,
         filename: Optional[str] = None,
         format: Union[str, List[str]] = None,
-        format_folder : bool = False,
+        format_folder: bool = False,
         bypass: bool = False,
     ):
         """

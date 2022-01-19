@@ -240,7 +240,9 @@ class AbstractMask2D(AbstractMask):
             origin=self.origin,
         )
 
-    def pixel_coordinates_2d_from(self, scaled_coordinates_2d) -> Union[Tuple[float], Tuple[float, float]]:
+    def pixel_coordinates_2d_from(
+        self, scaled_coordinates_2d
+    ) -> Union[Tuple[float], Tuple[float, float]]:
 
         return geometry_util.pixel_coordinates_2d_from(
             scaled_coordinates_2d=scaled_coordinates_2d,
@@ -483,7 +485,9 @@ class AbstractMask2D(AbstractMask):
         )
         return Grid2D(grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1)
 
-    def grid_scaled_for_marching_squares_from(self, grid_pixels_1d, shape_native) -> "Grid2D":
+    def grid_scaled_for_marching_squares_from(
+        self, grid_pixels_1d, shape_native
+    ) -> "Grid2D":
 
         from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
@@ -650,7 +654,7 @@ class AbstractMask2D(AbstractMask):
         ).astype("int")
 
     @property
-    def shape_native_masked_pixels(self)-> Tuple[int, int]:
+    def shape_native_masked_pixels(self) -> Tuple[int, int]:
         """
         The (y,x) shape corresponding to the extent of unmasked pixels that go vertically and horizontally across the
         mask.

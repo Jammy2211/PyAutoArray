@@ -396,7 +396,9 @@ class Grid1D(AbstractGrid1D):
 
     def structure_2d_list_from(
         self, result_list: List
-    ) -> List[Union["Array1D", "Grid2D", "Grid2DTransformed", "Grid2DTransformedNumpy"]]:
+    ) -> List[
+        Union["Array1D", "Grid2D", "Grid2DTransformed", "Grid2DTransformedNumpy"]
+    ]:
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
