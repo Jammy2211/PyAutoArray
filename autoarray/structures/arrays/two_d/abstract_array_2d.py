@@ -2,8 +2,6 @@ import logging
 import numpy as np
 from typing import List, Tuple, Union
 
-from autoconf import conf
-
 from autoarray.structures.abstract_structure import AbstractStructure2D
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
