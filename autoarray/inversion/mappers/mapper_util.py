@@ -4,10 +4,6 @@ from typing import Tuple
 from autoarray import numba_util
 from autoarray import exc
 
-from autoarray.nn_tools import nn_c_tools
-
-from scipy.spatial import Delaunay
-
 
 @numba_util.jit()
 def data_slim_to_pixelization_unique_from(
@@ -100,107 +96,6 @@ def data_slim_to_pixelization_unique_from(
         pix_lengths[ip] = pix_size
 
     return data_to_pix_unique, data_weights, pix_lengths
-
-
-@numba_util.jit()
-def triangle_area_from(
-    corner_0: Tuple[float, float],
-    corner_1: Tuple[float, float],
-    corner_2: Tuple[float, float],
-) -> float:
-    """
-    Returns the area within a triangle whose three corners are located at the (x,y) coordinates given by the function
-    inputs `corner_a` `corner_b` and `corner_c`.
-
-    Parameters
-    ----------
-    corner_0
-        The (x,y) coordinates of the triangle's first corner.
-    corner_1
-        The (x,y) coordinates of the triangle's second corner.
-    corner_2
-        The (x,y) coordinates of the triangle's third corner.
-
-    Returns
-    -------
-    The area of the triangle given the input (x,y) corners.
-    """
-
-    x1 = corner_0[0]
-    y1 = corner_0[1]
-    x2 = corner_1[0]
-    y2 = corner_1[1]
-    x3 = corner_2[0]
-    y3 = corner_2[1]
-
-    return 0.5 * np.abs(x1 * y2 + x2 * y3 + x3 * y1 - x2 * y1 - x3 * y2 - x1 * y3)
-
-
-@numba_util.jit()
-def pixel_weights_delaunay_from(
-    source_grid_slim,
-    source_pixelization_grid,
-    slim_index_for_sub_slim_index: np.ndarray,
-    pix_indexes_for_sub_slim_index,
-) -> np.ndarray:
-    """
-    Returns the weights of the mappings between the masked sub-pixels and the Delaunay pixelization.
-
-    Weights are determiend via a nearest neighbor interpolation scheme, whereby every data-sub pixel maps to three
-    Delaunay pixel vertexes (in the source frame). The weights of these 3 mappings depends on the distance of the
-    coordinate to each vertex, with the highest weight being its closest neighbor,
-
-    Parameters
-    -----------
-    source_grid_slim
-        A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
-        `source` reference frame.
-    source_pixelization_grid
-        The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
-    slim_index_for_sub_slim_index
-        The mappings between the data's sub slimmed indexes and the slimmed indexes on the non sub-sized indexes.
-    pix_indexes_for_sub_slim_index
-        The mappings from a data sub-pixel index to a pixelization pixel index.
-    """
-
-    pixel_weights = np.zeros(pix_indexes_for_sub_slim_index.shape)
-
-    for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
-
-        pix_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
-
-        if pix_indexes[1] != -1:
-
-            vertices_of_the_simplex = source_pixelization_grid[pix_indexes]
-
-            sub_gird_coordinate_on_source_place = source_grid_slim[sub_slim_index]
-
-            term0 = triangle_area_from(
-                corner_0=vertices_of_the_simplex[1],
-                corner_1=vertices_of_the_simplex[2],
-                corner_2=sub_gird_coordinate_on_source_place,
-            )
-            term1 = triangle_area_from(
-                corner_0=vertices_of_the_simplex[0],
-                corner_1=vertices_of_the_simplex[2],
-                corner_2=sub_gird_coordinate_on_source_place,
-            )
-            term2 = triangle_area_from(
-                corner_0=vertices_of_the_simplex[0],
-                corner_1=vertices_of_the_simplex[1],
-                corner_2=sub_gird_coordinate_on_source_place,
-            )
-
-            norm = term0 + term1 + term2
-
-            weight_abc = np.array([term0, term1, term2]) / norm
-
-            pixel_weights[sub_slim_index] = weight_abc
-
-        else:
-            pixel_weights[sub_slim_index][0] = 1.0
-
-    return pixel_weights
 
 
 @numba_util.jit()
@@ -330,9 +225,109 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     return pix_indexes_for_sub_slim_index
 
 
+@numba_util.jit()
+def triangle_area_from(
+    corner_0: Tuple[float, float],
+    corner_1: Tuple[float, float],
+    corner_2: Tuple[float, float],
+) -> float:
+    """
+    Returns the area within a triangle whose three corners are located at the (x,y) coordinates given by the function
+    inputs `corner_a` `corner_b` and `corner_c`.
+
+    Parameters
+    ----------
+    corner_0
+        The (x,y) coordinates of the triangle's first corner.
+    corner_1
+        The (x,y) coordinates of the triangle's second corner.
+    corner_2
+        The (x,y) coordinates of the triangle's third corner.
+
+    Returns
+    -------
+    The area of the triangle given the input (x,y) corners.
+    """
+
+    x1 = corner_0[0]
+    y1 = corner_0[1]
+    x2 = corner_1[0]
+    y2 = corner_1[1]
+    x3 = corner_2[0]
+    y3 = corner_2[1]
+
+    return 0.5 * np.abs(x1 * y2 + x2 * y3 + x3 * y1 - x2 * y1 - x3 * y2 - x1 * y3)
+
+
+@numba_util.jit()
+def pixel_weights_delaunay_from(
+    source_grid_slim,
+    source_pixelization_grid,
+    slim_index_for_sub_slim_index: np.ndarray,
+    pix_indexes_for_sub_slim_index,
+) -> np.ndarray:
+    """
+    Returns the weights of the mappings between the masked sub-pixels and the Delaunay pixelization.
+
+    Weights are determiend via a nearest neighbor interpolation scheme, whereby every data-sub pixel maps to three
+    Delaunay pixel vertexes (in the source frame). The weights of these 3 mappings depends on the distance of the
+    coordinate to each vertex, with the highest weight being its closest neighbor,
+
+    Parameters
+    -----------
+    source_grid_slim
+        A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
+        `source` reference frame.
+    source_pixelization_grid
+        The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
+    slim_index_for_sub_slim_index
+        The mappings between the data's sub slimmed indexes and the slimmed indexes on the non sub-sized indexes.
+    pix_indexes_for_sub_slim_index
+        The mappings from a data sub-pixel index to a pixelization pixel index.
+    """
+
+    pixel_weights = np.zeros(pix_indexes_for_sub_slim_index.shape)
+
+    for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
+
+        pix_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
+
+        if pix_indexes[1] != -1:
+
+            vertices_of_the_simplex = source_pixelization_grid[pix_indexes]
+
+            sub_gird_coordinate_on_source_place = source_grid_slim[sub_slim_index]
+
+            term0 = triangle_area_from(
+                corner_0=vertices_of_the_simplex[1],
+                corner_1=vertices_of_the_simplex[2],
+                corner_2=sub_gird_coordinate_on_source_place,
+            )
+            term1 = triangle_area_from(
+                corner_0=vertices_of_the_simplex[0],
+                corner_1=vertices_of_the_simplex[2],
+                corner_2=sub_gird_coordinate_on_source_place,
+            )
+            term2 = triangle_area_from(
+                corner_0=vertices_of_the_simplex[0],
+                corner_1=vertices_of_the_simplex[1],
+                corner_2=sub_gird_coordinate_on_source_place,
+            )
+
+            norm = term0 + term1 + term2
+
+            weight_abc = np.array([term0, term1, term2]) / norm
+
+            pixel_weights[sub_slim_index] = weight_abc
+
+        else:
+            pixel_weights[sub_slim_index][0] = 1.0
+
+    return pixel_weights
+
+
 def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
-    grid: np.ndarray,
-    pixelization_grid: np.ndarray,
+    grid: np.ndarray, pixelization_grid: np.ndarray
 ) -> np.ndarray:
     """
     Returns the mappings between a set of slimmed sub-grid pixels and pixelization pixels, using information on
@@ -362,16 +357,23 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
         Voronoi grid.
     """
 
+    try:
+        from autoarray.util.nn import nn_py
+    except ImportError as e:
+        raise ImportError(
+            "In order to use the VoronoiNN pixelization you must install the "
+            "Natural Neighbor Interpolation c package.\n\n"
+            ""
+            "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
+        ) from e
+
     max_nneighbours = 100
     # I feel if the source pixel number is only ~ 1000, then it should be fine to set it to be 100 (or even 50).
     # There are cases where a grid can have over 100 neighbors when running the codes. But I think they are just weird cases in
     # the initializing phase (generating initializing points).
     # We can set it to be 200 to make our modelling more robust, but it will slow down our modelling.
 
-    (
-        pix_weights_for_sub_slim_index,
-        pix_indexes_for_sub_slim_index,
-    ) = nn_c_tools.natural_interpolation_weights(
+    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_py.natural_interpolation_weights(
         x_in=pixelization_grid[:, 1],
         y_in=pixelization_grid[:, 0],
         x_target=grid[:, 1],
@@ -382,6 +384,7 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
     bad_row_indexes = np.argwhere(
         np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0
     )
+
     # Seems if a point is outside the whole Voronoi region some of the weights have negative values.
     # For those kind of points, we reset its neighbor to be its cloest neighbour.
 

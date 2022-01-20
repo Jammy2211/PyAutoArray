@@ -5,7 +5,7 @@ from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.mask.mask_2d import Mask2D
 
-from autoarray.structures.arrays.two_d import array_2d as a2d
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 
 
 from autoarray.structures.grids import abstract_grid
@@ -403,9 +403,7 @@ class Grid2DIterate(AbstractGrid2D):
         )
 
     @staticmethod
-    def array_at_sub_size_from(
-        func: Callable, cls, mask: Mask2D, sub_size
-    ) -> a2d.Array2D:
+    def array_at_sub_size_from(func: Callable, cls, mask: Mask2D, sub_size) -> Array2D:
 
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
@@ -423,7 +421,7 @@ class Grid2DIterate(AbstractGrid2D):
         return grid_compute.structure_2d_from(result=grid_higher_sub).binned.native
 
     def threshold_mask_via_arrays_from(
-        self, array_lower_sub_2d: a2d.Array2D, array_higher_sub_2d: a2d.Array2D
+        self, array_lower_sub_2d: Array2D, array_higher_sub_2d: Array2D
     ) -> Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
@@ -470,8 +468,8 @@ class Grid2DIterate(AbstractGrid2D):
         fractional_accuracy_threshold: float,
         relative_accuracy_threshold: Optional[float],
         threshold_mask: Mask2D,
-        array_higher_sub_2d: a2d.Array2D,
-        array_lower_sub_2d: a2d.Array2D,
+        array_higher_sub_2d: Array2D,
+        array_lower_sub_2d: Array2D,
         array_higher_mask: Mask2D,
     ) -> np.ndarray:
         """
@@ -521,8 +519,8 @@ class Grid2DIterate(AbstractGrid2D):
         return threshold_mask
 
     def iterated_array_from(
-        self, func: Callable, cls: object, array_lower_sub_2d: a2d.Array2D
-    ) -> a2d.Array2D:
+        self, func: Callable, cls: object, array_lower_sub_2d: Array2D
+    ) -> Array2D:
         """
         Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
         The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
@@ -600,7 +598,7 @@ class Grid2DIterate(AbstractGrid2D):
 
         return self.return_iterated_array_result(iterated_array=iterated_array_2d)
 
-    def return_iterated_array_result(self, iterated_array: a2d.Array2D) -> a2d.Array2D:
+    def return_iterated_array_result(self, iterated_array: Array2D) -> Array2D:
         """
         Returns the resulting iterated array, by mapping it to 1D and then passing it back as an `Array2D` structure.
 
@@ -618,16 +616,16 @@ class Grid2DIterate(AbstractGrid2D):
             mask_2d=self.mask, array_2d_native=iterated_array, sub_size=1
         )
 
-        return a2d.Array2D(array=iterated_array_1d, mask=self.mask.mask_sub_1)
+        return Array2D(array=iterated_array_1d, mask=self.mask.mask_sub_1)
 
     @staticmethod
     @numba_util.jit()
     def iterated_array_jit_from(
-        iterated_array: a2d.Array2D,
+        iterated_array: Array2D,
         threshold_mask_higher_sub: Mask2D,
         threshold_mask_lower_sub: Mask2D,
-        array_higher_sub_2d: a2d.Array2D,
-    ) -> a2d.Array2D:
+        array_higher_sub_2d: Array2D,
+    ) -> Array2D:
         """
         Create the iterated array from a result array that is computed at a higher sub size leel than the previous grid.
 
@@ -871,7 +869,7 @@ class Grid2DIterate(AbstractGrid2D):
 
     def iterated_result_from(
         self, func: Callable, cls: object
-    ) -> Union[a2d.Array2D, Grid2D]:
+    ) -> Union[Array2D, Grid2D]:
         """
         Iterate over a function that returns an array or grid of values until the it meets a specified fractional
         accuracy. The function returns a result on a pixel-grid where evaluating it on more points on a higher

@@ -89,3 +89,4 @@ class Constant(AbstractRegularization):
                 pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
                 pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
             )
+

@@ -816,6 +816,7 @@ class Output:
         path: Optional[str] = None,
         filename: Optional[str] = None,
         format: Union[str, List[str]] = None,
+        format_folder: bool = False,
         bypass: bool = False,
     ):
         """
@@ -838,6 +839,9 @@ class Output:
         format
             The format of the output, 'show' displays on the computer screen, 'png' outputs to .png, 'fits' outputs to
             `.fits` format.
+        format_folder
+            If `True`, all images are output in a folder giving the format name, for
+            example `path/to/output/png/filename.png`. This can make managing large image catalogues easier.
         bypass
             Whether to bypass the `plt.show` or `plt.savefig` methods, used when plotting a subplot.
         """
@@ -848,6 +852,7 @@ class Output:
 
         self.filename = filename
         self._format = format
+        self.format_folder = format_folder
         self.bypass = bypass
 
     @property
@@ -861,6 +866,20 @@ class Output:
         if not isinstance(self.format, list):
             return [self.format]
         return self.format
+
+    def output_path_from(self, format):
+
+        if format in "show":
+            return None
+
+        if self.format_folder:
+            output_path = path.join(self.path, format)
+        else:
+            output_path = self.path
+
+        os.makedirs(output_path, exist_ok=True)
+
+        return output_path
 
     def to_figure(
         self,
@@ -880,17 +899,19 @@ class Output:
 
         for format in self.format_list:
 
+            output_path = self.output_path_from(format=format)
+
             if not self.bypass:
                 if format == "show":
                     plt.show()
                 elif format == "png":
-                    plt.savefig(path.join(self.path, f"{filename}.png"))
+                    plt.savefig(path.join(output_path, f"{filename}.png"))
                 elif format == "pdf":
-                    plt.savefig(path.join(self.path, f"{filename}.pdf"))
+                    plt.savefig(path.join(output_path, f"{filename}.pdf"))
                 elif format == "fits":
                     if structure is not None:
                         structure.output_to_fits(
-                            file_path=path.join(self.path, f"{filename}.fits"),
+                            file_path=path.join(output_path, f"{filename}.fits"),
                             overwrite=True,
                         )
 
@@ -903,12 +924,14 @@ class Output:
 
         for format in self.format_list:
 
+            output_path = self.output_path_from(format=format)
+
             if format == "show":
                 plt.show()
             elif format == "png":
-                plt.savefig(path.join(self.path, f"{filename}.png"))
+                plt.savefig(path.join(output_path, f"{filename}.png"))
             elif format == "pdf":
-                plt.savefig(path.join(self.path, f"{filename}.pdf"))
+                plt.savefig(path.join(output_path, f"{filename}.pdf"))
 
 
 def remove_spaces_and_commas_from(colors):

@@ -659,8 +659,6 @@ class Grid2DVoronoiNN(AbstractStructure2D):
         )
 
 
-
-
 class Grid2DDelaunay(AbstractStructure2D):
     """
     Returns the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
@@ -781,6 +779,9 @@ class Grid2DDelaunay(AbstractStructure2D):
 
     @cached_property
     def pixel_areas(self):
+        """
+        Currently I use a Voronoi structure to compute the pixel areas. So the results here should be exactly the same as Voronoi calculation.
+        """
 
         try:
             voronoi = scipy.spatial.Voronoi(
@@ -805,7 +806,6 @@ class Grid2DDelaunay(AbstractStructure2D):
 
         region_areas[region_areas == -1] = max_area
         region_areas[region_areas > max_area] = max_area
-
 
         return region_areas
 

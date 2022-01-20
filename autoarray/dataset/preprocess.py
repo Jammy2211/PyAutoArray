@@ -1,8 +1,6 @@
 import numpy as np
 from scipy.stats import norm
 
-from autoarray.structures.arrays.two_d import array_2d as a2d
-
 from autoarray import exc
 
 
@@ -236,6 +234,8 @@ def background_noise_map_via_edges_of_image_from(image, no_edges):
         Number of edges used to estimate the background level.
     """
 
+    from autoarray.structures.arrays.two_d.array_2d import Array2D
+
     edges = []
 
     for edge_no in range(no_edges):
@@ -254,7 +254,7 @@ def background_noise_map_via_edges_of_image_from(image, no_edges):
 
         edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
-    return a2d.Array2D.full(
+    return Array2D.full(
         fill_value=norm.fit(edges)[1],
         shape_native=image.shape_native,
         pixel_scales=image.pixel_scales,

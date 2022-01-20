@@ -2,6 +2,7 @@ from abc import ABC
 from abc import abstractmethod
 import numpy as np
 from typing import Dict, Optional, Union
+import warnings
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
@@ -181,14 +182,21 @@ class FitData(AbstractFit):
 
     @property
     def signal_to_noise_map(self) -> Union[np.ndarray, Array1D, Array2D]:
-        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
+        """
+        The signal-to-noise_map of the dataset and noise-map which are fitted.
+        """
+        warnings.filterwarnings("ignore")
+
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
     @property
     def potential_chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
-        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
+        """
+        The signal-to-noise_map of the dataset and noise-map which are fitted.
+        """
+        warnings.filterwarnings("ignore")
         absolute_signal_to_noise_map = np.divide(np.abs(self.data), self.noise_map)
         return np.square(absolute_signal_to_noise_map)
 

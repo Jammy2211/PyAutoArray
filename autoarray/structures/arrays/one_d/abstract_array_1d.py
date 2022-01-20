@@ -2,14 +2,12 @@ from typing import Tuple, Union
 
 from autoarray.structures.abstract_structure import AbstractStructure1D
 
-from autoarray.structures.arrays.one_d import array_1d as a1d
-
 from autoarray.structures.arrays.one_d import array_1d_util
 
 
 class AbstractArray1D(AbstractStructure1D):
     @property
-    def slim(self) -> Union["AbstractArray1D", "a1d.Array1D"]:
+    def slim(self) -> Union["AbstractArray1D", "Array1D"]:
         """
         Return an `Array1D` where the data is stored its `slim` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size].
@@ -17,6 +15,7 @@ class AbstractArray1D(AbstractStructure1D):
         If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
         `native` to `slim` and returned as a new `Array1D`.
         """
+        from autoarray.structures.arrays.one_d.array_1d import Array1D
 
         if self.shape[0] != self.mask.sub_shape_native[0]:
             return self
@@ -25,17 +24,18 @@ class AbstractArray1D(AbstractStructure1D):
             array_1d_native=self, mask_1d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return a1d.Array1D(array=array, mask=self.mask)
+        return Array1D(array=array, mask=self.mask)
 
     @property
-    def native(self) -> Union["AbstractArray1D", "a1d.Array1D"]:
+    def native(self) -> Union["AbstractArray1D", "Array1D"]:
         """
         Return an `Array1D` where the data is stored in its `native` representation, which is an ndarray of shape
         [total_pixels * sub_size].
 
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
-        `slim` to `native` and returned as a new `a1d.Array1D`.
+        `slim` to `native` and returned as a new `Array1D`.
         """
+        from autoarray.structures.arrays.one_d.array_1d import Array1D
 
         if self.shape[0] == self.mask.sub_shape_native[0]:
             return self
@@ -44,7 +44,7 @@ class AbstractArray1D(AbstractStructure1D):
             array_1d_slim=self, mask_1d=self.mask, sub_size=self.sub_size
         )
 
-        return a1d.Array1D(array=array, mask=self.mask)
+        return Array1D(array=array, mask=self.mask)
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """

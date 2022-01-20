@@ -215,7 +215,7 @@ def central_scaled_coordinate_2d_from(
     shape_native: Tuple[float, float],
     pixel_scales: Union[float, Tuple[float, float]],
     origin: Tuple[float, float] = (0.0, 0.0),
-):
+) -> Tuple[float, float]:
     """
     Returns the central coordinates of a 2D data structure (e.g. a `Frame2D`, `Grid2D`) in scaled units.
 
