@@ -1,8 +1,12 @@
 from astropy import units
 import copy
 import numpy as np
-from pynufft.linalg.nufft_cpu import NUFFT_cpu
 import warnings
+
+try:
+    from pynufft.linalg.nufft_cpu import NUFFT_cpu
+except ModuleNotFoundError:
+    NUFFT_cpu = object
 
 try:
     import pylops
