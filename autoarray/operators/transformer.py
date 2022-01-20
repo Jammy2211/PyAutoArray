@@ -1,9 +1,27 @@
 from astropy import units
 import copy
 import numpy as np
-import pylops
-from pynufft.linalg.nufft_cpu import NUFFT_cpu
 import warnings
+
+
+class NUFFTPlaceholder:
+    pass
+
+class PyLopsPlaceholder:
+    pass
+
+try:
+    from pynufft.linalg.nufft_cpu import NUFFT_cpu
+except ModuleNotFoundError:
+
+    NUFFT_cpu = NUFFTPlaceholder
+
+try:
+    import pylops
+    PyLopsOperator = pylops.LinearOperator
+except ModuleNotFoundError:
+
+    PyLopsOperator = PyLopsPlaceholder
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
@@ -12,11 +30,35 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.operators import transformer_util
 
+def pynufft_exception():
 
-class TransformerDFT(pylops.LinearOperator):
+    raise ModuleNotFoundError(
+        "\n--------------------\n"
+        "You are attempting to perform interferometer analysis.\n\n"
+        "However, the optional library PyNUFFT (https://github.com/jyhmiinlin/pynufft) is not installed.\n\n"
+        "Install it via the command `pip install pynufft==2020.2.7`.\n\n"
+        "See ? for more information.\n"
+        "----------------------"
+    )
+
+def pylops_exception():
+
+    raise ModuleNotFoundError(
+        "\n--------------------\n"
+        "You are attempting to perform interferometer analysis.\n\n"
+        "However, the optional library PyLops (https://github.com/PyLops/pylops) is not installed.\n\n"
+        "Install it via the command `pip install pylops==1.11.1`.\n\n"
+        "See ? for more information.\n"
+        "----------------------"
+    )
+
+class TransformerDFT(PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
 
-        super(TransformerDFT, self).__init__()
+        if isinstance(self, PyLopsPlaceholder):
+            pylops_exception()
+
+        super().__init__()
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask.mask_sub_1
@@ -104,8 +146,14 @@ class TransformerDFT(pylops.LinearOperator):
             )
 
 
-class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
+class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask):
+
+        if isinstance(self, NUFFTPlaceholder):
+            pynufft_exception()
+
+        if isinstance(self, PyLopsPlaceholder):
+            pylops_exception()
 
         super(TransformerNUFFT, self).__init__()
 

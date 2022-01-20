@@ -57,8 +57,7 @@ def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.nda
 
     1: If the input is a list, convert it to an ndarray.
     2: Check that the number of sub-pixels in the array is identical to that of the mask.
-    3) Map the input ndarray to its `slim` or `native` representation, depending on the `general.ini` config file
-    entry `store_slim`.
+    3) Map the input ndarray to its `slim` representation.
 
     For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2] and `native` a 3D NumPy array of
     shape [total_y_coordinates, total_x_coordinates, 2]
@@ -73,9 +72,7 @@ def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.nda
 
     grid_2d = abstract_grid.convert_grid(grid=grid_2d)
 
-    if conf.instance["general"]["structures"]["store_slim"]:
-        return convert_grid_2d_to_slim(grid_2d=grid_2d, mask_2d=mask_2d)
-    return convert_grid_2d_to_native(grid_2d=grid_2d, mask_2d=mask_2d)
+    return convert_grid_2d_to_slim(grid_2d=grid_2d, mask_2d=mask_2d)
 
 
 def convert_grid_2d_to_slim(

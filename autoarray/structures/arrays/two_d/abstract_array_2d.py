@@ -2,8 +2,6 @@ import logging
 import numpy as np
 from typing import List, Tuple, Union
 
-from autoconf import conf
-
 from autoarray.structures.abstract_structure import AbstractStructure2D
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
@@ -35,8 +33,7 @@ def convert_array_2d(array_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.n
 
     1) If the input is a list, convert it to an ndarray.
     2) Check that the number of sub-pixels in the array is identical to that of the mask.
-    3) Map the input ndarray to its `slim` or `native` representation, depending on the `general.ini` config file
-    entry `store_slim`.
+    3) Map the input ndarray to its `slim` representation.
 
     For an Array2D, `slim` refers to a 1D NumPy array of shape [total_values] and `native` a 2D NumPy array of shape
     [total_y_values, total_values].
@@ -51,9 +48,7 @@ def convert_array_2d(array_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.n
 
     array_2d = abstract_array.convert_array(array=array_2d)
 
-    if conf.instance["general"]["structures"]["store_slim"]:
-        return convert_array_2d_to_slim(array_2d=array_2d, mask_2d=mask_2d)
-    return convert_array_2d_to_native(array_2d=array_2d, mask_2d=mask_2d)
+    return convert_array_2d_to_slim(array_2d=array_2d, mask_2d=mask_2d)
 
 
 def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
