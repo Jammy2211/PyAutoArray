@@ -6,7 +6,13 @@ from autoarray.inversion.regularization import regularization_util
 
 
 class AdaptiveBrightness(AbstractRegularization):
-    def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
+    def __init__(
+        self,
+        inner_coefficient=1.0,
+        outer_coefficient=1.0,
+        signal_scale=1.0,
+        if_interpolated=False,
+    ):
         """ A instance-regularization scheme (regularization is described in the `Regularization` class above).
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is \
@@ -55,6 +61,7 @@ class AdaptiveBrightness(AbstractRegularization):
         self.inner_coefficient = inner_coefficient
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
+        self.if_interpolated = if_interpolated
 
     def regularization_weights_from(self, mapper) -> np.ndarray:
         pixel_signals = mapper.pixel_signals_from(signal_scale=self.signal_scale)
@@ -66,10 +73,58 @@ class AdaptiveBrightness(AbstractRegularization):
         )
 
     def regularization_matrix_from(self, mapper) -> np.ndarray:
-        regularization_weights = self.regularization_weights_from(mapper=mapper)
 
-        return regularization_util.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
-            pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
-        )
+        if self.if_interpolated is True:
+            regularization_weights = self.regularization_weights_from(mapper=mapper)
+            (
+                splitted_mappings,
+                splitted_sizes,
+                splitted_weights,
+            ) = mapper.splitted_pixelization_mappings_sizes_and_weights
+            max_j = np.shape(splitted_weights)[1] - 1
+            # The maximum neighbor index for a grid, if the maximum number of neighbors is 100, then it should be 99.
+
+            # Usually, there should not be such a case where a grid can have over 100 (somtimes even 200) neighbours,
+            # but when running the codes, this indeed happens.
+            # From my experience, it only happens in the initializing phase (generating initializing points), when very weird lens mass
+            # distribution can be considered. So, when coming across such extreme cases, we throw out a "exc.FitException" error to do a resample.
+            # We should keep an eye on this.
+            splitted_weights *= -1.0
+
+            for i in range(len(splitted_mappings)):
+
+                pixel_index = i // 4
+
+                flag = 0
+
+                for j in range(splitted_sizes[i]):
+
+                    if splitted_mappings[i][j] == pixel_index:
+                        splitted_weights[i][j] += 1.0
+                        flag = 1
+
+                    if j >= max_j:
+                        raise exc.FitException("neighbours exceeds!")
+
+                if flag == 0:
+                    splitted_mappings[i][j + 1] = pixel_index
+                    splitted_sizes[i] += 1
+                    splitted_weights[i][j + 1] = 1.0
+
+            return (
+                regularization_util.weighted_pixel_splitted_regularization_matrix_from(
+                    regularization_weights=regularization_weights,
+                    splitted_mappings=splitted_mappings,
+                    splitted_sizes=splitted_sizes,
+                    splitted_weights=splitted_weights,
+                )
+            )
+
+        else:
+            regularization_weights = self.regularization_weights_from(mapper=mapper)
+
+            return regularization_util.weighted_regularization_matrix_from(
+                regularization_weights=regularization_weights,
+                pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
+                pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
+            )

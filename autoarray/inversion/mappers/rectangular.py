@@ -88,15 +88,15 @@ class MapperRectangular(AbstractMapper):
     @profile_func
     def pix_indexes_for_sub_slim_index(self) -> PixForSub:
         """
-        Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in 
-        the `Rectangular` pixelization. 
+        Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in
+        the `Rectangular` pixelization.
 
-        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes, 
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
         for example:
 
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular 
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular
         pixelization's third (index 2) pixel.
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular 
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular
         pixelization's fifth (index 4) pixel.
 
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used

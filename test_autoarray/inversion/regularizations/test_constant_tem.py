@@ -38,5 +38,3 @@ def test__regularization_matrix__matches_util():
     )
 
     assert (regularization_matrix == regularization_matrix_util).all()
-
-

@@ -86,26 +86,26 @@ class MapperDelaunay(AbstractMapper):
     def pix_indexes_for_sub_slim_index(self) -> PixForSub:
         """
         Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Delaunay`
-        pixelization. 
+        pixelization.
 
-        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes, 
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
         for example:
 
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Delaunay 
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Delaunay
         pixelization's third (index 2) pixel.
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Delaunay 
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Delaunay
         pixelization's fifth (index 4) pixel.
 
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
-        for cases where a data pixel maps to more than one pixelization pixel. 
-        
-        For a `Delaunay` pixelization each data pixel maps to 3 Delaunay triangles with interpolation, for example: 
-        
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Delaunay 
+        for cases where a data pixel maps to more than one pixelization pixel.
+
+        For a `Delaunay` pixelization each data pixel maps to 3 Delaunay triangles with interpolation, for example:
+
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Delaunay
         pixelization's third (index 2) pixel.
-        - `pix_indexes_for_sub_slim_index[0, 1] = 5`: The data's first (index 0) sub-pixel also maps to the Delaunay 
+        - `pix_indexes_for_sub_slim_index[0, 1] = 5`: The data's first (index 0) sub-pixel also maps to the Delaunay
         pixelization's sixth (index 5) pixel.
-        - `pix_indexes_for_sub_slim_index[0, 2] = 8`: The data's first (index 0) sub-pixel also maps to the Delaunay 
+        - `pix_indexes_for_sub_slim_index[0, 2] = 8`: The data's first (index 0) sub-pixel also maps to the Delaunay
         pixelization's ninth (index 8) pixel.
 
         For the Delaunay pixelization these mappings are calculated using the Scipy spatial library
@@ -148,3 +148,39 @@ class MapperDelaunay(AbstractMapper):
     @property
     def delaunay(self):
         return self.source_pixelization_grid.Delaunay
+
+    @property
+    def splitted_pixelization_mappings_sizes_and_weights(self):
+
+        delaunay = self.delaunay
+
+        splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
+            self.source_pixelization_grid.splitted_pixelization_grid
+        )
+        pix_indexes_for_simplex_index = delaunay.simplices
+
+        (
+            splitted_mappings,
+            splitted_sizes,
+        ) = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
+            source_grid_slim=self.source_pixelization_grid.splitted_pixelization_grid,
+            simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
+            pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
+            delaunay_points=delaunay.points,
+        )
+
+        splitted_weights = mapper_util.pixel_weights_delaunay_from(
+            source_grid_slim=self.source_pixelization_grid.splitted_pixelization_grid,
+            source_pixelization_grid=self.source_pixelization_grid,
+            slim_index_for_sub_slim_index=self.source_pixelization_grid.splitted_pixelization_grid,
+            pix_indexes_for_sub_slim_index=splitted_mappings.astype("int"),
+        )
+
+        append_line_int = np.zeros((len(splitted_weights), 1), dtype="int") - 1
+        append_line_float = np.zeros((len(splitted_weights), 1), dtype="float")
+
+        return (
+            np.hstack((splitted_mappings.astype("int"), append_line_int)),
+            splitted_sizes.astype("int"),
+            np.hstack((splitted_weights, append_line_float)),
+        )

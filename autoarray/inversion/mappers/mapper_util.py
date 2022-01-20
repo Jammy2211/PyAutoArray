@@ -362,33 +362,61 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
         Voronoi grid.
     """
 
-    max_nneighbours = 30
+    max_nneighbours = 100
+    # I feel if the source pixel number is only ~ 1000, then it should be fine to set it to be 100 (or even 50).
+    # There are cases where a grid can have over 100 neighbors when running the codes. But I think they are just weird cases in
+    # the initializing phase (generating initializing points).
+    # We can set it to be 200 to make our modelling more robust, but it will slow down our modelling.
 
-    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_c_tools.natural_interpolation_weights(
-            x_in=pixelization_grid[:, 1],
-            y_in=pixelization_grid[:, 0],
-            x_target=grid[:, 1],
-            y_target=grid[:, 0],
-            max_nneighbours=max_nneighbours)
+    (
+        pix_weights_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index,
+    ) = nn_c_tools.natural_interpolation_weights(
+        x_in=pixelization_grid[:, 1],
+        y_in=pixelization_grid[:, 0],
+        x_target=grid[:, 1],
+        y_target=grid[:, 0],
+        max_nneighbours=max_nneighbours,
+    )
 
-    bad_row_indexes = np.argwhere(np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0)
-    # Seems if a point is outside the whole Voronoi region some of the weights have negative values. 
+    bad_row_indexes = np.argwhere(
+        np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0
+    )
+    # Seems if a point is outside the whole Voronoi region some of the weights have negative values.
     # For those kind of points, we reset its neighbor to be its cloest neighbour.
 
     for item in bad_row_indexes:
         ind = item[0]
         pix_indexes_for_sub_slim_index[ind] = -1
         pix_indexes_for_sub_slim_index[ind][0] = np.argmin(
-                np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
+            np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
         )
         pix_weights_for_sub_slim_index[ind] = 0.0
         pix_weights_for_sub_slim_index[ind][0] = 1.0
-        
-    pix_indexes_for_sub_slim_index_sizes = np.sum(pix_indexes_for_sub_slim_index != -1, axis=1)
 
-    return pix_indexes_for_sub_slim_index, pix_indexes_for_sub_slim_index_sizes, pix_weights_for_sub_slim_index
+    bad_row_indexes = np.argwhere(pix_indexes_for_sub_slim_index[:, 0] == -1)
+    # There are also grids where the NN code will throw out not even one neighbor.
+    # For those grids, we also mark them as bad grids and set their neighbors to the closest ones.
+    # The part below can be merged into the above part.
 
+    for item in bad_row_indexes:
+        ind = item[0]
+        pix_indexes_for_sub_slim_index[ind] = -1
+        pix_indexes_for_sub_slim_index[ind][0] = np.argmin(
+            np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
+        )
+        pix_weights_for_sub_slim_index[ind] = 0.0
+        pix_weights_for_sub_slim_index[ind][0] = 1.0
 
+    pix_indexes_for_sub_slim_index_sizes = np.sum(
+        pix_indexes_for_sub_slim_index != -1, axis=1
+    )
+
+    return (
+        pix_indexes_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index_sizes,
+        pix_weights_for_sub_slim_index,
+    )
 
 
 @numba_util.jit()

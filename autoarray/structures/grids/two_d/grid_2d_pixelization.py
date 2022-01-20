@@ -336,6 +336,31 @@ class Grid2DVoronoi(AbstractStructure2D):
 
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
+
+    @cached_property
+    def splitted_pixelization_grid(self):
+        half_region_area_sqrt_lengths = 0.5 * np.sqrt(self.pixel_areas)
+        # "0.5" is arbitrarily chosen here.
+
+        splitted_array = np.zeros((self.pixels, 4, 2))
+
+        splitted_array[:, 0][:, 0] = self[:, 0] + half_region_area_sqrt_lengths
+        splitted_array[:, 0][:, 1] = self[:, 1]
+
+        splitted_array[:, 1][:, 0] = self[:, 0] - half_region_area_sqrt_lengths
+        splitted_array[:, 1][:, 1] = self[:, 1]
+
+        splitted_array[:, 2][:, 0] = self[:, 0]
+        splitted_array[:, 2][:, 1] = self[:, 1] + half_region_area_sqrt_lengths
+
+        splitted_array[:, 3][:, 0] = self[:, 0]
+        splitted_array[:, 3][:, 1] = self[:, 1] - half_region_area_sqrt_lengths
+
+        #print(splitted_array)
+
+        return splitted_array.reshape((self.pixels * 4, 2))
+
+
     @cached_property
     def pixel_areas(self):
         voronoi_vertices = self.voronoi.vertices
@@ -349,6 +374,13 @@ class Grid2DVoronoi(AbstractStructure2D):
                 region_areas[i] = -1
             else:
                 region_areas[i] = grid_2d_util.compute_polygon_area(voronoi_vertices[region_vertices_indexes])
+
+        max_area = np.percentile(region_areas, 90.0)
+        # We set the maximum area to be 90.0 percentile of the areas. Sometimes, pixels at boundaries can have very large unrealistic areas.
+
+        region_areas[region_areas == -1] = max_area
+        region_areas[region_areas > max_area] = max_area
+
         return region_areas
 
     @property
@@ -518,6 +550,29 @@ class Grid2DVoronoiNN(AbstractStructure2D):
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @cached_property
+    def splitted_pixelization_grid(self):
+        half_region_area_sqrt_lengths = 0.5 * np.sqrt(self.pixel_areas)
+        # "0.5" is arbitrarily chosen here.
+
+        splitted_array = np.zeros((self.pixels, 4, 2))
+
+        splitted_array[:, 0][:, 0] = self[:, 0] + half_region_area_sqrt_lengths
+        splitted_array[:, 0][:, 1] = self[:, 1]
+
+        splitted_array[:, 1][:, 0] = self[:, 0] - half_region_area_sqrt_lengths
+        splitted_array[:, 1][:, 1] = self[:, 1]
+
+        splitted_array[:, 2][:, 0] = self[:, 0]
+        splitted_array[:, 2][:, 1] = self[:, 1] + half_region_area_sqrt_lengths
+
+        splitted_array[:, 3][:, 0] = self[:, 0]
+        splitted_array[:, 3][:, 1] = self[:, 1] - half_region_area_sqrt_lengths
+
+        #print(splitted_array)
+
+        return splitted_array.reshape((self.pixels * 4, 2))
+
+    @cached_property
     def pixel_areas(self):
         voronoi_vertices = self.voronoi.vertices
         voronoi_regions = self.voronoi.regions
@@ -530,6 +585,14 @@ class Grid2DVoronoiNN(AbstractStructure2D):
                 region_areas[i] = -1
             else:
                 region_areas[i] = grid_2d_util.compute_polygon_area(voronoi_vertices[region_vertices_indexes])
+
+
+        max_area = np.percentile(region_areas, 90.0)
+        # We set the maximum area to be 90.0 percentile of the areas. Sometimes, pixels at boundaries can have very large unrealistic areas.
+
+        region_areas[region_areas == -1] = max_area
+        region_areas[region_areas > max_area] = max_area
+
         return region_areas
 
     @property
@@ -692,11 +755,32 @@ class Grid2DDelaunay(AbstractStructure2D):
 
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
+
+    @cached_property
+    def splitted_pixelization_grid(self):
+        half_region_area_sqrt_lengths = 0.5 * np.sqrt(self.pixel_areas)
+        # "0.5" is arbitrarily chosen here.
+
+        splitted_array = np.zeros((self.pixels, 4, 2))
+
+        splitted_array[:, 0][:, 0] = self[:, 0] + half_region_area_sqrt_lengths
+        splitted_array[:, 0][:, 1] = self[:, 1]
+
+        splitted_array[:, 1][:, 0] = self[:, 0] - half_region_area_sqrt_lengths
+        splitted_array[:, 1][:, 1] = self[:, 1]
+
+        splitted_array[:, 2][:, 0] = self[:, 0]
+        splitted_array[:, 2][:, 1] = self[:, 1] + half_region_area_sqrt_lengths
+
+        splitted_array[:, 3][:, 0] = self[:, 0]
+        splitted_array[:, 3][:, 1] = self[:, 1] - half_region_area_sqrt_lengths
+
+        #print(splitted_array)
+
+        return splitted_array.reshape((self.pixels * 4, 2))
+
     @cached_property
     def pixel_areas(self):
-        '''
-        Currently I use a Voronoi structure to compute the pixel areas. So the results here should be exactly the same as Voronoi calculation.
-        '''
 
         try:
             voronoi = scipy.spatial.Voronoi(
@@ -716,6 +800,13 @@ class Grid2DDelaunay(AbstractStructure2D):
                 region_areas[i] = -1
             else:
                 region_areas[i] = grid_2d_util.compute_polygon_area(voronoi_vertices[region_vertices_indexes])
+
+        max_area = np.percentile(region_areas, 90.0)
+
+        region_areas[region_areas == -1] = max_area
+        region_areas[region_areas > max_area] = max_area
+
+
         return region_areas
 
     @property
@@ -737,8 +828,8 @@ class Grid2DDelaunay(AbstractStructure2D):
         return self[self.mask.sub_border_flat_indexes]
 
     @classmethod
-    def manual_slim(cls, grid) -> "Grid2DVoronoi":
-        return Grid2DVoronoi(grid=grid)
+    def manual_slim(cls, grid) -> "Grid2DDelaunay":
+        return Grid2DDelaunay(grid=grid)
 
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:

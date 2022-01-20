@@ -80,53 +80,61 @@ class MapperVoronoiNN(AbstractMapper):
             profiling_dict=profiling_dict,
         )
 
-        mappings, sizes, weights = mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
-            grid=source_grid_slim,
-            pixelization_grid=source_pixelization_grid
+        (
+            mappings,
+            sizes,
+            weights,
+        ) = mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+            grid=source_grid_slim, pixelization_grid=source_pixelization_grid
         )
 
         self.tem_pix_indexes_for_sub_slim_index = PixForSub(
-                mappings=mappings,
-                sizes=sizes)
+            mappings=mappings, sizes=sizes
+        )
 
         self.tem_pix_weights_for_sub_slim_index = weights
 
-        #print(weights)
-        #print(mappings)
-        #print(sizes)
+        # print(weights)
+        # print(mappings)
+        # print(sizes)
 
-                                                                                                     
-    @cached_property                                                                                 
-    def pix_indexes_for_sub_slim_index(self) -> PixForSub:                                           
-        """                                                                                          
+    @cached_property
+    def pix_indexes_for_sub_slim_index(self) -> PixForSub:
+        """
         Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Voronoi`
-        pixelization.                                                                                
-                                                                                                     
+        pixelization.
+
         The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
-        for example:                                                                                 
-                                                                                                     
+        for example:
+
         - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Voronoi
-        pixelization's third (index 2) pixel.                                                        
+        pixelization's third (index 2) pixel.
         - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Voronoi
-        pixelization's fifth (index 4) pixel.                                                        
-                                                                                                     
+        pixelization's fifth (index 4) pixel.
+
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
         for cases where a data pixel maps to more than one pixelization pixel (for example a `Delaunay` pixelization
         where each data pixel maps to 3 Delaunay triangles with interpolation). For a Voronoi pixelizaiton each
-        data sub-pixel maps to a single pixelization pixel, thus this dimension is of size 1.        
-                                                                                                     
+        data sub-pixel maps to a single pixelization pixel, thus this dimension is of size 1.
+
         For the Voronoi pixelization these mappings are calculated using a graph search which finds every data
         sub-pixel's nearest neighbor Voronoi pixel (see `mapper_util.pix_indexes_for_sub_slim_index_voronoi_from`).
-        """                                                                                          
-                                                                      
-        return self.tem_pix_indexes_for_sub_slim_index                                                                                     
-    @cached_property                                                                                 
-    def pix_weights_for_sub_slim_index(self) -> np.ndarray:                                          
+        """
+
+        return self.tem_pix_indexes_for_sub_slim_index
+
+    @cached_property
+    def pix_weights_for_sub_slim_index(self) -> np.ndarray:
 
         return self.tem_pix_weights_for_sub_slim_index
 
     @property
     def voronoi(self):
         return self.source_pixelization_grid.voronoi
-        
 
+    @property
+    def splitted_pixelization_mappings_sizes_and_weights(self):
+        return mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+            grid=self.source_pixelization_grid.splitted_pixelization_grid,
+            pixelization_grid=self.source_pixelization_grid,
+        )
