@@ -1,9 +1,14 @@
 from astropy import units
 import copy
 import numpy as np
-import pylops
 from pynufft.linalg.nufft_cpu import NUFFT_cpu
 import warnings
+
+try:
+    import pylops
+    PyLopsOperator = pylops.LinearOperator
+except ModuleNotFoundError:
+    PyLopsOperator = object
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
@@ -13,10 +18,10 @@ from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.operators import transformer_util
 
 
-class TransformerDFT(pylops.LinearOperator):
+class TransformerDFT(PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
 
-        super(TransformerDFT, self).__init__()
+        super().__init__()
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask.mask_sub_1
@@ -104,7 +109,7 @@ class TransformerDFT(pylops.LinearOperator):
             )
 
 
-class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
+class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask):
 
         super(TransformerNUFFT, self).__init__()
