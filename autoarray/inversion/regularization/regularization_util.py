@@ -173,13 +173,11 @@ def weighted_pixel_splitted_regularization_matrix_from(
     regularization_weights: float, splitted_mappings, splitted_sizes, splitted_weights
 ) -> np.ndarray:
 
-    # I'm not sure which is the best way to add surface brightness weight to the regularization scheme here.
+    # I'm not sure what is the best way to add surface brightness weight to the regularization scheme here.
     # Currently, I simply mulitply the i-th weight to the i-th source pixel, but there should be different ways.
-    # Need keeps an eye here.
+    # Need to keep an eye here.
 
     pixels = int(len(splitted_mappings) / 4)
-
-    print(pixels)
 
     regularization_matrix = np.zeros(shape=(pixels, pixels))
 
@@ -200,10 +198,10 @@ def weighted_pixel_splitted_regularization_matrix_from(
             for l in range(temp_size):
                 for m in range(temp_size - l):
                     regularization_matrix[temp_mapping[l], temp_mapping[l + m]] += (
-                        temp_weight[l] * temp_weight[l + m] * regularization_weights[i]
+                        temp_weight[l] * temp_weight[l + m] * regularization_weight[i]
                     )
                     regularization_matrix[temp_mapping[l + m], temp_mapping[l]] += (
-                        temp_weight[l] * temp_weight[l + m] * regularization_weights[i]
+                        temp_weight[l] * temp_weight[l + m] * regularization_weight[i]
                     )
 
     for i in range(pixels):
