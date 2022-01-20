@@ -523,66 +523,6 @@ class TestAPI:
         assert grid.pixel_scales == (1.0, 2.5)
         assert grid.origin == (9.0, 0.5)
 
-    def test__manual__store_slim_is_false_so_stores_in_native(self):
-
-        conf.instance["general"]["structures"]["store_slim"] = False
-
-        grid = aa.Grid2D.manual_native(
-            grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
-            pixel_scales=1.0,
-            sub_size=1,
-        )
-
-        assert type(grid) == aa.Grid2D
-        assert (
-            grid == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-        ).all()
-        assert (
-            grid.native
-            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-        ).all()
-        assert (
-            grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-        ).all()
-        assert (
-            grid.binned.native
-            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-        ).all()
-        assert (
-            grid.binned == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-        ).all()
-        assert grid.pixel_scales == (1.0, 1.0)
-        assert grid.origin == (0.0, 0.0)
-        assert grid.sub_size == 1
-
-        grid = aa.Grid2D.manual_slim(
-            grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-            shape_native=(1, 1),
-            pixel_scales=1.0,
-            sub_size=2,
-            origin=(0.0, 1.0),
-        )
-
-        assert type(grid) == aa.Grid2D
-        assert (
-            grid == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-        ).all()
-        assert (
-            grid.native
-            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-        ).all()
-        assert (
-            grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-        ).all()
-        assert (grid.binned.native == np.array([[[4.0, 5.0]]])).all()
-        assert (grid.binned.slim == np.array([[4.0, 5.0]])).all()
-        assert grid.pixel_scales == (1.0, 1.0)
-        assert grid.origin == (0.0, 1.0)
-        assert grid.sub_size == 2
-
-        conf.instance["general"]["structures"]["store_slim"] = True
-
-
 class TestGrid:
     def test__grid_via_deflection_grid_from(self):
 
