@@ -1,5 +1,4 @@
 import numpy as np
-import pylops
 from scipy import sparse
 
 from autoconf import cached_property
@@ -35,6 +34,8 @@ class InversionLinearOperator(AbstractInversion):
 
         S is the vector of reconstructed inversion values.
         """
+
+        import pylops
 
         Aop = pylops.MatrixMult(
             sparse.bsr_matrix(self.linear_obj_list[0].mapping_matrix)

@@ -1,5 +1,9 @@
 import numpy as np
-import pylops
+try:
+    import pylops
+    PyLopsOperator = pylops.LinearOperator
+except ModuleNotFoundError:
+    PyLopsOperator = object
 
 
 class AbstractRegularization:
@@ -131,7 +135,7 @@ class AbstractRegularization:
         raise NotImplementedError
 
 
-class RegularizationLop(pylops.LinearOperator):
+class RegularizationLop(PyLopsOperator):
     def __init__(self, regularization_matrix):
         self.regularization_matrix = regularization_matrix
         self.pixels = regularization_matrix.shape[0]
