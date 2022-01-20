@@ -3,12 +3,16 @@ import copy
 import numpy as np
 import warnings
 
+
+class NUFFTPlaceholder:
+    pass
+
+class PyLopsPlaceholder:
+    pass
+
 try:
     from pynufft.linalg.nufft_cpu import NUFFT_cpu
 except ModuleNotFoundError:
-
-    class NUFFTPlaceholder:
-        pass
 
     NUFFT_cpu = NUFFTPlaceholder
 
@@ -16,9 +20,6 @@ try:
     import pylops
     PyLopsOperator = pylops.LinearOperator
 except ModuleNotFoundError:
-
-    class PyLopsPlaceholder:
-        pass
 
     PyLopsOperator = PyLopsPlaceholder
 
@@ -29,31 +30,26 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.operators import transformer_util
 
-def pylops_exception():
-
-
-    raise ModuleNotFoundError(
-        "You are attempting to perform interferometer analysis. "
-        ""
-        "However, the optional library PyNUFFT (https://github.com/jyhmiinlin/pynufft) is not installed."
-        ""
-        "Install it via the command `pip install pynufft==2020.2.7`."
-        ""
-        "See ? for more information."
-        ""
-    )
-
 def pynufft_exception():
 
     raise ModuleNotFoundError(
-        "You are attempting to perform interferometer analysis."
-        ""
-        "However, the optional library PyLops (https://github.com/PyLops/pylops) is not installed."
-        ""
-        "Install it via the command `pip install pylops>=1.11.1`."
-        ""
-        "See ? for more information."
-        ""
+        "\n--------------------\n"
+        "You are attempting to perform interferometer analysis.\n\n"
+        "However, the optional library PyNUFFT (https://github.com/jyhmiinlin/pynufft) is not installed.\n\n"
+        "Install it via the command `pip install pynufft==2020.2.7`.\n\n"
+        "See ? for more information.\n"
+        "----------------------"
+    )
+
+def pylops_exception():
+
+    raise ModuleNotFoundError(
+        "\n--------------------\n"
+        "You are attempting to perform interferometer analysis.\n\n"
+        "However, the optional library PyLops (https://github.com/PyLops/pylops) is not installed.\n\n"
+        "Install it via the command `pip install pylops==1.11.1`.\n\n"
+        "See ? for more information.\n"
+        "----------------------"
     )
 
 class TransformerDFT(PyLopsOperator):
