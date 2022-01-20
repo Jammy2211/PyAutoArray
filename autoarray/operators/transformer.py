@@ -6,13 +6,21 @@ import warnings
 try:
     from pynufft.linalg.nufft_cpu import NUFFT_cpu
 except ModuleNotFoundError:
-    NUFFT_cpu = object
+
+    class NUFFTPlaceholder:
+        pass
+
+    NUFFT_cpu = NUFFTPlaceholder
 
 try:
     import pylops
     PyLopsOperator = pylops.LinearOperator
 except ModuleNotFoundError:
-    PyLopsOperator = object
+
+    class PyLopsPlaceholder:
+        pass
+
+    PyLopsOperator = PyLopsPlaceholder
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
@@ -21,9 +29,38 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.operators import transformer_util
 
+def pylops_exception():
+
+
+    raise ModuleNotFoundError(
+        "You are attempting to perform interferometer analysis. "
+        ""
+        "However, the optional library PyNUFFT (https://github.com/jyhmiinlin/pynufft) is not installed."
+        ""
+        "Install it via the command `pip install pynufft==2020.2.7`."
+        ""
+        "See ? for more information."
+        ""
+    )
+
+def pynufft_exception():
+
+    raise ModuleNotFoundError(
+        "You are attempting to perform interferometer analysis."
+        ""
+        "However, the optional library PyLops (https://github.com/PyLops/pylops) is not installed."
+        ""
+        "Install it via the command `pip install pylops>=1.11.1`."
+        ""
+        "See ? for more information."
+        ""
+    )
 
 class TransformerDFT(PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
+
+        if isinstance(self, PyLopsPlaceholder):
+            pylops_exception()
 
         super().__init__()
 
@@ -115,6 +152,12 @@ class TransformerDFT(PyLopsOperator):
 
 class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask):
+
+        if isinstance(self, NUFFTPlaceholder):
+            pynufft_exception()
+
+        if isinstance(self, PyLopsPlaceholder):
+            pylops_exception()
 
         super(TransformerNUFFT, self).__init__()
 
