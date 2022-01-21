@@ -4,7 +4,7 @@ from typing import Dict, Optional
 from autoconf import cached_property
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.mappers.abstract import PixForSub
+from autoarray.inversion.mappers.abstract import PixSubWeights
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
@@ -82,7 +82,7 @@ class MapperVoronoi(AbstractMapper):
 
     @cached_property
     @profile_func
-    def pix_indexes_for_sub_slim_index(self) -> PixForSub:
+    def pix_indexes_for_sub_slim_index(self) -> PixSubWeights:
         """
         Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Voronoi`
         pixelization.
@@ -112,9 +112,10 @@ class MapperVoronoi(AbstractMapper):
             pixel_neighbors_sizes=self.source_pixelization_grid.pixel_neighbors.sizes,
         ).astype("int")
 
-        return PixForSub(
+        return PixSubWeights(
             mappings=mappings,
             sizes=np.ones(self.source_grid_slim.shape[0], dtype="int"),
+            weights=self.pix_weights_for_sub_slim_index,
         )
 
     @cached_property
@@ -136,8 +137,14 @@ class MapperVoronoi(AbstractMapper):
         return self.source_pixelization_grid.voronoi
 
     @property
-    def splitted_pixelization_mappings_sizes_and_weights(self):
-        return mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+    def pix_indexes_for_sub_slim_index_split_cross(self) -> PixSubWeights:
+        (
+            mappings,
+            sizes,
+            weights,
+        ) = mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
             grid=self.source_pixelization_grid.split_cross,
             pixelization_grid=self.source_pixelization_grid,
         )
+
+        return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)

@@ -4,7 +4,7 @@ from typing import Dict, Optional
 from autoconf import cached_property
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.mappers.abstract import PixForSub
+from autoarray.inversion.mappers.abstract import PixSubWeights
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
@@ -83,7 +83,7 @@ class MapperDelaunay(AbstractMapper):
 
     @cached_property
     @profile_func
-    def pix_indexes_for_sub_slim_index(self) -> PixForSub:
+    def pix_indexes_for_sub_slim_index(self) -> PixSubWeights:
         """
         Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Delaunay`
         pixelization.
@@ -123,7 +123,17 @@ class MapperDelaunay(AbstractMapper):
             delaunay_points=delaunay.points,
         )
 
-        return PixForSub(mappings=mappings.astype("int"), sizes=sizes.astype("int"))
+        mappings = mappings.astype("int")
+        sizes = sizes.astype("int")
+
+        weights = mapper_util.pixel_weights_delaunay_from(
+            source_grid_slim=self.source_grid_slim,
+            source_pixelization_grid=self.source_pixelization_grid,
+            slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
+            pix_indexes_for_sub_slim_index=mappings,
+        )
+
+        return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
     @cached_property
     @profile_func
@@ -138,19 +148,14 @@ class MapperDelaunay(AbstractMapper):
 
         The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
         """
-        return mapper_util.pixel_weights_delaunay_from(
-            source_grid_slim=self.source_grid_slim,
-            source_pixelization_grid=self.source_pixelization_grid,
-            slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
-        )
+        return self.pix_indexes_for_sub_slim_index.weights
 
     @property
     def delaunay(self):
         return self.source_pixelization_grid.Delaunay
 
     @property
-    def splitted_pixelization_mappings_sizes_and_weights(self):
+    def pix_indexes_for_sub_slim_index_split_cross(self) -> PixSubWeights:
 
         delaunay = self.delaunay
 
@@ -179,8 +184,8 @@ class MapperDelaunay(AbstractMapper):
         append_line_int = np.zeros((len(splitted_weights), 1), dtype="int") - 1
         append_line_float = np.zeros((len(splitted_weights), 1), dtype="float")
 
-        return (
-            np.hstack((splitted_mappings.astype("int"), append_line_int)),
-            splitted_sizes.astype("int"),
-            np.hstack((splitted_weights, append_line_float)),
+        return PixSubWeights(
+            mappings=np.hstack((splitted_mappings.astype("int"), append_line_int)),
+            sizes=splitted_sizes.astype("int"),
+            weights=np.hstack((splitted_weights, append_line_float)),
         )

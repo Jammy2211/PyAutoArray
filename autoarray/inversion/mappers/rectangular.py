@@ -4,7 +4,7 @@ from typing import Dict, Optional, Tuple
 from autoconf import cached_property
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.mappers.abstract import PixForSub
+from autoarray.inversion.mappers.abstract import PixSubWeights
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
@@ -86,7 +86,7 @@ class MapperRectangular(AbstractMapper):
 
     @cached_property
     @profile_func
-    def pix_indexes_for_sub_slim_index(self) -> PixForSub:
+    def pix_indexes_for_sub_slim_index(self) -> PixSubWeights:
         """
         Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in
         the `Rectangular` pixelization.
@@ -116,9 +116,10 @@ class MapperRectangular(AbstractMapper):
 
         mappings = mappings.reshape((len(mappings), 1))
 
-        return PixForSub(
+        return PixSubWeights(
             mappings=mappings.reshape((len(mappings), 1)),
             sizes=np.ones(len(mappings), dtype="int"),
+            weights=self.pix_weights_for_sub_slim_index,
         )
 
     @cached_property

@@ -97,7 +97,7 @@ class AbstractMapper(LinearObj):
         return self.source_grid_slim.mask.slim_index_for_sub_slim_index
 
     @property
-    def pix_indexes_for_sub_slim_index(self) -> "PixForSub":
+    def pix_indexes_for_sub_slim_index(self) -> "PixSubWeights":
         raise NotImplementedError
 
     @cached_property
@@ -230,13 +230,14 @@ class AbstractMapper(LinearObj):
             return indexes
 
 
-class PixForSub:
-    def __init__(self, mappings: np.ndarray, sizes: np.ndarray):
+class PixSubWeights:
+    def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):
         """
-        Packages the following two quantities of the ndarray `pix_indexes_for_sub_slim_index`:
+        Packages the following three quantities of the ndarray `pix_indexes_for_sub_slim_index`:
 
         - `mappings`: the mapping of every `sub_slim_index` to the `pix_indexes`.
         - `sizes`: the number of `pix_indexes` each `sub_slim_index` maps too.
+        - `weights`: the interpolation weight of every pix in `pix_indexes.
 
         The need to store separately the mappings and sizes is so that the `sizes` can be easy iterated over when
         perform calculations for efficiency.
@@ -252,3 +253,4 @@ class PixForSub:
         """
         self.mappings = mappings
         self.sizes = sizes
+        self.weights = weights

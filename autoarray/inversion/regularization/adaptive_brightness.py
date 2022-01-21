@@ -146,20 +146,16 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
 
         regularization_weights = self.regularization_weights_from(mapper=mapper)
 
-        (
-            splitted_mappings,
-            splitted_sizes,
-            splitted_weights,
-        ) = mapper.splitted_pixelization_mappings_sizes_and_weights
+        pix_sub_weights_split_cross = mapper.pix_indexes_for_sub_slim_index_split_cross
 
         (
             splitted_mappings,
             splitted_sizes,
             splitted_weights,
         ) = regularization_util.reg_split_from(
-            splitted_mappings=splitted_mappings,
-            splitted_sizes=splitted_sizes,
-            splitted_weights=splitted_weights,
+            splitted_mappings=pix_sub_weights_split_cross.mappings,
+            splitted_sizes=pix_sub_weights_split_cross.sizes,
+            splitted_weights=pix_sub_weights_split_cross.weights,
         )
 
         return regularization_util.weighted_pixel_splitted_regularization_matrix_from(
