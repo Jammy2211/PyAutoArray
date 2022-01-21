@@ -134,3 +134,10 @@ class MapperVoronoi(AbstractMapper):
     @property
     def voronoi(self):
         return self.source_pixelization_grid.voronoi
+
+    @property
+    def splitted_pixelization_mappings_sizes_and_weights(self):
+        return mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+            grid=self.source_pixelization_grid.splitted_pixelization_grid,
+            pixelization_grid=self.source_pixelization_grid,
+        )

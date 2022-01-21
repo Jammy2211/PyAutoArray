@@ -209,6 +209,21 @@ def make_regularization_constant():
     return fixtures.make_regularization_constant()
 
 
+@pytest.fixture(name="regularization_constant_split")
+def make_regularization_constant_split():
+    return fixtures.make_regularization_constant_split()
+
+
+@pytest.fixture(name="regularization_adaptive_brightness")
+def make_regularization_adaptive_brightness():
+    return fixtures.make_regularization_adaptive_brightness()
+
+
+@pytest.fixture(name="regularization_adaptive_brightness_split")
+def make_regularization_adaptive_brightness_split():
+    return fixtures.make_regularization_adaptive_brightness_split()
+
+
 @pytest.fixture(name="rectangular_mapper_7x7_3x3")
 def make_rectangular_mapper_7x7_3x3():
     return fixtures.make_rectangular_mapper_7x7_3x3()
