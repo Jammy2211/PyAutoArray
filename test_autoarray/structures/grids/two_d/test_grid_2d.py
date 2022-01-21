@@ -523,6 +523,7 @@ class TestAPI:
         assert grid.pixel_scales == (1.0, 2.5)
         assert grid.origin == (9.0, 0.5)
 
+
 class TestGrid:
     def test__grid_via_deflection_grid_from(self):
 
