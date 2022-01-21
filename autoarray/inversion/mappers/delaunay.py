@@ -155,7 +155,7 @@ class MapperDelaunay(AbstractMapper):
         delaunay = self.delaunay
 
         splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
-            self.source_pixelization_grid.splitted_pixelization_grid
+            self.source_pixelization_grid.split_cross
         )
         pix_indexes_for_simplex_index = delaunay.simplices
 
@@ -163,16 +163,16 @@ class MapperDelaunay(AbstractMapper):
             splitted_mappings,
             splitted_sizes,
         ) = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
-            source_grid_slim=self.source_pixelization_grid.splitted_pixelization_grid,
+            source_grid_slim=self.source_pixelization_grid.split_cross,
             simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
             pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
             delaunay_points=delaunay.points,
         )
 
         splitted_weights = mapper_util.pixel_weights_delaunay_from(
-            source_grid_slim=self.source_pixelization_grid.splitted_pixelization_grid,
+            source_grid_slim=self.source_pixelization_grid.split_cross,
             source_pixelization_grid=self.source_pixelization_grid,
-            slim_index_for_sub_slim_index=self.source_pixelization_grid.splitted_pixelization_grid,
+            slim_index_for_sub_slim_index=self.source_pixelization_grid.split_cross,
             pix_indexes_for_sub_slim_index=splitted_mappings.astype("int"),
         )
 

@@ -368,10 +368,6 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
         ) from e
 
     max_nneighbours = 100
-    # I feel if the source pixel number is only ~ 1000, then it should be fine to set it to be 100 (or even 50).
-    # There are cases where a grid can have over 100 neighbors when running the codes. But I think they are just weird cases in
-    # the initializing phase (generating initializing points).
-    # We can set it to be 200 to make our modelling more robust, but it will slow down our modelling.
 
     pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_py.natural_interpolation_weights(
         x_in=pixelization_grid[:, 1],

@@ -1,18 +1,7 @@
-import itertools
-import numpy as np
-from typing import Dict, List, Optional
-
-from autoconf import cached_property
-
-from autoarray.inversion.linear_obj import LinearObj
-from autoarray.inversion.linear_obj import UniqueMappings
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DDelaunay
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoiNN
-
-from autoarray.numba_util import profile_func
-from autoarray.inversion.mappers import mapper_util
 
 
 def mapper_from(
