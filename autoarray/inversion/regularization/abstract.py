@@ -1,6 +1,8 @@
 import numpy as np
+
 try:
     import pylops
+
     PyLopsOperator = pylops.LinearOperator
 except ModuleNotFoundError:
     PyLopsOperator = object

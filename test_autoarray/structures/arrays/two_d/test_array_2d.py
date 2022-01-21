@@ -395,4 +395,3 @@ class TestAPI:
         )
 
         assert (arr.native == np.array([[3.0, 2.0], [6.0, 4.0], [5.0, 1.0]])).all()
-

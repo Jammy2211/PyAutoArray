@@ -7,8 +7,10 @@ import warnings
 class NUFFTPlaceholder:
     pass
 
+
 class PyLopsPlaceholder:
     pass
+
 
 try:
     from pynufft.linalg.nufft_cpu import NUFFT_cpu
@@ -18,6 +20,7 @@ except ModuleNotFoundError:
 
 try:
     import pylops
+
     PyLopsOperator = pylops.LinearOperator
 except ModuleNotFoundError:
 
@@ -30,6 +33,7 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.operators import transformer_util
 
+
 def pynufft_exception():
 
     raise ModuleNotFoundError(
@@ -41,6 +45,7 @@ def pynufft_exception():
         "----------------------"
     )
 
+
 def pylops_exception():
 
     raise ModuleNotFoundError(
@@ -51,6 +56,7 @@ def pylops_exception():
         "See ? for more information.\n"
         "----------------------"
     )
+
 
 class TransformerDFT(PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
