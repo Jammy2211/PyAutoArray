@@ -1,6 +1,60 @@
 import numpy as np
+from typing import Tuple
 
 from autoarray import numba_util
+
+from autofit import exc
+
+
+def reg_split_from(
+    splitted_mappings: np.ndarray,
+    splitted_sizes: np.ndarray,
+    splitted_weights: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    For each source pixel centre which has already been split into a cross of four points (whose size is based on the
+    area of the source pixel) this function applies the weights of each cross, where a weight is given by the distance
+    of each point to the source pixel centre.
+
+    There are cases where a grid has over 100 neighbors, corresponding to very coordinate transformations. In such
+    extreme cases, we raise a `exc.FitException`.
+
+    Parameters
+    ----------
+    splitted_mappings
+    splitted_sizes
+    splitted_weights
+
+    Returns
+    -------
+
+    """
+
+    max_j = np.shape(splitted_weights)[1] - 1
+
+    splitted_weights *= -1.0
+
+    for i in range(len(splitted_mappings)):
+
+        pixel_index = i // 4
+
+        flag = 0
+
+        for j in range(splitted_sizes[i]):
+
+            if splitted_mappings[i][j] == pixel_index:
+                splitted_weights[i][j] += 1.0
+                flag = 1
+
+            if j >= max_j:
+                raise exc.FitException("neighbours exceeds!")
+
+        if flag == 0:
+            splitted_mappings[i][j + 1] = pixel_index
+            splitted_sizes[i] += 1
+            splitted_weights[i][j + 1] = 1.0
+
+    return splitted_mappings, splitted_sizes, splitted_weights
 
 
 @numba_util.jit()

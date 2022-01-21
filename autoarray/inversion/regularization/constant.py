@@ -86,32 +86,15 @@ class ConstantSplit(Constant):
             splitted_weights,
         ) = mapper.splitted_pixelization_mappings_sizes_and_weights
 
-        max_j = np.shape(splitted_weights)[1] - 1
-        # The maximum neighbor index for a grid, if the maximum number of neighbors is 100, then it should be 99.
-
-        # Usually, there should not be such a case where a grid can have over 100 (sometimes even 200) neighbours,
-        # but when running the codes, this indeed happens.
-        # From my experience, it only happens in the initializing phase (generating initializing points), when very weird lens mass
-        # distribution can be considered. So, when coming across such extreme cases, we throw out a "exc.FitException" error to do a resample.
-        # We should keep an eye on this.
-
-        splitted_weights *= -1.0
-
-        for i in range(len(splitted_mappings)):
-            pixel_index = i // 4
-            flag = 0
-            for j in range(splitted_sizes[i]):
-                if splitted_mappings[i][j] == pixel_index:
-                    splitted_weights[i][j] += 1.0
-                    flag = 1
-
-            if j >= max_j:
-                raise exc.FitException("neighbours exceeds!")
-
-            if flag == 0:
-                splitted_mappings[i][j + 1] = pixel_index
-                splitted_sizes[i] += 1
-                splitted_weights[i][j + 1] = 1.0
+        (
+            splitted_mappings,
+            splitted_sizes,
+            splitted_weights,
+        ) = regularization_util.reg_split_from(
+            splitted_mappings=splitted_mappings,
+            splitted_sizes=splitted_sizes,
+            splitted_weights=splitted_weights,
+        )
 
         return regularization_util.constant_pixel_splitted_regularization_matrix_from(
             coefficient=self.coefficient,
