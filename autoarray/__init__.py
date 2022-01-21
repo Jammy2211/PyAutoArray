@@ -33,7 +33,7 @@ from .inversion.mappers.factory import mapper_from as Mapper
 from .inversion.mappers.rectangular import MapperRectangular
 from .inversion.mappers.delaunay import MapperDelaunay
 from .inversion.mappers.voronoi import MapperVoronoi
-from .inversion.mappers.voronoi_nn import MapperVoronoiNN
+from .inversion.mappers.voronoi import MapperVoronoiNN
 from .inversion.pixelizations.settings import SettingsPixelization
 from .inversion.linear_eqn.imaging import LEqImagingMapping
 from .inversion.linear_eqn.imaging import LEqImagingWTilde

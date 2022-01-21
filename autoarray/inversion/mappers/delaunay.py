@@ -81,9 +81,13 @@ class MapperDelaunay(AbstractMapper):
             profiling_dict=profiling_dict,
         )
 
+    @property
+    def delaunay(self):
+        return self.source_pixelization_grid.Delaunay
+
     @cached_property
     @profile_func
-    def pix_indexes_for_sub_slim_index(self) -> PixSubWeights:
+    def pix_sub_weights(self) -> "PixSubWeights":
         """
         Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Delaunay`
         pixelization.
@@ -110,6 +114,15 @@ class MapperDelaunay(AbstractMapper):
 
         For the Delaunay pixelization these mappings are calculated using the Scipy spatial library
         (see `mapper_util.pix_indexes_for_sub_slim_index_delaunay_from`).
+
+        Returns an arrays describing the weights of the mappings between of every sub-pixel in the masked data and
+        pixel in the pixelization. Weights are a result of the mappings between data sub-pixels and pixelization
+        pixels using interpolation.
+
+        The `Delaunay` pixelization uses interpolation and weights are computed using a nearest neighbor Delaunay
+        scheme (see `pixel_weights_delaunay_from`).
+
+        The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
         """
         delaunay = self.delaunay
 
@@ -135,27 +148,8 @@ class MapperDelaunay(AbstractMapper):
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
-    @cached_property
-    @profile_func
-    def pix_weights_for_sub_slim_index(self) -> np.ndarray:
-        """
-        Returns an arrays describing the weights of the mappings between of every sub-pixel in the masked data and
-        pixel in the pixelization. Weights are a result of the mappings between data sub-pixels and pixelization
-        pixels using interpolation.
-
-        The `Delaunay` pixelization uses interpolation and weights are computed using a nearest neighbor Delaunay
-        scheme (see `pixel_weights_delaunay_from`).
-
-        The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
-        """
-        return self.pix_indexes_for_sub_slim_index.weights
-
     @property
-    def delaunay(self):
-        return self.source_pixelization_grid.Delaunay
-
-    @property
-    def pix_indexes_for_sub_slim_index_split_cross(self) -> PixSubWeights:
+    def pix_sub_weights_split_cross(self) -> PixSubWeights:
 
         delaunay = self.delaunay
 

@@ -11,7 +11,7 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNN
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 

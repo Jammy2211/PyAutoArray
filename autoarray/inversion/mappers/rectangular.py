@@ -86,7 +86,7 @@ class MapperRectangular(AbstractMapper):
 
     @cached_property
     @profile_func
-    def pix_indexes_for_sub_slim_index(self) -> PixSubWeights:
+    def pix_sub_weights(self) -> "PixSubWeights":
         """
         Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in
         the `Rectangular` pixelization.
@@ -106,6 +106,14 @@ class MapperRectangular(AbstractMapper):
 
         For the Rectangular pixelization these mappings are calculated using the uniform properties of the grid
         (see `grid_2d_util.grid_pixel_indexes_2d_slim_from`).
+
+        Returns an arrays describing the weights of the mappings between of every sub-pixel in the masked data and
+        pixel in the pixelization. Weights are a result of the mappings between data sub-pixels and pixelization
+        pixels using interpolation.
+
+        The `Rectangular` pixelization does not use interpolation therefore all weights are 1.0.
+
+        The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
         """
         mappings = grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=self.source_grid_slim,
@@ -119,19 +127,5 @@ class MapperRectangular(AbstractMapper):
         return PixSubWeights(
             mappings=mappings.reshape((len(mappings), 1)),
             sizes=np.ones(len(mappings), dtype="int"),
-            weights=self.pix_weights_for_sub_slim_index,
+            weights=np.ones((len(self.source_grid_slim), 1), dtype="int"),
         )
-
-    @cached_property
-    @profile_func
-    def pix_weights_for_sub_slim_index(self) -> np.ndarray:
-        """
-        Returns an arrays describing the weights of the mappings between of every sub-pixel in the masked data and
-        pixel in the pixelization. Weights are a result of the mappings between data sub-pixels and pixelization
-        pixels using interpolation.
-
-        The `Rectangular` pixelization does not use interpolation therefore all weights are 1.0.
-
-        The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
-        """
-        return np.ones((len(self.source_grid_slim), 1), dtype="int")

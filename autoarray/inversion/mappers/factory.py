@@ -39,7 +39,7 @@ def mapper_from(
             hyper_image=hyper_data,
         )
     elif isinstance(source_pixelization_grid, Grid2DVoronoiNN):
-        from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
+        from autoarray.inversion.mappers.voronoi import MapperVoronoiNN
 
         return MapperVoronoiNN(
             source_grid_slim=source_grid_slim,

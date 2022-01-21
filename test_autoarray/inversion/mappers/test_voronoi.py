@@ -34,6 +34,5 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     ).T
 
     assert (
-        mapper.pix_indexes_for_sub_slim_index.mappings
-        == pix_indexes_for_sub_slim_index_util
+        mapper.pix_indexes_for_sub_slim_index == pix_indexes_for_sub_slim_index_util
     ).all()

@@ -93,17 +93,27 @@ class AbstractMapper(LinearObj):
         return self.source_pixelization_grid.pixels
 
     @property
-    def slim_index_for_sub_slim_index(self) -> np.ndarray:
-        return self.source_grid_slim.mask.slim_index_for_sub_slim_index
-
-    @property
-    def pix_indexes_for_sub_slim_index(self) -> "PixSubWeights":
+    def pix_sub_weights(self) -> "PixSubWeights":
         raise NotImplementedError
 
     @cached_property
     @profile_func
+    def pix_indexes_for_sub_slim_index(self) -> np.ndarray:
+        return self.pix_sub_weights.mappings
+
+    @cached_property
+    @profile_func
+    def pix_sizes_for_sub_slim_index(self) -> np.ndarray:
+        return self.pix_sub_weights.sizes
+
+    @cached_property
+    @profile_func
     def pix_weights_for_sub_slim_index(self) -> np.ndarray:
-        raise NotImplementedError
+        return self.pix_sub_weights.weights
+
+    @property
+    def slim_index_for_sub_slim_index(self) -> np.ndarray:
+        return self.source_grid_slim.mask.slim_index_for_sub_slim_index
 
     @property
     def sub_slim_indexes_for_pix_index(self) -> List[List]:
@@ -120,8 +130,8 @@ class AbstractMapper(LinearObj):
         """
         sub_slim_indexes_for_pix_index = [[] for _ in range(self.pixels)]
 
-        pix_indexes_for_sub_slim_index = self.pix_indexes_for_sub_slim_index.mappings
-        sizes = self.pix_indexes_for_sub_slim_index.sizes
+        pix_indexes_for_sub_slim_index = self.pix_indexes_for_sub_slim_index
+        sizes = self.pix_sizes_for_sub_slim_index
 
         for slim_index, pix_index in enumerate(pix_indexes_for_sub_slim_index):
             for k in range(sizes[slim_index]):
@@ -150,8 +160,8 @@ class AbstractMapper(LinearObj):
             pix_lengths,
         ) = mapper_util.data_slim_to_pixelization_unique_from(
             data_pixels=self.source_grid_slim.shape_slim,
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
-            pix_indexes_for_sub_slim_sizes=self.pix_indexes_for_sub_slim_index.sizes,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
+            pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             sub_size=self.source_grid_slim.sub_size,
         )
@@ -176,8 +186,8 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
             total_mask_sub_pixels=self.source_grid_slim.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
-            pix_size_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.sizes,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
+            pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )
 
@@ -198,8 +208,8 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
             signal_scale=signal_scale,
             pixel_weights=self.pix_weights_for_sub_slim_index,
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
-            pix_size_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.sizes,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
+            pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             hyper_image=self.hyper_image,
         )

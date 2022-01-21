@@ -80,7 +80,7 @@ class ConstantSplit(Constant):
 
     def regularization_matrix_from(self, mapper):
 
-        pix_sub_weights_split_cross = mapper.pix_indexes_for_sub_slim_index_split_cross
+        pix_sub_weights_split_cross = mapper.pix_sub_weights_split_cross
 
         (
             splitted_mappings,

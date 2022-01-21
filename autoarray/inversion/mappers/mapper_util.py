@@ -9,7 +9,7 @@ from autoarray import exc
 def data_slim_to_pixelization_unique_from(
     data_pixels,
     pix_indexes_for_sub_slim_index: np.ndarray,
-    pix_indexes_for_sub_slim_sizes: np.ndarray,
+    pix_sizes_for_sub_slim_index: np.ndarray,
     pix_weights_for_sub_slim_index,
     sub_size: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -57,7 +57,7 @@ def data_slim_to_pixelization_unique_from(
 
     sub_fraction = 1.0 / (sub_size ** 2.0)
 
-    max_pix_mappings = int(np.max(pix_indexes_for_sub_slim_sizes))
+    max_pix_mappings = int(np.max(pix_sizes_for_sub_slim_index))
 
     data_to_pix_unique = -1 * np.ones((data_pixels, max_pix_mappings * sub_size ** 2))
     data_weights = np.zeros((data_pixels, max_pix_mappings * sub_size ** 2))
@@ -72,7 +72,7 @@ def data_slim_to_pixelization_unique_from(
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
 
-            for pix_to_slim_index in range(pix_indexes_for_sub_slim_sizes[ip_sub]):
+            for pix_to_slim_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
 
                 pix = pix_indexes_for_sub_slim_index[ip_sub, pix_to_slim_index]
                 pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_to_slim_index]

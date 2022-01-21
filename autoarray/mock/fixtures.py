@@ -28,7 +28,7 @@ from autoarray.layout.layout import Layout2D
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNN
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.transformer import TransformerDFT

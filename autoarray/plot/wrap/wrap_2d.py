@@ -13,7 +13,7 @@ from autoarray.plot.wrap import wrap_base as wb
 
 from autoarray.plot.wrap.wrap_base import AbstractMatWrap
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNN
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.mapper_util import triangle_area_from
 from autoarray.structures.grids.two_d.grid_2d import Grid2D

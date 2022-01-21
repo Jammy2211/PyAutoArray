@@ -10,7 +10,7 @@ from autoarray.preloads import Preloads
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.pixelizations.settings import SettingsPixelization
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNN
 
 from autoarray.numba_util import profile_func
 
