@@ -328,7 +328,7 @@ def pixel_weights_delaunay_from(
 
 def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
     grid: np.ndarray, pixelization_grid: np.ndarray
-) -> np.ndarray:
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Returns the mappings between a set of slimmed sub-grid pixels and pixelization pixels, using information on
     how the pixels hosting each sub-pixel map to their closest pixelization pixel on the slim grid in the data-plane
@@ -381,35 +381,25 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
         max_nneighbours=max_nneighbours,
     )
 
-    bad_row_indexes = np.argwhere(
-        np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0
+    bad_indexes = np.argwhere(np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0)
+
+    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = remove_bad_entries_voronoi_nn(
+        bad_indexes=bad_indexes,
+        pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+        grid=grid,
+        pixelization_grid=pixelization_grid,
     )
 
-    # Seems if a point is outside the whole Voronoi region some of the weights have negative values.
-    # For those kind of points, we reset its neighbor to be its cloest neighbour.
+    bad_indexes = np.argwhere(pix_indexes_for_sub_slim_index[:, 0] == -1)
 
-    for item in bad_row_indexes:
-        ind = item[0]
-        pix_indexes_for_sub_slim_index[ind] = -1
-        pix_indexes_for_sub_slim_index[ind][0] = np.argmin(
-            np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
-        )
-        pix_weights_for_sub_slim_index[ind] = 0.0
-        pix_weights_for_sub_slim_index[ind][0] = 1.0
-
-    bad_row_indexes = np.argwhere(pix_indexes_for_sub_slim_index[:, 0] == -1)
-    # There are also grids where the NN code will throw out not even one neighbor.
-    # For those grids, we also mark them as bad grids and set their neighbors to the closest ones.
-    # The part below can be merged into the above part.
-
-    for item in bad_row_indexes:
-        ind = item[0]
-        pix_indexes_for_sub_slim_index[ind] = -1
-        pix_indexes_for_sub_slim_index[ind][0] = np.argmin(
-            np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
-        )
-        pix_weights_for_sub_slim_index[ind] = 0.0
-        pix_weights_for_sub_slim_index[ind][0] = 1.0
+    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = remove_bad_entries_voronoi_nn(
+        bad_indexes=bad_indexes,
+        pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+        grid=grid,
+        pixelization_grid=pixelization_grid,
+    )
 
     pix_indexes_for_sub_slim_index_sizes = np.sum(
         pix_indexes_for_sub_slim_index != -1, axis=1
@@ -420,6 +410,48 @@ def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
         pix_indexes_for_sub_slim_index_sizes,
         pix_weights_for_sub_slim_index,
     )
+
+
+def remove_bad_entries_voronoi_nn(
+    bad_indexes,
+    pix_weights_for_sub_slim_index,
+    pix_indexes_for_sub_slim_index,
+    grid,
+    pixelization_grid,
+):
+    """
+    The nearest neighbor interpolation can return invalid or bad entries which are removed from the mapping arrays. The
+    current circumstances this arises are:
+
+    1) If a point is outside the whole Voronoi region, some weights have negative values. In this case, we reset its
+    neighbor to its closest neighbor.
+
+    2) The nearest neighbor interpolation code may not return even a single neighbor. We mark these as a bad grid by
+    settings their neighbors to the closest ones.
+
+    Parameters
+    ----------
+    bad_indexes
+    pix_weights_for_sub_slim_index
+    pix_indexes_for_sub_slim_index
+    grid
+    pixelization_grid
+
+    Returns
+    -------
+
+    """
+
+    for item in bad_indexes:
+        ind = item[0]
+        pix_indexes_for_sub_slim_index[ind] = -1
+        pix_indexes_for_sub_slim_index[ind][0] = np.argmin(
+            np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
+        )
+        pix_weights_for_sub_slim_index[ind] = 0.0
+        pix_weights_for_sub_slim_index[ind][0] = 1.0
+
+    return pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index
 
 
 @numba_util.jit()
