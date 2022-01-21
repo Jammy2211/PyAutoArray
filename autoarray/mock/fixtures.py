@@ -28,6 +28,7 @@ from autoarray.layout.layout import Layout2D
 from autoarray.inversion.mappers.rectangular import MapperRectangular
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.transformer import TransformerDFT
@@ -435,7 +436,7 @@ def make_rectangular_mapper_7x7_3x3():
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
         data_pixelization_grid=None,
-        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
+        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
 
@@ -444,7 +445,7 @@ def make_delaunay_mapper_9_3x3():
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_delaunay_pixelization_grid_9(),
         data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
+        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
 
@@ -453,7 +454,16 @@ def make_voronoi_mapper_9_3x3():
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_voronoi_pixelization_grid_9(),
         data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
+        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+    )
+
+
+def make_voronoi_mapper_nn_9_3x3():
+    return MapperVoronoiNN(
+        source_grid_slim=make_sub_grid_2d_7x7(),
+        source_pixelization_grid=make_voronoi_pixelization_grid_9(),
+        data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
+        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
 
