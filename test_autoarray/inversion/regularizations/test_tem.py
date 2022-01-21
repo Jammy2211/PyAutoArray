@@ -78,7 +78,7 @@ def test__splitted():
             splitted_sizes[i] += 1
             splitted_weights[i][j + 1] = 1.0
 
-    regularization_matrix = aa.inversion.regularization.regularization_util.constant_pixel_splitted_regularization_matrix_from(
+    regularization_matrix = aa.util.regularization.constant_pixel_splitted_regularization_matrix_from(
         coefficient=1.0,
         splitted_mappings=splitted_mappings,
         splitted_sizes=splitted_sizes,
