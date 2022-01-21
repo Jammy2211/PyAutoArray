@@ -677,6 +677,6 @@ class TestWeightedRegularizationMatrix:
 	)                
         
         
-        assert (pytest.approx(regularization_matrix[0], 1e-4) == np.array([4.58 * 2.0, -0.6 * 2.0, -2.45 * 2.0, -1.26 * 2.0, -0.27 * 2.0]))
+        assert (pytest.approx(regularization_matrix[0], 1e-4) == np.array([4.58 * 4.0, -0.6 * 4.0, -2.45 * 4.0, -1.26 * 4.0, -0.27 * 4.0]))
 
 

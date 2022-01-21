@@ -4,6 +4,8 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray.inversion.regularization import regularization_util
 
+from autofit import exc
+
 
 class AdaptiveBrightness(AbstractRegularization):
     def __init__(
