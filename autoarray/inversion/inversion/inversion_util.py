@@ -44,7 +44,7 @@ def curvature_reg_matrix_from(
     curvature_reg_matrix
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
-    #for i in range(regularization_matrix.shape[0]):
+    # for i in range(regularization_matrix.shape[0]):
 
     #    curvature_matrix[i, i] += regularization_matrix[i, i]
 

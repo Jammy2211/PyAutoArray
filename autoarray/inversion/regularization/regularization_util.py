@@ -168,7 +168,7 @@ def weighted_regularization_matrix_from(
     return regularization_matrix
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def weighted_pixel_splitted_regularization_matrix_from(
     regularization_weights: float, splitted_mappings, splitted_sizes, splitted_weights
 ) -> np.ndarray:

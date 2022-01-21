@@ -104,7 +104,7 @@ class InversionMatrices(AbstractInversion):
             return self.curvature_matrix
 
         if self.has_one_mapper:
-            
+
             curvature_reg_matrix = inversion_util.curvature_reg_matrix_from(
                 curvature_matrix=self.curvature_matrix,
                 regularization_matrix=self.regularization_matrix,

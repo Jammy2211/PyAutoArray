@@ -113,13 +113,11 @@ class AdaptiveBrightness(AbstractRegularization):
                     splitted_sizes[i] += 1
                     splitted_weights[i][j + 1] = 1.0
 
-            return (
-                regularization_util.weighted_pixel_splitted_regularization_matrix_from(
-                    regularization_weights=regularization_weights,
-                    splitted_mappings=splitted_mappings,
-                    splitted_sizes=splitted_sizes,
-                    splitted_weights=splitted_weights,
-                )
+            return regularization_util.weighted_pixel_splitted_regularization_matrix_from(
+                regularization_weights=regularization_weights,
+                splitted_mappings=splitted_mappings,
+                splitted_sizes=splitted_sizes,
+                splitted_weights=splitted_weights,
             )
 
         else:

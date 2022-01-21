@@ -74,13 +74,11 @@ class Constant(AbstractRegularization):
                     splitted_sizes[i] += 1
                     splitted_weights[i][j + 1] = 1.0
 
-            return (
-                regularization_util.constant_pixel_splitted_regularization_matrix_from(
-                    coefficient=self.coefficient,
-                    splitted_mappings=splitted_mappings,
-                    splitted_sizes=splitted_sizes,
-                    splitted_weights=splitted_weights,
-                )
+            return regularization_util.constant_pixel_splitted_regularization_matrix_from(
+                coefficient=self.coefficient,
+                splitted_mappings=splitted_mappings,
+                splitted_sizes=splitted_sizes,
+                splitted_weights=splitted_weights,
             )
 
         else:
@@ -89,4 +87,3 @@ class Constant(AbstractRegularization):
                 pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
                 pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
             )
-

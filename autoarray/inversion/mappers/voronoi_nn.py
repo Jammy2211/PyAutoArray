@@ -134,4 +134,3 @@ class MapperVoronoiNN(AbstractMapper):
             grid=self.source_pixelization_grid.splitted_pixelization_grid,
             pixelization_grid=self.source_pixelization_grid,
         )
-
