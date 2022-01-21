@@ -170,7 +170,10 @@ def weighted_regularization_matrix_from(
 
 # @numba_util.jit()
 def weighted_pixel_splitted_regularization_matrix_from(
-    regularization_weights: float, splitted_mappings, splitted_sizes, splitted_weights
+    regularization_weights: np.ndarray,
+    splitted_mappings,
+    splitted_sizes,
+    splitted_weights,
 ) -> np.ndarray:
 
     # I'm not sure what is the best way to add surface brightness weight to the regularization scheme here.

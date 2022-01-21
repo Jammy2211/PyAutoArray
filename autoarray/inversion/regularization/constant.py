@@ -46,11 +46,10 @@ class Constant(AbstractRegularization):
 
 
 class ConstantSplit(Constant):
-
     def __init__(self, coefficient: float = 1.0):
         """
         A constant regularization scheme which splits every source pixel into a cross of four regularization points
-        (regularization is described in the `Regularization` class above), which interpolates to these points in order
+        (regularization is described in the `Regularization` class above) and interpolates to these points in order
         to apply smoothing on the solution of an `Inversion`.
 
         The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a

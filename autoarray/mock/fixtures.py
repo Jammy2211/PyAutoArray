@@ -6,7 +6,9 @@ from autoarray.dataset.interferometer import SettingsInterferometer
 from autoarray.inversion.regularization.constant import Constant
 from autoarray.inversion.regularization.constant import ConstantSplit
 from autoarray.inversion.regularization.adaptive_brightness import AdaptiveBrightness
-# from autoarray.inversion.regularization.adaptive_brightness import ConstantSplit
+from autoarray.inversion.regularization.adaptive_brightness import (
+    AdaptiveBrightnessSplit,
+)
 from autoarray.operators.convolver import Convolver
 from autoarray.fit.fit_data import FitData
 from autoarray.fit.fit_data import FitDataComplex
@@ -365,19 +367,13 @@ def make_regularization_constant_split():
 
 def make_regularization_adaptive_brightness():
     return AdaptiveBrightness(
-        inner_coefficient=0.1,
-        outer_coefficient=10.0,
-        signal_scale=0.5,
-        if_interpolated=False,
+        inner_coefficient=0.1, outer_coefficient=10.0, signal_scale=0.5
     )
 
 
 def make_regularization_adaptive_brightness_split():
-    return AdaptiveBrightness(
-        inner_coefficient=0.1,
-        outer_coefficient=10.0,
-        signal_scale=0.5,
-        if_interpolated=True,
+    return AdaptiveBrightnessSplit(
+        inner_coefficient=0.1, outer_coefficient=10.0, signal_scale=0.5
     )
 
 
@@ -439,7 +435,7 @@ def make_rectangular_mapper_7x7_3x3():
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
         data_pixelization_grid=None,
-        hyper_image=Array2D.ones(shape_native=(3,3), pixel_scales=1.0)
+        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
     )
 
 
@@ -448,7 +444,7 @@ def make_delaunay_mapper_9_3x3():
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_delaunay_pixelization_grid_9(),
         data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
     )
 
 
@@ -457,7 +453,7 @@ def make_voronoi_mapper_9_3x3():
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_voronoi_pixelization_grid_9(),
         data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+        hyper_image=Array2D.ones(shape_native=(3, 3), pixel_scales=1.0),
     )
 
 

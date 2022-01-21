@@ -130,7 +130,7 @@ def test__inversion_imaging__via_regularizations(
     regularization_constant,
     regularization_constant_split,
     regularization_adaptive_brightness,
-    regularization_adaptive_brightness_split
+    regularization_adaptive_brightness_split,
 ):
 
     inversion = aa.Inversion(
@@ -154,7 +154,9 @@ def test__inversion_imaging__via_regularizations(
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoi)
     assert isinstance(inversion.leq, aa.LEqImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.38417, 1.0e-4)
+    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
+        10.38417, 1.0e-4
+    )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
     inversion = aa.Inversion(
@@ -166,7 +168,9 @@ def test__inversion_imaging__via_regularizations(
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoi)
     assert isinstance(inversion.leq, aa.LEqImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(-25.71476, 1.0e-4)
+    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
+        -25.71476, 1.0e-4
+    )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
     inversion = aa.Inversion(
@@ -178,8 +182,11 @@ def test__inversion_imaging__via_regularizations(
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoi)
     assert isinstance(inversion.leq, aa.LEqImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(-26.31747, 1.0e-4)
+    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
+        -26.31747, 1.0e-4
+    )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+
 
 def test__inversion_imaging__compare_mapping_and_w_tilde_values(
     masked_imaging_7x7, voronoi_mapper_9_3x3, regularization_constant
