@@ -7,14 +7,14 @@ from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.inversion.mappers.rectangular import MapperRectangular
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 
 
 class MapperPlotter(Plotter):
     def __init__(
         self,
-        mapper: Union[MapperRectangular, MapperVoronoi],
+        mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp],
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),

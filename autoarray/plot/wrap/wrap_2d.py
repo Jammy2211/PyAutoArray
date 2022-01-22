@@ -12,8 +12,8 @@ from typing import List, Union, Optional, Tuple
 from autoarray.plot.wrap import wrap_base as wb
 
 from autoarray.plot.wrap.wrap_base import AbstractMatWrap
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNN
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.mapper_util import triangle_area_from
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
@@ -496,7 +496,7 @@ class PatchOverlay(AbstractMatWrap2D):
 
 class VoronoiDrawer(AbstractMatWrap2D):
     """
-    Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
+    Draws Voronoi pixels from a `MapperVoronoiNoInterp` object (see `inversions.mapper`). This includes both drawing
     each Voronoi cell and coloring it according to a color value.
 
     The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
@@ -508,7 +508,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
     def draw_voronoi_pixels(
         self,
-        mapper: MapperVoronoi,
+        mapper: MapperVoronoiNoInterp,
         values: np.ndarray,
         cmap: wb.Cmap,
         colorbar: wb.Colorbar,
@@ -520,7 +520,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         
         Parameters
         ----------
-        mapper : MapperVoronoi
+        mapper : MapperVoronoiNoInterp
             An object which contains the (y,x) grid of Voronoi cell centres.
         values
             An array used to compute the color values that every Voronoi cell is plotted using.
@@ -647,7 +647,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
 class DelaunayDrawer(AbstractMatWrap2D):
     """
-    Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
+    Draws Voronoi pixels from a `MapperVoronoiNoInterp` object (see `inversions.mapper`). This includes both drawing
     each Voronoi cell and coloring it according to a color value.
 
     The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
@@ -672,7 +672,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
         
         Parameters
         ----------
-        mapper : MapperVoronoi
+        mapper : MapperVoronoiNoInterp
             An object which contains the (y,x) grid of Voronoi cell centres.
         values
             An array used to compute the color values that every Voronoi cell is plotted using.
@@ -820,7 +820,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
 
 class VoronoiNNDrawer(AbstractMatWrap2D):
     """
-    Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
+    Draws Voronoi pixels from a `MapperVoronoiNoInterp` object (see `inversions.mapper`). This includes both drawing
     each Voronoi cell and coloring it according to a color value.
 
     The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
@@ -832,7 +832,7 @@ class VoronoiNNDrawer(AbstractMatWrap2D):
 
     def draw_voronoiNN_pixels(
         self,
-        mapper: MapperVoronoiNN,
+        mapper: MapperVoronoi,
         values: np.ndarray,
         cmap: wb.Cmap,
         colorbar: wb.Colorbar,
@@ -845,7 +845,7 @@ class VoronoiNNDrawer(AbstractMatWrap2D):
         
         Parameters
         ----------
-        mapper : MapperVoronoi
+        mapper : MapperVoronoiNoInterp
             An object which contains the (y,x) grid of Voronoi cell centres.
         values
             An array used to compute the color values that every Voronoi cell is plotted using.

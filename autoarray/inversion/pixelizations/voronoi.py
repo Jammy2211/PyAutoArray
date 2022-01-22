@@ -5,12 +5,11 @@ from typing import Dict, Optional, Tuple
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
-from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoiNN
 from autoarray.preloads import Preloads
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.pixelizations.settings import SettingsPixelization
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNN
 
 from autoarray.numba_util import profile_func
 
@@ -71,7 +70,7 @@ class Voronoi(AbstractPixelization):
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
         in both the `data` and `source` frames.
 
-        This function returns a `MapperVoronoi` as follows:
+        This function returns a `MapperVoronoiNoInterp` as follows:
 
         1) Before this routine is called, a sparse grid of (y,x) coordinates are computed from the 2D masked data,
         the `data_pixelization_grid`, which acts as the Voronoi pixel centres of the pixelization and mapper.
@@ -89,7 +88,7 @@ class Voronoi(AbstractPixelization):
         5) Use the transformed `source_pixelization_grid`'s (y,x) coordinates as the centres of the Voronoi
         pixelization.
 
-        6) Return the `MapperVoronoi`.
+        6) Return the `MapperVoronoiNoInterp`.
 
         Parameters
         ----------
@@ -139,7 +138,7 @@ class Voronoi(AbstractPixelization):
             self, VoronoiBrightnessImage
         ):
 
-            return MapperVoronoi(
+            return MapperVoronoiNoInterp(
                 source_grid_slim=relocated_source_grid_slim,
                 source_pixelization_grid=source_pixelization_grid,
                 data_pixelization_grid=data_pixelization_grid,
@@ -149,13 +148,17 @@ class Voronoi(AbstractPixelization):
 
         else:
 
-            return MapperVoronoiNN(
+            return MapperVoronoi(
                 source_grid_slim=relocated_source_grid_slim,
                 source_pixelization_grid=source_pixelization_grid,
                 data_pixelization_grid=data_pixelization_grid,
                 hyper_image=hyper_image,
                 profiling_dict=profiling_dict,
             )
+
+    @property
+    def uses_interpolation(self):
+        return False
 
     @profile_func
     def relocated_pixelization_grid_from(
@@ -228,6 +231,7 @@ class Voronoi(AbstractPixelization):
         return Grid2DVoronoi(
             grid=source_pixelization_grid,
             nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
+            uses_interpolation=self.uses_interpolation
         )
 
 
@@ -443,70 +447,14 @@ class VoronoiBrightnessImage(Voronoi):
 
 
 class VoronoiNNMagnification(VoronoiMagnification):
-    @profile_func
-    def pixelization_grid_from(
-        self,
-        source_grid_slim=None,
-        source_pixelization_grid=None,
-        sparse_index_for_slim_index=None,
-    ) -> Grid2DVoronoi:
-        """
-        Return the Voronoi `source_pixelization_grid` as a `Grid2DVoronoi` object, which provides additional
-        functionality for performing operations that exploit the geometry of a Voronoi pixelization.
 
-        The array `sparse_index_for_slim_index` encodes the closest source pixel of every pixel on the
-        (full resolution) sub image-plane grid. This is used for efficiently pairing every image-plane pixel to its
-        corresponding source-plane pixel.
-
-        Parameters
-        ----------
-        source_grid_slim
-            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
-            `source` reference frame.
-        source_pixelization_grid
-            The centres of every Voronoi pixel in the `source` frame, which are initially derived by computing a sparse
-            set of (y,x) coordinates computed from the unmasked data in the `data` frame and applying a transformation
-            to this.
-        settings
-            Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
-        """
-
-        return Grid2DVoronoiNN(
-            grid=source_pixelization_grid,
-            nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
-        )
+    @property
+    def uses_interpolation(self):
+        return True
 
 
 class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
-    @profile_func
-    def pixelization_grid_from(
-        self,
-        source_grid_slim=None,
-        source_pixelization_grid=None,
-        sparse_index_for_slim_index=None,
-    ) -> Grid2DVoronoi:
-        """
-        Return the Voronoi `source_pixelization_grid` as a `Grid2DVoronoi` object, which provides additional
-        functionality for performing operations that exploit the geometry of a Voronoi pixelization.
 
-        The array `sparse_index_for_slim_index` encodes the closest source pixel of every pixel on the
-        (full resolution) sub image-plane grid. This is used for efficiently pairing every image-plane pixel to its
-        corresponding source-plane pixel.
-
-        Parameters
-        ----------
-        source_grid_slim
-            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
-            `source` reference frame.
-        source_pixelization_grid
-            The centres of every Voronoi pixel in the `source` frame, which are initially derived by computing a sparse
-            set of (y,x) coordinates computed from the unmasked data in the `data` frame and applying a transformation
-            to this.
-        settings
-            Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
-        """
-
-        return Grid2DVoronoiNN(
-            grid=source_pixelization_grid,
-            nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
-        )
+    @property
+    def uses_interpolation(self):
+        return True

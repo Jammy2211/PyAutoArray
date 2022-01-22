@@ -12,7 +12,7 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.grids.two_d import grid_2d_util
 
 
-class MapperRectangular(AbstractMapper):
+class MapperRectangularNoInterp(AbstractMapper):
     def __init__(
         self,
         source_grid_slim: Grid2D,

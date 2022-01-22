@@ -56,6 +56,10 @@ class Delaunay(AbstractPixelization):
         """
         super().__init__()
 
+    @property
+    def uses_interpolation(self):
+        return False
+
     def mapper_from(
         self,
         source_grid_slim: Grid2D,
@@ -207,7 +211,7 @@ class Delaunay(AbstractPixelization):
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
 
-        return Grid2DDelaunay(grid=source_pixelization_grid)
+        return Grid2DDelaunay(grid=source_pixelization_grid, uses_interpolation=self.uses_interpolation)
 
 
 class DelaunayMagnification(Delaunay):

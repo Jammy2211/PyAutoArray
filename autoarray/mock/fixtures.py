@@ -25,10 +25,10 @@ from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.interferometer import Interferometer
 from autoarray.structures.kernel_2d import Kernel2D
 from autoarray.layout.layout import Layout2D
-from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNN
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.transformer import TransformerDFT
@@ -432,7 +432,7 @@ def make_voronoi_pixelization_grid_9():
 
 
 def make_rectangular_mapper_7x7_3x3():
-    return MapperRectangular(
+    return MapperRectangularNoInterp(
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
         data_pixelization_grid=None,
@@ -450,7 +450,7 @@ def make_delaunay_mapper_9_3x3():
 
 
 def make_voronoi_mapper_9_3x3():
-    return MapperVoronoi(
+    return MapperVoronoiNoInterp(
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_voronoi_pixelization_grid_9(),
         data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
@@ -459,7 +459,7 @@ def make_voronoi_mapper_9_3x3():
 
 
 def make_voronoi_mapper_nn_9_3x3():
-    return MapperVoronoiNN(
+    return MapperVoronoi(
         source_grid_slim=make_sub_grid_2d_7x7(),
         source_pixelization_grid=make_voronoi_pixelization_grid_9(),
         data_pixelization_grid=Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),

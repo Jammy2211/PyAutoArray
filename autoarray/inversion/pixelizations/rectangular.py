@@ -7,7 +7,7 @@ from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangu
 from autoarray.preloads import Preloads
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.pixelizations.settings import SettingsPixelization
-from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 
 from autoarray import exc
 from autoarray.numba_util import profile_func
@@ -71,6 +71,10 @@ class Rectangular(AbstractPixelization):
         self.pixels = self.shape[0] * self.shape[1]
         super().__init__()
 
+    @property
+    def uses_interpolation(self):
+        return False
+
     def mapper_from(
         self,
         source_grid_slim: Grid2D,
@@ -80,12 +84,12 @@ class Rectangular(AbstractPixelization):
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
-    ) -> MapperRectangular:
+    ) -> MapperRectangularNoInterp:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
         in both the `data` and `source` frames.
 
-        This function returns a `MapperRectangular` as follows:
+        This function returns a `MapperRectangularNoInterp` as follows:
 
         1) If `settings.use_border=True`, the border of the input `source_grid_slim` is used to relocate all of the
         grid's (y,x) coordinates beyond the border to the edge of the border.
@@ -94,7 +98,7 @@ class Rectangular(AbstractPixelization):
         over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_grid_slim` if step 1
         is bypassed).
 
-        3) Return the `MapperRectangular`.
+        3) Return the `MapperRectangularNoInterp`.
 
         Parameters
         ----------
@@ -124,7 +128,7 @@ class Rectangular(AbstractPixelization):
         )
         pixelization_grid = self.pixelization_grid_from(source_grid_slim=relocated_grid)
 
-        return MapperRectangular(
+        return MapperRectangularNoInterp(
             source_grid_slim=relocated_grid,
             source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,

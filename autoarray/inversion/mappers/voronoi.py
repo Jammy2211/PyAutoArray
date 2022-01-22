@@ -98,7 +98,7 @@ class AbstractMapperVoronoi(AbstractMapper):
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
 
-class MapperVoronoi(AbstractMapperVoronoi):
+class MapperVoronoiNoInterp(AbstractMapperVoronoi):
     @cached_property
     @profile_func
     def pix_sub_weights(self) -> "PixSubWeights":
@@ -146,7 +146,7 @@ class MapperVoronoi(AbstractMapperVoronoi):
         )
 
 
-class MapperVoronoiNN(AbstractMapperVoronoi):
+class MapperVoronoi(AbstractMapperVoronoi):
     @cached_property
     @profile_func
     def pix_sub_weights(self) -> "PixSubWeights":

@@ -239,6 +239,7 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
         cls,
         grid: Union[np.ndarray, List],
         nearest_pixelization_index_for_slim_index: Optional[np.ndarray] = None,
+        uses_interpolation : bool = False,
         *args,
         **kwargs
     ):
@@ -268,6 +269,7 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
         obj.nearest_pixelization_index_for_slim_index = (
             nearest_pixelization_index_for_slim_index
         )
+        obj.uses_interpolation = uses_interpolation
 
         return obj
 
@@ -283,25 +285,6 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
 
 
 class Grid2DVoronoi(AbstractGrid2DIrregular):
-    """
-    Returns the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
-    grid plus a small buffer.
-
-    Parameters
-    -----------
-    grid
-        The (y,x) grid of coordinates which determine the Voronoi pixelization's
-    pixelization_grid
-        The (y,x) centre of every Voronoi pixel in scaleds.
-    origin
-        The scaled origin of the Voronoi pixelization's coordinate system.
-    pixel_neighbors
-        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
-        the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors.sizes
-        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
-        Voronoi grid.
-    """
 
     @cached_property
     def voronoi(self) -> scipy.spatial.Voronoi:
@@ -447,12 +430,6 @@ class Grid2DVoronoi(AbstractGrid2DIrregular):
                 self.scaled_maxima[0],
             ]
         )
-
-
-class Grid2DVoronoiNN(Grid2DVoronoi):
-
-    pass
-
 
 class Grid2DDelaunay(AbstractGrid2DIrregular):
     """

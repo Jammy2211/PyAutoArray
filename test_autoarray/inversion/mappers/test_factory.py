@@ -59,7 +59,7 @@ def test__rectangular_mapper():
         settings=aa.SettingsPixelization(use_border=False),
     )
 
-    assert isinstance(mapper, aa.MapperRectangular)
+    assert isinstance(mapper, aa.MapperRectangularNoInterp)
     assert mapper.data_pixelization_grid == None
     assert mapper.source_pixelization_grid.shape_native_scaled == pytest.approx(
         (2.0, 2.0), 1.0e-4
@@ -208,7 +208,7 @@ def test__voronoi_mapper():
         settings=aa.SettingsPixelization(use_border=False),
     )
 
-    assert isinstance(mapper, aa.MapperVoronoi)
+    assert isinstance(mapper, aa.MapperVoronoiNoInterp)
     assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
