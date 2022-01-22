@@ -89,15 +89,26 @@ class MapperDelaunay(AbstractMapper):
     @profile_func
     def pix_sub_weights(self) -> "PixSubWeights":
         """
-        Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Delaunay`
-        pixelization.
+        Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
+        and pixel in the `Delaunay` pixelization.
+
+        - `pix_indexes_for_sub_slim_index`: the mapping of every data pixel (given its `sub_slim_index`)
+        to pixelization pixels (given their `pix_indexes`).
+
+        - `pix_sizes_for_sub_slim_index`: the number of mappings of every data pixel to pixelization pixels.
+
+        - `pix_weights_for_sub_slim_index`: the interpolation weights of every data pixel's pixelization
+        pixel mapping
+
+        These are packaged into the class `PixSubWeights` with attributes `mappings`, `sizes` and `weights`.
 
         The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
         for example:
 
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Delaunay
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular
         pixelization's third (index 2) pixel.
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Delaunay
+
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular
         pixelization's fifth (index 4) pixel.
 
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
@@ -107,22 +118,17 @@ class MapperDelaunay(AbstractMapper):
 
         - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Delaunay
         pixelization's third (index 2) pixel.
+
         - `pix_indexes_for_sub_slim_index[0, 1] = 5`: The data's first (index 0) sub-pixel also maps to the Delaunay
         pixelization's sixth (index 5) pixel.
+
         - `pix_indexes_for_sub_slim_index[0, 2] = 8`: The data's first (index 0) sub-pixel also maps to the Delaunay
         pixelization's ninth (index 8) pixel.
 
+        The interpolation weights of these multiple mappings are stored in the array `pix_weights_for_sub_slim_index`.
+
         For the Delaunay pixelization these mappings are calculated using the Scipy spatial library
         (see `mapper_util.pix_indexes_for_sub_slim_index_delaunay_from`).
-
-        Returns an arrays describing the weights of the mappings between of every sub-pixel in the masked data and
-        pixel in the pixelization. Weights are a result of the mappings between data sub-pixels and pixelization
-        pixels using interpolation.
-
-        The `Delaunay` pixelization uses interpolation and weights are computed using a nearest neighbor Delaunay
-        scheme (see `pixel_weights_delaunay_from`).
-
-        The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
         """
         delaunay = self.delaunay
 

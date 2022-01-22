@@ -103,30 +103,36 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
     @profile_func
     def pix_sub_weights(self) -> "PixSubWeights":
         """
-        Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Voronoi`
-        pixelization.
+        Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
+        and pixel in the `Voronoi` pixelization.
+
+        - `pix_indexes_for_sub_slim_index`: the mapping of every data pixel (given its `sub_slim_index`)
+        to pixelization pixels (given their `pix_indexes`).
+
+        - `pix_sizes_for_sub_slim_index`: the number of mappings of every data pixel to pixelization pixels.
+
+        - `pix_weights_for_sub_slim_index`: the interpolation weights of every data pixel's pixelization
+        pixel mapping
+
+        These are packaged into the class `PixSubWeights` with attributes `mappings`, `sizes` and `weights`.
 
         The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
         for example:
 
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Voronoi
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular
         pixelization's third (index 2) pixel.
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Voronoi
+
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular
         pixelization's fifth (index 4) pixel.
 
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
-        for cases where a data pixel maps to more than one pixelization pixel (for example a `Delaunay` pixelization
-        where each data pixel maps to 3 Delaunay triangles with interpolation). For a Voronoi pixelizaiton each
-        data sub-pixel maps to a single pixelization pixel, thus this dimension is of size 1.
+        for cases where a data pixel maps to more than one pixelization pixel (for example a `Delaunay` triangulation
+        where each data pixel maps to 3 Delaunay triangles with interpolation weights). The weights of multiple mappings
+        are stored in the array `pix_weights_for_sub_slim_index`.
 
-        For the Voronoi pixelization these mappings are calculated using a graph search which finds every data
-        sub-pixel's nearest neighbor Voronoi pixel (see `mapper_util.pix_indexes_for_sub_slim_index_voronoi_from`).
-
-        Returns an arrays describing the weights of the mappings between of every sub-pixel in the masked data and
-        pixel in the pixelization. Weights are a result of the mappings between data sub-pixels and pixelization
-        pixels using interpolation.
-
-        The `Voronoi` pixelization does not use interpolation therefore all weights are 1.0.
+        For this Voronoi pixelizaiton each data sub-pixel maps to a single pixelization pixel, thus the second
+        dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
+        are equal to 1.0.
 
         The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
         """
@@ -151,24 +157,44 @@ class MapperVoronoi(AbstractMapperVoronoi):
     @profile_func
     def pix_sub_weights(self) -> "PixSubWeights":
         """
-        Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in the `Voronoi`
-        pixelization.
+        Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
+        and pixel in the `Voronoi` pixelization.
+
+        - `pix_indexes_for_sub_slim_index`: the mapping of every data pixel (given its `sub_slim_index`)
+        to pixelization pixels (given their `pix_indexes`).
+
+        - `pix_sizes_for_sub_slim_index`: the number of mappings of every data pixel to pixelization pixels.
+
+        - `pix_weights_for_sub_slim_index`: the interpolation weights of every data pixel's pixelization
+        pixel mapping
+
+        These are packaged into the class `PixSubWeights` with attributes `mappings`, `sizes` and `weights`.
 
         The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
         for example:
 
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Voronoi
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular
         pixelization's third (index 2) pixel.
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Voronoi
+
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular
         pixelization's fifth (index 4) pixel.
 
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
-        for cases where a data pixel maps to more than one pixelization pixel (for example a `Delaunay` pixelization
-        where each data pixel maps to 3 Delaunay triangles with interpolation). For a Voronoi pixelizaiton each
-        data sub-pixel maps to a single pixelization pixel, thus this dimension is of size 1.
+        for cases where a data pixel maps to more than one pixelization pixel.
 
-        For the Voronoi pixelization these mappings are calculated using a graph search which finds every data
-        sub-pixel's nearest neighbor Voronoi pixel (see `mapper_util.pix_indexes_for_sub_slim_index_voronoi_from`).
+        For a this Voronoi pixelization a natural neighbor interpolation scheme is used to map each data pixel many
+        Voronoi pixels, for example:
+
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the natural
+        neighbor of the Voronoi pixelization's third (index 2) pixel.
+
+        - `pix_indexes_for_sub_slim_index[0, 1] = 5`: The data's first (index 0) sub-pixel also maps to the natural
+        neighbor of the Voronoi pixelization's sixth (index 5) pixel.
+
+        - `pix_indexes_for_sub_slim_index[0, 2] = 8`: The data's first (index 0) sub-pixel also maps to the natural
+        neighbor of the Voronoi pixelization's ninth (index 8) pixel.
+
+        The interpolation weights of these multiple mappings are stored in the array `pix_weights_for_sub_slim_index`.
         """
         mappings, sizes, weights = mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
             grid=self.source_grid_slim, pixelization_grid=self.source_pixelization_grid

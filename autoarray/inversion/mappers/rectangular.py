@@ -28,7 +28,7 @@ class MapperRectangularNoInterp(AbstractMapper):
         `pixelization` package first.
 
         A `Mapper` determines the mappings between the masked data grid's pixels (`data_grid_slim` and
-        `source_grid_slim`) and the pxelization's pixels (`data_pixelization_grid` and `source_pixelization_grid`).
+        `source_grid_slim`) and the pixelization's pixels (`data_pixelization_grid` and `source_pixelization_grid`).
 
         The 1D Indexing of each grid is identical in the `data` and `source` frames (e.g. the transformation does not
         change the indexing, such that `source_grid_slim[0]` corresponds to the transformed value
@@ -45,9 +45,9 @@ class MapperRectangularNoInterp(AbstractMapper):
         - pix_indexes_for_sub_slim_index[2, 0] = 1: the data's 3rd sub-pixel maps to the pixelization's 2nd pixel.
 
         The second dimension of this array (where all three examples above are 0) is used for cases where a
-        single pixel on the `grid_slim` maps to multiple pixels on the `pixelization_grid`. For example, using a
-        `Delaunay` pixelization, where every `grid_slim` pixel maps to three Delaunay pixels (the corners of the
-        triangles):
+        single pixel on the `grid_slim` maps to multiple pixels on the `pixelization_grid`. For example, a
+        `Delaunay` triangulation, where every `grid_slim` pixel maps to three Delaunay pixels (the corners of the
+        triangles) with varying interpolation weights .
 
         For a `Rectangular` pixelization every pixel in the masked data maps to only one pixel, thus the second
         dimension of `pix_indexes_for_sub_slim_index` is always of size 1.
@@ -88,32 +88,36 @@ class MapperRectangularNoInterp(AbstractMapper):
     @profile_func
     def pix_sub_weights(self) -> "PixSubWeights":
         """
-        Returns arrays describing the mappings between of every sub-pixel in the masked data and pixel in
-        the `Rectangular` pixelization.
+        Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
+        and pixel in the `Rectangular` pixelization.
+
+        - `pix_indexes_for_sub_slim_index`: the mapping of every data pixel (given its `sub_slim_index`)
+        to pixelization pixels (given their `pix_indexes`).
+
+        - `pix_sizes_for_sub_slim_index`: the number of mappings of every data pixel to pixelization pixels.
+
+        - `pix_weights_for_sub_slim_index`: the interpolation weights of every data pixel's pixelization
+        pixel mapping
+
+        These are packaged into the class `PixSubWeights` with attributes `mappings`, `sizes` and `weights`.
 
         The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
         for example:
 
         - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular
         pixelization's third (index 2) pixel.
+
         - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular
         pixelization's fifth (index 4) pixel.
 
         The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
-        for cases where a data pixel maps to more than one pixelization pixel (for example a `Delaunay` pixelization
-        where each data pixel maps to 3 Delaunay triangles with interpolation). For a Rectangular pixelizaiton each
-        data sub-pixel maps to a single pixelization pixel, thus this dimension is of size 1.
+        for cases where a data pixel maps to more than one pixelization pixel (for example a `Delaunay` triangulation
+        where each data pixel maps to 3 Delaunay triangles with interpolation weights). The weights of multiple mappings
+        are stored in the array `pix_weights_for_sub_slim_index`.
 
-        For the Rectangular pixelization these mappings are calculated using the uniform properties of the grid
-        (see `grid_2d_util.grid_pixel_indexes_2d_slim_from`).
-
-        Returns an arrays describing the weights of the mappings between of every sub-pixel in the masked data and
-        pixel in the pixelization. Weights are a result of the mappings between data sub-pixels and pixelization
-        pixels using interpolation.
-
-        The `Rectangular` pixelization does not use interpolation therefore all weights are 1.0.
-
-        The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
+        For a Rectangular pixelizaiton each data sub-pixel maps to a single pixelization pixel, thus the second
+        dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
+        are equal to 1.0.
         """
         mappings = grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=self.source_grid_slim,

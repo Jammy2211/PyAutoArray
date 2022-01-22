@@ -477,6 +477,7 @@ class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
 
     This uses uses a natural neighbor interpolation scheme (https://en.wikipedia.org/wiki/Natural_neighbor_interpolation).
     """
+
     @property
     def uses_interpolation(self):
         return True
