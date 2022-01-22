@@ -213,7 +213,7 @@ class TestGrid2DVoronoi:
 
         pix = aa.Grid2DVoronoi(grid=grid)
 
-        assert pix.pixel_areas == pytest.approx(
+        assert pix.voronoi_pixel_areas == pytest.approx(
             np.array(
                 [
                     -0.1372583,
@@ -421,7 +421,7 @@ class TestGrid2DDelaunay:
 
         pix = aa.Grid2DDelaunay(grid=grid)
 
-        assert pix.pixel_areas == pytest.approx(
+        assert pix.voronoi_pixel_areas == pytest.approx(
             np.array(
                 [
                     -0.1372583,

@@ -234,7 +234,7 @@ class Grid2DRectangular(AbstractStructure2D):
         )
 
 
-class AbstractGrid2DIrregular(AbstractStructure2D):
+class AbstractGrid2DMeshTriangulation(AbstractStructure2D):
     def __new__(
         cls,
         grid: Union[np.ndarray, List],
@@ -244,10 +244,22 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
         **kwargs
     ):
         """
-        A grid of (y,x) coordinates which represent a Voronoi pixelization.
+        An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.
 
-        A `Grid2DVoronoi` is ordered arbitrarily, given that there is no regular pattern for a Voronoi mesh's indexing
-        to follow.
+        The input irregular `2D` grid represents both of the following quantities:
+
+        - The corners of the Delaunay triangulles used to construct a Delaunay triangulation.
+        - The centers of a Voronoi pixels used to constract a Voronoi mesh.
+
+        These reflect the closely related geometric properties of the Delaunay and Voronoi grids, whereby the corner
+        points of Delaunay triangles by definition represent the centres of the corresponding Voronoi mesh.
+
+        Different pixelizations, mappers and regularization schemes combine the the Delaunay and Voronoi
+        geometries in different ways to perform an Inversion. Thus, having all geometric methods contained in the
+        single class here is necessary.
+
+        The input `grid` of source pixel centres is ordered arbitrarily, given that there is no regular pattern
+        for a Delaunay triangulation and Voronoi mesh's indexing to follow.
 
         This class is used in conjuction with the `inversion/pixelizations` package to create Voronoi pixelizations
         and mappers that perform an `Inversion`.
@@ -255,7 +267,7 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
         Parameters
         -----------
         grid
-            The grid of (y,x) coordinates corresponding to the centres of each pixel in the Voronoi pixelization.
+            The grid of (y,x) coordinates corresponding to the Delaunay triangle corners and Voronoi pixel centres.
         nearest_pixelization_index_for_slim_index
             When a Voronoi grid is used to create a mapper and inversion, there are mappings between the `data` pixels
             and Voronoi pixelization. This array contains these mappings and it is used to speed up the creation of the
@@ -275,8 +287,8 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
 
     def __array_finalize__(self, obj: object):
         """
-        Ensures that the attribute `nearest_pixelization_index_for_slim_index` which is used to speed up the
-        computation of a mapper from the Voronoi grid is not lost in various calculations.
+        Ensures that the attributes `nearest_pixelization_index_for_slim_index` and `uses_interpolation` are retained
+        when numpy array calculations are performed.
         """
         if hasattr(obj, "nearest_pixelization_index_for_slim_index"):
             self.nearest_pixelization_index_for_slim_index = (
@@ -287,16 +299,35 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
             self.uses_interpolation = obj.uses_interpolation
 
     @cached_property
-    def voronoi(self) -> scipy.spatial.Voronoi:
+    def delaunay(self) -> scipy.spatial.Delaunay:
         """
-        Returns a `scipy.spatial.Voronoi` object from the (y,x) grid of coordinates which correspond to the centre
-        of every cell of the Voronoi pixelization.
+        Returns a `scipy.spatial.Delaunay` object from the 2D (y,x) grid of irregular coordinates, which correspond to
+        the corner of every triangle of a Delaunay triangulation.
 
-        This object contains numerous attributes describing a Voronoi pixelization, however only the `ridge_points`
-        attribute is used by PyAutoArray (see the Scipy documentation for a description of this attribute).
+        This object contains numerous attributes describing a Delaunay triangulation. PyAutoArray uses the `ridge_points`
+        attribute to determine the neighbors of every Voronoi pixel and the `vertices`, `regions` and `point_region`
+        properties to determine the Voronoi pixel areas.
 
         There are numerous exceptions that `scipy.spatial.Voronoi` may raise when the input grid of coordinates used
-        to compute the Voronoi pixelization are ill posed. These exceptions are caught and combined into a single
+        to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
+        `PixelizationException`, which helps exception handling in the `inversion` package.
+        """
+        try:
+            return scipy.spatial.Delaunay(np.asarray([self[:, 0], self[:, 1]]).T)
+        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
+            raise exc.PixelizationException() from e
+
+    @cached_property
+    def voronoi(self) -> scipy.spatial.Voronoi:
+        """
+        Returns a `scipy.spatial.Voronoi` object from the 2D (y,x) grid of irregular coordinates, which correspond to
+        the centre of every Voronoi pixel.
+
+        This object contains numerous attributes describing a Voronoi mesh. PyAutoArray uses
+        the `vertex_neighbor_vertices` attribute to determine the neighbors of every Delaunay triangle.
+
+        There are numerous exceptions that `scipy.spatial.Delaunay` may raise when the input grid of coordinates used
+        to compute the Delaunay triangulation are ill posed. These exceptions are caught and combined into a single
         `PixelizationException`, which helps exception handling in the `inversion` package.
         """
         try:
@@ -307,8 +338,23 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
             raise exc.PixelizationException() from e
 
     @cached_property
-    def split_cross(self):
-        half_region_area_sqrt_lengths = 0.5 * np.sqrt(self.pixel_areas)
+    def split_cross(self) -> np.ndarray:
+        """
+        For every 2d (y,x) coordinate corresponding to a Voronoi pixel centre, this property splits them into a cross
+        of four coordinates in the vertical and horizontal directions. The function therefore returns a irregular
+        2D grid with four times the number of (y,x) coordinates.
+
+        The distance between each centre and the 4 cross points is given by half the square root of its Voronoi
+        pixel area.
+
+        The reason for creating this grid is that the cross points allow one to estimate the gradient of the value of
+        the Voronoi mesh, once the Voronoi pixels have values associated with them (e.g. after using the Voronoi
+        mesh to fit data and perform an `Inversion`).
+
+        The grid returned by this function is used by certain regularization schemes in the `Inversion` module to apply
+        gradient regularization to an `Inversion` using a Delaunay triangulation or Voronoi mesh.
+        """
+        half_region_area_sqrt_lengths = 0.5 * np.sqrt(self.voronoi_pixel_areas)
 
         splitted_array = np.zeros((self.pixels, 4, 2))
 
@@ -327,7 +373,17 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
         return splitted_array.reshape((self.pixels * 4, 2))
 
     @cached_property
-    def pixel_areas(self):
+    def voronoi_pixel_areas(self) -> np.ndarray:
+        """
+        Returns the area of every Voronoi pixel in the Voronoi mesh.
+
+        These areas are used when performing gradient regularization in order to determine the size of the cross of
+        points where the derivative is evaluated and therefore where regularization is evaluated (see `split_cross`).
+
+        Pixels at boundaries can sometimes have large unrealistic areas, in which case we set the maximum area to be
+        90.0% the maximum area of the Voronoi mesh.
+        """
+
         voronoi_vertices = self.voronoi.vertices
         voronoi_regions = self.voronoi.regions
         voronoi_point_region = self.voronoi.point_region
@@ -343,7 +399,6 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
                 )
 
         max_area = np.percentile(region_areas, 90.0)
-        # We set the maximum area to be 90.0 percentile of the areas. Sometimes, pixels at boundaries can have very large unrealistic areas.
 
         region_areas[region_areas == -1] = max_area
         region_areas[region_areas > max_area] = max_area
@@ -417,15 +472,17 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
         )
 
 
-class Grid2DVoronoi(AbstractGrid2DIrregular):
+class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
     @cached_property
     def pixel_neighbors(self) -> PixelNeighbors:
         """
-        A class packing the ndarrays describing the neighbors of every pixel in the Voronoi pixelization (see
-        `PixelNeighbors` for a complete description of the neighboring scheme).
+        Returns a ndarray describing the neighbors of every pixel in a Voronoi mesh, where a neighbor is defined as
+        two Voronoi cells which share an adjacent vertex.
 
-        The neighbors of a Voronoi pixelization are using the `ridge_points` attribute of the scipy `Voronoi` object,
-        as described in the method `pixelization_util.voronoi_neighbors_from`.
+        see `PixelNeighbors` for a complete description of the neighboring scheme.
+
+        The neighbors of a Voronoi pixelization are computed using the `ridge_points` attribute of the scipy `Voronoi`
+        object, as described in the method `pixelization_util.voronoi_neighbors_from`.
         """
         neighbors, sizes = pixelization_util.voronoi_neighbors_from(
             pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
@@ -441,45 +498,18 @@ class Grid2DVoronoi(AbstractGrid2DIrregular):
         return Grid2DVoronoi(grid=grid)
 
 
-class Grid2DDelaunay(AbstractGrid2DIrregular):
-    """
-    Returns the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
-    grid plus a small buffer.
-
-    Parameters
-    -----------
-    grid
-        The (y,x) grid of coordinates which determine the Voronoi pixelization's
-    pixelization_grid
-        The (y,x) centre of every Voronoi pixel in scaleds.
-    origin
-        The scaled origin of the Voronoi pixelization's coordinate system.
-    pixel_neighbors
-        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
-        the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors.sizes
-        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
-        Voronoi grid.
-    """
-
-    @cached_property
-    def delaunay(self) -> scipy.spatial.Delaunay:
-        try:
-            return scipy.spatial.Delaunay(np.asarray([self[:, 0], self[:, 1]]).T)
-        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
-            raise exc.PixelizationException() from e
-
+class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
     @cached_property
     def pixel_neighbors(self) -> PixelNeighbors:
-
-        # neighbors, sizes = pixelization_util.voronoi_neighbors_from(
-        #    pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
-        # )
-
         """
-        see https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.vertex_neighbor_vertices.html#scipy.spatial.Delaunay.vertex_neighbor_vertices
-        """
+        Returns a ndarray describing the neighbors of every pixel in a Delaunay triangulation, where a neighbor is
+        defined as two Delaunay triangles which are directly connected to one another in the triangulation.
 
+        see `PixelNeighbors` for a complete description of the neighboring scheme.
+
+        The neighbors of a Voronoi pixelization are computed using the `ridge_points` attribute of the scipy `Voronoi`
+        object, as described in the method `pixelization_util.voronoi_neighbors_from`.
+        """
         indptr, indices = self.delaunay.vertex_neighbor_vertices
 
         sizes = indptr[1:] - indptr[:-1]
