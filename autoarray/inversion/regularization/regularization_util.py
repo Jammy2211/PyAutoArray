@@ -12,9 +12,21 @@ def reg_split_from(
     splitted_weights: np.ndarray,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    For each source pixel centre which has already been split into a cross of four points (whose size is based on the
-    area of the source pixel) this function applies the weights of each cross, where a weight is given by the distance
-    of each point to the source pixel centre.
+    When creating the regularization matrix of a source pixelization, this function assumes each has already been
+    split into a cross of four points (the size of which is based on the area of the source pixel). This cross of
+    points represents points which together can evaluate the gradient of the pixelization's reconstructed values.
+
+    This functiontakes this cross of points and determines the regularization weights of every point on the cross, so as
+     to construct a regulariaztion matrix based on the gradient of each pixel.
+
+    Because the size of each cross depends on the Voronoi pixel area, this regularization scheme and the weights
+    this function computes depend on the pixel area (they are larger for bigger pixels). This ensures that bigger
+    pixels are regularized more.
+
+    This scheme ensures that the number of pixel neighbors over which regularization is applied is fixed, at
+    4 * the total number of source pixels. This contrasts other regularization schemes, where the number of neighbors
+    changes depending on, for example, the Voronoi mesh geometry. By having a fixed number of neighbors this
+    removes stochasticty in the regularization that is applied to a solution.
 
     There are cases where a grid has over 100 neighbors, corresponding to very coordinate transformations. In such
     extreme cases, we raise a `exc.FitException`.
