@@ -99,16 +99,53 @@ class AbstractMapper(LinearObj):
     @cached_property
     @profile_func
     def pix_indexes_for_sub_slim_index(self) -> np.ndarray:
+        """
+        The mapping of every data pixel (given its `sub_slim_index`) to pixelization pixels (given their `pix_indexes`).
+
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
+        for example:
+
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the pixelization's
+        third (index 2) pixel.
+
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the pixelization's
+        fifth (index 4) pixel.
+        """
         return self.pix_sub_weights.mappings
 
     @cached_property
     @profile_func
     def pix_sizes_for_sub_slim_index(self) -> np.ndarray:
+        """
+        The number of mappings of every data pixel to pixelization pixels.
+
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
+        for example:
+
+        - `pix_sizes_for_sub_slim_index[0] = 2`: The data's first (index 0) sub-pixel maps to 2 pixels in the
+        pixelization.
+
+        - `pix_sizes_for_sub_slim_index[2] = 4`: The data's third (index 2) sub-pixel maps to 4 pixels in the
+        pixelization.
+        """
         return self.pix_sub_weights.sizes
 
     @cached_property
     @profile_func
     def pix_weights_for_sub_slim_index(self) -> np.ndarray:
+        """
+        The interoplation weights of the mapping of every data pixel (given its `sub_slim_index`) to pixelization
+        pixels (given their `pix_indexes`).
+
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
+        for example:
+
+        - `pix_weights_for_sub_slim_index[0, 0] = 0.1`: The data's first (index 0) sub-pixel mapping to the
+        pixelization's third (index 2) pixel has an interpolation weight of 0.1.
+
+        - `pix_weights_for_sub_slim_index[2, 0] = 0.2`: The data's third (index 2) sub-pixel mapping to the
+        pixelization's fifth (index 4) pixel has an interpolation weight of 0.2.
+        """
         return self.pix_sub_weights.weights
 
     @property
