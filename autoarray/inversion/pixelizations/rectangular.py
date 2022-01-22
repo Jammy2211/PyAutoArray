@@ -17,8 +17,9 @@ class Rectangular(AbstractPixelization):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
         A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The rectangular pixelization represents pixels using a uniform rectangular
-        grid.
+        dataset) with a 2D grid of pixels.
+
+        The rectangular pixelization represents pixels using a uniform rectangular grid.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
         have (y,x) coordinates in in two reference frames:
@@ -45,10 +46,13 @@ class Rectangular(AbstractPixelization):
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
-        Each (y,x) coordinate in the `source_grid_slim` is associated with the rectangular pixelization's pixels
-        based on whichever rectangular pixel they fall within. The rectangular grid is uniform, has
-        dimensions (total_y_pixels, total_x_pixels) and has indexing beginning in the top-left corner and going
-        rightwards and downwards.
+        The (y,x) coordinates of the `source_pixelization_grid` represent the centres of each rectangular pixel.
+
+        Each (y,x) coordinate in the `source_grid_slim` is associated with the rectangular pixelization pixel it falls
+        within. No interpolation is performed when making these associations.
+
+        The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
+        in the top-left corner and going rightwards and downwards.
 
         In the project `PyAutoLens`, one's data is a masked 2D image. Its `data_grid_slim` is a 2D grid where every
         (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms

@@ -17,8 +17,9 @@ class Delaunay(AbstractPixelization):
     def __init__(self):
         """
         A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The Delaunay pixelization represents pixels as an irregular 2D grid of
-        Delaunay triangles.
+        dataset) with a 2D grid of pixels.
+
+        The Delaunay pixelization represents pixels as an irregular 2D grid of Delaunay triangles.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay pixelization's pixels)
         have (y,x) coordinates in in two reference frames:
@@ -43,10 +44,12 @@ class Delaunay(AbstractPixelization):
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
+        The (y,x) coordinates of the `source_pixelization_grid` represent the corners of the triangles in the
+        Delaunay triangulation.
+
         Each (y,x) coordinate in the `source_grid_slim` is associated with the three nearest Delaunay triangle
-        corners (when joined together with straight lines these corners form Delaunay triangles). This association
-        uses weighted interpolation whereby `source_grid_slim` coordinates are associated to the Delaunay corners with
-        a higher weight if they are a closer distance to one another.
+        corners. This association uses a weighted interpolation scheme whereby every `source_grid_slim` coordinate is
+        associated to Delaunay triangle corners with a higher weight if they are a closer distance to it.
 
         In the project `PyAutoLens`, one's data is a masked 2D image. Its `data_grid_slim` is a 2D grid where every
         (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms

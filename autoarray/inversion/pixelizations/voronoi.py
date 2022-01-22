@@ -239,8 +239,10 @@ class VoronoiMagnification(Voronoi):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
         A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The Voronoi pixelization represents pixels as an irregular grid of Voronoi
-        cells which can form any shape, size or tesselation.
+        dataset) with a 2D grid of pixels.
+
+        The Voronoi pixelization represents pixels as an irregular grid of Voronoi cells which can form any shape,
+        size or tesselation.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
         have (y,x) coordinates in in two reference frames:
@@ -264,6 +266,9 @@ class VoronoiMagnification(Voronoi):
         `data_pixelization_grid` and `source_pixelization_grid`.
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
+
+        The (y,x) coordinates of the `source_pixelization_grid` represent the centres of the Voronoi pixels on the
+        Voronoi mesh.
 
         Each (y,x) coordinate in the `source_grid_slim` is associated with the Voronoi pixel whose centre is its
         nearest neighbor. Voronoi pixelizations do not use a weighted interpolation scheme (unlike the `Delaunay`)
@@ -447,12 +452,31 @@ class VoronoiBrightnessImage(Voronoi):
 
 
 class VoronoiNNMagnification(VoronoiMagnification):
+    """
+    A full description of this class is given for the class `VoronoiMagnification`.
+
+    The only difference for this class is that when it is used by the `Mapper` to map coordinates from the data
+    frame to source frame it uses interpolation. This means that every pixel in the data is mapped to multiple Voronoi
+    pixels, where these mappings are weighted.
+
+    This uses uses a natural neighbor interpolation scheme (https://en.wikipedia.org/wiki/Natural_neighbor_interpolation).
+    """
+
     @property
     def uses_interpolation(self):
         return True
 
 
 class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
+    """
+    A full description of this class is given for the class `VoronoiBrightnessImage`.
+
+    The only difference for this class is that when it is used by the `Mapper` to map coordinates from the data
+    frame to source frame it uses interpolation. This means that every pixel in the data is mapped to multiple Voronoi
+    pixels, where these mappings are weighted.
+
+    This uses uses a natural neighbor interpolation scheme (https://en.wikipedia.org/wiki/Natural_neighbor_interpolation).
+    """
     @property
     def uses_interpolation(self):
         return True
