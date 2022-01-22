@@ -211,7 +211,9 @@ class Delaunay(AbstractPixelization):
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
 
-        return Grid2DDelaunay(grid=source_pixelization_grid, uses_interpolation=self.uses_interpolation)
+        return Grid2DDelaunay(
+            grid=source_pixelization_grid, uses_interpolation=self.uses_interpolation
+        )
 
 
 class DelaunayMagnification(Delaunay):

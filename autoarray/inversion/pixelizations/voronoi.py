@@ -231,7 +231,7 @@ class Voronoi(AbstractPixelization):
         return Grid2DVoronoi(
             grid=source_pixelization_grid,
             nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
-            uses_interpolation=self.uses_interpolation
+            uses_interpolation=self.uses_interpolation,
         )
 
 
@@ -447,14 +447,12 @@ class VoronoiBrightnessImage(Voronoi):
 
 
 class VoronoiNNMagnification(VoronoiMagnification):
-
     @property
     def uses_interpolation(self):
         return True
 
 
 class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
-
     @property
     def uses_interpolation(self):
         return True

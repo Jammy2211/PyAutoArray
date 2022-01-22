@@ -30,7 +30,6 @@ def mapper_from(
         )
     elif isinstance(source_pixelization_grid, Grid2DVoronoi):
 
-
         if source_pixelization_grid.uses_interpolation:
 
             from autoarray.inversion.mappers.voronoi import MapperVoronoi

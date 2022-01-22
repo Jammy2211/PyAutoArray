@@ -46,7 +46,7 @@ class AbstractMapperVoronoi(AbstractMapper):
 
         The second dimension of this array (where all three examples above are 0) is used for cases where a
         single pixel on the `grid_slim` maps to multiple pixels on the `pixelization_grid`. For example, using a
-        `Delaunay` pixelization, where every `grid_slim` pixel maps to three Delaunay pixels (the corners of the
+        `.dDelaunay` pixelization, where every `grid_slim` pixel maps to three Delaunay pixels (the corners of the
         triangles):
 
         For a `Voronoi` pixelization every pixel in the masked data maps to only one Voronoi pixel, thus the second

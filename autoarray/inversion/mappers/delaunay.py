@@ -83,7 +83,7 @@ class MapperDelaunay(AbstractMapper):
 
     @property
     def delaunay(self):
-        return self.source_pixelization_grid.Delaunay
+        return self.source_pixelization_grid.delaunay
 
     @cached_property
     @profile_func

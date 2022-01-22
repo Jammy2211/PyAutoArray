@@ -239,7 +239,7 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
         cls,
         grid: Union[np.ndarray, List],
         nearest_pixelization_index_for_slim_index: Optional[np.ndarray] = None,
-        uses_interpolation : bool = False,
+        uses_interpolation: bool = False,
         *args,
         **kwargs
     ):
@@ -283,8 +283,8 @@ class AbstractGrid2DIrregular(AbstractStructure2D):
                 obj.nearest_pixelization_index_for_slim_index
             )
 
-
-class Grid2DVoronoi(AbstractGrid2DIrregular):
+        if hasattr(obj, "uses_interpolation"):
+            self.uses_interpolation = obj.uses_interpolation
 
     @cached_property
     def voronoi(self) -> scipy.spatial.Voronoi:
@@ -307,24 +307,8 @@ class Grid2DVoronoi(AbstractGrid2DIrregular):
             raise exc.PixelizationException() from e
 
     @cached_property
-    def pixel_neighbors(self) -> PixelNeighbors:
-        """
-        A class packing the ndarrays describing the neighbors of every pixel in the Voronoi pixelization (see
-        `PixelNeighbors` for a complete description of the neighboring scheme).
-
-        The neighbors of a Voronoi pixelization are using the `ridge_points` attribute of the scipy `Voronoi` object,
-        as described in the method `pixelization_util.voronoi_neighbors_from`.
-        """
-        neighbors, sizes = pixelization_util.voronoi_neighbors_from(
-            pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
-        )
-
-        return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
-
-    @cached_property
     def split_cross(self):
         half_region_area_sqrt_lengths = 0.5 * np.sqrt(self.pixel_areas)
-        # "0.5" is arbitrarily chosen here.
 
         splitted_array = np.zeros((self.pixels, 4, 2))
 
@@ -339,8 +323,6 @@ class Grid2DVoronoi(AbstractGrid2DIrregular):
 
         splitted_array[:, 3][:, 0] = self[:, 0]
         splitted_array[:, 3][:, 1] = self[:, 1] - half_region_area_sqrt_lengths
-
-        # print(splitted_array)
 
         return splitted_array.reshape((self.pixels * 4, 2))
 
@@ -369,6 +351,16 @@ class Grid2DVoronoi(AbstractGrid2DIrregular):
         return region_areas
 
     @property
+    def sub_border_grid(self) -> np.ndarray:
+        """
+        The (y,x) grid of all sub-pixels which are at the border of the mask.
+
+        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
+        within these border pixels which are at the extreme edge of the border.
+        """
+        return self[self.mask.sub_border_flat_indexes]
+
+    @property
     def origin(self) -> Tuple[float, float]:
         """
         The (y,x) origin of the Voronoi grid, which is fixed to (0.0, 0.0) for simplicity.
@@ -381,13 +373,6 @@ class Grid2DVoronoi(AbstractGrid2DIrregular):
         The total number of pixels in the Voronoi pixelization.
         """
         return self.shape[0]
-
-    @classmethod
-    def manual_slim(cls, grid) -> "Grid2DVoronoi":
-        """
-        Convenience method which mimicks the API of other `Grid2D` objects in PyAutoArray.
-        """
-        return Grid2DVoronoi(grid=grid)
 
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
@@ -431,6 +416,31 @@ class Grid2DVoronoi(AbstractGrid2DIrregular):
             ]
         )
 
+
+class Grid2DVoronoi(AbstractGrid2DIrregular):
+    @cached_property
+    def pixel_neighbors(self) -> PixelNeighbors:
+        """
+        A class packing the ndarrays describing the neighbors of every pixel in the Voronoi pixelization (see
+        `PixelNeighbors` for a complete description of the neighboring scheme).
+
+        The neighbors of a Voronoi pixelization are using the `ridge_points` attribute of the scipy `Voronoi` object,
+        as described in the method `pixelization_util.voronoi_neighbors_from`.
+        """
+        neighbors, sizes = pixelization_util.voronoi_neighbors_from(
+            pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
+        )
+
+        return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+
+    @classmethod
+    def manual_slim(cls, grid) -> "Grid2DVoronoi":
+        """
+        Convenience method which mimicks the API of other `Grid2D` objects in PyAutoArray.
+        """
+        return Grid2DVoronoi(grid=grid)
+
+
 class Grid2DDelaunay(AbstractGrid2DIrregular):
     """
     Returns the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
@@ -453,7 +463,7 @@ class Grid2DDelaunay(AbstractGrid2DIrregular):
     """
 
     @cached_property
-    def Delaunay(self) -> scipy.spatial.Delaunay:
+    def delaunay(self) -> scipy.spatial.Delaunay:
         try:
             return scipy.spatial.Delaunay(np.asarray([self[:, 0], self[:, 1]]).T)
         except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
@@ -470,7 +480,7 @@ class Grid2DDelaunay(AbstractGrid2DIrregular):
         see https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.vertex_neighbor_vertices.html#scipy.spatial.Delaunay.vertex_neighbor_vertices
         """
 
-        indptr, indices = self.Delaunay.vertex_neighbor_vertices
+        indptr, indices = self.delaunay.vertex_neighbor_vertices
 
         sizes = indptr[1:] - indptr[:-1]
 
@@ -481,113 +491,6 @@ class Grid2DDelaunay(AbstractGrid2DIrregular):
 
         return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @cached_property
-    def split_cross(self):
-        half_region_area_sqrt_lengths = 0.5 * np.sqrt(self.pixel_areas)
-        # "0.5" is arbitrarily chosen here.
-
-        splitted_array = np.zeros((self.pixels, 4, 2))
-
-        splitted_array[:, 0][:, 0] = self[:, 0] + half_region_area_sqrt_lengths
-        splitted_array[:, 0][:, 1] = self[:, 1]
-
-        splitted_array[:, 1][:, 0] = self[:, 0] - half_region_area_sqrt_lengths
-        splitted_array[:, 1][:, 1] = self[:, 1]
-
-        splitted_array[:, 2][:, 0] = self[:, 0]
-        splitted_array[:, 2][:, 1] = self[:, 1] + half_region_area_sqrt_lengths
-
-        splitted_array[:, 3][:, 0] = self[:, 0]
-        splitted_array[:, 3][:, 1] = self[:, 1] - half_region_area_sqrt_lengths
-
-        # print(splitted_array)
-
-        return splitted_array.reshape((self.pixels * 4, 2))
-
-    @cached_property
-    def pixel_areas(self):
-        """
-        Currently I use a Voronoi structure to compute the pixel areas. So the results here should be exactly the same as Voronoi calculation.
-        """
-
-        try:
-            voronoi = scipy.spatial.Voronoi(
-                np.asarray([self[:, 1], self[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
-            )
-        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
-            raise exc.PixelizationException() from e
-
-        voronoi_vertices = voronoi.vertices
-        voronoi_regions = voronoi.regions
-        voronoi_point_region = voronoi.point_region
-        region_areas = np.zeros(self.pixels)
-
-        for i in range(self.pixels):
-            region_vertices_indexes = voronoi_regions[voronoi_point_region[i]]
-            if -1 in region_vertices_indexes:
-                region_areas[i] = -1
-            else:
-                region_areas[i] = grid_2d_util.compute_polygon_area(
-                    voronoi_vertices[region_vertices_indexes]
-                )
-
-        max_area = np.percentile(region_areas, 90.0)
-
-        region_areas[region_areas == -1] = max_area
-        region_areas[region_areas > max_area] = max_area
-
-        return region_areas
-
-    @property
-    def origin(self) -> Tuple[float, float]:
-        return 0.0, 0.0
-
-    @property
-    def pixels(self) -> int:
-        return self.shape[0]
-
-    @property
-    def sub_border_grid(self) -> np.ndarray:
-        """
-        The (y,x) grid of all sub-pixels which are at the border of the mask.
-
-        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border.
-        """
-        return self[self.mask.sub_border_flat_indexes]
-
     @classmethod
     def manual_slim(cls, grid) -> "Grid2DDelaunay":
         return Grid2DDelaunay(grid=grid)
-
-    @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
-        return (
-            np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
-            np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
-        )
-
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        return (
-            np.amax(self[:, 0]).astype("float"),
-            np.amax(self[:, 1]).astype("float"),
-        )
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        return (
-            np.amin(self[:, 0]).astype("float"),
-            np.amin(self[:, 1]).astype("float"),
-        )
-
-    @property
-    def extent(self) -> np.ndarray:
-        return np.array(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
