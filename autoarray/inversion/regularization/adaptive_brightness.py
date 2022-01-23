@@ -83,7 +83,6 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
         inner_coefficient=1.0,
         outer_coefficient=1.0,
         signal_scale=1.0,
-        if_interpolated=False,
     ):
         """
         An adaptive regularization scheme which splits every source pixel into a cross of four regularization points
@@ -140,7 +139,6 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
         self.inner_coefficient = inner_coefficient
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
-        self.if_interpolated = if_interpolated
 
     def regularization_matrix_from(self, mapper) -> np.ndarray:
 
