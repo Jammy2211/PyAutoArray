@@ -12,21 +12,21 @@ def reg_split_from(
     splitted_weights: np.ndarray,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    When creating the regularization matrix of a source pixelization, this function assumes each has already been
+    When creating the regularization matrix of a source pixelization, this function assumes each source pixel has been
     split into a cross of four points (the size of which is based on the area of the source pixel). This cross of
     points represents points which together can evaluate the gradient of the pixelization's reconstructed values.
 
-    This functiontakes this cross of points and determines the regularization weights of every point on the cross, so as
-     to construct a regulariaztion matrix based on the gradient of each pixel.
+    This function takes each cross of points and determines the regularization weights of every point on the cross,
+    to construct a regulariaztion matrix based on the gradient of each pixel.
 
-    Because the size of each cross depends on the Voronoi pixel area, this regularization scheme and the weights
-    this function computes depend on the pixel area (they are larger for bigger pixels). This ensures that bigger
-    pixels are regularized more.
+    The size of each cross depends on the Voronoi pixel area, thus this regularization scheme and its weights depend
+    on the pixel area (there are larger weights for bigger pixels). This ensures that bigger pixels are regularized
+    more.
 
-    This scheme ensures that the number of pixel neighbors over which regularization is applied is fixed, at
-    4 * the total number of source pixels. This contrasts other regularization schemes, where the number of neighbors
-    changes depending on, for example, the Voronoi mesh geometry. By having a fixed number of neighbors this
-    removes stochasticty in the regularization that is applied to a solution.
+    The number of pixel neighbors over which regularization is 4 * the total number of source pixels. This contrasts
+    other regularization schemes, where the number of neighbors changes depending on, for example, the Voronoi mesh
+    geometry. By having a fixed number of neighbors this removes stochasticty in the regularization that is applied
+    to a solution.
 
     There are cases where a grid has over 100 neighbors, corresponding to very coordinate transformations. In such
     extreme cases, we raise a `exc.FitException`.
@@ -132,17 +132,17 @@ def constant_pixel_splitted_regularization_matrix_from(
 
             k = i * 4 + j
 
-            temp_size = splitted_sizes[k]
-            temp_mapping = splitted_mappings[k]
-            temp_weight = splitted_weights[k]
+            size = splitted_sizes[k]
+            mapping = splitted_mappings[k]
+            weight = splitted_weights[k]
 
-            for l in range(temp_size):
-                for m in range(temp_size - l):
-                    regularization_matrix[temp_mapping[l], temp_mapping[l + m]] += (
-                        temp_weight[l] * temp_weight[l + m] * regularization_coefficient
+            for l in range(size):
+                for m in range(size - l):
+                    regularization_matrix[mapping[l], mapping[l + m]] += (
+                        weight[l] * weight[l + m] * regularization_coefficient
                     )
-                    regularization_matrix[temp_mapping[l + m], temp_mapping[l]] += (
-                        temp_weight[l] * temp_weight[l + m] * regularization_coefficient
+                    regularization_matrix[mapping[l + m], mapping[l]] += (
+                        weight[l] * weight[l + m] * regularization_coefficient
                     )
 
     for i in range(pixels):
@@ -234,7 +234,7 @@ def weighted_regularization_matrix_from(
     return regularization_matrix
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def weighted_pixel_splitted_regularization_matrix_from(
     regularization_weights: np.ndarray,
     splitted_mappings,
@@ -260,17 +260,17 @@ def weighted_pixel_splitted_regularization_matrix_from(
 
             k = i * 4 + j
 
-            temp_size = splitted_sizes[k]
-            temp_mapping = splitted_mappings[k]
-            temp_weight = splitted_weights[k]
+            size = splitted_sizes[k]
+            mapping = splitted_mappings[k]
+            weight = splitted_weights[k]
 
-            for l in range(temp_size):
-                for m in range(temp_size - l):
-                    regularization_matrix[temp_mapping[l], temp_mapping[l + m]] += (
-                        temp_weight[l] * temp_weight[l + m] * regularization_weight[i]
+            for l in range(size):
+                for m in range(size - l):
+                    regularization_matrix[mapping[l], mapping[l + m]] += (
+                        weight[l] * weight[l + m] * regularization_weight[i]
                     )
-                    regularization_matrix[temp_mapping[l + m], temp_mapping[l]] += (
-                        temp_weight[l] * temp_weight[l + m] * regularization_weight[i]
+                    regularization_matrix[mapping[l + m], mapping[l]] += (
+                        weight[l] * weight[l + m] * regularization_weight[i]
                     )
 
     for i in range(pixels):
