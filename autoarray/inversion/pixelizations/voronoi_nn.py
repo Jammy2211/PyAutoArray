@@ -1,8 +1,6 @@
 from autoarray.inversion.pixelizations.voronoi import VoronoiMagnification
 from autoarray.inversion.pixelizations.voronoi import VoronoiBrightnessImage
 
-from autoarray.numba_util import profile_func
-
 
 class VoronoiNNMagnification(VoronoiMagnification):
     """
@@ -33,4 +31,8 @@ class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
 
     @property
     def uses_interpolation(self):
+        return True
+
+    @property
+    def is_stochastic(self) -> bool:
         return True

@@ -117,6 +117,10 @@ class AbstractPixelization:
 
         raise NotImplementedError()
 
+    @property
+    def is_stochastic(self):
+        return False
+
     def __str__(self):
         return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
 

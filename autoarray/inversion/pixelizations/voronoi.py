@@ -487,3 +487,7 @@ class VoronoiNNBrightnessImagePlaceholdder(VoronoiBrightnessImage):
     @property
     def uses_interpolation(self):
         return True
+
+    @property
+    def is_stochastic(self) -> bool:
+        return True

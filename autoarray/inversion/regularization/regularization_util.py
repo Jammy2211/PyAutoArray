@@ -4,6 +4,7 @@ from typing import Tuple
 from autoarray import exc
 from autoarray import numba_util
 
+
 @numba_util.jit()
 def constant_regularization_matrix_from(
     coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_sizes: np.ndarray

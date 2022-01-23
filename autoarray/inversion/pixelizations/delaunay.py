@@ -429,3 +429,7 @@ class DelaunayBrightnessImage(Delaunay):
             seed=settings.kmeans_seed,
             stochastic=settings.is_stochastic,
         )
+
+    @property
+    def is_stochastic(self) -> bool:
+        return True
