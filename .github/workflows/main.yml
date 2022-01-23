@@ -37,15 +37,11 @@ jobs:
         pip3 install -r PyAutoArray/optional_requirements.txt
 
         cd PyAutoArray/autoarray/util/nn/src/nn
-        pwd
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/runner/work/PyAutoArray/PyAutoArray/autoarray/util/nn/src/nn
-        $LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/runner/work/PyAutoArray/PyAutoArray/PyAutoArray/autoarray/util/nn/src/nn
         bash ./configure
         cp makefile_autolens makefile
         make
-        cd /home/runner/work/PyAutoArray
-        pwd
-        stop
+        cd /home/runner/work/PyAutoArray/PyAutoArray
 
     - name: Extract branch name
       shell: bash
