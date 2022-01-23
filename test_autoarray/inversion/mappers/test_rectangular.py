@@ -41,8 +41,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     ).T
 
     assert (
-        mapper.pix_indexes_for_sub_slim_index.mappings
-        == pix_indexes_for_sub_slim_index_util
+        mapper.pix_indexes_for_sub_slim_index == pix_indexes_for_sub_slim_index_util
     ).all()
 
 
@@ -63,8 +62,8 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
     pixel_signals_util = aa.util.mapper.adaptive_pixel_signals_from(
         pixels=9,
         signal_scale=2.0,
-        pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index.mappings,
-        pix_size_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index.sizes,
+        pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
+        pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
         pixel_weights=mapper.pix_weights_for_sub_slim_index,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
         hyper_image=image_7x7,

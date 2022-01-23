@@ -213,18 +213,18 @@ class TestGrid2DVoronoi:
 
         pix = aa.Grid2DVoronoi(grid=grid)
 
-        assert pix.pixel_areas == pytest.approx(
+        assert pix.voronoi_pixel_areas == pytest.approx(
             np.array(
                 [
-                    -1,
-                    -1,
-                    1.0 * np.tan(22.5 / 180.0 * np.pi) * 0.5 * 16.0,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
                 ]
             ),
             1e-6,
@@ -421,18 +421,19 @@ class TestGrid2DDelaunay:
 
         pix = aa.Grid2DDelaunay(grid=grid)
 
-        assert pix.pixel_areas == pytest.approx(
+        assert pix.voronoi_pixel_areas == pytest.approx(
             np.array(
                 [
-                    -1,
-                    -1,
-                    1.0 * np.tan(22.5 / 180.0 * np.pi) * 0.5 * 16.0,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
+                    -0.1372583,
+                    -0.1372583,
+                    # 1.0 * np.tan(22.5 / 180.0 * np.pi) * 0.5 * 16.0,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
+                    -0.1372583,
                 ]
             ),
             1e-6,

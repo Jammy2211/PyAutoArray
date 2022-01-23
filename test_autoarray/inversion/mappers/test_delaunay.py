@@ -32,13 +32,12 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     sizes = sizes.astype("int")
 
     assert (
-        mapper.pix_indexes_for_sub_slim_index.mappings
-        == pix_indexes_for_sub_slim_index_util
+        mapper.pix_indexes_for_sub_slim_index == pix_indexes_for_sub_slim_index_util
     ).all()
-    assert (mapper.pix_indexes_for_sub_slim_index.sizes == sizes).all()
+    assert (mapper.pix_sizes_for_sub_slim_index == sizes).all()
 
     assert (
-        mapper.pix_indexes_for_sub_slim_index.mappings
+        mapper.pix_indexes_for_sub_slim_index
         == np.array(
             [
                 [0, -1, -1],
@@ -55,6 +54,5 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     ).all()
 
     assert (
-        mapper.pix_indexes_for_sub_slim_index.sizes
-        == np.array([1, 1, 3, 1, 1, 1, 1, 1, 1])
+        mapper.pix_sizes_for_sub_slim_index == np.array([1, 1, 3, 1, 1, 1, 1, 1, 1])
     ).all()

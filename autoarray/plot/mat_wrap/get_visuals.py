@@ -6,8 +6,8 @@ from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
 from autoarray.fit.fit_dataset import FitImaging
-from autoarray.inversion.mappers.rectangular import MapperRectangular
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
@@ -225,7 +225,7 @@ class GetVisuals2D(AbstractGetVisuals):
         return self.visuals + self.visuals.__class__(origin=origin)
 
     def via_mapper_for_data_from(
-        self, mapper: Union[MapperRectangular, MapperVoronoi]
+        self, mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp]
     ) -> Visuals2D:
         """
         From a `Mapper` get its attributes that can be plotted in the mapper's data-plane  (e.g. the reconstructed
@@ -267,7 +267,7 @@ class GetVisuals2D(AbstractGetVisuals):
         )
 
     def via_mapper_for_source_from(
-        self, mapper: Union[MapperRectangular, MapperVoronoi]
+        self, mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp]
     ) -> Visuals2D:
         """
         From a `Mapper` get its attributes that can be plotted in the mapper's source-plane  (e.g. the reconstruction)

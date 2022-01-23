@@ -8,10 +8,10 @@ from typing import Iterable, Optional, List, Union
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.voronoi_nn import MapperVoronoiNN
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
@@ -68,7 +68,7 @@ class AbstractMatPlot:
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `MapperVoronoi`: using `plt.fill`.
+        - `MapperVoronoiNoInterp`: using `plt.fill`.
         
         Parameters
         ----------
@@ -462,7 +462,7 @@ class MatPlot2D(AbstractMatPlot):
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `MapperVoronoi`: using `plt.fill`.
+        - `MapperVoronoiNoInterp`: using `plt.fill`.
 
         Parameters
         ----------
@@ -786,13 +786,13 @@ class MatPlot2D(AbstractMatPlot):
 
     def plot_mapper(
         self,
-        mapper: Union[MapperRectangular, MapperVoronoi],
+        mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp],
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
     ):
 
-        if isinstance(mapper, MapperRectangular):
+        if isinstance(mapper, MapperRectangularNoInterp):
 
             self._plot_rectangular_mapper(
                 mapper=mapper,
@@ -808,7 +808,7 @@ class MatPlot2D(AbstractMatPlot):
                 auto_labels=auto_labels,
                 source_pixelilzation_values=source_pixelilzation_values,
             )
-        elif isinstance(mapper, MapperVoronoiNN):
+        elif isinstance(mapper, MapperVoronoi):
             self._plot_voronoiNN_mapper(
                 mapper=mapper,
                 visuals_2d=visuals_2d,
@@ -826,7 +826,7 @@ class MatPlot2D(AbstractMatPlot):
 
     def _plot_rectangular_mapper(
         self,
-        mapper: MapperRectangular,
+        mapper: MapperRectangularNoInterp,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
@@ -900,7 +900,7 @@ class MatPlot2D(AbstractMatPlot):
 
     def _plot_voronoi_mapper(
         self,
-        mapper: MapperVoronoi,
+        mapper: MapperVoronoiNoInterp,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,

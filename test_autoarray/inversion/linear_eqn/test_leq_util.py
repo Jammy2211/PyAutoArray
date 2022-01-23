@@ -296,8 +296,8 @@ class TestDataVectorFromData:
 
             data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
                 data_pixels=w_tilde_data.shape[0],
-                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index.mappings,
-                pix_indexes_for_sub_slim_sizes=mapper.pix_indexes_for_sub_slim_index.sizes,
+                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
+                pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
                 pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
                 sub_size=sub_size,
             )
@@ -531,8 +531,8 @@ class TestCurvatureMatrixImaging:
 
             data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
                 data_pixels=w_tilde_lengths.shape[0],
-                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index.mappings,
-                pix_indexes_for_sub_slim_sizes=mapper.pix_indexes_for_sub_slim_index.sizes,
+                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
+                pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
                 pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
                 sub_size=sub_size,
             )
@@ -594,7 +594,7 @@ class TestMappedReconstructedDataFrom:
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=3,
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-            pix_indexes_for_sub_slim_sizes=pix_indexes_for_sub_slim_index_sizes,
+            pix_sizes_for_sub_slim_index=pix_indexes_for_sub_slim_index_sizes,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=1,
         )
@@ -619,7 +619,7 @@ class TestMappedReconstructedDataFrom:
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=3,
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-            pix_indexes_for_sub_slim_sizes=pix_indexes_for_sub_slim_index_sizes,
+            pix_sizes_for_sub_slim_index=pix_indexes_for_sub_slim_index_sizes,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=2,
         )

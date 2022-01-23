@@ -318,7 +318,7 @@ class TestDataToPixUnique:
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=image_pixels,
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-            pix_indexes_for_sub_slim_sizes=pix_size_for_sub_slim_index,
+            pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=sub_size,
         )
@@ -349,7 +349,7 @@ class TestDataToPixUnique:
         data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=image_pixels,
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-            pix_indexes_for_sub_slim_sizes=pix_size_for_sub_slim_index,
+            pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
             pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
             sub_size=sub_size,
         )
@@ -486,8 +486,7 @@ class TestPixelizationIndexesVoronoi:
         )
 
         assert (
-            mapper.pix_indexes_for_sub_slim_index.mappings
-            == sub_to_pix_nearest_neighbour
+            mapper.pix_indexes_for_sub_slim_index == sub_to_pix_nearest_neighbour
         ).all()
 
 

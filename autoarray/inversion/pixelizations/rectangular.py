@@ -7,7 +7,7 @@ from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DRectangu
 from autoarray.preloads import Preloads
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.pixelizations.settings import SettingsPixelization
-from autoarray.inversion.mappers.rectangular import MapperRectangular
+from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 
 from autoarray import exc
 from autoarray.numba_util import profile_func
@@ -17,8 +17,9 @@ class Rectangular(AbstractPixelization):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
         A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The rectangular pixelization represents pixels using a uniform rectangular
-        grid.
+        dataset) with a 2D grid of pixels.
+
+        The rectangular pixelization represents pixels using a uniform rectangular grid.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
         have (y,x) coordinates in in two reference frames:
@@ -45,10 +46,13 @@ class Rectangular(AbstractPixelization):
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
-        Each (y,x) coordinate in the `source_grid_slim` is associated with the rectangular pixelization's pixels
-        based on whichever rectangular pixel they fall within. The rectangular grid is uniform, has
-        dimensions (total_y_pixels, total_x_pixels) and has indexing beginning in the top-left corner and going
-        rightwards and downwards.
+        The (y,x) coordinates of the `source_pixelization_grid` represent the centres of each rectangular pixel.
+
+        Each (y,x) coordinate in the `source_grid_slim` is associated with the rectangular pixelization pixel it falls
+        within. No interpolation is performed when making these associations.
+
+        The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
+        in the top-left corner and going rightwards and downwards.
 
         In the project `PyAutoLens`, one's data is a masked 2D image. Its `data_grid_slim` is a 2D grid where every
         (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
@@ -71,6 +75,10 @@ class Rectangular(AbstractPixelization):
         self.pixels = self.shape[0] * self.shape[1]
         super().__init__()
 
+    @property
+    def uses_interpolation(self):
+        return False
+
     def mapper_from(
         self,
         source_grid_slim: Grid2D,
@@ -80,12 +88,12 @@ class Rectangular(AbstractPixelization):
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
-    ) -> MapperRectangular:
+    ) -> MapperRectangularNoInterp:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
         in both the `data` and `source` frames.
 
-        This function returns a `MapperRectangular` as follows:
+        This function returns a `MapperRectangularNoInterp` as follows:
 
         1) If `settings.use_border=True`, the border of the input `source_grid_slim` is used to relocate all of the
         grid's (y,x) coordinates beyond the border to the edge of the border.
@@ -94,7 +102,7 @@ class Rectangular(AbstractPixelization):
         over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_grid_slim` if step 1
         is bypassed).
 
-        3) Return the `MapperRectangular`.
+        3) Return the `MapperRectangularNoInterp`.
 
         Parameters
         ----------
@@ -124,7 +132,7 @@ class Rectangular(AbstractPixelization):
         )
         pixelization_grid = self.pixelization_grid_from(source_grid_slim=relocated_grid)
 
-        return MapperRectangular(
+        return MapperRectangularNoInterp(
             source_grid_slim=relocated_grid,
             source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,

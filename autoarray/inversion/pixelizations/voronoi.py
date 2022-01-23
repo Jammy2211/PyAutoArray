@@ -8,6 +8,7 @@ from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from autoarray.preloads import Preloads
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.pixelizations.settings import SettingsPixelization
+from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 
 from autoarray.numba_util import profile_func
@@ -69,7 +70,7 @@ class Voronoi(AbstractPixelization):
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
         in both the `data` and `source` frames.
 
-        This function returns a `MapperVoronoi` as follows:
+        This function returns a `MapperVoronoiNoInterp` as follows:
 
         1) Before this routine is called, a sparse grid of (y,x) coordinates are computed from the 2D masked data,
         the `data_pixelization_grid`, which acts as the Voronoi pixel centres of the pixelization and mapper.
@@ -87,7 +88,7 @@ class Voronoi(AbstractPixelization):
         5) Use the transformed `source_pixelization_grid`'s (y,x) coordinates as the centres of the Voronoi
         pixelization.
 
-        6) Return the `MapperVoronoi`.
+        6) Return the `MapperVoronoiNoInterp`.
 
         Parameters
         ----------
@@ -130,6 +131,22 @@ class Voronoi(AbstractPixelization):
                 source_pixelization_grid=relocated_source_pixelization_grid,
                 sparse_index_for_slim_index=source_pixelization_grid.sparse_index_for_slim_index,
             )
+        except ValueError as e:
+            raise e
+
+        if isinstance(self, VoronoiMagnification) or isinstance(
+            self, VoronoiBrightnessImage
+        ):
+
+            return MapperVoronoiNoInterp(
+                source_grid_slim=relocated_source_grid_slim,
+                source_pixelization_grid=source_pixelization_grid,
+                data_pixelization_grid=data_pixelization_grid,
+                hyper_image=hyper_image,
+                profiling_dict=profiling_dict,
+            )
+
+        else:
 
             return MapperVoronoi(
                 source_grid_slim=relocated_source_grid_slim,
@@ -139,8 +156,9 @@ class Voronoi(AbstractPixelization):
                 profiling_dict=profiling_dict,
             )
 
-        except ValueError as e:
-            raise e
+    @property
+    def uses_interpolation(self):
+        return False
 
     @profile_func
     def relocated_pixelization_grid_from(
@@ -213,6 +231,7 @@ class Voronoi(AbstractPixelization):
         return Grid2DVoronoi(
             grid=source_pixelization_grid,
             nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
+            uses_interpolation=self.uses_interpolation,
         )
 
 
@@ -220,8 +239,10 @@ class VoronoiMagnification(Voronoi):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
         A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The Voronoi pixelization represents pixels as an irregular grid of Voronoi
-        cells which can form any shape, size or tesselation.
+        dataset) with a 2D grid of pixels.
+
+        The Voronoi pixelization represents pixels as an irregular grid of Voronoi cells which can form any shape,
+        size or tesselation.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
         have (y,x) coordinates in in two reference frames:
@@ -245,6 +266,9 @@ class VoronoiMagnification(Voronoi):
         `data_pixelization_grid` and `source_pixelization_grid`.
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
+
+        The (y,x) coordinates of the `source_pixelization_grid` represent the centres of the Voronoi pixels on the
+        Voronoi mesh.
 
         Each (y,x) coordinate in the `source_grid_slim` is associated with the Voronoi pixel whose centre is its
         nearest neighbor. Voronoi pixelizations do not use a weighted interpolation scheme (unlike the `Delaunay`)
@@ -425,3 +449,35 @@ class VoronoiBrightnessImage(Voronoi):
             seed=settings.kmeans_seed,
             stochastic=settings.is_stochastic,
         )
+
+
+class VoronoiNNMagnification(VoronoiMagnification):
+    """
+    A full description of this class is given for the class `VoronoiMagnification`.
+
+    The only difference for this class is that when it is used by the `Mapper` to map coordinates from the data
+    frame to source frame it uses interpolation. This means that every pixel in the data is mapped to multiple Voronoi
+    pixels, where these mappings are weighted.
+
+    This uses uses a natural neighbor interpolation scheme (https://en.wikipedia.org/wiki/Natural_neighbor_interpolation).
+    """
+
+    @property
+    def uses_interpolation(self):
+        return True
+
+
+class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
+    """
+    A full description of this class is given for the class `VoronoiBrightnessImage`.
+
+    The only difference for this class is that when it is used by the `Mapper` to map coordinates from the data
+    frame to source frame it uses interpolation. This means that every pixel in the data is mapped to multiple Voronoi
+    pixels, where these mappings are weighted.
+
+    This uses uses a natural neighbor interpolation scheme (https://en.wikipedia.org/wiki/Natural_neighbor_interpolation).
+    """
+
+    @property
+    def uses_interpolation(self):
+        return True

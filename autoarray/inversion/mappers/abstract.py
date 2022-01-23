@@ -93,17 +93,64 @@ class AbstractMapper(LinearObj):
         return self.source_pixelization_grid.pixels
 
     @property
-    def slim_index_for_sub_slim_index(self) -> np.ndarray:
-        return self.source_grid_slim.mask.slim_index_for_sub_slim_index
-
-    @property
-    def pix_indexes_for_sub_slim_index(self) -> "PixForSub":
+    def pix_sub_weights(self) -> "PixSubWeights":
         raise NotImplementedError
 
     @cached_property
     @profile_func
+    def pix_indexes_for_sub_slim_index(self) -> np.ndarray:
+        """
+        The mapping of every data pixel (given its `sub_slim_index`) to pixelization pixels (given their `pix_indexes`).
+
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
+        for example:
+
+        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the pixelization's
+        third (index 2) pixel.
+
+        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the pixelization's
+        fifth (index 4) pixel.
+        """
+        return self.pix_sub_weights.mappings
+
+    @cached_property
+    @profile_func
+    def pix_sizes_for_sub_slim_index(self) -> np.ndarray:
+        """
+        The number of mappings of every data pixel to pixelization pixels.
+
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
+        for example:
+
+        - `pix_sizes_for_sub_slim_index[0] = 2`: The data's first (index 0) sub-pixel maps to 2 pixels in the
+        pixelization.
+
+        - `pix_sizes_for_sub_slim_index[2] = 4`: The data's third (index 2) sub-pixel maps to 4 pixels in the
+        pixelization.
+        """
+        return self.pix_sub_weights.sizes
+
+    @cached_property
+    @profile_func
     def pix_weights_for_sub_slim_index(self) -> np.ndarray:
-        raise NotImplementedError
+        """
+        The interoplation weights of the mapping of every data pixel (given its `sub_slim_index`) to pixelization
+        pixels (given their `pix_indexes`).
+
+        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
+        for example:
+
+        - `pix_weights_for_sub_slim_index[0, 0] = 0.1`: The data's first (index 0) sub-pixel mapping to the
+        pixelization's third (index 2) pixel has an interpolation weight of 0.1.
+
+        - `pix_weights_for_sub_slim_index[2, 0] = 0.2`: The data's third (index 2) sub-pixel mapping to the
+        pixelization's fifth (index 4) pixel has an interpolation weight of 0.2.
+        """
+        return self.pix_sub_weights.weights
+
+    @property
+    def slim_index_for_sub_slim_index(self) -> np.ndarray:
+        return self.source_grid_slim.mask.slim_index_for_sub_slim_index
 
     @property
     def sub_slim_indexes_for_pix_index(self) -> List[List]:
@@ -120,8 +167,8 @@ class AbstractMapper(LinearObj):
         """
         sub_slim_indexes_for_pix_index = [[] for _ in range(self.pixels)]
 
-        pix_indexes_for_sub_slim_index = self.pix_indexes_for_sub_slim_index.mappings
-        sizes = self.pix_indexes_for_sub_slim_index.sizes
+        pix_indexes_for_sub_slim_index = self.pix_indexes_for_sub_slim_index
+        sizes = self.pix_sizes_for_sub_slim_index
 
         for slim_index, pix_index in enumerate(pix_indexes_for_sub_slim_index):
             for k in range(sizes[slim_index]):
@@ -150,8 +197,8 @@ class AbstractMapper(LinearObj):
             pix_lengths,
         ) = mapper_util.data_slim_to_pixelization_unique_from(
             data_pixels=self.source_grid_slim.shape_slim,
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
-            pix_indexes_for_sub_slim_sizes=self.pix_indexes_for_sub_slim_index.sizes,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
+            pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             sub_size=self.source_grid_slim.sub_size,
         )
@@ -176,8 +223,8 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
             total_mask_sub_pixels=self.source_grid_slim.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
-            pix_size_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.sizes,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
+            pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )
 
@@ -198,8 +245,8 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
             signal_scale=signal_scale,
             pixel_weights=self.pix_weights_for_sub_slim_index,
-            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.mappings,
-            pix_size_for_sub_slim_index=self.pix_indexes_for_sub_slim_index.sizes,
+            pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
+            pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             hyper_image=self.hyper_image,
         )
@@ -230,18 +277,21 @@ class AbstractMapper(LinearObj):
             return indexes
 
 
-class PixForSub:
-    def __init__(self, mappings: np.ndarray, sizes: np.ndarray):
+class PixSubWeights:
+    def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):
         """
-        Packages the following two quantities of the ndarray `pix_indexes_for_sub_slim_index`:
+        Packages the following three quantities of a mapper:
 
-        - `mappings`: the mapping of every `sub_slim_index` to the `pix_indexes`.
-        - `sizes`: the number of `pix_indexes` each `sub_slim_index` maps too.
+        - `mappings` (`pix_indexes_for_sub_slim_index`): the mapping of every data pixel (given its `sub_slim_index`)
+        to pixelization pixels (given their `pix_indexes`).
+
+        - `sizes`(`pix_sizes_for_sub_slim_index`): the number of mappings of every data pixel to pixelization pixels.
+
+        - `weights` (`pix_weights_for_sub_slim_index`): the interpolation weights of every data pixel's pixelization
+        pixel mapping
 
         The need to store separately the mappings and sizes is so that the `sizes` can be easy iterated over when
         perform calculations for efficiency.
-
-        See the mapper properties `pix_indexes_for_sub_slim_index()` for a description of the mappings array.
 
         Parameters
         ----------
@@ -252,3 +302,4 @@ class PixForSub:
         """
         self.mappings = mappings
         self.sizes = sizes
+        self.weights = weights
