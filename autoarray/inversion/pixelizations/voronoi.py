@@ -450,6 +450,9 @@ class VoronoiBrightnessImage(Voronoi):
             stochastic=settings.is_stochastic,
         )
 
+    @property
+    def is_stochastic(self) -> bool:
+        return True
 
 class VoronoiNNMagnificationPlaceholder(VoronoiMagnification):
     """
