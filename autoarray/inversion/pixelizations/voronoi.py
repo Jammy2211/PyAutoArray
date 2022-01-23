@@ -134,19 +134,7 @@ class Voronoi(AbstractPixelization):
         except ValueError as e:
             raise e
 
-        if isinstance(self, VoronoiMagnification) or isinstance(
-            self, VoronoiBrightnessImage
-        ):
-
-            return MapperVoronoiNoInterp(
-                source_grid_slim=relocated_source_grid_slim,
-                source_pixelization_grid=source_pixelization_grid,
-                data_pixelization_grid=data_pixelization_grid,
-                hyper_image=hyper_image,
-                profiling_dict=profiling_dict,
-            )
-
-        else:
+        if self.uses_interpolation:
 
             return MapperVoronoi(
                 source_grid_slim=relocated_source_grid_slim,
@@ -155,6 +143,14 @@ class Voronoi(AbstractPixelization):
                 hyper_image=hyper_image,
                 profiling_dict=profiling_dict,
             )
+
+        return MapperVoronoiNoInterp(
+            source_grid_slim=relocated_source_grid_slim,
+            source_pixelization_grid=source_pixelization_grid,
+            data_pixelization_grid=data_pixelization_grid,
+            hyper_image=hyper_image,
+            profiling_dict=profiling_dict,
+        )
 
     @property
     def uses_interpolation(self):
@@ -453,6 +449,7 @@ class VoronoiBrightnessImage(Voronoi):
     @property
     def is_stochastic(self) -> bool:
         return True
+
 
 class VoronoiNNMagnificationPlaceholder(VoronoiMagnification):
     """

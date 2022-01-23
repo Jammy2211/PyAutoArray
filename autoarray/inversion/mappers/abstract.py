@@ -97,7 +97,6 @@ class AbstractMapper(LinearObj):
         raise NotImplementedError
 
     @cached_property
-    @profile_func
     def pix_indexes_for_sub_slim_index(self) -> np.ndarray:
         """
         The mapping of every data pixel (given its `sub_slim_index`) to pixelization pixels (given their `pix_indexes`).
@@ -114,7 +113,6 @@ class AbstractMapper(LinearObj):
         return self.pix_sub_weights.mappings
 
     @cached_property
-    @profile_func
     def pix_sizes_for_sub_slim_index(self) -> np.ndarray:
         """
         The number of mappings of every data pixel to pixelization pixels.
@@ -131,7 +129,6 @@ class AbstractMapper(LinearObj):
         return self.pix_sub_weights.sizes
 
     @cached_property
-    @profile_func
     def pix_weights_for_sub_slim_index(self) -> np.ndarray:
         """
         The interoplation weights of the mapping of every data pixel (given its `sub_slim_index`) to pixelization
