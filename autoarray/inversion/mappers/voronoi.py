@@ -86,11 +86,7 @@ class AbstractMapperVoronoi(AbstractMapper):
 
     @property
     def pix_sub_weights_split_cross(self) -> PixSubWeights:
-        (
-            mappings,
-            sizes,
-            weights,
-        ) = mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+        (mappings, sizes, weights) = mapper_util.pix_size_weights_voronoi_nn_from(
             grid=self.source_pixelization_grid.split_cross,
             pixelization_grid=self.source_pixelization_grid,
         )
@@ -196,7 +192,7 @@ class MapperVoronoi(AbstractMapperVoronoi):
 
         The interpolation weights of these multiple mappings are stored in the array `pix_weights_for_sub_slim_index`.
         """
-        mappings, sizes, weights = mapper_util.pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+        mappings, sizes, weights = mapper_util.pix_size_weights_voronoi_nn_from(
             grid=self.source_grid_slim, pixelization_grid=self.source_pixelization_grid
         )
 

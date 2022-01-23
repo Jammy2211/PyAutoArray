@@ -6,69 +6,6 @@ from autoarray import numba_util
 from autofit import exc
 
 
-def reg_split_from(
-    splitted_mappings: np.ndarray,
-    splitted_sizes: np.ndarray,
-    splitted_weights: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    When creating the regularization matrix of a source pixelization, this function assumes each source pixel has been
-    split into a cross of four points (the size of which is based on the area of the source pixel). This cross of
-    points represents points which together can evaluate the gradient of the pixelization's reconstructed values.
-
-    This function takes each cross of points and determines the regularization weights of every point on the cross,
-    to construct a regulariaztion matrix based on the gradient of each pixel.
-
-    The size of each cross depends on the Voronoi pixel area, thus this regularization scheme and its weights depend
-    on the pixel area (there are larger weights for bigger pixels). This ensures that bigger pixels are regularized
-    more.
-
-    The number of pixel neighbors over which regularization is 4 * the total number of source pixels. This contrasts
-    other regularization schemes, where the number of neighbors changes depending on, for example, the Voronoi mesh
-    geometry. By having a fixed number of neighbors this removes stochasticty in the regularization that is applied
-    to a solution.
-
-    There are cases where a grid has over 100 neighbors, corresponding to very coordinate transformations. In such
-    extreme cases, we raise a `exc.FitException`.
-
-    Parameters
-    ----------
-    splitted_mappings
-    splitted_sizes
-    splitted_weights
-
-    Returns
-    -------
-
-    """
-
-    max_j = np.shape(splitted_weights)[1] - 1
-
-    splitted_weights *= -1.0
-
-    for i in range(len(splitted_mappings)):
-
-        pixel_index = i // 4
-
-        flag = 0
-
-        for j in range(splitted_sizes[i]):
-
-            if splitted_mappings[i][j] == pixel_index:
-                splitted_weights[i][j] += 1.0
-                flag = 1
-
-            if j >= max_j:
-                raise exc.FitException("neighbours exceeds!")
-
-        if flag == 0:
-            splitted_mappings[i][j + 1] = pixel_index
-            splitted_sizes[i] += 1
-            splitted_weights[i][j + 1] = 1.0
-
-    return splitted_mappings, splitted_sizes, splitted_weights
-
-
 @numba_util.jit()
 def constant_regularization_matrix_from(
     coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_sizes: np.ndarray
@@ -109,44 +46,6 @@ def constant_regularization_matrix_from(
             neighbor_index = pixel_neighbors[i, j]
             regularization_matrix[i, i] += regularization_coefficient
             regularization_matrix[i, neighbor_index] -= regularization_coefficient
-
-    return regularization_matrix
-
-
-@numba_util.jit()
-def constant_pixel_splitted_regularization_matrix_from(
-    coefficient: float, splitted_mappings, splitted_sizes, splitted_weights
-) -> np.ndarray:
-
-    pixels = int(len(splitted_mappings) / 4)
-
-    regularization_matrix = np.zeros(shape=(pixels, pixels))
-
-    regularization_coefficient = coefficient ** 2.0
-
-    for i in range(pixels):
-
-        regularization_matrix[i, i] += 2e-8
-
-        for j in range(4):
-
-            k = i * 4 + j
-
-            size = splitted_sizes[k]
-            mapping = splitted_mappings[k]
-            weight = splitted_weights[k]
-
-            for l in range(size):
-                for m in range(size - l):
-                    regularization_matrix[mapping[l], mapping[l + m]] += (
-                        weight[l] * weight[l + m] * regularization_coefficient
-                    )
-                    regularization_matrix[mapping[l + m], mapping[l]] += (
-                        weight[l] * weight[l + m] * regularization_coefficient
-                    )
-
-    for i in range(pixels):
-        regularization_matrix[i, i] /= 2.0
 
     return regularization_matrix
 
@@ -234,12 +133,75 @@ def weighted_regularization_matrix_from(
     return regularization_matrix
 
 
+def reg_split_from(
+    splitted_mappings: np.ndarray,
+    splitted_sizes: np.ndarray,
+    splitted_weights: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    When creating the regularization matrix of a source pixelization, this function assumes each source pixel has been
+    split into a cross of four points (the size of which is based on the area of the source pixel). This cross of
+    points represents points which together can evaluate the gradient of the pixelization's reconstructed values.
+
+    This function takes each cross of points and determines the regularization weights of every point on the cross,
+    to construct a regulariaztion matrix based on the gradient of each pixel.
+
+    The size of each cross depends on the Voronoi pixel area, thus this regularization scheme and its weights depend
+    on the pixel area (there are larger weights for bigger pixels). This ensures that bigger pixels are regularized
+    more.
+
+    The number of pixel neighbors over which regularization is 4 * the total number of source pixels. This contrasts
+    other regularization schemes, where the number of neighbors changes depending on, for example, the Voronoi mesh
+    geometry. By having a fixed number of neighbors this removes stochasticty in the regularization that is applied
+    to a solution.
+
+    There are cases where a grid has over 100 neighbors, corresponding to very coordinate transformations. In such
+    extreme cases, we raise a `exc.FitException`.
+
+    Parameters
+    ----------
+    splitted_mappings
+    splitted_sizes
+    splitted_weights
+
+    Returns
+    -------
+
+    """
+
+    max_j = np.shape(splitted_weights)[1] - 1
+
+    splitted_weights *= -1.0
+
+    for i in range(len(splitted_mappings)):
+
+        pixel_index = i // 4
+
+        flag = 0
+
+        for j in range(splitted_sizes[i]):
+
+            if splitted_mappings[i][j] == pixel_index:
+                splitted_weights[i][j] += 1.0
+                flag = 1
+
+            if j >= max_j:
+                raise exc.FitException("neighbours exceeds!")
+
+        if flag == 0:
+            splitted_mappings[i][j + 1] = pixel_index
+            splitted_sizes[i] += 1
+            splitted_weights[i][j + 1] = 1.0
+
+    return splitted_mappings, splitted_sizes, splitted_weights
+
+
 @numba_util.jit()
-def weighted_pixel_splitted_regularization_matrix_from(
+def pixel_splitted_regularization_matrix_from(
     regularization_weights: np.ndarray,
-    splitted_mappings,
-    splitted_sizes,
-    splitted_weights,
+    splitted_mappings: np.ndarray,
+    splitted_sizes: np.ndarray,
+    splitted_weights: np.ndarray,
 ) -> np.ndarray:
 
     # I'm not sure what is the best way to add surface brightness weight to the regularization scheme here.

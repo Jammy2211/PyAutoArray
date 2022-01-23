@@ -326,7 +326,7 @@ def pixel_weights_delaunay_from(
     return pixel_weights
 
 
-def pix_weights_and_indexes_for_sub_slim_index_voronoi_nn_from(
+def pix_size_weights_voronoi_nn_from(
     grid: np.ndarray, pixelization_grid: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
