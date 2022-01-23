@@ -38,9 +38,15 @@ jobs:
         pwd
         cd PyAutoArray/autoarray/util/nn/src/nn
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD
-        ./configure
+        bash ./configure
         cp makefile_autolens makefile
         make
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
+        cd ..
 
     - name: Extract branch name
       shell: bash
