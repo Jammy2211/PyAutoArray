@@ -5,8 +5,6 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray.inversion.regularization import regularization_util
 
-from autofit import exc
-
 
 class Constant(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0):

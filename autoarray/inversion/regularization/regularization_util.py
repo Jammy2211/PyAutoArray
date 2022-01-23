@@ -1,10 +1,8 @@
 import numpy as np
 from typing import Tuple
 
+from autoarray import exc
 from autoarray import numba_util
-
-from autofit import exc
-
 
 @numba_util.jit()
 def constant_regularization_matrix_from(
@@ -186,7 +184,9 @@ def reg_split_from(
                 flag = 1
 
             if j >= max_j:
-                raise exc.FitException("neighbours exceeds!")
+                raise exc.PixelizationException(
+                    "the number of Voronoi natural neighbours exceeds 100."
+                )
 
         if flag == 0:
             splitted_mappings[i][j + 1] = pixel_index

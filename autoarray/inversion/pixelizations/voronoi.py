@@ -451,8 +451,11 @@ class VoronoiBrightnessImage(Voronoi):
         )
 
 
-class VoronoiNNMagnification(VoronoiMagnification):
+class VoronoiNNMagnificationPlaceholder(VoronoiMagnification):
     """
+    THIS IS A PLACEHOLDER WHERE THIS CLASS WILL BE STORED ONCE WE DONT REQUEST BACKWARDS COMPATBILITY FROM THE
+    `voronoi_nn` package.
+
     A full description of this class is given for the class `VoronoiMagnification`.
 
     The only difference for this class is that when it is used by the `Mapper` to map coordinates from the data
@@ -467,8 +470,11 @@ class VoronoiNNMagnification(VoronoiMagnification):
         return True
 
 
-class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
+class VoronoiNNBrightnessImagePlaceholdder(VoronoiBrightnessImage):
     """
+    THIS IS A PLACEHOLDER WHERE THIS CLASS WILL BE STORED ONCE WE DONT REQUEST BACKWARDS COMPATBILITY FROM THE
+    `voronoi_nn` package.
+
     A full description of this class is given for the class `VoronoiBrightnessImage`.
 
     The only difference for this class is that when it is used by the `Mapper` to map coordinates from the data
