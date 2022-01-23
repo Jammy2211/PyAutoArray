@@ -92,8 +92,11 @@ class ConstantSplit(Constant):
             splitted_weights=pix_sub_weights_split_cross.weights,
         )
 
-        return regularization_util.constant_pixel_splitted_regularization_matrix_from(
-            coefficient=self.coefficient,
+        pixels = int(len(splitted_mappings) / 4)
+        regularization_weights = np.full(fill_value=1.0, shape=(pixels,))
+
+        return regularization_util.pixel_splitted_regularization_matrix_from(
+            regularization_weights=regularization_weights,
             splitted_mappings=splitted_mappings,
             splitted_sizes=splitted_sizes,
             splitted_weights=splitted_weights,
