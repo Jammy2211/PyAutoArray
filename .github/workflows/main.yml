@@ -34,19 +34,14 @@ jobs:
         pip3 install pytest
         pip3 install -r PyAutoConf/requirements.txt
         pip3 install -r PyAutoArray/requirements.txt
+        pip3 install -r PyAutoArray/optional_requirements.txt
 
         pwd
-        cd PyAutoArray/autoarray/util/nn/src/nn
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD
         bash ./configure
         cp makefile_autolens makefile
         make
-        cd ..
-        cd ..
-        cd ..
-        cd ..
-        cd ..
-        cd ..
+        cd /home/runner/work/PyAutoArray
 
     - name: Extract branch name
       shell: bash
