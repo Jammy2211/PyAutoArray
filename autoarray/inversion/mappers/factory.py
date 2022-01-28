@@ -10,8 +10,12 @@ def mapper_from(
     hyper_data=None,
 ):
 
+    from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
+    from autoarray.inversion.mappers.delaunay import MapperDelaunay
+    from autoarray.inversion.mappers.voronoi import MapperVoronoi
+    from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
+
     if isinstance(source_pixelization_grid, Grid2DRectangular):
-        from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 
         return MapperRectangularNoInterp(
             source_grid_slim=source_grid_slim,
@@ -20,7 +24,6 @@ def mapper_from(
             hyper_image=hyper_data,
         )
     elif isinstance(source_pixelization_grid, Grid2DDelaunay):
-        from autoarray.inversion.mappers.delaunay import MapperDelaunay
 
         return MapperDelaunay(
             source_grid_slim=source_grid_slim,
@@ -32,8 +35,6 @@ def mapper_from(
 
         if source_pixelization_grid.uses_interpolation:
 
-            from autoarray.inversion.mappers.voronoi import MapperVoronoi
-
             return MapperVoronoi(
                 source_grid_slim=source_grid_slim,
                 source_pixelization_grid=source_pixelization_grid,
@@ -42,8 +43,6 @@ def mapper_from(
             )
 
         else:
-
-            from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 
             return MapperVoronoiNoInterp(
                 source_grid_slim=source_grid_slim,
