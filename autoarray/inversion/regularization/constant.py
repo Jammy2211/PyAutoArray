@@ -74,9 +74,7 @@ class ConstantSplit(Constant):
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """
 
-        super().__init__()
-
-        self.coefficient = coefficient
+        super().__init__(coefficient=coefficient)
 
     def regularization_matrix_from(self, mapper):
 
