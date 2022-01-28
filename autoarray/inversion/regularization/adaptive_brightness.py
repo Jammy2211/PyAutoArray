@@ -78,12 +78,7 @@ class AdaptiveBrightness(AbstractRegularization):
 
 
 class AdaptiveBrightnessSplit(AdaptiveBrightness):
-    def __init__(
-        self,
-        inner_coefficient=1.0,
-        outer_coefficient=1.0,
-        signal_scale=1.0,
-    ):
+    def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
         """
         An adaptive regularization scheme which splits every source pixel into a cross of four regularization points
         (regularization is described in the `Regularization` class above) and interpolates to these points in order
@@ -134,11 +129,11 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             low signal regions.
         """
 
-        super().__init__()
-
-        self.inner_coefficient = inner_coefficient
-        self.outer_coefficient = outer_coefficient
-        self.signal_scale = signal_scale
+        super().__init__(
+            inner_coefficient=inner_coefficient,
+            outer_coefficient=outer_coefficient,
+            signal_scale=signal_scale,
+        )
 
     def regularization_matrix_from(self, mapper) -> np.ndarray:
 

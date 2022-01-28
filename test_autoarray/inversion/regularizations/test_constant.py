@@ -1,6 +1,8 @@
 import autoarray as aa
 import numpy as np
 
+np.set_printoptions(threshold=np.inf)
+from autoarray.mock import fixtures
 from autoarray.mock.mock import MockPixelizationGrid, MockMapper
 
 
@@ -28,13 +30,18 @@ def test__regularization_matrix__matches_util():
 
     mapper = MockMapper(source_pixelization_grid=pixelization_grid)
 
-    reg = aa.reg.Constant(coefficient=1.0)
+    reg = aa.reg.Constant(coefficient=2.0)
     regularization_matrix = reg.regularization_matrix_from(mapper=mapper)
 
     regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from(
-        coefficient=1.0,
+        coefficient=2.0,
         pixel_neighbors=pixel_neighbors,
         pixel_neighbors_sizes=pixel_neighbors_sizes,
     )
 
+    assert reg.coefficient == 2.0
     assert (regularization_matrix == regularization_matrix_util).all()
+
+    reg = aa.reg.ConstantSplit(coefficient=3.0)
+
+    assert reg.coefficient == 3.0

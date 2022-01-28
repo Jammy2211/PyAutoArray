@@ -27,6 +27,7 @@ class Constant(AbstractRegularization):
         coefficient
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """
+
         self.coefficient = coefficient
 
         super().__init__()
@@ -72,9 +73,8 @@ class ConstantSplit(Constant):
         coefficient
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """
-        self.coefficient = coefficient
 
-        super().__init__()
+        super().__init__(coefficient=coefficient)
 
     def regularization_matrix_from(self, mapper):
 
