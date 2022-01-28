@@ -27,9 +27,10 @@ class Constant(AbstractRegularization):
         coefficient
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """
-        self.coefficient = coefficient
 
         super().__init__()
+
+        self.coefficient = coefficient
 
     def regularization_weights_from(self, mapper) -> np.ndarray:
         return self.coefficient * np.ones(mapper.pixels)
@@ -72,9 +73,10 @@ class ConstantSplit(Constant):
         coefficient
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """
-        self.coefficient = coefficient
 
         super().__init__()
+
+        self.coefficient = coefficient
 
     def regularization_matrix_from(self, mapper):
 
