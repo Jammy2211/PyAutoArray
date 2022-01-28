@@ -815,17 +815,16 @@ class Grid2D(AbstractGrid2D):
         result or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
+        from autoarray.structures.grids.two_d.grid_transformed import (
+            Grid2DTransformed,
+        )
+        from autoarray.structures.grids.two_d.grid_transformed import (
+            Grid2DTransformedNumpy,
+        )
+
         if len(result.shape) == 1:
             return Array2D(array=result, mask=self.mask)
         else:
-
-            from autoarray.structures.grids.two_d.grid_transformed import (
-                Grid2DTransformed,
-            )
-            from autoarray.structures.grids.two_d.grid_transformed import (
-                Grid2DTransformedNumpy,
-            )
-
             if isinstance(result, Grid2DTransformedNumpy):
                 return Grid2DTransformed(grid=result, mask=self.mask)
             return Grid2D(grid=result, mask=self.mask)

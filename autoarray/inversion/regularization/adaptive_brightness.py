@@ -134,11 +134,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             low signal regions.
         """
 
-        super().__init__()
-
-        self.inner_coefficient = inner_coefficient
-        self.outer_coefficient = outer_coefficient
-        self.signal_scale = signal_scale
+        super().__init__(inner_coefficient=inner_coefficient, outer_coefficient=outer_coefficient, signal_scale=signal_scale)
 
     def regularization_matrix_from(self, mapper) -> np.ndarray:
 
