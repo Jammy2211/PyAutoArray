@@ -522,7 +522,7 @@ def mapping_matrix_from(
     pix_size_for_sub_slim_index: np.ndarray,
     pix_weights_for_sub_slim_index: np.ndarray,
     pixels: int,
-    total_mask_sub_pixels: int,
+    total_mask_pixels: int,
     slim_index_for_sub_slim_index: np.ndarray,
     sub_fraction: float,
 ) -> np.ndarray:
@@ -598,7 +598,7 @@ def mapping_matrix_from(
         The fractional area each sub-pixel takes up in an pixel.
     """
 
-    mapping_matrix = np.zeros((total_mask_sub_pixels, pixels))
+    mapping_matrix = np.zeros((total_mask_pixels, pixels))
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
 

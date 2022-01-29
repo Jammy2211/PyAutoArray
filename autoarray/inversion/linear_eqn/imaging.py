@@ -79,10 +79,13 @@ class AbstractLEqImaging(AbstractLEq):
 
         This property returns the a list of each linear object's blurred mapping matrix.
         """
+
         return [
             self.convolver.convolve_mapping_matrix(
                 mapping_matrix=linear_obj.mapping_matrix
             )
+            if linear_obj.blurred_mapping_matrix_override is None
+            else linear_obj.blurred_mapping_matrix_override
             for linear_obj in self.linear_obj_list
         ]
 

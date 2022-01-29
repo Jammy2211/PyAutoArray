@@ -49,7 +49,7 @@ class TestMappingMatrix:
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=np.ones(3, dtype="int"),
             pixels=6,
-            total_mask_sub_pixels=3,
+            total_mask_pixels=3,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=1.0,
         )
@@ -75,7 +75,7 @@ class TestMappingMatrix:
             pix_size_for_sub_slim_index=np.ones(5, dtype="int"),
             pix_weights_for_sub_slim_index=np.ones((5, 1), dtype="int"),
             pixels=8,
-            total_mask_sub_pixels=5,
+            total_mask_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=1.0,
         )
@@ -108,7 +108,7 @@ class TestMappingMatrix:
             pix_size_for_sub_slim_index=np.ones(20, dtype="int"),
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
             pixels=8,
-            total_mask_sub_pixels=5,
+            total_mask_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=0.25,
         )
@@ -142,7 +142,7 @@ class TestMappingMatrix:
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=np.ones(20, dtype="int"),
             pixels=8,
-            total_mask_sub_pixels=5,
+            total_mask_pixels=5,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=0.25,
         )
@@ -275,7 +275,7 @@ class TestMappingMatrix:
             pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=np.ones(48, dtype="int"),
             pixels=6,
-            total_mask_sub_pixels=3,
+            total_mask_pixels=3,
             slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
             sub_fraction=1.0 / 16.0,
         )

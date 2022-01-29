@@ -218,7 +218,7 @@ class AbstractMapper(LinearObj):
         return mapper_util.mapping_matrix_from(
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pixels=self.pixels,
-            total_mask_sub_pixels=self.source_grid_slim.mask.pixels_in_mask,
+            total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,

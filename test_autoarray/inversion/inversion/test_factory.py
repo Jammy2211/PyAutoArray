@@ -3,9 +3,6 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
-from autoarray.inversion.mappers.delaunay import MapperDelaunay
-
 from autoarray.mock.mock import MockLinearObjFunc
 
 
@@ -16,10 +13,10 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
 
     mask = masked_imaging_7x7_no_blur.mask
 
+    grid = aa.Grid2D.from_mask(mask=mask)
+
     linear_obj = MockLinearObjFunc(
-        sub_slim_shape=mask.sub_shape_slim,
-        sub_size=mask.sub_size,
-        mapping_matrix=np.full(fill_value=0.5, shape=(9, 1)),
+        grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
     )
 
     inversion = aa.Inversion(

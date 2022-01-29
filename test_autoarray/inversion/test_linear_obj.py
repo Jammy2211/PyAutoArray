@@ -39,7 +39,9 @@ def test__data_to_pix_unique_from():
     assert (data_weights[1, :] == np.array([1.0, 0.0, 0.0, 0.0])).all()
     assert (pix_lengths == np.array([1, 1])).all()
 
-    linear_obj = aa.LinearObjFunc(sub_slim_shape=8, sub_size=2)
+    grid = aa.Grid2D.uniform(shape_native=(1, 2), sub_size=2, pixel_scales=0.1)
+
+    linear_obj = aa.LinearObjFunc(grid=grid)
 
     assert (
         linear_obj.data_unique_mappings.data_to_pix_unique == data_to_pix_unique

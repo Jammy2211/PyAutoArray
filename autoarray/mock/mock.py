@@ -60,15 +60,22 @@ class MockConvolver:
 
 
 class MockLinearObjFunc(LinearObjFunc):
-    def __init__(self, sub_slim_shape=None, sub_size=None, mapping_matrix=None):
+    def __init__(
+        self, grid=None, mapping_matrix=None, blurred_mapping_matrix_override=None
+    ):
 
-        super().__init__(sub_slim_shape=sub_slim_shape, sub_size=sub_size)
+        super().__init__(grid=grid)
 
         self._mapping_matrix = mapping_matrix
+        self._blurred_mapping_matrix_override = blurred_mapping_matrix_override
 
     @property
     def mapping_matrix(self) -> np.ndarray:
         return self._mapping_matrix
+
+    @property
+    def blurred_mapping_matrix_override(self) -> np.ndarray:
+        return self._blurred_mapping_matrix_override
 
 
 class MockPixelizationGrid:
