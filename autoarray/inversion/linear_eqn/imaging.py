@@ -77,7 +77,11 @@ class AbstractLEqImaging(AbstractLEq):
 
         This is used to construct the simultaneous linear equations which reconstruct the data.
 
-        This property returns the a list of each linear object's blurred mapping matrix.
+        This property returns the a list of each linear object's blurred mapping matrix, which is computed by
+        blurring each linear object's `mapping_matrix` property with the `Convolver` operator.
+
+        A linear object may have a `blurred_mapping_matrix_override` property, which bypasses  the `mapping_matrix`
+        computation and convolution operator and is directly placed in the `blurred_mapping_matrix_list`.
         """
 
         return [
