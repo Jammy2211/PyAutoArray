@@ -7,7 +7,7 @@ from autoarray.numba_util import profile_func
 
 
 class UniqueMappings:
-    def __init__(self, data_to_pix_unique, data_weights, pix_lengths):
+    def __init__(self, data_to_pix_unique: np.ndarray, data_weights : np.ndarray, pix_lengths: np.ndarray):
         """
         Packages the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
         to their corresponding pixelization pixels (e.g. `pixelization_grid`).
