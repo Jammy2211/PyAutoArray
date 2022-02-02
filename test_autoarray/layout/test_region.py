@@ -242,146 +242,124 @@ class TestRegion2D:
             array == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 0.0], [1.0, 1.0, 0.0]])
         ).all()
 
-    def test__parallel_front_edge_region_from__extracts_rows_within_bottom_of_region(
-        self,
-    ):
+    def test__parallel_front_region_from(self,):
 
         region = aa.Region2D(region=(0, 3, 0, 3))
 
-        # Front edge is row 0, so for 1 row we extract 0 -> 1
-
-        front_edge = region.parallel_front_edge_region_from(rows=(0, 1))
+        front_edge = region.parallel_front_region_from(pixels=(0, 1))
 
         assert front_edge == (0, 1, 0, 3)
 
-        # Front edge is row 0, so for 2 rows we extract 0 -> 2
-
-        front_edge = region.parallel_front_edge_region_from(rows=(0, 2))
+        front_edge = region.parallel_front_region_from(pixels=(0, 2))
 
         assert front_edge == (0, 2, 0, 3)
 
-        # Front edge is row 0, so for these 2 rows we extract 1 ->2
-
-        front_edge = region.parallel_front_edge_region_from(rows=(1, 3))
+        front_edge = region.parallel_front_region_from(pixels=(1, 3))
 
         assert front_edge == (1, 3, 0, 3)
 
-    def test__parallel_trails_of_region_from__extracts_rows_above_region(self):
+    def test__parallel_trailing_region_from(self):
 
-        region = aa.Region2D(
-            region=(0, 3, 0, 3)
-        )  # The trails are row 3 and above, so extract 3 -> 4
+        region = aa.Region2D(region=(0, 3, 0, 3))
 
-        trails = region.parallel_trails_region_from(rows=(0, 1))
+        trails = region.parallel_trailing_region_from(pixels=(0, 1))
 
         assert trails == (3, 4, 0, 3)
 
-        # The trails are row 3 and above, so extract 3 -> 5
-
-        trails = region.parallel_trails_region_from(rows=(0, 2))
+        trails = region.parallel_trailing_region_from(pixels=(0, 2))
 
         assert trails == (3, 5, 0, 3)
 
-        # The trails are row 3 and above, so extract 4 -> 6
-
-        trails = region.parallel_trails_region_from(rows=(1, 3))
+        trails = region.parallel_trailing_region_from(pixels=(1, 3))
 
         assert trails == (4, 6, 0, 3)
 
-    def test__parallel_side_nearest_read_out_region_from(self):
+    def test__parallel_full_region_from(self,):
 
         region = aa.Region2D(region=(1, 3, 0, 5))
 
-        parallel_region = region.parallel_side_nearest_read_out_region_from(
-            shape_2d=(5, 5), columns=(0, 1)
+        serial_region = region.parallel_full_region_from(shape_2d=(5, 5))
+
+        assert serial_region == (1, 3, 0, 5)
+
+        region = aa.Region2D(region=(1, 3, 0, 5))
+
+        serial_region = region.parallel_full_region_from(shape_2d=(5, 25))
+
+        assert serial_region == (1, 3, 0, 25)
+
+        region = aa.Region2D(region=(3, 5, 5, 30))
+
+        serial_region = region.parallel_full_region_from(shape_2d=(8, 55))
+
+        assert serial_region == (3, 5, 0, 55)
+
+    def test__serial_front_region_from(self):
+
+        region = aa.Region2D(region=(0, 3, 0, 3))
+
+        front_edge = region.serial_front_region_from(pixels=(0, 1))
+
+        assert front_edge == (0, 3, 0, 1)
+
+        front_edge = region.serial_front_region_from(pixels=(0, 2))
+
+        assert front_edge == (0, 3, 0, 2)
+
+        front_edge = region.serial_front_region_from(pixels=(1, 3))
+
+        assert front_edge == (0, 3, 1, 3)
+
+    def test__serial_trailing_region_from(self):
+
+        region = aa.Region2D(
+            region=(0, 3, 0, 3)
+        )  # The trails are column 3 and above, so extract 3 -> 4
+
+        trails = region.serial_trailing_region_from(pixels=(0, 1))
+
+        assert trails == (0, 3, 3, 4)
+
+        # The trails are column 3 and above, so extract 3 -> 5
+
+        trails = region.serial_trailing_region_from(pixels=(0, 2))
+
+        assert trails == (0, 3, 3, 5)
+
+        # The trails are column 3 and above, so extract 4 -> 6
+
+        trails = region.serial_trailing_region_from(pixels=(1, 3))
+
+        assert trails == (0, 3, 4, 6)
+
+    def test__serial_towards_roe_full_region_from(self):
+
+        region = aa.Region2D(region=(1, 3, 0, 5))
+
+        parallel_region = region.serial_towards_roe_full_region_from(
+            shape_2d=(5, 5), pixels=(0, 1)
         )
 
         assert parallel_region == (0, 5, 0, 1)
 
-        parallel_region = region.parallel_side_nearest_read_out_region_from(
-            shape_2d=(4, 4), columns=(1, 3)
+        parallel_region = region.serial_towards_roe_full_region_from(
+            shape_2d=(4, 4), pixels=(1, 3)
         )
 
         assert parallel_region == (0, 4, 1, 3)
 
         region = aa.Region2D(region=(1, 3, 2, 5))
 
-        parallel_region = region.parallel_side_nearest_read_out_region_from(
-            shape_2d=(4, 4), columns=(1, 3)
+        parallel_region = region.serial_towards_roe_full_region_from(
+            shape_2d=(4, 4), pixels=(1, 3)
         )
 
         assert parallel_region == (0, 4, 3, 5)
 
         region = aa.Region2D(region=(1, 3, 0, 5))
 
-        parallel_region = region.parallel_side_nearest_read_out_region_from(
-            shape_2d=(2, 5), columns=(0, 1)
+        parallel_region = region.serial_towards_roe_full_region_from(
+            shape_2d=(2, 5), pixels=(0, 1)
         )
 
         assert parallel_region == (0, 2, 0, 1)
-
-    def test__serial_front_edge_of_region__extracts_region_within_left_of_region(self):
-
-        region = aa.Region2D(
-            region=(0, 3, 0, 3)
-        )  # Front edge is column 0, so for 1 column we extract 0 -> 1
-
-        front_edge = region.serial_front_edge_region_from(columns=(0, 1))
-
-        assert front_edge == (0, 3, 0, 1)
-
-        # Front edge is column 0, so for 2 columns we extract 0 -> 2
-
-        front_edge = region.serial_front_edge_region_from(columns=(0, 2))
-
-        assert front_edge == (0, 3, 0, 2)
-
-        # Front edge is column 0, so for these 2 columns we extract 1 ->2
-
-        front_edge = region.serial_front_edge_region_from(columns=(1, 3))
-
-        assert front_edge == (0, 3, 1, 3)
-
-    def test__serial_trails_of_regions__extracts_region_to_right_of_region(self):
-
-        region = aa.Region2D(
-            region=(0, 3, 0, 3)
-        )  # The trails are column 3 and above, so extract 3 -> 4
-
-        trails = region.serial_trails_region_from(columns=(0, 1))
-
-        assert trails == (0, 3, 3, 4)
-
-        # The trails are column 3 and above, so extract 3 -> 5
-
-        trails = region.serial_trails_region_from(columns=(0, 2))
-
-        assert trails == (0, 3, 3, 5)
-
-        # The trails are column 3 and above, so extract 4 -> 6
-
-        trails = region.serial_trails_region_from(columns=(1, 3))
-
-        assert trails == (0, 3, 4, 6)
-
-    def test__serial_entire_rows_of_regions__full_region_from_left_most_prescan_to_right_most_end_of_trails(
-        self,
-    ):
-
-        region = aa.Region2D(region=(1, 3, 0, 5))
-
-        serial_region = region.serial_entire_rows_of_region_from(shape_2d=(5, 5))
-
-        assert serial_region == (1, 3, 0, 5)
-
-        region = aa.Region2D(region=(1, 3, 0, 5))
-
-        serial_region = region.serial_entire_rows_of_region_from(shape_2d=(5, 25))
-
-        assert serial_region == (1, 3, 0, 25)
-
-        region = aa.Region2D(region=(3, 5, 5, 30))
-
-        serial_region = region.serial_entire_rows_of_region_from(shape_2d=(8, 55))
-
-        assert serial_region == (3, 5, 0, 55)

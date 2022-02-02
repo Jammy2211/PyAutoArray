@@ -1,3 +1,5 @@
+from typing import Tuple, List
+
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.layout.region import Region1D
@@ -35,23 +37,36 @@ class Layout1D:
 class Layout2D:
     def __init__(
         self,
-        shape_2d,
-        original_roe_corner=(1, 0),
-        parallel_overscan=None,
-        serial_prescan=None,
-        serial_overscan=None,
+        shape_2d: Tuple[int, int],
+        original_roe_corner: Tuple[int, int] = (1, 0),
+        parallel_overscan: Tuple[int, int, int, int] = None,
+        serial_prescan: Tuple[int, int, int, int] = None,
+        serial_overscan: Tuple[int, int, int, int] = None,
     ):
         """
-        Abstract base class for a charge injection pattern_ci, which defines the regions charge injections appears \
-         on a charge-injection frame_ci, the input normalization and other properties.
+        Abstract base class for a layout of a 2D array, which defines specific regions on the array, for example
+        where the parallel overscan and serial prescan are.
+
+        This can be inherited from for arrays with additional regions, for example a charge injeciton image in the
+        project **PyAutoCTI** where rectangles of injected charge are contained on the image.
 
         Parameters
         -----------
-        normalization
-            The normalization of the charge injection lines.
-        regions: [(int,)]
-            A list of the integer coordinates specifying the corners of each charge injection region \
-            (top-row, bottom-row, left-column, right-column).
+        shape_2d
+            The two dimensional shape of the charge injection imaging, corresponding to the number of rows (pixels
+            in parallel direction) and columns (pixels in serial direction).
+        original_roe_corner
+            The original read-out electronics corner of the charge injeciton imaging, which is internally rotated to a
+            common orientation in **PyAutoCTI**.
+        parallel_overscan
+            Integer pixel coordinates specifying the corners of the parallel overscan (top-row, bottom-row,
+            left-column, right-column).
+        serial_prescan
+            Integer pixel coordinates specifying the corners of the serial prescan (top-row, bottom-row,
+            left-column, right-column).
+        serial_overscan
+            Integer pixel coordinates specifying the corners of the serial overscan (top-row, bottom-row,
+            left-column, right-column).
         """
 
         self.shape_2d = shape_2d
@@ -98,7 +113,7 @@ class Layout2D:
             serial_overscan=serial_overscan,
         )
 
-    def after_extraction(self, extraction_region):
+    def after_extraction_from(self, extraction_region):
 
         parallel_overscan = layout_util.region_after_extraction(
             original_region=self.parallel_overscan, extraction_region=extraction_region
