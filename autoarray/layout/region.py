@@ -1,24 +1,43 @@
 import numpy as np
+from numpy.typing import ArrayLike
 from typing import Tuple
 
 from autoarray import exc
 
 
-class Region1D:
+class AbstractRegion:
+    def __init__(self, region):
+        """
+        Abstract base class for a region, which defines coordinates of a region on 1D or 2D data.
+
+        Parameters
+        ----------
+        region
+            The coordinates on the data of the region defined using pixel coordinates.
+        """
+        self.region = region
+
+    def __getitem__(self, item):
+        return self.region[item]
+
+    def __eq__(self, other):
+        if self.region == other:
+            return True
+        return super().__eq__(other)
+
+
+class Region1D(AbstractRegion):
     def __init__(self, region: Tuple[int, int]):
         """
-        Setup a region of an `Structure1D` object (e.g. `Array1D`, `Grid1D`, etc.), which could be where the parallel
-        overscan, serial overscan, etc. are.
+        A region of a 1D array defined as a tuple (x0, x1) = (left-pixel, right-pixel).
 
-        This is defined as a tuple of pixel indexes (x0, x1).
-
-        For example, if an `Array1D` has `shape_native` = (10,), a region (2, 4) would be defined over the region
-        `array[2,4]`.
+        For example, the overscan of 1D data may be defined by the region (40, 50), indicating it spans 10 pixels after
+        40 rows of data.
 
         Parameters
         -----------
         region
-            The (x0, x1) pixel indexes on the image defining the region.
+            The coordinates on the 1D data of the region defined following the convention (x0, y1).
         """
 
         if region[0] < 0 or region[1] < 0:
@@ -31,70 +50,86 @@ class Region1D:
                 "The first pixel index in the Region1D was equal to or greater than the second pixel index."
             )
 
-        self.region = region
-
-    @property
-    def total_pixels(self):
-        return self.x1 - self.x0
-
-    @property
-    def x0(self):
-        return self[0]
-
-    @property
-    def x1(self):
-        return self[1]
-
-    def __getitem__(self, item):
-        return self.region[item]
-
-    def __eq__(self, other):
-        if self.region == other:
-            return True
-        return super().__eq__(other)
+        super().__init__(region=region)
 
     def __repr__(self):
         return "<Region1D {} {}>".format(*self)
 
     @property
-    def slice(self):
-        return np.s_[self.x0 : self.x1]
-
-    @property
-    def x_slice(self):
-        return np.s_[self.x0 : self.x1]
-
-    @property
-    def shape(self):
+    def total_pixels(self) -> int:
         return self.x1 - self.x0
 
-    def front_edge_region_from(self, pixels):
+    @property
+    def x0(self) -> int:
+        return self[0]
+
+    @property
+    def x1(self) -> int:
+        return self[1]
+
+    @property
+    def slice(self) -> ArrayLike:
+        return np.s_[self.x0 : self.x1]
+
+    @property
+    def x_slice(self) -> ArrayLike:
+        return np.s_[self.x0 : self.x1]
+
+    def front_region_from(self, pixels: Tuple[int, int]) -> "Region1D":
+        """
+        Returns a `Region1D` corresponding to the front pixels in this region in the clocking direction (e.g. the
+        pixels in the region that are closest to the read-out electronics which is defined at the 1D index (0,)).
+
+        For example, if the `Region1D` covers the pixels (5, 15) and we input `pixels=(1,3)` this will return
+        the 2nd to 4th pixels within the region corresponding to (6, 8).
+
+        Other functions use the computed region to extract the front region from 1D arrays containing data.
+
+        Parameters
+        ----------
+        pixels
+            A tuple defining the pixel coordinates used to compute the front region.
+        """
 
         x_min = self.x0 + pixels[0]
         x_max = self.x0 + pixels[1]
 
         return Region1D((x_min, x_max))
 
-    def trails_region_from(self, pixels):
+    def trailing_region_from(self, pixels: Tuple[int, int]) -> "Region1D":
+        """
+        Returns a `Region1D` corresponding to the pixels trailing this region in the clocking direction (e.g. the rows
+        of pixels outside this region and in the direction away from the CCD read-out electronics defined at the 1D
+        index (0,)).
 
+        For example, if the `Region1D` covers the pixels (5, 15) and we input `pixels=(1,3)` this will return
+        the 2nd to 4th pixels of trailing region corresponding to (16, 18).
+
+        Other functions use the computed region to extract the trailing region from 1D arrays containing data.
+
+        Parameters
+        ----------
+        pixels
+            A tuple defining the pixel coordinates used to compute the trailing region.
+        """
         x_min = self.x1 + pixels[0]
         x_max = self.x1 + pixels[1]
 
         return Region1D((x_min, x_max))
 
 
-class Region2D:
+class Region2D(AbstractRegion):
     def __init__(self, region: Tuple[int, int, int, int]):
         """
         A region of a 2D array defined as a tuple (y0, y1, x0, x1) = (top-row, bottom-row, left-column, right-column).
 
-        For example, a the parallel overscan of an image may be defined by the coordinates (100, 120, 10, 30),
+        For example, a the parallel overscan of an image may be defined by the region (100, 120, 10, 30),
         indicating it spans 20 rows at the end of the array over the columns defined between 10 and 30.
 
         Parameters
         -----------
         region
-            The coordinates on the image of the region defined following the convention (y0, y1, x0, y1).
+            The coordinates on the 2D array of the region defined following the convention (y0, y1, x0, y1).
         """
 
         if region[0] < 0 or region[1] < 0 or region[2] < 0 or region[3] < 0:
@@ -111,7 +146,8 @@ class Region2D:
             raise exc.RegionException(
                 "The first column in the Region2D was equal to greater than the second column."
             )
-        self.region = region
+
+        super().__init__(region=region)
 
     def __getitem__(self, item):
         return self.region[item]
@@ -125,39 +161,39 @@ class Region2D:
         return "<Region2D {} {} {} {}>".format(*self)
 
     @property
-    def total_rows(self):
+    def total_rows(self) -> int:
         return self.y1 - self.y0
 
     @property
-    def total_columns(self):
+    def total_columns(self) -> int:
         return self.x1 - self.x0
 
     @property
-    def y0(self):
+    def y0(self) -> int:
         return self[0]
 
     @property
-    def y1(self):
+    def y1(self) -> int:
         return self[1]
 
     @property
-    def x0(self):
+    def x0(self) -> int:
         return self[2]
 
     @property
-    def x1(self):
+    def x1(self) -> int:
         return self[3]
 
     @property
-    def slice(self):
+    def slice(self) -> ArrayLike:
         return np.s_[self.y0 : self.y1, self.x0 : self.x1]
 
     @property
-    def y_slice(self):
+    def y_slice(self) -> ArrayLike:
         return np.s_[self.y0 : self.y1]
 
     @property
-    def x_slice(self):
+    def x_slice(self) -> ArrayLike:
         return np.s_[self.x0 : self.x1]
 
     @property
@@ -184,8 +220,9 @@ class Region2D:
 
     def parallel_front_region_from(self, pixels: Tuple[int, int]) -> "Region2D":
         """
-        Returns a `Region2D` corresponding to the front pixels in this region in the parallel  clocking direction
-        (e.g. the rows of pixels in the region that are closest to the CCD read-out electronics).
+        Returns a `Region2D` corresponding to the front pixels in this region in the parallel clocking direction
+        (e.g. the rows of pixels in the region that are closest to the CCD read-out electronics defined at 2D
+        index (0,0)).
 
         For example, if the `Region2D` covers the pixels (0, 10, 0, 20) and we input `pixels=(1,6)` this will return
         the 2nd to 6th rows of the region corresponding to (1, 6, 0, 20).
@@ -209,7 +246,8 @@ class Region2D:
     ) -> "Region2D":
         """
         Returns a `Region2D` corresponding to the pixels trailing this region in the parallel clocking direction
-        (e.g. the rows of pixels outside this region and in the direction away from the CCD read-out electronics).
+        (e.g. the rows of pixels outside this region and in the direction away from the CCD read-out electronics
+        defined at 2D index (0,0)).
 
         For example, if the `Region2D` covers the pixels (0, 10, 0, 20) and we input `pixels=(1,6)` this will return
         the 2nd to 6th rows of the trailing region corresponding to (10, 16, 0, 20).
@@ -249,7 +287,8 @@ class Region2D:
     def serial_front_region_from(self, pixels: Tuple[int, int] = (0, 1)) -> "Region2D":
         """
         Returns a `Region2D` corresponding to the front pixels in this region in the serial clocking direction
-        (e.g. the columns of pixels in the region that are closest to the CCD read-out electronics).
+        (e.g. the columns of pixels in the region that are closest to the CCD read-out electronics defined at 2D
+        index (0,0)).
 
         For example, if the `Region2D` covers the pixels (0, 10, 0, 20) and we input `pixels=(1,6)` this will return
         the 2nd to 6th rows of the region corresponding to (1, 6, 0, 20).
@@ -269,7 +308,8 @@ class Region2D:
     ) -> "Region2D":
         """
         Returns a `Region2D` corresponding to the pixels trailing this region in the serial clocking direction
-        (e.g. the columns of pixels outside this region and in the direction away from the CCD read-out electronics).
+        (e.g. the columns of pixels outside this region and in the direction away from the CCD read-out electronics
+        defined at 2D index (0,0)).
 
         For example, if the `Region2D` covers the pixels (0, 10, 0, 20) and we input `pixels=(1,6)` this will return
         the 2nd to 6th rows of the trailing region corresponding to (0, 10, 20, 26).

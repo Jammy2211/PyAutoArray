@@ -96,19 +96,19 @@ class TestRegion1D:
 
         # Front edge is pixel 0, so for 1 pixel we extract 0 -> 1
 
-        front_edge_region = region.front_edge_region_from(pixels=(0, 1))
+        front_edge_region = region.front_region_from(pixels=(0, 1))
 
         assert front_edge_region == (0, 1)
 
         # Front edge is pixel 0, so for 2 pixels we extract 0 -> 2
 
-        front_edge_region = region.front_edge_region_from(pixels=(0, 2))
+        front_edge_region = region.front_region_from(pixels=(0, 2))
 
         assert front_edge_region == (0, 2)
 
         # Front edge is pixel 0, so for these 2 pixels we extract 1 ->2
 
-        front_edge_region = region.front_edge_region_from(pixels=(1, 3))
+        front_edge_region = region.front_region_from(pixels=(1, 3))
 
         assert front_edge_region == (1, 3)
 
@@ -118,19 +118,19 @@ class TestRegion1D:
 
         # Front edge ends pixel 3, so for 1 pixel we extract 3 -> 4
 
-        trails_region = region.trails_region_from(pixels=(0, 1))
+        trails_region = region.trailing_region_from(pixels=(0, 1))
 
         assert trails_region == (3, 4)
 
         # Front edge ends pixel 3, so for 2 pixels we extract 3 -> 5
 
-        trails_region = region.trails_region_from(pixels=(0, 2))
+        trails_region = region.trailing_region_from(pixels=(0, 2))
 
         assert trails_region == (3, 5)
 
         # Front edge ends pixel 3, so for these 2 pixels we extract 3 ->6
 
-        trails_region = region.trails_region_from(pixels=(1, 3))
+        trails_region = region.trailing_region_from(pixels=(1, 3))
 
         assert trails_region == (4, 6)
 
