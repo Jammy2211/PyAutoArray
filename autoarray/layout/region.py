@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.typing import ArrayLike
-from typing import Tuple
+from typing import List, Tuple, Union
 
 from autoarray import exc
 

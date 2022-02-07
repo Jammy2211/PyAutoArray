@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 PixelScales = Union[Tuple[float, float], float]
 
@@ -15,3 +15,11 @@ from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 
 Transformer = Union[TransformerDFT, TransformerNUFFT]
+
+from autoarray.layout.region import Region1D
+from autoarray.layout.region import Region2D
+
+Region1DLike = Union[Region1D, Tuple[int, int]]
+Region1DList = Union[List[Region1D], List[Tuple[int, int]]]
+Region2DLike = Union[Region2D, Tuple[int, int, int, int]]
+Region2DList = Union[List[Region2D], List[Tuple[int, int, int, int]]]

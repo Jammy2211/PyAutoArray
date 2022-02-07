@@ -113,7 +113,7 @@ class Layout2D:
             serial_overscan=serial_overscan,
         )
 
-    def after_extraction_from(self, extraction_region):
+    def layout_extracted_from(self, extraction_region):
 
         parallel_overscan = layout_util.region_after_extraction(
             original_region=self.parallel_overscan, extraction_region=extraction_region
@@ -283,5 +283,5 @@ class Layout2D:
         return serial_overscan_array.binned_across_rows
 
     @property
-    def serial_trails_columns(self):
+    def serial_eper_pixels(self):
         return self.serial_overscan[3] - self.serial_overscan[2]
