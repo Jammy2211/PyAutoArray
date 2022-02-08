@@ -1,5 +1,6 @@
 import numpy as np
-from typing import Tuple
+import scipy.spatial
+from typing import List, Tuple, Union
 
 from autoarray import numba_util
 
@@ -370,3 +371,79 @@ def voronoi_neighbors_from(
         pixel_neighbors_index[pair1] += 1
 
     return pixel_neighbors, pixel_neighbors_sizes
+
+
+def voronoi_revised_from(
+    voronoi: scipy.spatial.Voronoi
+) -> Union[List[Tuple], np.ndarray]:
+    """
+    To plot a Voronoi pixelization using the `matplotlib.fill()` function a revised Voronoi pixelization must be
+     computed, where 2D infinite voronoi regions are converted to finite 2D regions.
+
+    This function returns a list of tuples containing the indices of the vertices of each revised Voronoi cell and
+    a list of tuples containing the revised Voronoi vertex vertices.
+
+    Parameters
+    ----------
+    voronoi
+        The input Voronoi diagram that is being plotted.
+    """
+
+    if voronoi.points.shape[1] != 2:
+        raise ValueError("Requires 2D input")
+
+    region_list = []
+    vertex_list = voronoi.vertices.tolist()
+
+    center = voronoi.points.mean(axis=0)
+    radius = voronoi.points.ptp().max() * 2
+
+    # Construct a map containing all ridges for a given point
+    all_ridges = {}
+    for (p1, p2), (v1, v2) in zip(voronoi.ridge_points, voronoi.ridge_vertices):
+        all_ridges.setdefault(p1, []).append((p2, v1, v2))
+        all_ridges.setdefault(p2, []).append((p1, v1, v2))
+
+    # Reconstruct infinite regions
+    for p1, region in enumerate(voronoi.point_region):
+        vertices = voronoi.regions[region]
+
+        if all(v >= 0 for v in vertices):
+            # finite region
+            region_list.append(vertices)
+            continue
+
+        # reconstruct a non-finite region
+        ridges = all_ridges[p1]
+        region = [v for v in vertices if v >= 0]
+
+        for p2, v1, v2 in ridges:
+            if v2 < 0:
+                v1, v2 = v2, v1
+            if v1 >= 0:
+                # finite ridge: already in the region
+                continue
+
+            # Compute the missing endpoint of an infinite ridge
+
+            t = voronoi.points[p2] - voronoi.points[p1]  # tangent
+            t /= np.linalg.norm(t)
+            n = np.array([-t[1], t[0]])  # hyper
+
+            midpoint = voronoi.points[[p1, p2]].mean(axis=0)
+            direction = np.sign(np.dot(midpoint - center, n)) * n
+            far_point = voronoi.vertices[v2] + direction * radius
+
+            region.append(len(vertex_list))
+            vertex_list.append(far_point.tolist())
+
+        # sort region counterclockwise
+        vs = np.asarray([vertex_list[v] for v in region])
+        c = vs.mean(axis=0)
+        angles = np.arctan2(vs[:, 1] - c[1], vs[:, 0] - c[0])
+        region = np.array(region)[np.argsort(angles)]
+
+        # finish
+        region_list.append(region.tolist())
+
+    return region_list, np.asarray(vertex_list)

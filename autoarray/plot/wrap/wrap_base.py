@@ -436,7 +436,7 @@ class Colorbar(AbstractMatWrap):
         cax.set_array(color_values)
 
         if self.manual_tick_values is None and self.manual_tick_labels is None:
-            plt.colorbar(mappable=cax, **self.config_dict)
+            cb = plt.colorbar(mappable=cax, **self.config_dict)
         elif (
             self.manual_tick_values is not None and self.manual_tick_labels is not None
         ):
@@ -444,6 +444,8 @@ class Colorbar(AbstractMatWrap):
                 mappable=cax, ticks=self.manual_tick_values, **self.config_dict
             )
             cb.ax.set_yticklabels(self.manual_tick_labels)
+
+        return cb
 
 
 class ColorbarTickParams(AbstractMatWrap):

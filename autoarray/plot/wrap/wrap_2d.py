@@ -16,6 +16,7 @@ from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.mapper_util import triangle_area_from
+from autoarray.inversion.pixelizations.pixelization_util import voronoi_revised_from
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
@@ -520,16 +521,16 @@ class VoronoiDrawer(AbstractMatWrap2D):
         
         Parameters
         ----------
-        mapper : MapperVoronoiNoInterp
-            An object which contains the (y,x) grid of Voronoi cell centres.
+        mapper
+            A mapper object which contains the Voronoi mesh.
         values
             An array used to compute the color values that every Voronoi cell is plotted using.
-        cmap : str
+        cmap
             The colormap used to plot each Voronoi cell.
-        colorbar : Colorbar
+        colorbar
             The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
         """
-        regions, vertices = self.voronoi_polygons(voronoi=mapper.voronoi)
+        regions, vertices = voronoi_revised_from(voronoi=mapper.voronoi)
 
         if values is not None:
 
@@ -548,11 +549,12 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
             if colorbar is not None:
 
-                colorbar = colorbar.set_with_color_values(
+                cb = colorbar.set_with_color_values(
                     cmap=cmap, color_values=color_values
                 )
-                if colorbar is not None and colorbar_tickparams is not None:
-                    colorbar_tickparams.set(cb=colorbar)
+
+                if cb is not None and colorbar_tickparams is not None:
+                    colorbar_tickparams.set(cb=cb)
 
         else:
             cmap = plt.get_cmap("Greys")
@@ -560,89 +562,9 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
         for region, index in zip(regions, range(mapper.pixels)):
             polygon = vertices[region]
-            col = cmap(color_array[index])
-            plt.fill(*zip(*polygon), facecolor=col, zorder=-1, **self.config_dict)
+            color = cmap(color_array[index])
 
-    def voronoi_polygons(self, voronoi, radius=None):
-        """
-        Reconstruct infinite voronoi regions in a 2D diagram to finite regions.
-
-        Parameters
-        ----------
-        voronoi : Voronoi
-            The input Voronoi diagram that is being plotted.
-        radius, optional
-            Distance to 'points at infinity'.
-
-        Returns
-        -------
-        regions : list of tuples
-            Indices of vertices in each revised Voronoi regions.
-        vertices : list of tuples
-            Grid2DIrregular for revised Voronoi vertices. Same as coordinates
-            of input vertices, with 'points at infinity' appended to the
-            end.
-        """
-
-        if voronoi.points.shape[1] != 2:
-            raise ValueError("Requires 2D input")
-
-        new_regions = []
-        new_vertices = voronoi.vertices.tolist()
-
-        center = voronoi.points.mean(axis=0)
-        if radius is None:
-            radius = voronoi.points.ptp().max() * 2
-
-        # Construct a map containing all ridges for a given point
-        all_ridges = {}
-        for (p1, p2), (v1, v2) in zip(voronoi.ridge_points, voronoi.ridge_vertices):
-            all_ridges.setdefault(p1, []).append((p2, v1, v2))
-            all_ridges.setdefault(p2, []).append((p1, v1, v2))
-
-        # Reconstruct infinite regions
-        for p1, region in enumerate(voronoi.point_region):
-            vertices = voronoi.regions[region]
-
-            if all(v >= 0 for v in vertices):
-                # finite region
-                new_regions.append(vertices)
-                continue
-
-            # reconstruct a non-finite region
-            ridges = all_ridges[p1]
-            new_region = [v for v in vertices if v >= 0]
-
-            for p2, v1, v2 in ridges:
-                if v2 < 0:
-                    v1, v2 = v2, v1
-                if v1 >= 0:
-                    # finite ridge: already in the region
-                    continue
-
-                # Compute the missing endpoint of an infinite ridge
-
-                t = voronoi.points[p2] - voronoi.points[p1]  # tangent
-                t /= np.linalg.norm(t)
-                n = np.array([-t[1], t[0]])  # hyper
-
-                midpoint = voronoi.points[[p1, p2]].mean(axis=0)
-                direction = np.sign(np.dot(midpoint - center, n)) * n
-                far_point = voronoi.vertices[v2] + direction * radius
-
-                new_region.append(len(new_vertices))
-                new_vertices.append(far_point.tolist())
-
-            # sort region counterclockwise
-            vs = np.asarray([new_vertices[v] for v in new_region])
-            c = vs.mean(axis=0)
-            angles = np.arctan2(vs[:, 1] - c[1], vs[:, 0] - c[0])
-            new_region = np.array(new_region)[np.argsort(angles)]
-
-            # finish
-            new_regions.append(new_region.tolist())
-
-        return new_regions, np.asarray(new_vertices)
+            plt.fill(*zip(*polygon), facecolor=color, zorder=-1, **self.config_dict)
 
 
 class DelaunayDrawer(AbstractMatWrap2D):
