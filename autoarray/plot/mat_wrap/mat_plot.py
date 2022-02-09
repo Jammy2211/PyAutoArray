@@ -50,7 +50,7 @@ class AbstractMatPlot:
         title: Optional[wb.Title] = None,
         ylabel: Optional[wb.YLabel] = None,
         xlabel: Optional[wb.XLabel] = None,
-        text: Optional[wb.Text] = None,
+        text: Optional[Union[wb.Text, List[wb.Text]]] = None,
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
     ):
@@ -216,7 +216,7 @@ class MatPlot1D(AbstractMatPlot):
         title: Optional[wb.Title] = None,
         ylabel: Optional[wb.YLabel] = None,
         xlabel: Optional[wb.XLabel] = None,
-        text: Optional[wb.Text] = None,
+        text: Optional[Union[wb.Text, List[wb.Text]]] = None,
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         yx_plot: Optional[w1d.YXPlot] = None,
@@ -399,7 +399,10 @@ class MatPlot1D(AbstractMatPlot):
         self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
         self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
 
-        self.text.set()
+        if self.text is not list:
+            self.text.set()
+        else:
+            [text.set() for text in self.text]
 
         visuals_1d.plot_via_plotter(plotter=self)
 
@@ -426,7 +429,7 @@ class MatPlot2D(AbstractMatPlot):
         title: Optional[wb.Title] = None,
         ylabel: Optional[wb.YLabel] = None,
         xlabel: Optional[wb.XLabel] = None,
-        text: Optional[wb.Text] = None,
+        text: Optional[Union[wb.Text, List[wb.Text]]] = None,
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         array_overlay: Optional[w2d.ArrayOverlay] = None,
@@ -677,7 +680,10 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        self.text.set()
+        if not isinstance(self.text, list):
+            self.text.set()
+        else:
+            [text.set() for text in self.text]
 
         if self.colorbar is not None:
             cb = self.colorbar.set()
@@ -758,7 +764,10 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        self.text.set()
+        if self.text is not list:
+            self.text.set()
+        else:
+            [text.set() for text in self.text]
 
         extent = self.axis.config_dict.get("extent")
 
@@ -878,7 +887,10 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        self.text.set()
+        if self.text is not list:
+            self.text.set()
+        else:
+            [text.set() for text in self.text]
 
         self.grid_plot.plot_rectangular_grid_lines(
             extent=mapper.source_pixelization_grid.extent,
@@ -930,7 +942,10 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        self.text.set()
+        if self.text is not list:
+            self.text.set()
+        else:
+            [text.set() for text in self.text]
 
         self.voronoi_drawer.draw_voronoi_pixels(
             mapper=mapper,
@@ -982,7 +997,10 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        self.text.set()
+        if self.text is not list:
+            self.text.set()
+        else:
+            [text.set() for text in self.text]
 
         self.delaunay_drawer.draw_delaunay_pixels(
             mapper=mapper,
@@ -1035,7 +1053,10 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        self.text.set()
+        if self.text is not list:
+            self.text.set()
+        else:
+            [text.set() for text in self.text]
 
         self.voronoiNN_drawer.draw_voronoiNN_pixels(
             mapper=mapper,

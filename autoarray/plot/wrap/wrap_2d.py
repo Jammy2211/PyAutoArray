@@ -510,10 +510,10 @@ class VoronoiDrawer(AbstractMatWrap2D):
     def draw_voronoi_pixels(
         self,
         mapper: MapperVoronoiNoInterp,
-        values: np.ndarray,
-        cmap: wb.Cmap,
-        colorbar: wb.Colorbar,
-        colorbar_tickparams: wb.ColorbarTickParams = None,
+        values: Optional[np.ndarray],
+        cmap: Optional[wb.Cmap],
+        colorbar: Optional[wb.Colorbar],
+        colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 
