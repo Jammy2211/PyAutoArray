@@ -17,8 +17,8 @@ To install nn for PyAutoLens on a linux machine (and presumably a MAC) follow th
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/your/path/to/autoarray/util/nn/src/nn
 
-You may wish to add this to your ~/.bashrc file or virtual enviroment activate script so you do not need to re-enter 
-the path every time you open a new enviroment.
+You may wish to add this to your ~/.bashrc file or virtual environment activate script so you do not need to re-enter 
+the path every time you open a new environment.
 
 2. go to directory 'nn'
 

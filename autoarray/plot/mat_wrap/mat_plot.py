@@ -399,7 +399,7 @@ class MatPlot1D(AbstractMatPlot):
         self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
         self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
 
-        if self.text is not list:
+        if not isinstance(self.text, list):
             self.text.set()
         else:
             [text.set() for text in self.text]
@@ -764,7 +764,7 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        if self.text is not list:
+        if not isinstance(self.text, list):
             self.text.set()
         else:
             [text.set() for text in self.text]
@@ -887,7 +887,7 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        if self.text is not list:
+        if not isinstance(self.text, list):
             self.text.set()
         else:
             [text.set() for text in self.text]
@@ -942,7 +942,7 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        if self.text is not list:
+        if not isinstance(self.text, list):
             self.text.set()
         else:
             [text.set() for text in self.text]
@@ -997,7 +997,7 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        if self.text is not list:
+        if not isinstance(self.text, list):
             self.text.set()
         else:
             [text.set() for text in self.text]
@@ -1053,7 +1053,7 @@ class MatPlot2D(AbstractMatPlot):
             array=None, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        if self.text is not list:
+        if not isinstance(self.text, list):
             self.text.set()
         else:
             [text.set() for text in self.text]

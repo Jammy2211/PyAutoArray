@@ -3,6 +3,7 @@ from typing import Tuple
 
 from autoarray import numba_util
 from autoarray import exc
+from autoarray.inversion.pixelizations import pixelization_util
 
 
 @numba_util.jit()
@@ -226,40 +227,6 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
 
 
 @numba_util.jit()
-def triangle_area_from(
-    corner_0: Tuple[float, float],
-    corner_1: Tuple[float, float],
-    corner_2: Tuple[float, float],
-) -> float:
-    """
-    Returns the area within a triangle whose three corners are located at the (x,y) coordinates given by the function
-    inputs `corner_a` `corner_b` and `corner_c`.
-
-    Parameters
-    ----------
-    corner_0
-        The (x,y) coordinates of the triangle's first corner.
-    corner_1
-        The (x,y) coordinates of the triangle's second corner.
-    corner_2
-        The (x,y) coordinates of the triangle's third corner.
-
-    Returns
-    -------
-    The area of the triangle given the input (x,y) corners.
-    """
-
-    x1 = corner_0[0]
-    y1 = corner_0[1]
-    x2 = corner_1[0]
-    y2 = corner_1[1]
-    x3 = corner_2[0]
-    y3 = corner_2[1]
-
-    return 0.5 * np.abs(x1 * y2 + x2 * y3 + x3 * y1 - x2 * y1 - x3 * y2 - x1 * y3)
-
-
-@numba_util.jit()
 def pixel_weights_delaunay_from(
     source_grid_slim,
     source_pixelization_grid,
@@ -298,25 +265,25 @@ def pixel_weights_delaunay_from(
 
             sub_gird_coordinate_on_source_place = source_grid_slim[sub_slim_index]
 
-            term0 = triangle_area_from(
+            area_0 = pixelization_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[1],
                 corner_1=vertices_of_the_simplex[2],
                 corner_2=sub_gird_coordinate_on_source_place,
             )
-            term1 = triangle_area_from(
+            area_1 = pixelization_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[0],
                 corner_1=vertices_of_the_simplex[2],
                 corner_2=sub_gird_coordinate_on_source_place,
             )
-            term2 = triangle_area_from(
+            area_2 = pixelization_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[0],
                 corner_1=vertices_of_the_simplex[1],
                 corner_2=sub_gird_coordinate_on_source_place,
             )
 
-            norm = term0 + term1 + term2
+            norm = area_0 + area_1 + area_2
 
-            weight_abc = np.array([term0, term1, term2]) / norm
+            weight_abc = np.array([area_0, area_1, area_2]) / norm
 
             pixel_weights[sub_slim_index] = weight_abc
 

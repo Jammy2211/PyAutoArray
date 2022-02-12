@@ -1,6 +1,8 @@
-import autoarray as aa
 import numpy as np
+import pytest
 import scipy.spatial
+
+import autoarray as aa
 
 
 def test__rectangular_neighbors_from():
@@ -167,3 +169,31 @@ def test__voronoi_neighbors_from():
     assert set(pixel_neighbors[8]) == {5, 7, -1, -1}
 
     assert (pixel_neighbors_sizes == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()
+
+
+def test__delaunay_interpolated_grid_from():
+
+    shape_native = (3, 3)
+
+    grid_interpolate_slim = aa.Grid2D.uniform(
+        shape_native=shape_native, pixel_scales=1.0
+    ).slim
+
+    delaunay_grid = np.array(
+        [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
+    )
+
+    delaunay = scipy.spatial.Delaunay(delaunay_grid)
+
+    values = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+
+    interpolated_grid = aa.util.pixelization.delaunay_interpolated_grid_from(
+        shape_native=shape_native,
+        grid_interpolate_slim=grid_interpolate_slim,
+        values=values,
+        delaunay=delaunay,
+    )
+
+    assert interpolated_grid == pytest.approx(
+        np.array([[1.0, 1.5, 2.0], [2.5, 3.0, 3.5], [4.0, 4.5, 5.0]]), 1.0e-4
+    )
