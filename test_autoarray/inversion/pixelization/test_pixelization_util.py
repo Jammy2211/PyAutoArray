@@ -190,7 +190,7 @@ def test__delaunay_interpolated_grid_from():
     interpolated_grid = aa.util.pixelization.delaunay_interpolated_array_from(
         shape_native=shape_native,
         interpolation_grid_slim=grid_interpolate_slim,
-        values=values,
+        pixel_values=values,
         delaunay=delaunay,
     )
 

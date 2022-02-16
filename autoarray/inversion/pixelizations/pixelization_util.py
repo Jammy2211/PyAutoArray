@@ -361,7 +361,7 @@ def delaunay_triangle_area_from(
 def delaunay_interpolated_array_from(
     shape_native: Tuple[int, int],
     interpolation_grid_slim: np.ndarray,
-    values: np.ndarray,
+    pixel_values: np.ndarray,
     delaunay: scipy.spatial.Delaunay,
 ) -> np.ndarray:
     """
@@ -385,7 +385,7 @@ def delaunay_interpolated_array_from(
     interpolation_grid_slim
         A 1D grid of (y,x) coordinates where each interpolation is evaluated. The shape of this grid must be equal to
         shape_native[0] * shape_native[1], but it does not need to be uniform itself.
-    values
+    pixel_values
         The values of the Delaunay nodes (e.g. the connecting points where triangles meet) which are interpolated
         to compute the value in each pixel on the `interpolated_grid`.
     delaunay
@@ -401,7 +401,7 @@ def delaunay_interpolated_array_from(
     simplices = delaunay.simplices
     pixel_points = delaunay.points
 
-    interpolated_grid = np.zeros(len(interpolation_grid_slim))
+    interpolated_array = np.zeros(len(interpolation_grid_slim))
 
     for slim_index in range(len(interpolation_grid_slim)):
 
@@ -412,10 +412,10 @@ def delaunay_interpolated_array_from(
             cloest_pixel_index = np.argmin(
                 np.sum((pixel_points - interpolating_point) ** 2.0, axis=1)
             )
-            interpolated_grid[slim_index] = values[cloest_pixel_index]
+            interpolated_array[slim_index] = pixel_values[cloest_pixel_index]
         else:
             triangle_points = pixel_points[simplices[simplex_index]]
-            triangle_values = values[simplices[simplex_index]]
+            triangle_values = pixel_values[simplices[simplex_index]]
 
             area_0 = delaunay_triangle_area_from(
                 corner_0=triangle_points[1],
@@ -436,9 +436,9 @@ def delaunay_interpolated_array_from(
 
             weight_abc = np.array([area_0, area_1, area_2]) / norm
 
-            interpolated_grid[slim_index] = np.sum(weight_abc * triangle_values)
+            interpolated_array[slim_index] = np.sum(weight_abc * triangle_values)
 
-    return interpolated_grid.reshape(shape_native)
+    return interpolated_array.reshape(shape_native)
 
 
 @numba_util.jit()
@@ -567,3 +567,33 @@ def voronoi_revised_from(
         region_list.append(region.tolist())
 
     return region_list, np.asarray(vertex_list)
+
+
+def voronoi_nn_interpolated_array_from(
+    shape_native: Tuple[int, int],
+    interpolation_grid_slim: np.ndarray,
+    pixel_values: np.ndarray,
+    voronoi: scipy.spatial.Voronoi,
+) -> np.ndarray:
+
+    try:
+        from autoarray.util.nn import nn_py
+    except ImportError as e:
+        raise ImportError(
+            "In order to use the VoronoiNN pixelization you must install the "
+            "Natural Neighbor Interpolation c package.\n\n"
+            ""
+            "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
+        ) from e
+
+    pixel_points = voronoi.points
+
+    interpolated_array = nn_py.natural_interpolation(
+        pixel_points[:, 0],
+        pixel_points[:, 1],
+        pixel_values,
+        interpolation_grid_slim[:, 1],
+        interpolation_grid_slim[:, 0],
+    )
+
+    return interpolated_array.reshape(shape_native)

@@ -673,40 +673,8 @@ class VoronoiNNDrawer(AbstractMatWrap2D):
             The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
         """
 
-        extent = mapper.source_pixelization_grid.extent
-
-        y_mean = 0.5 * (extent[2] + extent[3])
-        y_half_length = 0.5 * (extent[3] - extent[2])
-
-        x_mean = 0.5 * (extent[0] + extent[1])
-        x_half_length = 0.5 * (extent[1] - extent[0])
-
-        half_length = np.max([y_half_length, x_half_length])
-
-        y0 = y_mean - half_length
-        y1 = y_mean + half_length
-
-        x0 = x_mean - half_length
-        x1 = x_mean + half_length
-
-        nnn = 401
-
-        ys = np.linspace(y0, y1, nnn)
-        xs = np.linspace(x0, x1, nnn)
-
-        xs_grid, ys_grid = np.meshgrid(xs, ys)
-
-        xs_grid_1d = xs_grid.ravel()
-        ys_grid_1d = ys_grid.ravel()
-
         if values is None:
             return
-
-        interpolating_values = self.voronoiNN_interpolation_from(
-            voronoi=mapper.voronoi,
-            interpolating_yx=np.vstack((ys_grid_1d, xs_grid_1d)).T,
-            pixel_values=values,
-        )
 
         vmin = cmap.vmin_from(array=values)
         vmax = cmap.vmax_from(array=values)
@@ -724,37 +692,16 @@ class VoronoiNNDrawer(AbstractMatWrap2D):
             if colorbar is not None and colorbar_tickparams is not None:
                 colorbar_tickparams.set(cb=colorbar)
 
+        interpolation_array = mapper.source_pixelization_grid.interpolated_array_from(
+            values=values
+        )
+
         plt.imshow(
-            interpolating_values.reshape((nnn, nnn)),
+            X=interpolation_array,
             cmap=cmap,
-            extent=[x0, x1, y0, y1],
-            origin="lower",
+            extent=mapper.source_pixelization_grid.extent_square,
             aspect=aspect,
         )
-
-    def voronoiNN_interpolation_from(self, voronoi, interpolating_yx, pixel_values):
-
-        try:
-            from autoarray.util.nn import nn_py
-        except ImportError as e:
-            raise ImportError(
-                "In order to use the VoronoiNN pixelization you must install the "
-                "Natural Neighbor Interpolation c package.\n\n"
-                ""
-                "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
-            ) from e
-
-        pixel_points = voronoi.points
-
-        interpolating_values = nn_py.natural_interpolation(
-            pixel_points[:, 0],
-            pixel_points[:, 1],
-            pixel_values,
-            interpolating_yx[:, 1],
-            interpolating_yx[:, 0],
-        )
-
-        return interpolating_values
 
 
 class OriginScatter(GridScatter):

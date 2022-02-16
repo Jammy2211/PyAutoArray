@@ -568,6 +568,23 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
         """
         return Grid2DVoronoi(grid=grid)
 
+    def interpolated_array_from(
+        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+    ) -> Array2D:
+
+        interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
+
+        interpolated_array = pixelization_util.voronoi_nn_interpolated_array_from(
+            shape_native=shape_native,
+            interpolation_grid_slim=interpolation_grid.slim,
+            pixel_values=values,
+            voronoi=self.voronoi,
+        )
+
+        return Array2D.manual_native(
+            array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
+        )
+
 
 class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
     @cached_property
@@ -606,7 +623,7 @@ class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
             shape_native=shape_native,
             interpolation_grid_slim=interpolation_grid.slim,
             delaunay=self.delaunay,
-            values=values,
+            pixel_values=values,
         )
 
         return Array2D.manual_native(
