@@ -6,6 +6,8 @@ from typing import Optional, List, Union, Tuple
 from autoconf import cached_property
 
 from autoarray.structures.abstract_structure import AbstractStructure2D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
@@ -57,7 +59,76 @@ class PixelNeighbors(np.ndarray):
         return obj
 
 
-class Grid2DRectangular(AbstractStructure2D):
+class AbstractGrid2DPixelization(AbstractStructure2D):
+    @property
+    def extent(self) -> np.ndarray:
+        raise NotImplementedError
+
+    @property
+    def extent_square(self) -> Tuple[float, float, float, float]:
+        """
+        Returns an extent where the y and x distances from each edge are the same.
+
+        This ensures that a uniform grid with square pixels can be laid over this extent, such that an
+        `interpolation_grid` can be computed which has square pixels. This is not necessary, but benefits visualization.
+        """
+
+        y_mean = 0.5 * (self.extent[2] + self.extent[3])
+        y_half_length = 0.5 * (self.extent[3] - self.extent[2])
+
+        x_mean = 0.5 * (self.extent[0] + self.extent[1])
+        x_half_length = 0.5 * (self.extent[1] - self.extent[0])
+
+        half_length = np.max([y_half_length, x_half_length])
+
+        y0 = y_mean - half_length
+        y1 = y_mean + half_length
+
+        x0 = x_mean - half_length
+        x1 = x_mean + half_length
+
+        return (x0, x1, y0, y1)
+
+    def interpolation_grid_from(
+        self, shape_native: Tuple[int, int] = (401, 401)
+    ) -> "Grid2D":
+        """
+        Returns a 2D grid of (y,x) coordinates on to which a reconstruction from a pixelization (e.g. a `Delaunay`,
+        `Voronoi`) can be interpolated.
+
+        The interpolation grid is computed from the pixelization's `extent`, which describes the [x0, x1, y0, y1]
+        extent that the pixelization covers. This `extent` is converted to an `extent_square` such
+        that `x1 - x0 = y1 - y1`, ensuring that the interpolation grid can have uniform square pixels.
+
+        Parameters
+        ----------
+        shape_native
+            The (y,x) shape of the interpolation grid.
+        """
+
+        x0, x1, y0, y1 = self.extent_square
+
+        ys = np.linspace(y1, y0, shape_native[0])
+        xs = np.linspace(x0, x1, shape_native[1])
+
+        xs_grid, ys_grid = np.meshgrid(xs, ys)
+
+        xs_grid_1d = xs_grid.ravel()
+        ys_grid_1d = ys_grid.ravel()
+
+        grid_2d = np.vstack((ys_grid_1d, xs_grid_1d)).T
+
+        grid_2d = grid_2d.reshape((shape_native[0], shape_native[1], 2))
+
+        pixel_scales = (
+            abs(grid_2d[0, 0, 0] - grid_2d[1, 0, 0]),
+            abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
+        )
+
+        return Grid2D.manual_native(grid=grid_2d, pixel_scales=pixel_scales)
+
+
+class Grid2DRectangular(AbstractGrid2DPixelization):
     def __new__(
         cls,
         grid: np.ndarray,
@@ -234,7 +305,7 @@ class Grid2DRectangular(AbstractStructure2D):
         )
 
 
-class AbstractGrid2DMeshTriangulation(AbstractStructure2D):
+class AbstractGrid2DMeshTriangulation(AbstractGrid2DPixelization):
     def __new__(
         cls,
         grid: Union[np.ndarray, List],
@@ -524,3 +595,20 @@ class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
     @classmethod
     def manual_slim(cls, grid) -> "Grid2DDelaunay":
         return Grid2DDelaunay(grid=grid)
+
+    def interpolated_array_from(
+        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+    ) -> Array2D:
+
+        interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
+
+        interpolated_array = pixelization_util.delaunay_interpolated_array_from(
+            shape_native=shape_native,
+            interpolation_grid_slim=interpolation_grid.slim,
+            delaunay=self.delaunay,
+            values=values,
+        )
+
+        return Array2D.manual_native(
+            array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
+        )

@@ -187,9 +187,9 @@ def test__delaunay_interpolated_grid_from():
 
     values = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
 
-    interpolated_grid = aa.util.pixelization.delaunay_interpolated_grid_from(
+    interpolated_grid = aa.util.pixelization.delaunay_interpolated_array_from(
         shape_native=shape_native,
-        grid_interpolate_slim=grid_interpolate_slim,
+        interpolation_grid_slim=grid_interpolate_slim,
         values=values,
         delaunay=delaunay,
     )

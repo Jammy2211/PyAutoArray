@@ -605,40 +605,8 @@ class DelaunayDrawer(AbstractMatWrap2D):
             The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
         """
 
-        extent = mapper.source_pixelization_grid.extent
-
-        y_mean = 0.5 * (extent[2] + extent[3])
-        y_half_length = 0.5 * (extent[3] - extent[2])
-
-        x_mean = 0.5 * (extent[0] + extent[1])
-        x_half_length = 0.5 * (extent[1] - extent[0])
-
-        half_length = np.max([y_half_length, x_half_length])
-
-        y0 = y_mean - half_length
-        y1 = y_mean + half_length
-
-        x0 = x_mean - half_length
-        x1 = x_mean + half_length
-
-        nnn = 401
-
-        ys = np.linspace(y0, y1, nnn)
-        xs = np.linspace(x0, x1, nnn)
-
-        xs_grid, ys_grid = np.meshgrid(xs, ys)
-
-        xs_grid_1d = xs_grid.ravel()
-        ys_grid_1d = ys_grid.ravel()
-
         if values is None:
             return
-
-        interpolating_values = self.delaunay_interpolated_grid_from(
-            delaunay=mapper.delaunay,
-            interpolating_yx=np.vstack((ys_grid_1d, xs_grid_1d)).T,
-            pixel_values=values,
-        )
 
         vmin = cmap.vmin_from(array=values)
         vmax = cmap.vmax_from(array=values)
@@ -656,89 +624,16 @@ class DelaunayDrawer(AbstractMatWrap2D):
             if colorbar is not None and colorbar_tickparams is not None:
                 colorbar_tickparams.set(cb=colorbar)
 
-        plt.imshow(
-            interpolating_values.reshape((nnn, nnn)),
-            cmap=cmap,
-            extent=[x0, x1, y0, y1],
-            origin="lower",
-            aspect=aspect,
+        interpolation_array = mapper.source_pixelization_grid.interpolated_array_from(
+            values=values
         )
 
-        # uncomment below if only plot triangle boundaries
-        # d_points, simplices = self.delaunay_triangles(mapper.delaunay)
-        # plt.triplot(d_points[:, 0], d_points[:, 1], simplices)
-        # plt.xlim([-0.6, 0.6])
-        # plt.ylim([-0.6, 0.6])
-
-    def delaunay_triangles(self, delaunay):
-        """
-        Reconstruct infinite voronoi regions in a 2D diagram to finite regions.
-
-        Parameters
-        ----------
-        voronoi : Voronoi
-            The input Voronoi diagram that is being plotted.
-        radius, optional
-            Distance to 'points at infinity'.
-
-        Returns
-        -------
-        regions : list of tuples
-            Indices of vertices in each revised Voronoi regions.
-        vertices : list of tuples
-            Grid2DIrregular for revised Voronoi vertices. Same as coordinates
-            of input vertices, with 'points at infinity' appended to the
-            end.
-        """
-        xpts = delaunay.points[:, 1]
-        ypts = delaunay.points[:, 0]
-
-        return np.vstack((xpts, ypts)).T, delaunay.simplices
-
-    def delaunay_interpolated_grid_from(self, delaunay, interpolating_yx, pixel_values):
-
-        simplex_index_for_interpolating_points = delaunay.find_simplex(interpolating_yx)
-        simplices = delaunay.simplices
-        pixel_points = delaunay.points
-
-        interpolating_values = np.zeros(len(interpolating_yx))
-
-        for i in range(len(interpolating_yx)):
-
-            simplex_index = simplex_index_for_interpolating_points[i]
-            interpolating_point = interpolating_yx[i]
-
-            if simplex_index == -1:
-                cloest_pixel_index = np.argmin(
-                    np.sum((pixel_points - interpolating_point) ** 2.0, axis=1)
-                )
-                interpolating_values[i] = pixel_values[cloest_pixel_index]
-            else:
-                triangle_points = pixel_points[simplices[simplex_index]]
-                triangle_values = pixel_values[simplices[simplex_index]]
-
-                term0 = pixelization_util.delaunay_triangle_area_from(
-                    corner_0=triangle_points[1],
-                    corner_1=triangle_points[2],
-                    corner_2=interpolating_point,
-                )
-                term1 = pixelization_util.delaunay_triangle_area_from(
-                    corner_0=triangle_points[0],
-                    corner_1=triangle_points[2],
-                    corner_2=interpolating_point,
-                )
-                term2 = pixelization_util.delaunay_triangle_area_from(
-                    corner_0=triangle_points[0],
-                    corner_1=triangle_points[1],
-                    corner_2=interpolating_point,
-                )
-                norm = term0 + term1 + term2
-
-                weight_abc = np.array([term0, term1, term2]) / norm
-
-                interpolating_values[i] = np.sum(weight_abc * triangle_values)
-
-        return interpolating_values
+        plt.imshow(
+            X=interpolation_array,
+            cmap=cmap,
+            extent=mapper.source_pixelization_grid.extent_square,
+            aspect=aspect,
+        )
 
 
 class VoronoiNNDrawer(AbstractMatWrap2D):

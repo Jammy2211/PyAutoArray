@@ -5,6 +5,54 @@ import scipy.spatial
 from autoarray import exc
 import autoarray as aa
 
+from autoarray.mock.mock import MockGrid2DPixelization
+
+
+class TestAbstractGrid2DPixelization:
+    def test__interpolation_grid_from(self):
+
+        grid = MockGrid2DPixelization(extent=(-1.0, 1.0, -1.0, 1.0))
+
+        interpolation_grid = grid.interpolation_grid_from(shape_native=(3, 2))
+
+        assert interpolation_grid.native == pytest.approx(
+            np.array(
+                [
+                    [[1.0, -1.0], [1.0, 1.0]],
+                    [[0.0, -1.0], [0.0, 1.0]],
+                    [[-1.0, -1.0], [-1.0, 1.0]],
+                ]
+            )
+        )
+        assert interpolation_grid.pixel_scales == (1.0, 2.0)
+
+        interpolation_grid = grid.interpolation_grid_from(shape_native=(2, 3))
+
+        assert interpolation_grid.native == pytest.approx(
+            np.array(
+                [
+                    [[1.0, -1.0], [1.0, 0.0], [1.0, 1.0]],
+                    [[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]],
+                ]
+            )
+        )
+        assert interpolation_grid.pixel_scales == (2.0, 1.0)
+
+        grid = MockGrid2DPixelization(extent=(-20.0, -5.0, -10.0, -5.0))
+
+        interpolation_grid = grid.interpolation_grid_from(shape_native=(3, 3))
+
+        assert interpolation_grid.native == pytest.approx(
+            np.array(
+                [
+                    [[0.0, -20.0], [0.0, -12.5], [0.0, -5.0]],
+                    [[-7.5, -20.0], [-7.5, -12.5], [-7.5, -5.0]],
+                    [[-15.0, -20.0], [-15.0, -12.5], [-15.0, -5.0]],
+                ]
+            )
+        )
+        assert interpolation_grid.pixel_scales == (7.5, 7.5)
+
 
 class TestGrid2DRectangular:
     def test__pixel_neighbors__compare_to_pixelization_util(self):
@@ -437,4 +485,30 @@ class TestGrid2DDelaunay:
                 ]
             ),
             1e-6,
+        )
+
+    def test__interpolated_array_from(self):
+
+        grid = aa.Grid2D.manual_slim(
+            [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+            shape_native=(3, 2),
+            pixel_scales=1.0,
+        )
+
+        grid_delaunay = aa.Grid2DDelaunay(grid=grid)
+
+        interpolated_array = grid_delaunay.interpolated_array_from(
+            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(3, 2)
+        )
+
+        assert interpolated_array.native == pytest.approx(
+            np.array([[3.0, 5.0], [2.0, 5.0], [1.0, 5.0]]), 1.0e-4
+        )
+
+        interpolated_array = grid_delaunay.interpolated_array_from(
+            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(2, 3)
+        )
+
+        assert interpolated_array.native == pytest.approx(
+            np.array([[3.0, 6.0, 5.0], [1.0, 4.0, 5.0]]), 1.0e-4
         )

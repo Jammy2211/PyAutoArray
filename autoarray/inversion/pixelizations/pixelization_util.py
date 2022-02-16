@@ -358,9 +358,9 @@ def delaunay_triangle_area_from(
     return 0.5 * np.abs(x1 * y2 + x2 * y3 + x3 * y1 - x2 * y1 - x3 * y2 - x1 * y3)
 
 
-def delaunay_interpolated_grid_from(
+def delaunay_interpolated_array_from(
     shape_native: Tuple[int, int],
-    grid_interpolate_slim: np.ndarray,
+    interpolation_grid_slim: np.ndarray,
     values: np.ndarray,
     delaunay: scipy.spatial.Delaunay,
 ) -> np.ndarray:
@@ -382,7 +382,7 @@ def delaunay_interpolated_grid_from(
     ----------
     shape_native
         The 2D (y,x) shape of the uniform grid the values are interpolated on too.
-    grid_interpolate_slim
+    interpolation_grid_slim
         A 1D grid of (y,x) coordinates where each interpolation is evaluated. The shape of this grid must be equal to
         shape_native[0] * shape_native[1], but it does not need to be uniform itself.
     values
@@ -396,17 +396,17 @@ def delaunay_interpolated_grid_from(
     The input values interpolated to the `grid_interpolate_slim` (y,x) coordintes given the Delaunay triangulation.
 
     """
-    simplex_index_for_interpolate_index = delaunay.find_simplex(grid_interpolate_slim)
+    simplex_index_for_interpolate_index = delaunay.find_simplex(interpolation_grid_slim)
 
     simplices = delaunay.simplices
     pixel_points = delaunay.points
 
-    interpolated_grid = np.zeros(len(grid_interpolate_slim))
+    interpolated_grid = np.zeros(len(interpolation_grid_slim))
 
-    for slim_index in range(len(grid_interpolate_slim)):
+    for slim_index in range(len(interpolation_grid_slim)):
 
         simplex_index = simplex_index_for_interpolate_index[slim_index]
-        interpolating_point = grid_interpolate_slim[slim_index]
+        interpolating_point = interpolation_grid_slim[slim_index]
 
         if simplex_index == -1:
             cloest_pixel_index = np.argmin(
