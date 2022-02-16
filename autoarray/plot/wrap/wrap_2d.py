@@ -568,7 +568,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
             plt.fill(*zip(*polygon), facecolor=color, zorder=-1, **self.config_dict)
 
 
-class DelaunayDrawer(AbstractMatWrap2D):
+class InterpolatedReconstruction(AbstractMatWrap2D):
     """
     Draws Voronoi pixels from a `MapperVoronoiNoInterp` object (see `inversions.mapper`). This includes both drawing
     each Voronoi cell and coloring it according to a color value.
@@ -580,9 +580,9 @@ class DelaunayDrawer(AbstractMatWrap2D):
     https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill.html
     """
 
-    def draw_delaunay_pixels(
+    def imshow_reconstruction(
         self,
-        mapper: MapperDelaunay,
+        mapper: Union[MapperDelaunay, MapperVoronoiNoInterp, MapperVoronoi],
         values: np.ndarray,
         cmap: wb.Cmap,
         colorbar: wb.Colorbar,
@@ -629,75 +629,7 @@ class DelaunayDrawer(AbstractMatWrap2D):
         )
 
         plt.imshow(
-            X=interpolation_array,
-            cmap=cmap,
-            extent=mapper.source_pixelization_grid.extent_square,
-            aspect=aspect,
-        )
-
-
-class VoronoiNNDrawer(AbstractMatWrap2D):
-    """
-    Draws Voronoi pixels from a `MapperVoronoiNoInterp` object (see `inversions.mapper`). This includes both drawing
-    each Voronoi cell and coloring it according to a color value.
-
-    The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
-
-    This object wraps methods described in below:
-
-    https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill.html
-    """
-
-    def draw_voronoiNN_pixels(
-        self,
-        mapper: MapperVoronoi,
-        values: np.ndarray,
-        cmap: wb.Cmap,
-        colorbar: wb.Colorbar,
-        colorbar_tickparams: wb.ColorbarTickParams = None,
-        aspect=None,
-    ):
-        """
-        Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 
-        coordinate of the centre of every Voronoi cell. This uses the method `plt.fill`.
-        
-        Parameters
-        ----------
-        mapper : MapperVoronoiNoInterp
-            An object which contains the (y,x) grid of Voronoi cell centres.
-        values
-            An array used to compute the color values that every Voronoi cell is plotted using.
-        cmap : str
-            The colormap used to plot each Voronoi cell.
-        colorbar : Colorbar
-            The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
-        """
-
-        if values is None:
-            return
-
-        vmin = cmap.vmin_from(array=values)
-        vmax = cmap.vmax_from(array=values)
-
-        color_values = np.where(values > vmax, vmax, values)
-        color_values = np.where(values < vmin, vmin, color_values)
-
-        cmap = plt.get_cmap(cmap.config_dict["cmap"])
-
-        if colorbar is not None:
-
-            colorbar = colorbar.set_with_color_values(
-                cmap=cmap, color_values=color_values
-            )
-            if colorbar is not None and colorbar_tickparams is not None:
-                colorbar_tickparams.set(cb=colorbar)
-
-        interpolation_array = mapper.source_pixelization_grid.interpolated_array_from(
-            values=values
-        )
-
-        plt.imshow(
-            X=interpolation_array,
+            X=interpolation_array.native,
             cmap=cmap,
             extent=mapper.source_pixelization_grid.extent_square,
             aspect=aspect,
