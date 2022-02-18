@@ -1,3 +1,4 @@
+import numpy as np
 from typing import Dict, List, Optional, Union
 
 from autoarray.dataset.imaging import Imaging
@@ -13,6 +14,7 @@ from autoarray.inversion.linear_eqn.imaging import LEqImagingMapping
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.linear_operator import InversionLinearOperator
 from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerMapping
+from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerWTilde
 from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerMappingPyLops
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -46,6 +48,8 @@ def inversion_from(
         visibilities=dataset.visibilities,
         noise_map=dataset.noise_map,
         transformer=dataset.transformer,
+        w_tilde=dataset.w_tilde,
+        dirty_image_w_tilde=dataset.dirty_image_w_tilde,
         linear_obj_list=linear_obj_list,
         regularization_list=regularization_list,
         settings=settings,
@@ -107,6 +111,8 @@ def inversion_interferometer_unpacked_from(
     visibilities: Visibilities,
     noise_map: VisibilitiesNoiseMap,
     transformer: Union[TransformerDFT, TransformerNUFFT],
+    w_tilde,
+    dirty_image_w_tilde: np.ndarray,
     linear_obj_list: List[LinearObj],
     regularization_list: Optional[List[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
@@ -115,12 +121,25 @@ def inversion_interferometer_unpacked_from(
 ):
     if not settings.use_linear_operators:
 
-        leq = LEqInterferometerMapping(
-            noise_map=noise_map,
-            transformer=transformer,
-            linear_obj_list=linear_obj_list,
-            profiling_dict=profiling_dict,
-        )
+        if settings.use_w_tilde:
+
+            leq = LEqInterferometerWTilde(
+                noise_map=noise_map,
+                transformer=transformer,
+                w_tilde=w_tilde,
+                dirty_image_w_tilde=dirty_image_w_tilde,
+                linear_obj_list=linear_obj_list,
+                profiling_dict=profiling_dict,
+            )
+
+        else:
+
+            leq = LEqInterferometerMapping(
+                noise_map=noise_map,
+                transformer=transformer,
+                linear_obj_list=linear_obj_list,
+                profiling_dict=profiling_dict,
+            )
 
     else:
 

@@ -28,6 +28,10 @@ the path every time you open a new environment.
  
     ./configure
 
+3 (Optional) If you receive a permission error running the command above (which has been reported to occur on super computers) then try the following command instead:
+
+    bash ./configure
+
 4. run the following command is to backup the automatically generated makefile.
 
     cp makefile_autolens makefile

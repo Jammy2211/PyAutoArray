@@ -25,6 +25,7 @@ from autoarray.plot.wrap.wrap_2d import GridPlot
 from autoarray.plot.wrap.wrap_2d import GridErrorbar
 from autoarray.plot.wrap.wrap_2d import VectorYXQuiver
 from autoarray.plot.wrap.wrap_2d import PatchOverlay
+from autoarray.plot.wrap.wrap_2d import InterpolatedReconstruction
 from autoarray.plot.wrap.wrap_2d import VoronoiDrawer
 from autoarray.plot.wrap.wrap_2d import OriginScatter
 from autoarray.plot.wrap.wrap_2d import MaskScatter

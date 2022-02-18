@@ -200,7 +200,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         )
 
     @profile_func
-    def data_vector_from(self, data: Visibilities, preloads) -> np.ndarray:
+    def data_vector_from(self, data: Array2D, preloads: Preloads) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
         by this object.
@@ -302,6 +302,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
         w_tilde: WTildeInterferometer,
+        dirty_image_w_tilde: np.ndarray,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
@@ -336,6 +337,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         """
 
         self.w_tilde = w_tilde
+        self.dirty_image_w_tilde = dirty_image_w_tilde
         self.w_tilde.check_noise_map(noise_map=noise_map)
 
         super().__init__(
@@ -346,7 +348,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         )
 
     @profile_func
-    def data_vector_from(self, data: Visibilities, preloads: Preloads) -> np.ndarray:
+    def data_vector_from(self, data: Array2D, preloads: Preloads) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
         by this object.
@@ -359,7 +361,9 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
 
         The calculation is described in more detail in `leq_util.w_tilde_data_interferometer_from`.
         """
-        return None
+        return np.dot(
+            self.linear_obj_list[0].mapping_matrix.T, self.dirty_image_w_tilde
+        )
 
     @property
     @profile_func

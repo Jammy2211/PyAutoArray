@@ -570,49 +570,72 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
 class InterpolatedReconstruction(AbstractMatWrap2D):
     """
-    Draws Voronoi pixels from a `MapperVoronoiNoInterp` object (see `inversions.mapper`). This includes both drawing
-    each Voronoi cell and coloring it according to a color value.
+    Given a `Mapper` and a corresponding array of `pixel_values` (e.g. the reconstruction values of a Delaunay
+    triangulation) plot the values using `plt.imshow()`.
 
-    The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
+    The `pixel_values` are an ndarray of values which correspond to the irregular pixels of the pixelization (e.g. for
+    a Delaunay triangulation they are the connecting corners of each triangle or Voronoi mesh). This cannot be plotted
+    with `imshow()`, therefore this class first converts the `pixel_values` from this irregular grid to a uniform 2D
+    array of square pixels via interpolation.
+
+    The interpolation routine depends on the `Mapper`, with most mappers having their own built-in interpolation
+    routine specific to that pixelization.
 
     This object wraps methods described in below:
 
-    https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill.html
+    - plt.imshow: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
     """
 
     def imshow_reconstruction(
         self,
         mapper: Union[MapperDelaunay, MapperVoronoiNoInterp, MapperVoronoi],
-        values: np.ndarray,
+        pixel_values: np.ndarray,
         cmap: wb.Cmap,
         colorbar: wb.Colorbar,
         colorbar_tickparams: wb.ColorbarTickParams = None,
         aspect=None,
     ):
         """
-        Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 
-        coordinate of the centre of every Voronoi cell. This uses the method `plt.fill`.
+        Given a `Mapper` and a corresponding array of `pixel_values` (e.g. the reconstruction values of a Delaunay
+        triangulation) plot the values using `plt.imshow()`.
+
+        The `pixel_values` are an ndarray of values which correspond to the irregular pixels of the pixelization (e.g. for
+        a Delaunay triangulation they are the connecting corners of each triangle or Voronoi mesh). This cannot be plotted
+        with `imshow()`, therefore this class first converts the `pixel_values` from this irregular grid to a uniform 2D
+        array of square pixels via interpolation.
+
+        The interpolation routine depends on the `Mapper`, with most mappers having their own built-in interpolation
+        routine specific to that pixelization.
+
+        This object wraps methods described in below:
+
+        - plt.imshow: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
         
         Parameters
         ----------
-        mapper : MapperVoronoiNoInterp
-            An object which contains the (y,x) grid of Voronoi cell centres.
-        values
-            An array used to compute the color values that every Voronoi cell is plotted using.
-        cmap : str
-            The colormap used to plot each Voronoi cell.
-        colorbar : Colorbar
-            The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
+        mapper
+            An object which contains a 2D grid of pixelization pixels (e.g. Voronoi mesh cells) and defines how to
+            interpolate values from the pixelization.
+        pixel_values
+            The pixel values of the pixelization (e.g. a Voronoi mesh) which are interpolated to a uniform square
+            array for plotting with `imshow()`.
+        cmap
+            The colormap used by `imshow()` to plot the pixelization values.
+        colorbar
+            The `Colorbar` object in `mat_base` used to set the colorbar of the figure the interpolated pixelization
+            values (e.g. values interpolated from the Voronoi mesh) are plotted on.
+        colorbar_tickparams
+            Controls the tick parameters of the colorbar.
         """
 
-        if values is None:
+        if pixel_values is None:
             return
 
-        vmin = cmap.vmin_from(array=values)
-        vmax = cmap.vmax_from(array=values)
+        vmin = cmap.vmin_from(array=pixel_values)
+        vmax = cmap.vmax_from(array=pixel_values)
 
-        color_values = np.where(values > vmax, vmax, values)
-        color_values = np.where(values < vmin, vmin, color_values)
+        color_values = np.where(pixel_values > vmax, vmax, pixel_values)
+        color_values = np.where(pixel_values < vmin, vmin, color_values)
 
         cmap = plt.get_cmap(cmap.config_dict["cmap"])
 
@@ -625,7 +648,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
                 colorbar_tickparams.set(cb=colorbar)
 
         interpolation_array = mapper.source_pixelization_grid.interpolated_array_from(
-            values=values
+            values=pixel_values
         )
 
         plt.imshow(

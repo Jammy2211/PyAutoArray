@@ -114,7 +114,7 @@ class TransformerDFT(PyLopsOperator):
 
         return Visibilities(visibilities=visibilities)
 
-    def image_from(self, visibilities):
+    def image_from(self, visibilities, use_adjoint_scaling: bool = False):
 
         image_slim = transformer_util.image_via_jit_from(
             n_pixels=self.grid.shape[0],
@@ -249,8 +249,14 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
             )  # flip due to PyNUFFT internal flip
         )
 
-    def image_from(self, visibilities):
+    def image_from(self, visibilities, use_adjoint_scaling: bool = False):
+
         image = np.real(self.adjoint(visibilities))[::-1, :]
+
+        if use_adjoint_scaling:
+
+            image *= self.adjoint_scaling
+
         return Array2D.manual_native(
             array=image, pixel_scales=self.real_space_mask.pixel_scales
         )

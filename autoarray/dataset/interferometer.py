@@ -191,6 +191,14 @@ class Interferometer(AbstractDataset):
             curvature_preload=curvature_preload, noise_map_value=self.noise_map[0]
         )
 
+    @cached_property
+    def dirty_image_w_tilde(self):
+        return self.transformer.image_from(
+            visibilities=self.visibilities.real * self.noise_map.real ** -2.0
+            + 1j * self.visibilities.imag * self.noise_map.imag ** -2.0,
+            use_adjoint_scaling=True,
+        )
+
     @property
     def mask(self):
         return self.real_space_mask

@@ -11,7 +11,6 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
@@ -940,7 +939,7 @@ class MatPlot2D(AbstractMatPlot):
 
         self.interpolated_reconstruction.imshow_reconstruction(
             mapper=mapper,
-            values=source_pixelilzation_values,
+            pixel_values=source_pixelilzation_values,
             cmap=self.cmap,
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,
@@ -998,7 +997,7 @@ class MatPlot2D(AbstractMatPlot):
 
         self.interpolated_reconstruction.imshow_reconstruction(
             mapper=mapper,
-            values=source_pixelilzation_values,
+            pixel_values=source_pixelilzation_values,
             cmap=self.cmap,
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,

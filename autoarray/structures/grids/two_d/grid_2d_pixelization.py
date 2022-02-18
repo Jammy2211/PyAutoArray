@@ -569,17 +569,32 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
         return Grid2DVoronoi(grid=grid)
 
     def interpolated_array_from(
-        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+        self,
+        values: np.ndarray,
+        shape_native: Tuple[int, int] = (401, 401),
+        use_nn=False,
     ) -> Array2D:
 
         interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
 
-        interpolated_array = pixelization_util.voronoi_nn_interpolated_array_from(
-            shape_native=shape_native,
-            interpolation_grid_slim=interpolation_grid.slim,
-            pixel_values=values,
-            voronoi=self.voronoi,
-        )
+        if use_nn:
+
+            interpolated_array = pixelization_util.voronoi_nn_interpolated_array_from(
+                shape_native=shape_native,
+                interpolation_grid_slim=interpolation_grid.slim,
+                pixel_values=values,
+                voronoi=self.voronoi,
+            )
+
+        else:
+
+            from scipy.interpolate import griddata
+
+            interpolated_array = griddata(
+                points=self.voronoi.points, values=values, xi=interpolation_grid
+            )
+
+            interpolated_array = interpolated_array.reshape(shape_native)
 
         return Array2D.manual_native(
             array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales

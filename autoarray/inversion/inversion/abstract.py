@@ -48,6 +48,7 @@ class AbstractInversion:
         self.regularization_list = regularization_list
 
         self.settings = settings
+
         self.preloads = preloads
         self.profiling_dict = profiling_dict
 
