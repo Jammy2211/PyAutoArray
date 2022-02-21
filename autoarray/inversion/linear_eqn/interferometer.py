@@ -16,6 +16,7 @@ from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.linear_eqn import leq_util
 from autoarray.inversion.inversion import inversion_interferometer_util
+from autoarray.inversion.inversion import inversion_util_secret
 
 from autoarray.numba_util import profile_func
 
@@ -233,6 +234,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         concatenated ensuring their `curvature_matrix` values are solved for simultaneously. This includes all
         diagonal and off-diagonal terms describing the covariances between linear objects.
         """
+
         real_curvature_matrix = leq_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.transformed_mapping_matrix.real,
             noise_map=self.noise_map.real,
@@ -365,6 +367,22 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
             self.linear_obj_list[0].mapping_matrix.T, self.dirty_image_w_tilde
         )
 
+    @cached_property
+    @profile_func
+    def curvature_matrix(self) -> np.ndarray:
+        """
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
+
+        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
+        concatenated ensuring their `curvature_matrix` values are solved for simultaneously. This includes all
+        diagonal and off-diagonal terms describing the covariances between linear objects.
+        """
+        return self.curvature_matrix_diag
+
     @property
     @profile_func
     def curvature_matrix_diag(self) -> np.ndarray:
@@ -377,12 +395,19 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
 
         This function computes the diagonal terms of F using the w_tilde formalism.
         """
-        return inversion_interferometer_util.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
+
+        return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
             curvature_preload=self.w_tilde.curvature_preload,
             pix_indexes_for_sub_slim_index=self.mapper_list[
                 0
             ].pix_indexes_for_sub_slim_index,
-            native_index_for_slim_index=self.transformer.real_space_mask.mask.native_index_for_slim_index,
+            pix_size_for_sub_slim_index=self.mapper_list[
+                0
+            ].pix_sizes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index=self.mapper_list[
+                0
+            ].pix_weights_for_sub_slim_index,
+            native_index_for_slim_index=self.transformer.real_space_mask.native_index_for_slim_index,
             pixelization_pixels=self.linear_obj_list[0].pixels,
         )
 

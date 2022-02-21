@@ -1,3 +1,5 @@
+from typing import Dict, Tuple, Optional
+
 from autoarray.structures.arrays.abstract_array import Header
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.layout.layout import Layout2D
@@ -109,24 +111,45 @@ class Array2DEuclid(Array2D):
         row_index = ccd_id[-1]
 
         if (row_index in "123") and (quadrant_id == "E"):
-            return Array2DEuclid.bottom_left(array_electrons=array)
+            return Array2DEuclid.bottom_left(
+                array_electrons=array, ccd_id=ccd_id, quadrant_id=quadrant_id
+            )
         elif (row_index in "123") and (quadrant_id == "F"):
-            return Array2DEuclid.bottom_right(array_electrons=array)
+            return Array2DEuclid.bottom_right(
+                array_electrons=array, ccd_id=ccd_id, quadrant_id=quadrant_id
+            )
         elif (row_index in "123") and (quadrant_id == "G"):
-            return Array2DEuclid.top_right(array_electrons=array)
+            return Array2DEuclid.top_right(
+                array_electrons=array, ccd_id=ccd_id, quadrant_id=quadrant_id
+            )
         elif (row_index in "123") and (quadrant_id == "H"):
-            return Array2DEuclid.top_left(array_electrons=array)
+            return Array2DEuclid.top_left(
+                array_electrons=array, ccd_id=ccd_id, quadrant_id=quadrant_id
+            )
         elif (row_index in "456") and (quadrant_id == "E"):
-            return Array2DEuclid.top_right(array_electrons=array)
+            return Array2DEuclid.top_right(
+                array_electrons=array, ccd_id=ccd_id, quadrant_id=quadrant_id
+            )
         elif (row_index in "456") and (quadrant_id == "F"):
-            return Array2DEuclid.top_left(array_electrons=array)
+            return Array2DEuclid.top_left(
+                array_electrons=array, ccd_id=ccd_id, quadrant_id=quadrant_id
+            )
         elif (row_index in "456") and (quadrant_id == "G"):
-            return Array2DEuclid.bottom_left(array_electrons=array)
+            return Array2DEuclid.bottom_left(
+                array_electrons=array, ccd_id=ccd_id, quadrant_id=quadrant_id
+            )
         elif (row_index in "456") and (quadrant_id == "H"):
-            return Array2DEuclid.bottom_right(array_electrons=array)
+            return Array2DEuclid.bottom_right(
+                array_electrons=array, ccd_id=ccd_id, quadrant_id=quadrant_id
+            )
 
     @classmethod
-    def top_left(cls, array_electrons):
+    def top_left(
+        cls,
+        array_electrons,
+        ccd_id: Optional[str] = None,
+        quadrant_id: Optional[str] = None,
+    ):
         """
         Use an input array of a Euclid quadrant corresponding to the top-left of a Euclid CCD and rotate the quadrant
         to the correct orientation for arCTIc clocking.
@@ -139,12 +162,19 @@ class Array2DEuclid(Array2D):
             array=array_electrons, roe_corner=(0, 0)
         )
 
-        header = Header(original_roe_corner=(0, 0))
+        header = HeaderEuclid(
+            original_roe_corner=(0, 0), ccd_id=ccd_id, quadrant_id=quadrant_id
+        )
 
         return cls.manual(array=array_electrons, pixel_scales=0.1, header=header)
 
     @classmethod
-    def top_right(cls, array_electrons):
+    def top_right(
+        cls,
+        array_electrons,
+        ccd_id: Optional[str] = None,
+        quadrant_id: Optional[str] = None,
+    ):
         """
         Use an input array of a Euclid quadrant corresponding the top-left of a Euclid CCD and rotate the  quadrant to
         the correct orientation for arCTIc clocking.
@@ -157,12 +187,19 @@ class Array2DEuclid(Array2D):
             array=array_electrons, roe_corner=(0, 1)
         )
 
-        header = Header(original_roe_corner=(0, 1))
+        header = HeaderEuclid(
+            original_roe_corner=(0, 1), ccd_id=ccd_id, quadrant_id=quadrant_id
+        )
 
         return cls.manual(array=array_electrons, pixel_scales=0.1, header=header)
 
     @classmethod
-    def bottom_left(cls, array_electrons):
+    def bottom_left(
+        cls,
+        array_electrons,
+        ccd_id: Optional[str] = None,
+        quadrant_id: Optional[str] = None,
+    ):
         """
         Use an input array of a Euclid quadrant corresponding to the bottom-left of a Euclid CCD and rotate the
         quadrant to the correct orientation for arCTIc clocking.
@@ -175,12 +212,19 @@ class Array2DEuclid(Array2D):
             array=array_electrons, roe_corner=(1, 0)
         )
 
-        header = Header(original_roe_corner=(1, 0))
+        header = HeaderEuclid(
+            original_roe_corner=(1, 0), ccd_id=ccd_id, quadrant_id=quadrant_id
+        )
 
         return cls.manual(array=array_electrons, pixel_scales=0.1, header=header)
 
     @classmethod
-    def bottom_right(cls, array_electrons):
+    def bottom_right(
+        cls,
+        array_electrons,
+        ccd_id: Optional[str] = None,
+        quadrant_id: Optional[str] = None,
+    ):
         """
         Use an input array of a Euclid quadrant corresponding to the bottom-right of a Euclid CCD and rotate the
         quadrant to the correct orientation for arCTIc clocking.
@@ -193,7 +237,9 @@ class Array2DEuclid(Array2D):
             array=array_electrons, roe_corner=(1, 1)
         )
 
-        header = Header(original_roe_corner=(1, 1))
+        header = HeaderEuclid(
+            original_roe_corner=(1, 1), ccd_id=ccd_id, quadrant_id=quadrant_id
+        )
 
         return cls.manual(array=array_electrons, pixel_scales=0.1, header=header)
 
@@ -489,3 +535,30 @@ class Layout2DEuclid(Layout2D):
         )
 
         return layout_2d.new_rotated_from(roe_corner=(1, 1))
+
+
+class HeaderEuclid(Header):
+    def __init__(
+        self,
+        header_sci_obj: Dict = None,
+        header_hdu_obj: Dict = None,
+        original_roe_corner: Tuple[int, int] = None,
+        readout_offsets: Optional[Tuple] = None,
+        ccd_id: Optional[str] = None,
+        quadrant_id: Optional[str] = None,
+    ):
+
+        super().__init__(
+            header_sci_obj=header_sci_obj,
+            header_hdu_obj=header_hdu_obj,
+            original_roe_corner=original_roe_corner,
+            readout_offsets=readout_offsets,
+        )
+
+        self.ccd_id = ccd_id
+        self.quadrant_id = quadrant_id
+
+    @property
+    def row_index(self) -> str:
+        if self.ccd_id is not None:
+            return self.ccd_id[-1]

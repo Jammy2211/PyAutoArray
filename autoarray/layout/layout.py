@@ -7,9 +7,13 @@ from autoarray.layout.region import Region2D
 
 from autoarray.layout import layout_util
 
+from autoarray.type import Region1DLike, Region2DLike
+
 
 class Layout1D:
-    def __init__(self, shape_1d, prescan=None, overscan=None):
+    def __init__(
+        self, shape_1d, prescan: Region1DLike = None, overscan: Region1DLike = None
+    ):
         """
         Abstract base class for a layout, which defines the regions a signal, its input normalization and other
         properties.
@@ -39,9 +43,9 @@ class Layout2D:
         self,
         shape_2d: Tuple[int, int],
         original_roe_corner: Tuple[int, int] = (1, 0),
-        parallel_overscan: Tuple[int, int, int, int] = None,
-        serial_prescan: Tuple[int, int, int, int] = None,
-        serial_overscan: Tuple[int, int, int, int] = None,
+        parallel_overscan: Region2DLike = None,
+        serial_prescan: Region2DLike = None,
+        serial_overscan: Region2DLike = None,
     ):
         """
         Abstract base class for a layout of a 2D array, which defines specific regions on the array, for example

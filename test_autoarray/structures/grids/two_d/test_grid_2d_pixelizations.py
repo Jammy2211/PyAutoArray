@@ -460,7 +460,7 @@ class TestGrid2DVoronoi:
         grid_voronoi = aa.Grid2DVoronoi(grid=grid)
 
         interpolated_array = grid_voronoi.interpolated_array_from(
-            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(3, 2)
+            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(3, 2), use_nn=True
         )
 
         assert interpolated_array.native == pytest.approx(
@@ -468,7 +468,7 @@ class TestGrid2DVoronoi:
         )
 
         interpolated_array = grid_voronoi.interpolated_array_from(
-            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(2, 3)
+            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(2, 3), use_nn=True
         )
 
         assert interpolated_array.native == pytest.approx(

@@ -75,6 +75,8 @@ class Rectangular(AbstractPixelization):
         self.pixels = self.shape[0] * self.shape[1]
         super().__init__()
 
+        self.profiling_dict = {}
+
     @property
     def uses_interpolation(self):
         return False

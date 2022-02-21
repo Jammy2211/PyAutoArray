@@ -37,6 +37,7 @@ from .inversion.mappers.voronoi import MapperVoronoi
 from .inversion.pixelizations.settings import SettingsPixelization
 from .inversion.linear_eqn.imaging import LEqImagingMapping
 from .inversion.linear_eqn.imaging import LEqImagingWTilde
+from .inversion.linear_eqn.interferometer import LEqInterferometerWTilde
 from .inversion.linear_eqn.interferometer import LEqInterferometerMapping
 from .inversion.linear_eqn.interferometer import LEqInterferometerMappingPyLops
 from .inversion.linear_obj import LinearObj
