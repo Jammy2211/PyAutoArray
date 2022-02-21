@@ -414,7 +414,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
     @profile_func
     def mapped_reconstructed_data_dict_from(
         self, reconstruction: np.ndarray
-    ) -> Visibilities:
+    ) -> Dict[LinearObj, Visibilities]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
@@ -428,9 +428,9 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         This function converts an ndarray of a `reconstruction` to a dictionary of ndarrays containing each linear
         object's reconstructed images, where the keys are the instances of each mapper in the inversion.
 
-        The w-tilde formalism bypasses the calculation of the `mapping_matrix` and it therefore cannot be used to map
-        the reconstruction's values to the data frame. Instead, the unique data-to-pixelization mappings are used,
-        including the 2D non-uniform fast Fourier transform operation after mapping is complete.
+        To perform this mapping the `mapping_matrix` is used, which straightforwardly describes how every value of
+        the `reconstruction` maps to pixels in the data-frame after the 2D non-uniform fast Fourier transformer
+        operation has been performed.
 
         Parameters
         ----------
@@ -438,11 +438,23 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
             The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
             individual mapper (in the data frame).
         """
-        return self.transformer.visibilities_from(
-            image=self.mapped_reconstructed_data_dict_from(
-                reconstruction=reconstruction
-            )
+        mapped_reconstructed_data_dict = {}
+
+        image_dict = self.mapped_reconstructed_image_dict_from(
+            reconstruction=reconstruction
         )
+
+        for linear_obj in self.linear_obj_list:
+
+            visibilities = self.transformer.visibilities_from(
+                image=image_dict[linear_obj]
+            )
+
+            visibilities = Visibilities(visibilities=visibilities)
+
+            mapped_reconstructed_data_dict[linear_obj] = visibilities
+
+        return mapped_reconstructed_data_dict
 
 
 class LEqInterferometerMappingPyLops(AbstractLEqInterferometer):
