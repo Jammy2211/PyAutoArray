@@ -13,6 +13,7 @@ class SettingsInversion:
         maxiter: int = 250,
         check_solution: bool = True,
         use_curvature_matrix_preload: bool = True,
+        use_w_tilde_numpy: bool = False,
     ):
 
         self.use_w_tilde = use_w_tilde
@@ -21,3 +22,4 @@ class SettingsInversion:
         self.maxiter = maxiter
         self.check_solution = check_solution
         self.use_curvature_matrix_preload = use_curvature_matrix_preload
+        self.use_w_tilde_numpy = use_w_tilde_numpy

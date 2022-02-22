@@ -480,7 +480,6 @@ def data_vector_via_transformed_mapping_matrix_from(
     return data_vector
 
 
-@numba_util.jit()
 def curvature_matrix_via_w_tilde_from(
     w_tilde: np.ndarray, mapping_matrix: np.ndarray
 ) -> np.ndarray:

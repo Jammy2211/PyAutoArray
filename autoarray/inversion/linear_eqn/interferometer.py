@@ -394,24 +394,28 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         This function computes the diagonal terms of F using the w_tilde formalism.
         """
 
-        return leq_util.curvature_matrix_via_w_tilde_from(
-            w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix
-        )
+        if self.settings.use_w_tilde_numpy:
 
-        # return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
-        #     curvature_preload=self.w_tilde.curvature_preload,
-        #     pix_indexes_for_sub_slim_index=self.mapper_list[
-        #         0
-        #     ].pix_indexes_for_sub_slim_index,
-        #     pix_size_for_sub_slim_index=self.mapper_list[
-        #         0
-        #     ].pix_sizes_for_sub_slim_index,
-        #     pix_weights_for_sub_slim_index=self.mapper_list[
-        #         0
-        #     ].pix_weights_for_sub_slim_index,
-        #     native_index_for_slim_index=self.transformer.real_space_mask.native_index_for_slim_index,
-        #     pixelization_pixels=self.linear_obj_list[0].pixels,
-        # )
+            return leq_util.curvature_matrix_via_w_tilde_from(
+                w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix
+            )
+
+        from autoarray.inversion.inversion import inversion_util_secret
+
+        return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
+            curvature_preload=self.w_tilde.curvature_preload,
+            pix_indexes_for_sub_slim_index=self.mapper_list[
+                0
+            ].pix_indexes_for_sub_slim_index,
+            pix_size_for_sub_slim_index=self.mapper_list[
+                0
+            ].pix_sizes_for_sub_slim_index,
+            pix_weights_for_sub_slim_index=self.mapper_list[
+                0
+            ].pix_weights_for_sub_slim_index,
+            native_index_for_slim_index=self.transformer.real_space_mask.native_index_for_slim_index,
+            pixelization_pixels=self.linear_obj_list[0].pixels,
+        )
 
     @profile_func
     def mapped_reconstructed_data_dict_from(
