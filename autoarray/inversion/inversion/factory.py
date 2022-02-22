@@ -128,6 +128,7 @@ def inversion_interferometer_unpacked_from(
                 transformer=transformer,
                 w_tilde=w_tilde,
                 linear_obj_list=linear_obj_list,
+                settings=settings,
                 profiling_dict=profiling_dict,
             )
 
