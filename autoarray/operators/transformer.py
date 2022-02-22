@@ -94,6 +94,11 @@ class TransformerDFT(PyLopsOperator):
         self.dtype = "complex128"
         self.explicit = False
 
+        # NOTE: This is the scaling factor that needs to be applied to the adjoint operator
+        self.adjoint_scaling = (2.0 * self.grid.shape_native[0]) * (
+            2.0 * self.grid.shape_native[1]
+        )
+
     def visibilities_from(self, image):
 
         if self.preload_transform:

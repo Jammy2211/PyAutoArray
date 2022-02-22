@@ -67,9 +67,7 @@ def w_tilde_curvature_preload_interferometer_from(
 
 
 @numba_util.jit()
-def w_tilde_curvature_interferometer_via_preload_from(
-    w_tilde_preload, native_index_for_slim_index
-):
+def w_tilde_via_preload_from(w_tilde_preload, native_index_for_slim_index):
     pass
 
 

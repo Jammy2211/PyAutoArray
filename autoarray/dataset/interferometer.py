@@ -17,18 +17,33 @@ from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray import exc
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.dataset import preprocess
-from autoarray.inversion.inversion import inversion_util_secret
-from autoarray.inversion.inversion import inversion_interferometer_util
 
 logger = logging.getLogger(__name__)
 
 
 class WTildeInterferometer(AbstractWTilde):
-    def __init__(self, curvature_preload, noise_map_value):
+    def __init__(self, curvature_preload, noise_map_value, real_space_mask):
 
         super().__init__(
             curvature_preload=curvature_preload, noise_map_value=noise_map_value
         )
+
+        self.real_space_mask = real_space_mask
+
+        from autoarray.inversion.inversion import inversion_util_secret
+
+        self.w_tilde_matrix = inversion_util_secret.w_tilde_via_preload_from(
+            w_tilde_preload=self.curvature_preload,
+            native_index_for_slim_index=self.real_space_mask.native_index_for_slim_index,
+        )
+
+    # @cached_property
+    # def w_tilde_matrix(self):
+    #
+    #     return inversion_util_secret.w_tilde_via_preload_from(
+    #         w_tilde_preload=self.curvature_preload,
+    #         native_index_for_slim_index=self.real_space_mask.native_index_for_slim_index,
+    #     )
 
 
 class SettingsInterferometer(AbstractSettingsDataset):
@@ -179,7 +194,9 @@ class Interferometer(AbstractDataset):
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
-        logger.info("IMAGING - Computing W-Tilde... May take a moment.")
+        from autoarray.inversion.inversion import inversion_util_secret
+
+        logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
 
         curvature_preload = inversion_util_secret.w_tilde_curvature_preload_interferometer_from(
             noise_map_real=self.noise_map.real,
@@ -189,7 +206,9 @@ class Interferometer(AbstractDataset):
         )
 
         return WTildeInterferometer(
-            curvature_preload=curvature_preload, noise_map_value=self.noise_map[0]
+            curvature_preload=curvature_preload,
+            noise_map_value=self.noise_map[0],
+            real_space_mask=self.real_space_mask,
         )
 
     @cached_property
