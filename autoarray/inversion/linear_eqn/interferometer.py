@@ -15,8 +15,6 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.linear_eqn import leq_util
-from autoarray.inversion.inversion import inversion_interferometer_util
-from autoarray.inversion.inversion import inversion_util_secret
 
 from autoarray.numba_util import profile_func
 
@@ -304,7 +302,6 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
         w_tilde: WTildeInterferometer,
-        dirty_image_w_tilde: np.ndarray,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
@@ -339,7 +336,6 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         """
 
         self.w_tilde = w_tilde
-        self.dirty_image_w_tilde = dirty_image_w_tilde
         self.w_tilde.check_noise_map(noise_map=noise_map)
 
         super().__init__(
@@ -348,6 +344,8 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
             linear_obj_list=linear_obj_list,
             profiling_dict=profiling_dict,
         )
+
+        self.settings = settings
 
     @profile_func
     def data_vector_from(self, data: Array2D, preloads: Preloads) -> np.ndarray:
@@ -364,7 +362,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         The calculation is described in more detail in `leq_util.w_tilde_data_interferometer_from`.
         """
         return np.dot(
-            self.linear_obj_list[0].mapping_matrix.T, self.dirty_image_w_tilde
+            self.linear_obj_list[0].mapping_matrix.T, self.w_tilde.dirty_image
         )
 
     @cached_property
@@ -397,7 +395,7 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
         """
 
         return leq_util.curvature_matrix_via_w_tilde_from(
-            w_tilde=self.w_tilde.w_tilde_matrix, mapping_matrix=self.mapping_matrix
+            w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix
         )
 
         # return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(

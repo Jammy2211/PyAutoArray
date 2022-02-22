@@ -2,6 +2,8 @@ import numpy as np
 from typing import Dict, List, Optional, Union
 
 from autoarray.dataset.imaging import Imaging
+from autoarray.dataset.imaging import WTildeImaging
+from autoarray.dataset.interferometer import WTildeInterferometer
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
@@ -49,7 +51,6 @@ def inversion_from(
         noise_map=dataset.noise_map,
         transformer=dataset.transformer,
         w_tilde=dataset.w_tilde,
-        dirty_image_w_tilde=dataset.dirty_image_w_tilde,
         linear_obj_list=linear_obj_list,
         regularization_list=regularization_list,
         settings=settings,
@@ -61,7 +62,7 @@ def inversion_imaging_unpacked_from(
     image: Array2D,
     noise_map: Array2D,
     convolver: Convolver,
-    w_tilde,
+    w_tilde: WTildeImaging,
     linear_obj_list: List[LinearObj],
     regularization_list: Optional[List[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
@@ -111,8 +112,7 @@ def inversion_interferometer_unpacked_from(
     visibilities: Visibilities,
     noise_map: VisibilitiesNoiseMap,
     transformer: Union[TransformerDFT, TransformerNUFFT],
-    w_tilde,
-    dirty_image_w_tilde: np.ndarray,
+    w_tilde: WTildeInterferometer,
     linear_obj_list: List[LinearObj],
     regularization_list: Optional[List[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
@@ -127,7 +127,6 @@ def inversion_interferometer_unpacked_from(
                 noise_map=noise_map,
                 transformer=transformer,
                 w_tilde=w_tilde,
-                dirty_image_w_tilde=dirty_image_w_tilde,
                 linear_obj_list=linear_obj_list,
                 profiling_dict=profiling_dict,
             )

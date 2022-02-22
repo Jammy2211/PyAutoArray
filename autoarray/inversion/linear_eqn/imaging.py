@@ -281,7 +281,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
-        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description.
+        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq`) for a full description.
 
         A linear object describes the mappings between values in observed `data` and the linear object's model via its
         `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image

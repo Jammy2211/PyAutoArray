@@ -22,7 +22,23 @@ from autoarray import exc
 
 class AbstractWTilde:
     def __init__(self, curvature_preload, noise_map_value):
+        """
+        Packages together all derived data quantities necessary to fit `data (e.g. `Imsging`, Interferometer`) using
+        an ` Inversion` via the w_tilde formalism.
 
+        The w_tilde formalism performs linear algebra formalism in a way that speeds up the construction of the
+        simultaneous linear equations by bypassing the construction of a `mapping_matrix` and precomputing
+        operations like blurring or a Fourier transform.
+
+        Parameters
+        ----------
+        curvature_preload
+            A matrix which uses the imaging's noise-map and PSF to preload as much of the computation of the
+            curvature matrix as possible.
+        noise_map_value
+            The first value of the noise-map used to construct the curvature preload, which is used as a sanity
+            check when performing the inversion to ensure the preload corresponds to the data being fitted.
+        """
         self.curvature_preload = curvature_preload
         self.noise_map_value = noise_map_value
 
