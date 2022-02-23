@@ -414,7 +414,8 @@ class LEqInterferometerWTilde(AbstractLEqInterferometer):
                 0
             ].pix_weights_for_sub_slim_index,
             native_index_for_slim_index=self.transformer.real_space_mask.native_index_for_slim_index,
-            pixelization_pixels=self.linear_obj_list[0].pixels,
+            pix_pixels=self.linear_obj_list[0].pixels,
+     #       sub_slim_indexes_for_pix_index=self.mapper_list[0].sub_slim_indexes_for_pix_index
         )
 
     @profile_func
