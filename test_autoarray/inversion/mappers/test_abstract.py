@@ -17,9 +17,11 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
         pixels=9,
     )
 
-    full_indexes = mapper.pix_indexes_for_slim_indexes(pix_indexes=[0, 1])
+    pixe_indexes_for_slim_indexes = mapper.pix_indexes_for_slim_indexes(
+        pix_indexes=[0, 1]
+    )
 
-    assert full_indexes == [0, 1, 2, 3, 4, 5, 6, 7]
+    assert pixe_indexes_for_slim_indexes == [0, 1, 2, 3, 4, 5, 6, 7]
 
     mapper = MockMapper(
         pix_sub_weights=PixSubWeights(
@@ -30,9 +32,51 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
         pixels=9,
     )
 
-    full_indexes = mapper.pix_indexes_for_slim_indexes(pix_indexes=[[0], [4]])
+    pixe_indexes_for_slim_indexes = mapper.pix_indexes_for_slim_indexes(
+        pix_indexes=[[0], [4]]
+    )
 
-    assert full_indexes == [[0, 1, 2, 3], [5, 6]]
+    assert pixe_indexes_for_slim_indexes == [[0, 1, 2, 3], [5, 6]]
+
+
+def test__sub_slim_indexes_for_pix_index():
+
+    mapper = MockMapper(
+        pix_sub_weights=PixSubWeights(
+            mappings=np.array(
+                [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
+            ).astype("int"),
+            sizes=np.ones(8).astype("int"),
+            weights=np.ones(8),
+        ),
+        pixels=5,
+    )
+
+    assert mapper.sub_slim_indexes_for_pix_index == [
+        [0, 3, 6],
+        [1, 4],
+        [2],
+        [5, 7],
+        [0, 1, 2, 3, 4, 5, 6, 7],
+    ]
+
+    sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index = (
+        mapper.sub_slim_indexes_for_pix_index_arr
+    )
+
+    assert (
+        sub_slim_indexes_for_pix_index
+        == np.array(
+            [
+                [0, 3, 6, -1, -1, -1, -1, -1],
+                [1, 4, -1, -1, -1, -1, -1, -1],
+                [2, -1, -1, -1, -1, -1, -1, -1],
+                [5, 7, -1, -1, -1, -1, -1, -1],
+                [0, 1, 2, 3, 4, 5, 6, 7],
+            ]
+        )
+    ).all()
+    assert (sub_slim_sizes_for_pix_index == np.array([3, 2, 1, 2, 8])).all()
 
 
 def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):

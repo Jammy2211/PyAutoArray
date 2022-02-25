@@ -6,6 +6,36 @@ from autoarray import exc
 from autoarray.inversion.pixelizations import pixelization_util
 
 
+def sub_slim_indexes_for_pix_index(
+    pix_indexes_for_sub_slim_index: np.ndarray,
+    pix_sizes_for_sub_slim_index: np.ndarray,
+    pix_pixels: int,
+) -> Tuple[np.ndarray, np.ndarray]:
+
+    sub_slim_sizes_for_pix_index = np.zeros(pix_pixels).astype("int")
+
+    for pix_indexes in pix_indexes_for_sub_slim_index:
+        for pix_index in pix_indexes:
+
+            sub_slim_sizes_for_pix_index[pix_index] += 1
+
+    max_pix_size = np.max(sub_slim_sizes_for_pix_index)
+
+    sub_slim_indexes_for_pix_index = -1 * np.ones(shape=(pix_pixels, max_pix_size))
+    sub_slim_sizes_for_pix_index = np.zeros(pix_pixels).astype("int")
+
+    for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
+        for pix_index in pix_indexes:
+
+            sub_slim_indexes_for_pix_index[
+                pix_index, sub_slim_sizes_for_pix_index[pix_index]
+            ] = slim_index
+
+            sub_slim_sizes_for_pix_index[pix_index] += 1
+
+    return sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index
+
+
 @numba_util.jit()
 def data_slim_to_pixelization_unique_from(
     data_pixels,

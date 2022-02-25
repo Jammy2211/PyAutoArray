@@ -38,6 +38,35 @@ def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
     return image_to_pixelization
 
 
+def test__sub_slim_indexes_for_pix_index():
+
+    pix_indexes_for_sub_slim_index = np.array(
+        [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
+    ).astype("int")
+    pix_sizes_for_sub_slim_index = np.ones(8).astype("int")
+    pix_pixels = 5
+
+    sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index = aa.util.mapper.sub_slim_indexes_for_pix_index(
+        pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+        pix_sizes_for_sub_slim_index=pix_sizes_for_sub_slim_index,
+        pix_pixels=pix_pixels,
+    )
+
+    assert (
+        sub_slim_indexes_for_pix_index
+        == np.array(
+            [
+                [0, 3, 6, -1, -1, -1, -1, -1],
+                [1, 4, -1, -1, -1, -1, -1, -1],
+                [2, -1, -1, -1, -1, -1, -1, -1],
+                [5, 7, -1, -1, -1, -1, -1, -1],
+                [0, 1, 2, 3, 4, 5, 6, 7],
+            ]
+        )
+    ).all()
+    assert (sub_slim_sizes_for_pix_index == np.array([3, 2, 1, 2, 8])).all()
+
+
 class TestMappingMatrix:
     def test__3_image_pixels__6_pixel_pixels__sub_grid_1x1(self, three_pixels):
 

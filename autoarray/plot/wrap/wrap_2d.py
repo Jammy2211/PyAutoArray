@@ -509,7 +509,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
     def draw_voronoi_pixels(
         self,
         mapper: MapperVoronoiNoInterp,
-        values: Optional[np.ndarray],
+        pixel_values: Optional[np.ndarray],
         cmap: Optional[wb.Cmap],
         colorbar: Optional[wb.Colorbar],
         colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
@@ -522,7 +522,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         ----------
         mapper
             A mapper object which contains the Voronoi mesh.
-        values
+        pixel_values
             An array used to compute the color values that every Voronoi cell is plotted using.
         cmap
             The colormap used to plot each Voronoi cell.
@@ -533,13 +533,13 @@ class VoronoiDrawer(AbstractMatWrap2D):
             voronoi=mapper.voronoi
         )
 
-        if values is not None:
+        if pixel_values is not None:
 
-            vmin = cmap.vmin_from(array=values)
-            vmax = cmap.vmax_from(array=values)
+            vmin = cmap.vmin_from(array=pixel_values)
+            vmax = cmap.vmax_from(array=pixel_values)
 
-            color_values = np.where(values > vmax, vmax, values)
-            color_values = np.where(values < vmin, vmin, color_values)
+            color_values = np.where(pixel_values > vmax, vmax, pixel_values)
+            color_values = np.where(pixel_values < vmin, vmin, color_values)
 
             if vmax != vmin:
                 color_array = (color_values - vmin) / (vmax - vmin)

@@ -995,6 +995,14 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
+        # self.voronoi_drawer.draw_voronoi_pixels(
+        #     mapper=mapper,
+        #     pixel_values=source_pixelilzation_values,
+        #     cmap=self.cmap,
+        #     colorbar=self.colorbar,
+        #     colorbar_tickparams=self.colorbar_tickparams,
+        # )
+
         self.interpolated_reconstruction.imshow_reconstruction(
             mapper=mapper,
             pixel_values=source_pixelilzation_values,
