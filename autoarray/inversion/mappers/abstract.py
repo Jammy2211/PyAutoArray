@@ -188,7 +188,6 @@ class AbstractMapper(LinearObj):
 
         return mapper_util.sub_slim_indexes_for_pix_index(
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
-            pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_pixels=self.pixels,
         )
 
