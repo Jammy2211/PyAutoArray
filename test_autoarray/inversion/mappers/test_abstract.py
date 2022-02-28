@@ -47,7 +47,18 @@ def test__sub_slim_indexes_for_pix_index():
                 [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
             ).astype("int"),
             sizes=np.ones(8).astype("int"),
-            weights=np.ones(8),
+            weights=np.array(
+                [
+                    [0.1, 0.9],
+                    [0.2, 0.8],
+                    [0.3, 0.7],
+                    [0.4, 0.6],
+                    [0.5, 0.5],
+                    [0.6, 0.4],
+                    [0.7, 0.3],
+                    [0.8, 0.2],
+                ]
+            ),
         ),
         pixels=5,
     )
@@ -60,7 +71,7 @@ def test__sub_slim_indexes_for_pix_index():
         [0, 1, 2, 3, 4, 5, 6, 7],
     ]
 
-    sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index = (
+    sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index, sub_slim_weights_for_pix_index = (
         mapper.sub_slim_indexes_for_pix_index_arr
     )
 
@@ -77,6 +88,18 @@ def test__sub_slim_indexes_for_pix_index():
         )
     ).all()
     assert (sub_slim_sizes_for_pix_index == np.array([3, 2, 1, 2, 8])).all()
+    assert (
+        sub_slim_weights_for_pix_index
+        == np.array(
+            [
+                [0.1, 0.4, 0.7, -1, -1, -1, -1, -1],
+                [0.2, 0.5, -1, -1, -1, -1, -1, -1],
+                [0.3, -1, -1, -1, -1, -1, -1, -1],
+                [0.6, 0.8, -1, -1, -1, -1, -1, -1],
+                [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2],
+            ]
+        )
+    ).all()
 
 
 def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):

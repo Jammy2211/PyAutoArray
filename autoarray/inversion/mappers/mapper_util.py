@@ -8,8 +8,10 @@ from autoarray.inversion.pixelizations import pixelization_util
 
 @numba_util.jit()
 def sub_slim_indexes_for_pix_index(
-    pix_indexes_for_sub_slim_index: np.ndarray, pix_pixels: int
-) -> Tuple[np.ndarray, np.ndarray]:
+    pix_indexes_for_sub_slim_index: np.ndarray,
+    pix_weights_for_sub_slim_index: np.ndarray,
+    pix_pixels: int,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
     sub_slim_sizes_for_pix_index = np.zeros(pix_pixels)
 
@@ -21,18 +23,30 @@ def sub_slim_indexes_for_pix_index(
     max_pix_size = np.max(sub_slim_sizes_for_pix_index)
 
     sub_slim_indexes_for_pix_index = -1 * np.ones(shape=(pix_pixels, int(max_pix_size)))
+    sub_slim_weights_for_pix_index = -1 * np.ones(shape=(pix_pixels, int(max_pix_size)))
     sub_slim_sizes_for_pix_index = np.zeros(pix_pixels)
 
     for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
-        for pix_index in pix_indexes:
+
+        pix_weights = pix_weights_for_sub_slim_index[slim_index]
+
+        for pix_index, pix_weight in zip(pix_indexes, pix_weights):
 
             sub_slim_indexes_for_pix_index[
                 pix_index, int(sub_slim_sizes_for_pix_index[pix_index])
             ] = slim_index
 
+            sub_slim_weights_for_pix_index[
+                pix_index, int(sub_slim_sizes_for_pix_index[pix_index])
+            ] = pix_weight
+
             sub_slim_sizes_for_pix_index[pix_index] += 1
 
-    return sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index
+    return (
+        sub_slim_indexes_for_pix_index,
+        sub_slim_sizes_for_pix_index,
+        sub_slim_weights_for_pix_index,
+    )
 
 
 @numba_util.jit()
