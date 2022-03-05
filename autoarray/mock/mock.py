@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Dict, List, Optional, Tuple, Union
 
-from autoarray.preloads import Preloads
+from autoarray.fit.fit_dataset import FitDataset
 from autoarray.inversion.linear_obj import LinearObjFunc
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization
 from autoarray.inversion.regularization.abstract import AbstractRegularization
@@ -9,7 +9,6 @@ from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_eqn.imaging import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 from autoarray.inversion.inversion.matrices import InversionMatrices
-from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.two_d.grid_2d_pixelization import (
     AbstractGrid2DPixelization,
 )
@@ -75,29 +74,6 @@ class MockDataset:
         self.grid_inversion = grid_inversion
         self.psf = psf
         self.mask = mask
-
-
-class MockFitDataset:
-    def __init__(
-        self,
-        dataset=MockDataset(),
-        model_data=None,
-        inversion=None,
-        noise_map=None,
-        regularization_term=None,
-        log_det_curvature_reg_matrix_term=None,
-        log_det_regularization_matrix_term=None,
-    ):
-
-        self.dataset = dataset
-        self.model_data = model_data
-        self.inversion = inversion
-        self.noise_map = noise_map
-        self.signal_to_noise_map = noise_map
-
-        self.regularization_term = regularization_term
-        self.log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
-        self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
 
 class MockFitImaging(aa.FitImaging):
@@ -429,8 +405,8 @@ class MockInversion(InversionMatrices):
         log_det_regularization_matrix_term=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
-        settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
+        settings: aa.SettingsInversion = aa.SettingsInversion(),
+        preloads: aa.Preloads = aa.Preloads(),
     ):
 
         # self.__dict__["curvature_matrix"] = curvature_matrix
