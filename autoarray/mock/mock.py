@@ -84,6 +84,7 @@ class MockFitImaging(aa.FitImaging):
         model_data=None,
         inversion=None,
         noise_map=None,
+        blurred_image=None,
         profiling_dict: Optional[Dict] = None,
     ):
 
@@ -96,10 +97,17 @@ class MockFitImaging(aa.FitImaging):
         self._model_data = model_data
         self._inversion = inversion
         self._noise_map = noise_map
+        self._blurred_image = blurred_image
 
     @property
     def model_data(self):
         return self._model_data
+
+    @property
+    def inversion(self):
+        if self._inversion is None:
+            return super().inversion
+        return self._inversion
 
     @property
     def noise_map(self):
@@ -108,10 +116,9 @@ class MockFitImaging(aa.FitImaging):
         return self._noise_map
 
     @property
-    def inversion(self):
-        if self._inversion is None:
-            return super().inversion
-        return self._inversion
+    def blurred_image(self):
+        return self._blurred_image if self._blurred_image is not None else super().blurred_image
+
 
 
 class MockFitInterferometer(aa.FitInterferometer):

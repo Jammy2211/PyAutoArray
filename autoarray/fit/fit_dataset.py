@@ -113,22 +113,34 @@ class FitDataset(ABC):
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
-    @abstractmethod
     def normalized_residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
         Normalized_Residual = (Data - Model_Data) / Noise
         """
+        if self.use_mask_in_fit:
+            return fit_util.normalized_residual_map_with_mask_from(
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+            )
+        return fit_util.normalized_residual_map_from(
+            residual_map=self.residual_map, noise_map=self.noise_map
+        )
 
     @property
-    @abstractmethod
     def chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
+        if self.use_mask_in_fit:
+            return fit_util.chi_squared_map_with_mask_from(
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+            )
+        return fit_util.chi_squared_map_from(
+            residual_map=self.residual_map, noise_map=self.noise_map
+        )
 
     @property
     @abstractmethod
