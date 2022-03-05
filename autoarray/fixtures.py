@@ -2,9 +2,6 @@ import numpy as np
 
 import autoarray as aa
 
-from autoarray.fit.mock.mock_fit_imaging import MockFitImaging
-from autoarray.fit.mock.mock_fit_interferometer import MockFitInterferometer
-
 
 def make_mask_1d_7():
 
@@ -303,7 +300,7 @@ def make_imaging_fit_x1_plane_7x7():
 
     model_data = 5.0 * imaging_7x7.image
 
-    return MockFitImaging(
+    return aa.m.MockFitImaging(
         dataset=imaging_7x7, use_mask_in_fit=False, model_data=model_data
     )
 
@@ -314,7 +311,7 @@ def make_fit_interferometer_7():
 
     model_data = 5.0 * interferometer_7.visibilities
 
-    return MockFitInterferometer(
+    return aa.m.MockFitInterferometer(
         dataset=interferometer_7, use_mask_in_fit=False, model_data=model_data
     )
 

@@ -4,8 +4,6 @@ import pytest
 from autoconf import conf
 import autoarray as aa
 
-from autoarray.structures.grids.mock.mock_grid_decorators import MockGridRadialMinimum
-
 
 class TestGrid:
     def test__recursive_shape_storage(self):
@@ -413,7 +411,7 @@ class TestGridRadialMinimum:
     ):
 
         grid = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
-        mock_profile = MockGridRadialMinimum()
+        mock_profile = aa.m.MockGridRadialMinimum()
 
         deflections = mock_profile.deflections_yx_2d_from(grid=grid)
         assert (deflections == grid).all()
@@ -422,7 +420,7 @@ class TestGridRadialMinimum:
         self,
     ):
         grid = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
-        mock_profile = MockGridRadialMinimum()
+        mock_profile = aa.m.MockGridRadialMinimum()
 
         deflections = mock_profile.deflections_yx_2d_from(grid=grid)
 
@@ -437,7 +435,7 @@ class TestGridRadialMinimum:
             ]
         )
 
-        mock_profile = MockGridRadialMinimum()
+        mock_profile = aa.m.MockGridRadialMinimum()
 
         deflections = mock_profile.deflections_yx_2d_from(grid=grid)
 

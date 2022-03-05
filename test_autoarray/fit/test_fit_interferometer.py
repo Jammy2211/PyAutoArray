@@ -3,9 +3,6 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.inversion.mock.mock_inversion import MockInversion
-from autoarray.fit.mock.mock_fit_interferometer import MockFitInterferometer
-
 
 def test__visibilities_and_model_are_identical__no_masking__check_values_are_correct():
 
@@ -29,7 +26,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
         visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
     )
 
-    fit = MockFitInterferometer(
+    fit = aa.m.MockFitInterferometer(
         dataset=interferometer, use_mask_in_fit=False, model_data=model_visibilities
     )
 
@@ -79,7 +76,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
         visibilities=[1.0 + 2.0j, 3.0 + 3.0j]
     )
 
-    fit = MockFitInterferometer(
+    fit = aa.m.MockFitInterferometer(
         dataset=interferometer, use_mask_in_fit=False, model_data=model_visibilities
     )
 
@@ -129,13 +126,13 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
         visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
     )
 
-    inversion = MockInversion(
+    inversion = aa.m.MockInversion(
         regularization_term=2.0,
         log_det_curvature_reg_matrix_term=3.0,
         log_det_regularization_matrix_term=4.0,
     )
 
-    fit = MockFitInterferometer(
+    fit = aa.m.MockFitInterferometer(
         dataset=interferometer,
         use_mask_in_fit=False,
         model_data=model_visibilities,

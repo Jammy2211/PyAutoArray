@@ -2,11 +2,6 @@ import autoarray as aa
 from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.linear_eqn.imaging import LEqImagingWTilde
 
-from autoarray.operators.mock.mock_convolver import MockConvolver
-from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLinearObjFunc
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEqImaging
-
 from autoarray import exc
 
 import numpy as np
@@ -18,16 +13,16 @@ directory = path.dirname(path.realpath(__file__))
 
 def test__blurred_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7_3x3):
 
-    leq = MockLEqImaging(
+    leq = aa.m.MockLEqImaging(
         convolver=convolver_7x7, linear_obj_list=[rectangular_mapper_7x7_3x3]
     )
 
     assert leq.blurred_mapping_matrix_list[0][0, 0] == pytest.approx(1.0, 1e-4)
     assert leq.blurred_mapping_matrix[0, 0] == pytest.approx(1.0, 1e-4)
 
-    convolver = MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
+    convolver = aa.m.MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
 
-    leq = MockLEqImaging(
+    leq = aa.m.MockLEqImaging(
         convolver=convolver,
         linear_obj_list=[rectangular_mapper_7x7_3x3, rectangular_mapper_7x7_3x3],
     )
@@ -49,16 +44,16 @@ def test__blurred_mapping_matrix_property__with_blurred_mapping_matrix_override(
     convolver_7x7, rectangular_mapper_7x7_3x3
 ):
 
-    convolver = MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
+    convolver = aa.m.MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
 
     blurred_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
-    linear_obj = MockLinearObjFunc(
+    linear_obj = aa.m.MockLinearObjFunc(
         mapping_matrix=None,
         blurred_mapping_matrix_override=blurred_mapping_matrix_override,
     )
 
-    leq = MockLEqImaging(
+    leq = aa.m.MockLEqImaging(
         convolver=convolver, linear_obj_list=[rectangular_mapper_7x7_3x3, linear_obj]
     )
 
@@ -95,9 +90,9 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
         # noinspection PyTypeChecker
         LEqImagingWTilde(
             noise_map=np.ones(9),
-            convolver=MockConvolver(matrix_shape),
+            convolver=aa.m.MockConvolver(matrix_shape),
             w_tilde=w_tilde,
-            linear_obj_list=MockMapper(
+            linear_obj_list=aa.m.MockMapper(
                 mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
             ),
         )

@@ -2,24 +2,13 @@ import numpy as np
 
 import autoarray as aa
 
-from autoarray.mask.mock.mock_mask import MockMask
-from autoarray.dataset.mock.mock_dataset import MockDataset
-from autoarray.fit.mock.mock_fit_imaging import MockFitImaging
-from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
-from autoarray.inversion.regularization.mock.mock_regularization import (
-    MockRegularization,
-)
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEq
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEqImaging
-from autoarray.inversion.inversion.mock.mock_inversion import MockInversion
-
 
 def test__set_w_tilde():
 
     # fit inversion is None, so no need to bother with w_tilde.
 
-    fit_0 = MockFitImaging(inversion=None)
-    fit_1 = MockFitImaging(inversion=None)
+    fit_0 = aa.m.MockFitImaging(inversion=None)
+    fit_1 = aa.m.MockFitImaging(inversion=None)
 
     preloads = aa.Preloads(w_tilde=1, use_w_tilde=1)
     preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
@@ -29,10 +18,10 @@ def test__set_w_tilde():
 
     # Noise maps of fit are different but there is an inversion, so we should not preload w_tilde and use w_tilde.
 
-    fit_0 = MockFitImaging(
+    fit_0 = aa.m.MockFitImaging(
         inversion=1, noise_map=aa.Array2D.zeros(shape_native=(3, 1), pixel_scales=0.1)
     )
-    fit_1 = MockFitImaging(
+    fit_1 = aa.m.MockFitImaging(
         inversion=1, noise_map=aa.Array2D.ones(shape_native=(3, 1), pixel_scales=0.1)
     )
 
@@ -46,14 +35,14 @@ def test__set_w_tilde():
 
     noise_map = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=0.1, sub_size=1)
 
-    mask = MockMask(
+    mask = aa.m.MockMask(
         native_index_for_slim_index=noise_map.mask.native_index_for_slim_index
     )
 
-    dataset = MockDataset(psf=aa.Kernel2D.no_blur(pixel_scales=1.0), mask=mask)
+    dataset = aa.m.MockDataset(psf=aa.Kernel2D.no_blur(pixel_scales=1.0), mask=mask)
 
-    fit_0 = MockFitImaging(inversion=1, dataset=dataset, noise_map=noise_map)
-    fit_1 = MockFitImaging(inversion=1, dataset=dataset, noise_map=noise_map)
+    fit_0 = aa.m.MockFitImaging(inversion=1, dataset=dataset, noise_map=noise_map)
+    fit_1 = aa.m.MockFitImaging(inversion=1, dataset=dataset, noise_map=noise_map)
 
     preloads = aa.Preloads(w_tilde=1, use_w_tilde=1)
     preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
@@ -75,8 +64,8 @@ def test__set_relocated_grid():
 
     # LEq is None so there is no mapper, thus preload mapper to None.
 
-    fit_0 = MockFitImaging(inversion=None)
-    fit_1 = MockFitImaging(inversion=None)
+    fit_0 = aa.m.MockFitImaging(inversion=None)
+    fit_1 = aa.m.MockFitImaging(inversion=None)
 
     preloads = aa.Preloads(relocated_grid=1)
     preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
@@ -85,13 +74,15 @@ def test__set_relocated_grid():
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
-    leq_0 = MockLEq(linear_obj_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
-    leq_1 = MockLEq(
-        linear_obj_list=[MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))]
+    leq_0 = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(source_grid_slim=np.ones((3, 2)))]
+    )
+    leq_1 = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))]
     )
 
-    fit_0 = MockFitImaging(inversion=MockInversion(leq=leq_0))
-    fit_1 = MockFitImaging(inversion=MockInversion(leq=leq_1))
+    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
+    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
     preloads = aa.Preloads(relocated_grid=1)
     preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
@@ -100,11 +91,15 @@ def test__set_relocated_grid():
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
-    leq_0 = MockLEq(linear_obj_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
-    leq_1 = MockLEq(linear_obj_list=[MockMapper(source_grid_slim=np.ones((3, 2)))])
+    leq_0 = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(source_grid_slim=np.ones((3, 2)))]
+    )
+    leq_1 = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(source_grid_slim=np.ones((3, 2)))]
+    )
 
-    fit_0 = MockFitImaging(inversion=MockInversion(leq=leq_0))
-    fit_1 = MockFitImaging(inversion=MockInversion(leq=leq_1))
+    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
+    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
     preloads = aa.Preloads(relocated_grid=1)
     preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
@@ -116,8 +111,8 @@ def test__set_linear_obj_list():
 
     # LEq is None so there is no mapper, thus preload mapper to None.
 
-    fit_0 = MockFitImaging(inversion=None)
-    fit_1 = MockFitImaging(inversion=None)
+    fit_0 = aa.m.MockFitImaging(inversion=None)
+    fit_1 = aa.m.MockFitImaging(inversion=None)
 
     preloads = aa.Preloads(linear_obj_list=1)
     preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
@@ -126,11 +121,15 @@ def test__set_linear_obj_list():
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
-    leq_0 = MockLEq(linear_obj_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
-    leq_1 = MockLEq(linear_obj_list=[MockMapper(mapping_matrix=2.0 * np.ones((3, 2)))])
+    leq_0 = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(mapping_matrix=np.ones((3, 2)))]
+    )
+    leq_1 = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(mapping_matrix=2.0 * np.ones((3, 2)))]
+    )
 
-    fit_0 = MockFitImaging(inversion=MockInversion(leq=leq_0))
-    fit_1 = MockFitImaging(inversion=MockInversion(leq=leq_1))
+    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
+    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
     preloads = aa.Preloads(linear_obj_list=1)
     preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
@@ -139,11 +138,15 @@ def test__set_linear_obj_list():
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
-    leq_0 = MockLEq(linear_obj_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
-    leq_1 = MockLEq(linear_obj_list=[MockMapper(mapping_matrix=np.ones((3, 2)))])
+    leq_0 = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(mapping_matrix=np.ones((3, 2)))]
+    )
+    leq_1 = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(mapping_matrix=np.ones((3, 2)))]
+    )
 
-    fit_0 = MockFitImaging(inversion=MockInversion(leq=leq_0))
-    fit_1 = MockFitImaging(inversion=MockInversion(leq=leq_1))
+    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
+    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
     preloads = aa.Preloads(linear_obj_list=1)
     preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
@@ -152,21 +155,21 @@ def test__set_linear_obj_list():
 
     # Multiple mappers pre inversion still preloads full mapper list.
 
-    leq_0 = MockLEq(
+    leq_0 = aa.m.MockLEq(
         linear_obj_list=[
-            MockMapper(mapping_matrix=np.ones((3, 2))),
-            MockMapper(mapping_matrix=np.ones((3, 2))),
+            aa.m.MockMapper(mapping_matrix=np.ones((3, 2))),
+            aa.m.MockMapper(mapping_matrix=np.ones((3, 2))),
         ]
     )
-    leq_1 = MockLEq(
+    leq_1 = aa.m.MockLEq(
         linear_obj_list=[
-            MockMapper(mapping_matrix=np.ones((3, 2))),
-            MockMapper(mapping_matrix=np.ones((3, 2))),
+            aa.m.MockMapper(mapping_matrix=np.ones((3, 2))),
+            aa.m.MockMapper(mapping_matrix=np.ones((3, 2))),
         ]
     )
 
-    fit_0 = MockFitImaging(inversion=MockInversion(leq=leq_0))
-    fit_1 = MockFitImaging(inversion=MockInversion(leq=leq_1))
+    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
+    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
     preloads = aa.Preloads(linear_obj_list=1)
     preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
@@ -182,8 +185,8 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     # LEq is None thus preload it to None.
 
-    fit_0 = MockFitImaging(inversion=None)
-    fit_1 = MockFitImaging(inversion=None)
+    fit_0 = aa.m.MockFitImaging(inversion=None)
+    fit_1 = aa.m.MockFitImaging(inversion=None)
 
     preloads = aa.Preloads(
         operated_mapping_matrix=1,
@@ -206,11 +209,11 @@ def test__set_operated_mapping_matrix_with_preloads():
         [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
     )
 
-    leq_0 = MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
-    leq_1 = MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_1)
+    leq_0 = aa.m.MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    leq_1 = aa.m.MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_1)
 
-    fit_0 = MockFitImaging(inversion=MockInversion(leq=leq_0))
-    fit_1 = MockFitImaging(inversion=MockInversion(leq=leq_1))
+    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
+    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
     preloads = aa.Preloads(
         operated_mapping_matrix=1,
@@ -225,17 +228,17 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     # LEq's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
-    leq_0 = MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
-    leq_1 = MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    leq_0 = aa.m.MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    leq_1 = aa.m.MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
 
-    inversion_0 = MockInversion(
+    inversion_0 = aa.m.MockInversion(
         leq=leq_0,
         curvature_matrix_preload=curvature_matrix_preload,
         curvature_matrix_counts=curvature_matrix_counts,
     )
 
-    fit_0 = MockFitImaging(inversion=inversion_0)
-    fit_1 = MockFitImaging(inversion=MockInversion(leq=leq_1))
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
     preloads = aa.Preloads(
         operated_mapping_matrix=1,
@@ -255,12 +258,12 @@ def test__set_operated_mapping_matrix_with_preloads():
 
 def test__set_regularization_matrix_and_term():
 
-    regularization = MockRegularization(regularization_matrix=np.eye(2))
+    regularization = aa.m.MockRegularization(regularization_matrix=np.eye(2))
 
     # Inversion is None thus preload log_det_regularization_matrix_term to None.
 
-    fit_0 = MockFitImaging(inversion=None)
-    fit_1 = MockFitImaging(inversion=None)
+    fit_0 = aa.m.MockFitImaging(inversion=None)
+    fit_1 = aa.m.MockFitImaging(inversion=None)
 
     preloads = aa.Preloads(log_det_regularization_matrix_term=1)
     preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
@@ -270,13 +273,13 @@ def test__set_regularization_matrix_and_term():
 
     # Inversion's log_det_regularization_matrix_term are different thus no preloading.
 
-    fit_0 = MockFitImaging(
-        inversion=MockInversion(
+    fit_0 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(
             log_det_regularization_matrix_term=0, regularization_list=[regularization]
         )
     )
-    fit_1 = MockFitImaging(
-        inversion=MockInversion(
+    fit_1 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(
             log_det_regularization_matrix_term=1, regularization_list=[regularization]
         )
     )
@@ -291,17 +294,17 @@ def test__set_regularization_matrix_and_term():
 
     preloads = aa.Preloads(log_det_regularization_matrix_term=2)
 
-    fit_0 = MockFitImaging(
-        inversion=MockInversion(
-            leq=MockLEq(linear_obj_list=[MockMapper()]),
+    fit_0 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(
+            leq=aa.m.MockLEq(linear_obj_list=[aa.m.MockMapper()]),
             log_det_regularization_matrix_term=1,
             regularization_list=[regularization],
             preloads=preloads,
         )
     )
-    fit_1 = MockFitImaging(
-        inversion=MockInversion(
-            leq=MockLEq(linear_obj_list=[MockMapper()]),
+    fit_1 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(
+            leq=aa.m.MockLEq(linear_obj_list=[aa.m.MockMapper()]),
             log_det_regularization_matrix_term=1,
             regularization_list=[regularization],
             preloads=preloads,

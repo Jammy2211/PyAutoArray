@@ -2,9 +2,6 @@ import numpy as np
 
 import autoarray as aa
 
-from autoarray.inversion.inversion.mock.mock_inversion import MockInversion
-from autoarray.fit.mock.mock_fit_imaging import MockFitImaging
-
 
 def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
@@ -21,7 +18,7 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
     model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-    fit = MockFitImaging(
+    fit = aa.m.MockFitImaging(
         dataset=masked_imaging, use_mask_in_fit=False, model_data=model_image
     )
 
@@ -72,7 +69,9 @@ def test__image_and_model_are_different__include_masking__check_values_are_corre
 
     model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0], mask=mask)
 
-    fit = MockFitImaging(dataset=imaging, use_mask_in_fit=False, model_data=model_image)
+    fit = aa.m.MockFitImaging(
+        dataset=imaging, use_mask_in_fit=False, model_data=model_image
+    )
 
     assert (fit.mask == np.array([[False, False], [True, False]])).all()
 
@@ -120,13 +119,13 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
 
     model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-    inversion = MockInversion(
+    inversion = aa.m.MockInversion(
         regularization_term=2.0,
         log_det_curvature_reg_matrix_term=3.0,
         log_det_regularization_matrix_term=4.0,
     )
 
-    fit = MockFitImaging(
+    fit = aa.m.MockFitImaging(
         dataset=masked_imaging,
         use_mask_in_fit=False,
         model_data=model_image,
@@ -164,7 +163,7 @@ def test__profiling_dict__profiles_appropriate_functions():
 
     profiling_dict = {}
 
-    fit = MockFitImaging(
+    fit = aa.m.MockFitImaging(
         dataset=masked_imaging,
         use_mask_in_fit=False,
         model_data=model_image,

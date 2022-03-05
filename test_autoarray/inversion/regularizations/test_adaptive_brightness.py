@@ -1,9 +1,6 @@
 import autoarray as aa
 import numpy as np
 
-from autoarray.structures.grids.mock.mock_grid import MockPixelizationGrid
-from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
-
 
 def test__weight_list__matches_util():
 
@@ -11,7 +8,7 @@ def test__weight_list__matches_util():
 
     pixel_signals = np.array([0.21, 0.586, 0.45])
 
-    mapper = MockMapper(pixel_signals=pixel_signals)
+    mapper = aa.m.MockMapper(pixel_signals=pixel_signals)
 
     weight_list = reg.regularization_weights_from(mapper=mapper)
 
@@ -42,11 +39,11 @@ def test__regularization_matrix__matches_util():
     pixel_neighbors_sizes = np.array([2, 3, 4, 2, 4, 3])
     pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
-    pixelization_grid = MockPixelizationGrid(
+    pixelization_grid = aa.m.MockPixelizationGrid(
         pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
     )
 
-    mapper = MockMapper(
+    mapper = aa.m.MockMapper(
         source_pixelization_grid=pixelization_grid, pixel_signals=pixel_signals
     )
 

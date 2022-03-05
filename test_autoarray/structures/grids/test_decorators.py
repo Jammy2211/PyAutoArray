@@ -4,9 +4,6 @@ import pytest
 
 import autoarray as aa
 from autoarray.structures.grids.mock.mock_grid_decorators import (
-    MockGridLikeIteratorObj,
-    MockGrid1DLikeObj,
-    MockGrid2DLikeObj,
     ndarray_1d_from,
     ndarray_2d_from,
 )
@@ -17,7 +14,7 @@ class TestGrid1DToStructure:
 
         grid_2d = aa.Grid1D.manual_native(grid=[1.0, 2.0, 3.0], pixel_scales=1.0)
 
-        grid_like_object = MockGrid1DLikeObj()
+        grid_like_object = aa.m.MockGrid1DLikeObj()
 
         array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
@@ -25,7 +22,7 @@ class TestGrid1DToStructure:
         assert (array_output.native == np.array([1.0, 1.0, 1.0])).all()
         assert array_output.pixel_scales == (1.0,)
 
-        grid_like_object = MockGrid1DLikeObj(centre=(1.0, 0.0), angle=45.0)
+        grid_like_object = aa.m.MockGrid1DLikeObj(centre=(1.0, 0.0), angle=45.0)
 
         array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
@@ -37,7 +34,7 @@ class TestGrid1DToStructure:
 
         grid_2d = aa.Grid2D.uniform(shape_native=(4, 4), pixel_scales=1.0, sub_size=1)
 
-        grid_like_object = MockGrid1DLikeObj()
+        grid_like_object = aa.m.MockGrid1DLikeObj()
 
         array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
@@ -45,7 +42,7 @@ class TestGrid1DToStructure:
         assert (array_output.native == np.array([1.0])).all()
         assert array_output.pixel_scales == (1.0,)
 
-        grid_like_object = MockGrid1DLikeObj(centre=(1.0, 0.0))
+        grid_like_object = aa.m.MockGrid1DLikeObj(centre=(1.0, 0.0))
 
         array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
@@ -57,7 +54,7 @@ class TestGrid1DToStructure:
 
         grid_2d = aa.Grid2DIrregular(grid=[[0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])
 
-        grid_like_object = MockGrid1DLikeObj()
+        grid_like_object = aa.m.MockGrid1DLikeObj()
 
         array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
@@ -74,7 +71,7 @@ class TestGrid2DToStructure:
 
         grid_1d = aa.Grid1D.from_mask(mask=mask)
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         array_output = grid_like_object.ndarray_1d_from(grid=grid_1d)
 
@@ -103,7 +100,7 @@ class TestGrid2DToStructure:
 
         grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
@@ -137,7 +134,7 @@ class TestGrid2DToStructure:
 
     def test__grid_2d_irregular_in__output_values_same_format(self):
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
@@ -167,7 +164,7 @@ class TestGrid2DToStructure:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
         )
 
-        grid_like_obj = MockGridLikeIteratorObj()
+        grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
         values = grid_like_obj.ndarray_1d_from(grid=grid_2d)
 
@@ -182,7 +179,7 @@ class TestGrid2DToStructure:
             mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
         )
 
-        grid_like_obj = MockGridLikeIteratorObj()
+        grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
         values = grid_like_obj.ndarray_1d_from(grid=grid_2d)
 
@@ -197,7 +194,7 @@ class TestGrid2DToStructure:
             mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
         )
 
-        iterate_obj = MockGridLikeIteratorObj()
+        iterate_obj = aa.m.MockGridLikeIteratorObj()
 
         values = iterate_obj.ndarray_1d_from(grid=grid_2d)
 
@@ -235,7 +232,7 @@ class TestGrid2DToStructure:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
         )
 
-        grid_like_obj = MockGridLikeIteratorObj()
+        grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
         values = grid_like_obj.ndarray_2d_from(grid=grid_2d)
 
@@ -250,7 +247,7 @@ class TestGrid2DToStructure:
             mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
         )
 
-        grid_like_obj = MockGridLikeIteratorObj()
+        grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
         values = grid_like_obj.ndarray_2d_from(grid=grid_2d)
 
@@ -265,7 +262,7 @@ class TestGrid2DToStructure:
             mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
         )
 
-        iterate_obj = MockGridLikeIteratorObj()
+        iterate_obj = aa.m.MockGridLikeIteratorObj()
 
         values = iterate_obj.ndarray_2d_from(grid=grid_2d)
 
@@ -301,7 +298,7 @@ class TestGrid2DToStructreList:
 
         grid_1d = aa.Grid1D.from_mask(mask=mask)
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         array_output = grid_like_object.ndarray_1d_list_from(grid=grid_1d)
 
@@ -338,7 +335,7 @@ class TestGrid2DToStructreList:
 
         grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         array_output = grid_like_object.ndarray_1d_list_from(grid=grid_2d)
 
@@ -398,7 +395,7 @@ class TestGrid2DToStructreList:
 
     def test__grid_2d_irregular_in__output_is_list__list_of_same_format(self):
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
@@ -432,7 +429,7 @@ class TestGrid2DToStructreList:
             mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
         )
 
-        grid_like_obj = MockGridLikeIteratorObj()
+        grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
         values = grid_like_obj.ndarray_1d_list_from(grid=grid_2d)
 
@@ -463,7 +460,7 @@ class TestGrid2DToStructreList:
             mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
         )
 
-        grid_like_obj = MockGridLikeIteratorObj()
+        grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
         values = grid_like_obj.ndarray_2d_list_from(grid=grid_2d)
 
@@ -492,7 +489,7 @@ class TestGrid2DToVectorYX:
 
         grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         vectors_output = grid_like_object.ndarray_yx_2d_from(grid=grid_2d)
 
@@ -511,7 +508,7 @@ class TestGrid2DToVectorYX:
 
     def test__grid_2d_irregular_in__output_values_same_format(self):
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
@@ -538,7 +535,7 @@ class TestGrid2DToVectorYX:
             mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
         )
 
-        grid_like_obj = MockGridLikeIteratorObj()
+        grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
         vectors_output = grid_like_obj.ndarray_yx_2d_from(grid=grid_2d)
 
@@ -554,7 +551,7 @@ class TestGrid2DToVectorYX:
             mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
         )
 
-        iterate_obj = MockGridLikeIteratorObj()
+        iterate_obj = aa.m.MockGridLikeIteratorObj()
 
         vectors_output = iterate_obj.ndarray_yx_2d_from(grid=grid_2d)
 
@@ -599,7 +596,7 @@ class TestGrid2DToVectorYXList:
 
         grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         vectors_output = grid_like_object.ndarray_yx_2d_list_from(grid=grid_2d)
 
@@ -631,7 +628,7 @@ class TestGrid2DToVectorYXList:
 
     def test__grid_2d_irregular_in__output_is_list__list_of_same_format(self):
 
-        grid_like_object = MockGrid2DLikeObj()
+        grid_like_object = aa.m.MockGrid2DLikeObj()
 
         grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
@@ -663,7 +660,7 @@ class TestGrid2DToVectorYXList:
             mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
         )
 
-        grid_like_obj = MockGridLikeIteratorObj()
+        grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
         vectors_output = grid_like_obj.ndarray_yx_2d_list_from(grid=grid_2d)
 

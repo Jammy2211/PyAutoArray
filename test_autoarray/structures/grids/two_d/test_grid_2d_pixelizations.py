@@ -5,13 +5,11 @@ import scipy.spatial
 from autoarray import exc
 import autoarray as aa
 
-from autoarray.structures.grids.mock.mock_grid import MockGrid2DPixelization
-
 
 class TestAbstractGrid2DPixelization:
     def test__interpolation_grid_from(self):
 
-        grid = MockGrid2DPixelization(extent=(-1.0, 1.0, -1.0, 1.0))
+        grid = aa.m.MockGrid2DPixelization(extent=(-1.0, 1.0, -1.0, 1.0))
 
         interpolation_grid = grid.interpolation_grid_from(shape_native=(3, 2))
 
@@ -38,7 +36,7 @@ class TestAbstractGrid2DPixelization:
         )
         assert interpolation_grid.pixel_scales == (2.0, 1.0)
 
-        grid = MockGrid2DPixelization(extent=(-20.0, -5.0, -10.0, -5.0))
+        grid = aa.m.MockGrid2DPixelization(extent=(-20.0, -5.0, -10.0, -5.0))
 
         interpolation_grid = grid.interpolation_grid_from(shape_native=(3, 3))
 

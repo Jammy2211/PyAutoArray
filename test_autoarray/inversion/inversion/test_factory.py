@@ -3,9 +3,6 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLinearObjFunc
-
-
 # TODO : NEed to figure out how we blur linear light profile with blurring gird.
 
 
@@ -15,7 +12,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    linear_obj = MockLinearObjFunc(
+    linear_obj = aa.m.MockLinearObjFunc(
         grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
     )
 
@@ -25,7 +22,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
-    assert isinstance(inversion.linear_obj_list[0], MockLinearObjFunc)
+    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFunc)
     assert isinstance(inversion.leq, aa.LEqImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -35,7 +32,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
-    assert isinstance(inversion.linear_obj_list[0], MockLinearObjFunc)
+    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFunc)
     assert isinstance(inversion.leq, aa.LEqImagingWTilde)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 

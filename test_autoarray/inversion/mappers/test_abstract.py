@@ -2,13 +2,12 @@ import numpy as np
 
 import autoarray as aa
 
-from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
 from autoarray.inversion.mappers.abstract import PixSubWeights
 
 
 def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
 
-    mapper = MockMapper(
+    mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
             mappings=np.array([[0], [0], [0], [0], [0], [0], [0], [0]]),
             sizes=np.ones(8, dtype="int"),
@@ -23,7 +22,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
 
     assert pixe_indexes_for_slim_indexes == [0, 1, 2, 3, 4, 5, 6, 7]
 
-    mapper = MockMapper(
+    mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
             mappings=np.array([[0], [0], [0], [0], [3], [4], [4], [7]]),
             sizes=np.ones(8, dtype="int"),
@@ -41,7 +40,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
 
 def test__sub_slim_indexes_for_pix_index():
 
-    mapper = MockMapper(
+    mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
             mappings=np.array(
                 [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
@@ -113,7 +112,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     )
     pix_weights_for_sub_slim_index = np.ones((9, 1), dtype="int")
 
-    mapper = MockMapper(
+    mapper = aa.m.MockMapper(
         source_grid_slim=grid_2d_7x7,
         pix_sub_weights=pix_sub_weights,
         hyper_image=image_7x7,

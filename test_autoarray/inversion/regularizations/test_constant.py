@@ -3,9 +3,6 @@ import numpy as np
 
 np.set_printoptions(threshold=np.inf)
 
-from autoarray.structures.grids.mock.mock_grid import MockPixelizationGrid
-from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
-
 
 def test__regularization_matrix__matches_util():
 
@@ -25,11 +22,11 @@ def test__regularization_matrix__matches_util():
 
     pixel_neighbors_sizes = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
 
-    pixelization_grid = MockPixelizationGrid(
+    pixelization_grid = aa.m.MockPixelizationGrid(
         pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
     )
 
-    mapper = MockMapper(source_pixelization_grid=pixelization_grid)
+    mapper = aa.m.MockMapper(source_pixelization_grid=pixelization_grid)
 
     reg = aa.reg.Constant(coefficient=2.0)
     regularization_matrix = reg.regularization_matrix_from(mapper=mapper)
