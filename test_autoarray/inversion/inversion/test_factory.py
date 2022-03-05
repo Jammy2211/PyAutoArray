@@ -3,7 +3,7 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.mock.mock import MockLinearObjFunc
+from autoarray.inversion.linear_eqn.mock.mock_leq import MockLinearObjFunc
 
 
 # TODO : NEed to figure out how we blur linear light profile with blurring gird.

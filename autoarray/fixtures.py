@@ -10,8 +10,6 @@ from autoarray.inversion.regularization.adaptive_brightness import (
     AdaptiveBrightnessSplit,
 )
 from autoarray.operators.convolver import Convolver
-from autoarray.fit.fit_imaging import FitImaging
-from autoarray.fit.fit_interferometer import FitInterferometer
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
@@ -35,8 +33,8 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.inversion.inversion.factory import inversion_from
 
-from autoarray.mock.mock import MockFitImaging
-from autoarray.mock.mock import MockFitInterferometer
+from autoarray.fit.mock.mock_fit_imaging import MockFitImaging
+from autoarray.fit.mock.mock_fit_interferometer import MockFitInterferometer
 
 
 def make_mask_1d_7():

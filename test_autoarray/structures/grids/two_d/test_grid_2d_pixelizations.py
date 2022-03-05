@@ -5,7 +5,7 @@ import scipy.spatial
 from autoarray import exc
 import autoarray as aa
 
-from autoarray.mock.mock import MockGrid2DPixelization
+from autoarray.structures.grids.mock.mock_grid import MockGrid2DPixelization
 
 
 class TestAbstractGrid2DPixelization:

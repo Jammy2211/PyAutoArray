@@ -1,7 +1,8 @@
 import autoarray as aa
 import numpy as np
 
-from autoarray.mock.mock import MockPixelizationGrid, MockMapper
+from autoarray.structures.grids.mock.mock_grid import MockPixelizationGrid
+from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
 
 
 def test__weight_list__matches_util():

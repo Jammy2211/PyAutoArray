@@ -2,8 +2,9 @@ import autoarray as aa
 import numpy as np
 
 np.set_printoptions(threshold=np.inf)
-from autoarray.mock import fixtures
-from autoarray.mock.mock import MockPixelizationGrid, MockMapper
+
+from autoarray.structures.grids.mock.mock_grid import MockPixelizationGrid
+from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
 
 
 def test__regularization_matrix__matches_util():

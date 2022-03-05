@@ -3,7 +3,7 @@ from os import path
 import pytest
 from matplotlib import pyplot
 
-from autoarray.mock import fixtures
+from autoarray import fixtures
 from autoconf import conf
 
 

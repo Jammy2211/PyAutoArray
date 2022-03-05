@@ -1,6 +1,7 @@
 from . import exc
 from . import type
 from . import util
+from . import fixtures
 from .numba_util import profile_func
 from .preloads import Preloads
 from .dataset import preprocess
@@ -42,7 +43,6 @@ from .inversion.linear_obj import LinearObj
 from .inversion.linear_obj import LinearObjFunc
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
-from .mock import fixtures
 from .operators.convolver import Convolver
 from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT

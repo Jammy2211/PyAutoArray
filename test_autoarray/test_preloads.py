@@ -2,14 +2,17 @@ import numpy as np
 
 import autoarray as aa
 
-from autoarray.mock.mock import MockMask
-from autoarray.mock.mock import MockDataset
-from autoarray.mock.mock import MockFitImaging
-from autoarray.mock.mock import MockMapper
-from autoarray.mock.mock import MockRegularization
-from autoarray.mock.mock import MockLEq
-from autoarray.mock.mock import MockLEqImaging
-from autoarray.mock.mock import MockInversion
+from autoarray.mask.mock.mock_mask import MockMask
+from autoarray.dataset.mock.mock_dataset import MockDataset
+from autoarray.fit.mock.mock_fit_imaging import MockFitImaging
+from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
+from autoarray.inversion.regularization.mock.mock_regularization import (
+    MockRegularization,
+)
+from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEq
+from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEqImaging
+from autoarray.inversion.inversion.mock.mock_inversion import MockInversion
+
 
 def test__set_w_tilde():
 
@@ -61,9 +64,9 @@ def test__set_w_tilde():
         native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
     )
 
-    assert (preloads.w_tilde.curvature_preload == curvature_preload).all()
-    assert (preloads.w_tilde.indexes == indexes).all()
-    assert (preloads.w_tilde.lengths == lengths).all()
+    assert preloads.w_tilde.curvature_preload[0] == curvature_preload[0]
+    assert preloads.w_tilde.indexes[0] == indexes[0]
+    assert preloads.w_tilde.lengths[0] == lengths[0]
     assert preloads.w_tilde.noise_map_value == 1.0
     assert preloads.use_w_tilde == True
 

@@ -2,12 +2,10 @@ import autoarray as aa
 from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.linear_eqn.imaging import LEqImagingWTilde
 
-from autoarray.mock.mock import (
-    MockLinearObjFunc,
-    MockConvolver,
-    MockLEqImaging,
-    MockMapper,
-)
+from autoarray.operators.mock.mock_convolver import MockConvolver
+from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
+from autoarray.inversion.linear_eqn.mock.mock_leq import MockLinearObjFunc
+from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEqImaging
 
 from autoarray import exc
 

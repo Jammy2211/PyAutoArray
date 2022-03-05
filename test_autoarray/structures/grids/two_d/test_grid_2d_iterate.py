@@ -2,9 +2,12 @@ from os import path
 import numpy as np
 import pytest
 
-import autoarray as aa
-from autoarray.mock.mock_grid import ndarray_1d_from, ndarray_2d_from
+from autoarray.structures.grids.mock.mock_grid_decorators import (
+    ndarray_1d_from,
+    ndarray_2d_from,
+)
 
+import autoarray as aa
 
 test_coordinates_dir = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files"

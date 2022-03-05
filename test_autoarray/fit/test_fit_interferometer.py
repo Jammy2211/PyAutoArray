@@ -1,9 +1,10 @@
-import autoarray as aa
-
 import numpy as np
 import pytest
 
-from autoarray.mock.mock import MockInversion, MockFitInterferometer
+import autoarray as aa
+
+from autoarray.inversion.inversion.mock.mock_inversion import MockInversion
+from autoarray.fit.mock.mock_fit_interferometer import MockFitInterferometer
 
 
 def test__visibilities_and_model_are_identical__no_masking__check_values_are_correct():

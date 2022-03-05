@@ -2,8 +2,8 @@ import numpy as np
 from os import path
 import pytest
 
-
-from autoarray.mock.mock import MockMapper, MockLEq
+from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
+from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEq
 
 directory = path.dirname(path.realpath(__file__))
 

@@ -4,13 +4,13 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.mock.mock import (
-    MockLinearObjFunc,
-    MockMapper,
+from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
+from autoarray.inversion.regularization.mock.mock_regularization import (
     MockRegularization,
-    MockLEq,
-    MockInversion,
 )
+from autoarray.inversion.linear_eqn.mock.mock_leq import MockLinearObjFunc
+from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEq
+from autoarray.inversion.inversion.mock.mock_inversion import MockInversion
 
 from autoarray import exc
 

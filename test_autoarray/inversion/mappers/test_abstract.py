@@ -2,7 +2,7 @@ import numpy as np
 
 import autoarray as aa
 
-from autoarray.mock.mock import MockMapper
+from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
 from autoarray.inversion.mappers.abstract import PixSubWeights
 
 
