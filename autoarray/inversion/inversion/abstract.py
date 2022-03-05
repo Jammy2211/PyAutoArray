@@ -2,7 +2,7 @@ import numpy as np
 from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import splu
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
@@ -352,3 +352,14 @@ class AbstractInversion:
     @property
     def total_mappers(self):
         return len(self.mapper_list)
+
+    def interpolated_reconstruction_list_from(
+        self, shape_native: Tuple[int, int] = (401, 401)
+    ) -> List[Array2D]:
+
+        return [
+            mapper.interpolated_array_from(
+                values=self.reconstruction_dict[mapper], shape_native=shape_native
+            )
+            for mapper in self.mapper_list
+        ]

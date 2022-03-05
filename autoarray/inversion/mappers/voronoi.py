@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from autoconf import cached_property
 
@@ -148,6 +148,13 @@ class MapperVoronoi(AbstractMapperVoronoi):
         sizes = sizes.astype("int")
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
+
+    def interpolated_array_from(
+        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+    ) -> Array2D:
+        return self.source_pixelization_grid.interpolated_array_from(
+            values=values, shape_native=shape_native, use_nn=True
+        )
 
 
 class MapperVoronoiNoInterp(AbstractMapperVoronoi):

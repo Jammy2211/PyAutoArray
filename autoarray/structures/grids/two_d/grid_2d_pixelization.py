@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.spatial
 import scipy.spatial.qhull as qhull
+from scipy.interpolate import griddata
 from typing import Optional, List, Union, Tuple
 
 from autoconf import cached_property
@@ -304,6 +305,23 @@ class Grid2DRectangular(AbstractGrid2DPixelization):
             ]
         )
 
+    def interpolated_array_from(
+        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+    ) -> Array2D:
+
+        interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
+
+        print(interpolation_grid)
+        print(self)
+
+        interpolated_array = griddata(points=self, values=values, xi=interpolation_grid)
+
+        interpolated_array = interpolated_array.reshape(shape_native)
+
+        return Array2D.manual_native(
+            array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
+        )
+
 
 class AbstractGrid2DMeshTriangulation(AbstractGrid2DPixelization):
     def __new__(
@@ -587,8 +605,6 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
             )
 
         else:
-
-            from scipy.interpolate import griddata
 
             interpolated_array = griddata(
                 points=self.voronoi.points, values=values, xi=interpolation_grid

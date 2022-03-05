@@ -10,10 +10,8 @@ from autoarray.inversion.regularization.adaptive_brightness import (
     AdaptiveBrightnessSplit,
 )
 from autoarray.operators.convolver import Convolver
-from autoarray.fit.fit_data import FitData
-from autoarray.fit.fit_data import FitDataComplex
-from autoarray.fit.fit_dataset import FitImaging
-from autoarray.fit.fit_dataset import FitInterferometer
+from autoarray.fit.fit_imaging import FitImaging
+from autoarray.fit.fit_interferometer import FitInterferometer
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
@@ -36,6 +34,9 @@ from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.inversion.inversion.factory import inversion_from
+
+from autoarray.mock.mock import MockFitImaging
+from autoarray.mock.mock import MockFitInterferometer
 
 
 def make_mask_1d_7():
@@ -331,31 +332,22 @@ def make_imaging_fit_x1_plane_7x7():
 
     imaging_7x7 = make_masked_imaging_7x7()
 
-    fit = FitData(
-        data=imaging_7x7.image,
-        noise_map=imaging_7x7.noise_map,
-        model_data=5.0 * imaging_7x7.image,
-        mask=imaging_7x7.mask,
-        use_mask_in_fit=False,
-    )
+    model_data = 5.0 * imaging_7x7.image
 
-    return FitImaging(dataset=imaging_7x7, fit=fit)
+    return MockFitImaging(
+        dataset=imaging_7x7, use_mask_in_fit=False, model_data=model_data
+    )
 
 
 def make_fit_interferometer_7():
 
     interferometer_7 = make_interferometer_7()
 
-    fit = FitDataComplex(
-        data=interferometer_7.visibilities,
-        noise_map=interferometer_7.noise_map,
-        model_data=5.0 * interferometer_7.visibilities,
-        use_mask_in_fit=False,
+    model_data = 5.0 * interferometer_7.visibilities
+
+    return MockFitInterferometer(
+        dataset=interferometer_7, use_mask_in_fit=False, model_data=model_data
     )
-
-    fit_interferometer = FitInterferometer(dataset=interferometer_7, fit=fit)
-
-    return fit_interferometer
 
 
 def make_regularization_constant():

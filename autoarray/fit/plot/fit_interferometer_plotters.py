@@ -9,7 +9,7 @@ from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
-from autoarray.fit.fit_dataset import FitInterferometer
+from autoarray.fit.fit_interferometer import FitInterferometer
 
 
 class FitInterferometerPlotterMeta(Plotter):

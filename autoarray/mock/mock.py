@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from autoarray.preloads import Preloads
 from autoarray.inversion.linear_obj import LinearObjFunc
@@ -14,6 +14,8 @@ from autoarray.structures.grids.two_d.grid_2d_pixelization import (
     AbstractGrid2DPixelization,
 )
 from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
+
+import autoarray as aa
 
 
 class MockGrid2DPixelization(AbstractGrid2DPixelization):
@@ -75,10 +77,11 @@ class MockDataset:
         self.mask = mask
 
 
-class MockFit:
+class MockFitDataset:
     def __init__(
         self,
         dataset=MockDataset(),
+        model_data=None,
         inversion=None,
         noise_map=None,
         regularization_term=None,
@@ -87,6 +90,7 @@ class MockFit:
     ):
 
         self.dataset = dataset
+        self.model_data = model_data
         self.inversion = inversion
         self.noise_map = noise_map
         self.signal_to_noise_map = noise_map
@@ -94,6 +98,77 @@ class MockFit:
         self.regularization_term = regularization_term
         self.log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
+
+
+class MockFitImaging(aa.FitImaging):
+    def __init__(
+        self,
+        dataset=MockDataset(),
+        use_mask_in_fit: bool = False,
+        model_data=None,
+        inversion=None,
+        noise_map=None,
+        profiling_dict: Optional[Dict] = None,
+    ):
+
+        super().__init__(
+            dataset=dataset,
+            use_mask_in_fit=use_mask_in_fit,
+            profiling_dict=profiling_dict,
+        )
+
+        self._model_data = model_data
+        self._inversion = inversion
+        self._noise_map = noise_map
+
+    @property
+    def model_data(self):
+        return self._model_data
+
+    @property
+    def noise_map(self):
+        if self._noise_map is None:
+            return super().noise_map
+        return self._noise_map
+
+    @property
+    def inversion(self):
+        if self._inversion is None:
+            return super().inversion
+        return self._inversion
+
+
+class MockFitInterferometer(aa.FitInterferometer):
+    def __init__(
+        self,
+        dataset=MockDataset(),
+        use_mask_in_fit: bool = False,
+        model_data=None,
+        inversion=None,
+        noise_map=None,
+    ):
+
+        super().__init__(dataset=dataset, use_mask_in_fit=use_mask_in_fit)
+
+        self._model_data = model_data
+        self._inversion = inversion
+        self._noise_map = noise_map
+
+    @property
+    def model_data(self):
+        return self._model_data
+
+    @property
+    def noise_map(self):
+        if self._noise_map is None:
+            return super().noise_map
+        return self._noise_map
+
+    @property
+    def inversion(self):
+        if self._inversion is None:
+            return super().inversion
+        return self._inversion
 
 
 ### LEq ###
@@ -191,6 +266,7 @@ class MockMapper(AbstractMapper):
         mapping_matrix=None,
         pixel_signals=None,
         pixels=None,
+        interpolated_array=None,
     ):
 
         super().__init__(
@@ -206,6 +282,8 @@ class MockMapper(AbstractMapper):
         self._pixels = pixels
 
         self._pixel_signals = pixel_signals
+
+        self._interpolated_array = interpolated_array
 
     def pixel_signals_from(self, signal_scale):
         if self._pixel_signals is None:
@@ -225,6 +303,11 @@ class MockMapper(AbstractMapper):
     @property
     def mapping_matrix(self):
         return self._mapping_matrix
+
+    def interpolated_array_from(
+        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+    ):
+        return self._interpolated_array
 
 
 class MockLEq(AbstractLEq):
@@ -341,6 +424,8 @@ class MockInversion(InversionMatrices):
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
         reconstruction_dict: List[np.ndarray] = None,
+        regularization_term=None,
+        log_det_curvature_reg_matrix_term=None,
         log_det_regularization_matrix_term=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
@@ -369,6 +454,8 @@ class MockInversion(InversionMatrices):
         self._reconstruction = reconstruction
         self._reconstruction_dict = reconstruction_dict
 
+        self._regularization_term = regularization_term
+        self._log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
         self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
         self._curvature_matrix_preload = curvature_matrix_preload
@@ -419,6 +506,22 @@ class MockInversion(InversionMatrices):
             return super().reconstruction_dict
 
         return self._reconstruction_dict
+
+    @property
+    def regularization_term(self):
+
+        if self._regularization_term is None:
+            return super().regularization_term
+
+        return self._regularization_term
+
+    @property
+    def log_det_curvature_reg_matrix_term(self):
+
+        if self._log_det_curvature_reg_matrix_term is None:
+            return super().log_det_curvature_reg_matrix_term
+
+        return self._log_det_curvature_reg_matrix_term
 
     @property
     def log_det_regularization_matrix_term(self):

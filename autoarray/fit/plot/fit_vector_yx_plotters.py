@@ -5,7 +5,7 @@ from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
-from autoarray.fit.fit_dataset import FitImaging
+from autoarray.fit.fit_imaging import FitImaging
 from autoarray.fit.plot.fit_imaging_plotters import FitImagingPlotterMeta
 
 

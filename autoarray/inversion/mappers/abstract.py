@@ -295,6 +295,13 @@ class AbstractMapper(LinearObj):
                 )
             return indexes
 
+    def interpolated_array_from(
+        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+    ) -> Array2D:
+        return self.source_pixelization_grid.interpolated_array_from(
+            values=values, shape_native=shape_native
+        )
+
 
 class PixSubWeights:
     def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):

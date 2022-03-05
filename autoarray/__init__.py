@@ -11,11 +11,9 @@ from .dataset.imaging import WTildeImaging
 from .dataset.interferometer import Interferometer
 from .dataset.interferometer import SettingsInterferometer
 from .dataset.interferometer import SimulatorInterferometer
-from .fit.fit_data import FitData
-from .fit.fit_data import FitDataComplex
 from .fit.fit_dataset import FitDataset
-from .fit.fit_dataset import FitImaging
-from .fit.fit_dataset import FitInterferometer
+from .fit.fit_imaging import FitImaging
+from .fit.fit_interferometer import FitInterferometer
 from .instruments import acs
 from .instruments import euclid
 from .inversion.mappers.abstract import AbstractMapper

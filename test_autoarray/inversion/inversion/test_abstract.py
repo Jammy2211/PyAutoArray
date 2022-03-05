@@ -307,3 +307,20 @@ def test__brightest_reconstruction_pixel_and_centre():
     assert inversion.brightest_reconstruction_pixel_centre_list[0].in_list == [
         (5.0, 6.0)
     ]
+
+
+def test__interpolated_reconstruction_list_from():
+
+    interpolated_array = np.array([0.0, 1.0, 1.0, 1.0])
+
+    mapper = MockMapper(pixels=3, interpolated_array=interpolated_array)
+
+    inversion = MockInversion(
+        leq=MockLEq(linear_obj_list=[mapper]), reconstruction=interpolated_array
+    )
+
+    interpolated_reconstruction_list = inversion.interpolated_reconstruction_list_from(
+        shape_native=(3, 3)
+    )
+
+    assert (interpolated_reconstruction_list[0] == np.array([0.0, 1.0, 1.0, 1.0])).all()

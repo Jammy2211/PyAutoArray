@@ -207,6 +207,32 @@ class TestGrid2DRectangular:
             )
         )
 
+    # def test__interpolated_array_from(self):
+    #
+    #     grid = aa.Grid2D.manual_slim(
+    #         [[1.0, 0.0], [1.0, 2.0], [2.0, 1.0], [2.0, 2.0]],
+    #         shape_native=(2, 2),
+    #         pixel_scales=1.0,
+    #     )
+    #
+    #     grid_rectangular = aa.Grid2DRectangular(grid=grid, shape_native=grid.shape_native, pixel_scales=grid.pixel_scales)
+    #
+    #     interpolated_array = grid_rectangular.interpolated_array_from(
+    #         values=np.array([1.0, 2.0, 3.0, 4.0]), shape_native=(3, 2)
+    #     )
+    #
+    #     assert interpolated_array.native == pytest.approx(
+    #         np.array([[3.0, 5.0], [2.0, 5.0], [1.0, 5.0]]), 1.0e-4
+    #     )
+    #
+    #     interpolated_array = grid_rectangular.interpolated_array_from(
+    #         values=np.array([1.0, 2.0, 3.0, 4.0]), shape_native=(2, 3)
+    #     )
+    #
+    #     assert interpolated_array.native == pytest.approx(
+    #         np.array([[3.0, 6.0, 5.0], [1.0, 4.0, 5.0]]), 1.0e-4
+    #     )
+
 
 class TestGrid2DVoronoi:
     def test__pixel_neighbors__compare_to_pixelization_util(self):
