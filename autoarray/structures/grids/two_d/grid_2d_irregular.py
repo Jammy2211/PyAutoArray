@@ -305,8 +305,8 @@ class Grid2DIrregular(np.ndarray):
         self, grid_pair: Union["Grid2DIrregular"]
     ) -> "Grid2DIrregular":
         """
-        From an input grid, find the closest coordinates of this instance of the `Grid2DIrregular` to each coordinate on
-        the input grid and return each closest coordinate as a new `Grid2DIrregular`.
+        From an input grid, find the closest coordinates of this instance of the `Grid2DIrregular` to each coordinate
+        on the input grid and return each closest coordinate as a new `Grid2DIrregular`.
 
         Parameters
         ----------

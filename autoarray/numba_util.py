@@ -77,6 +77,7 @@ def profile_func(func: Callable):
             list(obj.profiling_dict)[-1] if obj.profiling_dict else None
         )
 
+
         start = time.time()
         for i in range(repeats):
             result = func(obj, *args, **kwargs)

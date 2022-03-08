@@ -3,14 +3,14 @@ import logging
 import numpy as np
 import os
 from os import path
-from typing import List
+from typing import List, Union
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
 class ValuesIrregular(np.ndarray):
-    def __new__(cls, values: np.ndarray):
+    def __new__(cls, values: Union[List, np.ndarray]):
         """
         A collection of values which are structured as follows:
 

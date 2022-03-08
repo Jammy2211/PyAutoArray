@@ -72,49 +72,5 @@ class FitImaging(FitDataset):
         return self.imaging.mask
 
     @property
-    def signal_to_noise_map(self) -> Union[np.ndarray, Array1D, Array2D]:
-        """
-        The signal-to-noise_map of the dataset and noise-map which are fitted.
-        """
-        warnings.filterwarnings("ignore")
-
-        signal_to_noise_map = np.divide(self.data, self.noise_map)
-        signal_to_noise_map[signal_to_noise_map < 0] = 0
-        return signal_to_noise_map
-
-    @property
-    def potential_chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
-        """
-        The signal-to-noise_map of the dataset and noise-map which are fitted.
-        """
-        warnings.filterwarnings("ignore")
-        absolute_signal_to_noise_map = np.divide(np.abs(self.data), self.noise_map)
-        return np.square(absolute_signal_to_noise_map)
-
-    @property
-    def chi_squared(self) -> float:
-        """
-        Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
-        """
-        if self.use_mask_in_fit:
-            return fit_util.chi_squared_with_mask_from(
-                chi_squared_map=self.chi_squared_map, mask=self.mask
-            )
-        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
-
-    @property
-    def noise_normalization(self) -> float:
-        """
-        Returns the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
-
-        [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
-        """
-        if self.use_mask_in_fit:
-            return fit_util.noise_normalization_with_mask_from(
-                noise_map=self.noise_map, mask=self.mask
-            )
-        return fit_util.noise_normalization_from(noise_map=self.noise_map)
-
-    @property
     def blurred_image(self):
         raise NotImplementedError
