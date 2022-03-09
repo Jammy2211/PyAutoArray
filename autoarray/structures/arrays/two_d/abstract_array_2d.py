@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from typing import List, Tuple, Union
 
-from autoarray.structures.abstract_structure import AbstractStructure2D
+from autoarray.structures.abstract_structure import Structure2D
 
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.mask.mask_2d import Mask2D
@@ -131,7 +131,7 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
     )
 
 
-class AbstractArray2D(AbstractStructure2D):
+class AbstractArray2D(Structure2D):
 
     header = None
 

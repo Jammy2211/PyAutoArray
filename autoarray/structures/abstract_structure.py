@@ -3,21 +3,12 @@ from os import path
 import pickle
 
 
-class AbstractStructure(np.ndarray):
-    def __array_finalize__(self, obj):
-
-        if hasattr(obj, "mask"):
-            self.mask = obj.mask
-
-        if hasattr(obj, "header"):
-            self.header = obj.header
+class Structure(np.ndarray):
 
     def __reduce__(self):
 
-        # Get the parent's __reduce__ tuple
         pickled_state = super().__reduce__()
 
-        # Create our own tuple to pass to __setstate__
         class_dict = {}
 
         for key, value in self.__dict__.items():
@@ -25,7 +16,6 @@ class AbstractStructure(np.ndarray):
 
         new_state = pickled_state[2] + (class_dict,)
 
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
         return pickled_state[0], pickled_state[1], new_state
 
     # noinspection PyMethodOverriding
@@ -36,7 +26,15 @@ class AbstractStructure(np.ndarray):
 
         super().__setstate__(state[0:-1])
 
-    def _new_structure(self, structure: "AbstractStructure", mask):
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "mask"):
+            self.mask = obj.mask
+
+        if hasattr(obj, "header"):
+            self.header = obj.header
+
+    def _new_structure(self, structure: "Structure", mask):
         """Conveninence method for creating a new instance of the Grid2D class from this grid.
 
         This method is over-written by other grids (e.g. Grid2DIterate) such that the slim and native methods return
@@ -44,7 +42,7 @@ class AbstractStructure(np.ndarray):
 
         Parameters
         ----------
-        data_structure : AbstractStructure
+        data_structure : Structure
             The structure which is to be turned into a new structure.
         mask :Mask2D
             The mask associated with this structure.
@@ -99,21 +97,6 @@ class AbstractStructure(np.ndarray):
     def total_pixels(self):
         return self.shape[0]
 
-    def resized_from(self, new_shape):
-        raise NotImplementedError
-
-    def padded_before_convolution_from(self, kernel_shape):
-        raise NotImplementedError
-
-    def trimmed_after_convolution_from(self, kernel_shape):
-        raise NotImplementedError
-
-    def structure_2d_from(self, result: np.ndarray):
-        raise NotImplementedError
-
-    def structure_2d_list_from(self, result_list: list):
-        raise NotImplementedError
-
     @classmethod
     def load(cls, file_path, filename):
         with open(path.join(file_path, f"{filename}.pickle"), "rb") as f:
@@ -130,20 +113,15 @@ class AbstractStructure(np.ndarray):
         raise NotImplementedError
 
 
-class AbstractStructure1D(AbstractStructure):
+class Structure1D(Structure):
 
     pass
 
 
-class AbstractStructure2D(AbstractStructure):
-    @property
-    def native(self):
+class Structure2D(Structure):
+
+    def structure_2d_list_from(self, result_list: list):
         raise NotImplementedError
 
-    @property
-    def shape_native(self):
-        return self.mask.shape
-
-    @property
-    def sub_shape_native(self):
-        return self.mask.sub_shape_native
+    def structure_2d_from(self, result: np.ndarray):
+        raise NotImplementedError

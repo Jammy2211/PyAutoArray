@@ -30,7 +30,7 @@ from os import path
 import os
 
 
-from autoarray.structures.abstract_structure import AbstractStructure
+from autoarray.structures.abstract_structure import Structure
 from autoarray import exc
 
 
@@ -885,7 +885,7 @@ class Output:
 
     def to_figure(
         self,
-        structure: Optional[AbstractStructure],
+        structure: Optional[Structure],
         auto_filename: Optional[str] = None,
     ):
         """

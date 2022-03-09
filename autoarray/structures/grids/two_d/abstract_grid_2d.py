@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple, Union
 from autoconf import conf
 from autoconf import cached_property
 
-from autoarray.structures.abstract_structure import AbstractStructure2D
+from autoarray.structures.abstract_structure import Structure2D
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.arrays.values import ValuesIrregular
@@ -123,9 +123,9 @@ def convert_grid_2d_to_native(
     )
 
 
-class AbstractGrid2D(AbstractStructure2D):
+class AbstractGrid2D(Structure2D):
     @property
-    def slim(self) -> Union[AbstractStructure2D, "Grid2D"]:
+    def slim(self) -> Union[Structure2D, "Grid2D"]:
         """
         Return a `Grid2D` where the data is stored its `slim` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size**2, 2].
@@ -144,7 +144,7 @@ class AbstractGrid2D(AbstractStructure2D):
         return self._new_structure(grid=grid_2d_slim, mask=self.mask)
 
     @property
-    def native(self) -> Union[AbstractStructure2D, "Grid2D"]:
+    def native(self) -> Union[Structure2D, "Grid2D"]:
         """
         Return a `Grid2D` where the data is stored in its `native` representation, which is an ndarray of shape
         [sub_size*total_y_pixels, sub_size*total_x_pixels, 2].

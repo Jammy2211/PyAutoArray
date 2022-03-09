@@ -5,7 +5,7 @@ from typing import List, Optional, Type, Union
 import warnings
 
 from autoconf import conf
-from autoarray.structures.abstract_structure import AbstractStructure
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
@@ -185,9 +185,9 @@ class AbstractDataset:
 
         Parameters
         ----------
-        data : AbstractStructure
+        data : Structure
             The array of the image data, in units of electrons per second.
-        noise_map : AbstractStructure
+        noise_map : Structure
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """
