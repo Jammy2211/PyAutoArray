@@ -216,23 +216,6 @@ class Grid2D(AbstractGrid2D):
 
         return obj
 
-    def _new_structure(self, grid: "Grid2D", mask: Mask2D) -> "Grid2D":
-        """
-        Conveninence method for creating a new instance of the Grid2D class from this grid.
-
-        This method is over-written by other grids (e.g. Grid2DIterate) such that the slim and native methods return
-        instances of that Grid2D's type.
-
-        Parameters
-        ----------
-        grid or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask :Mask2D
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        """
-        return Grid2D(grid=grid, mask=mask)
-
     @classmethod
     def manual_slim(
         cls,
@@ -730,6 +713,44 @@ class Grid2D(AbstractGrid2D):
         blurring_mask = mask.blurring_mask_from(kernel_shape_native=kernel_shape_native)
 
         return cls.from_mask(mask=blurring_mask)
+
+    @property
+    def slim(self) -> "Grid2D":
+        """
+        Return a `Grid2D` where the data is stored its `slim` representation, which is an ndarray of shape
+        [total_unmasked_pixels * sub_size**2, 2].
+
+        If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
+        `native` to `slim` and returned as a new `Grid2D`.
+        """
+        return Grid2D(grid=super()._slim, mask=self.mask)
+
+    @property
+    def native(self) -> "Grid2D":
+        """
+        Return a `Grid2D` where the data is stored in its `native` representation, which has shape
+        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2].
+
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Grid2D`.
+
+        This method is used in the child `Grid2D` classes to create their `native` properties.
+        """
+        return Grid2D(grid=super()._native, mask=self.mask)
+
+    @property
+    def binned(self) -> "Grid2D":
+        """
+        Return a `Grid2D` of the binned-up grid in its 1D representation, which is stored with
+        shape [total_unmasked_pixels, 2].
+
+        The binning up process converts a grid from (y,x) values where each value is a coordinate on the sub-grid to
+        (y,x) values where each coordinate is at the centre of its mask (e.g. a grid with a sub_size of 1). This is
+        performed by taking the mean of all (y,x) values in each sub pixel.
+
+        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+        """
+        return Grid2D(grid=super()._binned, mask=self.mask.mask_sub_1)
 
     def grid_via_deflection_grid_from(self, deflection_grid: "Grid2D") -> "Grid2D":
         """

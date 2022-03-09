@@ -116,6 +116,10 @@ class Grid2DIrregular(np.ndarray):
     def slim(self) -> "Grid2DIrregular":
         return self
 
+    @property
+    def native(self) -> "Grid2DIrregular":
+        return self
+
     @classmethod
     def from_yx_1d(cls, y: np.ndarray, x: np.ndarray) -> "Grid2DIrregular":
         """

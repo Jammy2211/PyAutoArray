@@ -99,28 +99,6 @@ class Grid2DIterate(AbstractGrid2D):
         if hasattr(obj, "sub_steps"):
             self.sub_steps = obj.sub_steps
 
-    def _new_structure(self, grid, mask):
-        """
-        Conveninence method for creating a new instance of the Grid2DIterate class from this grid.
-
-        This method is used in the 'slim', 'native', etc. convenience methods. By overwritin this method such that a
-        Grid2DIterate is created the slim and native methods will return instances of the Grid2DIterate.
-
-        Parameters
-        ----------
-        grid or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask :Mask2D
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        """
-        return Grid2DIterate(
-            grid=grid,
-            mask=mask,
-            fractional_accuracy=self.fractional_accuracy,
-            sub_steps=self.sub_steps,
-        )
-
     @classmethod
     def manual_slim(
         cls,
@@ -326,6 +304,59 @@ class Grid2DIterate(AbstractGrid2D):
             fractional_accuracy=fractional_accuracy,
             relative_accuracy=relative_accuracy,
             sub_steps=sub_steps,
+        )
+
+    @property
+    def slim(self) -> "Grid2DIterate":
+        """
+        Return a `Grid2D` where the data is stored its `slim` representation, which is an ndarray of shape
+        [total_unmasked_pixels * sub_size**2, 2].
+
+        If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
+        `native` to `slim` and returned as a new `Grid2D`.
+        """
+        return Grid2DIterate(
+            grid=super()._slim,
+            mask=self.mask,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+        )
+
+    @property
+    def native(self) -> "Grid2DIterate":
+        """
+        Return a `Grid2D` where the data is stored in its `native` representation, which has shape
+        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2].
+
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Grid2D`.
+
+        This method is used in the child `Grid2D` classes to create their `native` properties.
+        """
+        return Grid2DIterate(
+            grid=super()._native,
+            mask=self.mask,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+        )
+
+    @property
+    def binned(self) -> "Grid2DIterate":
+        """
+        Return a `Grid2D` of the binned-up grid in its 1D representation, which is stored with
+        shape [total_unmasked_pixels, 2].
+
+        The binning up process converts a grid from (y,x) values where each value is a coordinate on the sub-grid to
+        (y,x) values where each coordinate is at the centre of its mask (e.g. a grid with a sub_size of 1). This is
+        performed by taking the mean of all (y,x) values in each sub pixel.
+
+        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+        """
+        return Grid2DIterate(
+            grid=super()._binned,
+            mask=self.mask.mask_sub_1,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
         )
 
     def grid_via_deflection_grid_from(
