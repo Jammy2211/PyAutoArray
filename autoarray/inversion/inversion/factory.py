@@ -32,13 +32,18 @@ def inversion_from(
     profiling_dict: Optional[Dict] = None,
 ):
 
+    if settings.use_w_tilde:
+        w_tilde = dataset.w_tilde
+    else:
+        w_tilde = None
+
     if isinstance(dataset, Imaging):
 
         return inversion_imaging_unpacked_from(
             image=dataset.image,
             noise_map=dataset.noise_map,
             convolver=dataset.convolver,
-            w_tilde=dataset.w_tilde,
+            w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
             regularization_list=regularization_list,
             settings=settings,
@@ -50,7 +55,7 @@ def inversion_from(
         visibilities=dataset.visibilities,
         noise_map=dataset.noise_map,
         transformer=dataset.transformer,
-        w_tilde=dataset.w_tilde,
+        w_tilde=w_tilde,
         linear_obj_list=linear_obj_list,
         regularization_list=regularization_list,
         settings=settings,
