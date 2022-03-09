@@ -3,7 +3,7 @@ import numpy as np
 from typing import Dict, Optional, Tuple
 
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2DSparse
+from autoarray.structures.grids.two_d.sparse import Grid2DSparse
 from autoarray.structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from autoarray.preloads import Preloads
 from autoarray.inversion.pixelizations.abstract import AbstractPixelization

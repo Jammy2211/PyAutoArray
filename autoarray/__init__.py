@@ -56,7 +56,7 @@ from .structures.arrays.values import ValuesIrregular
 from .structures.arrays.abstract_array import Header
 from .structures.grids.one_d.grid_1d import Grid1D
 from .structures.grids.two_d.grid_2d import Grid2D
-from .structures.grids.two_d.grid_2d import Grid2DSparse
+from .structures.grids.two_d.sparse import Grid2DSparse
 from .structures.grids.two_d.grid_2d_iterate import Grid2DIterate
 from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform

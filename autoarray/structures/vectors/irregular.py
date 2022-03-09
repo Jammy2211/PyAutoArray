@@ -118,7 +118,7 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
             The vector field where all vectors outside of the input radius are removed.
 
         """
-        squared_distances = self.grid.distances_to_coordinate(coordinate=centre)
+        squared_distances = self.grid.distances_to_coordinate_from(coordinate=centre)
         mask = squared_distances < radius
 
         if np.all(mask == False):
@@ -153,7 +153,7 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
             The vector field where all vectors outside of the input radius are removed.
 
         """
-        squared_distances = self.grid.distances_to_coordinate(coordinate=centre)
+        squared_distances = self.grid.distances_to_coordinate_from(coordinate=centre)
         mask = (inner_radius < squared_distances) & (squared_distances < outer_radius)
 
         if np.all(mask == False):

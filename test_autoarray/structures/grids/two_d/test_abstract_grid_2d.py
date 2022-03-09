@@ -265,13 +265,17 @@ class TestGrid:
             grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
         )
 
-        square_distances = grid.squared_distances_to_coordinate(coordinate=(0.0, 0.0))
+        square_distances = grid.squared_distances_to_coordinate_from_from(
+            coordinate=(0.0, 0.0)
+        )
 
         assert isinstance(square_distances, aa.Array2D)
         assert (square_distances.slim == np.array([2.0, 13.0, 5.0])).all()
         assert (square_distances.mask == mask).all()
 
-        square_distances = grid.squared_distances_to_coordinate(coordinate=(0.0, 1.0))
+        square_distances = grid.squared_distances_to_coordinate_from_from(
+            coordinate=(0.0, 1.0)
+        )
 
         assert isinstance(square_distances, aa.Array2D)
         assert (square_distances.slim == np.array([1.0, 8.0, 2.0])).all()
@@ -285,7 +289,7 @@ class TestGrid:
             grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
         )
 
-        square_distances = grid.distances_to_coordinate(coordinate=(0.0, 0.0))
+        square_distances = grid.distances_to_coordinate_from(coordinate=(0.0, 0.0))
 
         assert (
             square_distances.slim
@@ -293,20 +297,20 @@ class TestGrid:
         ).all()
         assert (square_distances.mask == mask).all()
 
-        square_distances = grid.distances_to_coordinate(coordinate=(0.0, 1.0))
+        square_distances = grid.distances_to_coordinate_from(coordinate=(0.0, 1.0))
 
         assert (
             square_distances.slim == np.array([1.0, np.sqrt(8.0), np.sqrt(2.0)])
         ).all()
         assert (square_distances.mask == mask).all()
 
-    def test__grid_with_coordinates_within_distance_removed__single_coordinates_only(
+    def test__grid_with_coordinates_within_distance_removed_from__single_coordinates_only(
         self,
     ):
 
         grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
-        grid = grid.grid_with_coordinates_within_distance_removed(
+        grid = grid.grid_with_coordinates_within_distance_removed_from(
             coordinates=(0.0, 0.0), distance=0.05
         )
 
@@ -326,7 +330,7 @@ class TestGrid:
             )
         ).all()
 
-        grid = grid.grid_with_coordinates_within_distance_removed(
+        grid = grid.grid_with_coordinates_within_distance_removed_from(
             coordinates=(0.0, 0.0), distance=1.1
         )
 
@@ -338,7 +342,7 @@ class TestGrid:
             shape_native=(3, 3), pixel_scales=1.0, origin=(1.0, 1.0)
         )
 
-        grid = grid.grid_with_coordinates_within_distance_removed(
+        grid = grid.grid_with_coordinates_within_distance_removed_from(
             coordinates=(0.0, 0.0), distance=0.05
         )
 
@@ -358,11 +362,13 @@ class TestGrid:
             )
         ).all()
 
-    def test__grid_with_coordinates_within_distance_removed__multiple_coordinates(self):
+    def test__grid_with_coordinates_within_distance_removed_from__multiple_coordinates(
+        self
+    ):
 
         grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
-        grid = grid.grid_with_coordinates_within_distance_removed(
+        grid = grid.grid_with_coordinates_within_distance_removed_from(
             coordinates=[(0.0, 0.0), (1.0, -1.0), (-1.0, -1.0)], distance=0.05
         )
 
@@ -384,7 +390,7 @@ class TestGrid:
             shape_native=(3, 3), pixel_scales=1.0, origin=(1.0, 1.0)
         )
 
-        grid = grid.grid_with_coordinates_within_distance_removed(
+        grid = grid.grid_with_coordinates_within_distance_removed_from(
             coordinates=[(0.0, 0.0), (1.0, -1.0), (-1.0, -1.0), (2.0, 2.0)],
             distance=0.05,
         )

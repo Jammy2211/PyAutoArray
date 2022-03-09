@@ -318,7 +318,7 @@ class Grid2DIterate(Grid2D):
         `native` to `slim` and returned as a new `Grid2D`.
         """
         return Grid2DIterate(
-            grid=self._slim,
+            grid=super().slim,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -336,7 +336,7 @@ class Grid2DIterate(Grid2D):
         This method is used in the child `Grid2D` classes to create their `native` properties.
         """
         return Grid2DIterate(
-            grid=self._native,
+            grid=super().native,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -355,7 +355,7 @@ class Grid2DIterate(Grid2D):
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
         """
         return Grid2DIterate(
-            grid=self._binned,
+            grid=super().binned,
             mask=self.mask.mask_sub_1,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -388,12 +388,12 @@ class Grid2DIterate(Grid2D):
         """
         Returns the blurring grid from a grid and create it as a Grid2DIterate, via an input 2D kernel shape.
 
-            For a full description of blurring grids, checkout *blurring_grid_from*.
+        For a full description of blurring grids, checkout *blurring_grid_from*.
 
-            Parameters
-            ----------
-            kernel_shape_native
-                The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
+        Parameters
+        ----------
+        kernel_shape_native
+            The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
         return Grid2DIterate.blurring_grid_from(
