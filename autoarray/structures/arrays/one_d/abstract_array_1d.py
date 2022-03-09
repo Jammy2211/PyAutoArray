@@ -1,11 +1,11 @@
 from typing import Tuple, Union
 
-from autoarray.structures.abstract_structure import AbstractStructure1D
+from autoarray.structures.abstract_structure import Structure1D
 
 from autoarray.structures.arrays.one_d import array_1d_util
 
 
-class AbstractArray1D(AbstractStructure1D):
+class AbstractArray1D(Structure1D):
     @property
     def slim(self) -> Union["AbstractArray1D", "Array1D"]:
         """

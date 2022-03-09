@@ -1,5 +1,6 @@
+from abc import ABC
+from abc import abstractmethod
 import logging
-
 import numpy as np
 
 from autoarray import exc
@@ -8,7 +9,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractMask(np.ndarray):
+class AbstractMask(np.ndarray, ABC):
 
     pixel_scales = None
 
@@ -85,7 +86,7 @@ class AbstractMask(np.ndarray):
         super().__setstate__(state[0:-1])
 
     @property
-    def pixel_scale(self):
+    def pixel_scale(self) -> float:
         """
         For a mask with dimensions two or above check that are pixel scales are the same, and if so return this
         single value as a float.
@@ -100,7 +101,7 @@ class AbstractMask(np.ndarray):
         return self.pixel_scales[0]
 
     @property
-    def dimensions(self):
+    def dimensions(self) -> int:
         return len(self.shape)
 
     @property
@@ -122,7 +123,9 @@ class AbstractMask(np.ndarray):
         return 1.0 / self.sub_length
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
-        raise NotImplementedError()
+        """
+        Overwrite with method to output the mask to a `.fits` file.
+        """
 
     @property
     def pixels_in_mask(self) -> int:

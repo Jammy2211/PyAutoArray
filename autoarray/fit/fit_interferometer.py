@@ -1,17 +1,19 @@
 import numpy as np
 from typing import Dict, Optional, Union
 
-from autoarray.structures.arrays.one_d.array_1d import Array1D
+from autoarray.dataset.interferometer import Interferometer
 from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.structures.visibilities import Visibilities
 from autoarray.fit.fit_dataset import FitDataset
 
 from autoarray.fit import fit_util
+from autoarray import type as ty
 
 
 class FitInterferometer(FitDataset):
     def __init__(
         self,
-        dataset,
+        dataset: Interferometer,
         use_mask_in_fit: bool = False,
         profiling_dict: Optional[Dict] = None,
     ):
@@ -35,11 +37,11 @@ class FitInterferometer(FitDataset):
         residual_map
             The residual-map of the fit (data - model_data).
         chi_squared_map
-            The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
+            The chi-squared-map of the fit ((data - model_data) / noise_map ) **2.0
         chi_squared
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
         reduced_chi_squared
-            The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over \
+            The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over
             every data point.
         noise_normalization
             The overall normalization term of the noise_map, summed over every data point.
@@ -54,27 +56,27 @@ class FitInterferometer(FitDataset):
         )
 
     @property
-    def mask(self):
+    def mask(self) -> np.ndarray:
         return np.full(shape=self.visibilities.shape, fill_value=False)
 
     @property
-    def interferometer(self):
+    def interferometer(self) -> Interferometer:
         return self.dataset
 
     @property
-    def transformer(self):
+    def transformer(self) -> ty.Transformer:
         return self.interferometer.transformer
 
     @property
-    def visibilities(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def visibilities(self) -> Visibilities:
         return self.data
 
     @property
-    def model_visibilities(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def model_visibilities(self) -> Visibilities:
         return self.model_data
 
     @property
-    def normalized_residual_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def normalized_residual_map(self) -> np.ndarray:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -85,7 +87,7 @@ class FitInterferometer(FitDataset):
         )
 
     @property
-    def chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def chi_squared_map(self) -> np.ndarray:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
@@ -96,7 +98,7 @@ class FitInterferometer(FitDataset):
         )
 
     @property
-    def signal_to_noise_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def signal_to_noise_map(self) -> np.ndarray:
         """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map_real = np.divide(
             np.real(self.data), np.real(self.noise_map)
@@ -110,7 +112,7 @@ class FitInterferometer(FitDataset):
         return signal_to_noise_map_real + 1.0j * signal_to_noise_map_imag
 
     @property
-    def potential_chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def potential_chi_squared_map(self) -> np.ndarray:
         """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         return self.signal_to_noise_map
 
@@ -135,29 +137,29 @@ class FitInterferometer(FitDataset):
         )
 
     @property
-    def dirty_image(self):
+    def dirty_image(self) -> Array2D:
         return self.transformer.image_from(visibilities=self.visibilities)
 
     @property
-    def dirty_noise_map(self):
+    def dirty_noise_map(self) -> Array2D:
         return self.transformer.image_from(visibilities=self.noise_map)
 
     @property
-    def dirty_signal_to_noise_map(self):
+    def dirty_signal_to_noise_map(self) -> Array2D:
         return self.transformer.image_from(visibilities=self.signal_to_noise_map)
 
     @property
-    def dirty_model_image(self):
+    def dirty_model_image(self) -> Array2D:
         return self.transformer.image_from(visibilities=self.model_visibilities)
 
     @property
-    def dirty_residual_map(self):
+    def dirty_residual_map(self) -> Array2D:
         return self.transformer.image_from(visibilities=self.residual_map)
 
     @property
-    def dirty_normalized_residual_map(self):
+    def dirty_normalized_residual_map(self) -> Array2D:
         return self.transformer.image_from(visibilities=self.normalized_residual_map)
 
     @property
-    def dirty_chi_squared_map(self):
+    def dirty_chi_squared_map(self) -> Array2D:
         return self.transformer.image_from(visibilities=self.chi_squared_map)

@@ -1,18 +1,15 @@
-import numpy as np
-from typing import Dict, Optional, Union
-import warnings
+from typing import Dict, Optional
 
-from autoarray.structures.arrays.one_d.array_1d import Array1D
-from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.dataset.imaging import Imaging
 from autoarray.fit.fit_dataset import FitDataset
-
-from autoarray.fit import fit_util
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.arrays.two_d.array_2d import Array2D
 
 
 class FitImaging(FitDataset):
     def __init__(
         self,
-        dataset,
+        dataset: Imaging,
         use_mask_in_fit: bool = False,
         profiling_dict: Optional[Dict] = None,
     ):
@@ -56,21 +53,21 @@ class FitImaging(FitDataset):
         )
 
     @property
-    def imaging(self):
+    def imaging(self) -> Imaging:
         return self.dataset
 
     @property
-    def image(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def image(self) -> Array2D:
         return self.data
 
     @property
-    def model_image(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def model_image(self) -> Array2D:
         return self.model_data
 
     @property
-    def mask(self):
+    def mask(self) -> Mask2D:
         return self.imaging.mask
 
     @property
-    def blurred_image(self):
+    def blurred_image(self) -> Array2D:
         raise NotImplementedError

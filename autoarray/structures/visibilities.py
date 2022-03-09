@@ -1,8 +1,10 @@
 import logging
 import numpy as np
+from typing import List, Tuple, Union
 
 from autoconf import cached_property
 
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 from autoarray.structures.arrays.two_d import array_2d_util
@@ -11,10 +13,10 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractVisibilities(np.ndarray):
+class AbstractVisibilities(Structure):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, visibilities, *args, **kwargs):
+    def __new__(cls, visibilities: Union[np.ndarray, List[complex]], *args, **kwargs):
         """
         A collection of (real, imag) visibilities which are used to represent the data in an `Interferometer` dataset.
 
@@ -60,30 +62,12 @@ class AbstractVisibilities(np.ndarray):
         if hasattr(obj, "ordered_1d"):
             self.ordered_1d = obj.ordered_1d
 
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super(AbstractVisibilities, self).__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super(AbstractVisibilities, self).__setstate__(state[0:-1])
-
     @property
-    def slim(self):
+    def slim(self) -> "AbstractVisibilities":
         return self
 
     @property
-    def in_array(self):
+    def in_array(self) -> np.ndarray:
         """
         Returns the 1D complex NumPy array of values with shape [total_visibilities] as a NumPy float array of
         shape [total_visibilities, 2].
@@ -91,23 +75,25 @@ class AbstractVisibilities(np.ndarray):
         return np.stack((np.real(self), np.imag(self)), axis=-1)
 
     @property
-    def in_grid(self):
-        """Returns the 1D complex NumPy array of values as an irregular grid."""
+    def in_grid(self) -> Grid2DIrregular:
+        """
+        Returns the 1D complex NumPy array of values as an irregular grid.
+        """
         return Grid2DIrregular(grid=self.in_array)
 
     @property
-    def shape_slim(self):
+    def shape_slim(self) -> int:
         return self.shape[0]
 
     @cached_property
-    def amplitudes(self):
+    def amplitudes(self) -> np.ndarray:
         return np.sqrt(np.square(self.real) + np.square(self.imag))
 
     @cached_property
-    def phases(self):
+    def phases(self) -> np.ndarray:
         return np.arctan2(self.imag, self.real)
 
-    def output_to_fits(self, file_path, overwrite=False):
+    def output_to_fits(self, file_path: str, overwrite: bool = False):
         """
         Output the visibilities to a .fits file.
 
@@ -116,10 +102,10 @@ class AbstractVisibilities(np.ndarray):
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
-        overwrite : bool
+        overwrite
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         array_2d_util.numpy_array_2d_to_fits(
@@ -127,18 +113,24 @@ class AbstractVisibilities(np.ndarray):
         )
 
     @property
-    def scaled_maxima(self):
-        """The maximum values of the visibilities if they are treated as a 2D grid in the complex plane."""
-        return (np.max(self.real), np.max(self.imag))
+    def scaled_maxima(self) -> Tuple[float, float]:
+        """
+        The maximum values of the visibilities if they are treated as a 2D grid in the complex plane.
+        """
+        return np.max(self.real), np.max(self.imag)
 
     @property
-    def scaled_minima(self):
-        """The minimum values of the visibilities if they are treated as a 2D grid in the complex plane."""
-        return (np.min(self.real), np.min(self.imag))
+    def scaled_minima(self) -> Tuple[float, float]:
+        """
+        The minimum values of the visibilities if they are treated as a 2D grid in the complex plane.
+        """
+        return np.min(self.real), np.min(self.imag)
 
     @property
-    def extent(self):
-        """The extent of the visibilities if they are treated as a 2D grid in the complex plane."""
+    def extent(self) -> np.ndarray:
+        """
+        The extent of the visibilities if they are treated as a 2D grid in the complex plane.
+        """
         return np.array(
             [
                 self.scaled_minima[1],
@@ -151,7 +143,9 @@ class AbstractVisibilities(np.ndarray):
 
 class Visibilities(AbstractVisibilities):
     @classmethod
-    def manual_slim(cls, visibilities):
+    def manual_slim(
+        cls, visibilities: Union[np.ndarray, List[complex]]
+    ) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) by inputting (real, imag) values as a 1D complex
         NumPy array or 2D NumPy float array or list, for example:
@@ -165,10 +159,10 @@ class Visibilities(AbstractVisibilities):
         visibilities
             The (real, imag) visibilities values.
         """
-        return cls(visibilities=visibilities)
+        return cls(visibilities)
 
     @classmethod
-    def full(cls, fill_value, shape_slim):
+    def full(cls, fill_value: float, shape_slim: Tuple[int]) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) where all (real, imag) values are filled with an
         input fill value, analogous to the method numpy ndarray.full.
@@ -190,7 +184,7 @@ class Visibilities(AbstractVisibilities):
         )
 
     @classmethod
-    def ones(cls, shape_slim):
+    def ones(cls, shape_slim: Tuple[int]) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) where all (real, imag) values are filled with ones,
         analogous to the method np.ones().
@@ -206,7 +200,7 @@ class Visibilities(AbstractVisibilities):
         return cls.full(fill_value=1.0, shape_slim=shape_slim)
 
     @classmethod
-    def zeros(cls, shape_slim):
+    def zeros(cls, shape_slim: Tuple[int]) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) where all (real, imag) values are filled with zeros,
         analogous to the method np.zeros().
@@ -222,7 +216,7 @@ class Visibilities(AbstractVisibilities):
         return cls.full(fill_value=0.0, shape_slim=shape_slim)
 
     @classmethod
-    def from_fits(cls, file_path, hdu):
+    def from_fits(cls, file_path: str, hdu: int) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) by loading the(real, imag) values from a .fits file.
 
@@ -246,7 +240,7 @@ class Visibilities(AbstractVisibilities):
 class VisibilitiesNoiseMap(Visibilities):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, visibilities, *args, **kwargs):
+    def __new__(cls, visibilities: Union[np.ndarray, List[complex]], *args, **kwargs):
         """
         A collection of (real, imag) visibilities noise-map values which are used to represent the noise-map in
         an `Interferometer` dataset.

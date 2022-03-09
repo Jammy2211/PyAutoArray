@@ -5,11 +5,13 @@ import os
 from os import path
 from typing import List, Union
 
+from autoarray.structures.abstract_structure import Structure
+
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class ValuesIrregular(np.ndarray):
+class ValuesIrregular(Structure):
     def __new__(cls, values: Union[List, np.ndarray]):
         """
         A collection of values which are structured as follows:
@@ -54,31 +56,36 @@ class ValuesIrregular(np.ndarray):
 
     @property
     def slim(self) -> "ValuesIrregular":
-        """The ValuesIrregular in their 1D representation, an ndarray of shape [total_values]."""
+        """
+        The ValuesIrregular in their `slim` representation, a 1D ndarray of shape [total_values].
+        """
         return self
 
     @property
     def in_list(self) -> List:
-        """Return the values in a list."""
+        """
+        Return the values in a list.
+        """
         return [value for value in self]
 
     def values_from(self, array_slim: np.ndarray) -> "ValuesIrregular":
         """
-        Create a *ValuesIrregular* object from a 1D ndarray of values of shape [total_values].
+        Create a `ValuesIrregular` object from a 1D ndarray of values of shape [total_values].
 
-        The *ValuesIrregular* are structured following this `ValuesIrregular` instance.
+        The returned values have an identical structure to this `ValuesIrregular` instance.
 
         Parameters
         ----------
         array_slim
-            The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregular* object."""
+            The 1D ndarray with (hape [total_values] whose values are mapped to a `ValuesIrregular` object.
+        """
         return ValuesIrregular(values=array_slim)
 
     def grid_from(self, grid_slim: np.ndarray) -> "Grid2DIrregular":
         """
         Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
 
-        The `Grid2DIrregular` are structured following this *ValuesIrregular* instance.
+        The returned grid are structured following this `ValuesIrregular` instance.
 
         Parameters
         ----------
@@ -94,11 +101,11 @@ class ValuesIrregular(np.ndarray):
     @classmethod
     def from_file(cls, file_path: str) -> "ValuesIrregular":
         """
-        Create a `Grid2DIrregular` object from a file which stores the coordinates as a list of list of tuples.
+        Create a `ValuesIrregular` object from a  `.json` file which stores the coordinates as a list of list of tuples.
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         """
 

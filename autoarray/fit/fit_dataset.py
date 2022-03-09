@@ -1,13 +1,14 @@
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 import warnings
 
-from autoarray.structures.arrays.values import ValuesIrregular
-from autoarray.structures.arrays.one_d.array_1d import Array1D
-from autoarray.structures.arrays.two_d.array_2d import Array2D
+from autoarray.mask.abstract_mask import AbstractMask
+from autoarray.structures.abstract_structure import Structure
+from autoarray.inversion.inversion.abstract import AbstractInversion
 
+from autoarray import type as ty
 from autoarray.fit import fit_util
 from autoarray.numba_util import profile_func
 
@@ -59,35 +60,35 @@ class FitDataset(ABC):
 
     @property
     @abstractmethod
-    def mask(self):
+    def mask(self) -> AbstractMask:
         """
         Overwrite this method so it returns the mask of the dataset which is fitted to the input data.
         """
 
     @property
-    def inversion(self):
+    def inversion(self) -> Optional[AbstractInversion]:
         """
         Overwrite this method so it returns the inversion used to fit the dataset.
         """
-        raise NotImplementedError
+        return None
 
     @property
-    def data(self):
+    def data(self) -> ty.DataLike:
         return self.dataset.data
 
     @property
-    def noise_map(self):
+    def noise_map(self) -> ty.NoiseMapLike:
         return self.dataset.noise_map
 
     @property
     @abstractmethod
-    def model_data(self):
+    def model_data(self) -> ty.DataLike:
         """
         Overwrite this method so it returns the model-data which is fitted to the input data.
         """
 
     @property
-    def signal_to_noise_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def signal_to_noise_map(self) -> ty.DataLike:
         """
         The signal-to-noise_map of the dataset and noise-map which are fitted.
         """
@@ -98,7 +99,7 @@ class FitDataset(ABC):
         return signal_to_noise_map
 
     @property
-    def potential_chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D]:
+    def potential_chi_squared_map(self) -> ty.DataLike:
         """
         The signal-to-noise_map of the dataset and noise-map which are fitted.
         """
@@ -107,7 +108,7 @@ class FitDataset(ABC):
         return np.square(absolute_signal_to_noise_map)
 
     @property
-    def residual_map(self) -> Union[np.ndarray, Array1D, Array2D, ValuesIrregular]:
+    def residual_map(self) -> Structure:
         """
         Returns the residual-map between the masked dataset and model data, where:
 
@@ -121,7 +122,7 @@ class FitDataset(ABC):
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
-    def normalized_residual_map(self) -> Union[np.ndarray, Array1D, Array2D, ValuesIrregular]:
+    def normalized_residual_map(self) -> Structure:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -136,7 +137,7 @@ class FitDataset(ABC):
         )
 
     @property
-    def chi_squared_map(self) -> Union[np.ndarray, Array1D, Array2D, ValuesIrregular]:
+    def chi_squared_map(self) -> Structure:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 

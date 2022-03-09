@@ -1,14 +1,14 @@
 import numpy as np
 from typing import Union
 
-from autoarray.structures.abstract_structure import AbstractStructure1D
+from autoarray.structures.abstract_structure import Structure1D
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids.one_d import grid_1d_util
 
 
-class AbstractGrid1D(AbstractStructure1D):
+class AbstractGrid1D(Structure1D):
     @property
     def slim(self) -> Union["AbstractGrid1D", "Grid1D"]:
         """
