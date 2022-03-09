@@ -59,7 +59,7 @@ class Array1D(AbstractArray1D):
             The origin of the line's mask.
         """
 
-        array = abstract_array.convert_array(array)
+        array = array_2d_util.convert_array(array)
 
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
@@ -135,7 +135,7 @@ class Array1D(AbstractArray1D):
             The origin of the line's mask.
         """
 
-        array = abstract_array.convert_array(array)
+        array = array_2d_util.convert_array(array)
 
         array = array_1d_util.array_1d_slim_from(
             array_1d_native=array, mask_1d=mask, sub_size=mask.sub_size

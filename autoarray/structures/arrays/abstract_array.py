@@ -10,20 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
-    """
-    If the input array input a convert is of type list, convert it to type NumPy array.
 
-    Parameters
-    ----------
-    array : list or ndarray
-        The array which may be converted to an ndarray
-    """
-
-    if type(array) is list:
-        array = np.asarray(array)
-
-    return array
 
 
 class Header:

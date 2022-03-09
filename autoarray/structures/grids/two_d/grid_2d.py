@@ -212,7 +212,7 @@ class Grid2D(AbstractGrid2D):
         obj = grid.view(cls)
         obj.mask = mask
 
-        abstract_grid_2d.check_grid_2d(grid_2d=obj)
+        grid_2d_util.check_grid_2d(grid_2d=obj)
 
         return obj
 
@@ -260,7 +260,7 @@ class Grid2D(AbstractGrid2D):
             origin=origin,
         )
 
-        grid = abstract_grid_2d.convert_grid_2d(grid_2d=grid, mask_2d=mask)
+        grid = grid_2d_util.convert_grid_2d(grid_2d=grid, mask_2d=mask)
 
         return Grid2D(grid=grid, mask=mask)
 
@@ -311,7 +311,7 @@ class Grid2D(AbstractGrid2D):
             origin=origin,
         )
 
-        grid = abstract_grid_2d.convert_grid_2d(grid_2d=grid, mask_2d=mask)
+        grid = grid_2d_util.convert_grid_2d(grid_2d=grid, mask_2d=mask)
 
         return Grid2D(grid=grid, mask=mask)
 
@@ -375,9 +375,9 @@ class Grid2D(AbstractGrid2D):
         """
 
         grid = abstract_grid.convert_grid(grid=grid)
-        abstract_grid_2d.check_grid_2d_and_mask_2d(grid_2d=grid, mask_2d=mask)
+        grid_2d_util.check_grid_2d_and_mask_2d(grid_2d=grid, mask_2d=mask)
 
-        grid = abstract_grid_2d.convert_grid_2d(grid_2d=grid, mask_2d=mask)
+        grid = grid_2d_util.convert_grid_2d(grid_2d=grid, mask_2d=mask)
 
         return Grid2D(grid=grid, mask=mask)
 

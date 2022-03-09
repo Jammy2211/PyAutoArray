@@ -8,7 +8,7 @@ from autoarray.structures.vectors.abstract import AbstractVectorYX2D
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids import abstract_grid
-from autoarray.structures.grids.two_d import abstract_grid_2d
+from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 
 from autoarray import type as ty
@@ -278,7 +278,7 @@ class VectorYX2D(AbstractVectorYX2D):
             origin=origin,
         )
 
-        vectors = abstract_grid_2d.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
+        vectors = grid_2d_util.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
 
         return cls(vectors=vectors, grid=grid, mask=mask)
 
@@ -342,7 +342,7 @@ class VectorYX2D(AbstractVectorYX2D):
             origin=origin,
         )
 
-        vectors = abstract_grid_2d.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
+        vectors = grid_2d_util.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
 
         return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
@@ -366,7 +366,7 @@ class VectorYX2D(AbstractVectorYX2D):
 
         grid = Grid2D.from_mask(mask=mask)
 
-        vectors = abstract_grid_2d.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
+        vectors = grid_2d_util.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
         return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
     @classmethod

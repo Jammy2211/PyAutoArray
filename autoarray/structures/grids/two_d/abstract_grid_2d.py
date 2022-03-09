@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from autoconf import conf
 from autoconf import cached_property
@@ -12,115 +12,9 @@ from autoarray.structures.arrays.values import ValuesIrregular
 from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
 from autoarray.mask.mask_2d import Mask2D
 
-from autoarray import exc
-from autoarray.structures.grids import abstract_grid
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
-
-
-def check_grid_2d(grid_2d: np.ndarray):
-
-    if grid_2d.shape[-1] != 2:
-        raise exc.GridException(
-            "The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)"
-        )
-
-    if 2 < len(grid_2d.shape) > 3:
-        raise exc.GridException("The dimensions of the input grid array is not 2 or 3")
-
-
-def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
-
-    if len(grid_2d.shape) == 2:
-
-        if grid_2d.shape[0] != mask_2d.sub_pixels_in_mask:
-            raise exc.GridException(
-                "The input 1D grid does not have the same number of entries as sub-pixels in"
-                "the mask."
-            )
-
-    elif len(grid_2d.shape) == 3:
-
-        if (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.sub_shape_native:
-            raise exc.GridException(
-                "The input grid is 2D but not the same dimensions as the sub-mask "
-                "(e.g. the mask 2D shape multipled by its sub size.)"
-            )
-
-
-def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.ndarray:
-    """
-    The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
-    
-    This function performs the following and checks and conversions on the input:
-
-    1: If the input is a list, convert it to an ndarray.
-    2: Check that the number of sub-pixels in the array is identical to that of the mask.
-    3) Map the input ndarray to its `slim` representation.
-
-    For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2] and `native` a 3D NumPy array of
-    shape [total_y_coordinates, total_x_coordinates, 2]
-
-    Parameters
-    ----------
-    grid_2d
-        The input (y,x) grid of coordinates which is converted to an ndarray if it is a list.
-    mask_2d : Mask2D
-        The mask of the output Array2D.
-    """
-
-    grid_2d = abstract_grid.convert_grid(grid=grid_2d)
-
-    return convert_grid_2d_to_slim(grid_2d=grid_2d, mask_2d=mask_2d)
-
-
-def convert_grid_2d_to_slim(
-    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
-) -> np.ndarray:
-    """
-    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
-
-    This function checks the dimensions of the input `grid_2d` and maps it to its `slim` representation.
-
-    For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2].
-
-    Parameters
-    ----------
-    grid_2d
-        The input (y,x) grid of coordinates which is converted to its silm representation.
-    mask_2d : Mask2D
-        The mask of the output Array2D.
-    """
-    if len(grid_2d.shape) == 2:
-        return grid_2d
-    return grid_2d_util.grid_2d_slim_from(
-        grid_2d_native=grid_2d, mask=mask_2d, sub_size=mask_2d.sub_size
-    )
-
-
-def convert_grid_2d_to_native(
-    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
-) -> np.ndarray:
-    """
-    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
-
-    This function checks the dimensions of the input `grid_2d` and maps it to its `native` representation.
-
-    For a Grid2D, `native` refers to a 2D NumPy array of shape [total_y_coordinates, total_x_coordinates, 2].
-
-    Parameters
-    ----------
-    grid_2d
-        The input (y,x) grid of coordinates which is converted to its native representation.
-    mask_2d : Mask2D
-        The mask of the output Array2D.
-    """
-    if len(grid_2d.shape) == 3:
-        return grid_2d
-    return grid_2d_util.grid_2d_native_from(
-        grid_2d_slim=grid_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
-    )
 
 
 class AbstractGrid2D(Structure2D):

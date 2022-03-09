@@ -1,13 +1,143 @@
 from astropy.io import fits
-from functools import wraps
-import inspect
 import numpy as np
 import os
-from typing import Tuple
+from typing import List, Tuple, Union
 
 from autoconf import conf
 from autoarray import numba_util
 from autoarray.mask import mask_2d_util
+
+from autoarray import exc
+from autoarray.structures.arrays import abstract_array
+
+def check_array_2d(array_2d: np.ndarray):
+    if len(array_2d.shape) != 1:
+        raise exc.ArrayException(
+            "An array input into the Array2D.__new__ method is not of shape 1."
+        )
+
+
+def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
+    """
+    If the input array input a convert is of type list, convert it to type NumPy array.
+
+    Parameters
+    ----------
+    array : list or ndarray
+        The array which may be converted to an ndarray
+    """
+
+    if type(array) is list:
+        array = np.asarray(array)
+
+    return array
+
+
+def convert_array_2d(array_2d: Union[np.ndarray, List], mask_2d: "Mask2D") -> np.ndarray:
+    """
+    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
+    Array2D.
+
+    This function performs the following and checks and conversions on the input:
+
+    1) If the input is a list, convert it to an ndarray.
+    2) Check that the number of sub-pixels in the array is identical to that of the mask.
+    3) Map the input ndarray to its `slim` representation.
+
+    For an Array2D, `slim` refers to a 1D NumPy array of shape [total_values] and `native` a 2D NumPy array of shape
+    [total_y_values, total_values].
+
+    Parameters
+    ----------
+    array_2d
+        The input structure which is converted to an ndarray if it is a list.
+    mask_2d
+        The mask of the output Array2D.
+    """
+
+    array_2d = convert_array(array=array_2d)
+
+    return convert_array_2d_to_slim(array_2d=array_2d, mask_2d=mask_2d)
+
+
+def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.ndarray:
+    """
+    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
+    Array2D.
+
+    This function checks the dimensions of the input `array_2d` and maps it to its `slim` representation.
+
+    For an Array2D, `slim` refers to a 1D NumPy array of shape [total_values].
+
+    Parameters
+    ----------
+    array_2d
+        The input structure which is converted to its slim representation.
+    mask_2d
+        The mask of the output Array2D.
+    """
+
+    if len(array_2d.shape) == 1:
+
+        array_2d_slim = array_2d
+
+        if array_2d_slim.shape[0] != mask_2d.sub_pixels_in_mask:
+            raise exc.ArrayException(
+                "The input 1D array does not have the same number of entries as sub-pixels in"
+                "the mask."
+            )
+
+        return array_2d_slim
+
+    if array_2d.shape != mask_2d.sub_shape_native:
+        raise exc.ArrayException(
+            "The input array is 2D but not the same dimensions as the sub-mask "
+            "(e.g. the mask 2D shape multipled by its sub size.)"
+        )
+
+    return array_2d_slim_from(
+        array_2d_native=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+    )
+
+
+def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.ndarray:
+    """
+    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
+    Array2D.
+
+    This function checks the dimensions of the input `array_2d` and maps it to its `native` representation.
+
+    For an Array2D, `native` a 2D NumPy array of shape [total_y_values, total_values].
+
+    Parameters
+    ----------
+    array_2d
+        The input structure which is converted to an ndarray if it is a list.
+    mask_2d : "Mask2D"
+        The mask of the output Array2D.
+    """
+
+    if len(array_2d.shape) == 2:
+
+        array_2d_native = array_2d * np.invert(mask_2d)
+
+        if array_2d.shape != mask_2d.sub_shape_native:
+            raise exc.ArrayException(
+                "The input array is 2D but not the same dimensions as the sub-mask "
+                "(e.g. the mask 2D shape multipled by its sub size.)"
+            )
+
+        return array_2d_native
+
+    if array_2d.shape[0] != mask_2d.sub_pixels_in_mask:
+        raise exc.ArrayException(
+            "The input 1D array does not have the same number of entries as sub-pixels in"
+            "the mask."
+        )
+
+    return array_2d_native_from(
+        array_2d_slim=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+    )
 
 
 @numba_util.jit()
