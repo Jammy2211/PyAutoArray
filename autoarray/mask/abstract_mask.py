@@ -9,7 +9,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractMask(np.ndarray, ABC):
+class Mask(np.ndarray, ABC):
 
     pixel_scales = None
 
@@ -55,7 +55,7 @@ class AbstractMask(np.ndarray, ABC):
 
     def __array_finalize__(self, obj):
 
-        if isinstance(obj, AbstractMask):
+        if isinstance(obj, Mask):
             self.sub_size = obj.sub_size
             self.pixel_scales = obj.pixel_scales
             self.origin = obj.origin
@@ -169,7 +169,7 @@ class AbstractMask(np.ndarray, ABC):
         """
         return int(self.pixels_in_mask * self.sub_size ** self.dimensions)
 
-    def mask_new_sub_size_from(self, mask, sub_size=1) -> "AbstractMask":
+    def mask_new_sub_size_from(self, mask, sub_size=1) -> "Mask":
         """
         Returns the mask on the same scaled coordinate system but with a sub-grid of an inputsub_size.
         """

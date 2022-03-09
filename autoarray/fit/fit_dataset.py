@@ -4,7 +4,7 @@ import numpy as np
 from typing import Dict, Optional
 import warnings
 
-from autoarray.mask.abstract_mask import AbstractMask
+from autoarray.mask.abstract_mask import Mask
 from autoarray.structures.abstract_structure import Structure
 from autoarray.inversion.inversion.abstract import AbstractInversion
 
@@ -60,7 +60,7 @@ class FitDataset(ABC):
 
     @property
     @abstractmethod
-    def mask(self) -> AbstractMask:
+    def mask(self) -> Mask:
         """
         Overwrite this method so it returns the mask of the dataset which is fitted to the input data.
         """

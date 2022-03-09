@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from typing import List, Tuple, Union
 
-from autoarray.mask.abstract_mask import AbstractMask
+from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
 from autoarray.structures.arrays.one_d import array_1d_util
@@ -12,7 +12,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractMask1d(AbstractMask):
+class Mask1d(Mask):
     def __new__(
         cls,
         mask: np.ndarray,
@@ -42,7 +42,7 @@ class AbstractMask1d(AbstractMask):
         """
 
         # noinspection PyArgumentList
-        return AbstractMask.__new__(
+        return Mask.__new__(
             cls=cls,
             mask=mask,
             pixel_scales=pixel_scales,
@@ -150,7 +150,7 @@ class AbstractMask1d(AbstractMask):
         )
 
 
-class Mask1D(AbstractMask1d):
+class Mask1D(Mask1d):
     @classmethod
     def manual(
         cls,

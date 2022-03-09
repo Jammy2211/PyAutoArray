@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 
 from autoconf import cached_property
 
-from autoarray.mask.abstract_mask import AbstractMask
+from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
 from autoarray.structures.arrays.two_d import array_2d_util
@@ -17,7 +17,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractMask2D(AbstractMask):
+class Mask2D(Mask):
 
     # noinspection PyUnusedLocal
     def __new__(
@@ -55,7 +55,7 @@ class AbstractMask2D(AbstractMask):
             The (y,x) scaled units origin of the mask's coordinate system.
         """
 
-        obj = AbstractMask.__new__(
+        obj = Mask.__new__(
             cls=cls,
             mask=mask,
             pixel_scales=pixel_scales,
@@ -68,7 +68,7 @@ class AbstractMask2D(AbstractMask):
 
         super().__array_finalize__(obj=obj)
 
-        if isinstance(obj, AbstractMask2D):
+        if isinstance(obj, Mask2D):
             pass
         else:
             self.origin = (0.0, 0.0)
@@ -755,7 +755,7 @@ class AbstractMask2D(AbstractMask):
         )
 
 
-class Mask2D(AbstractMask2D):
+class Mask2D(Mask2D):
     @classmethod
     def manual(
         cls,
@@ -766,7 +766,7 @@ class Mask2D(AbstractMask2D):
         invert: bool = False,
     ) -> "Mask2D":
         """
-        Returns a Mask2D (see `AbstractMask2D.__new__`) by inputting the array values in 2D, for example:
+        Returns a Mask2D (see `Mask2D.__new__`) by inputting the array values in 2D, for example:
 
         mask=np.array([[False, False],
                        [True, False]])

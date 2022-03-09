@@ -8,6 +8,7 @@ from autoconf import cached_property
 from autoarray.dataset.abstract_dataset import AbstractWTilde
 from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
 from autoarray.dataset.abstract_dataset import AbstractDataset
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
@@ -27,7 +28,7 @@ class WTildeInterferometer(AbstractWTilde):
         w_matrix: np.ndarray,
         curvature_preload: np.ndarray,
         dirty_image: np.ndarray,
-        real_space_mask: "Mask2D",
+        real_space_mask: Mask2D,
         noise_map_value: float,
     ):
         """

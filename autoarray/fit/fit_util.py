@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.mask.abstract_mask import AbstractMask
+from autoarray.mask.abstract_mask import Mask
 from autoarray.structures.abstract_structure import Structure
 
 
@@ -174,7 +174,7 @@ def noise_normalization_complex_from(*, noise_map: Structure) -> float:
 
 
 def residual_map_with_mask_from(
-    *, data: Structure, mask: AbstractMask, model_data: Structure
+    *, data: Structure, mask: Mask, model_data: Structure
 ) -> Structure:
     """
     Returns the residual-map of the fit of model-data to a masked dataset, where:
@@ -198,7 +198,7 @@ def residual_map_with_mask_from(
 
 
 def normalized_residual_map_with_mask_from(
-    *, residual_map: Structure, noise_map: Structure, mask: AbstractMask
+    *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
     """
     Returns the normalized residual-map of the fit of model-data to a masked dataset, where:
@@ -225,7 +225,7 @@ def normalized_residual_map_with_mask_from(
 
 
 def chi_squared_map_with_mask_from(
-    *, residual_map: Structure, noise_map: Structure, mask: AbstractMask
+    *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
     """
     Returnss the chi-squared-map of the fit of model-data to a masked dataset, where:
@@ -254,7 +254,7 @@ def chi_squared_map_with_mask_from(
 
 
 def chi_squared_with_mask_from(
-    *, chi_squared_map: Structure, mask: AbstractMask
+    *, chi_squared_map: Structure, mask: Mask
 ) -> float:
     """
     Returns the chi-squared terms of each model data's fit to a masked dataset, by summing the masked
@@ -273,7 +273,7 @@ def chi_squared_with_mask_from(
 
 
 def noise_normalization_with_mask_from(
-    *, noise_map: Structure, mask: AbstractMask
+    *, noise_map: Structure, mask: Mask
 ) -> float:
     """
     Returns the noise-map normalization terms of masked noise-map, summing the noise_map value in every pixel as:
@@ -293,7 +293,7 @@ def noise_normalization_with_mask_from(
 
 
 def normalized_residual_map_complex_with_mask_from(
-    *, residual_map: Structure, noise_map: Structure, mask: AbstractMask
+    *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
     """
     Returns the normalized residual-map of the fit of complex model-data to a masked dataset, where:
@@ -329,7 +329,7 @@ def normalized_residual_map_complex_with_mask_from(
 
 
 def chi_squared_map_complex_with_mask_from(
-    *, residual_map: Structure, noise_map: Structure, mask: AbstractMask
+    *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
     """
     Returnss the chi-squared-map of the fit of complex model-data to a masked dataset, where:
@@ -368,7 +368,7 @@ def chi_squared_map_complex_with_mask_from(
 
 
 def chi_squared_complex_with_mask_from(
-    *, chi_squared_map: Structure, mask: AbstractMask
+    *, chi_squared_map: Structure, mask: Mask
 ) -> float:
     """
     Returns the chi-squared terms of each complex model data's fit to a masked dataset, by summing the masked
@@ -389,7 +389,7 @@ def chi_squared_complex_with_mask_from(
 
 
 def noise_normalization_complex_with_mask_from(
-    *, noise_map: Structure, mask: AbstractMask
+    *, noise_map: Structure, mask: Mask
 ) -> float:
     """
     Returns the noise-map normalization terms of a complex masked noise-map, summing the noise_map value in every pixel as:
