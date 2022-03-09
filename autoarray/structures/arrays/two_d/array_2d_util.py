@@ -10,6 +10,7 @@ from autoarray.mask import mask_2d_util
 from autoarray import exc
 from autoarray.structures.arrays import abstract_array
 
+
 def check_array_2d(array_2d: np.ndarray):
     if len(array_2d.shape) != 1:
         raise exc.ArrayException(
@@ -33,7 +34,9 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
     return array
 
 
-def convert_array_2d(array_2d: Union[np.ndarray, List], mask_2d: "Mask2D") -> np.ndarray:
+def convert_array_2d(
+    array_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
+) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.

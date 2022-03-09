@@ -10,9 +10,6 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-
-
-
 class Header:
     def __init__(
         self,

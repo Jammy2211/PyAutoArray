@@ -1,9 +1,10 @@
 import numpy as np
 from typing import Callable, Union, List, Tuple, Optional
 
-from autoarray.structures.grids.two_d.abstract_grid_2d import AbstractGrid2D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
+from autoarray.structures.abstract_structure import Structure2D
+
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.grids.two_d.grid_2d import Grid2D
 
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 
@@ -24,7 +25,7 @@ def sub_steps_from(sub_steps):
     return sub_steps
 
 
-class Grid2DIterate(AbstractGrid2D):
+class Grid2DIterate(Grid2D):
     def __new__(
         cls,
         grid: np.ndarray,
@@ -81,6 +82,7 @@ class Grid2DIterate(AbstractGrid2D):
         obj.fractional_accuracy = fractional_accuracy
         obj.relative_accuracy = relative_accuracy
         obj.sub_steps = sub_steps
+
         return obj
 
     def __array_finalize__(self, obj):
@@ -316,7 +318,7 @@ class Grid2DIterate(AbstractGrid2D):
         `native` to `slim` and returned as a new `Grid2D`.
         """
         return Grid2DIterate(
-            grid=super()._slim,
+            grid=self._slim,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -334,7 +336,7 @@ class Grid2DIterate(AbstractGrid2D):
         This method is used in the child `Grid2D` classes to create their `native` properties.
         """
         return Grid2DIterate(
-            grid=super()._native,
+            grid=self._native,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -353,7 +355,7 @@ class Grid2DIterate(AbstractGrid2D):
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
         """
         return Grid2DIterate(
-            grid=super()._binned,
+            grid=self._binned,
             mask=self.mask.mask_sub_1,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,

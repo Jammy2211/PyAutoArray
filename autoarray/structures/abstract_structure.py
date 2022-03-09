@@ -5,15 +5,14 @@ from typing import Tuple, Union
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
+from autoarray.structures.arrays.two_d import array_2d_util
+
 
 class Structure(AbstractNDArray, ABC):
     def __array_finalize__(self, obj):
 
         if hasattr(obj, "mask"):
             self.mask = obj.mask
-
-        if hasattr(obj, "header"):
-            self.header = obj.header
 
     @property
     @abstractmethod
@@ -69,8 +68,20 @@ class Structure(AbstractNDArray, ABC):
     def total_pixels(self) -> int:
         return self.shape[0]
 
-    def output_to_fits(self, file_path, overwrite):
-        raise NotImplementedError
+    def output_to_fits(self, file_path: str, overwrite: bool = False):
+        """
+        Output the grid to a .fits file.
+
+        Parameters
+        ----------
+        file_path
+            The path the file is output to, including the filename and the .fits extension, e.g. '/path/to/filename.fits'
+        overwrite
+            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
+        """
+        array_2d_util.numpy_array_2d_to_fits(
+            array_2d=self.native, file_path=file_path, overwrite=overwrite
+        )
 
 
 class Structure1D(Structure):

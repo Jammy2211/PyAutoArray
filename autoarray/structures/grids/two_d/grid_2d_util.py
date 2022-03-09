@@ -64,7 +64,7 @@ def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D") -> np.n
 
 
 def convert_grid_2d_to_slim(
-        grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
+    grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
 ) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
@@ -88,7 +88,7 @@ def convert_grid_2d_to_slim(
 
 
 def convert_grid_2d_to_native(
-        grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
+    grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
 ) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 

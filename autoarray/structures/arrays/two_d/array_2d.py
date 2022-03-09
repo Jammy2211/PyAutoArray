@@ -193,6 +193,15 @@ class Array2D(Structure2D):
 
         return obj
 
+    def __array_finalize__(self, obj):
+
+        obj = super().__array_finalize__(obj=obj)
+
+        if hasattr(obj, "header"):
+            self.header = obj.header
+        else:
+            self.header = None
+
     @classmethod
     def manual_slim(
         cls,
@@ -360,7 +369,7 @@ class Array2D(Structure2D):
         mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
-        array = array_2d_util. convert_array_2d(array_2d=array, mask_2d=mask)
+        array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
         return cls(array=array, mask=mask, header=header)
 
     @classmethod
@@ -706,7 +715,9 @@ class Array2D(Structure2D):
             origin=self.mask.mask_centre,
         )
 
-        array = array_2d_util. convert_array_2d(array_2d=extracted_array_2d, mask_2d=mask)
+        array = array_2d_util.convert_array_2d(
+            array_2d=extracted_array_2d, mask_2d=mask
+        )
 
         return Array2D(array=array, mask=mask, header=self.header)
 
@@ -767,7 +778,9 @@ class Array2D(Structure2D):
             new_shape=new_shape, pad_value=mask_pad_value
         )
 
-        array = array_2d_util. convert_array_2d(array_2d=resized_array_2d, mask_2d=resized_mask)
+        array = array_2d_util.convert_array_2d(
+            array_2d=resized_array_2d, mask_2d=resized_mask
+        )
 
         return Array2D(array=array, mask=resized_mask, header=self.header)
 
@@ -819,7 +832,9 @@ class Array2D(Structure2D):
 
         resized_mask = self.mask.resized_mask_from(new_shape=trimmed_array_2d.shape)
 
-        array = array_2d_util. convert_array_2d(array_2d=trimmed_array_2d, mask_2d=resized_mask)
+        array = array_2d_util.convert_array_2d(
+            array_2d=trimmed_array_2d, mask_2d=resized_mask
+        )
 
         return Array2D(array=array, mask=resized_mask, header=self.header)
 
