@@ -1,9 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 import numpy as np
 from typing import Tuple, Union
 
+from autoarray.abstract_ndarray import AbstractNDArray
 
-class Structure(np.ndarray, ABC):
+
+class Structure(AbstractNDArray, ABC):
     def __reduce__(self):
 
         pickled_state = super().__reduce__()

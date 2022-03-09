@@ -253,9 +253,7 @@ def chi_squared_map_with_mask_from(
     )
 
 
-def chi_squared_with_mask_from(
-    *, chi_squared_map: Structure, mask: Mask
-) -> float:
+def chi_squared_with_mask_from(*, chi_squared_map: Structure, mask: Mask) -> float:
     """
     Returns the chi-squared terms of each model data's fit to a masked dataset, by summing the masked
     chi-squared-map of the fit.
@@ -272,9 +270,7 @@ def chi_squared_with_mask_from(
     return float(np.sum(chi_squared_map[np.asarray(mask) == 0]))
 
 
-def noise_normalization_with_mask_from(
-    *, noise_map: Structure, mask: Mask
-) -> float:
+def noise_normalization_with_mask_from(*, noise_map: Structure, mask: Mask) -> float:
     """
     Returns the noise-map normalization terms of masked noise-map, summing the noise_map value in every pixel as:
 

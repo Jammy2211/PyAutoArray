@@ -1,7 +1,8 @@
 from abc import ABC
-from abc import abstractmethod
 import logging
 import numpy as np
+
+from autoarray.abstract_ndarray import AbstractNDArray
 
 from autoarray import exc
 
@@ -9,7 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Mask(np.ndarray, ABC):
+class Mask(AbstractNDArray, ABC):
 
     pixel_scales = None
 
@@ -62,28 +63,6 @@ class Mask(np.ndarray, ABC):
         else:
             self.sub_size = 1
             self.pixel_scales = None
-
-    def __reduce__(self):
-
-        # Get the parent's __reduce__ tuple
-        pickled_state = super().__reduce__()
-
-        # Create our own tuple to pass to __setstate__
-
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super().__setstate__(state[0:-1])
 
     @property
     def pixel_scale(self) -> float:
