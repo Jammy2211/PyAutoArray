@@ -55,11 +55,13 @@ class TestImaging:
 
         imaging = imaging.signal_to_noise_limited_from(signal_to_noise_limit=100.0)
 
-        assert (imaging.image == np.array([20.0, 20.0, 20.0, 5.0])).all()
+        assert (imaging.image.slim == np.array([20.0, 20.0, 20.0, 5.0])).all()
 
-        assert (imaging.noise_map == np.array([5.0, 5.0, 5.0, 2.0])).all()
+        assert (imaging.noise_map.slim == np.array([5.0, 5.0, 5.0, 2.0])).all()
 
-        assert (imaging.signal_to_noise_map == np.array([4.0, 4.0, 4.0, 2.5])).all()
+        assert (
+            imaging.signal_to_noise_map.slim == np.array([4.0, 4.0, 4.0, 2.5])
+        ).all()
 
     def test__new_imaging_with_signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
         self,

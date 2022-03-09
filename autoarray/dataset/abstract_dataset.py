@@ -222,7 +222,10 @@ class AbstractDataset:
                 self.noise_map.native,
             )
 
-            noise_map = noise_map._new_structure(noise_map_limit, mask=mask).slim
+            if len(self.noise_map.native) == 1:
+                noise_map = Array1D.manual_mask(array=noise_map_limit, mask=mask)
+            else:
+                noise_map = Array2D.manual_mask(noise_map_limit, mask=mask)
 
         self.noise_map = noise_map
 
@@ -294,9 +297,7 @@ class AbstractDataset:
         """
         The estimated absolute_signal-to-noise_maps mappers of the image.
         """
-        return self.data._new_structure(
-            np.divide(np.abs(self.data), self.noise_map), mask=self.data.mask
-        )
+        return np.divide(np.abs(self.data), self.noise_map)
 
     @property
     def absolute_signal_to_noise_max(self) -> float:
@@ -311,9 +312,7 @@ class AbstractDataset:
         The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to
         the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0).
         """
-        return self.data._new_structure(
-            np.square(self.absolute_signal_to_noise_map), mask=self.data.mask
-        )
+        return np.square(self.absolute_signal_to_noise_map)
 
     @property
     def potential_chi_squared_max(self) -> float:

@@ -7,27 +7,6 @@ from autoarray.abstract_ndarray import AbstractNDArray
 
 
 class Structure(AbstractNDArray, ABC):
-    def __reduce__(self):
-
-        pickled_state = super().__reduce__()
-
-        class_dict = {}
-
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-
-        new_state = pickled_state[2] + (class_dict,)
-
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-
-        super().__setstate__(state[0:-1])
-
     def __array_finalize__(self, obj):
 
         if hasattr(obj, "mask"):
@@ -35,22 +14,6 @@ class Structure(AbstractNDArray, ABC):
 
         if hasattr(obj, "header"):
             self.header = obj.header
-
-    def _new_structure(self, structure: "Structure", mask):
-        """
-        Conveninence method for creating a new instance of the Grid2D class from this grid.
-
-        This method is over-written by other grids (e.g. Grid2DIterate) such that the slim and native methods return
-        instances of that Grid2D's type.
-
-        Parameters
-        ----------
-        data_structure : Structure
-            The structure which is to be turned into a new structure.
-        mask :Mask2D
-            The mask associated with this structure.
-        """
-        raise NotImplementedError()
 
     @property
     @abstractmethod
