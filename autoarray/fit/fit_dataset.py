@@ -4,6 +4,7 @@ import numpy as np
 from typing import Dict, Optional, Union
 import warnings
 
+from autoarray.structures.abstract_structure import Structure
 from autoarray.inversion.inversion.abstract import AbstractInversion
 
 from autoarray import type as ty
@@ -106,7 +107,7 @@ class FitDataset(ABC):
         return np.square(absolute_signal_to_noise_map)
 
     @property
-    def residual_map(self) -> np.ndarray:
+    def residual_map(self) -> Structure:
         """
         Returns the residual-map between the masked dataset and model data, where:
 
@@ -120,7 +121,7 @@ class FitDataset(ABC):
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
-    def normalized_residual_map(self) -> ty.DataLike:
+    def normalized_residual_map(self) -> Structure:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -135,7 +136,7 @@ class FitDataset(ABC):
         )
 
     @property
-    def chi_squared_map(self) -> ty.DataLike:
+    def chi_squared_map(self) -> Structure:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
