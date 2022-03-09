@@ -34,7 +34,8 @@ class Structure(np.ndarray, ABC):
             self.header = obj.header
 
     def _new_structure(self, structure: "Structure", mask):
-        """Conveninence method for creating a new instance of the Grid2D class from this grid.
+        """
+        Conveninence method for creating a new instance of the Grid2D class from this grid.
 
         This method is over-written by other grids (e.g. Grid2DIterate) such that the slim and native methods return
         instances of that Grid2D's type.

@@ -1,7 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 import warnings
 
 from autoarray.structures.abstract_structure import Structure

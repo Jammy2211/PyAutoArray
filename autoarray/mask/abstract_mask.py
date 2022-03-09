@@ -85,7 +85,7 @@ class AbstractMask(np.ndarray):
         super().__setstate__(state[0:-1])
 
     @property
-    def pixel_scale(self):
+    def pixel_scale(self) -> float:
         """
         For a mask with dimensions two or above check that are pixel scales are the same, and if so return this
         single value as a float.
@@ -100,7 +100,7 @@ class AbstractMask(np.ndarray):
         return self.pixel_scales[0]
 
     @property
-    def dimensions(self):
+    def dimensions(self) -> int:
         return len(self.shape)
 
     @property
