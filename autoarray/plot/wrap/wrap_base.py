@@ -884,9 +884,7 @@ class Output:
         return output_path
 
     def to_figure(
-        self,
-        structure: Optional[Structure],
-        auto_filename: Optional[str] = None,
+        self, structure: Optional[Structure], auto_filename: Optional[str] = None
     ):
         """
         Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.

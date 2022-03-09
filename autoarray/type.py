@@ -28,8 +28,8 @@ from autoarray.structures.arrays.values import ValuesIrregular
 from autoarray.dataset.interferometer import Visibilities
 from autoarray.dataset.interferometer import VisibilitiesNoiseMap
 
-DataLike = Union[np.ndarray, Array1D, Array2D, ValuesIrregular, Visibilities]
-NoiseMapLike = Union[np.ndarray, Array1D, Array2D, ValuesIrregular, VisibilitiesNoiseMap]
+DataLike = Union[Array1D, Array2D, ValuesIrregular, Visibilities]
+NoiseMapLike = Union[Array1D, Array2D, ValuesIrregular, VisibilitiesNoiseMap]
 
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT

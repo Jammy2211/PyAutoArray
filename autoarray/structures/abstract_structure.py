@@ -1,10 +1,9 @@
+from abc import ABC, abstractmethod
 import numpy as np
-from os import path
-import pickle
+from typing import Tuple, Union
 
 
-class Structure(np.ndarray):
-
+class Structure(np.ndarray, ABC):
     def __reduce__(self):
 
         pickled_state = super().__reduce__()
@@ -50,64 +49,58 @@ class Structure(np.ndarray):
         raise NotImplementedError()
 
     @property
-    def slim(self):
-        raise NotImplementedError()
+    @abstractmethod
+    def slim(self) -> "Structure":
+        """
+        Returns the data structure in its `slim` format which flattens all unmasked values to a 1D array.
+        """
 
     @property
-    def native(self):
-        raise NotImplementedError()
+    @abstractmethod
+    def native(self) -> "Structure":
+        """
+        Returns the data structure in its `native` format which contains all unmaksed values to the native dimensions.
+        """
 
     @property
-    def shape_slim(self):
+    def shape_slim(self) -> int:
         return self.mask.shape_slim
 
     @property
-    def sub_shape_slim(self):
+    def sub_shape_slim(self) -> int:
         return self.mask.sub_shape_slim
 
     @property
-    def shape_native(self):
+    def shape_native(self) -> Tuple[int, ...]:
         return self.mask.shape
 
     @property
-    def sub_shape_native(self):
+    def sub_shape_native(self) -> Tuple[int, ...]:
         return self.mask.sub_shape_native
 
     @property
-    def pixel_scales(self):
+    def pixel_scales(self) -> Tuple[int, ...]:
         return self.mask.pixel_scales
 
     @property
-    def pixel_scale(self):
+    def pixel_scale(self) -> float:
         return self.mask.pixel_scale
 
     @property
-    def origin(self):
+    def origin(self) -> Tuple[int, ...]:
         return self.mask.origin
 
     @property
-    def sub_size(self):
+    def sub_size(self) -> int:
         return self.mask.sub_size
 
     @property
-    def unmasked_grid(self):
+    def unmasked_grid(self) -> Union["Grid1D", "Grid2D"]:
         return self.mask.unmasked_grid_sub_1
 
     @property
-    def total_pixels(self):
+    def total_pixels(self) -> int:
         return self.shape[0]
-
-    @classmethod
-    def load(cls, file_path, filename):
-        with open(path.join(file_path, f"{filename}.pickle"), "rb") as f:
-            return pickle.load(f)
-
-    def save(self, file_path, filename):
-        """
-        Save the tracer by serializing it with pickle.
-        """
-        with open(path.join(file_path, f"{filename}.pickle"), "wb") as f:
-            pickle.dump(self, f)
 
     def output_to_fits(self, file_path, overwrite):
         raise NotImplementedError
@@ -119,7 +112,6 @@ class Structure1D(Structure):
 
 
 class Structure2D(Structure):
-
     def structure_2d_list_from(self, result_list: list):
         raise NotImplementedError
 
