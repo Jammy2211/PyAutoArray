@@ -253,7 +253,9 @@ def chi_squared_map_with_mask_from(
     )
 
 
-def chi_squared_with_mask_from(*, chi_squared_map: Structure, mask: AbstractMask) -> float:
+def chi_squared_with_mask_from(
+    *, chi_squared_map: Structure, mask: AbstractMask
+) -> float:
     """
     Returns the chi-squared terms of each model data's fit to a masked dataset, by summing the masked
     chi-squared-map of the fit.

@@ -9,7 +9,7 @@ from autoarray.structures.arrays.two_d.array_2d import Array2D
 class FitImaging(FitDataset):
     def __init__(
         self,
-        dataset,
+        dataset: Imaging,
         use_mask_in_fit: bool = False,
         profiling_dict: Optional[Dict] = None,
     ):
