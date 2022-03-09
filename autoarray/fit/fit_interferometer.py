@@ -37,11 +37,11 @@ class FitInterferometer(FitDataset):
         residual_map
             The residual-map of the fit (data - model_data).
         chi_squared_map
-            The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
+            The chi-squared-map of the fit ((data - model_data) / noise_map ) **2.0
         chi_squared
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
         reduced_chi_squared
-            The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over \
+            The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over
             every data point.
         noise_normalization
             The overall normalization term of the noise_map, summed over every data point.

@@ -117,14 +117,14 @@ class AbstractVisibilities(Structure):
         """
         The maximum values of the visibilities if they are treated as a 2D grid in the complex plane.
         """
-        return (np.max(self.real), np.max(self.imag))
+        return np.max(self.real), np.max(self.imag)
 
     @property
     def scaled_minima(self) -> Tuple[float, float]:
         """
         The minimum values of the visibilities if they are treated as a 2D grid in the complex plane.
         """
-        return (np.min(self.real), np.min(self.imag))
+        return np.min(self.real), np.min(self.imag)
 
     @property
     def extent(self) -> np.ndarray:

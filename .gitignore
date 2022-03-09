@@ -6,6 +6,7 @@ test_autoarray/instruments/files/
 
 .envr
 __pycache__
+*.log
 *.swp
 .eggs/
 autoarray.egg-info/

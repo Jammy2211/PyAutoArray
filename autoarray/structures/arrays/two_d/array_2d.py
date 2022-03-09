@@ -231,7 +231,7 @@ class Array2D(AbstractArray2D):
 
         if shape_native is not None and len(shape_native) != 2:
             raise exc.ArrayException(
-                "The input shape_native parameter is not a tuple of type (float, float)"
+                "The input shape_native parameter is not a tuple of type (int, int)"
             )
 
         mask = Mask2D.unmasked(
