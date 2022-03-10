@@ -3,20 +3,20 @@ from functools import wraps
 from typing import List, Optional, Union
 
 from autoconf import conf
-from autoarray.structures.arrays.one_d.array_1d import Array1D
-from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.one_d.grid_1d import Grid1D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_transformed import Grid2DTransformed
-from autoarray.structures.grids.two_d.grid_transformed import Grid2DTransformedNumpy
-from autoarray.structures.grids.two_d.grid_2d_iterate import Grid2DIterate
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
-from autoarray.structures.grids.two_d.grid_2d_irregular import (
+from autoarray.structures.one_d.array_1d import Array1D
+from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.one_d.grid_1d import Grid1D
+from autoarray.structures.two_d.grids.grid_2d import Grid2D
+from autoarray.structures.two_d.grids.grid_transformed import Grid2DTransformed
+from autoarray.structures.two_d.grids.grid_transformed import Grid2DTransformedNumpy
+from autoarray.structures.two_d.grids.grid_2d_iterate import Grid2DIterate
+from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.grid_2d_irregular import (
     Grid2DIrregularTransformed,
 )
-from autoarray.structures.vectors.uniform import VectorYX2D
-from autoarray.structures.vectors.irregular import VectorYX2DIrregular
-from autoarray.structures.arrays.values import ValuesIrregular
+from autoarray.structures.two_d.vectors.uniform import VectorYX2D
+from autoarray.structures.two_d.vectors.irregular import VectorYX2DIrregular
+from autoarray.structures.values import ValuesIrregular
 
 from autoarray import exc
 

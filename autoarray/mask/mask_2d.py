@@ -8,9 +8,9 @@ from autoconf import cached_property
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
-from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.structures.two_d import array_2d_util
 from autoarray.geometry import geometry_util
-from autoarray.structures.grids.two_d import grid_2d_util
+from autoarray.structures.two_d.grids import grid_2d_util
 from autoarray.mask import mask_2d_util
 
 logging.basicConfig()
@@ -149,7 +149,7 @@ class Mask2D(Mask):
             A 1D array of values which were computed using a padded grid
         """
 
-        from autoarray.structures.arrays.two_d.array_2d import Array2D
+        from autoarray.structures.two_d.array_2d import Array2D
 
         pad_size_0 = self.shape[0] - image_shape[0]
         pad_size_1 = self.shape[1] - image_shape[1]
@@ -307,7 +307,7 @@ class Mask2D(Mask):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
         value y value in scaled units.
         """
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
             shape_native=self.shape,
@@ -321,7 +321,7 @@ class Mask2D(Mask):
     @property
     def masked_grid(self) -> "Grid2D":
 
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self,
@@ -334,7 +334,7 @@ class Mask2D(Mask):
     @property
     def masked_grid_sub_1(self) -> "Grid2D":
 
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
@@ -349,7 +349,7 @@ class Mask2D(Mask):
         an annulus mask.
         """
 
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         edge_grid_1d = self.masked_grid_sub_1[self.edge_1d_indexes]
         return Grid2D(grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1)
@@ -370,7 +370,7 @@ class Mask2D(Mask):
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         border_grid_1d = self.masked_grid_sub_1[self.border_1d_indexes]
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
@@ -391,7 +391,7 @@ class Mask2D(Mask):
         grid_scaled_1d: np.ndarray
             A grid of (y,x) coordinates in scaled units.
         """
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         grid_pixels_1d = grid_2d_util.grid_pixels_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
@@ -417,7 +417,7 @@ class Mask2D(Mask):
         grid_scaled_1d: np.ndarray
             The grid of (y,x) coordinates in scaled units.
         """
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         grid_pixel_centres_1d = grid_2d_util.grid_pixel_centres_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
@@ -449,7 +449,7 @@ class Mask2D(Mask):
             The grid of (y,x) coordinates in scaled units.
         """
 
-        from autoarray.structures.arrays.two_d.array_2d import Array2D
+        from autoarray.structures.two_d.array_2d import Array2D
 
         grid_pixel_indexes_1d = grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
@@ -475,7 +475,7 @@ class Mask2D(Mask):
         grid_pixels_1d
             The grid of (y,x) coordinates in pixels.
         """
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,
@@ -489,7 +489,7 @@ class Mask2D(Mask):
         self, grid_pixels_1d, shape_native
     ) -> "Grid2D":
 
-        from autoarray.structures.grids.two_d.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.grid_2d import Grid2D
 
         grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,

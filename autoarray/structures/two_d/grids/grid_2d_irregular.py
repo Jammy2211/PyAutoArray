@@ -6,11 +6,11 @@ import pickle
 from typing import List, Optional, Tuple, Union
 import json
 
-from autoarray.structures.arrays.values import ValuesIrregular
+from autoarray.structures.values import ValuesIrregular
 
 from autoarray import exc
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.grids.two_d import grid_2d_util
+from autoarray.structures.two_d.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
 
@@ -163,7 +163,7 @@ class Grid2DIrregular(np.ndarray):
         Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
         `Grid2DIrregular` are structured following this *Grid2DIrregular* instance."""
 
-        from autoarray.structures.grids.two_d.grid_transformed import (
+        from autoarray.structures.two_d.grids.grid_transformed import (
             Grid2DTransformedNumpy,
         )
 

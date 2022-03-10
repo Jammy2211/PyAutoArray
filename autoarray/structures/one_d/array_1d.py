@@ -4,11 +4,11 @@ from typing import Optional
 from autoarray.structures.header import Header
 
 from autoarray.structures.abstract_structure import Structure1D
-from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.structures.one_d.grid_1d import Grid1D
 from autoarray.mask.mask_1d import Mask1D
 
-from autoarray.structures.arrays.one_d import array_1d_util
-from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.structures.one_d import array_1d_util
+from autoarray.structures.two_d import array_2d_util
 from autoarray.geometry import geometry_util
 
 from typing import Union, Tuple, List
@@ -332,7 +332,7 @@ class Array1D(Structure1D):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Array1D`.
         """
-        from autoarray.structures.arrays.one_d.array_1d import Array1D
+        from autoarray.structures.one_d.array_1d import Array1D
 
         if self.shape[0] == self.mask.sub_shape_native[0]:
             return self

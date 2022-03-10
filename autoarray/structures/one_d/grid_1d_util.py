@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Tuple
 
-from autoarray.structures.arrays.one_d import array_1d_util
+from autoarray.structures.one_d import array_1d_util
 from autoarray import numba_util
 from autoarray.geometry import geometry_util
 from autoarray.mask import mask_1d_util

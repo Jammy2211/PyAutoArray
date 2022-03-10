@@ -5,8 +5,8 @@ from typing import List, Tuple, Union
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
-from autoarray.structures.arrays.one_d import array_1d_util
-from autoarray.structures.grids.one_d import grid_1d_util
+from autoarray.structures.one_d import array_1d_util
+from autoarray.structures.one_d import grid_1d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -94,7 +94,7 @@ class Mask1d(Mask):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
         value y value in scaled units.
         """
-        from autoarray.structures.grids.one_d.grid_1d import Grid1D
+        from autoarray.structures.one_d.grid_1d import Grid1D
 
         grid_slim = grid_1d_util.grid_1d_slim_via_mask_from(
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin

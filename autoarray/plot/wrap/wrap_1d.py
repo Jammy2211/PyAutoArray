@@ -7,8 +7,8 @@ import numpy as np
 from typing import List, Optional, Union
 
 from autoarray.plot.wrap.wrap_base import AbstractMatWrap
-from autoarray.structures.arrays.one_d.array_1d import Array1D
-from autoarray.structures.grids.one_d.grid_1d import Grid1D
+from autoarray.structures.one_d.array_1d import Array1D
+from autoarray.structures.one_d.grid_1d import Grid1D
 from autoarray import exc
 
 

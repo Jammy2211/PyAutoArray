@@ -9,9 +9,9 @@ from autoarray.fit.fit_imaging import FitImaging
 from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.arrays.one_d.array_1d import Array1D
-from autoarray.structures.grids.two_d.grid_2d import Grid2D
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.one_d.array_1d import Array1D
+from autoarray.structures.two_d.grids.grid_2d import Grid2D
+from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
 
 from autoarray.type import Grid2DLike
 

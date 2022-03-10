@@ -2,7 +2,7 @@ from os import path
 import numpy as np
 import pytest
 
-from autoarray.structures.grids.mock.mock_grid_decorators import (
+from autoarray.structures.two_d.grids.mock.mock_grid_decorators import (
     ndarray_1d_from,
     ndarray_2d_from,
 )

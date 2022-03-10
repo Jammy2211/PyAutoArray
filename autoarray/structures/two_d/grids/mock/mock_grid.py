@@ -1,10 +1,10 @@
 import numpy as np
 from typing import Tuple
 
-from autoarray.structures.grids.two_d.grid_2d_pixelization import (
+from autoarray.structures.two_d.grids.grid_2d_pixelization import (
     AbstractGrid2DPixelization,
 )
-from autoarray.structures.grids.two_d.grid_2d_pixelization import PixelNeighbors
+from autoarray.structures.two_d.grids.grid_2d_pixelization import PixelNeighbors
 
 
 class MockGrid2DPixelization(AbstractGrid2DPixelization):

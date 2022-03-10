@@ -5,7 +5,7 @@ import warnings
 
 from autoarray import exc
 from autoarray import numba_util
-from autoarray.structures.grids.two_d import grid_2d_util
+from autoarray.structures.two_d.grids import grid_2d_util
 
 
 @numba_util.jit()

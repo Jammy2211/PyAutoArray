@@ -5,9 +5,9 @@ from typing import List, Tuple, Union
 from autoconf import cached_property
 
 from autoarray.structures.abstract_structure import Structure
-from autoarray.structures.grids.two_d.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
 
-from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.structures.two_d import array_2d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
