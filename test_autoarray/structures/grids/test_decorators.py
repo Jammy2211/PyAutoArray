@@ -47,7 +47,7 @@ class TestGrid1DToStructure:
         array_output = grid_like_object.ndarray_1d_from(grid=grid_2d)
 
         assert isinstance(array_output, aa.Array1D)
-        assert (array_output.native == np.array([1.0, 1.0, 1.0])).all()
+        assert (array_output.native == np.array([1.0, 1.0, 1.0, 1.0])).all()
         assert array_output.pixel_scales == (1.0,)
 
     def test__grid_2d_irregular_in__output_values_projected_format(self):

@@ -8,6 +8,12 @@ from autoarray.geometry import geometry_util
 from autoarray import numba_util
 from autoarray.mask import mask_2d_util
 
+def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
+
+    if type(grid) is list:
+        grid = np.asarray(grid)
+
+    return grid
 
 def check_grid_2d(grid_2d: np.ndarray):
     if grid_2d.shape[-1] != 2:
@@ -58,7 +64,7 @@ def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D") -> np.n
         The mask of the output Array2D.
     """
 
-    grid_2d = abstract_grid.convert_grid(grid=grid_2d)
+    grid_2d = convert_grid(grid=grid_2d)
 
     return convert_grid_2d_to_slim(grid_2d=grid_2d, mask_2d=mask_2d)
 

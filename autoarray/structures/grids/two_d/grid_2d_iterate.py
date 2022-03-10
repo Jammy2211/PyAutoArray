@@ -146,7 +146,7 @@ class Grid2DIterate(Grid2D):
         origin
             The origin of the grid's mask.
         """
-        grid = abstract_grid.convert_grid(grid=grid)
+        grid = grid_2d_util.convert_grid(grid=grid)
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = Mask2D.unmasked(

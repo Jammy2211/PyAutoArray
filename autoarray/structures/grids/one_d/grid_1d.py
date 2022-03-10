@@ -6,8 +6,8 @@ from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
 from autoarray.mask.mask_1d import Mask1D
 
 from autoarray import exc
-from autoarray.structures.grids import abstract_grid
 from autoarray.structures.grids.one_d import grid_1d_util
+from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 
 
@@ -193,7 +193,7 @@ class Grid1D(AbstractGrid1D):
 
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
-        grid = abstract_grid.convert_grid(grid=grid)
+        grid = grid_2d_util.convert_grid(grid=grid)
 
         mask = Mask1D.unmasked(
             shape_slim=grid.shape[0] // sub_size,
@@ -252,7 +252,7 @@ class Grid1D(AbstractGrid1D):
             originates from.
         """
 
-        grid = abstract_grid.convert_grid(grid=grid)
+        grid = grid_2d_util.convert_grid(grid=grid)
 
         if grid.shape[0] == mask.sub_shape_native[0]:
 

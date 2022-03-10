@@ -319,7 +319,7 @@ class VectorYX2D(AbstractVectorYX2D):
             The origin of the grid's mask.
         """
 
-        vectors = abstract_grid.convert_grid(grid=vectors)
+        vectors = grid_2d_util.convert_grid(grid=vectors)
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 

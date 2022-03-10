@@ -297,7 +297,7 @@ class Grid2D(Structure2D):
             The origin of the grid's mask.
         """
 
-        grid = abstract_grid.convert_grid(grid=grid)
+        grid = grid_2d_util.convert_grid(grid=grid)
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
@@ -373,7 +373,7 @@ class Grid2D(Structure2D):
             originates from.
         """
 
-        grid = abstract_grid.convert_grid(grid=grid)
+        grid = grid_2d_util.convert_grid(grid=grid)
         grid_2d_util.check_grid_2d_and_mask_2d(grid_2d=grid, mask_2d=mask)
 
         grid = grid_2d_util.convert_grid_2d(grid_2d=grid, mask_2d=mask)
@@ -806,14 +806,14 @@ class Grid2D(Structure2D):
     def grid_via_deflection_grid_from(self, deflection_grid: "Grid2D") -> "Grid2D":
         """
         Returns a new Grid2D from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
-             termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
+        termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
 
-            This is used by PyAutoLens to perform grid ray-tracing.
+        This is used by PyAutoLens to perform grid ray-tracing.
 
-            Parameters
-            ----------
-            deflection_grid
-                The grid of (y,x) coordinates which is subtracted from this grid.
+        Parameters
+        ----------
+        deflection_grid
+            The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid2D(grid=self - deflection_grid, mask=self.mask)
 

@@ -8,14 +8,6 @@ from autoarray import numba_util
 from autoarray.mask import mask_2d_util
 
 from autoarray import exc
-from autoarray.structures.arrays import abstract_array
-
-
-def check_array_2d(array_2d: np.ndarray):
-    if len(array_2d.shape) != 1:
-        raise exc.ArrayException(
-            "An array input into the Array2D.__new__ method is not of shape 1."
-        )
 
 
 def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
@@ -32,6 +24,12 @@ def convert_array(array: Union[np.ndarray, List]) -> np.ndarray:
         array = np.asarray(array)
 
     return array
+
+def check_array_2d(array_2d: np.ndarray):
+    if len(array_2d.shape) != 1:
+        raise exc.ArrayException(
+            "An array input into the Array2D.__new__ method is not of shape 1."
+        )
 
 
 def convert_array_2d(
