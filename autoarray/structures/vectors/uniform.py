@@ -7,7 +7,6 @@ from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.vectors.abstract import AbstractVectorYX2D
 
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.grids import abstract_grid
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 

@@ -76,7 +76,7 @@ class AbstractPixelization:
         pixel indexes are used to then determine a grid of (y,x) coordinates from the transformed `source_grid_grid` in
         the `source` reference frame, whereby points located outside of it are relocated to the border's edge.
 
-        A full description of relocation is given in the method abstract_grid_2d.relocated_grid_from()`.
+        A full description of relocation is given in the method grid_2d.relocated_grid_from()`.
 
         This is used in the project PyAutoLens to relocate the coordinates that are ray-traced near the centre of mass
         of galaxies, which are heavily demagnified and may trace to outskirts of the source-plane well beyond the

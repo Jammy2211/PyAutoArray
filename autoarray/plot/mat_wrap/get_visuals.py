@@ -209,7 +209,7 @@ class GetVisuals2D(AbstractGetVisuals):
 
         Parameters
         ----------
-        grid : abstract_grid_2d.AbstractGrid2D
+        grid : Grid2D
             The grid whose attributes are extracted for plotting.
 
         Returns

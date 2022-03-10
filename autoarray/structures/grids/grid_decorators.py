@@ -3,10 +3,8 @@ from functools import wraps
 from typing import List, Optional, Union
 
 from autoconf import conf
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 from autoarray.structures.arrays.two_d.array_2d import Array2D
-from autoarray.structures.grids.one_d.abstract_grid_1d import AbstractGrid1D
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.structures.grids.two_d.grid_2d import Grid2D
 from autoarray.structures.grids.two_d.grid_transformed import Grid2DTransformed
@@ -48,7 +46,7 @@ def grid_1d_to_structure(func):
     ) -> Union[Array1D, ValuesIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
-        `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
+        `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
@@ -103,7 +101,7 @@ def grid_1d_to_structure(func):
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
-        elif isinstance(grid, AbstractGrid1D):
+        elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.project_to_radial_grid_2d(angle=angle)
             result = func(obj, grid_2d_radial, *args, **kwargs)
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
@@ -161,7 +159,7 @@ def grid_1d_output_structure(func):
 
         elif isinstance(grid, Grid2DIrregular):
             return grid.structure_2d_from(result=result)
-        elif isinstance(grid, AbstractGrid1D):
+        elif isinstance(grid, Grid1D):
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
 
         raise exc.GridException(
@@ -195,7 +193,7 @@ def grid_2d_to_structure(func):
     ) -> Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
-        `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
+        `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
@@ -237,7 +235,7 @@ def grid_2d_to_structure(func):
         elif isinstance(grid, Grid2D):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
-        elif isinstance(grid, AbstractGrid1D):
+        elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.project_to_radial_grid_2d()
             result = func(obj, grid_2d_radial, *args, **kwargs)
             return grid.structure_2d_from(result=result)
@@ -305,7 +303,7 @@ def grid_2d_to_structure_list(func):
         elif isinstance(grid, Grid2D):
             result_list = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
-        elif isinstance(grid, AbstractGrid1D):
+        elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.project_to_radial_grid_2d()
             result_list = func(obj, grid_2d_radial, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
@@ -340,7 +338,7 @@ def grid_2d_to_vector_yx(func):
     ) -> Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`, `Grid2DIterate`,
-        `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
+        `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
