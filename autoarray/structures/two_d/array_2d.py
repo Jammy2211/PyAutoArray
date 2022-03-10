@@ -589,7 +589,7 @@ class Array2D(Structure2D):
         return Array2D.manual_mask(array=self.native, mask=mask, header=self.header)
 
     @property
-    def slim(self) -> Structure2D:
+    def slim(self) -> "Array2D":
         """
         Return an `Array2D` where the data is stored its `slim` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size**2].

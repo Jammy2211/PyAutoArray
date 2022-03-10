@@ -62,13 +62,13 @@ from .structures.two_d.grids.irregular import Grid2DIrregularUniform
 from .structures.two_d.grids.grid_2d_pixelization import Grid2DRectangular
 from .structures.two_d.grids.grid_2d_pixelization import Grid2DVoronoi
 from .structures.two_d.grids.grid_2d_pixelization import Grid2DDelaunay
+from .structures.two_d.kernel_2d import Kernel2D
 from .structures.two_d.vectors.uniform import VectorYX2D
 from .structures.two_d.vectors.irregular import VectorYX2DIrregular
 from .structures import structure_decorators as grid_dec
 from .structures.header import Header
 from .layout.region import Region1D
 from .layout.region import Region2D
-from .structures.kernel_2d import Kernel2D
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 

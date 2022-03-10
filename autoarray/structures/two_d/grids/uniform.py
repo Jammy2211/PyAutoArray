@@ -9,6 +9,7 @@ from autoarray.structures.abstract_structure import Structure2D
 from autoarray.structures.two_d.array_2d import Array2D
 from autoarray.structures.values import ValuesIrregular
 from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.sparse import Grid2DSparse
 
 from autoarray.structures.two_d import array_2d_util
 from autoarray.structures.two_d.grids import grid_2d_util
@@ -870,7 +871,7 @@ class Grid2D(Structure2D):
 
         return Grid2D.from_mask(mask=mask)
 
-    def structure_2d_from(self, result: np.ndarray) -> Union["Array2D", "Grid2D"]:
+    def structure_2d_from(self, result: np.ndarray) -> Union[Array2D, "Grid2D"]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
@@ -898,7 +899,7 @@ class Grid2D(Structure2D):
 
     def structure_2d_list_from(
         self, result_list: List
-    ) -> List[Union["Array2D", "Grid2D"]]:
+    ) -> List[Union[Array2D, "Grid2D"]]:
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
@@ -925,7 +926,7 @@ class Grid2D(Structure2D):
 
     def squared_distances_to_coordinate_from_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
-    ) -> "Array2D":
+    ) -> Array2D:
         """
         Returns the squared distance of every coordinate on the grid from an input coordinate.
 
@@ -941,7 +942,7 @@ class Grid2D(Structure2D):
 
     def distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
-    ) -> "Array2D":
+    ) -> Array2D:
         """
         Returns the distance of every coordinate on the grid from an input (y,x) coordinate.
 
@@ -1139,7 +1140,7 @@ class Grid2D(Structure2D):
 
         return Grid2D.from_mask(mask=padded_mask)
 
-    def relocated_grid_from(self, grid: "AbstractGrid2D") -> "Grid2D":
+    def relocated_grid_from(self, grid: "Grid2D") -> "Grid2D":
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
         border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
@@ -1175,8 +1176,8 @@ class Grid2D(Structure2D):
         )
 
     def relocated_pixelization_grid_from(
-        self, pixelization_grid: "Grid2DSparse"
-    ) -> "Grid2DSparse":
+        self, pixelization_grid: Grid2DSparse
+    ) -> Grid2DSparse:
         """
         Relocate the coordinates of a pixelization grid to the border of this grid. See the method
         `relocated_grid_from()`for a full description of how this grid relocation works.
@@ -1189,7 +1190,6 @@ class Grid2D(Structure2D):
         grid
             The pixelization grid whose pixels are relocated to the border edge if outside it.
         """
-        from autoarray.structures.two_d.grids.sparse import Grid2DSparse
 
         if len(self.sub_border_grid) == 0:
             return pixelization_grid

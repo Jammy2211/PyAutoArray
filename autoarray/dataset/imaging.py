@@ -11,7 +11,7 @@ from autoarray.dataset.abstract_dataset import AbstractDataset
 from autoarray.structures.two_d.array_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.two_d.grids.uniform import Grid2D
-from autoarray.structures.kernel_2d import Kernel2D
+from autoarray.structures.two_d.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc

@@ -93,7 +93,6 @@ class ValuesIrregular(Structure):
             The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregular`
             object.
         """
-
         from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
 
         return Grid2DIrregular(grid=grid_slim)
