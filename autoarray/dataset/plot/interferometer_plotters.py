@@ -7,7 +7,7 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.dataset.interferometer import Interferometer
-from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
 
 
 class InterferometerPlotter(Plotter):

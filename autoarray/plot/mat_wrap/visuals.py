@@ -6,8 +6,8 @@ from typing import List, Optional, Union
 from autoarray.structures.one_d.array_1d import Array1D
 from autoarray.structures.one_d.grid_1d import Grid1D
 from autoarray.structures.two_d.array_2d import Array2D
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
-from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.uniform import Grid2D
+from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.two_d.vectors.irregular import VectorYX2DIrregular

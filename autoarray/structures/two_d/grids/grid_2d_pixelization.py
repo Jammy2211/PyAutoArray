@@ -8,7 +8,7 @@ from autoconf import cached_property
 
 from autoarray.structures.abstract_structure import Structure2D
 from autoarray.structures.two_d.array_2d import Array2D
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
+from autoarray.structures.two_d.grids.uniform import Grid2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc

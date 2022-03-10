@@ -3,7 +3,7 @@ import numpy as np
 
 from autoarray.structures.abstract_structure import Structure2D
 
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
+from autoarray.structures.two_d.grids.uniform import Grid2D
 from autoarray.structures.two_d.grids import grid_2d_util
 
 logging.basicConfig()

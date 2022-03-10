@@ -10,8 +10,8 @@ from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.one_d.array_1d import Array1D
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
-from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.uniform import Grid2D
+from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
 
 from autoarray.type import Grid2DLike
 

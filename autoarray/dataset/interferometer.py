@@ -9,7 +9,7 @@ from autoarray.dataset.abstract_dataset import AbstractWTilde
 from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
 from autoarray.dataset.abstract_dataset import AbstractDataset
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
+from autoarray.structures.two_d.grids.uniform import Grid2D
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.visibilities import Visibilities

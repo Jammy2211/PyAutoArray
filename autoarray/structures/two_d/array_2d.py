@@ -560,7 +560,7 @@ class Array2D(Structure2D):
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        from autoarray.structures.two_d.grids.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.uniform import Grid2D
 
         grid = Grid2D.manual_yx_1d(
             y=y, x=x, shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1

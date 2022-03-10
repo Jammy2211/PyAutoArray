@@ -2,7 +2,7 @@ import numpy as np
 from typing import List, Union, Tuple
 
 from autoarray.structures.abstract_structure import Structure1D
-from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
 
 from autoarray.mask.mask_1d import Mask1D
 
@@ -475,11 +475,9 @@ class Grid1D(Structure1D):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         from autoarray.structures.one_d.array_1d import Array1D
-        from autoarray.structures.two_d.grids.grid_transformed import Grid2DTransformed
-        from autoarray.structures.two_d.grids.grid_transformed import (
-            Grid2DTransformedNumpy,
-        )
-        from autoarray.structures.two_d.grids.grid_2d import Grid2D
+        from autoarray.structures.two_d.grids.transformed import Grid2DTransformed
+        from autoarray.structures.two_d.grids.transformed import Grid2DTransformedNumpy
+        from autoarray.structures.two_d.grids.uniform import Grid2D
 
         if len(result.shape) == 1:
             return Array1D(array=result, mask=self.mask)

@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 from autoconf import cached_property
 
 from autoarray.structures.abstract_structure import Structure
-from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
 
 from autoarray.structures.two_d import array_2d_util
 

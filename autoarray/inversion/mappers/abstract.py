@@ -7,7 +7,7 @@ from autoconf import cached_property
 from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.linear_obj import UniqueMappings
 from autoarray.structures.two_d.array_2d import Array2D
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
+from autoarray.structures.two_d.grids.uniform import Grid2D
 
 from autoarray.numba_util import profile_func
 from autoarray.inversion.mappers import mapper_util

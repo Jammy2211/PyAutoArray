@@ -163,9 +163,7 @@ class Grid2DIrregular(np.ndarray):
         Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
         `Grid2DIrregular` are structured following this *Grid2DIrregular* instance."""
 
-        from autoarray.structures.two_d.grids.grid_transformed import (
-            Grid2DTransformedNumpy,
-        )
+        from autoarray.structures.two_d.grids.transformed import Grid2DTransformedNumpy
 
         if isinstance(grid_slim, Grid2DTransformedNumpy):
             return Grid2DIrregularTransformed(grid=grid_slim)

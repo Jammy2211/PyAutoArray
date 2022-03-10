@@ -9,8 +9,8 @@ from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.one_d.array_1d import Array1D
 from autoarray.structures.two_d.array_2d import Array2D
 from autoarray.structures.one_d.grid_1d import Grid1D
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
-from autoarray.structures.two_d.grids.grid_2d_iterate import Grid2DIterate
+from autoarray.structures.two_d.grids.uniform import Grid2D
+from autoarray.structures.two_d.grids.iterate import Grid2DIterate
 from autoarray.structures.two_d.vectors.uniform import VectorYX2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap

@@ -94,7 +94,7 @@ class ValuesIrregular(Structure):
             object.
         """
 
-        from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
+        from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
 
         return Grid2DIrregular(grid=grid_slim)
 

@@ -17,9 +17,9 @@ Array1D2DLike = Union[Array1D, Array2D]
 
 
 # from autoarray.structures.grids.one_d import grid_1d as g1d
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
-from autoarray.structures.two_d.grids.grid_2d_iterate import Grid2DIterate
-from autoarray.structures.two_d.grids.grid_2d_irregular import Grid2DIrregular
+from autoarray.structures.two_d.grids.uniform import Grid2D
+from autoarray.structures.two_d.grids.iterate import Grid2DIterate
+from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
 
 Grid1D2DLike = Union[np.ndarray, "Grid1D", Grid2D, Grid2DIterate, Grid2DIrregular]
 Grid2DLike = Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular]

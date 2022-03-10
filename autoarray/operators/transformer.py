@@ -27,7 +27,7 @@ except ModuleNotFoundError:
     PyLopsOperator = PyLopsPlaceholder
 
 from autoarray.structures.two_d.array_2d import Array2D
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
+from autoarray.structures.two_d.grids.uniform import Grid2D
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.structures.two_d import array_2d_util

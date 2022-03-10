@@ -3,7 +3,7 @@ import numpy as np
 from typing import List, Tuple, Union
 
 from autoarray.structures.two_d.array_2d import Array2D
-from autoarray.structures.two_d.grids.grid_2d import Grid2D
+from autoarray.structures.two_d.grids.uniform import Grid2D
 from autoarray.structures.two_d.vectors.abstract import AbstractVectorYX2D
 
 from autoarray.mask.mask_2d import Mask2D
