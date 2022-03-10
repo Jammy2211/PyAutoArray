@@ -53,7 +53,6 @@ from .layout.layout import Layout2D
 from .structures.arrays.one_d.array_1d import Array1D
 from .structures.arrays.two_d.array_2d import Array2D
 from .structures.arrays.values import ValuesIrregular
-from .structures.arrays.abstract_array import Header
 from .structures.grids.one_d.grid_1d import Grid1D
 from .structures.grids.two_d.grid_2d import Grid2D
 from .structures.grids.two_d.sparse import Grid2DSparse
@@ -66,6 +65,7 @@ from .structures.grids.two_d.grid_2d_pixelization import Grid2DDelaunay
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular
 from .structures.grids import grid_decorators as grid_dec
+from .structures.header import Header
 from .layout.region import Region1D
 from .layout.region import Region2D
 from .structures.kernel_2d import Kernel2D

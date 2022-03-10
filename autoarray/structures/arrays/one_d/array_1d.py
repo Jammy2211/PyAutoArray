@@ -1,13 +1,12 @@
 import numpy as np
 from typing import Optional
 
-from autoarray.structures.arrays.abstract_array import Header
-from autoarray.structures.arrays.one_d.abstract_array_1d import AbstractArray1D
+from autoarray.structures.header import Header
 
+from autoarray.structures.abstract_structure import Structure1D
 from autoarray.structures.grids.one_d.grid_1d import Grid1D
 from autoarray.mask.mask_1d import Mask1D
 
-from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.one_d import array_1d_util
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.geometry import geometry_util
@@ -15,7 +14,7 @@ from autoarray.geometry import geometry_util
 from typing import Union, Tuple, List
 
 
-class Array1D(AbstractArray1D):
+class Array1D(Structure1D):
     def __new__(
         cls,
         array: np.ndarray,
@@ -154,7 +153,7 @@ class Array1D(AbstractArray1D):
         header: Optional[Header] = None,
     ) -> "Array1D":
         """
-        Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with an input fill value,
+        Create an `Array1D` (see `Array1D.__new__`) where all values are filled with an input fill value,
         analogous to the method np.full().
 
         From 1D input the method cannot determine the 1D shape of the array and its mask, thus the `shape_native` must
@@ -197,7 +196,7 @@ class Array1D(AbstractArray1D):
         header: Optional[Header] = None,
     ) -> "Array1D":
         """
-        Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with zeros, analogous to the
+        Create an `Array1D` (see `Array1D.__new__`) where all values are filled with zeros, analogous to the
         method np.zeros().
 
         From 1D input the method cannot determine the 1D shape of the array and its mask, thus the `shape_native` must
@@ -234,7 +233,7 @@ class Array1D(AbstractArray1D):
         header: Optional[Header] = None,
     ) -> "Array1D":
         """
-        Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with ones, analogous to the
+        Create an `Array1D` (see `Array1D.__new__`) where all values are filled with ones, analogous to the
         method np.ones().
 
         From 1D input the method cannot determine the 1D shape of the array and its mask, thus the `shape_native` must
@@ -271,7 +270,7 @@ class Array1D(AbstractArray1D):
         origin: Tuple[float] = (0.0, 0.0),
     ) -> "Array1D":
         """
-        Create an Array1D (see `AbstractArray1D.__new__`) by loading the array values from a .fits file.
+        Create an Array1D (see `Array1D.__new__`) by loading the array values from a .fits file.
 
         Parameters
         ----------
@@ -306,9 +305,70 @@ class Array1D(AbstractArray1D):
         )
 
     @property
+    def slim(self) -> Union["Array1D"]:
+        """
+        Return an `Array1D` where the data is stored its `slim` representation, which is an ndarray of shape
+        [total_unmasked_pixels * sub_size].
+
+        If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
+        `native` to `slim` and returned as a new `Array1D`.
+        """
+
+        if self.shape[0] != self.mask.sub_shape_native[0]:
+            return self
+
+        array = array_1d_util.array_1d_slim_from(
+            array_1d_native=self, mask_1d=self.mask, sub_size=self.mask.sub_size
+        )
+
+        return Array1D(array=array, mask=self.mask)
+
+    @property
+    def native(self) -> Union["Array1D"]:
+        """
+        Return an `Array1D` where the data is stored in its `native` representation, which is an ndarray of shape
+        [total_pixels * sub_size].
+
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Array1D`.
+        """
+        from autoarray.structures.arrays.one_d.array_1d import Array1D
+
+        if self.shape[0] == self.mask.sub_shape_native[0]:
+            return self
+
+        array = array_1d_util.array_1d_native_from(
+            array_1d_slim=self, mask_1d=self.mask, sub_size=self.sub_size
+        )
+
+        return Array1D(array=array, mask=self.mask)
+
+    @property
+    def readout_offsets(self) -> Tuple[float]:
+        if self.header is not None:
+            if self.header.readout_offsets is not None:
+                return self.header.readout_offsets
+        return (0,)
+
+    @property
     def grid_radial(self) -> Grid1D:
         return Grid1D.uniform_from_zero(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
+        )
+
+    def output_to_fits(self, file_path: str, overwrite: bool = False):
+        """
+        Output the array to a .fits file.
+
+        Parameters
+        ----------
+        file_path
+            The output path of the file, including the filename and the `.fits` extension e.g. '/path/to/filename.fits'
+        overwrite
+            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
+        """
+        array_1d_util.numpy_array_1d_to_fits(
+            array_1d=self.native, file_path=file_path, overwrite=overwrite
         )

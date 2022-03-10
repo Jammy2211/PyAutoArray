@@ -6,7 +6,7 @@ import os
 from os import path
 import shutil
 
-from autoarray.structures.arrays.abstract_array import Header
+from autoarray.structures.header import Header
 from autoarray.structures.arrays.two_d.array_2d import Array2D
 from autoarray.layout.layout import Layout2D
 from autoarray.layout.region import Region2D

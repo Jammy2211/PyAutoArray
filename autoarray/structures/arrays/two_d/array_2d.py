@@ -4,10 +4,10 @@ from typing import Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure2D
+from autoarray.structures.header import Header
 from autoarray.structures.arrays.one_d.array_1d import Array1D
 
 from autoarray import exc
-from autoarray.structures.arrays import abstract_array
 from autoarray.geometry import geometry_util
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
@@ -522,9 +522,7 @@ class Array2D(Structure2D):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            header=abstract_array.Header(
-                header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj
-            ),
+            header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
 
     @classmethod
