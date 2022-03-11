@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 
-from autoarray.structures.abstract_structure import Structure2D
+from autoarray.structures.abstract_structure import Structure
 
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids import grid_2d_util
@@ -10,7 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractVectorYX2D(Structure2D):
+class AbstractVectorYX2D(Structure):
     def __array_finalize__(self, obj):
 
         if hasattr(obj, "mask"):

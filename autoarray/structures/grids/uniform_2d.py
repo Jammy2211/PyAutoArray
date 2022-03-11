@@ -5,7 +5,7 @@ from autoconf import conf
 from autoconf import cached_property
 
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.abstract_structure import Structure2D
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.values import ValuesIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -18,7 +18,7 @@ from autoarray.geometry import geometry_util
 from autoarray import type as ty
 
 
-class Grid2D(Structure2D):
+class Grid2D(Structure):
     def __new__(cls, grid: np.ndarray, mask: Mask2D, *args, **kwargs):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -486,7 +486,7 @@ class Grid2D(Structure2D):
     def uniform(
         cls,
         shape_native: Tuple[float, float],
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":

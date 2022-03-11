@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Callable, Union, List, Tuple, Optional
 
-from autoarray.structures.abstract_structure import Structure2D
+from autoarray.structures.abstract_structure import Structure
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.uniform_2d import Grid2D

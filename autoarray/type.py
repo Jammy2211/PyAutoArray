@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Tuple, Union
 
-PixelScales = Union[Tuple[float, float], float]
+PixelScales = Union[Tuple[float], Tuple[float, float], float]
 
 
 from autoarray.mask.mask_1d import Mask1D

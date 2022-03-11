@@ -7,6 +7,7 @@ from autoarray.mask.abstract_mask import Mask
 from autoarray import exc
 from autoarray.structures.arrays import array_1d_util
 from autoarray.structures.grids import grid_1d_util
+from autoarray import type as ty
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -16,7 +17,7 @@ class Mask1d(Mask):
     def __new__(
         cls,
         mask: np.ndarray,
-        pixel_scales: Tuple[float,],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float,] = (0.0,),
     ):
@@ -155,7 +156,7 @@ class Mask1D(Mask1d):
     def manual(
         cls,
         mask: Union[List, np.ndarray],
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         invert: bool = False,
@@ -181,7 +182,7 @@ class Mask1D(Mask1d):
     def unmasked(
         cls,
         shape_slim,
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         invert: bool = False,
@@ -208,7 +209,7 @@ class Mask1D(Mask1d):
     def from_fits(
         cls,
         file_path: str,
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         hdu: int = 0,
         origin: Tuple[float] = (0.0,),

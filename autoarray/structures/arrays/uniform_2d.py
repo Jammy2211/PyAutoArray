@@ -1,13 +1,14 @@
 import logging
 import numpy as np
-from typing import Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.abstract_structure import Structure2D
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.header import Header
 from autoarray.structures.arrays.uniform_1d import Array1D
 
 from autoarray import exc
+from autoarray import type as ty
 from autoarray.geometry import geometry_util
 from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
@@ -17,8 +18,16 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Array2D(Structure2D):
-    def __new__(cls, array, mask, header=None, zoom_for_plot=True, *args, **kwargs):
+class Array2D(Structure):
+    def __new__(
+        cls,
+        array: Union[np.ndarray, List],
+        mask: Mask2D,
+        header: Header = None,
+        zoom_for_plot: bool = True,
+        *args,
+        **kwargs
+    ):
         """
         An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel.
@@ -205,13 +214,13 @@ class Array2D(Structure2D):
     @classmethod
     def manual_slim(
         cls,
-        array,
-        shape_native,
-        pixel_scales,
+        array: Union[np.ndarray, List],
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
-        origin=(0.0, 0.0),
-        header=None,
-    ):
+        origin: Tuple[float, float] = (0.0, 0.0),
+        header: Optional[Header] = None,
+    ) -> "Array2D":
         """
         Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 1D, for example:
 
@@ -240,7 +249,7 @@ class Array2D(Structure2D):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        if shape_native is not None and len(shape_native) != 2:
+        if shape_native and len(shape_native) != 2:
             raise exc.ArrayException(
                 "The input shape_native parameter is not a tuple of type (int, int)"
             )
@@ -254,12 +263,17 @@ class Array2D(Structure2D):
 
         array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
 
-        return cls(array=array, mask=mask, header=header)
+        return Array2D(array=array, mask=mask, header=header)
 
     @classmethod
     def manual_native(
-        cls, array, pixel_scales, sub_size: int = 1, origin=(0.0, 0.0), header=None
-    ):
+        cls,
+        array: Union[np.ndarray, List],
+        pixel_scales: ty.PixelScales,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+        header: Optional[Header] = None,
+    ) -> "Array2D":
         """
         Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 2D, for example:
 
@@ -301,18 +315,18 @@ class Array2D(Structure2D):
 
         array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
 
-        return cls(array=array, mask=mask, header=header)
+        return Array2D(array=array, mask=mask, header=header)
 
     @classmethod
     def manual(
         cls,
-        array,
-        pixel_scales,
-        shape_native=None,
+        array: Union[np.ndarray, List],
+        pixel_scales: ty.PixelScales,
+        shape_native: Tuple[int, int] = None,
         sub_size: int = 1,
-        origin=(0.0, 0.0),
-        header=None,
-    ):
+        origin: Tuple[float, float] = (0.0, 0.0),
+        header: Optional[Header] = None,
+    ) -> "Array2D":
         """
         Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D, automatically
         determining whether to use the 'manual_slim' or 'manual_native' methods.
@@ -353,7 +367,9 @@ class Array2D(Structure2D):
         )
 
     @classmethod
-    def manual_mask(cls, array, mask, header=None):
+    def manual_mask(
+        cls, array: Union[np.ndarray, List], mask: Mask2D, header: Header = None
+    ) -> "Array2D":
         """
         Create an `Array2D` (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D with its mask,
         for example:
@@ -370,18 +386,18 @@ class Array2D(Structure2D):
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
         array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
-        return cls(array=array, mask=mask, header=header)
+        return Array2D(array=array, mask=mask, header=header)
 
     @classmethod
     def full(
         cls,
-        fill_value,
-        shape_native,
-        pixel_scales,
+        fill_value: float,
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
-        origin=(0.0, 0.0),
-        header=None,
-    ):
+        origin: Tuple[float, float] = (0.0, 0.0),
+        header: Optional[Header] = None,
+    ) -> "Array2D":
         """
         Create an `Array2D` (see `AbstractArray2D.__new__`) where all values are filled with an input fill value,
         analogous to the method np.full().
@@ -417,12 +433,12 @@ class Array2D(Structure2D):
     @classmethod
     def ones(
         cls,
-        shape_native,
-        pixel_scales,
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
-        origin=(0.0, 0.0),
-        header=None,
-    ):
+        origin: Tuple[float, float] = (0.0, 0.0),
+        header: Header = None,
+    ) -> "Array2D":
         """
         Create an Array2D (see `AbstractArray2D.__new__`) where all values are filled with ones, analogous to the
         method np.ones().
@@ -454,12 +470,12 @@ class Array2D(Structure2D):
     @classmethod
     def zeros(
         cls,
-        shape_native,
-        pixel_scales,
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
-        origin=(0.0, 0.0),
-        header=None,
-    ):
+        origin: Tuple[float, float] = (0.0, 0.0),
+        header: Header = None,
+    ) -> "Array2D":
         """
         Create an Array2D (see `AbstractArray2D.__new__`) where all values are filled with zeros, analogous to the
         method np.ones().
@@ -490,8 +506,13 @@ class Array2D(Structure2D):
 
     @classmethod
     def from_fits(
-        cls, file_path, pixel_scales, hdu=0, sub_size: int = 1, origin=(0.0, 0.0)
-    ):
+        cls,
+        file_path: str,
+        pixel_scales: ty.PixelScales,
+        hdu: int = 0,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Array2D":
         """
         Create an Array2D (see `AbstractArray2D.__new__`) by loading the array values from a .fits file.
 
@@ -527,8 +548,15 @@ class Array2D(Structure2D):
 
     @classmethod
     def manual_yx_and_values(
-        cls, y, x, values, shape_native, pixel_scales, sub_size: int = 1, header=None
-    ):
+        cls,
+        y: Union[np.ndarray, List],
+        x: Union[np.ndarray, List],
+        values: Union[np.ndarray, List],
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        sub_size: int = 1,
+        header: Header = None,
+    ) -> "Array2D":
         """
         Create an `Array2D` (see `AbstractArray2D.__new__`) by inputting the y and x pixel values where the array is filled
         and the values to fill the array, for example:
@@ -585,7 +613,7 @@ class Array2D(Structure2D):
             header=header,
         )
 
-    def apply_mask(self, mask: Mask2D):
+    def apply_mask(self, mask: Mask2D) -> "Array2D":
         return Array2D.manual_mask(array=self.native, mask=mask, header=self.header)
 
     @property

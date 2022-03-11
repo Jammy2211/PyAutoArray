@@ -1,7 +1,7 @@
 from astropy.io import fits
 import numpy as np
 import os
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from autoconf import conf
 from autoarray import numba_util
@@ -769,7 +769,7 @@ def numpy_array_2d_via_fits_from(
     return np.array(hdu_list[hdu].data).astype("float64")
 
 
-def header_obj_from(file_path: str, hdu: int):
+def header_obj_from(file_path: str, hdu: int) -> Dict:
     """
     Read a 2D NumPy array from a .fits file.
 
@@ -787,8 +787,8 @@ def header_obj_from(file_path: str, hdu: int):
 
     Returns
     -------
-    ndarray
-        The NumPy array that is loaded from the .fits file.
+    dict
+        The header dictionary.
 
     Examples
     --------

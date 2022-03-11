@@ -6,6 +6,7 @@ from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray import numba_util
 from autoarray.mask import mask_2d_util
+from autoarray import type as ty
 
 
 def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
@@ -141,7 +142,7 @@ def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
 @numba_util.jit()
 def grid_2d_slim_via_mask_from(
     mask_2d: np.ndarray,
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     sub_size: int,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
@@ -224,7 +225,7 @@ def grid_2d_slim_via_mask_from(
 
 def grid_2d_via_mask_from(
     mask_2d: np.ndarray,
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     sub_size: int,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
@@ -278,7 +279,7 @@ def grid_2d_via_mask_from(
 
 def grid_2d_slim_via_shape_native_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     sub_size: int,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
@@ -328,7 +329,7 @@ def grid_2d_slim_via_shape_native_from(
 
 def grid_2d_via_shape_native_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     sub_size: int,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
@@ -377,7 +378,7 @@ def grid_2d_via_shape_native_from(
 def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     sub_size: int,
     shape_slim: Optional[int] = 0,
 ) -> np.ndarray:
@@ -477,7 +478,7 @@ def grid_scaled_2d_slim_radial_projected_from(
 def grid_pixels_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
@@ -542,7 +543,7 @@ def grid_pixels_2d_slim_from(
 def grid_pixel_centres_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
@@ -606,7 +607,7 @@ def grid_pixel_centres_2d_slim_from(
 def grid_pixel_indexes_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
@@ -672,7 +673,7 @@ def grid_pixel_indexes_2d_slim_from(
 def grid_scaled_2d_slim_from(
     grid_pixels_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
@@ -732,7 +733,7 @@ def grid_scaled_2d_slim_from(
 def grid_pixel_centres_2d_from(
     grid_scaled_2d: np.ndarray,
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
@@ -963,9 +964,7 @@ def grid_2d_native_from(
 
 @numba_util.jit()
 def grid_2d_slim_upscaled_from(
-    grid_slim: np.ndarray,
-    upscale_factor: int,
-    pixel_scales: Union[float, Tuple[float, float]],
+    grid_slim: np.ndarray, upscale_factor: int, pixel_scales: ty.PixelScales
 ) -> np.ndarray:
     """
     From an input slimmed 2D grid, return an upscaled slimmed 2D grid where (y,x) coordinates are added at an

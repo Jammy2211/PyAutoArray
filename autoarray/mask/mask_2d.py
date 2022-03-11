@@ -8,6 +8,7 @@ from autoconf import cached_property
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
+from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
@@ -23,7 +24,7 @@ class Mask2D(Mask):
     def __new__(
         cls,
         mask: np.ndarray,
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         *args,
@@ -760,7 +761,7 @@ class Mask2D(Mask2D):
     def manual(
         cls,
         mask: np.ndarray or list,
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -809,7 +810,7 @@ class Mask2D(Mask2D):
     def unmasked(
         cls,
         shape_native: Tuple[int, int],
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -845,7 +846,7 @@ class Mask2D(Mask2D):
         cls,
         shape_native: Tuple[int, int],
         radius: float,
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -901,7 +902,7 @@ class Mask2D(Mask2D):
         shape_native: Tuple[int, int],
         inner_radius: float,
         outer_radius: float,
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -962,7 +963,7 @@ class Mask2D(Mask2D):
         inner_radius: float,
         outer_radius: float,
         outer_radius_2: float,
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -1027,7 +1028,7 @@ class Mask2D(Mask2D):
         major_axis_radius: float,
         axis_ratio: float,
         angle: float,
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -1093,7 +1094,7 @@ class Mask2D(Mask2D):
         outer_major_axis_radius: float,
         outer_axis_ratio: float,
         outer_phi: float,
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
@@ -1165,7 +1166,7 @@ class Mask2D(Mask2D):
         cls,
         shape_native: Tuple[int, int],
         pixel_coordinates: [[int, int]],
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         buffer: int = 0,
@@ -1216,7 +1217,7 @@ class Mask2D(Mask2D):
     def from_fits(
         cls,
         file_path: str,
-        pixel_scales: Union[float, Tuple[float, float]],
+        pixel_scales: ty.PixelScales,
         hdu: int = 0,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),

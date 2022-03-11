@@ -3,7 +3,7 @@ from sklearn.cluster import KMeans
 from typing import List, Optional, Tuple, Union
 import warnings
 
-from autoarray.structures.abstract_structure import Structure2D
+from autoarray.structures.abstract_structure import Structure
 
 from autoarray import exc
 from autoarray.structures.grids import grid_2d_util
@@ -11,7 +11,7 @@ from autoarray.mask.mask_2d import mask_2d_util
 from autoarray.structures.grids import sparse_2d_util
 
 
-class Grid2DSparse(Structure2D):
+class Grid2DSparse(Structure):
     def __new__(cls, grid: np.ndarray, sparse_index_for_slim_index: np.ndarray):
         """
         A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a

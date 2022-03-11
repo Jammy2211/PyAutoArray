@@ -6,12 +6,13 @@ import warnings
 from autoarray import exc
 from autoarray import numba_util
 from autoarray.structures.grids import grid_2d_util
+from autoarray import type as ty
 
 
 @numba_util.jit()
 def mask_2d_centres_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     centre: Tuple[float, float],
 ) -> Tuple[float, float]:
     """
@@ -141,7 +142,7 @@ def total_sparse_pixels_2d_from(
 @numba_util.jit()
 def mask_2d_circular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     radius: float,
     centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
@@ -154,7 +155,7 @@ def mask_2d_circular_from(
     ----------
     shape_native: Tuple[int, int]
         The (y,x) shape of the mask in units of pixels.
-    pixel_scales: float
+    pixel_scales
         The scaled units to pixel units conversion factor of each pixel.
     radius
         The radius (in scaled units) of the circle within which pixels unmasked.
@@ -195,7 +196,7 @@ def mask_2d_circular_from(
 @numba_util.jit()
 def mask_2d_circular_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     inner_radius: float,
     outer_radius: float,
     centre: Tuple[float, float] = (0.0, 0.0),
@@ -252,7 +253,7 @@ def mask_2d_circular_annular_from(
 @numba_util.jit()
 def mask_2d_circular_anti_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     inner_radius: float,
     outer_radius: float,
     outer_radius_2_scaled: float,
@@ -389,7 +390,7 @@ def elliptical_radius_from(
 @numba_util.jit()
 def mask_2d_elliptical_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     major_axis_radius: float,
     axis_ratio: float,
     angle: float,
@@ -453,7 +454,7 @@ def mask_2d_elliptical_from(
 @numba_util.jit()
 def mask_2d_elliptical_annular_from(
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     inner_major_axis_radius: float,
     inner_axis_ratio: float,
     inner_phi: float,

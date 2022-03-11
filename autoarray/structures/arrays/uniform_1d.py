@@ -1,20 +1,19 @@
 import numpy as np
-from typing import Optional
+from typing import Optional, Union, Tuple, List
 
 from autoarray.structures.header import Header
 
-from autoarray.structures.abstract_structure import Structure1D
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.mask.mask_1d import Mask1D
 
 from autoarray.structures.arrays import array_1d_util
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
+from autoarray import type as ty
 
-from typing import Union, Tuple, List
 
-
-class Array1D(Structure1D):
+class Array1D(Structure):
     def __new__(
         cls,
         array: np.ndarray,
@@ -34,7 +33,7 @@ class Array1D(Structure1D):
     def manual_slim(
         cls,
         array: Union[np.ndarray, Tuple[float], List[float]],
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
@@ -50,7 +49,7 @@ class Array1D(Structure1D):
         ----------
         array or list
             The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
-        pixel_scales: float
+        pixel_scales
             The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
         sub_size
             The size of each unmasked pixels sub-gridded line.
@@ -75,7 +74,7 @@ class Array1D(Structure1D):
     def manual_native(
         cls,
         array: Union[np.ndarray, Tuple[float], List[float]],
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
@@ -126,7 +125,7 @@ class Array1D(Structure1D):
         ----------
         array or list
             The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
-        pixel_scales: float
+        pixel_scales
             The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
         sub_size
             The size of each unmasked pixels sub-gridded line.
@@ -147,7 +146,7 @@ class Array1D(Structure1D):
         cls,
         fill_value: float,
         shape_native: Union[int, Tuple[int]],
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
@@ -165,7 +164,7 @@ class Array1D(Structure1D):
             The value all array elements are filled with.
         shape_native : Tuple[int]
             The 1D shape of the mask the array is paired with.
-        pixel_scales: (float, ) or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float,) structure.
         sub_size
@@ -190,7 +189,7 @@ class Array1D(Structure1D):
     def zeros(
         cls,
         shape_native: Union[int, Tuple[int]],
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
@@ -206,7 +205,7 @@ class Array1D(Structure1D):
         ----------
         shape_native : Tuple[int]
             The 1D shape of the mask the array is paired with.
-        pixel_scales: (float, ) or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float,) structure.
         sub_size
@@ -227,7 +226,7 @@ class Array1D(Structure1D):
     def ones(
         cls,
         shape_native: Union[int, Tuple[int]],
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
@@ -243,7 +242,7 @@ class Array1D(Structure1D):
         ----------
         shape_native : Tuple[int]
             The 1D shape of the mask the array is paired with.
-        pixel_scales: (float, ) or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float,) structure.
         sub_size
@@ -264,7 +263,7 @@ class Array1D(Structure1D):
     def from_fits(
         cls,
         file_path: str,
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         hdu: int = 0,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0, 0.0),

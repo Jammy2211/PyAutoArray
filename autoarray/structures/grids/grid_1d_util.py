@@ -5,11 +5,12 @@ from autoarray.structures.arrays import array_1d_util
 from autoarray import numba_util
 from autoarray.geometry import geometry_util
 from autoarray.mask import mask_1d_util
+from autoarray import type as ty
 
 
 def grid_1d_slim_via_shape_slim_from(
     shape_slim: Tuple[int],
-    pixel_scales: Tuple[float],
+    pixel_scales: ty.PixelScales,
     sub_size: int,
     origin: Tuple[float] = (0.0,),
 ) -> np.ndarray:
@@ -56,7 +57,7 @@ def grid_1d_slim_via_shape_slim_from(
 @numba_util.jit()
 def grid_1d_slim_via_mask_from(
     mask_1d: np.ndarray,
-    pixel_scales: Tuple[float],
+    pixel_scales: ty.PixelScales,
     sub_size: int,
     origin: Tuple[float] = (0.0,),
 ) -> np.ndarray:

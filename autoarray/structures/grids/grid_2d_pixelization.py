@@ -6,7 +6,7 @@ from typing import Optional, List, Union, Tuple
 
 from autoconf import cached_property
 
-from autoarray.structures.abstract_structure import Structure2D
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.mask.mask_2d import Mask2D
@@ -60,7 +60,7 @@ class PixelNeighbors(np.ndarray):
         return obj
 
 
-class AbstractGrid2DPixelization(Structure2D):
+class AbstractGrid2DPixelization(Structure):
     @property
     def extent(self) -> np.ndarray:
         raise NotImplementedError

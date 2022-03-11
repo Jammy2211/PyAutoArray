@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Union, Tuple
 
-from autoarray.structures.abstract_structure import Structure1D
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.mask.mask_1d import Mask1D
@@ -10,9 +10,10 @@ from autoarray import exc
 from autoarray.structures.grids import grid_1d_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
+from autoarray import type as ty
 
 
-class Grid1D(Structure1D):
+class Grid1D(Structure):
     def __new__(cls, grid: np.ndarray, mask: Mask1D, *args, **kwargs):
         """
         A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
@@ -167,7 +168,7 @@ class Grid1D(Structure1D):
     def manual_slim(
         cls,
         grid: Union[np.ndarray, List],
-        pixel_scales: Tuple[float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
     ) -> "Grid1D":
@@ -209,7 +210,7 @@ class Grid1D(Structure1D):
     def manual_native(
         cls,
         grid: Union[np.ndarray, List],
-        pixel_scales: Tuple[float],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
     ) -> "Grid1D":
@@ -296,7 +297,7 @@ class Grid1D(Structure1D):
     def uniform(
         cls,
         shape_native: Tuple[float],
-        pixel_scales: Union[float, Tuple[float]],
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0, 0.0),
     ) -> "Grid1D":
@@ -331,10 +332,7 @@ class Grid1D(Structure1D):
 
     @classmethod
     def uniform_from_zero(
-        cls,
-        shape_native: Tuple[float],
-        pixel_scales: Union[float, Tuple[float, float]],
-        sub_size: int = 1,
+        cls, shape_native: Tuple[float], pixel_scales: ty.PixelScales, sub_size: int = 1
     ) -> "Grid1D":
         """
         Create a `Grid1D` (see `Grid`D.__new__`) as a uniform grid of (x) values given an input `shape_native` and

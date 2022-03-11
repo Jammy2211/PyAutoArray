@@ -5,6 +5,7 @@ import numpy as np
 from autoarray.abstract_ndarray import AbstractNDArray
 
 from autoarray import exc
+from autoarray import type as ty
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -19,7 +20,7 @@ class Mask(AbstractNDArray, ABC):
         cls,
         mask: np.ndarray,
         origin: tuple,
-        pixel_scales: tuple,
+        pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         *args,
         **kwargs

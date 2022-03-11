@@ -1,7 +1,6 @@
 import logging
 from astropy import time
-import numpy as np
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, Tuple, Optional
 
 from autoarray.dataset import preprocess
 

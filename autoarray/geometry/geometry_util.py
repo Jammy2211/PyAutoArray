@@ -2,6 +2,7 @@ from typing import Tuple, Union
 import numpy as np
 
 from autoarray import numba_util
+from autoarray import type as ty
 
 
 def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:
@@ -29,7 +30,7 @@ def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:
     return shape_native
 
 
-def convert_pixel_scales_1d(pixel_scales: Union[float, Tuple[float]]) -> Tuple[float]:
+def convert_pixel_scales_1d(pixel_scales: ty.PixelScales) -> Tuple[float]:
     """
     Converts an input pixel-scale of type float to a tuple (float,). If the input is already a (float, ) it is 
     unchanged
@@ -85,7 +86,7 @@ def central_pixel_coordinates_1d_from(
 @numba_util.jit()
 def central_scaled_coordinate_1d_from(
     shape_slim: Tuple[float],
-    pixel_scales: Tuple[float],
+    pixel_scales: ty.PixelScales,
     origin: Tuple[float] = (0.0, 0.0),
 ):
     """
@@ -122,7 +123,7 @@ def central_scaled_coordinate_1d_from(
 def pixel_coordinates_1d_from(
     scaled_coordinates_1d: Tuple[float],
     shape_slim: Tuple[int],
-    pixel_scales: Tuple[float],
+    pixel_scales: ty.PixelScales,
     origins: Tuple[float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float]]:
 
@@ -141,7 +142,7 @@ def pixel_coordinates_1d_from(
 def scaled_coordinates_1d_from(
     pixel_coordinates_1d: Tuple[float],
     shape_slim: Tuple[int],
-    pixel_scales: Tuple[float],
+    pixel_scales: ty.PixelScales,
     origins: Tuple[float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float]]:
 
@@ -156,9 +157,7 @@ def scaled_coordinates_1d_from(
     return (x_pixel,)
 
 
-def convert_pixel_scales_2d(
-    pixel_scales: Union[float, Tuple[float, float]]
-) -> Tuple[float, float]:
+def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]:
     """
     Converts an input pixel-scale of type float to a pixel-scale of tuple (float, float). If the input is already
     type (float, float) it is unchanged
@@ -213,7 +212,7 @@ def central_pixel_coordinates_2d_from(
 @numba_util.jit()
 def central_scaled_coordinate_2d_from(
     shape_native: Tuple[float, float],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> Tuple[float, float]:
     """
@@ -253,7 +252,7 @@ def central_scaled_coordinate_2d_from(
 def pixel_coordinates_2d_from(
     scaled_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     origins: Tuple[float, float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float, float]]:
 
@@ -279,7 +278,7 @@ def pixel_coordinates_2d_from(
 def scaled_coordinates_2d_from(
     pixel_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],
-    pixel_scales: Union[float, Tuple[float, float]],
+    pixel_scales: ty.PixelScales,
     origins: Tuple[float, float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float, float]]:
 

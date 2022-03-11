@@ -1,7 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
@@ -45,7 +45,7 @@ class Structure(AbstractNDArray, ABC):
         return self.mask.sub_shape_native
 
     @property
-    def pixel_scales(self) -> Tuple[int, ...]:
+    def pixel_scales(self) -> Tuple[float, ...]:
         return self.mask.pixel_scales
 
     @property
@@ -68,6 +68,12 @@ class Structure(AbstractNDArray, ABC):
     def total_pixels(self) -> int:
         return self.shape[0]
 
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError
+
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """
         Output the grid to a .fits file.
@@ -82,16 +88,3 @@ class Structure(AbstractNDArray, ABC):
         array_2d_util.numpy_array_2d_to_fits(
             array_2d=self.native, file_path=file_path, overwrite=overwrite
         )
-
-
-class Structure1D(Structure):
-
-    pass
-
-
-class Structure2D(Structure):
-    def structure_2d_list_from(self, result_list: list):
-        raise NotImplementedError
-
-    def structure_2d_from(self, result: np.ndarray):
-        raise NotImplementedError
