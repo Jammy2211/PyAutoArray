@@ -589,7 +589,7 @@ class Grid2D(Structure):
 
         Parameters
         ----------
-        mask : Mask2D
+        mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
 
@@ -618,7 +618,7 @@ class Grid2D(Structure):
 
         Parameters
         ----------
-        mask : Mask2D
+        mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
 
@@ -703,7 +703,7 @@ class Grid2D(Structure):
 
         Parameters
         ----------
-        mask : Mask2D
+        mask
             The mask whose masked pixels are used to setup the blurring grid.
         kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.

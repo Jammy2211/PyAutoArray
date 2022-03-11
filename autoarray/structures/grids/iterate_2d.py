@@ -233,7 +233,7 @@ class Grid2DIterate(Grid2D):
 
         Parameters
         ----------
-        mask : Mask2D
+        mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
@@ -280,7 +280,7 @@ class Grid2DIterate(Grid2D):
 
         Parameters
         ----------
-        mask : Mask2D
+        mask
             The mask whose masked pixels are used to setup the blurring grid.
         kernel_shape_native
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
@@ -466,9 +466,9 @@ class Grid2DIterate(Grid2D):
 
         Parameters
         ----------
-        array_lower_sub_2d : Array2D
+        array_lower_sub_2d
             The results computed by a function using a lower sub-grid size
-        array_higher_sub_2d : Array2D
+        array_higher_sub_2d
             The results computed by a function using a higher sub-grid size.
         """
 
@@ -576,7 +576,7 @@ class Grid2DIterate(Grid2D):
             The function which is iterated over to compute a more precise evaluation.
         cls : cls
             The class the function belongs to.
-        grid_lower_sub_2d : Array2D
+        grid_lower_sub_2d
             The results computed by the function using a lower sub-grid size
         """
 
@@ -688,7 +688,7 @@ class Grid2DIterate(Grid2D):
 
         Parameters
         ----------
-        grid_lower_sub_2d : Array2D
+        grid_lower_sub_2d
             The results computed by a function using a lower sub-grid size
         grid_higher_sub_2d : grids.Array2D
             The results computed by a function using a higher sub-grid size.

@@ -346,7 +346,9 @@ class VectorYX2D(AbstractVectorYX2D):
         return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
     @classmethod
-    def manual_mask(cls, vectors, mask) -> "VectorYX2D":
+    def manual_mask(
+        cls, vectors: Union[np.ndarray, List], mask: Mask2D
+    ) -> "VectorYX2D":
         """
         Create a VectorYX2D (see *VectorYX2D.__new__*) by inputting the vectors in 1D or 2D with its mask,
         for example:
@@ -371,12 +373,12 @@ class VectorYX2D(AbstractVectorYX2D):
     @classmethod
     def full(
         cls,
-        fill_value,
-        shape_native,
+        fill_value: float,
+        shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-    ):
+    ) -> "VectorYX2D":
         """
         Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with an input fill value,
         analogous to the method np.full().
@@ -413,11 +415,11 @@ class VectorYX2D(AbstractVectorYX2D):
     @classmethod
     def ones(
         cls,
-        shape_native,
+        shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-    ):
+    ) -> "VectorYX2D":
         """
         Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with 1.0, analogous to 
         the method np.ones().
@@ -448,11 +450,11 @@ class VectorYX2D(AbstractVectorYX2D):
     @classmethod
     def zeros(
         cls,
-        shape_native,
+        shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-    ):
+    ) -> "VectorYX2D":
         """
         Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with 1.0, analogous to 
         the method np.zeros().
@@ -480,7 +482,76 @@ class VectorYX2D(AbstractVectorYX2D):
             origin=origin,
         )
 
-    def apply_mask(self, mask: Mask2D):
+    @property
+    def slim(self) -> "VectorYX2D":
+        """
+        Return a `VectorYX2D` where the data is stored its `slim` representation, which is an ndarray of shape
+        [total_unmasked_pixels * sub_size**2, 2].
+
+        If it is already stored in its `slim` representation it is returned as it is. If not, it is  mapped from
+        `native` to `slim` and returned as a new `Array2D`.
+        """
+        if len(self.shape) == 2:
+            return self
+
+        vectors_2d_slim = grid_2d_util.grid_2d_slim_from(
+            grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
+        )
+
+        return VectorYX2D(vectors=vectors_2d_slim, grid=self.grid.slim, mask=self.mask)
+
+    @property
+    def native(self) -> "VectorYX2D":
+        """
+        Return a `VectorYX2D` where the data is stored in its `native` representation, which is an ndarray of shape
+        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2].
+
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Grid2D`.
+        """
+
+        if len(self.shape) != 2:
+            return self
+
+        vectors_2d_native = grid_2d_util.grid_2d_native_from(
+            grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+        )
+
+        return VectorYX2D(
+            vectors=vectors_2d_native, grid=self.grid.native, mask=self.mask
+        )
+
+    @property
+    def binned(self) -> "VectorYX2D":
+        """
+        Convenience method to access the binned-up vectors as a Vector2D stored in its `slim` or `native` format.
+
+        The binning up process converts a grid from (y,x) values where each value is a coordinate on the sub-grid to
+        (y,x) values where each coordinate is at the centre of its mask (e.g. a grid with a sub_size of 1). This is
+        performed by taking the mean of all (y,x) values in each sub pixel.
+
+        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+        """
+
+        vector_2d_slim_binned_y = np.multiply(
+            self.mask.sub_fraction,
+            self.slim[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        vector_2d_slim_binned_x = np.multiply(
+            self.mask.sub_fraction,
+            self.slim[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        return VectorYX2D(
+            vectors=np.stack(
+                (vector_2d_slim_binned_y, vector_2d_slim_binned_x), axis=-1
+            ),
+            grid=self.grid.binned,
+            mask=self.mask.mask_sub_1,
+        )
+
+    def apply_mask(self, mask: Mask2D) -> "VectorYX2D":
         return VectorYX2D.manual_mask(vectors=self.native, mask=mask)
 
     @property

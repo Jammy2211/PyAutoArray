@@ -143,7 +143,7 @@ class Imaging(AbstractDataset):
         ----------
         image
             The array of the image data, in units of electrons per second.
-        noise_map : Array2D
+        noise_map
             An array describing the RMS standard deviation error in each pixel in units of electrons per second.
         psf
             An array describing the Point Spread Function kernel of the image.
@@ -496,7 +496,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
 
         Parameters
         ----------
-        image : Array2D
+        image
             The image before simulating which has noise added, PSF convolution, etc performed to it.
         """
 

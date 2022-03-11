@@ -20,7 +20,7 @@ class FitImaging(FitDataset):
         -----------
         dataset : MaskedImaging
             The masked imaging dataset that is fitted.
-        model_image : Array2D
+        model_image
             The model image the masked imaging is fitted with.
         inversion : LEq
             If the fit uses an `LEq` this is the instance of the object used to perform the fit. This determines

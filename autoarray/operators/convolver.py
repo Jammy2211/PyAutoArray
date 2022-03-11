@@ -170,9 +170,9 @@ class Convolver:
 
         Parameters
         ----------
-        mask : Mask2D
+        mask
             The mask within which the convolved signal is calculated.
-        blurring_mask : Mask2D
+        blurring_mask
             A masks of pixels outside the masks but whose light blurs into it after PSF convolution.
         kernel : grid.PSF or ndarray
             An array representing a PSF.
