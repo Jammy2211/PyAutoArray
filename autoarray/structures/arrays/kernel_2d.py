@@ -2,19 +2,25 @@ from astropy import units
 import numpy as np
 import scipy.signal
 from skimage.transform import resize, rescale
+from typing import List, Tuple, Union
 
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.arrays.uniform_2d import AbstractArray2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.header import Header
 
 from autoarray import exc
+from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
 
 
-class Kernel2D(Array2D):
+class Kernel2D(AbstractArray2D):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, array, mask, header=None, normalize=False, *args, **kwargs):
+    def __new__(
+        cls, array, mask, header=None, normalize: bool = False, *args, **kwargs
+    ):
         """
         An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel. See the *Array2D* class
@@ -41,7 +47,12 @@ class Kernel2D(Array2D):
 
     @classmethod
     def manual_slim(
-        cls, array, shape_native, pixel_scales, origin=(0.0, 0.0), normalize=False
+        cls,
+        array: Union[np.ndarray, List],
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        origin: Tuple[float, float] = (0.0, 0.0),
+        normalize: bool = False,
     ):
         """
         Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D, for example:
@@ -77,10 +88,16 @@ class Kernel2D(Array2D):
             origin=origin,
         )
 
-        return cls(array=array, mask=array.mask, normalize=normalize)
+        return Kernel2D(array=array, mask=array.mask, normalize=normalize)
 
     @classmethod
-    def manual_native(cls, array, pixel_scales, origin=(0.0, 0.0), normalize=False):
+    def manual_native(
+        cls,
+        array: Union[np.ndarray, List],
+        pixel_scales: ty.PixelScales,
+        origin: Tuple[float, float] = (0.0, 0.0),
+        normalize: bool = False,
+    ) -> "Kernel2D":
         """
         Create an Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 2D, for example:
 
@@ -111,11 +128,16 @@ class Kernel2D(Array2D):
             array=array, pixel_scales=pixel_scales, origin=origin
         )
 
-        return cls(array=array, mask=array.mask, normalize=normalize)
+        return Kernel2D(array=array, mask=array.mask, normalize=normalize)
 
     @classmethod
     def manual(
-        cls, array, pixel_scales, shape_native=None, origin=(0.0, 0.0), normalize=False
+        cls,
+        array: Union[np.ndarray, List],
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        origin: Tuple[float, float] = (0.0, 0.0),
+        normalize: bool = False,
     ):
         """
         Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
@@ -154,13 +176,12 @@ class Kernel2D(Array2D):
     @classmethod
     def full(
         cls,
-        fill_value,
-        shape_native,
-        pixel_scales,
-        sub_size: int = 1,
-        origin=(0.0, 0.0),
-        normalize=False,
-    ):
+        fill_value: float,
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        origin: Tuple[float, float] = (0.0, 0.0),
+        normalize: bool = False,
+    ) -> "Kernel2D":
         """
         Create a Kernel2D (see *Kernel2D.__new__*) where all values are filled with an input fill value, analogous to
         the method numpy ndarray.full.
@@ -184,10 +205,7 @@ class Kernel2D(Array2D):
         normalize : bool
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        if sub_size is not None:
-            shape_native = (shape_native[0] * sub_size, shape_native[1] * sub_size)
-
-        return cls.manual_native(
+        return Kernel2D.manual_native(
             array=np.full(fill_value=fill_value, shape=shape_native),
             pixel_scales=pixel_scales,
             origin=origin,
@@ -195,7 +213,13 @@ class Kernel2D(Array2D):
         )
 
     @classmethod
-    def ones(cls, shape_native, pixel_scales, origin=(0.0, 0.0), normalize=False):
+    def ones(
+        cls,
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        origin: Tuple[float, float] = (0.0, 0.0),
+        normalize: bool = False,
+    ):
         """
         Create an Kernel2D (see *Kernel2D.__new__*) where all values are filled with ones, analogous to the method numpy
         ndarray.ones.
@@ -226,7 +250,13 @@ class Kernel2D(Array2D):
         )
 
     @classmethod
-    def zeros(cls, shape_native, pixel_scales, origin=(0.0, 0.0), normalize=False):
+    def zeros(
+        cls,
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        origin: Tuple[float, float] = (0.0, 0.0),
+        normalize: bool = False,
+    ) -> "Kernel2D":
         """
         Create an Kernel2D (see *Kernel2D.__new__*) where all values are filled with zeros, analogous to the method numpy
         ndarray.ones.
@@ -276,14 +306,14 @@ class Kernel2D(Array2D):
     @classmethod
     def from_gaussian(
         cls,
-        shape_native,
-        pixel_scales,
-        sigma,
-        centre=(0.0, 0.0),
-        axis_ratio=1.0,
-        angle=0.0,
-        normalize=False,
-    ):
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        sigma: float,
+        centre: Tuple[float, float] = (0.0, 0.0),
+        axis_ratio: float = 1.0,
+        angle: float = 0.0,
+        normalize: bool = False,
+    ) -> "Kernel2D":
         """
         Setup the Kernel2D as a 2D symmetric elliptical Gaussian profile, according to the equation:
 
@@ -344,14 +374,14 @@ class Kernel2D(Array2D):
     @classmethod
     def from_as_gaussian_via_alma_fits_header_parameters(
         cls,
-        shape_native,
-        pixel_scales,
-        y_stddev,
-        x_stddev,
-        theta,
-        centre=(0.0, 0.0),
-        normalize=False,
-    ):
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        y_stddev: float,
+        x_stddev: float,
+        theta: float,
+        centre: Tuple[float, float] = (0.0, 0.0),
+        normalize: bool = False,
+    ) -> "Kernel2D":
 
         x_stddev = (
             x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
@@ -362,7 +392,7 @@ class Kernel2D(Array2D):
 
         axis_ratio = x_stddev / y_stddev
 
-        return cls.from_gaussian(
+        return Kernel2D.from_gaussian(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sigma=y_stddev,
@@ -374,8 +404,13 @@ class Kernel2D(Array2D):
 
     @classmethod
     def from_fits(
-        cls, file_path, hdu, pixel_scales, origin=(0.0, 0.0), normalize=False
-    ):
+        cls,
+        file_path: str,
+        hdu: int,
+        pixel_scales,
+        origin=(0.0, 0.0),
+        normalize: bool = False,
+    ) -> "Kernel2D":
         """
         Loads the Kernel2D from a .fits file.
 
@@ -402,14 +437,16 @@ class Kernel2D(Array2D):
         header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
         header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
-        return cls(
+        return Kernel2D(
             array=array[:],
             mask=array.mask,
             normalize=normalize,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
 
-    def rescaled_with_odd_dimensions_from(self, rescale_factor, normalize=False):
+    def rescaled_with_odd_dimensions_from(
+        self, rescale_factor: float, normalize: bool = False
+    ) -> "Kernel2D":
         """
         If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
         dimensions (odd-sized dimensions are required by a *Convolver*).
@@ -484,18 +521,18 @@ class Kernel2D(Array2D):
 
             pixel_scales = None
 
-        return self.__class__.manual_native(
+        return Kernel2D.manual_native(
             array=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
         )
 
     @property
-    def normalized(self):
+    def normalized(self) -> "Kernel2D":
         """
         Normalize the Kernel2D such that its data_vector values sum to unity.
         """
-        return self.__class__(array=self, mask=self.mask, normalize=True)
+        return Kernel2D(array=self, mask=self.mask, normalize=True)
 
-    def convolved_array_from(self, array):
+    def convolved_array_from(self, array: Array2D) -> Array2D:
         """
         Convolve an array with this Kernel2D
 
@@ -528,7 +565,7 @@ class Kernel2D(Array2D):
 
         return Array2D(array=convolved_array_1d, mask=array_binned_2d.mask)
 
-    def convolved_array_with_mask_from(self, array, mask):
+    def convolved_array_with_mask_from(self, array: Array2D, mask: Mask2D) -> Array2D:
         """
         Convolve an array with this Kernel2D
 
