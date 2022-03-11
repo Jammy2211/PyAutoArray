@@ -6,12 +6,12 @@ import warnings
 
 from autoconf import conf
 from autoarray.structures.abstract_structure import Structure
-from autoarray.structures.one_d.array_1d import Array1D
-from autoarray.structures.two_d.array_2d import Array2D
-from autoarray.structures.one_d.grid_1d import Grid1D
-from autoarray.structures.two_d.grids.uniform import Grid2D
-from autoarray.structures.two_d.grids.iterate import Grid2DIterate
-from autoarray.structures.two_d.vectors.uniform import VectorYX2D
+from autoarray.structures.arrays.uniform_1d import Array1D
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.uniform_1d import Grid1D
+from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.iterate_2d import Grid2DIterate
+from autoarray.structures.vectors.uniform import VectorYX2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.mask.mask_1d import Mask1D

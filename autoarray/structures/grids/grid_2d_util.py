@@ -2,7 +2,7 @@ import numpy as np
 from typing import List, Optional, Tuple, Union
 
 from autoarray import exc
-from autoarray.structures.two_d import array_2d_util
+from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray import numba_util
 from autoarray.mask import mask_2d_util

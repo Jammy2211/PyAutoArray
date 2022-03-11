@@ -40,33 +40,35 @@ def test__unmasked_2d__properties_consistent_with_util():
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
-    regular_to_unmasked_sparse_util = aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
+    regular_to_unmasked_sparse_2d_util = aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
         grid_scaled_2d_slim=grid,
         shape_native=(10, 10),
         pixel_scales=(0.15, 0.15),
         origin=(0.0, 0.0),
-    ).astype("int")
+    ).astype(
+        "int"
+    )
 
-    unmasked_sparse_for_sparse_util = aa.util.sparse.unmasked_sparse_for_sparse_from(
+    unmasked_sparse_for_sparse_2d_util = aa.util.sparse.unmasked_sparse_for_sparse_from(
         total_sparse_pixels=total_sparse_pixels,
         mask=mask,
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     ).astype("int")
 
-    sparse_for_unmasked_sparse_util = aa.util.sparse.sparse_for_unmasked_sparse_from(
+    sparse_for_unmasked_sparse_2d_util = aa.util.sparse.sparse_for_unmasked_sparse_from(
         mask=mask,
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         total_sparse_pixels=total_sparse_pixels,
     ).astype("int")
 
     sparse_index_for_slim_index_util = aa.util.sparse.sparse_slim_index_for_mask_slim_index_from(
-        regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
-        sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_util,
+        regular_to_unmasked_sparse=regular_to_unmasked_sparse_2d_util,
+        sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_2d_util,
     )
 
     sparse_grid_util = aa.util.sparse.sparse_grid_via_unmasked_from(
         unmasked_sparse_grid=unmasked_sparse_grid_util,
-        unmasked_sparse_for_sparse=unmasked_sparse_for_sparse_util,
+        unmasked_sparse_for_sparse=unmasked_sparse_for_sparse_2d_util,
     )
 
     assert (

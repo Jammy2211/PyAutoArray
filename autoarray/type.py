@@ -10,16 +10,16 @@ from autoarray.mask.mask_2d import Mask2D
 Mask1D2DLike = Union[Mask1D, Mask2D]
 
 
-from autoarray.structures.one_d.array_1d import Array1D
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_1d import Array1D
+from autoarray.structures.arrays.uniform_2d import Array2D
 
 Array1D2DLike = Union[Array1D, Array2D]
 
 
 # from autoarray.structures.grids.one_d import grid_1d as g1d
-from autoarray.structures.two_d.grids.uniform import Grid2D
-from autoarray.structures.two_d.grids.iterate import Grid2DIterate
-from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
+from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.iterate_2d import Grid2DIterate
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 Grid1D2DLike = Union[np.ndarray, "Grid1D", Grid2D, Grid2DIterate, Grid2DIrregular]
 Grid2DLike = Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular]

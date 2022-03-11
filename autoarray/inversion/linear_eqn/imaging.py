@@ -7,7 +7,7 @@ from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.linear_eqn.abstract import AbstractLEq
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.dataset.imaging import WTildeImaging
 

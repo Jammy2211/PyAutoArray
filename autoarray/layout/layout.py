@@ -1,7 +1,7 @@
 from typing import Tuple, List
 
-from autoarray.structures.one_d.array_1d import Array1D
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_1d import Array1D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.layout.region import Region1D
 from autoarray.layout.region import Region2D
 

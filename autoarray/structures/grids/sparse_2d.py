@@ -6,9 +6,9 @@ import warnings
 from autoarray.structures.abstract_structure import Structure2D
 
 from autoarray import exc
-from autoarray.structures.two_d.grids import grid_2d_util
+from autoarray.structures.grids import grid_2d_util
 from autoarray.mask.mask_2d import mask_2d_util
-from autoarray.structures.two_d.grids import sparse_util
+from autoarray.structures.grids import sparse_2d_util
 
 
 class Grid2DSparse(Structure2D):
@@ -105,13 +105,13 @@ class Grid2DSparse(Structure2D):
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        sparse_for_unmasked_sparse = sparse_util.sparse_for_unmasked_sparse_from(
+        sparse_for_unmasked_sparse = sparse_2d_util.sparse_for_unmasked_sparse_from(
             mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=total_sparse_pixels,
         ).astype("int")
 
-        unmasked_sparse_for_sparse = sparse_util.unmasked_sparse_for_sparse_from(
+        unmasked_sparse_for_sparse = sparse_2d_util.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_sparse_pixels,
             mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
@@ -124,14 +124,14 @@ class Grid2DSparse(Structure2D):
             origin=origin,
         ).astype("int")
 
-        sparse_index_for_slim_index = sparse_util.sparse_slim_index_for_mask_slim_index_from(
+        sparse_index_for_slim_index = sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
         ).astype(
             "int"
         )
 
-        sparse_grid = sparse_util.sparse_grid_via_unmasked_from(
+        sparse_grid = sparse_2d_util.sparse_grid_via_unmasked_from(
             unmasked_sparse_grid=unmasked_sparse_grid_1d,
             unmasked_sparse_for_sparse=unmasked_sparse_for_sparse,
         )

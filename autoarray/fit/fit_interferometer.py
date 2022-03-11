@@ -2,7 +2,7 @@ import numpy as np
 from typing import Dict, Optional, Union
 
 from autoarray.dataset.interferometer import Interferometer
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.fit.fit_dataset import FitDataset
 

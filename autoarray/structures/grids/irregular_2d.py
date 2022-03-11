@@ -10,7 +10,7 @@ from autoarray.structures.values import ValuesIrregular
 
 from autoarray import exc
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.two_d.grids import grid_2d_util
+from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
 
@@ -163,7 +163,7 @@ class Grid2DIrregular(np.ndarray):
         Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
         `Grid2DIrregular` are structured following this *Grid2DIrregular* instance."""
 
-        from autoarray.structures.two_d.grids.transformed import Grid2DTransformedNumpy
+        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
 
         if isinstance(grid_slim, Grid2DTransformedNumpy):
             return Grid2DIrregularTransformed(grid=grid_slim)

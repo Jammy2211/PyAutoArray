@@ -1,7 +1,7 @@
 from typing import Dict, Tuple, Optional
 
 from autoarray.structures.header import Header
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.layout.layout import Layout2D
 from autoarray.layout.region import Region2D
 

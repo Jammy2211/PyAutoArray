@@ -5,11 +5,11 @@ from autoconf import cached_property
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.mappers.abstract import PixSubWeights
-from autoarray.structures.two_d.array_2d import Array2D
-from autoarray.structures.two_d.grids.uniform import Grid2D
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.numba_util import profile_func
-from autoarray.structures.two_d.grids import grid_2d_util
+from autoarray.structures.grids import grid_2d_util
 
 
 class MapperRectangularNoInterp(AbstractMapper):

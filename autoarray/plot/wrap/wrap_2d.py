@@ -16,9 +16,9 @@ from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.pixelizations import pixelization_util
-from autoarray.structures.two_d.grids.uniform import Grid2D
-from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
-from autoarray.structures.two_d.vectors.irregular import VectorYX2DIrregular
+from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 
 from autoarray import exc
 

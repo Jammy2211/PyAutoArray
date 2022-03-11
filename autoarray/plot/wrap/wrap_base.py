@@ -1,7 +1,7 @@
 from autoconf import conf
 import matplotlib
 
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 
 from typing import Union, List, Optional, Tuple
 

@@ -5,7 +5,7 @@ from typing import Tuple, Union
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
-from autoarray.structures.two_d import array_2d_util
+from autoarray.structures.arrays import array_2d_util
 
 
 class Structure(AbstractNDArray, ABC):

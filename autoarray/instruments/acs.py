@@ -7,12 +7,12 @@ from os import path
 import shutil
 
 from autoarray.structures.header import Header
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.layout.layout import Layout2D
 from autoarray.layout.region import Region2D
 
 from autoarray import exc
-from autoarray.structures.two_d import array_2d_util
+from autoarray.structures.arrays import array_2d_util
 from autoarray.layout import layout_util
 
 logging.basicConfig()

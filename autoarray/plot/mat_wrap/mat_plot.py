@@ -6,15 +6,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Iterable, Optional, List, Union
 
-from autoarray.structures.one_d.array_1d import Array1D
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_1d import Array1D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
-from autoarray.structures.two_d import array_2d_util
+from autoarray.structures.arrays import array_2d_util
 
 from autoarray import exc
 from autoarray.plot.wrap import wrap_base as wb

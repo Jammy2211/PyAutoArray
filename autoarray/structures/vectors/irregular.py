@@ -2,8 +2,8 @@ import logging
 import numpy as np
 from typing import List, Tuple, Union
 
-from autoarray.structures.two_d.vectors.abstract import AbstractVectorYX2D
-from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
+from autoarray.structures.vectors.abstract import AbstractVectorYX2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.values import ValuesIrregular
 
 from autoarray import exc

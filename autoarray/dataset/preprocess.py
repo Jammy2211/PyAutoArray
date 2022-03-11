@@ -234,7 +234,7 @@ def background_noise_map_via_edges_of_image_from(image, no_edges):
         Number of edges used to estimate the background level.
     """
 
-    from autoarray.structures.two_d.array_2d import Array2D
+    from autoarray.structures.arrays.uniform_2d import Array2D
 
     edges = []
 

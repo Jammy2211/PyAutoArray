@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.structures.two_d.grids.uniform import Grid2D
+from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 class Grid2DTransformed(Grid2D):

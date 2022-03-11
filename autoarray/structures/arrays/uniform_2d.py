@@ -5,12 +5,12 @@ from typing import Tuple, Union
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure2D
 from autoarray.structures.header import Header
-from autoarray.structures.one_d.array_1d import Array1D
+from autoarray.structures.arrays.uniform_1d import Array1D
 
 from autoarray import exc
 from autoarray.geometry import geometry_util
-from autoarray.structures.two_d import array_2d_util
-from autoarray.structures.two_d.grids import grid_2d_util
+from autoarray.structures.arrays import array_2d_util
+from autoarray.structures.grids import grid_2d_util
 from autoarray.layout import layout_util
 
 logging.basicConfig()
@@ -560,7 +560,7 @@ class Array2D(Structure2D):
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        from autoarray.structures.two_d.grids.uniform import Grid2D
+        from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid = Grid2D.manual_yx_1d(
             y=y, x=x, shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1

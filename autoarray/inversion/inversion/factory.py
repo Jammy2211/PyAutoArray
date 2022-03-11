@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Union
 from autoarray.dataset.imaging import Imaging
 from autoarray.dataset.imaging import WTildeImaging
 from autoarray.dataset.interferometer import WTildeInterferometer
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.operators.convolver import Convolver

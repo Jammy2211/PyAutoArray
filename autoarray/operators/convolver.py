@@ -1,7 +1,7 @@
 from autoarray import numba_util
 import numpy as np
 
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray import exc
 from autoarray.mask import mask_2d_util

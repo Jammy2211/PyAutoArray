@@ -1,6 +1,6 @@
-from autoarray.structures.two_d.grids.grid_2d_pixelization import Grid2DRectangular
-from autoarray.structures.two_d.grids.grid_2d_pixelization import Grid2DDelaunay
-from autoarray.structures.two_d.grids.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.structures.grids.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.grids.grid_2d_pixelization import Grid2DDelaunay
+from autoarray.structures.grids.grid_2d_pixelization import Grid2DVoronoi
 
 
 def mapper_from(

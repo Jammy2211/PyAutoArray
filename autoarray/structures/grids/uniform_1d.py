@@ -2,13 +2,13 @@ import numpy as np
 from typing import List, Union, Tuple
 
 from autoarray.structures.abstract_structure import Structure1D
-from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.mask.mask_1d import Mask1D
 
 from autoarray import exc
-from autoarray.structures.one_d import grid_1d_util
-from autoarray.structures.two_d.grids import grid_2d_util
+from autoarray.structures.grids import grid_1d_util
+from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
 
@@ -372,7 +372,7 @@ class Grid1D(Structure1D):
         If it is already stored in its `slim` representation  the `Grid1D` is returned as it is. If not, it is
         mapped from  `native` to `slim` and returned as a new `Grid1D`.
         """
-        from autoarray.structures.one_d.grid_1d import Grid1D
+        from autoarray.structures.grids.uniform_1d import Grid1D
 
         if self.shape[0] != self.mask.sub_shape_native[0]:
             return self
@@ -392,7 +392,7 @@ class Grid1D(Structure1D):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Grid1D`.
         """
-        from autoarray.structures.one_d.grid_1d import Grid1D
+        from autoarray.structures.grids.uniform_1d import Grid1D
 
         if self.shape[0] == self.mask.sub_shape_native[0]:
             return self
@@ -415,7 +415,7 @@ class Grid1D(Structure1D):
 
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
         """
-        from autoarray.structures.one_d.grid_1d import Grid1D
+        from autoarray.structures.grids.uniform_1d import Grid1D
 
         grid_1d_slim = self.slim
 
@@ -474,10 +474,10 @@ class Grid1D(Structure1D):
         result or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        from autoarray.structures.one_d.array_1d import Array1D
-        from autoarray.structures.two_d.grids.transformed import Grid2DTransformed
-        from autoarray.structures.two_d.grids.transformed import Grid2DTransformedNumpy
-        from autoarray.structures.two_d.grids.uniform import Grid2D
+        from autoarray.structures.arrays.uniform_1d import Array1D
+        from autoarray.structures.grids.transformed_2d import Grid2DTransformed
+        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
+        from autoarray.structures.grids.uniform_2d import Grid2D
 
         if len(result.shape) == 1:
             return Array1D(array=result, mask=self.mask)

@@ -6,13 +6,13 @@ from autoconf import cached_property
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure2D
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.values import ValuesIrregular
-from autoarray.structures.two_d.grids.irregular import Grid2DIrregular
-from autoarray.structures.two_d.grids.sparse import Grid2DSparse
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.structures.grids.sparse_2d import Grid2DSparse
 
-from autoarray.structures.two_d import array_2d_util
-from autoarray.structures.two_d.grids import grid_2d_util
+from autoarray.structures.arrays import array_2d_util
+from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
 from autoarray import type as ty
@@ -887,8 +887,8 @@ class Grid2D(Structure2D):
         result or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        from autoarray.structures.two_d.grids.transformed import Grid2DTransformed
-        from autoarray.structures.two_d.grids.transformed import Grid2DTransformedNumpy
+        from autoarray.structures.grids.transformed_2d import Grid2DTransformed
+        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
 
         if len(result.shape) == 1:
             return Array2D(array=result, mask=self.mask)

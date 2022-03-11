@@ -6,7 +6,7 @@ from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
-from autoarray.structures.two_d.array_2d import Array2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 

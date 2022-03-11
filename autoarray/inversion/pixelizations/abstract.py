@@ -2,8 +2,8 @@ import numpy as np
 from typing import Dict, Optional
 
 from autoarray.inversion.pixelizations.settings import SettingsPixelization
-from autoarray.structures.two_d.grids.uniform import Grid2D
-from autoarray.structures.two_d.grids.sparse import Grid2DSparse
+from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.preloads import Preloads
 
 from autoarray.numba_util import profile_func
