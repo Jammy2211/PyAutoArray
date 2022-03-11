@@ -49,7 +49,8 @@ class Grid2DSparse(Structure2D):
 
     def __array_finalize__(self, obj):
 
-        obj = super().__array_finalize__(obj=obj)
+        if hasattr(obj, "mask"):
+            self.mask = obj.mask
 
         if hasattr(obj, "sparse_index_for_slim_index"):
             self.sparse_index_for_slim_index = obj.sparse_index_for_slim_index
