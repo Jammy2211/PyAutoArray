@@ -1801,7 +1801,7 @@ class TestMaskBlurring:
             util.mask_2d.blurring_mask_2d_from(mask, kernel_shape_native=(5, 5))
 
 
-class TestMaskFromShapeAndMask2dIndexForMask1dIndex:
+class TestMaskFromShapeAndMask2dIndexForMask1DIndex:
     def test__2d_array_is_2x2__is_not_masked__maps_correctly(self):
 
         slim_to_native = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
@@ -2632,7 +2632,7 @@ class TestSubMask1DIndexFromMask1DIndexes:
         ]
 
 
-class TestSubMask2dToSubMask1d:
+class TestSubMask2dToSubMask1D:
     def test__mask_if_full_of_false__indexes_are_ascending_order(self):
 
         mask = np.full(fill_value=False, shape=(3, 3))
