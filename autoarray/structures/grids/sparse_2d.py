@@ -173,7 +173,7 @@ class Grid2DSparse(Structure):
             The maximum number of iterations in one run of the KMeans algorithm.
         seed or None
             The random number seed, which can be used to reproduce Grid2DSparse's for the same inputs.
-        stochastic : bool
+        stochastic
             If True, the random number seed is randommly chosen every time the function is called, ensuring every
             pixel-grid is randomly determined and thus stochastic.
         """

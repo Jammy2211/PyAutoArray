@@ -145,7 +145,7 @@ class GridScatter(AbstractMatWrap2D):
             The grid of (y,x) coordinates that is plotted.
         color_array : ndarray
             The array of RGB color values used to color the grid.
-        cmap : str
+        cmap
             The Matplotlib colormap used for the grid point coloring.
         """
 
@@ -418,7 +418,7 @@ class GridErrorbar(AbstractMatWrap2D):
             The grid of (y,x) coordinates that is plotted.
         color_array : ndarray
             The array of RGB color values used to color the grid.
-        cmap : str
+        cmap
             The Matplotlib colormap used for the grid point coloring.
         """
 

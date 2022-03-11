@@ -105,7 +105,7 @@ class AbstractPlotter:
         -----------
         figsize
             The size of the figure in (total_y_pixels, total_x_pixels).
-        as_subplot : bool
+        as_subplot
             If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
             new figure and so that it can be output using the *output.output_figure(structure=None)* function.
         """

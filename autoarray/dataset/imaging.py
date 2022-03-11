@@ -287,17 +287,17 @@ class Imaging(AbstractDataset):
         ----------
         noise_map_non_constant
         name
-        image_path : str
+        image_path
             The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
         pixel_scales
             The size of each pixel in scaled units.
         image_hdu
             The hdu the image is contained in the .fits file specified by *image_path*.
-        psf_path : str
+        psf_path
             The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
         psf_hdu
             The hdu the psf is contained in the .fits file specified by *psf_path*.
-        noise_map_path : str
+        noise_map_path
             The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
         noise_map_hdu
             The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
@@ -459,12 +459,12 @@ class AbstractSimulatorImaging:
             The exposure time of the simulated imaging.
         background_sky_level
             The level of the background sky of the simulated imaging.
-        normalize_psf : bool
+        normalize_psf
             If `True`, the PSF kernel is normalized so all values sum to 1.0.
         read_noise
             The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
             sigma equal to the value `read_noise`.
-        add_poisson_noise : bool
+        add_poisson_noise
             Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
         noise_if_add_noise_false
             If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives

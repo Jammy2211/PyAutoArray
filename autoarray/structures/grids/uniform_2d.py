@@ -485,7 +485,7 @@ class Grid2D(Structure):
     @classmethod
     def uniform(
         cls,
-        shape_native: Tuple[float, float],
+        shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
@@ -551,7 +551,7 @@ class Grid2D(Structure):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
             The origin of the grid's mask.
-        buffer_around_corners : bool
+        buffer_around_corners
             Whether the grid is buffered such that the (y,x) values in the centre of its masks' edge pixels align
             with the input bounding box values.
         """
@@ -1111,7 +1111,7 @@ class Grid2D(Structure):
         """
         return self[self.mask.sub_border_flat_indexes]
 
-    def padded_grid_from(self, kernel_shape_native: Tuple[float, float]) -> "Grid2D":
+    def padded_grid_from(self, kernel_shape_native: Tuple[int, int]) -> "Grid2D":
         """
         When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will
         be 'missing' if the grid is used to evaluate the signal via an analytic function.

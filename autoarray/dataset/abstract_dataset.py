@@ -185,9 +185,9 @@ class AbstractDataset:
 
         Parameters
         ----------
-        data : Structure
+        dataucture
             The array of the image data, in units of electrons per second.
-        noise_map : Structure
+        noise_mapucture
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """

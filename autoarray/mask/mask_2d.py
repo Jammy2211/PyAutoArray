@@ -196,9 +196,9 @@ class Mask2D(Mask):
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The full path of the file that is output, including the file name and `.fits` extension.
-        overwrite : bool
+        overwrite
             If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
             error is raised.
 
@@ -787,7 +787,7 @@ class Mask2D(Mask2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        invert : bool
+        invert
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
@@ -829,7 +829,7 @@ class Mask2D(Mask2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        invert : bool
+        invert
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
@@ -872,7 +872,7 @@ class Mask2D(Mask2D):
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centre of the circle used to mask pixels.
-        invert : bool
+        invert
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
@@ -931,7 +931,7 @@ class Mask2D(Mask2D):
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centre of the annulus used to mask pixels.
-        invert : bool
+        invert
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
@@ -995,7 +995,7 @@ class Mask2D(Mask2D):
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centre of the anti-annulus used to mask pixels.
-        invert : bool
+        invert
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
@@ -1059,7 +1059,7 @@ class Mask2D(Mask2D):
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centred of the ellipse used to mask pixels.
-        invert : bool
+        invert
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
@@ -1132,7 +1132,7 @@ class Mask2D(Mask2D):
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
             The (y,x) scaled units centre of the elliptical annuli used to mask pixels.
-        invert : bool
+        invert
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
@@ -1194,7 +1194,7 @@ class Mask2D(Mask2D):
         buffer
             All input `pixel_coordinates` are buffed with `False` entries in all 8 neighboring directions by this
             amount.
-        invert : bool
+        invert
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
@@ -1228,7 +1228,7 @@ class Mask2D(Mask2D):
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The full path of the fits file.
         hdu
             The HDU number in the fits file containing the image image.

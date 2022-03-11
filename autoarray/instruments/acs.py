@@ -331,7 +331,7 @@ class Array2DACS(Array2D):
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         """

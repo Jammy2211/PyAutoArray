@@ -311,7 +311,7 @@ class MatPlot1D(AbstractMatPlot):
 
         Parameters
         ----------
-        is_for_subplot : bool
+        is_for_subplot
             The entry the `is_for_subplot` attribute of every `MatWrap` object is set too.
         """
         self.is_for_multi_plot = is_for_multi_plot

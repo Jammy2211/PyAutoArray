@@ -151,9 +151,9 @@ def numpy_array_1d_to_fits(
     ----------
     array_2d
         The 2D array that is written to fits.
-    file_path : str
+    file_path
         The full path of the file that is output, including the file name and ``.fits`` extension.
-    overwrite : bool
+    overwrite
         If `True` and a file already exists with the input file_path the .fits file is overwritten. If False, an error
         will be raised.
 
@@ -189,7 +189,7 @@ def numpy_array_1d_via_fits_from(file_path: str, hdu: int):
 
     Parameters
     ----------
-    file_path : str
+    file_path
         The full path of the file that is loaded, including the file name and ``.fits`` extension.
     hdu
         The HDU extension of the array that is loaded from the .fits file.

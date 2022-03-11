@@ -275,7 +275,7 @@ def psf_with_odd_dimensions_from(psf):
     rescale_factor
         The factor by which the kernel is rescaled. If this has a value of 1.0, the kernel is rescaled to the
         closest odd-sized dimensions (e.g. 20 -> 19). Higher / lower values scale to higher / lower dimensions.
-    normalize : bool
+    normalize
         Whether the PSF should be normalized after being rescaled.
     """
     return psf.rescaled_with_odd_dimensions_from(rescale_factor=1.0)

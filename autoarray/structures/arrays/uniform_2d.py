@@ -786,7 +786,7 @@ class Array2D(AbstractArray2D):
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The path the file is loaded from, including the filename and the `.fits` extension,
             e.g. '/path/to/filename.fits'
         hdu

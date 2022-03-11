@@ -119,9 +119,9 @@ class ValuesIrregular(Structure):
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        overwrite : bool
+        overwrite
             If there is as exsiting file it will be overwritten if this is `True`.
         """
 

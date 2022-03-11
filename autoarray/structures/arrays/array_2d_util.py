@@ -115,7 +115,7 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.nd
     ----------
     array_2d
         The input structure which is converted to an ndarray if it is a list.
-    mask_2d : "Mask2D"
+    mask_2d
         The mask of the output Array2D.
     """
 
@@ -698,9 +698,9 @@ def numpy_array_2d_to_fits(
     ----------
     array_2d
         The 2D array that is written to fits.
-    file_path : str
+    file_path
         The full path of the file that is output, including the file name and ``.fits`` extension.
-    overwrite : bool
+    overwrite
         If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
         error is raised.
 
@@ -744,11 +744,11 @@ def numpy_array_2d_via_fits_from(
 
     Parameters
     ----------
-    file_path : str
+    file_path
         The full path of the file that is loaded, including the file name and ``.fits`` extension.
     hdu
         The HDU extension of the array that is loaded from the .fits file.
-    do_not_scale_image_data : bool
+    do_not_scale_image_data
         If True, the .fits file is not rescaled automatically based on the .fits header info.
 
     Returns
@@ -778,11 +778,11 @@ def header_obj_from(file_path: str, hdu: int) -> Dict:
 
     Parameters
     ----------
-    file_path : str
+    file_path
         The full path of the file that is loaded, including the file name and ``.fits`` extension.
     hdu
         The HDU extension of the array that is loaded from the .fits file.
-    do_not_scale_image_data : bool
+    do_not_scale_image_data
         If True, the .fits file is not rescaled automatically based on the .fits header info.
 
     Returns

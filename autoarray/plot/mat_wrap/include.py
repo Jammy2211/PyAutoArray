@@ -18,9 +18,9 @@ class AbstractInclude:
 
         Parameters
         ----------
-        origin : bool
+        origin
             If `True`, the `origin` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
-        mask : bool
+        mask
             if `True`, the `mask` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
         """
 
@@ -62,9 +62,9 @@ class Include1D(AbstractInclude):
 
         Parameters
         ----------
-        origin : bool
+        origin
             If `True`, the `origin` of the plotted data structure (e.g. `Line`)  is included on the figure.
-        mask : bool
+        mask
             if `True`, the `mask` of the plotted data structure (e.g. `Line`)  is included on the figure.
         """
         super().__init__(origin=origin, mask=mask)
@@ -100,21 +100,21 @@ class Include2D(AbstractInclude):
 
         Parameters
         ----------
-        origin : bool
+        origin
             If `True`, the `origin` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
-        mask : bool
+        mask
             if `True`, the `mask` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
-        border : bool
+        border
             If `True`, the `border` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
-        mapper_data_pixelization_grid : bool
+        mapper_data_pixelization_grid
             If `True`, the pixelization grid in the data plane of a plotted `Mapper` is included on the figure.
-        mapper_source_pixelization_grid : bool
+        mapper_source_pixelization_grid
             If `True`, the pixelization grid in the source plane of a plotted `Mapper` is included on the figure.
-        parallel_overscan : bool
+        parallel_overscan
             If `True`, the parallel overscan of a plotted `Frame2D` is included on the figure.
-        serial_prescan : bool
+        serial_prescan
             If `True`, the serial prescan of a plotted `Frame2D` is included on the figure.
-        serial_overscan : bool
+        serial_overscan
             If `True`, the serial overscan of a plotted `Frame2D` is included on the figure.
         """
 

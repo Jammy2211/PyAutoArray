@@ -33,7 +33,7 @@ class Kernel2D(AbstractArray2D):
         mask :Mask2D
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         obj = super().__new__(cls=cls, array=array, mask=mask, header=header)
@@ -76,7 +76,7 @@ class Kernel2D(AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         array = Array2D.manual_slim(
@@ -119,7 +119,7 @@ class Kernel2D(AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         array = Array2D.manual_native(
@@ -156,7 +156,7 @@ class Kernel2D(AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         if len(array.shape) == 1:
@@ -200,7 +200,7 @@ class Kernel2D(AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         return Kernel2D.manual_native(
@@ -236,7 +236,7 @@ class Kernel2D(AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         return cls.full(
@@ -273,7 +273,7 @@ class Kernel2D(AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         return cls.full(
@@ -333,7 +333,7 @@ class Kernel2D(AbstractArray2D):
             The axis-ratio of the elliptical Gaussian.
         angle
             The rotational angle of the Gaussian's ellipse defined counter clockwise from the positive x-axis.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
 
@@ -414,7 +414,7 @@ class Kernel2D(AbstractArray2D):
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The path the file is loaded from, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         hdu
@@ -424,7 +424,7 @@ class Kernel2D(AbstractArray2D):
             it is converted to a (float, float) structure.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
-        normalize : bool
+        normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
 
@@ -461,7 +461,7 @@ class Kernel2D(AbstractArray2D):
         rescale_factor
             The factor by which the kernel is rescaled. If this has a value of 1.0, the kernel is rescaled to the
             closest odd-sized dimensions (e.g. 20 -> 19). Higher / lower values scale to higher / lower dimensions.
-        normalize : bool
+        normalize
             Whether the PSF should be normalized after being rescaled.
         """
 

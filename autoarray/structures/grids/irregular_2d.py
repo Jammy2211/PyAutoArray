@@ -1,4 +1,3 @@
-import ast
 import numpy as np
 import os
 from os import path
@@ -6,15 +5,16 @@ import pickle
 from typing import List, Optional, Tuple, Union
 import json
 
+from autoarray.abstract_ndarray import AbstractNDArray
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.values import ValuesIrregular
 
 from autoarray import exc
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
 
-class Grid2DIrregular(np.ndarray):
+class Grid2DIrregular(AbstractNDArray):
     def __new__(cls, grid: Union[np.ndarray, List]):
         """
         An irregular grid of (y,x) coordinates.
@@ -51,24 +51,6 @@ class Grid2DIrregular(np.ndarray):
         obj = grid.view(cls)
 
         return obj
-
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super().__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super().__setstate__(state[0:-1])
 
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
@@ -123,7 +105,8 @@ class Grid2DIrregular(np.ndarray):
     @classmethod
     def from_yx_1d(cls, y: np.ndarray, x: np.ndarray) -> "Grid2DIrregular":
         """
-        Create `Grid2DIrregular` from a list of y and x values."""
+        Create `Grid2DIrregular` from a list of y and x values.
+        """
         return Grid2DIrregular(grid=np.stack((y, x), axis=-1))
 
     @classmethod
@@ -132,16 +115,21 @@ class Grid2DIrregular(np.ndarray):
     ) -> "Grid2DIrregular":
         """
         Create `Grid2DIrregular` from a list of coordinates in pixel units and a mask which allows these coordinates to
-        be converted to scaled units."""
+        be converted to scaled units.
+        """
+
         coorindates = [
             mask.scaled_coordinates_2d_from(pixel_coordinates_2d=pixel_coordinates_2d)
             for pixel_coordinates_2d in pixels
         ]
-        return cls(grid=coorindates)
+
+        return Grid2DIrregular(grid=coorindates)
 
     @property
     def in_list(self) -> List:
-        """Return the coordinates in a list."""
+        """
+        Return the coordinates in a list.
+        """
         return [tuple(value) for value in self]
 
     def values_from(self, array_slim: np.ndarray) -> ValuesIrregular:
@@ -345,7 +333,7 @@ class Grid2DIrregular(np.ndarray):
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         """
 
@@ -355,13 +343,14 @@ class Grid2DIrregular(np.ndarray):
         return Grid2DIrregular(grid=grid)
 
     def output_to_json(self, file_path: str, overwrite: bool = False):
-        """Output this instance of the `Grid2DIrregular` object to a list of list of tuples.
+        """
+        Output this instance of the `Grid2DIrregular` object to a list of list of tuples.
 
         Parameters
         ----------
-        file_path : str
+        file_path
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        overwrite : bool
+        overwrite
             If there is as exsiting file it will be overwritten if this is `True`.
         """
 
@@ -381,18 +370,6 @@ class Grid2DIrregular(np.ndarray):
 
         with open(file_path, "w+") as f:
             json.dump(self.in_list, f)
-
-    @classmethod
-    def load(cls, file_path: str, filename: str) -> "Grid2DIrregular":
-        with open(path.join(file_path, f"{filename}.pickle"), "rb") as f:
-            return pickle.load(f)
-
-    def save(self, file_path: str, filename: str):
-        """
-        Save the tracer by serializing it with pickle.
-        """
-        with open(path.join(file_path, f"{filename}.pickle"), "wb") as f:
-            pickle.dump(self, f)
 
 
 class Grid2DIrregularTransformed(Grid2DIrregular):
@@ -507,14 +484,15 @@ class Grid2DIrregularUniform(Grid2DIrregular):
             pixel_scales[1] / upscale_factor,
         )
 
-        return cls(
+        return Grid2DIrregularUniform(
             grid=grid_upscaled_1d, pixel_scales=pixel_scales, shape_native=shape_native
         )
 
     def grid_from(self, grid_slim: np.ndarray) -> "Grid2DIrregularUniform":
         """
         Create a `Grid2DIrregularUniform` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
-        `Grid2DIrregularUniform` are structured following this *GridIrregular2D* instance."""
+        `Grid2DIrregularUniform` are structured following this *GridIrregular2D* instance.
+        """
         return Grid2DIrregularUniform(
             grid=grid_slim,
             pixel_scales=self.pixel_scales,
@@ -526,15 +504,15 @@ class Grid2DIrregularUniform(Grid2DIrregular):
     ) -> "Grid2DIrregularUniform":
         """
         Returns a new Grid2DIrregular from this grid coordinates, where the (y,x) coordinates of this grid have a
-            grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
-            values.
+        grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
+        values.
 
-            This is used by PyAutoLens to perform grid ray-tracing.
+        This is used by PyAutoLens to perform grid ray-tracing.
 
-            Parameters
-            ----------
-            deflection_grid
-                The grid of (y,x) coordinates which is subtracted from this grid.
+        Parameters
+        ----------
+        deflection_grid
+            The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid2DIrregularUniform(
             grid=self - deflection_grid,

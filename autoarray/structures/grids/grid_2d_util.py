@@ -62,7 +62,7 @@ def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D") -> np.n
     ----------
     grid_2d
         The input (y,x) grid of coordinates which is converted to an ndarray if it is a list.
-    mask_2d : "Mask2D"
+    mask_2d
         The mask of the output Array2D.
     """
 
@@ -85,7 +85,7 @@ def convert_grid_2d_to_slim(
     ----------
     grid_2d
         The input (y,x) grid of coordinates which is converted to its silm representation.
-    mask_2d : "Mask2D"
+    mask_2d
         The mask of the output Array2D.
     """
     if len(grid_2d.shape) == 2:
@@ -109,7 +109,7 @@ def convert_grid_2d_to_native(
     ----------
     grid_2d
         The input (y,x) grid of coordinates which is converted to its native representation.
-    mask_2d : "Mask2D"
+    mask_2d
         The mask of the output Array2D.
     """
     if len(grid_2d.shape) == 3:
@@ -168,7 +168,7 @@ def grid_2d_slim_via_mask_from(
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
     sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
-    origin : (float, flloat)
+    origin
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
 
     Returns
@@ -251,7 +251,7 @@ def grid_2d_via_mask_from(
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
     sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
-    origin : (float, flloat)
+    origin
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
 
     Returns
@@ -353,7 +353,7 @@ def grid_2d_via_shape_native_from(
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
     sub_size
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
-    origin : (float, flloat)
+    origin
         The (y,x) origin of the 2D array, which the sub-grid is shifted around.
 
     Returns
@@ -502,7 +502,7 @@ def grid_pixels_2d_slim_from(
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
-    origin : (float, flloat)
+    origin
         The (y,x) origin of the grid, which the scaled grid is shifted to.
 
     Returns
@@ -566,7 +566,7 @@ def grid_pixel_centres_2d_slim_from(
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
-    origin : (float, flloat)
+    origin
         The (y,x) origin of the grid, which the scaled grid is shifted
 
     Returns
@@ -635,7 +635,7 @@ def grid_pixel_indexes_2d_slim_from(
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
-    origin : (float, flloat)
+    origin
         The (y,x) origin of the grid, which the scaled grid is shifted.
 
     Returns
@@ -695,7 +695,7 @@ def grid_scaled_2d_slim_from(
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
-    origin : (float, flloat)
+    origin
         The (y,x) origin of the grid, which the scaled grid is shifted.
 
     Returns
@@ -756,7 +756,7 @@ def grid_pixel_centres_2d_from(
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the original 2D array.
-    origin : (float, flloat)
+    origin
         The (y,x) origin of the grid, which the scaled grid is shifted
 
     Returns
