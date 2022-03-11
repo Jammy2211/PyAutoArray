@@ -296,7 +296,7 @@ class Grid1D(Structure):
     @classmethod
     def uniform(
         cls,
-        shape_native: Tuple[float],
+        shape_native: Tuple[int],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0, 0.0),
@@ -332,7 +332,7 @@ class Grid1D(Structure):
 
     @classmethod
     def uniform_from_zero(
-        cls, shape_native: Tuple[float], pixel_scales: ty.PixelScales, sub_size: int = 1
+        cls, shape_native: Tuple[int], pixel_scales: ty.PixelScales, sub_size: int = 1
     ) -> "Grid1D":
         """
         Create a `Grid1D` (see `Grid`D.__new__`) as a uniform grid of (x) values given an input `shape_native` and
@@ -370,7 +370,6 @@ class Grid1D(Structure):
         If it is already stored in its `slim` representation  the `Grid1D` is returned as it is. If not, it is
         mapped from  `native` to `slim` and returned as a new `Grid1D`.
         """
-        from autoarray.structures.grids.uniform_1d import Grid1D
 
         if self.shape[0] != self.mask.sub_shape_native[0]:
             return self
@@ -390,7 +389,6 @@ class Grid1D(Structure):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Grid1D`.
         """
-        from autoarray.structures.grids.uniform_1d import Grid1D
 
         if self.shape[0] == self.mask.sub_shape_native[0]:
             return self
@@ -413,7 +411,6 @@ class Grid1D(Structure):
 
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
         """
-        from autoarray.structures.grids.uniform_1d import Grid1D
 
         grid_1d_slim = self.slim
 

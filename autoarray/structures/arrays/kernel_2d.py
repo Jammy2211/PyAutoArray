@@ -16,8 +16,6 @@ from autoarray.structures.arrays import array_2d_util
 
 
 class Kernel2D(AbstractArray2D):
-
-    # noinspection PyUnusedLocal
     def __new__(
         cls, array, mask, header=None, normalize: bool = False, *args, **kwargs
     ):

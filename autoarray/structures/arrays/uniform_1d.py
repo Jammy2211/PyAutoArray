@@ -16,8 +16,8 @@ from autoarray import type as ty
 class Array1D(Structure):
     def __new__(
         cls,
-        array: np.ndarray,
-        mask: np.ndarray,
+        array: Union[np.ndarray, List],
+        mask: Mask1D,
         header: Optional[Header] = None,
         *args,
         **kwargs
@@ -109,7 +109,7 @@ class Array1D(Structure):
     def manual_mask(
         cls,
         array: Union[np.ndarray, Tuple[float], List[float]],
-        mask: np.ndarray,
+        mask: Mask1D,
         header: Optional[Header] = None,
     ) -> "Array1D":
         """
@@ -331,7 +331,6 @@ class Array1D(Structure):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Array1D`.
         """
-        from autoarray.structures.arrays.uniform_1d import Array1D
 
         if self.shape[0] == self.mask.sub_shape_native[0]:
             return self
