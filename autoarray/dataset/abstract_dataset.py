@@ -5,7 +5,6 @@ from typing import List, Optional, Type, Union
 import warnings
 
 from autoconf import conf
-from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -23,7 +22,7 @@ from autoarray import exc
 class AbstractWTilde:
     def __init__(self, curvature_preload, noise_map_value):
         """
-        Packages together all derived data quantities necessary to fit `data (e.g. `Imsging`, Interferometer`) using
+        Packages together all derived data quantities necessary to fit `data (e.g. `Imaging`, Interferometer`) using
         an ` Inversion` via the w_tilde formalism.
 
         The w_tilde formalism performs linear algebra formalism in a way that speeds up the construction of the

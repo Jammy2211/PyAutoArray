@@ -202,6 +202,16 @@ class AbstractArray2D(Structure):
 
         return obj
 
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "mask"):
+            self.mask = obj.mask
+
+        if hasattr(obj, "header"):
+            self.header = obj.header
+        else:
+            self.header = None
+
     def apply_mask(self, mask: Mask2D) -> "Array2D":
         return Array2D.manual_mask(array=self.native, mask=mask, header=self.header)
 
@@ -470,14 +480,6 @@ class AbstractArray2D(Structure):
 
 
 class Array2D(AbstractArray2D):
-    def __array_finalize__(self, obj):
-
-        obj = super().__array_finalize__(obj=obj)
-
-        if hasattr(obj, "header"):
-            self.header = obj.header
-        else:
-            self.header = None
 
     @classmethod
     def manual_slim(
