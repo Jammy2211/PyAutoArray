@@ -956,15 +956,71 @@ class Grid2D(Structure):
         )
         return Array2D.manual_mask(array=distances, mask=self.mask)
 
+    def grid_2d_radial_projected_shape_slim_from(
+        self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0
+    ) -> int:
+        """
+        The function `grid_scaled_2d_slim_radial_projected_from()` determines a projected radial grid of points from a
+        2D region of coordinates defined by an extent [xmin, xmax, ymin, ymax] and with a (y,x) centre.
+
+        To do this, the function first performs these 3 steps:
+
+        1) Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance
+        of the 4 paths from the (y,x) centre to the edge of the region (e.g. following the positive / negative y and
+        x axes).
+
+        2) Use the pixel-scale corresponding to the direction chosen (e.g. if the positive x-axis was the longest, the
+        pixel_scale in the x dimension is used).
+
+        3) Determine the number of pixels between the centre and the edge of the region using the longest path between
+        the two chosen above.
+
+        A schematic is shown below:
+
+        -------------------
+        |                 |
+        |<- - -  - ->x    | x = centre
+        |                 | <-> = longest radial path from centre to extent edge
+        |                 |
+        -------------------
+
+        Using the centre x above, this function finds the longest radial path to the edge of the extent window.
+
+        This function returns the integer number of pixels given by this radial grid, which is then used to create
+        the radial grid.
+
+        Parameters
+        ----------
+        extent
+            The extent of the grid the radii grid is computed using, with format [xmin, xmax, ymin, ymax]
+        centre : (float, flloat)
+            The (y,x) central coordinate which the radial grid is traced outwards from.
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+        sub_size
+            The size of the sub-grid that each pixel of the 2D mask array is divided into.
+
+        Returns
+        -------
+        int
+            The 1D integer shape of a radial set of points sampling the longest distance from the centre to the edge of the
+            extent in along the positive x-axis.
+        """
+        return grid_2d_util.radial_projected_shape_slim_from(
+            extent=self.extent,
+            centre=centre,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+        )
+
     def grid_2d_radial_projected_from(
-        self,
-        centre: Tuple[float, float] = (0.0, 0.0),
-        angle: float = 0.0,
-        radial_grid_shape_slim: Optional[int] = None,
+        self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0
     ) -> "Grid2DIrregular":
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
-        extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:
+        extent [xmin, xmax, ymin, ymax] and with a (y,x) centre.
+
+        This functions operates as follows:
 
         1 Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance
         of the 4 paths from the (y,x) centre to the edge of the region e.g. following the positive / negative y and
@@ -1009,9 +1065,7 @@ class Grid2D(Structure):
             positive x-axis.
         """
 
-        if radial_grid_shape_slim is not None:
-            shape_slim = radial_grid_shape_slim
-        elif hasattr(self, "radial_projected_shape_slim"):
+        if hasattr(self, "radial_projected_shape_slim"):
             shape_slim = self.radial_projected_shape_slim
         else:
             shape_slim = 0

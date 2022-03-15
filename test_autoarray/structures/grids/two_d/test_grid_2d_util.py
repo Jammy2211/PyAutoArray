@@ -825,6 +825,44 @@ class TestGrid2DFromShape:
 
 
 class TestGridRadialProjected:
+    def test__radial_projected_shape_slim_from(self):
+
+        shape_slim = aa.util.grid_2d.radial_projected_shape_slim_from(
+            extent=np.array([-1.0, 1.0, -1.0, 1.0]),
+            centre=(0.0, 0.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert shape_slim == 2
+
+        shape_slim = aa.util.grid_2d.radial_projected_shape_slim_from(
+            extent=np.array([-1.0, 3.0, -1.0, 1.0]),
+            centre=(0.0, 0.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert shape_slim == 4
+
+        shape_slim = aa.util.grid_2d.radial_projected_shape_slim_from(
+            extent=np.array([-1.0, 3.0, -1.0, 1.0]),
+            centre=(0.0, 1.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert shape_slim == 3
+
+        shape_slim = aa.util.grid_2d.radial_projected_shape_slim_from(
+            extent=np.array([-2.0, 1.0, -1.0, 1.0]),
+            centre=(0.0, 1.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert shape_slim == 4
+
     def test__grid_radial_projected_from_scaled_2d__vary_all_x_dimension_parameters(
         self
     ):

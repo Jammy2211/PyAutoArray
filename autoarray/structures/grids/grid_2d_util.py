@@ -375,6 +375,84 @@ def grid_2d_via_shape_native_from(
 
 
 @numba_util.jit()
+def radial_projected_shape_slim_from(
+    extent: np.ndarray,
+    centre: Tuple[float, float],
+    pixel_scales: ty.PixelScales,
+    sub_size: int,
+) -> int:
+    """
+    The function `grid_scaled_2d_slim_radial_projected_from()` determines a projected radial grid of points from a 2D
+    region of coordinates defined by an extent [xmin, xmax, ymin, ymax] and with a (y,x) centre.
+
+    To do this, the function first performs these 3 steps:
+
+    1) Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance of
+    the 4 paths from the (y,x) centre to the edge of the region (e.g. following the positive / negative y and x axes).
+
+    2) Use the pixel-scale corresponding to the direction chosen (e.g. if the positive x-axis was the longest, the
+    pixel_scale in the x dimension is used).
+
+    3) Determine the number of pixels between the centre and the edge of the region using the longest path between the
+    two chosen above.
+
+    A schematic is shown below:
+
+    -------------------
+    |                 |
+    |<- - -  - ->x    | x = centre
+    |                 | <-> = longest radial path from centre to extent edge
+    |                 |
+    -------------------
+
+    Using the centre x above, this function finds the longest radial path to the edge of the extent window.
+
+    This function returns the integer number of pixels given by this radial grid, which is then used to create
+    the radial grid.
+
+    Parameters
+    ----------
+    extent
+        The extent of the grid the radii grid is computed using, with format [xmin, xmax, ymin, ymax]
+    centre : (float, flloat)
+        The (y,x) central coordinate which the radial grid is traced outwards from.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+    sub_size
+        The size of the sub-grid that each pixel of the 2D mask array is divided into.
+
+    Returns
+    -------
+    int
+        The 1D integer shape of a radial set of points sampling the longest distance from the centre to the edge of the
+        extent in along the positive x-axis.
+    """
+
+    distance_to_positive_x = extent[1] - centre[1]
+    distance_to_positive_y = extent[3] - centre[0]
+    distance_to_negative_x = centre[1] - extent[0]
+    distance_to_negative_y = centre[0] - extent[2]
+
+    scaled_distance = max(
+        [
+            distance_to_positive_x,
+            distance_to_positive_y,
+            distance_to_negative_x,
+            distance_to_negative_y,
+        ]
+    )
+
+    if (scaled_distance == distance_to_positive_y) or (
+        scaled_distance == distance_to_negative_y
+    ):
+        pixel_scale = pixel_scales[0]
+    else:
+        pixel_scale = pixel_scales[1]
+
+    return sub_size * int((scaled_distance / pixel_scale)) + 1
+
+
+@numba_util.jit()
 def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
@@ -384,7 +462,9 @@ def grid_scaled_2d_slim_radial_projected_from(
 ) -> np.ndarray:
     """
     Determine a projected radial grid of points from a 2D region of coordinates defined by an
-    extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:
+    extent [xmin, xmax, ymin, ymax] and with a (y,x) centre.
+
+    This functions operates as follows:
 
     1) Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance of
     the 4 paths from the (y,x) centre to the edge of the region (e.g. following the positive / negative y and x axes).

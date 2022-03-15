@@ -480,7 +480,6 @@ class AbstractArray2D(Structure):
 
 
 class Array2D(AbstractArray2D):
-
     @classmethod
     def manual_slim(
         cls,

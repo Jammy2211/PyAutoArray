@@ -89,9 +89,7 @@ def grid_1d_to_structure(func):
 
         if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIterate):
             grid_2d_projected = grid.grid_2d_radial_projected_from(
-                centre=centre,
-                angle=angle,
-                radial_grid_shape_slim=radial_grid_shape_slim,
+                centre=centre, angle=angle
             )
             result = func(obj, grid_2d_projected, *args, **kwargs)
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
