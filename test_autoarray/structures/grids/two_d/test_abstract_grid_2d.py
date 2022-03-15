@@ -115,7 +115,7 @@ class TestGrid:
 
         grid_radii = grid.grid_2d_radial_projected_from(centre=(0.3, 0.1), angle=60.0)
         grid_radial_shape_slim = grid.grid_2d_radial_projected_shape_slim_from(
-            centre=(0.3, 0.1), angle=60.0
+            centre=(0.3, 0.1)
         )
 
         grid_radii_util_angle = aa.util.geometry.transform_grid_2d_to_reference_frame(

@@ -206,20 +206,20 @@ class TestGrid1D:
             grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=1
         )
 
-        grid_2d = grid_1d.project_to_radial_grid_2d(angle=0.0)
+        grid_2d = grid_1d.grid_2d_radial_projected_from(angle=0.0)
 
         assert type(grid_2d) == aa.Grid2DIrregular
         assert grid_2d.slim == pytest.approx(
             np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0], [0.0, 4.0]]), 1.0e-4
         )
 
-        grid_2d = grid_1d.project_to_radial_grid_2d(angle=90.0)
+        grid_2d = grid_1d.grid_2d_radial_projected_from(angle=90.0)
 
         assert grid_2d.slim == pytest.approx(
             np.array([[-1.0, 0.0], [-2.0, 0.0], [-3.0, 0.0], [-4.0, 0.0]]), 1.0e-4
         )
 
-        grid_2d = grid_1d.project_to_radial_grid_2d(angle=45.0)
+        grid_2d = grid_1d.grid_2d_radial_projected_from(angle=45.0)
 
         assert grid_2d.slim == pytest.approx(
             np.array(

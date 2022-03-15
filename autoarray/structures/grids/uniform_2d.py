@@ -957,7 +957,7 @@ class Grid2D(Structure):
         return Array2D.manual_mask(array=distances, mask=self.mask)
 
     def grid_2d_radial_projected_shape_slim_from(
-        self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0
+        self, centre: Tuple[float, float] = (0.0, 0.0)
     ) -> int:
         """
         The function `grid_scaled_2d_slim_radial_projected_from()` determines a projected radial grid of points from a

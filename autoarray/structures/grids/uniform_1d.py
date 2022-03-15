@@ -421,7 +421,7 @@ class Grid1D(Structure):
 
         return Grid1D(grid=binned_grid_1d_slim, mask=self.mask.mask_sub_1)
 
-    def project_to_radial_grid_2d(self, angle: float = 0.0) -> Grid2DIrregular:
+    def grid_2d_radial_projected_from(self, angle: float = 0.0) -> Grid2DIrregular:
         """
         Project the 1D grid of (y,x) coordinates to an irregular 2d grid of (y,x) coordinates. The projection works
         as follows:

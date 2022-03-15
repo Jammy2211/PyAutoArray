@@ -38,7 +38,6 @@ def grid_1d_to_structure(func):
     def wrapper(
         obj: object,
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
-        radial_grid_shape_slim: Optional[int] = None,
         *args,
         **kwargs
     ) -> Union[Array1D, ValuesIrregular]:
@@ -98,7 +97,7 @@ def grid_1d_to_structure(func):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid1D):
-            grid_2d_radial = grid.project_to_radial_grid_2d(angle=angle)
+            grid_2d_radial = grid.grid_2d_radial_projected_from(angle=angle)
             result = func(obj, grid_2d_radial, *args, **kwargs)
             return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
 
@@ -232,7 +231,7 @@ def grid_2d_to_structure(func):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid1D):
-            grid_2d_radial = grid.project_to_radial_grid_2d()
+            grid_2d_radial = grid.grid_2d_radial_projected_from()
             result = func(obj, grid_2d_radial, *args, **kwargs)
             return grid.structure_2d_from(result=result)
 
@@ -300,7 +299,7 @@ def grid_2d_to_structure_list(func):
             result_list = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
         elif isinstance(grid, Grid1D):
-            grid_2d_radial = grid.project_to_radial_grid_2d()
+            grid_2d_radial = grid.grid_2d_radial_projected_from()
             result_list = func(obj, grid_2d_radial, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
 
