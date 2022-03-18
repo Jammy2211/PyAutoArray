@@ -91,7 +91,9 @@ class AbstractGrid2DPixelization(Structure):
         return (x0, x1, y0, y1)
 
     def interpolation_grid_from(
-        self, shape_native: Tuple[int, int] = (401, 401)
+        self,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> "Grid2D":
         """
         Returns a 2D grid of (y,x) coordinates on to which a reconstruction from a pixelization (e.g. a `Delaunay`,
@@ -105,28 +107,14 @@ class AbstractGrid2DPixelization(Structure):
         ----------
         shape_native
             The (y,x) shape of the interpolation grid.
+        extent
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
+            is input.
         """
 
-        x0, x1, y0, y1 = self.extent_square
+        extent = self.extent_square if extent is None else extent
 
-        ys = np.linspace(y1, y0, shape_native[0])
-        xs = np.linspace(x0, x1, shape_native[1])
-
-        xs_grid, ys_grid = np.meshgrid(xs, ys)
-
-        xs_grid_1d = xs_grid.ravel()
-        ys_grid_1d = ys_grid.ravel()
-
-        grid_2d = np.vstack((ys_grid_1d, xs_grid_1d)).T
-
-        grid_2d = grid_2d.reshape((shape_native[0], shape_native[1], 2))
-
-        pixel_scales = (
-            abs(grid_2d[0, 0, 0] - grid_2d[1, 0, 0]),
-            abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
-        )
-
-        return Grid2D.manual_native(grid=grid_2d, pixel_scales=pixel_scales)
+        return Grid2D.manual_extent(extent=extent, shape_native=shape_native)
 
 
 class Grid2DRectangular(AbstractGrid2DPixelization):
@@ -306,13 +294,39 @@ class Grid2DRectangular(AbstractGrid2DPixelization):
         )
 
     def interpolated_array_from(
-        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+        self,
+        values: np.ndarray,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> Array2D:
+        """
+        The reconstruction of data certain pixelizations, for example a `Delaunay` triangulation, requires that
+        reconstructed data (e.g. the `reconstruction` output from an `Inversion`) is on an irregular pixelization.
 
-        interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
+        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to the
+        `Delaunay` triangulation.
 
-        print(interpolation_grid)
-        print(self)
+        This function therefore interpolates the reconstruction on to a regular grid of square pixels.
+        For a rectangular pixelization which is uniform, this is not stricly necessary as the native grid is
+        easy to analyse. This interpolation function is included partly to mirror the API of other pixelizations.
+
+        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
+        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
+        be returned by instead inputting the optional `shape_scaled` tuple.
+
+        Parameters
+        ----------
+        values
+            The value corresponding to the reconstructed value of every rectangular pixel on the rectangular grid.
+        shape_native
+            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
+        extent
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
+            is input.
+        """
+        interpolation_grid = self.interpolation_grid_from(
+            shape_native=shape_native, extent=extent
+        )
 
         interpolated_array = griddata(points=self, values=values, xi=interpolation_grid)
 
@@ -590,6 +604,7 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
         self,
         values: np.ndarray,
         shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
         use_nn=False,
     ) -> Array2D:
         """
@@ -608,13 +623,17 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
 
         Parameters
         ----------
+        values
+            The value corresponding to the reconstructed value of every Voronoi cell.
         shape_native
             The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
         shape_scaled
             The 2D shape in scaled coordinates (e.g. arc-seconds in PyAutoGalaxy / PyAutoLens) that the interpolated
             reconstructed source is returned on.
         """
-        interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
+        interpolation_grid = self.interpolation_grid_from(
+            shape_native=shape_native, extent=extent
+        )
 
         if use_nn:
 
@@ -666,7 +685,10 @@ class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
         return Grid2DDelaunay(grid=grid)
 
     def interpolated_array_from(
-        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+        self,
+        values: np.ndarray,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> Array2D:
         """
         The reconstruction of data on a `Delaunay` triangulation (e.g. the `reconstruction` output from an `Inversion`)
@@ -685,13 +707,17 @@ class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
 
         Parameters
         ----------
+        values
+            The value corresponding to the reconstructed value of Delaunay triangle vertex.
         shape_native
             The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
-        shape_scaled
-            The 2D shape in scaled coordinates (e.g. arc-seconds in PyAutoGalaxy / PyAutoLens) that the interpolated
-            reconstructed source is returned on.
+        extent
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
+            is input.
         """
-        interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
+        interpolation_grid = self.interpolation_grid_from(
+            shape_native=shape_native, extent=extent
+        )
 
         interpolated_array = pixelization_util.delaunay_interpolated_array_from(
             shape_native=shape_native,

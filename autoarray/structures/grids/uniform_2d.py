@@ -504,7 +504,7 @@ class Grid2D(Structure):
         Parameters
         ----------
         extent
-            The (x0, x1, y0, y1) extent of the grid that is created.
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created.
         shape_native
             The 2D shape of the grid that is created within this extent.
         pixel_scales

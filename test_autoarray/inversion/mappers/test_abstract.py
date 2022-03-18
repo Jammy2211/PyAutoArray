@@ -149,11 +149,15 @@ def test__interpolated_array_from(grid_2d_7x7):
     )
 
     interpolated_array_via_mapper = mapper.interpolated_array_from(
-        values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(3, 3)
+        values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
+        shape_native=(3, 3),
+        extent=(-0.2, 0.2, -0.2, 0.2),
     )
 
     interpolated_array_via_grid = pixelization_grid.interpolated_array_from(
-        values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(3, 3)
+        values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
+        shape_native=(3, 3),
+        extent=(-0.2, 0.2, -0.2, 0.2),
     )
 
     assert (interpolated_array_via_mapper == interpolated_array_via_grid).all()

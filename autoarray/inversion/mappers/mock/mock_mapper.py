@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple
+from typing import Optional, Tuple
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
 
@@ -53,6 +53,9 @@ class MockMapper(AbstractMapper):
         return self._mapping_matrix
 
     def interpolated_array_from(
-        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+        self,
+        values: np.ndarray,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ):
         return self._interpolated_array

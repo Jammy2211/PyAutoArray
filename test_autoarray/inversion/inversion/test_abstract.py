@@ -317,7 +317,7 @@ def test__interpolated_reconstruction_list_from():
     )
 
     interpolated_reconstruction_list = inversion.interpolated_reconstruction_list_from(
-        shape_native=(3, 3)
+        shape_native=(3, 3), extent=(-0.2, 0.2, -0.3, 0.3)
     )
 
     assert (interpolated_reconstruction_list[0] == np.array([0.0, 1.0, 1.0, 1.0])).all()

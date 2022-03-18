@@ -296,7 +296,10 @@ class AbstractMapper(LinearObj):
             return indexes
 
     def interpolated_array_from(
-        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
+        self,
+        values: np.ndarray,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
     ) -> Array2D:
         """
         The reconstructed values of a mapper (e.g. the `reconstruction` of an `Inversion` may be on an irregular
@@ -315,14 +318,17 @@ class AbstractMapper(LinearObj):
 
         Parameters
         ----------
+        values
+            The value corresponding to the reconstructed value of every pixelization pixel (e.g. Delaunay triangle
+            vertexes, Voronoi mesh cells).
         shape_native
             The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
-        shape_scaled
-            The 2D shape in scaled coordinates (e.g. arc-seconds in PyAutoGalaxy / PyAutoLens) that the interpolated
-            reconstructed source is returned on.
+        extent
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
+            is input.
         """
         return self.source_pixelization_grid.interpolated_array_from(
-            values=values, shape_native=shape_native
+            values=values, shape_native=shape_native, extent=extent
         )
 
 

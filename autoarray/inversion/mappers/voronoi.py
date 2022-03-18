@@ -149,13 +149,6 @@ class MapperVoronoi(AbstractMapperVoronoi):
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
-    def interpolated_array_from(
-        self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
-    ) -> Array2D:
-        return self.source_pixelization_grid.interpolated_array_from(
-            values=values, shape_native=shape_native, use_nn=True
-        )
-
 
 class MapperVoronoiNoInterp(AbstractMapperVoronoi):
     @cached_property
