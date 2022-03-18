@@ -109,6 +109,23 @@ class AbstractGrid2DPixelization(Structure):
 
         x0, x1, y0, y1 = self.extent_square
 
+        ys = np.linspace(y1, y0, shape_native[0])
+        xs = np.linspace(x0, x1, shape_native[1])
+
+        xs_grid, ys_grid = np.meshgrid(xs, ys)
+
+        xs_grid_1d = xs_grid.ravel()
+        ys_grid_1d = ys_grid.ravel()
+
+        grid_2d = np.vstack((ys_grid_1d, xs_grid_1d)).T
+
+        grid_2d = grid_2d.reshape((shape_native[0], shape_native[1], 2))
+
+        pixel_scales = (
+            abs(grid_2d[0, 0, 0] - grid_2d[1, 0, 0]),
+            abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
+        )
+
         return Grid2D.manual_native(grid=grid_2d, pixel_scales=pixel_scales)
 
 

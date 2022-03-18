@@ -351,7 +351,8 @@ class MatPlot1D(AbstractMatPlot):
         if x is None:
             x = np.arange(len(y))
             use_integers = True
-            x = Array1D.manual_native(array=x, pixel_scales=y.pixel_scales)
+            pixel_scales = (x[1] - x[0],)
+            x = Array1D.manual_native(array=x, pixel_scales=pixel_scales)
 
         if self.yx_plot.plot_axis_type is None:
             plot_axis_type = "linear"

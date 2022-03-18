@@ -980,7 +980,7 @@ class Grid2D(Structure):
         """
         return ValuesIrregular(values=array_slim)
 
-    def squared_distances_to_coordinate_from_from(
+    def squared_distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
     ) -> Array2D:
         """
@@ -1008,7 +1008,7 @@ class Grid2D(Structure):
             The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
         distances = np.sqrt(
-            self.squared_distances_to_coordinate_from_from(coordinate=coordinate)
+            self.squared_distances_to_coordinate_from(coordinate=coordinate)
         )
         return Array2D.manual_mask(array=distances, mask=self.mask)
 
@@ -1070,7 +1070,10 @@ class Grid2D(Structure):
         )
 
     def grid_2d_radial_projected_from(
-        self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0, shape_slim: Optional[int] = 0,
+        self,
+        centre: Tuple[float, float] = (0.0, 0.0),
+        angle: float = 0.0,
+        shape_slim: Optional[int] = 0,
     ) -> "Grid2DIrregular":
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
@@ -1126,7 +1129,7 @@ class Grid2D(Structure):
             centre=centre,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
-            shape_slim=shape_slim
+            shape_slim=shape_slim,
         )
 
         grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(

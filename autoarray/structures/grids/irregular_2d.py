@@ -229,17 +229,17 @@ class Grid2DIrregular(AbstractNDArray):
         elif len(result_list[0].shape) == 2:
             return [self.grid_from(grid_slim=value) for value in result_list]
 
-    def squared_distances_to_coordinate_from_from(
+    def squared_distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
     ) -> ValuesIrregular:
         """
         Returns the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
-            coordinate.
+        coordinate.
 
-            Parameters
-            ----------
-            coordinate
-                The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
+        Parameters
+        ----------
+        coordinate
+            The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
         """
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
@@ -258,7 +258,7 @@ class Grid2DIrregular(AbstractNDArray):
                 The (y,x) coordinate from which the distance of every *Coordinate* is computed.
         """
         distances = np.sqrt(
-            self.squared_distances_to_coordinate_from_from(coordinate=coordinate)
+            self.squared_distances_to_coordinate_from(coordinate=coordinate)
         )
         return self.values_from(array_slim=distances)
 
