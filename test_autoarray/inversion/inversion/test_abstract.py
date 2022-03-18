@@ -321,3 +321,22 @@ def test__interpolated_reconstruction_list_from():
     )
 
     assert (interpolated_reconstruction_list[0] == np.array([0.0, 1.0, 1.0, 1.0])).all()
+
+
+def test__interpolated_errors_list_from():
+
+    interpolated_array = np.array([0.0, 1.0, 1.0, 1.0])
+
+    mapper = aa.m.MockMapper(pixels=3, interpolated_array=interpolated_array)
+
+    inversion = aa.m.MockInversion(
+        leq=aa.m.MockLEq(linear_obj_list=[mapper]), errors=interpolated_array
+    )
+
+    interpolated_errors_list = inversion.interpolated_errors_list_from(
+        shape_native=(3, 3), extent=(-0.2, 0.2, -0.3, 0.3)
+    )
+
+    assert (interpolated_errors_list[0] == np.array([0.0, 1.0, 1.0, 1.0])).all()
+
+

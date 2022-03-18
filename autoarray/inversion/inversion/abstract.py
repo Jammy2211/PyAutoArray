@@ -185,6 +185,34 @@ class AbstractInversion:
         """
         return sum(self.mapped_reconstructed_image_dict.values())
 
+    @property
+    def errors(self):
+        raise NotImplementedError
+
+    @property
+    def errors_dict(self) -> Dict[LinearObj, np.ndarray]:
+        return self.leq.source_quantity_dict_from(source_quantity=self.errors)
+
+    @property
+    def errors_with_covariance(self):
+        raise NotImplementedError
+
+    @property
+    def magnification_list(self) -> List[float]:
+
+        magnification_list = []
+
+        interpolated_reconstruction_list = self.interpolated_reconstruction_list_from(shape_native=(401, 401))
+
+        for i, linear_obj in enumerate(self.linear_obj_list):
+
+            mapped_reconstructed_image = self.mapped_reconstructed_image_dict[linear_obj]
+            interpolated_reconstruction = interpolated_reconstruction_list[i]
+
+            magnification_list.append(np.sum(mapped_reconstructed_image) / np.sum(interpolated_reconstruction))
+
+        return magnification_list
+
     @cached_property
     @profile_func
     def regularization_term(self):
@@ -252,14 +280,6 @@ class AbstractInversion:
                 )
             except np.linalg.LinAlgError:
                 raise exc.InversionException()
-
-    @property
-    def errors_with_covariance(self):
-        raise NotImplementedError
-
-    @property
-    def errors(self):
-        raise NotImplementedError
 
     @property
     def brightest_reconstruction_pixel_list(self):
@@ -384,6 +404,34 @@ class AbstractInversion:
         return [
             mapper.interpolated_array_from(
                 values=self.reconstruction_dict[mapper],
+                shape_native=shape_native,
+                extent=extent,
+            )
+            for mapper in self.mapper_list
+        ]
+
+    def interpolated_errors_list_from(
+        self,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
+    ) -> List[Array2D]:
+        """
+        Analogous to the function `interpolated_reconstruction_list_from()` but for the error in every reconstructed
+        pixel.
+
+        See this function for a full description.
+
+        Parameters
+        ----------
+        shape_native
+            The 2D shape in pixels of the interpolated errors, which is always returned using square pixels.
+        extent
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
+            is input.
+        """
+        return [
+            mapper.interpolated_array_from(
+                values=self.errors_dict[mapper],
                 shape_native=shape_native,
                 extent=extent,
             )

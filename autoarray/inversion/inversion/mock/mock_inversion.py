@@ -22,6 +22,8 @@ class MockInversion(InversionMatrices):
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
         reconstruction_dict: List[np.ndarray] = None,
+        errors: np.ndarray = None,
+        errors_dict: List[np.ndarray] = None,
         regularization_term=None,
         log_det_curvature_reg_matrix_term=None,
         log_det_regularization_matrix_term=None,
@@ -52,6 +54,9 @@ class MockInversion(InversionMatrices):
         self._reconstruction = reconstruction
         self._reconstruction_dict = reconstruction_dict
 
+        self._errors = errors
+        self._errors_dict = errors_dict
+
         self._regularization_term = regularization_term
         self._log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
         self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
@@ -79,31 +84,31 @@ class MockInversion(InversionMatrices):
 
     @property
     def reconstruction(self):
-        """
-        Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
-        of https://arxiv.org/pdf/astro-ph/0302587.pdf
-
-        S is the vector of reconstructed inversion values.
-        """
 
         if self._reconstruction is None:
             return super().reconstruction
-
         return self._reconstruction
 
     @property
     def reconstruction_dict(self):
-        """
-        Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
-        of https://arxiv.org/pdf/astro-ph/0302587.pdf
-
-        S is the vector of reconstructed inversion values.
-        """
 
         if self._reconstruction_dict is None:
             return super().reconstruction_dict
-
         return self._reconstruction_dict
+
+    @property
+    def errors(self):
+        
+        if self._errors is None:
+            return super().errors
+        return self._errors
+
+    @property
+    def errors_dict(self):
+
+        if self._errors_dict is None:
+            return super().errors_dict
+        return self._errors_dict
 
     @property
     def regularization_term(self):
