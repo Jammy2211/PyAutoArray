@@ -241,6 +241,116 @@ class TestAPI:
         assert grid.origin == (0.0, 1.0)
         assert grid.sub_size == 2
 
+    def test__manual_extent(self):
+
+        grid = aa.Grid2D.manual_extent(
+            extent=(-1.0, 1.0, 2.0, 3.0), shape_native=(2, 3), sub_size=1
+        )
+
+        assert type(grid) == aa.Grid2D
+        assert (
+            grid
+            == np.array(
+                [
+                    [3.0, -1.0],
+                    [3.0, 0.0],
+                    [3.0, 1.0],
+                    [2.0, -1.0],
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                ]
+            )
+        ).all()
+        assert (
+            grid.native
+            == np.array(
+                [
+                    [[3.0, -1.0], [3.0, 0.0], [3.0, 1.0]],
+                    [[2.0, -1.0], [2.0, 0.0], [2.0, 1.0]],
+                ]
+            )
+        ).all()
+        assert (
+            grid.slim
+            == np.array(
+                [
+                    [3.0, -1.0],
+                    [3.0, 0.0],
+                    [3.0, 1.0],
+                    [2.0, -1.0],
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                ]
+            )
+        ).all()
+        assert grid.pixel_scales == (1.0, 1.0)
+        assert grid.origin == (0.0, 0.0)
+
+        grid = aa.Grid2D.manual_extent(
+            extent=(-1.5, 1.5, -1.5, 1.5), shape_native=(2, 2), sub_size=2
+        )
+
+        assert type(grid) == aa.Grid2D
+        assert (
+            grid
+            == np.array(
+                [
+                    [1.5, -1.5],
+                    [1.5, -0.5],
+                    [1.5, 0.5],
+                    [1.5, 1.5],
+                    [0.5, -1.5],
+                    [0.5, -0.5],
+                    [0.5, 0.5],
+                    [0.5, 1.5],
+                    [-0.5, -1.5],
+                    [-0.5, -0.5],
+                    [-0.5, 0.5],
+                    [-0.5, 1.5],
+                    [-1.5, -1.5],
+                    [-1.5, -0.5],
+                    [-1.5, 0.5],
+                    [-1.5, 1.5],
+                ]
+            )
+        ).all()
+        assert (
+            grid.native
+            == np.array(
+                [
+                    [[1.5, -1.5], [1.5, -0.5], [1.5, 0.5], [1.5, 1.5]],
+                    [[0.5, -1.5], [0.5, -0.5], [0.5, 0.5], [0.5, 1.5]],
+                    [[-0.5, -1.5], [-0.5, -0.5], [-0.5, 0.5], [-0.5, 1.5]],
+                    [[-1.5, -1.5], [-1.5, -0.5], [-1.5, 0.5], [-1.5, 1.5]],
+                ]
+            )
+        ).all()
+        assert (
+            grid.slim
+            == np.array(
+                [
+                    [1.5, -1.5],
+                    [1.5, -0.5],
+                    [1.5, 0.5],
+                    [1.5, 1.5],
+                    [0.5, -1.5],
+                    [0.5, -0.5],
+                    [0.5, 0.5],
+                    [0.5, 1.5],
+                    [-0.5, -1.5],
+                    [-0.5, -0.5],
+                    [-0.5, 0.5],
+                    [-0.5, 1.5],
+                    [-1.5, -1.5],
+                    [-1.5, -0.5],
+                    [-1.5, 0.5],
+                    [-1.5, 1.5],
+                ]
+            )
+        ).all()
+        assert grid.pixel_scales == (1.0, 1.0)
+        assert grid.origin == (0.0, 0.0)
+
     def test__uniform__makes_grid_with_pixel_scale(self):
 
         grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=2.0)

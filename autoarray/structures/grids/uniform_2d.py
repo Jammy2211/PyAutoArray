@@ -488,7 +488,6 @@ class Grid2D(Structure):
         extent: Tuple[float, float, float, float],
         shape_native: Tuple[int, int],
         sub_size: int = 1,
-        origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the extent of the (y,x) grid coordinates as an input
@@ -519,8 +518,8 @@ class Grid2D(Structure):
 
         x0, x1, y0, y1 = extent
 
-        ys = np.linspace(y1, y0, shape_native[0])
-        xs = np.linspace(x0, x1, shape_native[1])
+        ys = np.linspace(y1, y0, shape_native[0] * sub_size)
+        xs = np.linspace(x0, x1, shape_native[1] * sub_size)
 
         xs_grid, ys_grid = np.meshgrid(xs, ys)
 
@@ -529,7 +528,9 @@ class Grid2D(Structure):
 
         grid_2d = np.vstack((ys_grid_1d, xs_grid_1d)).T
 
-        grid_2d = grid_2d.reshape((shape_native[0], shape_native[1], 2))
+        grid_2d = grid_2d.reshape(
+            (shape_native[0] * sub_size, shape_native[1] * sub_size, 2)
+        )
 
         pixel_scales = (
             abs(grid_2d[0, 0, 0] - grid_2d[1, 0, 0]),
