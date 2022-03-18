@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Union
+from typing import Optional, Union
 
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals1D
@@ -11,6 +11,7 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 
@@ -125,8 +126,8 @@ class Grid2DPlotter(Plotter):
 class YX1DPlotter(Plotter):
     def __init__(
         self,
-        y: Union[np.ndarray, List, Array1D],
-        x: Union[np.ndarray, List, Array1D],
+        y: Array1D,
+        x: Optional[Union[Array1D, Grid1D]] = None,
         mat_plot_1d: MatPlot1D = MatPlot1D(),
         visuals_1d: Visuals1D = Visuals1D(),
         include_1d: Include1D = Include1D(),
@@ -156,12 +157,13 @@ class YX1DPlotter(Plotter):
         include_1d
             Specifies which attributes of the `Array1D` are extracted and plotted as visuals for 1D plots.
         """
+
         super().__init__(
             visuals_1d=visuals_1d, include_1d=include_1d, mat_plot_1d=mat_plot_1d
         )
 
         self.y = y
-        self.x = x
+        self.x = y.grid_radial if x is None else x
 
     def get_visuals_1d(self) -> Visuals1D:
         return self.get_1d.via_array_1d_from(array_1d=self.x)

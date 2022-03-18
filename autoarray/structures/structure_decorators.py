@@ -125,7 +125,7 @@ def grid_1d_output_structure(func):
 
     @wraps(func)
     def wrapper(
-        obj: object,
+        obj,
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
         *args,
         **kwargs

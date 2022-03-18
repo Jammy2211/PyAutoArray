@@ -174,8 +174,8 @@ class AbstractSettingsDataset:
 class AbstractDataset:
     def __init__(
         self,
-        data: Union[Array2D, VectorYX2D, Visibilities],
-        noise_map: Union[Array2D, VectorYX2D, VisibilitiesNoiseMap],
+        data: Union[Array1D, Array2D, VectorYX2D, Visibilities],
+        noise_map: Union[Array1D, Array2D, VectorYX2D, VisibilitiesNoiseMap],
         settings=AbstractSettingsDataset(),
         name: str = None,
     ):

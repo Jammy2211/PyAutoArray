@@ -356,7 +356,29 @@ class AbstractInversion:
     def interpolated_reconstruction_list_from(
         self, shape_native: Tuple[int, int] = (401, 401)
     ) -> List[Array2D]:
+        """
+        The reconstruction of an `Inversion` can be on an irregular pixelization (e.g. a Delaunay triangulation,
+        Voronoi mesh).
 
+        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
+        this irregular grid.
+
+        This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
+        The routine that performs the interpolation is specific to each pixelization and contained in its
+        corresponding `Mapper` and `Grid2DPixelization` objects, which are called by this function.
+
+        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
+        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
+        be returned by instead inputting the optional `shape_scaled` tuple.
+
+        Parameters
+        ----------
+        shape_native
+            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
+        shape_scaled
+            The 2D shape in scaled coordinates (e.g. arc-seconds in PyAutoGalaxy / PyAutoLens) that the interpolated
+            reconstructed source is returned on.
+        """
         return [
             mapper.interpolated_array_from(
                 values=self.reconstruction_dict[mapper], shape_native=shape_native

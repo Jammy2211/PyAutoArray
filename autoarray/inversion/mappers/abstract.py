@@ -298,6 +298,29 @@ class AbstractMapper(LinearObj):
     def interpolated_array_from(
         self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
     ) -> Array2D:
+        """
+        The reconstructed values of a mapper (e.g. the `reconstruction` of an `Inversion` may be on an irregular
+        pixelization (e.g. a Delaunay triangulation, Voronoi mesh).
+
+        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
+        this irregular grid.
+
+        This function offers a simple alternative is therefore to interpolate the irregular reconstruction on to a
+        regular grid of square pixels. The routine that performs the interpolation is specific to each pixelization
+        and contained `Grid2DPixelization` object, which are called by this function.
+
+        The output interpolated reconstruction is by default returned on a grid of 401 x 401 square pixels. This
+        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
+        be returned by instead inputting the optional `shape_scaled` tuple.
+
+        Parameters
+        ----------
+        shape_native
+            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
+        shape_scaled
+            The 2D shape in scaled coordinates (e.g. arc-seconds in PyAutoGalaxy / PyAutoLens) that the interpolated
+            reconstructed source is returned on.
+        """
         return self.source_pixelization_grid.interpolated_array_from(
             values=values, shape_native=shape_native
         )

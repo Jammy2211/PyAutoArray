@@ -324,7 +324,7 @@ class MatPlot1D(AbstractMatPlot):
 
     def plot_yx(
         self,
-        y: Union[np.ndarray, List, Array1D],
+        y: Union[Array1D],
         visuals_1d: Visuals1D,
         auto_labels: AutoLabels,
         x: Optional[Union[np.ndarray, Iterable, List, Array1D]] = None,
@@ -351,6 +351,7 @@ class MatPlot1D(AbstractMatPlot):
         if x is None:
             x = np.arange(len(y))
             use_integers = True
+            x = Array1D.manual_native(array=x, pixel_scales=y.pixel_scales)
 
         if self.yx_plot.plot_axis_type is None:
             plot_axis_type = "linear"
@@ -387,7 +388,7 @@ class MatPlot1D(AbstractMatPlot):
             plt.yscale("symlog")
 
         self.xticks.set(
-            array=None,
+            array=x,
             min_value=np.min(x),
             max_value=np.max(x),
             units=self.units,

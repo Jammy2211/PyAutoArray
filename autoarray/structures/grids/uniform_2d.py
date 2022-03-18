@@ -483,6 +483,62 @@ class Grid2D(Structure):
         )
 
     @classmethod
+    def manual_extent(
+        cls,
+        extent: Tuple[float, float, float, float],
+        shape_native: Tuple[int, int],
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Grid2D":
+        """
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the extent of the (y,x) grid coordinates as an input
+        (x0, x1, y0, y1) tuple.
+
+        The (y,x) `shape_native` in pixels is also input which determines the resolution of the `Grid2D`.
+
+        (The **PyAutoArray** API typically uses a (y,x) notation, however extent variables begin with x currently.
+        This will be updated in a future release):
+
+        extent = (x0, x1, y0, y1) = (2.0, 4.0, -2.0, 6.0)
+        shape_native = (y,x) = (10, 20)
+
+        Parameters
+        ----------
+        extent
+            The (x0, x1, y0, y1) extent of the grid that is created.
+        shape_native
+            The 2D shape of the grid that is created within this extent.
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        origin
+            The origin of the grid's mask.
+        """
+
+        x0, x1, y0, y1 = extent
+
+        ys = np.linspace(y1, y0, shape_native[0])
+        xs = np.linspace(x0, x1, shape_native[1])
+
+        xs_grid, ys_grid = np.meshgrid(xs, ys)
+
+        xs_grid_1d = xs_grid.ravel()
+        ys_grid_1d = ys_grid.ravel()
+
+        grid_2d = np.vstack((ys_grid_1d, xs_grid_1d)).T
+
+        grid_2d = grid_2d.reshape((shape_native[0], shape_native[1], 2))
+
+        pixel_scales = (
+            abs(grid_2d[0, 0, 0] - grid_2d[1, 0, 0]),
+            abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
+        )
+
+        return Grid2D.manual_native(grid=grid_2d, pixel_scales=pixel_scales)
+
+    @classmethod
     def uniform(
         cls,
         shape_native: Tuple[int, int],
@@ -1014,7 +1070,7 @@ class Grid2D(Structure):
         )
 
     def grid_2d_radial_projected_from(
-        self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0
+        self, centre: Tuple[float, float] = (0.0, 0.0), angle: float = 0.0, shape_slim: Optional[int] = 0,
     ) -> "Grid2DIrregular":
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
@@ -1065,17 +1121,12 @@ class Grid2D(Structure):
             positive x-axis.
         """
 
-        if hasattr(self, "radial_projected_shape_slim"):
-            shape_slim = self.radial_projected_shape_slim
-        else:
-            shape_slim = 0
-
         grid_radial_projected_2d = grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
             extent=self.extent,
             centre=centre,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
-            shape_slim=shape_slim,
+            shape_slim=shape_slim
         )
 
         grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(

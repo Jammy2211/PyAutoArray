@@ -109,23 +109,6 @@ class AbstractGrid2DPixelization(Structure):
 
         x0, x1, y0, y1 = self.extent_square
 
-        ys = np.linspace(y1, y0, shape_native[0])
-        xs = np.linspace(x0, x1, shape_native[1])
-
-        xs_grid, ys_grid = np.meshgrid(xs, ys)
-
-        xs_grid_1d = xs_grid.ravel()
-        ys_grid_1d = ys_grid.ravel()
-
-        grid_2d = np.vstack((ys_grid_1d, xs_grid_1d)).T
-
-        grid_2d = grid_2d.reshape((shape_native[0], shape_native[1], 2))
-
-        pixel_scales = (
-            abs(grid_2d[0, 0, 0] - grid_2d[1, 0, 0]),
-            abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
-        )
-
         return Grid2D.manual_native(grid=grid_2d, pixel_scales=pixel_scales)
 
 
@@ -592,7 +575,28 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
         shape_native: Tuple[int, int] = (401, 401),
         use_nn=False,
     ) -> Array2D:
+        """
+        The reconstruction of data on a `Voronoi` mesh (e.g. the `reconstruction` output from an `Inversion`)
+        is on irregular pixelization.
 
+        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to the
+        `Voronoi` mesh.
+
+        This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
+        The routine uses the naturual neighbor Voronoi interpolation weights.
+
+        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
+        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
+        be returned by instead inputting the optional `shape_scaled` tuple.
+
+        Parameters
+        ----------
+        shape_native
+            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
+        shape_scaled
+            The 2D shape in scaled coordinates (e.g. arc-seconds in PyAutoGalaxy / PyAutoLens) that the interpolated
+            reconstructed source is returned on.
+        """
         interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
 
         if use_nn:
@@ -647,7 +651,29 @@ class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
     def interpolated_array_from(
         self, values: np.ndarray, shape_native: Tuple[int, int] = (401, 401)
     ) -> Array2D:
+        """
+        The reconstruction of data on a `Delaunay` triangulation (e.g. the `reconstruction` output from an `Inversion`)
+        is on  irregular pixelization.
 
+        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to the
+        `Delaunay` triangulation.
+
+        This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
+        The routine uses the Delaunay triangulation interpolation weights based on the area of each triangle to
+        perform this interpolation.
+
+        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
+        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
+        be returned by instead inputting the optional `shape_scaled` tuple.
+
+        Parameters
+        ----------
+        shape_native
+            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
+        shape_scaled
+            The 2D shape in scaled coordinates (e.g. arc-seconds in PyAutoGalaxy / PyAutoLens) that the interpolated
+            reconstructed source is returned on.
+        """
         interpolation_grid = self.interpolation_grid_from(shape_native=shape_native)
 
         interpolated_array = pixelization_util.delaunay_interpolated_array_from(

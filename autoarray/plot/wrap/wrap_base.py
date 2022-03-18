@@ -37,9 +37,9 @@ from autoarray import exc
 class Units:
     def __init__(
         self,
-        use_scaled: bool = None,
-        conversion_factor: float = None,
-        in_kpc: bool = None,
+        use_scaled: Optional[bool] = None,
+        conversion_factor: Optional[float] = None,
+        in_kpc: Optional[bool] = None,
     ):
         """
         This object controls the units of a plotted figure, and performs multiple tasks when making the plot:
@@ -75,7 +75,7 @@ class Units:
             self.use_scaled = use_scaled
         else:
             try:
-                self.use_scaled = conf.instance["visualize"]["general"]["general"][
+                self.use_scaled = conf.instance["visualize"]["general"]["units"][
                     "use_scaled"
                 ]
             except:
@@ -579,6 +579,8 @@ class YTicks(AbstractTicks):
             array=array, min_value=min_value, max_value=max_value, units=units
         )
         plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
+        if not units.use_scaled:
+            plt.gca().invert_yaxis()
 
 
 class XTicks(AbstractTicks):
@@ -700,7 +702,7 @@ class AbstractLabel(AbstractMatWrap):
         if units is None:
             return None
 
-        if units.in_kpc is not None:
+        if units.in_kpc is not None and units.use_scaled:
             if units.in_kpc:
                 return "kpc"
             else:
@@ -708,8 +710,7 @@ class AbstractLabel(AbstractMatWrap):
 
         if units.use_scaled:
             return "scaled"
-        else:
-            return "pixels"
+        return "pixels"
 
 
 class YLabel(AbstractLabel):
