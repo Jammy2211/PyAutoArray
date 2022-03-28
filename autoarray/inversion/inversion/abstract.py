@@ -202,14 +202,20 @@ class AbstractInversion:
 
         magnification_list = []
 
-        interpolated_reconstruction_list = self.interpolated_reconstruction_list_from(shape_native=(401, 401))
+        interpolated_reconstruction_list = self.interpolated_reconstruction_list_from(
+            shape_native=(401, 401)
+        )
 
         for i, linear_obj in enumerate(self.linear_obj_list):
 
-            mapped_reconstructed_image = self.mapped_reconstructed_image_dict[linear_obj]
+            mapped_reconstructed_image = self.mapped_reconstructed_image_dict[
+                linear_obj
+            ]
             interpolated_reconstruction = interpolated_reconstruction_list[i]
 
-            magnification_list.append(np.sum(mapped_reconstructed_image) / np.sum(interpolated_reconstruction))
+            magnification_list.append(
+                np.sum(mapped_reconstructed_image) / np.sum(interpolated_reconstruction)
+            )
 
         return magnification_list
 

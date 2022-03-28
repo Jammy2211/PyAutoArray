@@ -98,7 +98,7 @@ class MockInversion(InversionMatrices):
 
     @property
     def errors(self):
-        
+
         if self._errors is None:
             return super().errors
         return self._errors

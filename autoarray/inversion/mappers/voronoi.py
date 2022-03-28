@@ -149,6 +149,42 @@ class MapperVoronoi(AbstractMapperVoronoi):
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
+    def interpolated_array_from(
+        self,
+        values: np.ndarray,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
+    ) -> Array2D:
+        """
+        The reconstructed values of a mapper (e.g. the `reconstruction` of an `Inversion` may be on an irregular
+        pixelization (e.g. a Delaunay triangulation, Voronoi mesh).
+
+        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
+        this irregular grid.
+
+        This function offers a simple alternative is therefore to interpolate the irregular reconstruction on to a
+        regular grid of square pixels. The routine that performs the interpolation is specific to each pixelization
+        and contained `Grid2DPixelization` object, which are called by this function.
+
+        The output interpolated reconstruction is by default returned on a grid of 401 x 401 square pixels. This
+        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
+        be returned by instead inputting the optional `shape_scaled` tuple.
+
+        Parameters
+        ----------
+        values
+            The value corresponding to the reconstructed value of every pixelization pixel (e.g. Delaunay triangle
+            vertexes, Voronoi mesh cells).
+        shape_native
+            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
+        extent
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
+            is input.
+        """
+        return self.source_pixelization_grid.interpolated_array_from(
+            values=values, shape_native=shape_native, extent=extent, use_nn=True
+        )
+
 
 class MapperVoronoiNoInterp(AbstractMapperVoronoi):
     @cached_property

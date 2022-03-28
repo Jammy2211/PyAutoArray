@@ -1,0 +1,47 @@
+
+
+- Think very carefully about how Preloads and w_tilde interface with database. Pickle array? Large filesize
+but fast. Need to be careful with hyper galaxies.
+
+
+__Refactor__
+
+- Use composition in visualization MatPlot objects instead of inheritance.
+- Extract geometry from mask package.
+- auto_labels in visuals as a config loady thing.
+
+
+__Probably Terrible Idea Notes__
+
+w_tilde_tlc:
+
+- Output snr_cut to hard disk for loading + reproducbility due to potential randomness of model.
+
+- Setup rerpesentative tests on sLACS data reproducing errors on cosma. Include models but also use multiple
+models, investigating change in model effects.
+
+- w_tilde_via_snr_cut_iteration should compare to likelihood of fit without a snr_cut (in potential chi squared,
+or disabled enitrely) as opposed to fit with nearby snr_cut. MAke sure this is the same comparison performed in check_preloads.
+
+- The image we are using to set the curvature preload is not the lens subbed image, and therefore is not representative
+of the data the inversion fits. Probably why the thing is so effing slow. Make chi squaed map or potrntial chi squared
+map in Inversion module.
+
+- USe potetial chi squared map due to negative image values (data is irellevent, due to lens light sub).
+
+- Do not use w_tilde with an snr_cut when the lens light is being modeled, as this changes the
+Inversion S/N image. Check by making sure the image of the inversion does not change between models. Maybe see if
+there is a way this can be "ok".
+
+ - Faster calculation of w_tilde_imaging (or quick way to get from old one?).
+
+ - docstrings in Preloads for w_tilde.
+
+ - Proper unit test on Preloads for w_tilde.
+
+ - Add options for implciit preload of w_tilde / rest on and off, and manual input of snr_cut? Most likely make it so
+
+ we assume snr_cut=0.0 but default with an optional flag for snr_cut_iterate
+
+- For multiple mappers / fitting lens light with inversion we need to always fit the Inversion's profile subtracted
+image or whatever is represnetative of what the data fits.

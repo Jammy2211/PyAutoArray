@@ -338,5 +338,3 @@ def test__interpolated_errors_list_from():
     )
 
     assert (interpolated_errors_list[0] == np.array([0.0, 1.0, 1.0, 1.0])).all()
-
-

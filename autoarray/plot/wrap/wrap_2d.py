@@ -647,9 +647,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
             if colorbar is not None and colorbar_tickparams is not None:
                 colorbar_tickparams.set(cb=colorbar)
 
-        interpolation_array = mapper.source_pixelization_grid.interpolated_array_from(
-            values=pixel_values
-        )
+        interpolation_array = mapper.interpolated_array_from(values=pixel_values)
 
         plt.imshow(
             X=interpolation_array.native,

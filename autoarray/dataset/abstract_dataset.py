@@ -242,6 +242,18 @@ class AbstractDataset:
             self.grid_inversion = settings.grid_inversion_from(mask=mask_inversion)
 
     @property
+    def shape_native(self):
+        return self.mask.shape_native
+
+    @property
+    def shape_slim(self):
+        return self.data.shape_slim
+
+    @property
+    def pixel_scales(self):
+        return self.mask.pixel_scales
+
+    @property
     def mask(self) -> Union[Mask1D, Mask2D]:
         return self.data.mask
 

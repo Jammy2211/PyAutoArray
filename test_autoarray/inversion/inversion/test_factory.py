@@ -468,6 +468,3 @@ def test__inversion_matrices__x2_mappers(
         voronoi_mapper_9_3x3
     ] == pytest.approx(0.5 * np.ones(9), 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-
-

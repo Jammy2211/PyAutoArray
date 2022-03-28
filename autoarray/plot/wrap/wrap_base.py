@@ -536,7 +536,10 @@ class AbstractTicks(AbstractMatWrap):
         if self.manual_values is not None:
             return np.asarray(self.manual_values)
         elif not units.use_scaled:
-            return np.linspace(0, array.shape_native[0], 5).astype("int")
+            try:
+                return np.linspace(0, array.shape_native[0], 5).astype("int")
+            except AttributeError:
+                return np.linspace(0, np.asarray(array).shape[0], 5).astype("int")
         elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
             return np.round(np.linspace(min_value, max_value, 5), 2)
         elif units.use_scaled and units.conversion_factor is not None:
