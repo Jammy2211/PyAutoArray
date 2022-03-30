@@ -54,7 +54,9 @@ class MapperPlotter(Plotter):
     def get_visuals_2d_for_source(self) -> Visuals2D:
         return self.get_2d.via_mapper_for_source_from(mapper=self.mapper)
 
-    def figure_2d(self, interpolate_to_uniform:bool = True, solution_vector: bool = None):
+    def figure_2d(
+        self, interpolate_to_uniform: bool = True, solution_vector: bool = None
+    ):
         """
         Plots the plotter's `Mapper` object in 2D.
 
@@ -71,7 +73,9 @@ class MapperPlotter(Plotter):
             auto_labels=AutoLabels(title="Mapper", filename="mapper"),
         )
 
-    def subplot_image_and_mapper(self, image: Array2D, interpolate_to_uniform:bool = True):
+    def subplot_image_and_mapper(
+        self, image: Array2D, interpolate_to_uniform: bool = True
+    ):
         """
         Make a subplot of an input image and the `Mapper`'s source-plane reconstruction.
 

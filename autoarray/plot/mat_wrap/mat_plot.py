@@ -799,7 +799,7 @@ class MatPlot2D(AbstractMatPlot):
         mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp],
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
-        interpolate_to_uniform:bool=True,
+        interpolate_to_uniform: bool = True,
         source_pixelilzation_values=None,
     ):
 

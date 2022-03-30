@@ -207,7 +207,6 @@ class Grid2DSparse(Structure):
     def total_sparse_pixels(self) -> int:
         return len(self)
 
-
     @property
     def extent(self) -> np.ndarray:
         """
