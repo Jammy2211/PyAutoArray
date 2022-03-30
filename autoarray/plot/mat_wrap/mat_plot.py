@@ -799,6 +799,7 @@ class MatPlot2D(AbstractMatPlot):
         mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp],
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
+        interpolate_to_uniform:bool=True,
         source_pixelilzation_values=None,
     ):
 
@@ -808,6 +809,7 @@ class MatPlot2D(AbstractMatPlot):
                 mapper=mapper,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
+                interpolate_to_uniform=interpolate_to_uniform,
                 source_pixelilzation_values=source_pixelilzation_values,
             )
 
@@ -816,6 +818,7 @@ class MatPlot2D(AbstractMatPlot):
                 mapper=mapper,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
+                interpolate_to_uniform=interpolate_to_uniform,
                 source_pixelilzation_values=source_pixelilzation_values,
             )
         else:
@@ -824,6 +827,7 @@ class MatPlot2D(AbstractMatPlot):
                 mapper=mapper,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
+                interpolate_to_uniform=interpolate_to_uniform,
                 source_pixelilzation_values=source_pixelilzation_values,
             )
 
@@ -832,6 +836,7 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperRectangularNoInterp,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
+        interpolate_to_uniform: bool = True,
         source_pixelilzation_values=None,
     ):
 
@@ -909,6 +914,7 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperDelaunay,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
+        interpolate_to_uniform: bool = True,
         source_pixelilzation_values=None,
     ):
 
@@ -965,6 +971,7 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperVoronoiNoInterp,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
+        interpolate_to_uniform: bool = True,
         source_pixelilzation_values=None,
     ):
 
@@ -997,22 +1004,26 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
-        # self.voronoi_drawer.draw_voronoi_pixels(
-        #     mapper=mapper,
-        #     pixel_values=source_pixelilzation_values,
-        #     cmap=self.cmap,
-        #     colorbar=self.colorbar,
-        #     colorbar_tickparams=self.colorbar_tickparams,
-        # )
+        if not interpolate_to_uniform:
 
-        self.interpolated_reconstruction.imshow_reconstruction(
-            mapper=mapper,
-            pixel_values=source_pixelilzation_values,
-            cmap=self.cmap,
-            colorbar=self.colorbar,
-            colorbar_tickparams=self.colorbar_tickparams,
-            aspect=aspect_inv,
-        )
+            self.voronoi_drawer.draw_voronoi_pixels(
+                mapper=mapper,
+                pixel_values=source_pixelilzation_values,
+                cmap=self.cmap,
+                colorbar=self.colorbar,
+                colorbar_tickparams=self.colorbar_tickparams,
+            )
+
+        else:
+
+            self.interpolated_reconstruction.imshow_reconstruction(
+                mapper=mapper,
+                pixel_values=source_pixelilzation_values,
+                cmap=self.cmap,
+                colorbar=self.colorbar,
+                colorbar_tickparams=self.colorbar_tickparams,
+                aspect=aspect_inv,
+            )
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)

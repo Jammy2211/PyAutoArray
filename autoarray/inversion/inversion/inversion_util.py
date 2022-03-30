@@ -214,13 +214,8 @@ def inversion_normalized_residual_map_from(
         The array of `data` that the `LEq` fits.
     slim_index_for_sub_slim_index
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-<<<<<<< HEAD
-    all_sub_slim_indexes_for_pix_index
-        The mapping of every pixel on the `LEq`'s `reconstruction`'s pixel-grid to the `data` pixels.
-=======
     sub_slim_indexes_for_pix_index
         The mapping of every pixel on the `LinearEqn`'s `reconstruction`'s pixel-grid to the `data` pixels.
->>>>>>> master
 
     Returns
     -------
@@ -273,13 +268,8 @@ def inversion_chi_squared_map_from(
         The array of `data` that the `LEq` fits.
     slim_index_for_sub_slim_index
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-<<<<<<< HEAD
-    all_sub_slim_indexes_for_pix_index
-        The mapping of every pixel on the `LEq`'s `reconstruction`'s pixel-grid to the `data` pixels.
-=======
     sub_slim_indexes_for_pix_index
         The mapping of every pixel on the `LinearEqn`'s `reconstruction`'s pixel-grid to the `data` pixels.
->>>>>>> master
 
     Returns
     -------
