@@ -1,9 +1,8 @@
 numba
-numpy
+llvmlite
 astropy>=3.0.0
 decorator>=4.0.0
 dill>=0.3.1.1
-llvmlite
 matplotlib
 scipy>=1.5.1
 scikit-image>=0.14.2
