@@ -384,16 +384,6 @@ def test__inversion_interferometer__via_mapper(
     assert (np.imag(inversion.mapped_reconstructed_data) > 0.0).all()
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(14.4977, 1.0e-4)
 
-    inversion = aa.Inversion(
-        dataset=interferometer_7_no_fft,
-        linear_obj_list=[rectangular_mapper_7x7_3x3],
-        regularization_list=[regularization_constant],
-        settings=aa.SettingsInversion(use_linear_operators=True, check_solution=False),
-    )
-
-    assert isinstance(inversion.mapper_list[0], aa.MapperRectangularNoInterp)
-    assert isinstance(inversion.leq, aa.LEqInterferometerMappingPyLops)
-
 
 def test__inversion_matrices__x2_mappers(
     masked_imaging_7x7_no_blur,
