@@ -1,10 +1,10 @@
+numba
+numpy
 astropy>=3.0.0
 decorator>=4.0.0
 dill>=0.3.1.1
 llvmlite
 matplotlib
-numba
-numpy
 scipy>=1.5.1
 scikit-image>=0.14.2
 scikit-learn>=0.21.3
