@@ -1,5 +1,8 @@
 # MANIFEST.in
 include requirements.txt
 
+global-exclude test_autoarray
+recursive-exclude test_autoarray *
+
 recursive-include data *
 recursive-include autoarray/config *

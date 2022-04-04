@@ -821,6 +821,7 @@ class Output:
         self,
         path: Optional[str] = None,
         filename: Optional[str] = None,
+        prefix: Optional[str] = None,
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
@@ -842,6 +843,8 @@ class Output:
             If the figure is output to hard-disk the path of the folder it is saved to.
         filename
             If the figure is output to hard-disk the filename used to save it.
+        prefix
+            A prefix appended before the file name, e.g. ("prefix_filename").
         format
             The format of the output, 'show' displays on the computer screen, 'png' outputs to .png, 'fits' outputs to
             `.fits` format.
@@ -857,6 +860,7 @@ class Output:
             os.makedirs(path, exist_ok=True)
 
         self.filename = filename
+        self.prefix = prefix
         self._format = format
         self.format_folder = format_folder
         self.bypass = bypass
@@ -887,6 +891,15 @@ class Output:
 
         return output_path
 
+    def filename_from(self, auto_filename):
+
+        filename = auto_filename if self.filename is None else self.filename
+
+        if self.prefix is not None:
+            filename = f"{self.prefix}{filename}"
+
+        return filename
+
     def to_figure(
         self, structure: Optional[Structure], auto_filename: Optional[str] = None
     ):
@@ -897,9 +910,11 @@ class Output:
         ----------
         structure
             The 2D array of image to be output, required for outputting the image as a fits file.
+        auto_filename
+            If the filename is not manually specified this name is used instead, which is defined in the parent plotter.
         """
 
-        filename = auto_filename if self.filename is None else self.filename
+        filename = self.filename_from(auto_filename=auto_filename)
 
         for format in self.format_list:
 
@@ -919,12 +934,17 @@ class Output:
                             overwrite=True,
                         )
 
-    def subplot_to_figure(self, auto_filename=None):
+    def subplot_to_figure(self, auto_filename: Optional[str] = None):
         """
         Output a subplot figure, either as an image on the screen or to the hard-disk as a png or fits file.
+
+        Parameters
+        ----------
+        auto_filename
+            If the filename is not manually specified this name is used instead, which is defined in the parent plotter.
         """
 
-        filename = auto_filename if self.filename is None else self.filename
+        filename = self.filename_from(auto_filename=auto_filename)
 
         for format in self.format_list:
 

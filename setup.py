@@ -40,7 +40,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     keywords="cli",
-    packages=find_packages(exclude=["docs"]),
+    packages=find_packages(exclude=["docs", "test_autoarray", "test_autoarray*"]),
     install_requires=requirements,
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
