@@ -22,7 +22,7 @@ class Voronoi(AbstractPixelization):
         cells which can form any shape, size or tesselation.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
-        have (y,x) coordinates in in two reference frames:
+        have (y,x) coordinates in two reference frames:
 
         - `data`: the original reference frame of the masked data.
 
@@ -118,6 +118,7 @@ class Voronoi(AbstractPixelization):
         relocated_source_grid_slim = self.relocated_grid_from(
             source_grid_slim=source_grid_slim, settings=settings, preloads=preloads
         )
+
         relocated_source_pixelization_grid = self.relocated_pixelization_grid_from(
             source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
@@ -241,7 +242,7 @@ class VoronoiMagnification(Voronoi):
         size or tesselation.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
-        have (y,x) coordinates in in two reference frames:
+        have (y,x) coordinates in two reference frames:
 
         - `data`: the original reference frame of the masked data.
 
@@ -330,7 +331,7 @@ class VoronoiBrightnessImage(Voronoi):
         cells which can form any shape, size or tesselation.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
-        have (y,x) coordinates in in two reference frames:
+        have (y,x) coordinates in two reference frames:
 
         - `data`: the original reference frame of the masked data.
 

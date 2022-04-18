@@ -151,7 +151,7 @@ struct minell {
      */
 
     /*
-     * some coefficients used in in-ellipse tests
+     * some coefficients used in-ellipse tests
      */
     double alpha;
     double beta;

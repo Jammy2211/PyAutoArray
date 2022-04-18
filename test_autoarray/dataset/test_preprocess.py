@@ -294,6 +294,23 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     )
 
 
+def test__noise_map_from_image_exposure_time_map_and_background_variances():
+
+    image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+    exposure_time_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+    background_variances = aa.Array2D.full(
+        fill_value=3.0 ** 0.5, shape_native=(3, 3), pixel_scales=1.0
+    )
+
+    noise_map = aa.preprocess.noise_map_via_data_eps_exposure_time_map_and_background_variances_from(
+        data_eps=image,
+        exposure_time_map=exposure_time_map,
+        background_variances=background_variances,
+    )
+
+    assert noise_map.native == pytest.approx(1.65289 * np.ones((3, 3)), 1e-2)
+
+
 def test__noise_map_via_weight_map_from():
 
     weight_map = aa.Array2D.manual_native(
@@ -350,6 +367,45 @@ def test__noise_map_with_offset_values_added():
         ),
         1.0e-2,
     )
+
+
+def test__background_sky_level_via_edges_of_image_from():
+
+    image = aa.Array2D.manual_native(array=np.ones((3, 3)), pixel_scales=1.0)
+
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+        image=image, no_edges=1
+    )
+
+    assert background_sky_level == 1.0
+
+    image = aa.Array2D.manual_native(
+        array=[[1, 1, 1, 1], [1, 100, 100, 1], [1, 100, 100, 1], [1, 1, 1, 1]],
+        pixel_scales=1.0,
+    )
+
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+        image=image, no_edges=1
+    )
+
+    assert background_sky_level == 1.0
+
+    image = aa.Array2D.manual_native(
+        [
+            [0, 1, 1, 1, 0],
+            [0, 3, 1, 3, 0],
+            [0, 3, 100, 3, 0],
+            [0, 3, 3, 3, 0],
+            [0, 1, 1, 1, 0],
+        ],
+        pixel_scales=1.0,
+    )
+
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+        image=image, no_edges=2
+    )
+
+    assert background_sky_level == 1.0
 
 
 def test__background_noise_map_via_edges_of_image_from():

@@ -22,7 +22,7 @@ class Delaunay(AbstractPixelization):
         The Delaunay pixelization represents pixels as an irregular 2D grid of Delaunay triangles.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay pixelization's pixels)
-        have (y,x) coordinates in in two reference frames:
+        have (y,x) coordinates in two reference frames:
 
         - `data`: the original reference frame of the masked data.
 
@@ -227,7 +227,7 @@ class DelaunayMagnification(Delaunay):
         Delaunay triangles.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay pixelization's pixels)
-        have (y,x) coordinates in in two reference frames:
+        have (y,x) coordinates in two reference frames:
 
         - `data`: the original reference frame of the masked data.
 
@@ -313,7 +313,7 @@ class DelaunayBrightnessImage(Delaunay):
         Delaunay triangles.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay pixelization's pixels)
-        have (y,x) coordinates in in two reference frames:
+        have (y,x) coordinates in two reference frames:
 
         - `data`: the original reference frame of the masked data.
 

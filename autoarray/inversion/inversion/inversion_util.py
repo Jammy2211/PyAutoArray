@@ -9,60 +9,6 @@ from autoarray import exc
 from autoarray.inversion.linear_eqn import leq_util
 
 
-@numba_util.jit()
-def curvature_reg_matrix_from(
-    curvature_matrix: np.ndarray,
-    regularization_matrix: np.ndarray,
-    pixel_neighbors: np.ndarray,
-    pixel_neighbors_sizes: np.ndarray,
-):
-    """
-    Add together the `curvature_matrix` (F) and `regularization_matrix` (H).
-
-    This function is faster than an np.add for the following reasons:
-
-    1) The memory allocated to the `curvature_matrix` is overwritten, avoiding overhead due to copying.
-    2) The pixel neighbors computed previously are used to speed up the calculation, by using the known sparsity of
-    the regularization matrix.
-
-    Parameters
-    -----------
-    curvature_matrix
-        The matrix defining the correlations between image-pixels due to them being in the same source pixels, or
-         correlated due to sub-gridding / PSF convolution / a Fourier Transform.
-    regularization_matrix
-        The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
-    pixel_neighbors
-        An array of length (total_pixels) which provides the index of all neighbors of every pixel in
-        the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_sizes
-        An array of length (total_pixels) which gives the number of neighbors of every pixel in the
-        Voronoi grid.
-
-    Returns
-    -------
-    curvature_reg_matrix
-        The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
-    """
-    # for i in range(regularization_matrix.shape[0]):
-
-    #    curvature_matrix[i, i] += regularization_matrix[i, i]
-
-    #    for j in range(pixel_neighbors_sizes[i]):
-
-    #        neighbor_index = pixel_neighbors[i, j]
-
-    #        curvature_matrix[i, neighbor_index] += regularization_matrix[
-    #            i, neighbor_index
-    #        ]
-
-    # I commented above parts, since when using interpolated regularization, it no longer true.
-    # Needs to add a functionality to turn on above implementation.
-    curvature_matrix += regularization_matrix
-
-    return curvature_matrix
-
-
 def reconstruction_from(
     data_vector: np.ndarray,
     curvature_reg_matrix_cholesky: np.ndarray,

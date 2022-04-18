@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 
 from scipy.sparse import csc_matrix
@@ -75,6 +76,12 @@ class InversionMatrices(AbstractInversion):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
+        if self.preloads.curvature_matrix is not None:
+
+            # Need to copy because of how curvature_reg_matirx overwrites memory.
+
+            return copy.copy(self.preloads.curvature_matrix)
+
         if (
             self.preloads.curvature_matrix_preload is None
             or not self.settings.use_curvature_matrix_preload
@@ -104,20 +111,12 @@ class InversionMatrices(AbstractInversion):
 
         if self.has_one_mapper:
 
-            curvature_reg_matrix = inversion_util.curvature_reg_matrix_from(
-                curvature_matrix=self.curvature_matrix,
-                regularization_matrix=self.regularization_matrix,
-                pixel_neighbors=self.linear_obj_list[
-                    0
-                ].source_pixelization_grid.pixel_neighbors,
-                pixel_neighbors_sizes=self.linear_obj_list[
-                    0
-                ].source_pixelization_grid.pixel_neighbors.sizes,
-            )
+            curvature_matrix = self.curvature_matrix
+            curvature_matrix += self.regularization_matrix
 
             del self.__dict__["curvature_matrix"]
 
-            return curvature_reg_matrix
+            return curvature_matrix
 
         return np.add(self.curvature_matrix, self.regularization_matrix)
 

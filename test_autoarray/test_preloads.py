@@ -256,6 +256,52 @@ def test__set_operated_mapping_matrix_with_preloads():
     ).all()
 
 
+def test__set_curvature_matrix():
+
+    # Inversion is None thus preload curvature_matrix to None.
+
+    fit_0 = aa.m.MockFitImaging(inversion=None)
+    fit_1 = aa.m.MockFitImaging(inversion=None)
+
+    preloads = aa.Preloads(curvature_matrix=1)
+    preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.curvature_matrix is None
+
+    # Inversion's curvature matrices are different thus no preloading.
+
+    curvature_matrix_0 = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+
+    curvature_matrix_1 = np.array([[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+
+    fit_0 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+    )
+    fit_1 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_1)
+    )
+
+    preloads = aa.Preloads(curvature_matrix=1)
+    preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.curvature_matrix is None
+
+    # LEq's curvature matrices are the same therefore preload it and the curvature sparse terms.
+
+    preloads = aa.Preloads(curvature_matrix=2)
+
+    fit_0 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+    )
+    fit_1 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+    )
+
+    preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
+
+    assert (preloads.curvature_matrix == curvature_matrix_0).all()
+
+
 def test__set_regularization_matrix_and_term():
 
     regularization = aa.m.MockRegularization(regularization_matrix=np.eye(2))

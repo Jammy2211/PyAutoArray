@@ -24,6 +24,7 @@ class Preloads:
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
+        curvature_matrix=None,
         regularization_matrix=None,
         log_det_regularization_matrix_term=None,
         traced_sparse_grids_list_of_planes=None,
@@ -39,6 +40,7 @@ class Preloads:
         self.operated_mapping_matrix = operated_mapping_matrix
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
+        self.curvature_matrix = curvature_matrix
         self.regularization_matrix = regularization_matrix
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
@@ -48,7 +50,7 @@ class Preloads:
     def set_w_tilde_imaging(self, fit_0, fit_1):
         """
         The w-tilde linear algebra formalism speeds up inversions by computing beforehand quantities that enable
-        efficiently construction of the curvature matrix. These quantites can only be used if the noise-map is
+        efficiently construction of the curvature matrix. These quantities can only be used if the noise-map is
         fixed, therefore this function preloads these w-tilde quantities if the noise-map does not change.
 
         This function compares the noise map of two fit's corresponding to two model instances, and preloads wtilde
@@ -249,6 +251,45 @@ class Preloads:
                     "PRELOADS - LEq linear algebra quantities preloaded for this model-fit."
                 )
 
+    def set_curvature_matrix(self, fit_0, fit_1):
+        """
+        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        source-pixels does not change during the model-fit and therefore its associated cruvature matrix is also
+        fixed, meaning the curvature matrix preloaded.
+
+        This function compares the curvature matrix of two fit's corresponding to two model instances, and preloads
+        this value if it is the same for both fits.
+
+        The preload is typically used in **PyAutoGalaxy** inversions using a `Rectangular` pixelization.
+
+        Parameters
+        ----------
+        fit_0
+            The first fit corresponding to a model with a specific set of unit-values.
+        fit_1
+            The second fit corresponding to a model with a different set of unit-values.
+        """
+        self.curvature_matrix = None
+
+        inversion_0 = fit_0.inversion
+        inversion_1 = fit_1.inversion
+
+        if inversion_0 is None:
+            return
+
+        if inversion_0.curvature_matrix.shape == inversion_1.curvature_matrix.shape:
+
+            if (
+                np.max(abs(inversion_0.curvature_matrix - inversion_1.curvature_matrix))
+                < 1e-8
+            ):
+
+                self.curvature_matrix = inversion_0.curvature_matrix
+
+                logger.info(
+                    "PRELOADS - LEq Curvature Matrix preloaded for this model-fit."
+                )
+
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
         """
         If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
@@ -333,6 +374,7 @@ class Preloads:
         self.operated_mapping_matrix = None
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
+        self.curvature_matrix = None
         self.regularization_matrix = None
         self.log_det_regularization_matrix_term = None
 
@@ -354,6 +396,7 @@ class Preloads:
         line += [
             f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"
         ]
+        line += [f"Curvature Matrix = {self.curvature_matrix is not None}\n"]
         line += [f"Regularization Matrix = {self.regularization_matrix is not None}\n"]
         line += [
             f"Log Det Regularization Matrix Term = {self.log_det_regularization_matrix_term is not None}\n"

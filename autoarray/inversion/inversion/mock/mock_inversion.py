@@ -18,6 +18,7 @@ class MockInversion(InversionMatrices):
         leq: MockLEq = None,
         regularization_list: List[MockRegularization] = None,
         data_vector=None,
+        curvature_matrix=None,
         regularization_matrix=None,
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
@@ -50,6 +51,7 @@ class MockInversion(InversionMatrices):
 
         self._data_vector = data_vector
         self._regularization_matrix = regularization_matrix
+        self._curvature_matrix = curvature_matrix
         self._curvature_reg_matrix = curvature_reg_matrix
         self._reconstruction = reconstruction
         self._reconstruction_dict = reconstruction_dict
@@ -77,6 +79,14 @@ class MockInversion(InversionMatrices):
             return super().regularization_matrix
 
         return self._regularization_matrix
+
+    @property
+    def curvature_matrix(self):
+
+        if self._curvature_matrix is None:
+            return super().curvature_matrix
+
+        return self._curvature_matrix
 
     @property
     def curvature_reg_matrix(self):

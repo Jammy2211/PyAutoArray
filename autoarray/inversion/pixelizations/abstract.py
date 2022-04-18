@@ -16,7 +16,7 @@ class AbstractPixelization:
         dataset) which are aligned with a masked dataset with a 2D grid of pixels.
 
         Both of these grids (e.g. the masked dataset's 2D grid and the grid of the pixelization's pixels) have (y,x)
-        coordinates in in two reference frames:
+        coordinates in two reference frames:
 
         - `data`: the original reference frame of the masked data.
 

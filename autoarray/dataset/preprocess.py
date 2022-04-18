@@ -115,7 +115,8 @@ def array_counts_to_counts_per_second(array_counts, exposure_time):
 
 
 def array_with_random_uniform_values_added(array, upper_limit=0.001):
-    """Add random values drawn from a uniform distribution between zero and an input upper limit to an array.
+    """
+    Add random values drawn from a uniform distribution between zero and an input upper limit to an array.
 
     The current use-case of this function is adding small random values to a noise-map that is constant (e.g. all noise
     map values are the same). Constant noise-maps have been found to create "broken" inversions where the source is
@@ -132,7 +133,8 @@ def array_with_random_uniform_values_added(array, upper_limit=0.001):
 
 
 def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_map):
-    """Estimate the noise-map value in every data-point, by converting the data to units of counts and taking the
+    """
+    Estimate the noise-map value in every data-point, by converting the data to units of counts and taking the
     square root of these values.
 
     For datasets that may have a background noise component, this function does not return the overall noise-map if the
@@ -151,7 +153,8 @@ def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_ma
 
 
 def noise_map_via_weight_map_from(weight_map):
-    """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
+    """
+    Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and
     the software package MultiDrizzle.
 
     The variance in each pixel is computed as:
@@ -175,7 +178,8 @@ def noise_map_via_weight_map_from(weight_map):
 
 
 def noise_map_via_inverse_noise_map_from(inverse_noise_map):
-    """Setup the noise-map from an inverse noise-map.
+    """
+    Setup the noise-map from an inverse noise-map.
 
     The variance in each pixel is computed as:
 
@@ -192,7 +196,8 @@ def noise_map_via_inverse_noise_map_from(inverse_noise_map):
 def noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from(
     data_eps, exposure_time_map, background_noise_map
 ):
-    """Estimate the noise-map values in every data-point, by converting the data to units of counts, adding the
+    """
+    Estimate the noise-map values in every data-point, by converting the data to units of counts, adding the
     background noise-map and taking the square root of these values.
 
     This function assumes the input data is in electrons per second and returns the noise-map in electrons per second.
@@ -200,7 +205,7 @@ def noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from(
     Parameters
     ----------
     data_eps
-        The data in electrons second used to estimate the Poisson noise in every data point.
+        The background sky subtracted data in electrons second used to estimate the Poisson noise in every data point.
     exposure_time_map
         The exposure time at every data-point of the data.
     background_noise_map
@@ -216,6 +221,86 @@ def noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from(
         )
         / exposure_time_map
     )
+
+
+def noise_map_via_data_eps_exposure_time_map_and_background_variances_from(
+    data_eps, exposure_time_map, background_variances
+):
+    """
+    This is the same as `noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from`, however the
+    input `background_variances` are used instead.
+
+    Parameters
+    ----------
+    data_eps
+        The background sky subtracted data in electrons second used to estimate the Poisson noise in every data point.
+    exposure_time_map
+        The exposure time at every data-point of the data.
+    background_noise_map
+        The variance in every data point due to a background component of the noise-map in units
+        of electrons per second.
+    """
+    return (
+        np.sqrt(
+            (
+                np.abs(data_eps * exposure_time_map)
+                + (background_variances * exposure_time_map)
+            )
+        )
+        / exposure_time_map
+    )
+
+
+def edges_from(image, no_edges):
+    """
+    Extract the edges of an input image and return them as a concatenated 1D ndarray.
+
+    These edges are typically empty regions of an image that may contain the background sky, which can be used
+    for estimating the background sky level or noise.
+
+    Parameters
+    ----------
+    image
+        The image whose edge values are used to estimate the background noise.
+    no_edges
+        Number of edges used to estimate the background level.
+    """
+    edges = []
+
+    for edge_no in range(no_edges):
+        top_edge = image.native[edge_no, edge_no : image.shape_native[1] - edge_no]
+        bottom_edge = image.native[
+            image.shape_native[0] - 1 - edge_no,
+            edge_no : image.shape_native[1] - edge_no,
+        ]
+        left_edge = image.native[
+            edge_no + 1 : image.shape_native[0] - 1 - edge_no, edge_no
+        ]
+        right_edge = image.native[
+            edge_no + 1 : image.shape_native[0] - 1 - edge_no,
+            image.shape_native[1] - 1 - edge_no,
+        ]
+
+        edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
+
+    return edges
+
+
+def background_sky_level_via_edges_of_image_from(image, no_edges):
+    """
+    Estimate the background sky level in an image using the data values at its edges. These edge values are extracted
+    and their median is used to calculate the bakcground sky level.
+
+    Parameters
+    ----------
+    image
+        The image whose edge values are used to estimate the background noise.
+    no_edges
+        Number of edges used to estimate the background level.
+    """
+    edges = edges_from(image=image, no_edges=no_edges)
+
+    return np.median(edges)
 
 
 def background_noise_map_via_edges_of_image_from(image, no_edges):
@@ -236,23 +321,7 @@ def background_noise_map_via_edges_of_image_from(image, no_edges):
 
     from autoarray.structures.arrays.uniform_2d import Array2D
 
-    edges = []
-
-    for edge_no in range(no_edges):
-        top_edge = image.native[edge_no, edge_no : image.shape_native[1] - edge_no]
-        bottom_edge = image.native[
-            image.shape_native[0] - 1 - edge_no,
-            edge_no : image.shape_native[1] - edge_no,
-        ]
-        left_edge = image.native[
-            edge_no + 1 : image.shape_native[0] - 1 - edge_no, edge_no
-        ]
-        right_edge = image.native[
-            edge_no + 1 : image.shape_native[0] - 1 - edge_no,
-            image.shape_native[1] - 1 - edge_no,
-        ]
-
-        edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
+    edges = edges_from(image=image, no_edges=no_edges)
 
     return Array2D.full(
         fill_value=norm.fit(edges)[1],
