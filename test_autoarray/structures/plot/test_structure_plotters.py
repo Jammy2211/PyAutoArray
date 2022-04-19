@@ -128,7 +128,7 @@ class TestGrid2DPlotter:
         plot_patch,
     ):
 
-        grid_plotter = aplt.Grid2DPlotter(
+        grid_2d_plotter = aplt.Grid2DPlotter(
             grid=grid_2d_7x7,
             visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),
             mat_plot_2d=aplt.MatPlot2D(
@@ -138,11 +138,11 @@ class TestGrid2DPlotter:
 
         color_array = np.linspace(start=0.0, stop=1.0, num=grid_2d_7x7.shape_slim)
 
-        grid_plotter.figure_2d(color_array=color_array)
+        grid_2d_plotter.figure_2d(color_array=color_array)
 
         assert path.join(plot_path, "grid1.png") in plot_patch.paths
 
-        grid_plotter = aplt.Grid2DPlotter(
+        grid_2d_plotter = aplt.Grid2DPlotter(
             grid=grid_2d_7x7,
             visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),
             mat_plot_2d=aplt.MatPlot2D(
@@ -151,7 +151,7 @@ class TestGrid2DPlotter:
             include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         )
 
-        grid_plotter.figure_2d(color_array=color_array)
+        grid_2d_plotter.figure_2d(color_array=color_array)
 
         assert path.join(plot_path, "grid2.png") in plot_patch.paths
 
@@ -166,7 +166,7 @@ class TestGrid2DPlotter:
             indexes=[0, 1, 2],
         )
 
-        grid_plotter = aplt.Grid2DPlotter(
+        grid_2d_plotter = aplt.Grid2DPlotter(
             grid=grid_2d_7x7,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="grid3", format="png")
@@ -174,6 +174,6 @@ class TestGrid2DPlotter:
             visuals_2d=visuals_2d,
         )
 
-        grid_plotter.figure_2d(color_array=color_array)
+        grid_2d_plotter.figure_2d(color_array=color_array)
 
         assert path.join(plot_path, "grid3.png") in plot_patch.paths
