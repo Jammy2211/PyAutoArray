@@ -622,3 +622,30 @@ def mapping_matrix_from(
             mapping_matrix[slim_index][pix_index] += sub_fraction * pix_weight
 
     return mapping_matrix
+
+
+@numba_util.jit()
+def mapped_source_via_mapping_matrix_from(
+    mapping_matrix: np.ndarray, array_slim: np.ndarray
+) -> np.ndarray:
+    """
+    Maps a masked 2d image in the image domain to the source domain and returns its values, where each
+    source value is the average of all image-pixels which map to it.
+
+    Parameters
+    -----------
+    mapping_matrix
+        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
+    array_slim
+        The masked 2D array of values in its slim representation (e.g. the image data) which are mapped to the
+        source domain in order to compute their average values.
+    """
+
+    mapped_source = np.zeros(mapping_matrix.shape[1])
+
+    for i in range(mapping_matrix.shape[0]):
+        for j in range(mapping_matrix.shape[1]):
+            if mapping_matrix[i, j] > 0:
+                mapped_source[j] += array_slim[i] * mapping_matrix[i, j]
+
+    return mapped_source
