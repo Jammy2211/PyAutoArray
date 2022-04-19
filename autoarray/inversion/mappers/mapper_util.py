@@ -629,8 +629,12 @@ def mapped_source_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, array_slim: np.ndarray
 ) -> np.ndarray:
     """
-    Maps a masked 2d image in the image domain to the source domain and returns its values, where each
-    source value is the average of all image-pixels which map to it.
+    Map a masked 2d image in the image domain to the source domain and sum up all mappings on the source-pixels.
+
+    For example, suppose we have an image and a mapper. We can map every image-pixel to its corresponding mapper's
+    source pixel and sum the values based on these mappings.
+
+    This will produce something similar to a `reconstruction`, albeit it bypasses the linear algebra / inversion.
 
     Parameters
     -----------

@@ -295,6 +295,25 @@ class AbstractMapper(LinearObj):
                 )
             return indexes
 
+    def mapped_source_from(self, array_slim: np.ndarray) -> np.ndarray:
+        """
+        Map a masked 2d image in the image domain to the source domain and sum up all mappings on the source-pixels.
+
+        For example, suppose we have an image and a mapper. We can map every image-pixel to its corresponding mapper's
+        source pixel and sum the values based on these mappings.
+
+        This will produce something similar to a `reconstruction`, albeit it bypasses the linear algebra / inversion.
+
+        Parameters
+        -----------
+        array_slim
+            The masked 2D array of values in its slim representation (e.g. the image data) which are mapped to the
+            source domain in order to compute their average values.
+        """
+        return mapper_util.mapped_source_via_mapping_matrix_from(
+            mapping_matrix=self.mapping_matrix, array_slim=array_slim
+        )
+
     def interpolated_array_from(
         self,
         values: np.ndarray,
