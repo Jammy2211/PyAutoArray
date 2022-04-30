@@ -943,6 +943,18 @@ class TestGrid:
             grid.flipped.native == np.array([[[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]]])
         ).all()
 
+    def test__areas(self):
+
+        grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=2.0)
+
+        assert grid.pixel_area == 4.0
+        assert grid.total_area == 16.0
+
+        grid = aa.Grid2D.uniform(shape_native=(4, 3), pixel_scales=3.0)
+
+        assert grid.pixel_area == 9.0
+        assert grid.total_area == 108
+
     def test__grid_radial_projected_from__same_as_grid_util_but_also_includes_angle(
         self
     ):

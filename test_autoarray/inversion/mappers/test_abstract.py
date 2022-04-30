@@ -163,7 +163,7 @@ def test__interpolated_array_from(grid_2d_7x7):
     assert (interpolated_array_via_mapper == interpolated_array_via_grid).all()
 
 
-def test__mapped_source_from(grid_2d_7x7):
+def test__mapped_to_source_from(grid_2d_7x7):
 
     pixelization_grid = aa.Grid2D.manual_slim(
         [[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
@@ -179,10 +179,10 @@ def test__mapped_source_from(grid_2d_7x7):
 
     array_slim = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
 
-    mapped_source_util = aa.util.mapper.mapped_source_via_mapping_matrix_from(
+    mapped_to_source_util = aa.util.mapper.mapped_to_source_via_mapping_matrix_from(
         mapping_matrix=mapper.mapping_matrix, array_slim=array_slim
     )
 
-    mapped_source_mapper = mapper.mapped_source_from(array_slim=array_slim)
+    mapped_to_source_mapper = mapper.mapped_to_source_from(array=array_slim)
 
-    assert (mapped_source_util == mapped_source_mapper).all()
+    assert (mapped_to_source_util == mapped_to_source_mapper).all()

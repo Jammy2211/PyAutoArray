@@ -625,7 +625,7 @@ def mapping_matrix_from(
 
 
 @numba_util.jit()
-def mapped_source_via_mapping_matrix_from(
+def mapped_to_source_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, array_slim: np.ndarray
 ) -> np.ndarray:
     """
@@ -645,11 +645,18 @@ def mapped_source_via_mapping_matrix_from(
         source domain in order to compute their average values.
     """
 
-    mapped_source = np.zeros(mapping_matrix.shape[1])
+    mapped_to_source = np.zeros(mapping_matrix.shape[1])
+
+    source_pixel_count = np.zeros(mapping_matrix.shape[1])
 
     for i in range(mapping_matrix.shape[0]):
         for j in range(mapping_matrix.shape[1]):
             if mapping_matrix[i, j] > 0:
-                mapped_source[j] += array_slim[i] * mapping_matrix[i, j]
+                mapped_to_source[j] += array_slim[i] * mapping_matrix[i, j]
+                source_pixel_count[j] += 1
 
-    return mapped_source
+    for j in range(mapping_matrix.shape[1]):
+        if source_pixel_count[j] > 0:
+            mapped_to_source[j] /= source_pixel_count[j]
+
+    return mapped_to_source

@@ -295,7 +295,7 @@ class AbstractMapper(LinearObj):
                 )
             return indexes
 
-    def mapped_source_from(self, array_slim: np.ndarray) -> np.ndarray:
+    def mapped_to_source_from(self, array: Array2D) -> np.ndarray:
         """
         Map a masked 2d image in the image domain to the source domain and sum up all mappings on the source-pixels.
 
@@ -310,8 +310,8 @@ class AbstractMapper(LinearObj):
             The masked 2D array of values in its slim representation (e.g. the image data) which are mapped to the
             source domain in order to compute their average values.
         """
-        return mapper_util.mapped_source_via_mapping_matrix_from(
-            mapping_matrix=self.mapping_matrix, array_slim=array_slim
+        return mapper_util.mapped_to_source_via_mapping_matrix_from(
+            mapping_matrix=self.mapping_matrix, array_slim=array.binned.slim
         )
 
     def interpolated_array_from(

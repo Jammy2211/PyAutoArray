@@ -822,6 +822,7 @@ class Output:
         path: Optional[str] = None,
         filename: Optional[str] = None,
         prefix: Optional[str] = None,
+        suffix: Optional[str] = None,
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
@@ -845,6 +846,8 @@ class Output:
             If the figure is output to hard-disk the filename used to save it.
         prefix
             A prefix appended before the file name, e.g. ("prefix_filename").
+        prefix
+            A prefix appended after the file name, e.g. ("filenam_suffix").
         format
             The format of the output, 'show' displays on the computer screen, 'png' outputs to .png, 'fits' outputs to
             `.fits` format.
@@ -861,6 +864,7 @@ class Output:
 
         self.filename = filename
         self.prefix = prefix
+        self.suffix = suffix
         self._format = format
         self.format_folder = format_folder
         self.bypass = bypass
@@ -897,6 +901,9 @@ class Output:
 
         if self.prefix is not None:
             filename = f"{self.prefix}{filename}"
+
+        if self.suffix is not None:
+            filename = f"{filename}{self.suffix}"
 
         return filename
 

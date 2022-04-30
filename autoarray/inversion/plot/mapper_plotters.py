@@ -114,7 +114,7 @@ class MapperPlotter(Plotter):
         self.close_subplot_figure()
 
     def plot_source_from(
-        self, source_pixelization_values: np.ndarray, auto_labels: AutoLabels
+        self, source_pixelization_values: np.ndarray, auto_labels: AutoLabels = AutoLabels()
     ):
         """
         Plot the source of the `Mapper` where the coloring is specified by an input set of values.

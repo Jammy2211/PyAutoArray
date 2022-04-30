@@ -7,6 +7,7 @@ from autoarray.abstract_ndarray import AbstractNDArray
 
 from autoarray.structures.arrays import array_2d_util
 
+from autoarray import exc
 
 class Structure(AbstractNDArray, ABC):
     def __array_finalize__(self, obj):
@@ -51,6 +52,19 @@ class Structure(AbstractNDArray, ABC):
     @property
     def pixel_scale(self) -> float:
         return self.mask.pixel_scale
+
+    @property
+    def pixel_area(self):
+
+        if len(self.pixel_scales) != 2:
+
+            raise exc.GridException("Cannot compute area of structure which is not 2D.")
+
+        return self.pixel_scales[0] * self.pixel_scales[1]
+
+    @property
+    def total_area(self):
+        return self.total_pixels * self.pixel_area
 
     @property
     def origin(self) -> Tuple[int, ...]:
