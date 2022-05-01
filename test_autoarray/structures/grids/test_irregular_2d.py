@@ -114,11 +114,11 @@ class TestGrid2DIrregular:
         assert type(grid_from_1d) == aa.Grid2DIrregular
         assert grid_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
 
-    def test__grid_via_deflection_grid_from(self):
+    def test__grid_2d_via_deflection_grid_from(self):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0)])
 
-        grid = grid.grid_via_deflection_grid_from(
+        grid = grid.grid_2d_via_deflection_grid_from(
             deflection_grid=np.array([[1.0, 0.0], [1.0, 1.0]])
         )
 
@@ -266,13 +266,13 @@ class TestGrid2DIrregularUniform:
 
         assert (grid_upscale == grid_upscale_util).all()
 
-    def test__grid_via_deflection_grid_from(self):
+    def test__grid_2d_via_deflection_grid_from(self):
 
         grid = aa.Grid2DIrregularUniform(
             grid=[(1.0, 1.0), (2.0, 2.0)], pixel_scales=(1.0, 1.0), shape_native=(3, 3)
         )
 
-        grid = grid.grid_via_deflection_grid_from(
+        grid = grid.grid_2d_via_deflection_grid_from(
             deflection_grid=np.array([[1.0, 0.0], [1.0, 1.0]])
         )
 

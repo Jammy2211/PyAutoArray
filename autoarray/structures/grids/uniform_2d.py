@@ -860,7 +860,7 @@ class Grid2D(Structure):
         """
         return (self * np.pi) / 648000.0
 
-    def grid_via_deflection_grid_from(self, deflection_grid: "Grid2D") -> "Grid2D":
+    def grid_2d_via_deflection_grid_from(self, deflection_grid: "Grid2D") -> "Grid2D":
         """
         Returns a new Grid2D from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
         termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.

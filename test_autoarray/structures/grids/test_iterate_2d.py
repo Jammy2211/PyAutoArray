@@ -15,7 +15,7 @@ test_coordinates_dir = path.join(
 
 
 class TestObj:
-    def test__grid_via_deflection_grid_from(self):
+    def test__grid_2d_via_deflection_grid_from(self):
 
         grid = aa.Grid2DIterate.uniform(
             shape_native=(2, 2),
@@ -24,7 +24,7 @@ class TestObj:
             sub_steps=[2, 3],
         )
 
-        grid_deflected = grid.grid_via_deflection_grid_from(deflection_grid=grid)
+        grid_deflected = grid.grid_2d_via_deflection_grid_from(deflection_grid=grid)
 
         assert type(grid_deflected) == aa.Grid2DIterate
         assert (

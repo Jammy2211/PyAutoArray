@@ -635,11 +635,11 @@ class TestAPI:
 
 
 class TestGrid:
-    def test__grid_via_deflection_grid_from(self):
+    def test__grid_2d_via_deflection_grid_from(self):
 
         grid = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=2.0)
 
-        grid_deflected = grid.grid_via_deflection_grid_from(deflection_grid=grid)
+        grid_deflected = grid.grid_2d_via_deflection_grid_from(deflection_grid=grid)
 
         assert type(grid_deflected) == aa.Grid2D
         assert (

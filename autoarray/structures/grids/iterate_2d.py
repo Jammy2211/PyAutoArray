@@ -359,7 +359,7 @@ class Grid2DIterate(Grid2D):
             sub_steps=self.sub_steps,
         )
 
-    def grid_via_deflection_grid_from(
+    def grid_2d_via_deflection_grid_from(
         self, deflection_grid: np.ndarray
     ) -> "Grid2DIterate":
         """

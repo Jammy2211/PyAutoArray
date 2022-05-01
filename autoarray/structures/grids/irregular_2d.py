@@ -157,7 +157,7 @@ class Grid2DIrregular(AbstractNDArray):
             return Grid2DIrregularTransformed(grid=grid_slim)
         return Grid2DIrregular(grid=grid_slim)
 
-    def grid_via_deflection_grid_from(
+    def grid_2d_via_deflection_grid_from(
         self, deflection_grid: np.ndarray
     ) -> "Grid2DIrregular":
         """
@@ -499,7 +499,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
             shape_native=self.shape_native,
         )
 
-    def grid_via_deflection_grid_from(
+    def grid_2d_via_deflection_grid_from(
         self, deflection_grid: np.ndarray
     ) -> "Grid2DIrregularUniform":
         """
