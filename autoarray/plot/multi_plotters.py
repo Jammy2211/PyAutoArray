@@ -31,7 +31,7 @@ class MultiYX1DPlotter:
         self.plotter_list = plotter_list
 
         if color_list is None:
-            color_list = 10*["k", "r", "b", "g", "c", "m", "y"]
+            color_list = 10 * ["k", "r", "b", "g", "c", "m", "y"]
 
         self.color_list = color_list
         self.legend_labels = legend_labels

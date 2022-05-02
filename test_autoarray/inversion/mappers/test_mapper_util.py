@@ -619,4 +619,5 @@ def test_mapped_to_source_via_mapping_matrix_from():
         mapping_matrix=mapping_matrix, array_slim=array_slim
     )
 
+
 #    assert (mapped_to_source == np.array([3.5, 8.0, 3.5])).all()

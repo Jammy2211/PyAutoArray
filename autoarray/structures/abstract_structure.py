@@ -9,6 +9,7 @@ from autoarray.structures.arrays import array_2d_util
 
 from autoarray import exc
 
+
 class Structure(AbstractNDArray, ABC):
     def __array_finalize__(self, obj):
 
