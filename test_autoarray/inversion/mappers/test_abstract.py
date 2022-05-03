@@ -177,7 +177,11 @@ def test__mapped_to_source_from(grid_2d_7x7):
         source_grid_slim=grid_2d_7x7, source_pixelization_grid=pixelization_grid
     )
 
-    array_slim = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
+    array_slim = aa.Array2D.manual_slim(
+        [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
+        shape_native=(3, 3),
+        pixel_scales=1.0,
+    )
 
     mapped_to_source_util = aa.util.mapper.mapped_to_source_via_mapping_matrix_from(
         mapping_matrix=mapper.mapping_matrix, array_slim=array_slim
