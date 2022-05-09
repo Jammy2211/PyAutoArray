@@ -107,17 +107,17 @@ def test__set_relocated_grid():
     assert (preloads.relocated_grid == np.ones((3, 2))).all()
 
 
-def test__set_linear_obj_list():
+def test__set_mapper_list():
 
     # LEq is None so there is no mapper, thus preload mapper to None.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
     fit_1 = aa.m.MockFitImaging(inversion=None)
 
-    preloads = aa.Preloads(linear_obj_list=1)
-    preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(mapper_list=1)
+    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.linear_obj_list is None
+    assert preloads.mapper_list is None
 
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
@@ -131,10 +131,10 @@ def test__set_linear_obj_list():
     fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
     fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
-    preloads = aa.Preloads(linear_obj_list=1)
-    preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(mapper_list=1)
+    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert preloads.linear_obj_list is None
+    assert preloads.mapper_list is None
 
     # Mapper's mapping matrices are the same, thus preload mapper.
 
@@ -148,10 +148,10 @@ def test__set_linear_obj_list():
     fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
     fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
-    preloads = aa.Preloads(linear_obj_list=1)
-    preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(mapper_list=1)
+    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert (preloads.linear_obj_list[0].mapping_matrix == np.ones((3, 2))).all()
+    assert (preloads.mapper_list[0].mapping_matrix == np.ones((3, 2))).all()
 
     # Multiple mappers pre inversion still preloads full mapper list.
 
@@ -171,11 +171,11 @@ def test__set_linear_obj_list():
     fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
     fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
 
-    preloads = aa.Preloads(linear_obj_list=1)
-    preloads.set_linear_obj_list(fit_0=fit_0, fit_1=fit_1)
+    preloads = aa.Preloads(mapper_list=1)
+    preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
 
-    assert (preloads.linear_obj_list[0].mapping_matrix == np.ones((3, 2))).all()
-    assert (preloads.linear_obj_list[1].mapping_matrix == np.ones((3, 2))).all()
+    assert (preloads.mapper_list[0].mapping_matrix == np.ones((3, 2))).all()
+    assert (preloads.mapper_list[1].mapping_matrix == np.ones((3, 2))).all()
 
 
 def test__set_operated_mapping_matrix_with_preloads():

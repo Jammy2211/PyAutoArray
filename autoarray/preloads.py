@@ -20,7 +20,7 @@ class Preloads:
         use_w_tilde=None,
         sparse_image_plane_grid_pg_list=None,
         relocated_grid=None,
-        linear_obj_list=None,
+        mapper_list=None,
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
@@ -36,7 +36,7 @@ class Preloads:
 
         self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
         self.relocated_grid = relocated_grid
-        self.linear_obj_list = linear_obj_list
+        self.mapper_list = mapper_list
         self.operated_mapping_matrix = operated_mapping_matrix
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
@@ -123,8 +123,8 @@ class Preloads:
         if fit_0.inversion.total_mappers > 1:
             return
 
-        mapper_0 = fit_0.inversion.linear_obj_list[0]
-        mapper_1 = fit_1.inversion.linear_obj_list[0]
+        mapper_0 = fit_0.inversion.mapper_list[0]
+        mapper_1 = fit_1.inversion.mapper_list[0]
 
         if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
 
@@ -139,7 +139,7 @@ class Preloads:
                     "PRELOADS - Relocated grid of pxielization preloaded for this model-fit."
                 )
 
-    def set_linear_obj_list(self, fit_0, fit_1):
+    def set_mapper_list(self, fit_0, fit_1):
         """
         If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and the list of `Mapper`'s containing this information can
@@ -159,7 +159,7 @@ class Preloads:
             The second fit corresponding to a model with a different set of unit-values.
         """
 
-        self.linear_obj_list = None
+        self.mapper_list = None
 
         if fit_0.inversion is None:
             return
@@ -178,7 +178,7 @@ class Preloads:
 
             if np.allclose(inversion_0.mapping_matrix, inversion_1.mapping_matrix):
 
-                self.linear_obj_list = inversion_0.linear_obj_list
+                self.mapper_list = inversion_0.mapper_list
 
                 logger.info(
                     "PRELOADS - Mappers of planes preloaded for this model-fit."
@@ -370,7 +370,7 @@ class Preloads:
         self.traced_grids_of_planes_for_inversion = None
         self.sparse_image_plane_grid_pg_list = None
         self.relocated_grid = None
-        self.linear_obj_list = None
+        self.mapper_list = None
         self.operated_mapping_matrix = None
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
@@ -389,7 +389,7 @@ class Preloads:
         """
         line = [f"W Tilde = {self.w_tilde is not None}\n"]
         line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
-        line += [f"Mapper = {self.linear_obj_list is not None}\n"]
+        line += [f"Mapper = {self.mapper_list is not None}\n"]
         line += [
             f"Blurred Mapping Matrix = {self.operated_mapping_matrix is not None}\n"
         ]

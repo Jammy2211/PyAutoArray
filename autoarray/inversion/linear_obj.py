@@ -64,7 +64,7 @@ class LinearObj:
 
         This is used for linear objects where properly performing the 2D convolution within only the `LinearEqn`
         object is not possible. For example, images may have flux outside the masked region which is blurred into the
-        masked region which is linear solved for. This flux is outside the region that defines the `mapping_matrix and
+        masked region which is linear solved for. This flux is outside the region that defines the `mapping_matrix` and
         thus this override is required to properly incorporate it.
 
         Returns
