@@ -294,6 +294,13 @@ def make_masked_imaging_7x7_no_blur():
     return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
 
 
+def make_model_image_7x7():
+
+    imaging_7x7 = make_masked_imaging_7x7()
+
+    return 5.0 * imaging_7x7.image
+
+
 def make_imaging_fit_x1_plane_7x7():
 
     imaging_7x7 = make_masked_imaging_7x7()

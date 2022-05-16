@@ -31,7 +31,7 @@ class MockLEq(AbstractLEq):
     def __init__(
         self,
         noise_map=None,
-        linear_obj_list: List[Union[MockMapper]] = None,
+        linear_obj_list: List[Union[MockMapper, MockLinearObjFunc]] = None,
         operated_mapping_matrix=None,
         data_vector=None,
         curvature_matrix=None,
@@ -54,9 +54,9 @@ class MockLEq(AbstractLEq):
 
         return self._operated_mapping_matrix
 
-    def data_vector_from(self, data) -> np.ndarray:
+    def data_vector_from(self, data, preloads=None) -> np.ndarray:
         if self._data_vector is None:
-            return super().data_vector_from(data=data)
+            return super().data_vector_from(data=data, preloads=preloads)
 
         return self._data_vector
 

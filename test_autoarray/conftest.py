@@ -159,6 +159,11 @@ def make_masked_imaging_7x7_no_blur():
     return fixtures.make_masked_imaging_7x7_no_blur()
 
 
+@pytest.fixture(name="model_image_7x7")
+def make_model_image_7x7():
+    return fixtures.make_model_image_7x7()
+
+
 @pytest.fixture(name="fit_imaging_7x7")
 def make_imaging_fit_x1_plane_7x7():
     return fixtures.make_imaging_fit_x1_plane_7x7()
