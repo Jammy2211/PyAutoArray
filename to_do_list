@@ -11,6 +11,11 @@ __Refactor__
 - auto_labels in visuals as a config loady thing.
 
 
+__Visualization__
+
+- Need to properly make it so one can disable many aspections of visualization.
+
+
 __Probably Terrible Idea Notes__
 
 w_tilde_tlc:

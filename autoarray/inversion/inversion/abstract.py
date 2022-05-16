@@ -57,6 +57,14 @@ class AbstractInversion:
         return self.leq.linear_obj_list
 
     @property
+    def linear_obj_func_list(self):
+        return self.leq.linear_obj_func_list
+
+    @property
+    def has_linear_obj_func(self):
+        return self.leq.has_linear_obj_func
+
+    @property
     def mapper_list(self):
         return self.leq.mapper_list
 

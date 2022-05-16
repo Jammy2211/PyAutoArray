@@ -236,6 +236,9 @@ class FitDataset(ABC):
     @property
     @profile_func
     def figure_of_merit(self) -> float:
+
+        #    if self.
+
         if self.inversion is None:
             return self.log_likelihood
         return self.log_evidence

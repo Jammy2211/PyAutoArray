@@ -91,6 +91,7 @@ def inversion_imaging_unpacked_from(
             convolver=convolver,
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
+            settings=settings,
             profiling_dict=profiling_dict,
         )
 
@@ -100,6 +101,7 @@ def inversion_imaging_unpacked_from(
             noise_map=noise_map,
             convolver=convolver,
             linear_obj_list=linear_obj_list,
+            settings=settings,
             profiling_dict=profiling_dict,
         )
 

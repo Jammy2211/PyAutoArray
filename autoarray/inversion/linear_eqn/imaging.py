@@ -7,6 +7,7 @@ from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.linear_eqn.abstract import AbstractLEq
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.dataset.imaging import WTildeImaging
@@ -20,6 +21,7 @@ class AbstractLEqImaging(AbstractLEq):
         noise_map: Array2D,
         convolver: Convolver,
         linear_obj_list: List[LinearObj],
+        settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -44,6 +46,7 @@ class AbstractLEqImaging(AbstractLEq):
         """
 
         self.convolver = convolver
+        self.settings = settings
 
         super().__init__(
             noise_map=noise_map,
@@ -140,6 +143,7 @@ class LEqImagingMapping(AbstractLEqImaging):
         noise_map: Array2D,
         convolver: Convolver,
         linear_obj_list: List[LinearObj],
+        settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -170,6 +174,7 @@ class LEqImagingMapping(AbstractLEqImaging):
             noise_map=noise_map,
             convolver=convolver,
             linear_obj_list=linear_obj_list,
+            settings=settings,
             profiling_dict=profiling_dict,
         )
 
@@ -277,6 +282,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         convolver: Convolver,
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
+        settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -306,15 +312,19 @@ class LEqImagingWTilde(AbstractLEqImaging):
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        self.w_tilde = w_tilde
-        self.w_tilde.check_noise_map(noise_map=noise_map)
-
         super().__init__(
             noise_map=noise_map,
             convolver=convolver,
             linear_obj_list=linear_obj_list,
+            settings=settings,
             profiling_dict=profiling_dict,
         )
+
+        if self.settings.use_w_tilde:
+            self.w_tilde = w_tilde
+            self.w_tilde.check_noise_map(noise_map=noise_map)
+        else:
+            self.w_tilde = None
 
     @profile_func
     def data_vector_from(self, data: Array2D, preloads) -> np.ndarray:

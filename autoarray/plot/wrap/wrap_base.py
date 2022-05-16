@@ -25,6 +25,8 @@ def set_backend():
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cm
+from matplotlib.ticker import FormatStrFormatter
+
 import numpy as np
 from os import path
 import os
@@ -477,7 +479,12 @@ class TickParams(AbstractMatWrap):
 
 
 class AbstractTicks(AbstractMatWrap):
-    def __init__(self, manual_values: Optional[List[float]] = None, **kwargs):
+    def __init__(
+        self,
+        manual_values: Optional[List[float]] = None,
+        manual_units: Optional[str] = None,
+        **kwargs,
+    ):
         """
         The settings used to customize a figure's y and x ticks using the `YTicks` and `XTicks` objects.
 
@@ -494,6 +501,7 @@ class AbstractTicks(AbstractMatWrap):
         super().__init__(**kwargs)
 
         self.manual_values = manual_values
+        self.manual_units = manual_units
 
     def tick_values_from(self, min_value: float, max_value: float) -> np.ndarray:
         """
@@ -507,8 +515,9 @@ class AbstractTicks(AbstractMatWrap):
         max_value
             the maximum value of the ticks that figure is plotted using.
         """
+
         if self.manual_values is not None:
-            return np.linspace(min_value, max_value, len(self.manual_values))
+            return self.manual_values
         return np.linspace(min_value, max_value, 5)
 
     def tick_values_in_units_from(
@@ -582,6 +591,12 @@ class YTicks(AbstractTicks):
             array=array, min_value=min_value, max_value=max_value, units=units
         )
         plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
+
+        if self.manual_units is not None:
+            plt.gca().yaxis.set_major_formatter(
+                FormatStrFormatter(f"{self.manual_units}")
+            )
+
         if not units.use_scaled:
             plt.gca().invert_yaxis()
 
@@ -620,7 +635,13 @@ class XTicks(AbstractTicks):
             labels = self.tick_values_in_units_from(
                 array=array, min_value=min_value, max_value=max_value, units=units
             )
+
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
+
+        if self.manual_units is not None:
+            plt.gca().xaxis.set_major_formatter(
+                FormatStrFormatter(f"{self.manual_units}")
+            )
 
 
 class Title(AbstractMatWrap):

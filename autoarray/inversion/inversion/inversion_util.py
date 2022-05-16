@@ -44,7 +44,7 @@ def reconstruction_from(
     except np.linalg.LinAlgError:
         raise exc.InversionException()
 
-    if settings.check_solution:
+    if settings.check_solution and len(reconstruction) > 1:
         if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-4).all():
             if np.isclose(a=reconstruction[0], b=reconstruction, atol=1e-4).all():
                 raise exc.InversionException()

@@ -670,6 +670,7 @@ class MatPlot2D(AbstractMatPlot):
             max_value=extent_axis[3],
             units=self.units,
         )
+
         self.xticks.set(
             array=array,
             min_value=extent_axis[0],
@@ -686,7 +687,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
-        if self.colorbar is not None:
+        if self.colorbar is not False:
             cb = self.colorbar.set()
             self.colorbar_tickparams.set(cb=cb)
 

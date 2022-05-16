@@ -5,6 +5,7 @@ from autoarray.numba_util import profile_func
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj import LinearObjFunc
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -46,6 +47,25 @@ class AbstractLEq:
         self.linear_obj_list = linear_obj_list
 
         self.profiling_dict = profiling_dict
+
+    @property
+    def linear_obj_func_list(self) -> List[LinearObjFunc]:
+        """
+        Returns a list of all linear objects based on analytic functions used to construct the simultaneous linear
+        equations.
+
+        This property removes other linear objects (E.g. `Mapper` objects).
+        """
+        linear_obj_func_list = [
+            linear_obj if isinstance(linear_obj, LinearObjFunc) else None
+            for linear_obj in self.linear_obj_list
+        ]
+
+        return list(filter(None, linear_obj_func_list))
+
+    @property
+    def has_linear_obj_func(self):
+        return len(self.linear_obj_func_list) > 0
 
     @property
     def mapper_list(self) -> List[AbstractMapper]:

@@ -9,6 +9,7 @@ class SettingsInversion:
         self,
         use_w_tilde: bool = True,
         use_linear_operators: bool = False,
+        linear_func_only_use_evidence: bool = False,
         tolerance: float = 1e-8,
         maxiter: int = 250,
         check_solution: bool = True,
@@ -18,6 +19,7 @@ class SettingsInversion:
 
         self.use_w_tilde = use_w_tilde
         self.use_linear_operators = use_linear_operators
+        self.linear_func_only_use_evidence = linear_func_only_use_evidence
         self.tolerance = tolerance
         self.maxiter = maxiter
         self.check_solution = check_solution

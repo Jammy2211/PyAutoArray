@@ -10,6 +10,24 @@ from autoarray import exc
 directory = path.dirname(path.realpath(__file__))
 
 
+def test__linear_obj_func_list__filters_other_objects():
+
+    inversion = aa.m.MockInversion(
+        leq=aa.m.MockLEq(
+            linear_obj_list=[
+                aa.m.MockMapper(pixels=1),
+                aa.m.MockLinearObjFunc(grid=3),
+                aa.m.MockMapper(pixels=2),
+                aa.m.MockLinearObjFunc(grid=4),
+            ]
+        )
+    )
+
+    assert inversion.linear_obj_func_list[0].grid == 3
+    assert inversion.linear_obj_func_list[1].grid == 4
+    assert inversion.has_linear_obj_func == True
+
+
 def test__mapper_list__filters_other_objects():
 
     inversion = aa.m.MockInversion(
@@ -24,6 +42,7 @@ def test__mapper_list__filters_other_objects():
 
     assert inversion.mapper_list[0].pixels == 1
     assert inversion.mapper_list[1].pixels == 2
+    assert inversion.has_mapper == True
 
 
 def test__regularization_matrix():
