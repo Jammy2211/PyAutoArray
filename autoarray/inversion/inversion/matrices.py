@@ -176,6 +176,10 @@ class InversionMatrices(AbstractInversion):
         float
             The log determinant of the regularization matrix.
         """
+
+        if not self.has_mapper:
+            return 0.0
+
         if self.preloads.log_det_regularization_matrix_term is not None:
             return self.preloads.log_det_regularization_matrix_term
 

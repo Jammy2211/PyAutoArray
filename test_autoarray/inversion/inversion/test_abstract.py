@@ -227,7 +227,10 @@ def test__regularization_term():
         [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
     )
 
+    leq = aa.m.MockLEq(linear_obj_list=[aa.m.MockMapper()])
+
     inversion = aa.m.MockInversion(
+        leq=leq,
         reconstruction=reconstruction, regularization_matrix=regularization_matrix
     )
 
@@ -253,7 +256,10 @@ def test__regularization_term():
         [[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]]
     )
 
+    leq = aa.m.MockLEq(linear_obj_list=[aa.m.MockMapper()])
+
     inversion = aa.m.MockInversion(
+        leq=leq,
         reconstruction=reconstruction, regularization_matrix=regularization_matrix
     )
 
@@ -276,7 +282,10 @@ def test__regularization_term():
 
 def test__preload_of_log_det_regularization_term_overwrites_calculation():
 
+    leq = aa.m.MockLEq(linear_obj_list=[aa.m.MockMapper()])
+
     inversion = aa.m.MockInversion(
+        leq=leq,
         preloads=aa.Preloads(log_det_regularization_matrix_term=1.0)
     )
 

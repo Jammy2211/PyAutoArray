@@ -225,11 +225,19 @@ class FitDataset(ABC):
             The normalization noise_map-term for the data's noise-map.
         """
         if self.inversion is not None:
+            if self.inversion.has_mapper:
+                return fit_util.log_evidence_from(
+                    chi_squared=self.chi_squared,
+                    regularization_term=self.inversion.regularization_term,
+                    log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
+                    log_regularization_term=self.inversion.log_det_regularization_matrix_term,
+                    noise_normalization=self.noise_normalization,
+                )
             return fit_util.log_evidence_from(
                 chi_squared=self.chi_squared,
-                regularization_term=self.inversion.regularization_term,
+                regularization_term=0.0,
                 log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
-                log_regularization_term=self.inversion.log_det_regularization_matrix_term,
+                log_regularization_term=0.0,
                 noise_normalization=self.noise_normalization,
             )
 

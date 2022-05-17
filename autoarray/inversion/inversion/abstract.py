@@ -243,10 +243,12 @@ class AbstractInversion:
         The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens,
         this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
         """
-        return np.matmul(
-            self.reconstruction.T,
-            np.matmul(self.regularization_matrix, self.reconstruction),
-        )
+        if self.has_mapper:
+            return np.matmul(
+                self.reconstruction.T,
+                np.matmul(self.regularization_matrix, self.reconstruction),
+            )
+        return 0.0
 
     @cached_property
     @profile_func
