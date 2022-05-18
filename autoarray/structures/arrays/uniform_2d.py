@@ -24,7 +24,6 @@ class AbstractArray2D(Structure):
         array: Union[np.ndarray, List],
         mask: Mask2D,
         header: Header = None,
-        zoom_for_plot: bool = True,
         *args,
         **kwargs
     ):
@@ -198,7 +197,6 @@ class AbstractArray2D(Structure):
         obj = array.view(cls)
         obj.mask = mask
         obj.header = header
-        obj.zoom_for_plot = zoom_for_plot
 
         return obj
 

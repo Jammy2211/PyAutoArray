@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import Iterable, Optional, List, Union
 
+from autoconf import conf
+
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
@@ -623,7 +625,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             buffer = 1
 
-        if array.zoom_for_plot:
+        if conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]:
 
             extent = array.extent_of_zoomed_array(buffer=buffer)
             array = array.zoomed_around_mask(buffer=buffer)
