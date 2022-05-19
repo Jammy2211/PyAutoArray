@@ -521,7 +521,12 @@ class AbstractTicks(AbstractMatWrap):
         return np.linspace(min_value, max_value, 5)
 
     def tick_values_in_units_from(
-        self, array: Array2D, min_value: float, max_value: float, units: Units, axis : int
+        self,
+        array: Array2D,
+        min_value: float,
+        max_value: float,
+        units: Units,
+        axis: int,
     ) -> Optional[np.ndarray]:
         """
         Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
@@ -550,7 +555,12 @@ class AbstractTicks(AbstractMatWrap):
             try:
                 return np.linspace(0, array.shape_native[axis], 5).astype("int")
             except AttributeError:
-                return np.linspace(0, np.asarray(array).shape[axis], 5).astype("int")
+                try:
+                    return np.linspace(0, np.asarray(array).shape[axis], 5).astype(
+                        "int"
+                    )
+                except IndexError:
+                    return np.linspace(0, np.asarray(array).shape[0], 5).astype("int")
         elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
             return np.round(np.linspace(min_value, max_value, 5), 2)
         elif units.use_scaled and units.conversion_factor is not None:
@@ -634,8 +644,13 @@ class XTicks(AbstractTicks):
         else:
 
             ticks = self.tick_values_from(min_value=min_value, max_value=max_value)
+
             labels = self.tick_values_in_units_from(
-                array=array, min_value=min_value, max_value=max_value, units=units, axis=1
+                array=array,
+                min_value=min_value,
+                max_value=max_value,
+                units=units,
+                axis=1,
             )
 
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
