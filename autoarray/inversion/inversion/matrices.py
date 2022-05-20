@@ -76,6 +76,7 @@ class InversionMatrices(AbstractInversion):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
+
         if self.preloads.curvature_matrix is not None:
 
             # Need to copy because of how curvature_reg_matirx overwrites memory.

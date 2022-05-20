@@ -136,6 +136,9 @@ class InversionPlotter(Plotter):
             weights.
         """
 
+        if not self.inversion.has_mapper:
+            return
+
         mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)
 
         if reconstructed_image:

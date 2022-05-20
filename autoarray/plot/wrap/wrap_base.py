@@ -554,6 +554,8 @@ class AbstractTicks(AbstractMatWrap):
         elif not units.use_scaled:
             try:
                 return np.linspace(0, array.shape_native[axis], 5).astype("int")
+            except IndexError:
+                return np.linspace(0, array.shape_native[0], 5).astype("int")
             except AttributeError:
                 try:
                     return np.linspace(0, np.asarray(array).shape[axis], 5).astype(

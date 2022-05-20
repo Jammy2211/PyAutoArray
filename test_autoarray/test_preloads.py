@@ -18,11 +18,17 @@ def test__set_w_tilde():
 
     # Noise maps of fit are different but there is an inversion, so we should not preload w_tilde and use w_tilde.
 
+    inversion = aa.m.MockInversion(
+        leq=aa.m.MockLEq(linear_obj_list=[aa.m.MockMapper()])
+    )
+
     fit_0 = aa.m.MockFitImaging(
-        inversion=1, noise_map=aa.Array2D.zeros(shape_native=(3, 1), pixel_scales=0.1)
+        inversion=inversion,
+        noise_map=aa.Array2D.zeros(shape_native=(3, 1), pixel_scales=0.1),
     )
     fit_1 = aa.m.MockFitImaging(
-        inversion=1, noise_map=aa.Array2D.ones(shape_native=(3, 1), pixel_scales=0.1)
+        inversion=inversion,
+        noise_map=aa.Array2D.ones(shape_native=(3, 1), pixel_scales=0.1),
     )
 
     preloads = aa.Preloads(w_tilde=1, use_w_tilde=1)
@@ -41,8 +47,12 @@ def test__set_w_tilde():
 
     dataset = aa.m.MockDataset(psf=aa.Kernel2D.no_blur(pixel_scales=1.0), mask=mask)
 
-    fit_0 = aa.m.MockFitImaging(inversion=1, dataset=dataset, noise_map=noise_map)
-    fit_1 = aa.m.MockFitImaging(inversion=1, dataset=dataset, noise_map=noise_map)
+    fit_0 = aa.m.MockFitImaging(
+        inversion=inversion, dataset=dataset, noise_map=noise_map
+    )
+    fit_1 = aa.m.MockFitImaging(
+        inversion=inversion, dataset=dataset, noise_map=noise_map
+    )
 
     preloads = aa.Preloads(w_tilde=1, use_w_tilde=1)
     preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)

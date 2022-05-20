@@ -70,10 +70,13 @@ class Preloads:
         self.w_tilde = None
         self.use_w_tilde = False
 
-        if (
-            fit_0.inversion is not None
-            and np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8
-        ):
+        if fit_0.inversion is None:
+            return
+
+        if not fit_0.inversion.has_mapper:
+            return
+
+        if np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8:
 
             logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
 
