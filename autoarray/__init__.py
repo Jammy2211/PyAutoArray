@@ -35,11 +35,11 @@ from .inversion.mappers.delaunay import MapperDelaunay
 from .inversion.mappers.voronoi import MapperVoronoiNoInterp
 from .inversion.mappers.voronoi import MapperVoronoi
 from .inversion.pixelizations.settings import SettingsPixelization
-from .inversion.linear_eqn.imaging import LEqImagingMapping
-from .inversion.linear_eqn.imaging import LEqImagingWTilde
-from .inversion.linear_eqn.interferometer import LEqInterferometerWTilde
-from .inversion.linear_eqn.interferometer import LEqInterferometerMapping
-from .inversion.linear_eqn.interferometer import LEqInterferometerMappingPyLops
+from .inversion.linear_eqn.imaging.mapping import LEqImagingMapping
+from .inversion.linear_eqn.imaging.w_tilde import LEqImagingWTilde
+from .inversion.linear_eqn.interferometer.w_tilde import LEqInterferometerWTilde
+from .inversion.linear_eqn.interferometer.mapping import LEqInterferometerMapping
+from .inversion.linear_eqn.interferometer.lop import LEqInterferometerMappingPyLops
 from .inversion.linear_obj import LinearObj
 from .inversion.linear_obj import LinearObjFunc
 from .mask.mask_1d import Mask1D

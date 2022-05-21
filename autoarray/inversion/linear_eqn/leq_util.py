@@ -698,8 +698,34 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
     return curvature_matrix
 
 
+def curvature_matrix_with_added_to_diag_from(
+    curvature_matrix: np.ndarray
+) -> np.ndarray:
+    """
+    It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
+    via `np.linalg.solve` to fail and raise a `LinAlgError`.
+
+    In many circumstances, adding a small numerical value of `1.0e-8` to the diagonal of the `curvature_matrix`
+    makes it positive definite, such that the inversion is performed without raising an error.
+
+    This function adds this numerical value to the diagonal of the curvature matrix.
+
+    Parameters
+    ----------
+    curvature_matrix
+        The curvature matrix which is being constructed in order to solve a linear system of equations.
+    """
+
+    for i in range(curvature_matrix.shape[0]):
+        curvature_matrix[i, i] += 1e-8
+
+    return curvature_matrix
+
+
 def curvature_matrix_via_mapping_matrix_from(
-    mapping_matrix: np.ndarray, noise_map: np.ndarray
+    mapping_matrix: np.ndarray,
+    noise_map: np.ndarray,
+    add_to_curvature_diag: bool = False,
 ) -> np.ndarray:
     """
     Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
@@ -715,6 +741,12 @@ def curvature_matrix_via_mapping_matrix_from(
     """
     array = mapping_matrix / noise_map[:, None]
     curvature_matrix = np.dot(array.T, array)
+
+    if add_to_curvature_diag:
+        curvature_matrix = curvature_matrix_with_added_to_diag_from(
+            curvature_matrix=curvature_matrix
+        )
+
     return curvature_matrix
 
 

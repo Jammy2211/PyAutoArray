@@ -6,6 +6,7 @@ from autoarray.numba_util import profile_func
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.linear_obj import LinearObjFunc
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -16,6 +17,7 @@ class AbstractLEq:
         self,
         noise_map: Union[Array2D, VisibilitiesNoiseMap],
         linear_obj_list: List[LinearObj],
+        settings: SettingsInversion = SettingsInversion(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -45,7 +47,7 @@ class AbstractLEq:
         """
         self.noise_map = noise_map
         self.linear_obj_list = linear_obj_list
-
+        self.settings = settings
         self.profiling_dict = profiling_dict
 
     @property
@@ -103,6 +105,12 @@ class AbstractLEq:
         ]
 
         return list(filter(None, mapper_list))
+
+    @property
+    def add_to_curvature_diag(self) -> bool:
+        if len(self.linear_obj_func_list) == len(self.linear_obj_list):
+            return self.settings.linear_func_only_add_to_curvature_diag
+        return False
 
     @property
     @profile_func

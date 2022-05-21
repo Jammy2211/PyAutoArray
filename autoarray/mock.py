@@ -1,13 +1,14 @@
 from autoarray.dataset.mock.mock_dataset import MockDataset
-from autoarray.inversion.pixelizations.mock.mock_pixelization import MockPixelization
-from autoarray.inversion.regularization.mock.mock_regularization import (
-    MockRegularization,
+from autoarray.inversion.mock.mock_pixelization import MockPixelization
+from autoarray.inversion.mock.mock_regularization import MockRegularization
+from autoarray.inversion.mock.mock_mapper import MockMapper
+from autoarray.inversion.mock.mock_linear_obj_func import MockLinearObjFunc
+from autoarray.inversion.mock.mock_leq import MockLEq
+from autoarray.inversion.mock.mock_leq_imaging import MockLEqImaging
+from autoarray.inversion.mock.mock_leq_interferometer import (
+    MockLEqInterferometerMapping,
 )
-from autoarray.inversion.mappers.mock.mock_mapper import MockMapper
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLinearObjFunc
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEq
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEqImaging
-from autoarray.inversion.inversion.mock.mock_inversion import MockInversion
+from autoarray.inversion.mock.mock_inversion import MockInversion
 from autoarray.fit.mock.mock_fit_imaging import MockFitImaging
 from autoarray.fit.mock.mock_fit_interferometer import MockFitInterferometer
 from autoarray.mask.mock.mock_mask import MockMask

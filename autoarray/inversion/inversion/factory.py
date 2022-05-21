@@ -11,13 +11,19 @@ from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.inversion.linear_obj import LinearObj
-from autoarray.inversion.linear_eqn.imaging import LEqImagingWTilde
-from autoarray.inversion.linear_eqn.imaging import LEqImagingMapping
+from autoarray.inversion.linear_eqn.imaging.w_tilde import LEqImagingWTilde
+from autoarray.inversion.linear_eqn.imaging.mapping import LEqImagingMapping
 from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.linear_operator import InversionLinearOperator
-from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerMapping
-from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerWTilde
-from autoarray.inversion.linear_eqn.interferometer import LEqInterferometerMappingPyLops
+from autoarray.inversion.linear_eqn.interferometer.mapping import (
+    LEqInterferometerMapping,
+)
+from autoarray.inversion.linear_eqn.interferometer.w_tilde import (
+    LEqInterferometerWTilde,
+)
+from autoarray.inversion.linear_eqn.interferometer.lop import (
+    LEqInterferometerMappingPyLops,
+)
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads

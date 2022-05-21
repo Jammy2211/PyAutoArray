@@ -643,12 +643,15 @@ class MatPlot2D(AbstractMatPlot):
         aspect = self.figure.aspect_from(shape_native=array.shape_native)
         norm_scale = self.cmap.norm_from(array=array)
 
+        origin = conf.instance["visualize"]["general"]["general"]["imshow_origin"]
+
         plt.imshow(
             X=array.native,
             aspect=aspect,
             cmap=self.cmap.config_dict["cmap"],
             norm=norm_scale,
             extent=extent,
+            origin=origin,
         )
 
         if visuals_2d.array_overlay is not None:

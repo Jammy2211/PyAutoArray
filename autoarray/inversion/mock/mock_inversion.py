@@ -5,10 +5,8 @@ from autoarray.inversion.inversion.matrices import InversionMatrices
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 
-from autoarray.inversion.linear_eqn.mock.mock_leq import MockLEq
-from autoarray.inversion.regularization.mock.mock_regularization import (
-    MockRegularization,
-)
+from autoarray.inversion.mock.mock_leq import MockLEq
+from autoarray.inversion.mock.mock_regularization import MockRegularization
 
 
 class MockInversion(InversionMatrices):

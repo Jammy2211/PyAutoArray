@@ -12,8 +12,10 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.linear_obj import LinearObj
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.linear_eqn.imaging import AbstractLEqImaging
-from autoarray.inversion.linear_eqn.interferometer import AbstractLEqInterferometer
+from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
+from autoarray.inversion.linear_eqn.interferometer.abstract import (
+    AbstractLEqInterferometer,
+)
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 

@@ -7,6 +7,30 @@ import autoarray as aa
 directory = path.dirname(path.realpath(__file__))
 
 
+def test__add_to_curvature_diag():
+
+    leq = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockLinearObjFunc()],
+        settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=True),
+    )
+
+    assert leq.add_to_curvature_diag is True
+
+    leq = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockLinearObjFunc()],
+        settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=False),
+    )
+
+    assert leq.add_to_curvature_diag is False
+
+    leq = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockLinearObjFunc(), aa.m.MockMapper()],
+        settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=True),
+    )
+
+    assert leq.add_to_curvature_diag is False
+
+
 def test__mapping_matrix():
 
     mapper_0 = aa.m.MockMapper(mapping_matrix=np.ones((2, 2)))

@@ -2,7 +2,7 @@ import logging
 import numpy as np
 from typing import List
 
-from autoarray.inversion.linear_eqn.imaging import AbstractLEqImaging
+from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
 
 from autoarray import exc
 from autoarray.inversion.linear_eqn import leq_util
