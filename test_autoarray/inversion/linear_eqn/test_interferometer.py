@@ -19,8 +19,6 @@ def test__curvature_matrix():
         settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=False),
     )
 
-    print(leq.curvature_matrix)
-
     assert leq.curvature_matrix == pytest.approx(
         np.array([[4.0, 4.0], [4.0, 4.0]]), 1.0e-4
     )
