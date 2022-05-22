@@ -66,6 +66,23 @@ class AbstractLEq:
         return list(filter(None, linear_obj_func_list))
 
     @property
+    def linear_obj_func_index_list(self) -> List[int]:
+
+        linear_obj_func_index_list = []
+
+        pixel_count = 0
+
+        for linear_obj in self.linear_obj_list:
+
+            if isinstance(linear_obj, LinearObjFunc):
+
+                linear_obj_func_index_list.append(pixel_count)
+
+            pixel_count += linear_obj.pixels
+
+        return linear_obj_func_index_list
+
+    @property
     def has_linear_obj_func(self):
         return len(self.linear_obj_func_list) > 0
 

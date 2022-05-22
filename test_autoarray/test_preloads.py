@@ -329,14 +329,20 @@ def test__set_regularization_matrix_and_term():
 
     # Inversion's log_det_regularization_matrix_term are different thus no preloading.
 
+    leq = aa.m.MockLEq(linear_obj_list=[None])
+
     fit_0 = aa.m.MockFitImaging(
         inversion=aa.m.MockInversion(
-            log_det_regularization_matrix_term=0, regularization_list=[regularization]
+            log_det_regularization_matrix_term=0,
+            regularization_list=[regularization],
+            leq=leq,
         )
     )
     fit_1 = aa.m.MockFitImaging(
         inversion=aa.m.MockInversion(
-            log_det_regularization_matrix_term=1, regularization_list=[regularization]
+            log_det_regularization_matrix_term=1,
+            regularization_list=[regularization],
+            leq=leq,
         )
     )
 

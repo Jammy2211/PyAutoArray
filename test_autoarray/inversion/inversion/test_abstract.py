@@ -297,7 +297,9 @@ def test__determinant_of_positive_definite_matrix_via_cholesky():
 
     matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
-    leq = aa.m.MockInversion(curvature_reg_matrix=matrix)
+    leq = aa.m.MockLEq(linear_obj_list=[None])
+
+    leq = aa.m.MockInversion(leq=leq, curvature_reg_matrix=matrix)
 
     log_determinant = np.log(np.linalg.det(matrix))
 
@@ -305,7 +307,7 @@ def test__determinant_of_positive_definite_matrix_via_cholesky():
 
     matrix = np.array([[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]])
 
-    leq = aa.m.MockInversion(curvature_reg_matrix=matrix)
+    leq = aa.m.MockInversion(leq=leq, curvature_reg_matrix=matrix)
 
     log_determinant = np.log(np.linalg.det(matrix))
 

@@ -123,6 +123,29 @@ class InversionMatrices(AbstractInversion):
 
     @cached_property
     @profile_func
+    def curvature_reg_matrix_mapper(self):
+        """
+        The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
+
+        This is the curvature reg matrix for only the mappers, which is necessary for computing the log det
+        term without the linear light profiles included.
+        """
+        if not self.has_linear_obj_func:
+            return self.curvature_reg_matrix
+
+        curvature_reg_matrix = self.curvature_reg_matrix
+
+        curvature_reg_matrix = np.delete(
+            curvature_reg_matrix, self.leq.linear_obj_func_index_list, 0
+        )
+        curvature_reg_matrix = np.delete(
+            curvature_reg_matrix, self.leq.linear_obj_func_index_list, 1
+        )
+
+        return curvature_reg_matrix
+
+    @cached_property
+    @profile_func
     def curvature_reg_matrix_cholesky(self):
         """
         Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
@@ -133,6 +156,21 @@ class InversionMatrices(AbstractInversion):
         """
         try:
             return np.linalg.cholesky(self.curvature_reg_matrix)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
+
+    @cached_property
+    @profile_func
+    def curvature_reg_matrix_mapper_cholesky(self):
+        """
+        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
+        linear system of equations of the `LEq`.
+
+        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
+        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
+        """
+        try:
+            return np.linalg.cholesky(self.curvature_reg_matrix_mapper)
         except np.linalg.LinAlgError:
             raise exc.InversionException()
 
@@ -160,7 +198,9 @@ class InversionMatrices(AbstractInversion):
 
         This uses the Cholesky decomposition which is already computed before solving the reconstruction.
         """
-        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_cholesky)))
+        if not self.has_linear_obj_func:
+            return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_cholesky)))
+        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_mapper_cholesky)))
 
     @cached_property
     @profile_func
@@ -186,7 +226,7 @@ class InversionMatrices(AbstractInversion):
 
         try:
 
-            lu = splu(csc_matrix(self.regularization_matrix))
+            lu = splu(csc_matrix(self.regularization_matrix_mapper))
             diagL = lu.L.diagonal()
             diagU = lu.U.diagonal()
             diagL = diagL.astype(np.complex128)
@@ -198,7 +238,9 @@ class InversionMatrices(AbstractInversion):
 
             try:
                 return 2.0 * np.sum(
-                    np.log(np.diag(np.linalg.cholesky(self.regularization_matrix)))
+                    np.log(
+                        np.diag(np.linalg.cholesky(self.regularization_matrix_mapper))
+                    )
                 )
             except np.linalg.LinAlgError:
                 raise exc.InversionException()

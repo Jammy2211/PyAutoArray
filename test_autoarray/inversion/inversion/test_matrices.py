@@ -144,6 +144,21 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     )
 
 
+def test__curvature_reg_matrix_mapper():
+
+    leq = aa.m.MockLEq(
+        linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObjFunc()]
+    )
+
+    curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+
+    inversion = aa.m.MockInversion(leq=leq, curvature_reg_matrix=curvature_reg_matrix)
+
+    assert (
+        inversion.curvature_reg_matrix_mapper == np.array([[1.0, 2.0], [4.0, 5.0]])
+    ).all()
+
+
 def test__errors_and_errors_with_covariance():
 
     curvature_reg_matrix = np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 3.0]])

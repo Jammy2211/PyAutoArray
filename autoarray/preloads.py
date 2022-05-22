@@ -123,7 +123,7 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        if fit_0.inversion.total_mappers > 1:
+        if fit_0.inversion.total_mappers > 1 or fit_0.inversion.total_mappers == 0:
             return
 
         mapper_0 = fit_0.inversion.mapper_list[0]
@@ -165,6 +165,9 @@ class Preloads:
         self.mapper_list = None
 
         if fit_0.inversion is None:
+            return
+
+        if fit_0.inversion.total_mappers == 0:
             return
 
         from autoarray.inversion.inversion.linear_operator import (
@@ -320,6 +323,9 @@ class Preloads:
         inversion_1 = fit_1.inversion
 
         if inversion_0 is None:
+            return
+
+        if inversion_0.total_mappers == 0:
             return
 
         if (
