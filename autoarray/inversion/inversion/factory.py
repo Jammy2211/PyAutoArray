@@ -11,6 +11,7 @@ from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj import LinearObjFunc
 from autoarray.inversion.linear_eqn.imaging.w_tilde import LEqImagingWTilde
 from autoarray.inversion.linear_eqn.imaging.mapping import LEqImagingMapping
 from autoarray.inversion.inversion.matrices import InversionMatrices
@@ -81,7 +82,9 @@ def inversion_imaging_unpacked_from(
     profiling_dict: Optional[Dict] = None,
 ):
 
-    if preloads.use_w_tilde is not None:
+    if any(isinstance(linear_obj, LinearObjFunc) for linear_obj in linear_obj_list):
+        use_w_tilde = False
+    elif preloads.use_w_tilde is not None:
         use_w_tilde = preloads.use_w_tilde
     else:
         use_w_tilde = settings.use_w_tilde
@@ -132,9 +135,15 @@ def inversion_interferometer_unpacked_from(
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
 ):
+
+    if any(isinstance(linear_obj, LinearObjFunc) for linear_obj in linear_obj_list):
+        use_w_tilde = False
+    else:
+        use_w_tilde = settings.use_w_tilde
+
     if not settings.use_linear_operators:
 
-        if settings.use_w_tilde:
+        if use_w_tilde:
 
             leq = LEqInterferometerWTilde(
                 noise_map=noise_map,

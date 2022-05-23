@@ -16,6 +16,40 @@ __Visualization__
 - Need to properly make it so one can disable many aspections of visualization.
 
 
+
+__Linear obj Func + Mapper fast leq__
+
+- Create MapperLeq object, which creates curvature / regularization / curvature reg matrix for each mapper (could
+be Mapping or WTilde object).
+
+- Extend LinearObjFunc object to have curvature / regularization / curvature reg matrix, where it always uses
+Mapping calc and regularization matrix is all zeros.
+
+- Create LeqOffDiag objects, which take two of the above and compute curvature / regularization / curvature reg matrix
+for the off diagonal terms.
+
+- Each of these objects has the coordinates where it adds to the overall curvature / regularization / curvature reg
+matrix. For example, the first would be [0,0], the off diag would be something like [10, 0] if the mapper had 10
+pixels.
+
+- The above objects all also handle construction of the data_vector.
+
+- One can put preloads in these objects quite straight forwardly, enabling preloading of individual components
+of the linear algebra.
+
+- The role of LEqImaging / LEqInterferometer is now to take lists of the above objects and use them to
+construct the overall curvature / regularization / curvature reg matrix. This includes separate
+matrices with and withouth the linear obj func rows and columns, for calculation of the regularization and evidence terms.
+
+- Basically, the calculation of the data_vector / curvature / regularization matrix is now done section by section using the
+above objects, instead of constructing a large `blurred_mapping_matrix` (albeit we can retain this as an option).
+
+- Could aim for LEqImaging / LEqInterferometer to be reduced to just LEq,
+
+- For efficiency, you prob need to preallocate curvature_reg / curvature_reg_mapper (or perhaps even all
+matrices of every individual MapperLEq / LinearObjFunc / LeqOffDiag object?) and copy in memory.
+
+
 __Probably Terrible Idea Notes__
 
 w_tilde_tlc:

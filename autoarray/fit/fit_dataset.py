@@ -251,8 +251,6 @@ class FitDataset(ABC):
         if self.inversion.has_mapper:
             return self.log_evidence
 
-        if self.inversion.settings.linear_func_only_use_evidence:
-            return self.log_evidence
         return self.log_likelihood
 
     @property
