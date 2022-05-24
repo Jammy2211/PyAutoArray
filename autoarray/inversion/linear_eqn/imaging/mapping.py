@@ -97,6 +97,7 @@ class LEqImagingMapping(AbstractLEqImaging):
             mapping_matrix=self.operated_mapping_matrix,
             noise_map=self.noise_map,
             add_to_curvature_diag=self.add_to_curvature_diag,
+            linear_obj_func_index_list=self.linear_obj_func_index_list,
         )
 
     @profile_func

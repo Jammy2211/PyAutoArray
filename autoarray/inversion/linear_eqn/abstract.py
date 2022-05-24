@@ -125,8 +125,13 @@ class AbstractLEq:
 
     @property
     def add_to_curvature_diag(self) -> bool:
-        if len(self.linear_obj_func_list) == len(self.linear_obj_list):
-            return self.settings.linear_func_only_add_to_curvature_diag
+
+        # TODO : Use this criteria once we do full inversion refactor for linear objs.
+
+        # if len(self.linear_obj_func_list) == len(self.linear_obj_list):
+
+        if self.has_linear_obj_func:
+            return self.settings.linear_funcs_add_to_curvature_diag
         return False
 
     @property

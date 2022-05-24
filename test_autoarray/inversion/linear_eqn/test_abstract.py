@@ -31,24 +31,24 @@ def test__add_to_curvature_diag():
 
     leq = aa.m.MockLEq(
         linear_obj_list=[aa.m.MockLinearObjFunc()],
-        settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=True),
+        settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=True),
     )
 
     assert leq.add_to_curvature_diag is True
 
     leq = aa.m.MockLEq(
         linear_obj_list=[aa.m.MockLinearObjFunc()],
-        settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=False),
+        settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=False),
     )
 
     assert leq.add_to_curvature_diag is False
 
     leq = aa.m.MockLEq(
         linear_obj_list=[aa.m.MockLinearObjFunc(), aa.m.MockMapper()],
-        settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=True),
+        settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=True),
     )
 
-    assert leq.add_to_curvature_diag is False
+    assert leq.add_to_curvature_diag is True
 
 
 def test__mapping_matrix():

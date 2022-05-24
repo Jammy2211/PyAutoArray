@@ -69,7 +69,7 @@ def test__blurred_mapping_matrix_property__with_blurred_mapping_matrix_override(
     assert leq.blurred_mapping_matrix == pytest.approx(blurred_mapping_matrix, 1.0e-4)
 
 
-def test__curvature_matrix():
+def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     noise_map = np.ones(2)
     convolver = aa.m.MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
@@ -82,26 +82,28 @@ def test__curvature_matrix():
     )
 
     leq = aa.LEqImagingMapping(
-        linear_obj_list=[linear_obj],
+        linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
-        settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=False),
+        settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=False),
     )
 
-    assert leq.curvature_matrix == pytest.approx(
+    assert leq.curvature_matrix[0:2, 0:2] == pytest.approx(
         np.array([[10.0, 14.0], [14.0, 20.0]]), 1.0e-4
     )
 
-    assert leq.curvature_matrix[0, 0] - 10.0 < 1.0e-8
+    assert leq.curvature_matrix[0, 0] - 10.0 < 1.0e-12
+    assert leq.curvature_matrix[3, 3] - 2.0 < 1.0e-12
 
     leq = aa.LEqImagingMapping(
-        linear_obj_list=[linear_obj],
+        linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
-        settings=aa.SettingsInversion(linear_func_only_add_to_curvature_diag=True),
+        settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=True),
     )
 
     assert leq.curvature_matrix[0, 0] - 10.0 > 0.0
+    assert leq.curvature_matrix[3, 3] - 2.0 < 1.0e-12
 
 
 def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_noise_map():

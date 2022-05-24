@@ -319,7 +319,11 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         regularization_list=[regularization_constant],
-        settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
+        settings=aa.SettingsInversion(
+            use_w_tilde=False,
+            check_solution=False,
+            linear_funcs_add_to_curvature_diag=False,
+        ),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFunc)

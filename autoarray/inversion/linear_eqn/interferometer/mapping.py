@@ -111,7 +111,8 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
 
         if self.add_to_curvature_diag:
             curvature_matrix = leq_util.curvature_matrix_with_added_to_diag_from(
-                curvature_matrix=curvature_matrix
+                curvature_matrix=curvature_matrix,
+                linear_obj_func_index_list=self.linear_obj_func_index_list,
             )
 
         return curvature_matrix
