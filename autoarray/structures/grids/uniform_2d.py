@@ -1063,6 +1063,7 @@ class Grid2D(Structure):
             The 1D integer shape of a radial set of points sampling the longest distance from the centre to the edge of the
             extent in along the positive x-axis.
         """
+
         return grid_2d_util.radial_projected_shape_slim_from(
             extent=self.extent,
             centre=centre,
