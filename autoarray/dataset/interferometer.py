@@ -296,6 +296,14 @@ class Interferometer(AbstractDataset):
 
         return signal_to_noise_map_real + 1j * signal_to_noise_map_imag
 
+    @property
+    def blurring_grid(self):
+        return None
+
+    @property
+    def convolver(self):
+        return None
+
     def signal_to_noise_limited_from(self, signal_to_noise_limit, mask=None):
 
         interferometer = copy.deepcopy(self)

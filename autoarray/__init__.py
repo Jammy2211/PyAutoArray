@@ -34,6 +34,7 @@ from .inversion.mappers.rectangular import MapperRectangularNoInterp
 from .inversion.mappers.delaunay import MapperDelaunay
 from .inversion.mappers.voronoi import MapperVoronoiNoInterp
 from .inversion.mappers.voronoi import MapperVoronoi
+from .inversion.pixelizations.abstract import AbstractPixelization
 from .inversion.pixelizations.settings import SettingsPixelization
 from .inversion.linear_eqn.imaging.mapping import LEqImagingMapping
 from .inversion.linear_eqn.imaging.w_tilde import LEqImagingWTilde
