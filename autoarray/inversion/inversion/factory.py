@@ -89,6 +89,9 @@ def inversion_imaging_unpacked_from(
     else:
         use_w_tilde = settings.use_w_tilde
 
+    if not settings.use_w_tilde:
+        use_w_tilde = False
+
     if preloads.w_tilde is not None:
 
         w_tilde = preloads.w_tilde
