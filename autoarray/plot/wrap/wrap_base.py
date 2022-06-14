@@ -232,7 +232,12 @@ class Figure(AbstractMatWrap):
         if not plt.fignum_exists(num=1):
             config_dict = self.config_dict
             config_dict.pop("aspect")
-            plt.figure(**config_dict)
+
+            fig = plt.figure(**config_dict)
+            ax = fig.add_subplot(1,1,1)
+            from matplotlib.patches import Circle
+            circle = Circle(xy=(0.0, 0.0), radius=0.3, edgecolor="r", fill=False, fc="none", alpha=1.0, linewidth=3)
+            ax.add_patch(circle)
 
     def close(self):
         """

@@ -489,9 +489,8 @@ class PatchOverlay(AbstractMatWrap2D):
             The patches that are laid over the figure.
         """
 
-        patch_collection = PatchCollection(patches=patches, **self.config_dict)
-
-        plt.gcf().gca().add_collection(patch_collection)
+        # patch_collection = PatchCollection(patches=patches, **self.config_dict)
+        # plt.gcf().gca().add_collection(patch_collection)
 
 
 class VoronoiDrawer(AbstractMatWrap2D):
