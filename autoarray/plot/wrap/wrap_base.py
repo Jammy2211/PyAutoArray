@@ -232,6 +232,7 @@ class Figure(AbstractMatWrap):
         if not plt.fignum_exists(num=1):
             config_dict = self.config_dict
             config_dict.pop("aspect")
+            plt.figure(**config_dict)
 
     def close(self):
         """
