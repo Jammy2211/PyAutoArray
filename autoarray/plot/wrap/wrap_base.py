@@ -449,6 +449,17 @@ class Colorbar(AbstractMatWrap):
 
         return cb
 
+    @property
+    def cmap(self):
+
+        if self.config_dict["cmap"] == "autolens":
+
+            directory = path.dirname(path.realpath(__file__))
+
+            with open(path.join(directory, f"cmap.pkl"), "rb") as f:
+                return pickle.load(f)
+
+        return self.config_dict["cmap"]
 
 class ColorbarTickParams(AbstractMatWrap):
     """
