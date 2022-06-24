@@ -545,7 +545,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
             else:
                 color_array = np.ones(color_values.shape[0])
 
-            cmap = plt.get_cmap(cmap.config_dict["cmap"])
+            cmap = plt.get_cmap(cmap.cmap)
 
             if colorbar is not None:
 
@@ -636,7 +636,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         color_values = np.where(pixel_values > vmax, vmax, pixel_values)
         color_values = np.where(pixel_values < vmin, vmin, color_values)
 
-        cmap = plt.get_cmap(cmap.config_dict["cmap"])
+        cmap = plt.get_cmap(cmap.cmap)
 
         if colorbar is not None:
 

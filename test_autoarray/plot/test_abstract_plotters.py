@@ -100,7 +100,7 @@ class TestAbstractPlotter:
 
         assert plotter.mat_plot_2d.figure.config_dict["figsize"] == None
         assert plotter.mat_plot_2d.figure.config_dict["aspect"] == "square"
-        assert plotter.mat_plot_2d.cmap.config_dict["cmap"] == "jet"
+        assert plotter.mat_plot_2d.cmap.config_dict["cmap"] == "default"
         assert plotter.mat_plot_2d.cmap.config_dict["norm"] == "linear"
 
 

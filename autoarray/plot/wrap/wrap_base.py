@@ -1,6 +1,7 @@
-from autoconf import conf
 import matplotlib
+import pickle
 
+from autoconf import conf
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from typing import Union, List, Optional, Tuple
@@ -345,6 +346,9 @@ class Cmap(AbstractMatWrap):
         vmin = self.vmin_from(array=array)
         vmax = self.vmax_from(array=array)
 
+        if isinstance(self.config_dict["norm"], colors.Normalize):
+            return self.config_dict["norm"]
+
         if self.config_dict["norm"] in "linear":
             return colors.Normalize(vmin=vmin, vmax=vmax)
         elif self.config_dict["norm"] in "log":
@@ -365,6 +369,18 @@ class Cmap(AbstractMatWrap):
                 "The normalization (norm) supplied to the plotter is not a valid string must be "
                 "{linear, log, symmetric_log}"
             )
+
+    @property
+    def cmap(self):
+
+        if self.config_dict["cmap"] == "default":
+
+            directory = path.dirname(path.realpath(__file__))
+
+            with open(path.join(directory, f"cmap.pkl"), "rb") as f:
+                return pickle.load(f)
+
+        return self.config_dict["cmap"]
 
 
 class Colorbar(AbstractMatWrap):
@@ -449,17 +465,6 @@ class Colorbar(AbstractMatWrap):
 
         return cb
 
-    @property
-    def cmap(self):
-
-        if self.config_dict["cmap"] == "autolens":
-
-            directory = path.dirname(path.realpath(__file__))
-
-            with open(path.join(directory, f"cmap.pkl"), "rb") as f:
-                return pickle.load(f)
-
-        return self.config_dict["cmap"]
 
 class ColorbarTickParams(AbstractMatWrap):
     """

@@ -648,7 +648,7 @@ class MatPlot2D(AbstractMatPlot):
         plt.imshow(
             X=array.native,
             aspect=aspect,
-            cmap=self.cmap.config_dict["cmap"],
+            cmap=self.cmap.cmap,
             norm=norm_scale,
             extent=extent,
             origin=origin,
@@ -744,7 +744,7 @@ class MatPlot2D(AbstractMatPlot):
 
         elif color_array is not None:
 
-            cmap = plt.get_cmap(self.cmap.config_dict["cmap"])
+            cmap = plt.get_cmap(self.cmap.cmap)
 
             if y_errors is None and x_errors is None:
                 self.grid_scatter.scatter_grid_colored(
@@ -762,7 +762,7 @@ class MatPlot2D(AbstractMatPlot):
             if self.colorbar is not None:
 
                 colorbar = self.colorbar.set_with_color_values(
-                    cmap=self.cmap.config_dict["cmap"], color_values=color_array
+                    cmap=self.cmap.cmap, color_values=color_array
                 )
                 if colorbar is not None and self.colorbar_tickparams is not None:
                     self.colorbar_tickparams.set(cb=colorbar)

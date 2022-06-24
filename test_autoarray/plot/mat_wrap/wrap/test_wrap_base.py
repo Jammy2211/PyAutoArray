@@ -122,7 +122,7 @@ class TestCmap:
 
         cmap = aplt.Cmap()
 
-        assert cmap.config_dict["cmap"] == "jet"
+        assert cmap.config_dict["cmap"] == "default"
         assert cmap.config_dict["norm"] == "linear"
 
         cmap = aplt.Cmap(cmap="cold")
@@ -133,7 +133,7 @@ class TestCmap:
         cmap = aplt.Cmap()
         cmap.is_for_subplot = True
 
-        assert cmap.config_dict["cmap"] == "jet"
+        assert cmap.config_dict["cmap"] == "default"
         assert cmap.config_dict["norm"] == "linear"
 
         cmap = aplt.Cmap(cmap="cold")
@@ -254,9 +254,7 @@ class TestColorbar:
         figure.open()
         plt.imshow(np.ones((2, 2)))
         cb = aplt.Colorbar(fraction=0.1, pad=0.5)
-        cb.set_with_color_values(
-            cmap=aplt.Cmap().config_dict["cmap"], color_values=[1.0, 2.0, 3.0]
-        )
+        cb.set_with_color_values(cmap=aplt.Cmap().cmap, color_values=[1.0, 2.0, 3.0])
         figure.close()
 
 
