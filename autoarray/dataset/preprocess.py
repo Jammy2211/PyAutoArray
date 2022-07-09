@@ -107,7 +107,7 @@ def array_adus_to_eps(array_adus, exposure_time_map, gain):
 def array_counts_to_counts_per_second(array_counts, exposure_time):
 
     if exposure_time is None:
-        raise exc.FrameException(
+        raise exc.ArrayException(
             "Cannot convert a Frame2D to units counts per second without an exposure time attribute (exposure_time = None)."
         )
 

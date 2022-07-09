@@ -122,7 +122,7 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
         mask = squared_distances < radius
 
         if np.all(mask == False):
-            raise exc.VectorFieldException(
+            raise exc.VectorYXException(
                 "The input radius removed all vectors / points on the grid."
             )
 
@@ -157,7 +157,7 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
         mask = (inner_radius < squared_distances) & (squared_distances < outer_radius)
 
         if np.all(mask == False):
-            raise exc.VectorFieldException(
+            raise exc.VectorYXException(
                 "The input radius removed all vectors / points on the grid."
             )
 

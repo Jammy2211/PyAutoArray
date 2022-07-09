@@ -472,6 +472,7 @@ class TestGrid2DToStructreList:
         assert (ndarray_2d_list[0][0] == values_sub_3.binned[0]).all()
         assert (ndarray_2d_list[0][1] == values_sub_3.binned[1]).all()
 
+
 class TestGrid2DToVectorYX:
     def test__grid_2d_in__output_values_same_format(self):
 

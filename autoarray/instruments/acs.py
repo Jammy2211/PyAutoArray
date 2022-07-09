@@ -27,13 +27,13 @@ def fits_hdu_via_quadrant_letter_from(quadrant_letter):
     elif quadrant_letter == "B" or quadrant_letter == "A":
         return 4
     else:
-        raise exc.FrameException("Quadrant letter for FrameACS must be A, B, C or D.")
+        raise exc.ArrayException("Quadrant letter for FrameACS must be A, B, C or D.")
 
 
 def array_eps_to_counts(array_eps, bscale, bzero):
 
     if bscale is None:
-        raise exc.FrameException(
+        raise exc.ArrayException(
             "Cannot convert a Frame2D to units COUNTS without a bscale attribute (bscale = None)."
         )
 
@@ -137,7 +137,7 @@ class Array2DACS(Array2D):
                 bias = bias[0:2068, 2072:4144]
 
         else:
-            raise exc.FrameException(
+            raise exc.ArrayException(
                 "Quadrant letter for FrameACS must be A, B, C or D."
             )
 

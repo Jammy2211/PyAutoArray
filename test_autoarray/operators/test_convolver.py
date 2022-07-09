@@ -92,7 +92,7 @@ def test__numbering__uses_mask_correctly(simple_mask_5x5, cross_mask):
 
 def test__even_kernel_failure():
 
-    with pytest.raises(exc.ConvolverException):
+    with pytest.raises(exc.KernelException):
         aa.Convolver(
             mask=np.full((3, 3), False),
             kernel=aa.Kernel2D.ones(shape_native=(2, 2), pixel_scales=1.0),

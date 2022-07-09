@@ -101,5 +101,5 @@ def test__vectors_from_grid_within_radius():
     assert vectors_masked.in_list == [(2.0, 2.0)]
     assert vectors_masked.grid.in_list == [(0.0, 2.0)]
 
-    with pytest.raises(exc.VectorFieldException):
+    with pytest.raises(exc.VectorYXException):
         vectors.vectors_within_radius(radius=0.0, centre=(0.0, 0.0))
