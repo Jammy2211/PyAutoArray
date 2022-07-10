@@ -4,6 +4,7 @@ class MaskException(Exception):
 
     For example if a 2D mask's shape is not of length 2 (and thus not 2D).
     """
+
     pass
 
 
@@ -13,6 +14,7 @@ class ArrayException(Exception):
 
     For example if a 2D array's shape and its corresponding 2D mask shape do not match.
     """
+
     pass
 
 
@@ -22,6 +24,7 @@ class GridException(Exception):
 
     For example if a 2D grid's shape and its corresponding 2D mask shape do not match.
     """
+
     pass
 
 
@@ -31,6 +34,7 @@ class VectorYXException(Exception):
 
     For example if a 2D vector's shape and its corresponding 2D mask shape do not match.
     """
+
     pass
 
 
@@ -40,6 +44,7 @@ class KernelException(Exception):
 
     For example if the kernel has an even-sized number of pixels.
     """
+
     pass
 
 
@@ -49,6 +54,7 @@ class RegionException(Exception):
 
     For example if a region is specified where the right-hand x coordinate is less than the left hand x coordinate.
     """
+
     pass
 
 
@@ -58,6 +64,7 @@ class DatasetException(Exception):
 
     For example if a noise-map contains NaN values.
     """
+
     pass
 
 
@@ -67,6 +74,7 @@ class PixelizationException(Exception):
 
     For example if a `Rectangular` pixelization has dimensions below 3x3.
     """
+
     pass
 
 
@@ -76,6 +84,7 @@ class InversionException(Exception):
 
     For example many numpy linear algebra errors are overwritten with this exception for easy exception handling.
     """
+
     pass
 
 
@@ -85,6 +94,7 @@ class PlottingException(Exception):
 
     For example if the plotter type for certain plot objects is not a valid type.
     """
+
     pass
 
 
@@ -95,6 +105,7 @@ class PreloadsException(Exception):
     For example if the preloaded quantities lead to a change in figure of merit of a fit compared to a fit without
     preloading.
     """
+
     pass
 
 
@@ -102,4 +113,5 @@ class ProfilingException(Exception):
     """
     Raises exceptions associated with in-built profiling tools (e.g. the `profile_func` decorator).
     """
+
     pass

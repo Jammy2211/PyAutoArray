@@ -1,11 +1,13 @@
 from functools import wraps
-import numba
+import logging
 import time
 from typing import Callable
 
 from autoconf import conf
 
 from autoarray import exc
+
+logger = logging.getLogger(__name__)
 
 """
 Depending on if we're using a super computer, we want two different numba decorators:
@@ -29,9 +31,44 @@ except Exception:
     parallel = False
 
 
+def use_numba_from():
+
+    try:
+        use_numba = conf.instance["general"]["numba"]["use_numba"]
+    except Exception:
+        use_numba = False
+
+    if use_numba:
+        try:
+            import numba
+        except ModuleNotFoundError:
+            use_numba = False
+
+    return use_numba
+
+
+use_numba = use_numba_from()
+
+if not use_numba:
+
+    logger.warning(
+        f"\n******************************************************************************\n"
+        f"Numba is not being used, either because it is disabled in `config.general.ini` "
+        f"or because it is not installed.\n\n. "
+        f"This will lead to slow performance.\n\n. "
+        f"Install numba as described at the following webpage for improved performance. \n"
+        f"********************************************************************************"
+    )
+
+
 def jit(nopython=nopython, cache=cache, parallel=parallel):
     def wrapper(func):
-        return numba.jit(func, nopython=nopython, cache=cache, parallel=parallel)
+
+        use_numba = use_numba_from()
+
+        if use_numba:
+            return numba.jit(func, nopython=nopython, cache=cache, parallel=parallel)
+        return func
 
     return wrapper
 
