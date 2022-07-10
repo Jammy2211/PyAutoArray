@@ -254,11 +254,5 @@ class FitDataset(ABC):
         return self.log_likelihood
 
     @property
-    def total_mappers(self) -> int:
-        if self.inversion is None:
-            return 0
-        return self.inversion.total_mappers
-
-    @property
     def reduced_chi_squared(self) -> float:
         return self.chi_squared / int(np.size(self.mask) - np.sum(self.mask))
