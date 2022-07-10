@@ -30,26 +30,11 @@ except Exception:
     cache = True
     parallel = False
 
+try:
 
-def use_numba_from():
+    import numba
 
-    try:
-        use_numba = conf.instance["general"]["numba"]["use_numba"]
-    except Exception:
-        use_numba = False
-
-    if use_numba:
-        try:
-            import numba
-        except ModuleNotFoundError:
-            use_numba = False
-
-    return use_numba
-
-
-use_numba = use_numba_from()
-
-if not use_numba:
+except ModuleNotFoundError:
 
     logger.warning(
         f"\n******************************************************************************\n"
@@ -61,14 +46,28 @@ if not use_numba:
     )
 
 
+
 def jit(nopython=nopython, cache=cache, parallel=parallel):
     def wrapper(func):
 
-        use_numba = use_numba_from()
+        try:
+            use_numba = conf.instance["general"]["numba"]["use_numba"]
 
-        if use_numba:
+            if not use_numba:
+                return func
+
+        except KeyError:
+
+            pass
+
+        try:
+
+            import numba
             return numba.jit(func, nopython=nopython, cache=cache, parallel=parallel)
-        return func
+
+        except ModuleNotFoundError:
+
+            return func
 
     return wrapper
 
