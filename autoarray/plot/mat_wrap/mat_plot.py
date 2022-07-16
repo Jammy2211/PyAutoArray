@@ -1030,6 +1030,7 @@ class MatPlot2D(AbstractMatPlot):
                 colorbar_tickparams=self.colorbar_tickparams,
                 aspect=aspect_inv,
             )
+
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
