@@ -1,4 +1,5 @@
 import matplotlib
+from matplotlib.colors import LinearSegmentedColormap
 import pickle
 
 from autoconf import conf
@@ -375,10 +376,9 @@ class Cmap(AbstractMatWrap):
 
         if self.config_dict["cmap"] == "default":
 
-            directory = path.dirname(path.realpath(__file__))
+            from autoarray.plot.wrap.segmentdata import segmentdata
 
-            with open(path.join(directory, f"cmap.pkl"), "rb") as f:
-                return pickle.load(f)
+            return LinearSegmentedColormap(name="default", segmentdata=segmentdata)
 
         return self.config_dict["cmap"]
 

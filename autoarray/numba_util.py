@@ -46,7 +46,6 @@ except ModuleNotFoundError:
     )
 
 
-
 def jit(nopython=nopython, cache=cache, parallel=parallel):
     def wrapper(func):
 
@@ -63,6 +62,7 @@ def jit(nopython=nopython, cache=cache, parallel=parallel):
         try:
 
             import numba
+
             return numba.jit(func, nopython=nopython, cache=cache, parallel=parallel)
 
         except ModuleNotFoundError:

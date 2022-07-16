@@ -650,7 +650,9 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
                 points=self.voronoi.points, values=values, xi=interpolation_grid
             )
 
-            interpolated_array = np.flipud(np.fliplr(interpolated_array.reshape(shape_native).T))
+            interpolated_array = np.flipud(
+                np.fliplr(interpolated_array.reshape(shape_native).T)
+            )
 
         return Array2D.manual_native(
             array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
