@@ -69,8 +69,8 @@ class AbstractVisuals(ABC):
 class Visuals1D(AbstractVisuals):
     def __init__(
         self,
-        mask: Optional[Mask1D] = None,
         origin: Optional[Grid1D] = None,
+        mask: Optional[Mask1D] = None,
         points: Optional[Grid1D] = None,
         vertical_line: Optional[float] = None,
         shaded_region: Optional[
@@ -78,8 +78,8 @@ class Visuals1D(AbstractVisuals):
         ] = None,
     ):
 
-        self.mask = mask
         self.origin = origin
+        self.mask = mask
         self.points = points
         self.vertical_line = vertical_line
         self.shaded_region = shaded_region
