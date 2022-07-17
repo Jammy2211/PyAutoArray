@@ -139,6 +139,11 @@ def inversion_interferometer_unpacked_from(
     profiling_dict: Optional[Dict] = None,
 ):
 
+    try:
+        from autoarray.inversion.inversion import inversion_util_secret
+    except ImportError:
+        settings.use_w_tilde = False
+
     if any(isinstance(linear_obj, LinearObjFunc) for linear_obj in linear_obj_list):
         use_w_tilde = False
     else:
