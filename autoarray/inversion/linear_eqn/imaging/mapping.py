@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
-from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver

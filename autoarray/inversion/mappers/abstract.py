@@ -4,8 +4,8 @@ from typing import Dict, List, Optional, Tuple
 
 from autoconf import cached_property
 
-from autoarray.inversion.linear_obj import LinearObj
-from autoarray.inversion.linear_obj import UniqueMappings
+from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.func_list import UniqueMappings
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 

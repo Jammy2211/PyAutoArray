@@ -6,7 +6,7 @@ from autoconf import cached_property
 from autoarray.inversion.linear_eqn.interferometer.abstract import (
     AbstractLEqInterferometer,
 )
-from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 from autoarray.operators.transformer import TransformerNUFFT

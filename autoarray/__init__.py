@@ -41,8 +41,8 @@ from .inversion.linear_eqn.imaging.w_tilde import LEqImagingWTilde
 from .inversion.linear_eqn.interferometer.w_tilde import LEqInterferometerWTilde
 from .inversion.linear_eqn.interferometer.mapping import LEqInterferometerMapping
 from .inversion.linear_eqn.interferometer.lop import LEqInterferometerMappingPyLops
-from .inversion.linear_obj import LinearObj
-from .inversion.linear_obj import LinearObjFunc
+from .inversion.linear_obj.func_list import LinearObj
+from .inversion.linear_obj.func_list import LinearObjFuncList
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
 from .operators.convolver import Convolver

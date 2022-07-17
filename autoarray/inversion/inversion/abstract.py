@@ -11,7 +11,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.interferometer.abstract import (

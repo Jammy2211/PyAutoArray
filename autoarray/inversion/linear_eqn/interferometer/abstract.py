@@ -5,7 +5,7 @@ from autoconf import cached_property
 
 from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays.uniform_2d import Array2D

@@ -4,8 +4,8 @@ from typing import Dict, List, Optional, Union
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.linear_obj import LinearObj
-from autoarray.inversion.linear_obj import LinearObjFunc
+from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.func_list import LinearObjFuncList
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
@@ -30,7 +30,7 @@ class AbstractLEq:
         - `Mapper` objects describe the mappings between the data's values and pixels another pixelizaiton
         (e.g. a rectangular grid, Voronoi mesh, etc.).
 
-        - `LinearObjFunc` objects describe the mappings between the data's values and a functional form.
+        - `LinearObjFuncList` objects describe the mappings between the data's values and a functional form.
 
         From the `mapping_matrix` a system of linear equations can be constructed, which can then be solved for using
         the `Inversion` object. This class provides functions for setting up the system of linear equations.
@@ -51,7 +51,7 @@ class AbstractLEq:
         self.profiling_dict = profiling_dict
 
     @property
-    def linear_obj_func_list(self) -> List[LinearObjFunc]:
+    def linear_obj_func_list(self) -> List[LinearObjFuncList]:
         """
         Returns a list of all linear objects based on analytic functions used to construct the simultaneous linear
         equations.
@@ -59,7 +59,7 @@ class AbstractLEq:
         This property removes other linear objects (E.g. `Mapper` objects).
         """
         linear_obj_func_list = [
-            linear_obj if isinstance(linear_obj, LinearObjFunc) else None
+            linear_obj if isinstance(linear_obj, LinearObjFuncList) else None
             for linear_obj in self.linear_obj_list
         ]
 
@@ -74,7 +74,7 @@ class AbstractLEq:
 
         for linear_obj in self.linear_obj_list:
 
-            if isinstance(linear_obj, LinearObjFunc):
+            if isinstance(linear_obj, LinearObjFuncList):
 
                 linear_obj_func_index_list.append(pixel_count)
 
@@ -91,7 +91,7 @@ class AbstractLEq:
         """
         Returns a list of all mappers used to construct the simultaneous linear equations.
 
-        This property removes other linear objects (E.g. `LinearObjFunc` objects).
+        This property removes other linear objects (E.g. `LinearObjFuncList` objects).
         """
         mapper_list = [
             linear_obj if isinstance(linear_obj, AbstractMapper) else None
@@ -114,7 +114,7 @@ class AbstractLEq:
         Returns a list of all linear objects that are not mappers which used to construct the simultaneous linear
         equations.
 
-        This property retains linear objects which are not mappers (E.g. `LinearObjFunc` objects).
+        This property retains linear objects which are not mappers (E.g. `LinearObjFuncList` objects).
         """
         mapper_list = [
             linear_obj if not isinstance(linear_obj, AbstractMapper) else None

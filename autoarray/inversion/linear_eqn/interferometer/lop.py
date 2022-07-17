@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from autoarray.inversion.linear_eqn.interferometer.abstract import (
     AbstractLEqInterferometer,
 )
-from autoarray.inversion.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
