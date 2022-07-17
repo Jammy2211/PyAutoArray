@@ -41,7 +41,7 @@ def test__data_to_pix_unique_from():
 
     grid = aa.Grid2D.uniform(shape_native=(1, 2), sub_size=2, pixel_scales=0.1)
 
-    linear_obj = aa.LinearObjFuncList(grid=grid)
+    linear_obj = aa.LinearObjFuncListImaging(grid=grid)
 
     assert (
         linear_obj.data_unique_mappings.data_to_pix_unique == data_to_pix_unique

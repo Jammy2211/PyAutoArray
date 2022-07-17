@@ -1,14 +1,14 @@
 import numpy as np
 from typing import List, Union
 
-from autoarray.inversion.linear_obj.func_list import LinearObjFuncList
+from autoarray.inversion.linear_obj.func_list import LinearObjFuncListImaging
 from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.abstract import AbstractLEq
 
 from autoarray.inversion.mock.mock_mapper import MockMapper
 
 
-class MockLinearObjFunc(LinearObjFuncList):
+class MockLinearObjFunc(LinearObjFuncListImaging):
     def __init__(
         self, grid=None, mapping_matrix=None, blurred_mapping_matrix_override=None
     ):

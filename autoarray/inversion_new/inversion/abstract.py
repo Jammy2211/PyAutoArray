@@ -11,7 +11,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.interferometer.abstract import (
@@ -27,24 +27,9 @@ from autoarray.inversion.inversion import inversion_util
 class AbstractInversion:
     def __init__(
         self,
-        data: Union[Visibilities, Array2D],
-        leq: Union[AbstractLEqImaging, AbstractLEqInterferometer],
-        regularization_list: Optional[List[AbstractRegularization]] = None,
-        settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
+        linear_obj_list : List[LinearObj],
         profiling_dict: Optional[Dict] = None,
     ):
-        """
-        An inversion uses linear matrix
-        Parameters
-        ----------
-        data
-        leq
-        regularization_list
-        settings
-        preloads
-        profiling_dict
-        """
 
         try:
             import numba
@@ -57,71 +42,33 @@ class AbstractInversion:
                 "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
             )
 
-        self.data = data
-
-        self.leq = leq
-        self.regularization_list = regularization_list
-
-        self.settings = settings
-
-        self.preloads = preloads
-        self.profiling_dict = profiling_dict
+        self.linear_obj_list = linear_obj_list
 
     @property
-    def linear_obj_list(self):
-        return self.leq.linear_obj_list
+    def linear_obj_all_with_regularization(self):
+
+        regularization_list = [linear_obj.regularization for linear_obj in self.linear_obj_list]
+
+        if any(regularization_list):
+            return True
+
 
     @property
-    def linear_obj_func_list(self):
-        return self.leq.linear_obj_func_list
+    def linear_obj_with_regularization_index_list(self) -> List[int]:
 
-    @property
-    def has_linear_obj_func(self):
-        return self.leq.has_linear_obj_func
+        linear_obj_with_regularization_index_list = []
 
-    @property
-    def mapper_list(self):
-        return self.leq.mapper_list
-
-    @property
-    def has_mapper(self):
-        return self.leq.has_mapper
-
-    @property
-    def has_one_mapper(self):
-        return self.leq.has_one_mapper
-
-    @property
-    def noise_map(self):
-        return self.leq.noise_map
-
-    @property
-    def regularization_padded_list(self) -> List[AbstractRegularization]:
-        """
-        When combining linear function objects with mappers, the linear funciton objects do not have an associated
-        regularization matrix. Thus, the `regularization_list` is shorter than the `linear_obj_list`.
-
-        These two lists are iterated over together when constructing the `regularization_matrix`.
-
-        The `regularization_padded_list` therefore pads entries corresponds to lienar function objects with
-        Nones, so that when this matrix is constructed they do not raise an exception.
-        """
-        i = 0
-
-        regularization_list_padded = []
+        pixel_count = 0
 
         for linear_obj in self.linear_obj_list:
 
-            if isinstance(linear_obj, AbstractMapper):
+            if linear_obj.regularization is not None:
 
-                regularization_list_padded.append(self.regularization_list[i])
-                i += 1
+                linear_obj_with_regularization_index_list.append(pixel_count)
 
-            else:
+            pixel_count += linear_obj.pixels
 
-                regularization_list_padded.append(None)
-
-        return regularization_list_padded
+        return linear_obj_with_regularization_index_list
 
     @cached_property
     @profile_func
@@ -138,25 +85,15 @@ class AbstractInversion:
         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
         regularization it is bypassed.
         """
-        if self.preloads.regularization_matrix is not None:
-            return self.preloads.regularization_matrix
 
-        if not self.has_mapper:
-            return None
-
-        if self.has_one_mapper and self.has_linear_obj_func is False:
-            return self.regularization_list[0].regularization_matrix_from(
-                mapper=self.linear_obj_list[0]
-            )
+        if len(self.linear_obj_list) == 1:
+            return self.linear_obj_list[0].regularization_matrix
 
         return block_diag(
             *[
-                reg.regularization_matrix_from(mapper=linear_obj)
-                if reg is not None
-                else np.zeros((1, 1))
-                for (reg, linear_obj) in zip(
-                    self.regularization_padded_list, self.linear_obj_list
-                )
+                linear_obj.regularization_matrix
+                for linear_obj
+                in self.linear_obj_list
             ]
         )
 
@@ -181,10 +118,10 @@ class AbstractInversion:
         regularization_matrix = self.regularization_matrix
 
         regularization_matrix = np.delete(
-            regularization_matrix, self.leq.linear_obj_func_index_list, 0
+            regularization_matrix, self.linear_obj_with_regularization_index_list, 0
         )
         regularization_matrix = np.delete(
-            regularization_matrix, self.leq.linear_obj_func_index_list, 1
+            regularization_matrix, self.linear_obj_with_regularization_index_list, 1
         )
 
         return regularization_matrix
@@ -207,7 +144,7 @@ class AbstractInversion:
             return self.reconstruction
 
         return np.delete(
-            self.reconstruction, self.leq.linear_obj_func_index_list, axis=0
+            self.reconstruction, self.linear_obj_with_regularization_index_list, axis=0
         )
 
     @property

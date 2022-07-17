@@ -17,7 +17,10 @@ from autoarray.numba_util import profile_func
 class AbstractLinearObjFuncList(LinearObj):
     def __init__(
         self,
+        data: Array2D,
+        noise_map: Array2D,
         grid: Grid1D2DLike,
+        regularization: Optional[AbstractRegularization] = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -41,15 +44,15 @@ class AbstractLinearObjFuncList(LinearObj):
         profiling_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
+        self.data = data
+        self.noise_map = noise_map
         self.grid = grid
+
+        self.regularization = regularization
 
         self.profiling_dict = profiling_dict
 
     # TODO : perma store in memory and pass via lazy instantiate somehwere for model fit.
-
-    @property
-    def pixels(self):
-        return 1
 
     @cached_property
     @profile_func
@@ -87,7 +90,11 @@ class AbstractLinearObjFuncList(LinearObj):
 class LinearObjFuncListImaging(AbstractLinearObjFuncList):
     def __init__(
         self,
+        data: Array2D,
+        noise_map: Array2D,
         grid: Grid1D2DLike,
+        convolver: Convolver,
+        regularization: Optional[AbstractRegularization] = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -113,6 +120,54 @@ class LinearObjFuncListImaging(AbstractLinearObjFuncList):
         """
 
         super().__init__(
+            data=data,
+            noise_map=noise_map,
             grid=grid,
+            regularization=regularization,
             profiling_dict=profiling_dict,
         )
+
+        self.convolver = convolver
+
+
+class LinearObjFuncListInterferometer(AbstractLinearObjFuncList):
+    def __init__(
+            self,
+            data: Array2D,
+            noise_map: Array2D,
+            grid: Grid1D2DLike,
+            transformer: TransformerNUFFT,
+            regularization: Optional[AbstractRegularization] = None,
+            profiling_dict: Optional[Dict] = None,
+    ):
+        """
+        An object represented by one or more analytic functions, the solution of which can be solved for linearly via an
+        inversion.
+
+        By overwriting the `mapping_matrix` function with a method that fills in its value with the solution of the
+        analytic function, this is then passed through the `inversion` package to perform the linear inversion. The
+        API is identical to `Mapper` objects such that linear functions can easily be combined with mappers.
+
+        For example, in `PyAutoGalaxy` and `PyAutoLens` the light of galaxies is represented using `LightProfile`
+        objects, which describe the surface brightness of a galaxy as a function. This function can either be assigned
+        an overall intensity (e.g. the normalization) which describes how bright it is. Using the `LinearObjFuncListImaging` the
+        intensity can be solved for linearly instead.
+
+        Parameters
+        ----------
+        grid
+            The grid of data points representing the data that is fitted and therefore where the analytic function
+            is evaluated.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
+        """
+
+        super().__init__(
+            data=data,
+            noise_map=noise_map,
+            grid=grid,
+            regularization=regularization,
+            profiling_dict=profiling_dict,
+        )
+
+        self.transformer = transformer
