@@ -56,7 +56,7 @@ class AbstractLinearObjFuncList(LinearObj):
 
     @cached_property
     @profile_func
-    def data_unique_mappings(self):
+    def unique_mappings(self):
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
         to their corresponding pixelization pixels (e.g. `pixelization_grid`).
@@ -71,19 +71,15 @@ class AbstractLinearObjFuncList(LinearObj):
         sub_size = self.grid.sub_size
         shape_slim = self.grid.mask.shape_slim
 
-        data_to_pix_unique = -1.0 * np.ones(shape=(shape_slim, sub_size ** 2)).astype(
-            "int"
-        )
+        data_to_pix = -1.0 * np.ones(shape=(shape_slim, sub_size ** 2)).astype("int")
         data_weights = np.zeros(shape=(shape_slim, sub_size ** 2))
         pix_lengths = np.ones(shape=shape_slim).astype("int")
 
-        data_to_pix_unique[:, 0] = 0
+        data_to_pix[:, 0] = 0
         data_weights[:, 0] = 1.0
 
         return UniqueMappings(
-            data_to_pix_unique=data_to_pix_unique,
-            data_weights=data_weights,
-            pix_lengths=pix_lengths,
+            data_to_pix=data_to_pix, data_weights=data_weights, pix_lengths=pix_lengths
         )
 
 
@@ -132,13 +128,13 @@ class LinearObjFuncListImaging(AbstractLinearObjFuncList):
 
 class LinearObjFuncListInterferometer(AbstractLinearObjFuncList):
     def __init__(
-            self,
-            data: Array2D,
-            noise_map: Array2D,
-            grid: Grid1D2DLike,
-            transformer: TransformerNUFFT,
-            regularization: Optional[AbstractRegularization] = None,
-            profiling_dict: Optional[Dict] = None,
+        self,
+        data: Array2D,
+        noise_map: Array2D,
+        grid: Grid1D2DLike,
+        transformer: TransformerNUFFT,
+        regularization: Optional[AbstractRegularization] = None,
+        profiling_dict: Optional[Dict] = None,
     ):
         """
         An object represented by one or more analytic functions, the solution of which can be solved for linearly via an

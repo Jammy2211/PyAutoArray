@@ -15,11 +15,7 @@ from autoarray.numba_util import profile_func
 
 
 class AbstractLinearObjFuncList(LinearObj):
-    def __init__(
-        self,
-        grid: Grid1D2DLike,
-        profiling_dict: Optional[Dict] = None,
-    ):
+    def __init__(self, grid: Grid1D2DLike, profiling_dict: Optional[Dict] = None):
         """
         An object represented by one or more analytic functions, the solution of which can be solved for linearly via an
         inversion.
@@ -85,11 +81,7 @@ class AbstractLinearObjFuncList(LinearObj):
 
 
 class LinearObjFuncListImaging(AbstractLinearObjFuncList):
-    def __init__(
-        self,
-        grid: Grid1D2DLike,
-        profiling_dict: Optional[Dict] = None,
-    ):
+    def __init__(self, grid: Grid1D2DLike, profiling_dict: Optional[Dict] = None):
         """
         An object represented by one or more analytic functions, the solution of which can be solved for linearly via an 
         inversion.
@@ -112,7 +104,4 @@ class LinearObjFuncListImaging(AbstractLinearObjFuncList):
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(
-            grid=grid,
-            profiling_dict=profiling_dict,
-        )
+        super().__init__(grid=grid, profiling_dict=profiling_dict)

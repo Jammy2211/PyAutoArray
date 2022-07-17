@@ -7,7 +7,6 @@ from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.preloads import Preloads
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -19,7 +18,6 @@ class AbstractLEq:
         noise_map: Union[Array2D, VisibilitiesNoiseMap],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Optional[Preloads] = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -50,7 +48,6 @@ class AbstractLEq:
         self.noise_map = noise_map
         self.linear_obj_list = linear_obj_list
         self.settings = settings
-        self.preloads = preloads
         self.profiling_dict = profiling_dict
 
     @property

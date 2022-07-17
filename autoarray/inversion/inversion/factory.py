@@ -82,7 +82,10 @@ def inversion_imaging_unpacked_from(
     profiling_dict: Optional[Dict] = None,
 ):
 
-    if any(isinstance(linear_obj, LinearObjFuncListImaging) for linear_obj in linear_obj_list):
+    if any(
+        isinstance(linear_obj, LinearObjFuncListImaging)
+        for linear_obj in linear_obj_list
+    ):
         use_w_tilde = False
     elif preloads.use_w_tilde is not None:
         use_w_tilde = preloads.use_w_tilde
@@ -144,7 +147,10 @@ def inversion_interferometer_unpacked_from(
     except ImportError:
         settings.use_w_tilde = False
 
-    if any(isinstance(linear_obj, LinearObjFuncListImaging) for linear_obj in linear_obj_list):
+    if any(
+        isinstance(linear_obj, LinearObjFuncListImaging)
+        for linear_obj in linear_obj_list
+    ):
         use_w_tilde = False
     else:
         use_w_tilde = settings.use_w_tilde

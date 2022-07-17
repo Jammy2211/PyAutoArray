@@ -26,9 +26,7 @@ from autoarray.inversion.inversion import inversion_util
 
 class AbstractInversion:
     def __init__(
-        self,
-        linear_obj_list : List[LinearObj],
-        profiling_dict: Optional[Dict] = None,
+        self, linear_obj_list: List[LinearObj], profiling_dict: Optional[Dict] = None
     ):
 
         try:
@@ -47,11 +45,12 @@ class AbstractInversion:
     @property
     def linear_obj_all_with_regularization(self):
 
-        regularization_list = [linear_obj.regularization for linear_obj in self.linear_obj_list]
+        regularization_list = [
+            linear_obj.regularization for linear_obj in self.linear_obj_list
+        ]
 
         if any(regularization_list):
             return True
-
 
     @property
     def linear_obj_with_regularization_index_list(self) -> List[int]:
@@ -90,11 +89,7 @@ class AbstractInversion:
             return self.linear_obj_list[0].regularization_matrix
 
         return block_diag(
-            *[
-                linear_obj.regularization_matrix
-                for linear_obj
-                in self.linear_obj_list
-            ]
+            *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
 
     @cached_property
