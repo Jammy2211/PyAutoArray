@@ -30,7 +30,7 @@ class AbstractLEq:
         - `Mapper` objects describe the mappings between the data's values and pixels another pixelizaiton
         (e.g. a rectangular grid, Voronoi mesh, etc.).
 
-        - `LinearObjFuncListImaging` objects describe the mappings between the data's values and a functional form.
+        - `LinearObjFuncList` objects describe the mappings between the data's values and a functional form.
 
         From the `mapping_matrix` a system of linear equations can be constructed, which can then be solved for using
         the `Inversion` object. This class provides functions for setting up the system of linear equations.
@@ -91,7 +91,7 @@ class AbstractLEq:
         """
         Returns a list of all mappers used to construct the simultaneous linear equations.
 
-        This property removes other linear objects (E.g. `LinearObjFuncListImaging` objects).
+        This property removes other linear objects (E.g. `LinearObjFuncList` objects).
         """
         mapper_list = [
             linear_obj if isinstance(linear_obj, AbstractMapper) else None
@@ -114,7 +114,7 @@ class AbstractLEq:
         Returns a list of all linear objects that are not mappers which used to construct the simultaneous linear
         equations.
 
-        This property retains linear objects which are not mappers (E.g. `LinearObjFuncListImaging` objects).
+        This property retains linear objects which are not mappers (E.g. `LinearObjFuncList` objects).
         """
         mapper_list = [
             linear_obj if not isinstance(linear_obj, AbstractMapper) else None

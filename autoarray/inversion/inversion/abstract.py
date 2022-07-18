@@ -12,7 +12,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.inversion.regularization.to_reg_matrix import LinearObjToRegMatrix
 from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.interferometer.abstract import (
     AbstractLEqInterferometer,
@@ -29,7 +29,7 @@ class AbstractInversion:
         self,
         data: Union[Visibilities, Array2D],
         leq: Union[AbstractLEqImaging, AbstractLEqInterferometer],
-        regularization_list: Optional[List[AbstractRegularization]] = None,
+        regularization_list: Optional[List[LinearObjToRegMatrix]] = None,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -80,6 +80,23 @@ class AbstractInversion:
         return self.leq.has_linear_obj_func
 
     @property
+    def no_regularization_index_list(self):
+
+        no_regularization_index_list = []
+
+        pixel_count = 0
+
+        for reg in self.regularization_list:
+
+            if reg.regularization is None:
+
+                no_regularization_index_list.append(pixel_count)
+
+            pixel_count += reg.pixels
+
+        return no_regularization_index_list
+
+    @property
     def mapper_list(self):
         return self.leq.mapper_list
 
@@ -92,11 +109,20 @@ class AbstractInversion:
         return self.leq.has_one_mapper
 
     @property
+    def has_regularization(self):
+
+        for reg in self.regularization_list:
+            if reg is not None:
+                return True
+
+        return False
+
+    @property
     def noise_map(self):
         return self.leq.noise_map
 
     @property
-    def regularization_padded_list(self) -> List[AbstractRegularization]:
+    def regularization_padded_list(self) -> List[LinearObjToRegMatrix]:
         """
         When combining linear function objects with mappers, the linear funciton objects do not have an associated
         regularization matrix. Thus, the `regularization_list` is shorter than the `linear_obj_list`.
@@ -141,22 +167,19 @@ class AbstractInversion:
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
 
-        if not self.has_mapper:
-            return None
+        # TODO : This is a speed up for the single mapper case, need to retain by filtering regularization_list.
 
-        if self.has_one_mapper and self.has_linear_obj_func is False:
-            return self.regularization_list[0].regularization_matrix_from(
-                mapper=self.linear_obj_list[0]
-            )
+        # if self.has_one_mapper and self.has_linear_obj_func is False:
+        #     return self.regularization_list[0].regularization_matrix_from(
+        #         mapper=self.linear_obj_list[0]
+        #     )
+
+        # TODO : Use `pixels` of linear obj in reg instead of (1,1)
 
         return block_diag(
             *[
-                reg.regularization_matrix_from(mapper=linear_obj)
-                if reg is not None
-                else np.zeros((1, 1))
-                for (reg, linear_obj) in zip(
-                    self.regularization_padded_list, self.linear_obj_list
-                )
+                reg.regularization_matrix if reg is not None else np.zeros((1, 1))
+                for reg in self.regularization_list
             ]
         )
 
@@ -175,16 +198,19 @@ class AbstractInversion:
         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
         regularization it is bypassed.
         """
-        if not self.has_linear_obj_func:
-            return self.regularization_matrix
+
+        # This is again for speed, instead check by filtered regularization list if not has any Nones.
+
+        # if not self.has_linear_obj_func:
+        #     return self.regularization_matrix
 
         regularization_matrix = self.regularization_matrix
 
         regularization_matrix = np.delete(
-            regularization_matrix, self.leq.linear_obj_func_index_list, 0
+            regularization_matrix, self.no_regularization_index_list, 0
         )
         regularization_matrix = np.delete(
-            regularization_matrix, self.leq.linear_obj_func_index_list, 1
+            regularization_matrix, self.no_regularization_index_list, 1
         )
 
         return regularization_matrix
@@ -196,19 +222,22 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def reconstruction_mapper(self):
+    def reconstruction_reduced(self):
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
         of https://arxiv.org/pdf/astro-ph/0302587.pdf
 
         S is the vector of reconstructed inversion values.
         """
-        if not self.has_linear_obj_func:
-            return self.reconstruction
 
-        return np.delete(
-            self.reconstruction, self.leq.linear_obj_func_index_list, axis=0
-        )
+        # This is again for speed, instead check by filtered regularization list if not has any Nones.
+        #
+        # if not self.has_linear_obj_func:
+        #     return self.reconstruction
+
+        print(self.no_regularization_index_list)
+
+        return np.delete(self.reconstruction, self.no_regularization_index_list, axis=0)
 
     @property
     def reconstruction_dict(self) -> Dict[LinearObj, np.ndarray]:
@@ -336,11 +365,11 @@ class AbstractInversion:
         this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
         """
 
-        if self.has_mapper:
+        if self.has_regularization:
             return np.matmul(
-                self.reconstruction_mapper.T,
+                self.reconstruction_reduced.T,
                 np.matmul(
-                    self.regularization_matrix_reduced, self.reconstruction_mapper
+                    self.regularization_matrix_reduced, self.reconstruction_reduced
                 ),
             )
         return 0.0

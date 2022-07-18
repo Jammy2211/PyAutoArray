@@ -63,12 +63,21 @@ def test__mapping_matrix():
     assert leq.mapping_matrix == pytest.approx(mapping_matrix, 1.0e-4)
 
 
-def test__reconstruction_mapper():
+def test__reconstruction_reduced():
 
     leq = aa.m.MockLEq(
         linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObjFunc()]
     )
 
-    inversion = aa.m.MockInversion(leq=leq, reconstruction=np.array([1.0, 2.0, 3.0]))
+    regularization_list = [
+        aa.m.MockLinearObjToRegMatrix(pixels=2, regularization=1),
+        aa.m.MockLinearObjToRegMatrix(pixels=1),
+    ]
 
-    assert (inversion.reconstruction_mapper == np.array([1.0, 2.0])).all()
+    inversion = aa.m.MockInversion(
+        leq=leq,
+        regularization_list=regularization_list,
+        reconstruction=np.array([1.0, 2.0, 3.0]),
+    )
+
+    assert (inversion.reconstruction_reduced == np.array([1.0, 2.0])).all()

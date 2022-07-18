@@ -11,7 +11,7 @@ from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.linear_obj.func_list import LinearObjFuncListImaging
+from autoarray.inversion.linear_obj.func_list import LinearObjFuncList
 from autoarray.inversion.linear_eqn.imaging.w_tilde import LEqImagingWTilde
 from autoarray.inversion.linear_eqn.imaging.mapping import LEqImagingMapping
 from autoarray.inversion.inversion.matrices import InversionMatrices
@@ -25,7 +25,9 @@ from autoarray.inversion.linear_eqn.interferometer.w_tilde import (
 from autoarray.inversion.linear_eqn.interferometer.lop import (
     LEqInterferometerMappingPyLops,
 )
+from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.inversion.regularization.to_reg_matrix import LinearObjToRegMatrix
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 
@@ -82,10 +84,7 @@ def inversion_imaging_unpacked_from(
     profiling_dict: Optional[Dict] = None,
 ):
 
-    if any(
-        isinstance(linear_obj, LinearObjFuncListImaging)
-        for linear_obj in linear_obj_list
-    ):
+    if any(isinstance(linear_obj, LinearObjFuncList) for linear_obj in linear_obj_list):
         use_w_tilde = False
     elif preloads.use_w_tilde is not None:
         use_w_tilde = preloads.use_w_tilde
@@ -98,6 +97,19 @@ def inversion_imaging_unpacked_from(
     if preloads.w_tilde is not None:
 
         w_tilde = preloads.w_tilde
+
+    linear_obj_to_reg_list = []
+
+    for linear_obj, reg in zip(linear_obj_list, regularization_list):
+
+        if isinstance(linear_obj, AbstractMapper):
+            linear_obj_to_reg_list.append(
+                LinearObjToRegMatrix(regularization=reg, linear_obj=linear_obj)
+            )
+        else:
+            linear_obj_to_reg_list.append(
+                LinearObjToRegMatrix(regularization=reg, linear_obj=linear_obj)
+            )
 
     if use_w_tilde:
 
@@ -123,7 +135,7 @@ def inversion_imaging_unpacked_from(
     return InversionMatrices(
         data=image,
         leq=leq,
-        regularization_list=regularization_list,
+        regularization_list=linear_obj_to_reg_list,
         settings=settings,
         preloads=preloads,
         profiling_dict=profiling_dict,
@@ -147,13 +159,23 @@ def inversion_interferometer_unpacked_from(
     except ImportError:
         settings.use_w_tilde = False
 
-    if any(
-        isinstance(linear_obj, LinearObjFuncListImaging)
-        for linear_obj in linear_obj_list
-    ):
+    if any(isinstance(linear_obj, LinearObjFuncList) for linear_obj in linear_obj_list):
         use_w_tilde = False
     else:
         use_w_tilde = settings.use_w_tilde
+
+    linear_obj_to_reg_list = []
+
+    for linear_obj, reg in zip(linear_obj_list, regularization_list):
+
+        if isinstance(linear_obj, AbstractMapper):
+            linear_obj_to_reg_list.append(
+                LinearObjToRegMatrix(regularization=reg, linear_obj=linear_obj)
+            )
+        else:
+            linear_obj_to_reg_list.append(
+                LinearObjToRegMatrix(regularization=reg, linear_obj=linear_obj)
+            )
 
     if not settings.use_linear_operators:
 
@@ -191,7 +213,7 @@ def inversion_interferometer_unpacked_from(
         return InversionMatrices(
             data=visibilities,
             leq=leq,
-            regularization_list=regularization_list,
+            regularization_list=linear_obj_to_reg_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -200,7 +222,7 @@ def inversion_interferometer_unpacked_from(
     return InversionLinearOperator(
         data=visibilities,
         leq=leq,
-        regularization_list=regularization_list,
+        regularization_list=linear_obj_to_reg_list,
         settings=settings,
         profiling_dict=profiling_dict,
     )

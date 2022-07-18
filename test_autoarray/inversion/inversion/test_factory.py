@@ -20,6 +20,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj],
+        regularization_list=[None],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -32,6 +33,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj],
+        regularization_list=[None],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -318,7 +320,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        regularization_list=[regularization_constant],
+        regularization_list=[None, regularization_constant],
         settings=aa.SettingsInversion(
             use_w_tilde=False,
             check_solution=False,
@@ -391,7 +393,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        regularization_list=[regularization_constant],
+        regularization_list=[None, regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 

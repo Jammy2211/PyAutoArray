@@ -22,7 +22,7 @@ class AbstractLinearObjFuncList(LinearObj):
 
         For example, in `PyAutoGalaxy` and `PyAutoLens` the light of galaxies is represented using `LightProfile`
         objects, which describe the surface brightness of a galaxy as a function. This function can either be assigned
-        an overall intensity (e.g. the normalization) which describes how bright it is. Using the `LinearObjFuncListImaging` the
+        an overall intensity (e.g. the normalization) which describes how bright it is. Using the `LinearObjFuncList` the
         intensity can be solved for linearly instead.
 
         Parameters
@@ -54,7 +54,7 @@ class AbstractLinearObjFuncList(LinearObj):
         instead use the w-tilde formalism, which requires these unique mappings for efficient computation. For
         convenience, these mappings and associated metadata are packaged into the class `UniqueMappings`.
 
-        For a `LinearObjFuncListImaging` every data pixel's group of sub-pixels maps directly to the linear function.
+        For a `LinearObjFuncList` every data pixel's group of sub-pixels maps directly to the linear function.
         """
 
         sub_size = self.grid.sub_size
@@ -76,7 +76,7 @@ class AbstractLinearObjFuncList(LinearObj):
         )
 
 
-class LinearObjFuncListImaging(AbstractLinearObjFuncList):
+class LinearObjFuncList(AbstractLinearObjFuncList):
     def __init__(self, grid: Grid1D2DLike, profiling_dict: Optional[Dict] = None):
         """
         An object represented by one or more analytic functions, the solution of which can be solved for linearly via an 
@@ -88,7 +88,7 @@ class LinearObjFuncListImaging(AbstractLinearObjFuncList):
 
         For example, in `PyAutoGalaxy` and `PyAutoLens` the light of galaxies is represented using `LightProfile` 
         objects, which describe the surface brightness of a galaxy as a function. This function can either be assigned
-        an overall intensity (e.g. the normalization) which describes how bright it is. Using the `LinearObjFuncListImaging` the
+        an overall intensity (e.g. the normalization) which describes how bright it is. Using the `LinearObjFuncList` the
         intensity can be solved for linearly instead.
         
         Parameters

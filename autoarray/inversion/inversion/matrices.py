@@ -107,23 +107,25 @@ class InversionMatrices(AbstractInversion):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        if not self.has_mapper:
+        if not self.has_regularization:
             return self.curvature_matrix
 
-        if self.has_one_mapper:
+        # TODO : Done for speed, instead check if there is one regularization
 
-            curvature_matrix = self.curvature_matrix
-            curvature_matrix += self.regularization_matrix
-
-            del self.__dict__["curvature_matrix"]
-
-            return curvature_matrix
+        # if self.has_one_mapper:
+        #
+        #     curvature_matrix = self.curvature_matrix
+        #     curvature_matrix += self.regularization_matrix
+        #
+        #     del self.__dict__["curvature_matrix"]
+        #
+        #     return curvature_matrix
 
         return np.add(self.curvature_matrix, self.regularization_matrix)
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix_mapper(self):
+    def curvature_reg_matrix_reduced(self):
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
 
@@ -136,10 +138,10 @@ class InversionMatrices(AbstractInversion):
         curvature_reg_matrix = self.curvature_reg_matrix
 
         curvature_reg_matrix = np.delete(
-            curvature_reg_matrix, self.leq.linear_obj_func_index_list, 0
+            curvature_reg_matrix, self.no_regularization_index_list, 0
         )
         curvature_reg_matrix = np.delete(
-            curvature_reg_matrix, self.leq.linear_obj_func_index_list, 1
+            curvature_reg_matrix, self.no_regularization_index_list, 1
         )
 
         return curvature_reg_matrix
@@ -161,7 +163,7 @@ class InversionMatrices(AbstractInversion):
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix_mapper_cholesky(self):
+    def curvature_reg_matrix_reduced_cholesky(self):
         """
         Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
         linear system of equations of the `LEq`.
@@ -170,7 +172,7 @@ class InversionMatrices(AbstractInversion):
         to speed up the calculation of `log_det_curvature_reg_matrix_term`.
         """
         try:
-            return np.linalg.cholesky(self.curvature_reg_matrix_mapper)
+            return np.linalg.cholesky(self.curvature_reg_matrix_reduced)
         except np.linalg.LinAlgError:
             raise exc.InversionException()
 
@@ -200,7 +202,7 @@ class InversionMatrices(AbstractInversion):
         """
         if not self.has_linear_obj_func:
             return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_cholesky)))
-        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_mapper_cholesky)))
+        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_reduced_cholesky)))
 
     @cached_property
     @profile_func
@@ -218,7 +220,7 @@ class InversionMatrices(AbstractInversion):
             The log determinant of the regularization matrix.
         """
 
-        if not self.has_mapper:
+        if not self.has_regularization:
             return 0.0
 
         if self.preloads.log_det_regularization_matrix_term is not None:

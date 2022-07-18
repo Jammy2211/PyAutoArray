@@ -1,6 +1,7 @@
 from autoarray.dataset.mock.mock_dataset import MockDataset
 from autoarray.inversion.mock.mock_pixelization import MockPixelization
 from autoarray.inversion.mock.mock_regularization import MockRegularization
+from autoarray.inversion.mock.mock_reg_to_matrix import MockLinearObjToRegMatrix
 from autoarray.inversion.mock.mock_mapper import MockMapper
 from autoarray.inversion.mock.mock_linear_obj_func import MockLinearObjFunc
 from autoarray.inversion.mock.mock_leq import MockLEq
