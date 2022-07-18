@@ -63,9 +63,9 @@ class AbstractLEqInterferometer(AbstractLEq):
 
     @cached_property
     @profile_func
-    def transformed_mapping_matrix(self) -> np.ndarray:
+    def operated_mapping_matrix(self) -> np.ndarray:
         """
-        The `transformed_mapping_matrix` of a linear object describes the mappings between the observed data's values
+        The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values
         and the linear objects model, including a non-uniform fast Fourier transform operation.
 
         This is used to construct the simultaneous linear equations which reconstruct the data.
@@ -73,12 +73,12 @@ class AbstractLEqInterferometer(AbstractLEq):
         If there are multiple linear objects, the transformed mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
-        return np.hstack(self.transformed_mapping_matrix_list)
+        return np.hstack(self.operated_mapping_matrix_list)
 
     @property
-    def transformed_mapping_matrix_list(self) -> List[np.ndarray]:
+    def operated_mapping_matrix_list(self) -> List[np.ndarray]:
         """
-        The `transformed_mapping_matrix` of a linear object describes the mappings between the observed data's values
+        The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values
         and the linear objects model, including a non-uniform fast Fourier transform operation.
 
         This is used to construct the simultaneous linear equations which reconstruct the data.
@@ -91,20 +91,6 @@ class AbstractLEqInterferometer(AbstractLEq):
             )
             for linear_obj in self.linear_obj_list
         ]
-
-    @property
-    def operated_mapping_matrix(self) -> np.ndarray:
-        """
-        The linear objects whose mapping matrices are used to construct the simultaneous linear equations can have
-        operations applied to them which include this operation in the solution.
-
-        This property returns the final operated-on mapping matrix of every linear object. These are stacked such that
-        their simultaneous linear equations are solved simultaneously
-
-        For the linear equations which solve interferometer data only a non-uniform fast Fourier transform operation
-        is performed.
-        """
-        return self.transformed_mapping_matrix
 
     @profile_func
     def mapped_reconstructed_image_dict_from(

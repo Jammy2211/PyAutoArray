@@ -10,7 +10,7 @@ class MockLEqInterferometerMapping(LEqInterferometerMapping):
         noise_map=None,
         transformer=None,
         linear_obj_list=None,
-        transformed_mapping_matrix=None,
+        operated_mapping_matrix=None,
         settings: SettingsInversion = SettingsInversion(),
     ):
 
@@ -21,11 +21,11 @@ class MockLEqInterferometerMapping(LEqInterferometerMapping):
             settings=settings,
         )
 
-        self._transformed_mapping_matrix = transformed_mapping_matrix
+        self._operated_mapping_matrix = operated_mapping_matrix
 
     @property
-    def transformed_mapping_matrix(self):
-        if self._transformed_mapping_matrix is None:
-            return super().transformed_mapping_matrix
+    def operated_mapping_matrix(self):
+        if self._operated_mapping_matrix is None:
+            return super().operated_mapping_matrix
 
-        return self._transformed_mapping_matrix
+        return self._operated_mapping_matrix

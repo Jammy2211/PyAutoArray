@@ -9,14 +9,14 @@ directory = path.dirname(path.realpath(__file__))
 
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
-    transformed_mapping_matrix = np.array(
+    operated_mapping_matrix = np.array(
         [[1.0 + 1j, 1.0 + 1j, 1.0 + 1j], [1.0 + 1j, 1.0 + 1j, 1.0 + 1j]]
     )
     noise_map = np.array([1.0 + 1j, 1.0 + 1j])
 
     leq = aa.m.MockLEqInterferometerMapping(
         linear_obj_list=[aa.m.MockLinearObjFunc(), rectangular_mapper_7x7_3x3],
-        transformed_mapping_matrix=transformed_mapping_matrix,
+        operated_mapping_matrix=operated_mapping_matrix,
         noise_map=noise_map,
         settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=False),
     )
@@ -30,7 +30,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     leq = aa.m.MockLEqInterferometerMapping(
         linear_obj_list=[aa.m.MockLinearObjFunc(), rectangular_mapper_7x7_3x3],
-        transformed_mapping_matrix=transformed_mapping_matrix,
+        operated_mapping_matrix=operated_mapping_matrix,
         noise_map=noise_map,
         settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=True),
     )

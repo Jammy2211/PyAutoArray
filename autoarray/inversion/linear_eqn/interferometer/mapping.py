@@ -77,7 +77,7 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         The calculation is described in more detail in `leq_util.data_vector_via_transformed_mapping_matrix_from`.
         """
         return leq_util.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=self.transformed_mapping_matrix,
+            transformed_mapping_matrix=self.operated_mapping_matrix,
             visibilities=data,
             noise_map=self.noise_map,
         )
@@ -98,12 +98,12 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
         """
 
         real_curvature_matrix = leq_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=self.transformed_mapping_matrix.real,
+            mapping_matrix=self.operated_mapping_matrix.real,
             noise_map=self.noise_map.real,
         )
 
         imag_curvature_matrix = leq_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=self.transformed_mapping_matrix.imag,
+            mapping_matrix=self.operated_mapping_matrix.imag,
             noise_map=self.noise_map.imag,
         )
 
@@ -150,14 +150,14 @@ class LEqInterferometerMapping(AbstractLEqInterferometer):
             source_quantity=reconstruction
         )
 
-        transformed_mapping_matrix_list = self.transformed_mapping_matrix_list
+        operated_mapping_matrix_list = self.operated_mapping_matrix_list
 
         for index, linear_obj in enumerate(self.linear_obj_list):
 
             reconstruction = reconstruction_dict[linear_obj]
 
             visibilities = leq_util.mapped_reconstructed_visibilities_from(
-                transformed_mapping_matrix=transformed_mapping_matrix_list[index],
+                transformed_mapping_matrix=operated_mapping_matrix_list[index],
                 reconstruction=reconstruction,
             )
 
