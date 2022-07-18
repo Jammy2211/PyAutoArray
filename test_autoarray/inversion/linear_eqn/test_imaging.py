@@ -11,74 +11,74 @@ import pytest
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__blurred_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7_3x3):
+def test__operated_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7_3x3):
 
     leq = aa.m.MockLEqImaging(
         convolver=convolver_7x7, linear_obj_list=[rectangular_mapper_7x7_3x3]
     )
 
-    assert leq.blurred_mapping_matrix_list[0][0, 0] == pytest.approx(1.0, 1e-4)
-    assert leq.blurred_mapping_matrix[0, 0] == pytest.approx(1.0, 1e-4)
+    assert leq.operated_mapping_matrix_list[0][0, 0] == pytest.approx(1.0, 1e-4)
+    assert leq.operated_mapping_matrix[0, 0] == pytest.approx(1.0, 1e-4)
 
-    convolver = aa.m.MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
+    convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
 
     leq = aa.m.MockLEqImaging(
         convolver=convolver,
         linear_obj_list=[rectangular_mapper_7x7_3x3, rectangular_mapper_7x7_3x3],
     )
 
-    blurred_mapping_matrix_0 = np.array([[1.0, 1.0], [1.0, 1.0]])
-    blurred_mapping_matrix_1 = np.array([[1.0, 1.0], [1.0, 1.0]])
-    blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]])
+    operated_mapping_matrix_0 = np.array([[1.0, 1.0], [1.0, 1.0]])
+    operated_mapping_matrix_1 = np.array([[1.0, 1.0], [1.0, 1.0]])
+    operated_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]])
 
-    assert leq.blurred_mapping_matrix_list[0] == pytest.approx(
-        blurred_mapping_matrix_0, 1.0e-4
+    assert leq.operated_mapping_matrix_list[0] == pytest.approx(
+        operated_mapping_matrix_0, 1.0e-4
     )
-    assert leq.blurred_mapping_matrix_list[1] == pytest.approx(
-        blurred_mapping_matrix_1, 1.0e-4
+    assert leq.operated_mapping_matrix_list[1] == pytest.approx(
+        operated_mapping_matrix_1, 1.0e-4
     )
-    assert leq.blurred_mapping_matrix == pytest.approx(blurred_mapping_matrix, 1.0e-4)
+    assert leq.operated_mapping_matrix == pytest.approx(operated_mapping_matrix, 1.0e-4)
 
 
-def test__blurred_mapping_matrix_property__with_blurred_mapping_matrix_override(
+def test__operated_mapping_matrix_property__with_operated_mapping_matrix_override(
     convolver_7x7, rectangular_mapper_7x7_3x3
 ):
 
-    convolver = aa.m.MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
+    convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
 
-    blurred_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
+    operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
     linear_obj = aa.m.MockLinearObjFunc(
         mapping_matrix=None,
-        blurred_mapping_matrix_override=blurred_mapping_matrix_override,
+        operated_mapping_matrix_override=operated_mapping_matrix_override,
     )
 
     leq = aa.m.MockLEqImaging(
         convolver=convolver, linear_obj_list=[rectangular_mapper_7x7_3x3, linear_obj]
     )
 
-    blurred_mapping_matrix_0 = np.array([[1.0, 1.0], [1.0, 1.0]])
-    blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 2.0], [1.0, 1.0, 3.0, 4.0]])
+    operated_mapping_matrix_0 = np.array([[1.0, 1.0], [1.0, 1.0]])
+    operated_mapping_matrix = np.array([[1.0, 1.0, 1.0, 2.0], [1.0, 1.0, 3.0, 4.0]])
 
-    assert leq.blurred_mapping_matrix_list[0] == pytest.approx(
-        blurred_mapping_matrix_0, 1.0e-4
+    assert leq.operated_mapping_matrix_list[0] == pytest.approx(
+        operated_mapping_matrix_0, 1.0e-4
     )
-    assert leq.blurred_mapping_matrix_list[1] == pytest.approx(
-        blurred_mapping_matrix_override, 1.0e-4
+    assert leq.operated_mapping_matrix_list[1] == pytest.approx(
+        operated_mapping_matrix_override, 1.0e-4
     )
-    assert leq.blurred_mapping_matrix == pytest.approx(blurred_mapping_matrix, 1.0e-4)
+    assert leq.operated_mapping_matrix == pytest.approx(operated_mapping_matrix, 1.0e-4)
 
 
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     noise_map = np.ones(2)
-    convolver = aa.m.MockConvolver(blurred_mapping_matrix=np.ones((2, 2)))
+    convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
 
-    blurred_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
+    operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
     linear_obj = aa.m.MockLinearObjFunc(
         mapping_matrix=None,
-        blurred_mapping_matrix_override=blurred_mapping_matrix_override,
+        operated_mapping_matrix_override=operated_mapping_matrix_override,
     )
 
     leq = aa.LEqImagingMapping(

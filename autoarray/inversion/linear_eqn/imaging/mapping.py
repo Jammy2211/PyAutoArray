@@ -69,12 +69,12 @@ class LEqImagingMapping(AbstractLEqImaging):
         """
 
         if preloads.operated_mapping_matrix is not None:
-            blurred_mapping_matrix = preloads.operated_mapping_matrix
+            operated_mapping_matrix = preloads.operated_mapping_matrix
         else:
-            blurred_mapping_matrix = self.blurred_mapping_matrix
+            operated_mapping_matrix = self.operated_mapping_matrix
 
         return leq_util.data_vector_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix,
+            blurred_mapping_matrix=operated_mapping_matrix,
             image=data,
             noise_map=self.noise_map,
         )
@@ -133,14 +133,14 @@ class LEqImagingMapping(AbstractLEqImaging):
             source_quantity=reconstruction
         )
 
-        blurred_mapping_matrix_list = self.blurred_mapping_matrix_list
+        operated_mapping_matrix_list = self.operated_mapping_matrix_list
 
         for index, linear_obj in enumerate(self.linear_obj_list):
 
             reconstruction = reconstruction_dict[linear_obj]
 
             mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                mapping_matrix=blurred_mapping_matrix_list[index],
+                mapping_matrix=operated_mapping_matrix_list[index],
                 reconstruction=reconstruction,
             )
 

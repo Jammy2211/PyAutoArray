@@ -500,16 +500,16 @@ def test__inversion_matrices__x2_mappers(
         == voronoi_mapper_9_3x3.mapping_matrix
     ).all()
 
-    blurred_mapping_matrix = np.hstack(
+    operated_mapping_matrix = np.hstack(
         [rectangular_mapper_7x7_3x3.mapping_matrix, voronoi_mapper_9_3x3.mapping_matrix]
     )
 
     assert inversion.operated_mapping_matrix == pytest.approx(
-        blurred_mapping_matrix, 1.0e-4
+        operated_mapping_matrix, 1.0e-4
     )
 
     curvature_matrix = aa.util.leq.curvature_matrix_via_mapping_matrix_from(
-        mapping_matrix=blurred_mapping_matrix, noise_map=inversion.noise_map
+        mapping_matrix=operated_mapping_matrix, noise_map=inversion.noise_map
     )
 
     assert inversion.curvature_matrix == pytest.approx(curvature_matrix, 1.0e-4)

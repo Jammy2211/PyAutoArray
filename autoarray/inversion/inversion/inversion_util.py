@@ -3,7 +3,6 @@ from scipy.linalg import cho_solve
 
 from autoarray.inversion.inversion.settings import SettingsInversion
 
-from autoarray import numba_util
 from autoarray import exc
 
 from autoarray.inversion.linear_eqn import leq_util

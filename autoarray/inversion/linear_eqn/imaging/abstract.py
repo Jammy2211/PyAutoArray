@@ -56,9 +56,9 @@ class AbstractLEqImaging(AbstractLEq):
 
     @cached_property
     @profile_func
-    def blurred_mapping_matrix(self) -> np.ndarray:
+    def operated_mapping_matrix(self) -> np.ndarray:
         """
-        The `blurred_mapping_matrix` of a linear object describes the mappings between the observed data's values and
+        The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
         the linear objects model, including a 2D convolution operation.
 
         This is used to construct the simultaneous linear equations which reconstruct the data.
@@ -66,12 +66,12 @@ class AbstractLEqImaging(AbstractLEq):
         If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
         linear equations are solved simultaneously.
         """
-        return np.hstack(self.blurred_mapping_matrix_list)
+        return np.hstack(self.operated_mapping_matrix_list)
 
     @property
-    def blurred_mapping_matrix_list(self) -> List[np.ndarray]:
+    def operated_mapping_matrix_list(self) -> List[np.ndarray]:
         """
-        The `blurred_mapping_matrix` of a linear object describes the mappings between the observed data's values and
+        The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
         the linear objects model, including a 2D convolution operation.
 
         This is used to construct the simultaneous linear equations which reconstruct the data.
@@ -79,31 +79,18 @@ class AbstractLEqImaging(AbstractLEq):
         This property returns the a list of each linear object's blurred mapping matrix, which is computed by
         blurring each linear object's `mapping_matrix` property with the `Convolver` operator.
 
-        A linear object may have a `blurred_mapping_matrix_override` property, which bypasses  the `mapping_matrix`
-        computation and convolution operator and is directly placed in the `blurred_mapping_matrix_list`.
+        A linear object may have a `operated_mapping_matrix_override` property, which bypasses  the `mapping_matrix`
+        computation and convolution operator and is directly placed in the `operated_mapping_matrix_list`.
         """
 
         return [
             self.convolver.convolve_mapping_matrix(
                 mapping_matrix=linear_obj.mapping_matrix
             )
-            if linear_obj.blurred_mapping_matrix_override is None
-            else linear_obj.blurred_mapping_matrix_override
+            if linear_obj.operated_mapping_matrix_override is None
+            else linear_obj.operated_mapping_matrix_override
             for linear_obj in self.linear_obj_list
         ]
-
-    @property
-    def operated_mapping_matrix(self) -> np.ndarray:
-        """
-        The linear objects whose mapping matrices are used to construct the simultaneous linear equations can have
-        operations applied to them which include this operation in the solution.
-
-        This property returns the final operated-on mapping matrix of every linear object. These are stacked such that
-        their simultaneous linear equations are solved simultaneously
-
-        For the linear equations which solve imaging data only a convolution operation is performed.
-        """
-        return self.blurred_mapping_matrix
 
     def mapped_reconstructed_image_dict_from(
         self, reconstruction: np.ndarray

@@ -211,16 +211,16 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     # LEq's blurred mapping matrices are different thus no preloading.
 
-    blurred_mapping_matrix_0 = np.array(
+    operated_mapping_matrix_0 = np.array(
         [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
     )
 
-    blurred_mapping_matrix_1 = np.array(
+    operated_mapping_matrix_1 = np.array(
         [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
     )
 
-    leq_0 = aa.m.MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
-    leq_1 = aa.m.MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_1)
+    leq_0 = aa.m.MockLEqImaging(operated_mapping_matrix=operated_mapping_matrix_0)
+    leq_1 = aa.m.MockLEqImaging(operated_mapping_matrix=operated_mapping_matrix_1)
 
     fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_0))
     fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(leq=leq_1))
@@ -238,8 +238,8 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     # LEq's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
-    leq_0 = aa.m.MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
-    leq_1 = aa.m.MockLEqImaging(blurred_mapping_matrix=blurred_mapping_matrix_0)
+    leq_0 = aa.m.MockLEqImaging(operated_mapping_matrix=operated_mapping_matrix_0)
+    leq_1 = aa.m.MockLEqImaging(operated_mapping_matrix=operated_mapping_matrix_0)
 
     inversion_0 = aa.m.MockInversion(
         leq=leq_0,
@@ -257,7 +257,7 @@ def test__set_operated_mapping_matrix_with_preloads():
     )
     preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
 
-    assert (preloads.operated_mapping_matrix == blurred_mapping_matrix_0).all()
+    assert (preloads.operated_mapping_matrix == operated_mapping_matrix_0).all()
     assert (
         preloads.curvature_matrix_preload == curvature_matrix_preload.astype("int")
     ).all()

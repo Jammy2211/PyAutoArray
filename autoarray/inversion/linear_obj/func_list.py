@@ -5,10 +5,6 @@ from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.unique_mappings import UniqueMappings
-from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.operators.convolver import Convolver
-from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.type import Grid1D2DLike
 
 from autoarray.numba_util import profile_func
