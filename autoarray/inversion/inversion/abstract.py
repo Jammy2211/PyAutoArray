@@ -119,12 +119,7 @@ class AbstractInversion:
 
     @property
     def has_regularization(self):
-
-        for linear_obj in self.linear_obj_reg_list:
-            if linear_obj.regularization is not None:
-                return True
-
-        return False
+        return self.total_regularizations > 0
 
     @property
     def noise_map(self):
