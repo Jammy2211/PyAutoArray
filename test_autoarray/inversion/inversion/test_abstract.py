@@ -10,6 +10,36 @@ from autoarray import exc
 directory = path.dirname(path.realpath(__file__))
 
 
+def test__total_regularizations():
+
+    linear_obj_reg_0 = aa.m.MockLinearObjReg(regularization=aa.m.MockRegularization())
+    linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=None)
+
+    inversion = aa.m.MockInversion(
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1],
+    )
+
+    assert inversion.total_regularizations == 1
+
+    linear_obj_reg_0 = aa.m.MockLinearObjReg(regularization=aa.m.MockRegularization())
+    linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=aa.m.MockRegularization())
+
+    inversion = aa.m.MockInversion(
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1],
+    )
+
+    assert inversion.total_regularizations == 2
+
+    linear_obj_reg_0 = aa.m.MockLinearObjReg(regularization=None)
+    linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=None)
+
+    inversion = aa.m.MockInversion(
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1],
+    )
+
+    assert inversion.total_regularizations == 0
+
+
 def test__linear_obj_func_list__filters_other_objects():
 
     inversion = aa.m.MockInversion(

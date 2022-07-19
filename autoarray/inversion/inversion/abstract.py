@@ -17,6 +17,7 @@ from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.interferometer.abstract import (
     AbstractLEqInterferometer,
 )
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 
@@ -80,19 +81,23 @@ class AbstractInversion:
         return self.leq.has_linear_obj_func
 
     @property
+    def regularization_list(self) -> List[AbstractRegularization]:
+        return [linear_obj_reg.regularization for linear_obj_reg in self.linear_obj_reg_list]
+
+    @property
     def no_regularization_index_list(self):
 
         no_regularization_index_list = []
 
         pixel_count = 0
 
-        for reg in self.linear_obj_reg_list:
+        for linear_obj_reg in self.linear_obj_reg_list:
 
-            if reg.regularization is None:
+            if linear_obj_reg.regularization is None:
 
                 no_regularization_index_list.append(pixel_count)
 
-            pixel_count += reg.pixels
+            pixel_count += linear_obj_reg.pixels
 
         return no_regularization_index_list
 
@@ -107,6 +112,10 @@ class AbstractInversion:
     @property
     def has_one_mapper(self):
         return self.leq.has_one_mapper
+
+    @property
+    def total_regularizations(self) -> int:
+        return sum(regularization is not None for regularization in self.regularization_list)
 
     @property
     def has_regularization(self):
