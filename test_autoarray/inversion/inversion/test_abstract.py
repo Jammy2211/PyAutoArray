@@ -52,7 +52,12 @@ def test__regularization_matrix():
     reg_0 = aa.m.MockRegularization(regularization_matrix=np.ones((2, 2)))
     reg_1 = aa.m.MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
 
-    inversion = aa.m.MockInversion(regularization_list=[reg_0, reg_1], leq=leq)
+    linear_obj_reg_0 = aa.m.MockLinearObjReg(regularization=reg_0)
+    linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=reg_1)
+    #
+    inversion = aa.m.MockInversion(
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1], leq=leq
+    )
 
     regularization_matrix = np.array(
         [
@@ -232,7 +237,7 @@ def test__regularization_term():
     inversion = aa.m.MockInversion(
         leq=leq,
         reconstruction=reconstruction,
-        regularization_list=[aa.m.MockLinearObjToRegMatrix(regularization=1, pixels=3)],
+        linear_obj_reg_list=[aa.m.MockLinearObjReg(regularization=1, pixels=3)],
         regularization_matrix=regularization_matrix,
     )
 
@@ -263,7 +268,7 @@ def test__regularization_term():
     inversion = aa.m.MockInversion(
         leq=leq,
         reconstruction=reconstruction,
-        regularization_list=[aa.m.MockLinearObjToRegMatrix(regularization=1, pixels=3)],
+        linear_obj_reg_list=[aa.m.MockLinearObjReg(regularization=1, pixels=3)],
         regularization_matrix=regularization_matrix,
     )
 
@@ -290,7 +295,7 @@ def test__preload_of_log_det_regularization_term_overwrites_calculation():
 
     inversion = aa.m.MockInversion(
         leq=leq,
-        regularization_list=[aa.m.MockLinearObjToRegMatrix(regularization=1, pixels=3)],
+        linear_obj_reg_list=[aa.m.MockLinearObjReg(regularization=1, pixels=3)],
         preloads=aa.Preloads(log_det_regularization_matrix_term=1.0),
     )
 

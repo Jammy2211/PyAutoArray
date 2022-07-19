@@ -69,14 +69,14 @@ def test__reconstruction_reduced():
         linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObjFunc()]
     )
 
-    regularization_list = [
-        aa.m.MockLinearObjToRegMatrix(pixels=2, regularization=1),
-        aa.m.MockLinearObjToRegMatrix(pixels=1),
+    linear_obj_reg_list = [
+        aa.m.MockLinearObjReg(pixels=2, regularization=1),
+        aa.m.MockLinearObjReg(pixels=1),
     ]
 
     inversion = aa.m.MockInversion(
         leq=leq,
-        regularization_list=regularization_list,
+        linear_obj_reg_list=linear_obj_reg_list,
         reconstruction=np.array([1.0, 2.0, 3.0]),
     )
 

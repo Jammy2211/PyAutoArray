@@ -1,7 +1,7 @@
-from autoarray.inversion.regularization.to_reg_matrix import LinearObjToRegMatrix
+from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
 
 
-class MockLinearObjToRegMatrix(LinearObjToRegMatrix):
+class MockLinearObjReg(LinearObjReg):
     def __init__(
         self,
         regularization=None,

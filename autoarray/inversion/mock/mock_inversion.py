@@ -6,6 +6,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 
 from autoarray.inversion.mock.mock_leq import MockLEq
+from autoarray.inversion.mock.mock_linear_obj_reg import MockLinearObjReg
 from autoarray.inversion.mock.mock_regularization import MockRegularization
 
 
@@ -14,7 +15,7 @@ class MockInversion(InversionMatrices):
         self,
         data=None,
         leq: MockLEq = None,
-        regularization_list: List[MockRegularization] = None,
+        linear_obj_reg_list: List[MockLinearObjReg] = None,
         data_vector=None,
         curvature_matrix=None,
         regularization_matrix=None,
@@ -42,7 +43,7 @@ class MockInversion(InversionMatrices):
         super().__init__(
             data=data,
             leq=leq,
-            regularization_list=regularization_list,
+            linear_obj_reg_list=linear_obj_reg_list,
             settings=settings,
             preloads=preloads,
         )

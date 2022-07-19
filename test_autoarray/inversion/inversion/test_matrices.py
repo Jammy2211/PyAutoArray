@@ -152,14 +152,14 @@ def test__curvature_reg_matrix_reduced():
 
     curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 
-    regularization_list = [
-        aa.m.MockLinearObjToRegMatrix(regularization=1, pixels=2),
-        aa.m.MockLinearObjToRegMatrix(regularization=None, pixels=1),
+    linear_obj_reg_list = [
+        aa.m.MockLinearObjReg(regularization=1, pixels=2),
+        aa.m.MockLinearObjReg(regularization=None, pixels=1),
     ]
 
     inversion = aa.m.MockInversion(
         leq=leq,
-        regularization_list=regularization_list,
+        linear_obj_reg_list=linear_obj_reg_list,
         curvature_reg_matrix=curvature_reg_matrix,
     )
 

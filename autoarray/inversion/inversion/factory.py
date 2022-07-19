@@ -27,9 +27,25 @@ from autoarray.inversion.linear_eqn.interferometer.lop import (
 )
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.regularization.to_reg_matrix import LinearObjToRegMatrix
+from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
+
+
+def linear_obj_reg_list_from(
+    linear_obj_list: List[LinearObj],
+    regularization_list: Optional[List[AbstractRegularization]] = None,
+):
+
+    linear_obj_reg_list = []
+
+    for linear_obj, reg in zip(linear_obj_list, regularization_list):
+
+        linear_obj_reg_list.append(
+            LinearObjReg(linear_obj=linear_obj, regularization=reg)
+        )
+
+    return linear_obj_reg_list
 
 
 def inversion_from(
@@ -98,18 +114,9 @@ def inversion_imaging_unpacked_from(
 
         w_tilde = preloads.w_tilde
 
-    linear_obj_to_reg_list = []
-
-    for linear_obj, reg in zip(linear_obj_list, regularization_list):
-
-        if isinstance(linear_obj, AbstractMapper):
-            linear_obj_to_reg_list.append(
-                LinearObjToRegMatrix(regularization=reg, linear_obj=linear_obj)
-            )
-        else:
-            linear_obj_to_reg_list.append(
-                LinearObjToRegMatrix(regularization=reg, linear_obj=linear_obj)
-            )
+    linear_obj_reg_list = linear_obj_reg_list_from(
+        linear_obj_list=linear_obj_list, regularization_list=regularization_list
+    )
 
     if use_w_tilde:
 
@@ -135,7 +142,7 @@ def inversion_imaging_unpacked_from(
     return InversionMatrices(
         data=image,
         leq=leq,
-        regularization_list=linear_obj_to_reg_list,
+        linear_obj_reg_list=linear_obj_reg_list,
         settings=settings,
         preloads=preloads,
         profiling_dict=profiling_dict,
@@ -164,18 +171,9 @@ def inversion_interferometer_unpacked_from(
     else:
         use_w_tilde = settings.use_w_tilde
 
-    linear_obj_to_reg_list = []
-
-    for linear_obj, reg in zip(linear_obj_list, regularization_list):
-
-        if isinstance(linear_obj, AbstractMapper):
-            linear_obj_to_reg_list.append(
-                LinearObjToRegMatrix(regularization=reg, linear_obj=linear_obj)
-            )
-        else:
-            linear_obj_to_reg_list.append(
-                LinearObjToRegMatrix(regularization=reg, linear_obj=linear_obj)
-            )
+    linear_obj_reg_list = linear_obj_reg_list_from(
+        linear_obj_list=linear_obj_list, regularization_list=regularization_list
+    )
 
     if not settings.use_linear_operators:
 
@@ -213,7 +211,7 @@ def inversion_interferometer_unpacked_from(
         return InversionMatrices(
             data=visibilities,
             leq=leq,
-            regularization_list=linear_obj_to_reg_list,
+            linear_obj_reg_list=linear_obj_reg_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -222,7 +220,7 @@ def inversion_interferometer_unpacked_from(
     return InversionLinearOperator(
         data=visibilities,
         leq=leq,
-        regularization_list=linear_obj_to_reg_list,
+        linear_obj_reg_list=linear_obj_reg_list,
         settings=settings,
         profiling_dict=profiling_dict,
     )

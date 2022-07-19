@@ -12,7 +12,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.regularization.to_reg_matrix import LinearObjToRegMatrix
+from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
 from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
 from autoarray.inversion.linear_eqn.interferometer.abstract import (
     AbstractLEqInterferometer,
@@ -29,7 +29,7 @@ class AbstractInversion:
         self,
         data: Union[Visibilities, Array2D],
         leq: Union[AbstractLEqImaging, AbstractLEqInterferometer],
-        regularization_list: Optional[List[LinearObjToRegMatrix]] = None,
+        linear_obj_reg_list: Optional[List[LinearObjReg]] = None,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -40,7 +40,7 @@ class AbstractInversion:
         ----------
         data
         leq
-        regularization_list
+        linear_obj_reg_list
         settings
         preloads
         profiling_dict
@@ -60,7 +60,7 @@ class AbstractInversion:
         self.data = data
 
         self.leq = leq
-        self.regularization_list = regularization_list
+        self.linear_obj_reg_list = linear_obj_reg_list
 
         self.settings = settings
 
@@ -86,7 +86,7 @@ class AbstractInversion:
 
         pixel_count = 0
 
-        for reg in self.regularization_list:
+        for reg in self.linear_obj_reg_list:
 
             if reg.regularization is None:
 
@@ -111,8 +111,8 @@ class AbstractInversion:
     @property
     def has_regularization(self):
 
-        for reg in self.regularization_list:
-            if reg is not None:
+        for linear_obj in self.linear_obj_reg_list:
+            if linear_obj.regularization is not None:
                 return True
 
         return False
@@ -122,10 +122,10 @@ class AbstractInversion:
         return self.leq.noise_map
 
     @property
-    def regularization_padded_list(self) -> List[LinearObjToRegMatrix]:
+    def regularization_padded_list(self) -> List[LinearObjReg]:
         """
         When combining linear function objects with mappers, the linear funciton objects do not have an associated
-        regularization matrix. Thus, the `regularization_list` is shorter than the `linear_obj_list`.
+        regularization matrix. Thus, the `linear_obj_reg_list` is shorter than the `linear_obj_list`.
 
         These two lists are iterated over together when constructing the `regularization_matrix`.
 
@@ -134,20 +134,20 @@ class AbstractInversion:
         """
         i = 0
 
-        regularization_list_padded = []
+        linear_obj_reg_list_padded = []
 
         for linear_obj in self.linear_obj_list:
 
             if isinstance(linear_obj, AbstractMapper):
 
-                regularization_list_padded.append(self.regularization_list[i])
+                linear_obj_reg_list_padded.append(self.linear_obj_reg_list[i])
                 i += 1
 
             else:
 
-                regularization_list_padded.append(None)
+                linear_obj_reg_list_padded.append(None)
 
-        return regularization_list_padded
+        return linear_obj_reg_list_padded
 
     @cached_property
     @profile_func
@@ -167,10 +167,10 @@ class AbstractInversion:
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
 
-        # TODO : This is a speed up for the single mapper case, need to retain by filtering regularization_list.
+        # TODO : This is a speed up for the single mapper case, need to retain by filtering linear_obj_reg_list.
 
         # if self.has_one_mapper and self.has_linear_obj_func is False:
-        #     return self.regularization_list[0].regularization_matrix_from(
+        #     return self.linear_obj_reg_list[0].regularization_matrix_from(
         #         mapper=self.linear_obj_list[0]
         #     )
 
@@ -179,7 +179,7 @@ class AbstractInversion:
         return block_diag(
             *[
                 reg.regularization_matrix if reg is not None else np.zeros((1, 1))
-                for reg in self.regularization_list
+                for reg in self.linear_obj_reg_list
             ]
         )
 
@@ -234,8 +234,6 @@ class AbstractInversion:
         #
         # if not self.has_linear_obj_func:
         #     return self.reconstruction
-
-        print(self.no_regularization_index_list)
 
         return np.delete(self.reconstruction, self.no_regularization_index_list, axis=0)
 
@@ -462,9 +460,9 @@ class AbstractInversion:
 
         regularization_weights_dict = {}
 
-        for mapper, reg in zip(self.mapper_list, self.regularization_list):
+        for mapper, linear_obj_reg in zip(self.mapper_list, self.linear_obj_reg_list):
 
-            regularization_weights = reg.regularization_weights_from(mapper=mapper)
+            regularization_weights = linear_obj_reg.regularization_weights
 
             regularization_weights_dict[mapper] = regularization_weights
 
