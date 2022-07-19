@@ -15,7 +15,8 @@ from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
-from autoarray.inversion.linear_eqn import leq_util
+from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 from autoarray.dataset import preprocess
 
 logger = logging.getLogger(__name__)
@@ -87,7 +88,7 @@ class SettingsImaging(AbstractSettingsDataset):
             The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
             and `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
         grid_pixelized_class : ag.Grid2D
-            The type of grid used to create the grid that maps the `LEq` source pixels to the data's image-pixels.
+            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are `Grid2D` and `Grid2DIterate`.
             (see the `Grid2D` documentation for a description of these options).
         sub_size
@@ -235,7 +236,7 @@ class Imaging(AbstractDataset):
     def w_tilde(self):
         """
         The w_tilde formalism of the linear algebra equations precomputes the convolution of every pair of masked
-        noise-map values given the PSF (see `inversion.linear_eqn_util`).
+        noise-map values given the PSF (see `inversion.inversion_util`).
 
         The `WTilde` object stores these precomputed values in the imaging dataset ensuring they are only computed once
         per analysis.
@@ -251,7 +252,7 @@ class Imaging(AbstractDataset):
 
         logger.info("IMAGING - Computing W-Tilde... May take a moment.")
 
-        curvature_preload, indexes, lengths = leq_util.w_tilde_curvature_preload_imaging_from(
+        curvature_preload, indexes, lengths = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=self.noise_map.native,
             kernel_native=self.psf.native,
             native_index_for_slim_index=self.mask.native_index_for_slim_index,

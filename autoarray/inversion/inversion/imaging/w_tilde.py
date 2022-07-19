@@ -2,31 +2,37 @@ import numpy as np
 from scipy.linalg import block_diag
 from typing import Dict, List, Optional
 
+from autoconf import cached_property
+
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
+from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
+from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
 from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.dataset.imaging import WTildeImaging
 
-from autoarray.inversion.linear_eqn import leq_util
+from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
-
-class LEqImagingWTilde(AbstractLEqImaging):
+class InversionImagingWTilde(AbstractInversionImaging):
     def __init__(
         self,
+        data: Array2D,
         noise_map: Array2D,
         convolver: Convolver,
         w_tilde: WTildeImaging,
-        linear_obj_list: List[LinearObj],
+        linear_obj_reg_list: List[LinearObjReg],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
-        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq`) for a full description.
+        to be solved (see `inversion.inversion.abstract.AbstractInversion`) for a full description.
 
         A linear object describes the mappings between values in observed `data` and the linear object's model via its
         `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
@@ -44,7 +50,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         w_tilde
             An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
             the mapping matrix.
-        linear_obj_list
+        linear_obj_reg_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         profiling_dict
@@ -52,10 +58,12 @@ class LEqImagingWTilde(AbstractLEqImaging):
         """
 
         super().__init__(
+            data=data,
             noise_map=noise_map,
             convolver=convolver,
-            linear_obj_list=linear_obj_list,
+            linear_obj_reg_list=linear_obj_reg_list,
             settings=settings,
+            preloads=preloads,
             profiling_dict=profiling_dict,
         )
 
@@ -65,8 +73,9 @@ class LEqImagingWTilde(AbstractLEqImaging):
         else:
             self.w_tilde = None
 
+    @cached_property
     @profile_func
-    def data_vector_from(self, data: Array2D, preloads) -> np.ndarray:
+    def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
         by this object.
@@ -77,30 +86,30 @@ class LEqImagingWTilde(AbstractLEqImaging):
         If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
         for simultaneously.
 
-        The calculation is described in more detail in `leq_util.w_tilde_data_imaging_from`.
+        The calculation is described in more detail in `inversion_util.w_tilde_data_imaging_from`.
         """
 
-        w_tilde_data = leq_util.w_tilde_data_imaging_from(
-            image_native=data.native,
+        w_tilde_data = inversion_imaging_util.w_tilde_data_imaging_from(
+            image_native=self.data.native,
             noise_map_native=self.noise_map.native,
             kernel_native=self.convolver.kernel.native,
-            native_index_for_slim_index=data.mask.native_index_for_slim_index,
+            native_index_for_slim_index=self.data.mask.native_index_for_slim_index,
         )
 
         return np.concatenate(
             [
-                leq_util.data_vector_via_w_tilde_data_imaging_from(
+                inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
                     w_tilde_data=w_tilde_data,
-                    data_to_pix_unique=linear_obj.data_unique_mappings.data_to_pix_unique,
-                    data_weights=linear_obj.data_unique_mappings.data_weights,
-                    pix_lengths=linear_obj.data_unique_mappings.pix_lengths,
+                    data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
+                    data_weights=linear_obj.unique_mappings.data_weights,
+                    pix_lengths=linear_obj.unique_mappings.pix_lengths,
                     pix_pixels=linear_obj.pixels,
                 )
                 for linear_obj in self.linear_obj_list
             ]
         )
 
-    @property
+    @cached_property
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
@@ -122,7 +131,7 @@ class LEqImagingWTilde(AbstractLEqImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        if len(self.linear_obj_list) == 1:
+        if len(self.linear_obj_reg_list) == 1:
             return self.curvature_matrix_diag
 
         curvature_matrix = self.curvature_matrix_diag
@@ -156,30 +165,30 @@ class LEqImagingWTilde(AbstractLEqImaging):
 
         if len(self.linear_obj_list) == 1:
 
-            return leq_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+            return inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                 curvature_preload=self.w_tilde.curvature_preload,
                 curvature_indexes=self.w_tilde.indexes,
                 curvature_lengths=self.w_tilde.lengths,
                 data_to_pix_unique=self.linear_obj_list[
                     0
-                ].data_unique_mappings.data_to_pix_unique,
-                data_weights=self.linear_obj_list[0].data_unique_mappings.data_weights,
-                pix_lengths=self.linear_obj_list[0].data_unique_mappings.pix_lengths,
-                pix_pixels=self.linear_obj_list[0].pixels,
+                ].unique_mappings.data_to_pix_unique,
+                data_weights=self.linear_obj_list[0].unique_mappings.data_weights,
+                pix_lengths=self.linear_obj_list[0].unique_mappings.pix_lengths,
+                pix_pixels=self.linear_obj_reg_list[0].pixels,
             )
 
         return block_diag(
             *[
-                leq_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+                inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                     curvature_preload=self.w_tilde.curvature_preload,
                     curvature_indexes=self.w_tilde.indexes,
                     curvature_lengths=self.w_tilde.lengths,
-                    data_to_pix_unique=mapper.data_unique_mappings.data_to_pix_unique,
-                    data_weights=mapper.data_unique_mappings.data_weights,
-                    pix_lengths=mapper.data_unique_mappings.pix_lengths,
+                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
+                    data_weights=mapper.unique_mappings.data_weights,
+                    pix_lengths=mapper.unique_mappings.pix_lengths,
                     pix_pixels=mapper.pixels,
                 )
-                for mapper in self.linear_obj_list
+                for mapper in self.linear_obj_reg_list
             ]
         )
 
@@ -200,40 +209,39 @@ class LEqImagingWTilde(AbstractLEqImaging):
         mapper_0 = self.linear_obj_list[mapper_index_0]
         mapper_1 = self.linear_obj_list[mapper_index_1]
 
-        curvature_matrix_off_diag_0 = leq_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
+        curvature_matrix_off_diag_0 = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
             curvature_indexes=self.w_tilde.indexes,
             curvature_lengths=self.w_tilde.lengths,
-            data_to_pix_unique_0=mapper_0.data_unique_mappings.data_to_pix_unique,
-            data_weights_0=mapper_0.data_unique_mappings.data_weights,
-            pix_lengths_0=mapper_0.data_unique_mappings.pix_lengths,
+            data_to_pix_unique_0=mapper_0.unique_mappings.data_to_pix_unique,
+            data_weights_0=mapper_0.unique_mappings.data_weights,
+            pix_lengths_0=mapper_0.unique_mappings.pix_lengths,
             pix_pixels_0=mapper_0.pixels,
-            data_to_pix_unique_1=mapper_1.data_unique_mappings.data_to_pix_unique,
-            data_weights_1=mapper_1.data_unique_mappings.data_weights,
-            pix_lengths_1=mapper_1.data_unique_mappings.pix_lengths,
+            data_to_pix_unique_1=mapper_1.unique_mappings.data_to_pix_unique,
+            data_weights_1=mapper_1.unique_mappings.data_weights,
+            pix_lengths_1=mapper_1.unique_mappings.pix_lengths,
             pix_pixels_1=mapper_1.pixels,
         )
 
-        curvature_matrix_off_diag_1 = leq_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
+        curvature_matrix_off_diag_1 = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
             curvature_indexes=self.w_tilde.indexes,
             curvature_lengths=self.w_tilde.lengths,
-            data_to_pix_unique_0=mapper_1.data_unique_mappings.data_to_pix_unique,
-            data_weights_0=mapper_1.data_unique_mappings.data_weights,
-            pix_lengths_0=mapper_1.data_unique_mappings.pix_lengths,
+            data_to_pix_unique_0=mapper_1.unique_mappings.data_to_pix_unique,
+            data_weights_0=mapper_1.unique_mappings.data_weights,
+            pix_lengths_0=mapper_1.unique_mappings.pix_lengths,
             pix_pixels_0=mapper_1.pixels,
-            data_to_pix_unique_1=mapper_0.data_unique_mappings.data_to_pix_unique,
-            data_weights_1=mapper_0.data_unique_mappings.data_weights,
-            pix_lengths_1=mapper_0.data_unique_mappings.pix_lengths,
+            data_to_pix_unique_1=mapper_0.unique_mappings.data_to_pix_unique,
+            data_weights_1=mapper_0.unique_mappings.data_weights,
+            pix_lengths_1=mapper_0.unique_mappings.pix_lengths,
             pix_pixels_1=mapper_0.pixels,
         )
 
         return curvature_matrix_off_diag_0 + curvature_matrix_off_diag_1.T
 
+    @property
     @profile_func
-    def mapped_reconstructed_data_dict_from(
-        self, reconstruction: np.ndarray
-    ) -> Dict[LinearObj, Array2D]:
+    def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
@@ -261,17 +269,17 @@ class LEqImagingWTilde(AbstractLEqImaging):
         mapped_reconstructed_data_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
-            source_quantity=reconstruction
+            source_quantity=self.reconstruction
         )
 
         for linear_obj in self.linear_obj_list:
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
-                data_to_pix_unique=linear_obj.data_unique_mappings.data_to_pix_unique,
-                data_weights=linear_obj.data_unique_mappings.data_weights,
-                pix_lengths=linear_obj.data_unique_mappings.pix_lengths,
+            mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
+                data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
+                data_weights=linear_obj.unique_mappings.data_weights,
+                pix_lengths=linear_obj.unique_mappings.pix_lengths,
                 reconstruction=reconstruction,
             )
 

@@ -3,31 +3,36 @@ from typing import Dict, List, Optional
 
 from autoconf import cached_property
 
-from autoarray.inversion.linear_eqn.abstract import AbstractLEq
+from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
-from autoarray.inversion.linear_eqn import leq_util
+from autoarray.inversion.inversion import inversion_util
 
 from autoarray.numba_util import profile_func
 
 
-class AbstractLEqInterferometer(AbstractLEq):
+class AbstractInversionInterferometer(AbstractInversion):
     def __init__(
         self,
+        data: Visibilities,
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
-        linear_obj_list: List[LinearObj],
+        linear_obj_reg_list: List[LinearObjReg],
         settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
-        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description).
+        to be solved (see `inversion.inversion.abstract.AbstractInversion` for a full description).
 
         A linear object describes the mappings between values in observed `data` and the linear object's model via its
         `mapping_matrix`. This class constructs linear equations for `Interferometer` objects, where the data is an
@@ -41,7 +46,7 @@ class AbstractLEqInterferometer(AbstractLEq):
         transformer
             The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
             with the interferometer data's transformer.
-        linear_obj_list
+        linear_obj_reg_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         profiling_dict
@@ -49,9 +54,11 @@ class AbstractLEqInterferometer(AbstractLEq):
         """
 
         super().__init__(
+            data=data,
             noise_map=noise_map,
-            linear_obj_list=linear_obj_list,
+            linear_obj_reg_list=linear_obj_reg_list,
             settings=settings,
+            preloads=preloads,
             profiling_dict=profiling_dict,
         )
 
@@ -60,20 +67,6 @@ class AbstractLEqInterferometer(AbstractLEq):
     @property
     def mask(self) -> Mask2D:
         return self.transformer.real_space_mask
-
-    @cached_property
-    @profile_func
-    def operated_mapping_matrix(self) -> np.ndarray:
-        """
-        The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values
-        and the linear objects model, including a non-uniform fast Fourier transform operation.
-
-        This is used to construct the simultaneous linear equations which reconstruct the data.
-
-        If there are multiple linear objects, the transformed mapping matrices are stacked such that their simultaneous
-        linear equations are solved simultaneously.
-        """
-        return np.hstack(self.operated_mapping_matrix_list)
 
     @property
     def operated_mapping_matrix_list(self) -> List[np.ndarray]:
@@ -89,12 +82,13 @@ class AbstractLEqInterferometer(AbstractLEq):
             self.transformer.transform_mapping_matrix(
                 mapping_matrix=linear_obj.mapping_matrix
             )
-            for linear_obj in self.linear_obj_list
+            for linear_obj in self.linear_obj_reg_list
         ]
 
+    @property
     @profile_func
-    def mapped_reconstructed_image_dict_from(
-        self, reconstruction: np.ndarray
+    def mapped_reconstructed_image_dict(
+        self,
     ) -> Dict[LinearObj, Array2D]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
@@ -122,14 +116,14 @@ class AbstractLEqInterferometer(AbstractLEq):
         mapped_reconstructed_image_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
-            source_quantity=reconstruction
+            source_quantity=self.reconstruction
         )
 
         for linear_obj in self.linear_obj_list:
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                 mapping_matrix=linear_obj.mapping_matrix, reconstruction=reconstruction
             )
 

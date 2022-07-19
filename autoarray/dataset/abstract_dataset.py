@@ -50,7 +50,7 @@ class AbstractWTilde:
                 ""
                 f"The value of the noise map is {noise_map[0]} whereas in WTildeImaging it is {self.noise_map_value}"
                 ""
-                "Update WTildeImaging or do not use the w_tilde formalism to perform the LEq."
+                "Update WTildeImaging or do not use the w_tilde formalism to perform the Inversion."
             )
 
 
@@ -115,7 +115,7 @@ class AbstractSettingsDataset:
             The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D` and
             `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
         grid_pixelized_class : ag.Grid2D
-            The type of grid used to create the grid that maps the `LEq` source pixels to the data's image-pixels.
+            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are `Grid2D` and `Grid2DIterate` (see the `Grid2D` documentation for a
             description of these options).
         sub_size

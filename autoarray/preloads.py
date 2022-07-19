@@ -2,10 +2,10 @@ import logging
 import numpy as np
 from typing import List
 
-from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
+from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 
 from autoarray import exc
-from autoarray.inversion.linear_eqn import leq_util
+from autoarray.inversion.inversion import inversion_util
 
 
 logger = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class Preloads:
 
             from autoarray.dataset.imaging import WTildeImaging
 
-            preload, indexes, lengths = leq_util.w_tilde_curvature_preload_imaging_from(
+            preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=fit_0.noise_map.native,
                 kernel_native=fit_0.dataset.psf.native,
                 native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
@@ -244,7 +244,7 @@ class Preloads:
 
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
 
-                if isinstance(inversion_0.leq, AbstractLEqImaging):
+                if isinstance(inversion_0.inversion, AbstractInversionImaging):
 
                     self.curvature_matrix_preload = (
                         inversion_0.curvature_matrix_preload
@@ -254,7 +254,7 @@ class Preloads:
                     ).astype("int")
 
                 logger.info(
-                    "PRELOADS - LEq linear algebra quantities preloaded for this model-fit."
+                    "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
                 )
 
     def set_curvature_matrix(self, fit_0, fit_1):
@@ -293,7 +293,7 @@ class Preloads:
                 self.curvature_matrix = inversion_0.curvature_matrix
 
                 logger.info(
-                    "PRELOADS - LEq Curvature Matrix preloaded for this model-fit."
+                    "PRELOADS - Inversion Curvature Matrix preloaded for this model-fit."
                 )
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
@@ -342,7 +342,7 @@ class Preloads:
             )
 
             logger.info(
-                "PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit."
+                "PRELOADS - Inversion Log Det Regularization Matrix Term preloaded for this model-fit."
             )
 
     def check_via_fit(self, fit):

@@ -22,7 +22,7 @@ class UniqueMappings:
         The need to store separately the mappings and pixelization lengths is so that they be easily iterated over when
         perform calculations for efficiency.
 
-        See the mapper properties `data_unique_mappings()` for a description of the use of this object in mappers.
+        See the mapper properties `unique_mappings()` for a description of the use of this object in mappers.
 
         Parameters
         ----------

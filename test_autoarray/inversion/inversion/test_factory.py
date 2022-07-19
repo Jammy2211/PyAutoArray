@@ -25,7 +25,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFunc)
-    assert isinstance(inversion.leq, aa.LEqImagingMapping)
+    assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
     # Overwrites use_w_tilde to false.
@@ -38,7 +38,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFunc)
-    assert isinstance(inversion.leq, aa.LEqImagingMapping)
+    assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
 
@@ -58,7 +58,7 @@ def test__inversion_imaging__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperRectangularNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingMapping)
+    assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(6.9546, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -70,7 +70,7 @@ def test__inversion_imaging__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperRectangularNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(6.9546, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -82,7 +82,7 @@ def test__inversion_imaging__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion.leq, aa.LEqImagingMapping)
+    assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6674, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -94,7 +94,7 @@ def test__inversion_imaging__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6674, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -106,7 +106,7 @@ def test__inversion_imaging__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingMapping)
+    assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6763, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -118,7 +118,7 @@ def test__inversion_imaging__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6763, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -142,7 +142,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         10.66747, 1.0e-4
     )
@@ -156,7 +156,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         10.52745, 1.0e-4
     )
@@ -170,7 +170,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         47.410169, 1.0e-4
     )
@@ -184,7 +184,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         38.956734, 1.0e-4
     )
@@ -198,7 +198,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6763, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -210,7 +210,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         10.38417, 1.0e-4
     )
@@ -224,7 +224,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         -25.71476, 1.0e-4
     )
@@ -238,7 +238,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         -26.31747, 1.0e-4
     )
@@ -252,7 +252,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoi)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         10.66505, 1.0e-4
     )
@@ -266,7 +266,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoi)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         10.37955, 1.0e-4
     )
@@ -280,7 +280,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoi)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         49.63744, 1.0e-4
     )
@@ -294,7 +294,7 @@ def test__inversion_imaging__via_regularizations(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoi)
-    assert isinstance(inversion.leq, aa.LEqImagingWTilde)
+    assert isinstance(inversion, aa.InversionImagingWTilde)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         34.90782, 1.0e-4
     )
@@ -324,13 +324,13 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
         settings=aa.SettingsInversion(
             use_w_tilde=False,
             check_solution=False,
-            linear_funcs_add_to_curvature_diag=False,
+            no_regularization_add_to_curvature_diag=False,
         ),
     )
 
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFunc)
     assert isinstance(inversion.mapper_list[0], aa.MapperRectangularNoInterp)
-    assert isinstance(inversion.leq, aa.LEqImagingMapping)
+    assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
         6.95465245, 1.0e-4
     )
@@ -436,7 +436,7 @@ def test__inversion_interferometer__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperRectangularNoInterp)
-    assert isinstance(inversion.leq, aa.LEqInterferometerMapping)
+    assert isinstance(inversion, aa.InversionInterferometerMapping)
     assert inversion.mapped_reconstructed_data == pytest.approx(
         1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
     )
@@ -452,7 +452,7 @@ def test__inversion_interferometer__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperDelaunay)
-    assert isinstance(inversion.leq, aa.LEqInterferometerMapping)
+    assert isinstance(inversion, aa.InversionInterferometerMapping)
     assert inversion.mapped_reconstructed_data == pytest.approx(
         1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
     )
@@ -470,7 +470,7 @@ def test__inversion_interferometer__via_mapper(
     )
 
     assert isinstance(inversion.mapper_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion.leq, aa.LEqInterferometerMapping)
+    assert isinstance(inversion, aa.InversionInterferometerMapping)
     assert inversion.mapped_reconstructed_data == pytest.approx(
         1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
     )
@@ -510,7 +510,7 @@ def test__inversion_matrices__x2_mappers(
         operated_mapping_matrix, 1.0e-4
     )
 
-    curvature_matrix = aa.util.leq.curvature_matrix_via_mapping_matrix_from(
+    curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
         mapping_matrix=operated_mapping_matrix, noise_map=inversion.noise_map
     )
 

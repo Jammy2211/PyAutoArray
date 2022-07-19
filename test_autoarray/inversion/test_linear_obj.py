@@ -44,7 +44,7 @@ def test__data_to_pix_unique_from():
     linear_obj = aa.LinearObjFuncList(grid=grid)
 
     assert (
-        linear_obj.data_unique_mappings.data_to_pix_unique == data_to_pix_unique
+        linear_obj.unique_mappings.data_to_pix_unique == data_to_pix_unique
     ).all()
-    assert (linear_obj.data_unique_mappings.data_weights == data_weights).all()
-    assert (linear_obj.data_unique_mappings.pix_lengths == pix_lengths).all()
+    assert (linear_obj.unique_mappings.data_weights == data_weights).all()
+    assert (linear_obj.unique_mappings.pix_lengths == pix_lengths).all()

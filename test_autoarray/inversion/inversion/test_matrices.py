@@ -146,7 +146,7 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
 def test__curvature_reg_matrix_reduced():
 
-    leq = aa.m.MockLEq(
+    inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObjFunc()]
     )
 
@@ -158,7 +158,7 @@ def test__curvature_reg_matrix_reduced():
     ]
 
     inversion = aa.m.MockInversion(
-        leq=leq,
+        inversion=inversion,
         linear_obj_reg_list=linear_obj_reg_list,
         curvature_reg_matrix=curvature_reg_matrix,
     )

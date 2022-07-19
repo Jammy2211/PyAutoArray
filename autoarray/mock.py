@@ -4,11 +4,6 @@ from autoarray.inversion.mock.mock_regularization import MockRegularization
 from autoarray.inversion.mock.mock_linear_obj_reg import MockLinearObjReg
 from autoarray.inversion.mock.mock_mapper import MockMapper
 from autoarray.inversion.mock.mock_linear_obj_func import MockLinearObjFunc
-from autoarray.inversion.mock.mock_leq import MockLEq
-from autoarray.inversion.mock.mock_leq_imaging import MockLEqImaging
-from autoarray.inversion.mock.mock_leq_interferometer import (
-    MockLEqInterferometerMapping,
-)
 from autoarray.inversion.mock.mock_inversion import MockInversion
 from autoarray.fit.mock.mock_fit_imaging import MockFitImaging
 from autoarray.fit.mock.mock_fit_interferometer import MockFitInterferometer

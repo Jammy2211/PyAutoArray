@@ -12,18 +12,16 @@ from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.linear_obj.func_list import LinearObjFuncList
-from autoarray.inversion.linear_eqn.imaging.w_tilde import LEqImagingWTilde
-from autoarray.inversion.linear_eqn.imaging.mapping import LEqImagingMapping
-from autoarray.inversion.inversion.matrices import InversionMatrices
-from autoarray.inversion.inversion.linear_operator import InversionLinearOperator
-from autoarray.inversion.linear_eqn.interferometer.mapping import (
-    LEqInterferometerMapping,
+from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
+from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping
+from autoarray.inversion.inversion.interferometer.mapping import (
+    InversionInterferometerMapping,
 )
-from autoarray.inversion.linear_eqn.interferometer.w_tilde import (
-    LEqInterferometerWTilde,
+from autoarray.inversion.inversion.interferometer.w_tilde import (
+    InversionInterferometerWTilde,
 )
-from autoarray.inversion.linear_eqn.interferometer.lop import (
-    LEqInterferometerMappingPyLops,
+from autoarray.inversion.inversion.interferometer.lop import (
+    InversionInterferometerMappingPyLops,
 )
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
@@ -34,7 +32,7 @@ from autoarray.preloads import Preloads
 
 def linear_obj_reg_list_from(
     linear_obj_list: List[LinearObj],
-    regularization_list: Optional[List[AbstractRegularization]] = None,
+    regularization_list: List[Optional[AbstractRegularization]] = None,
 ):
 
     linear_obj_reg_list = []
@@ -51,7 +49,7 @@ def linear_obj_reg_list_from(
 def inversion_from(
     dataset,
     linear_obj_list: List[LinearObj],
-    regularization_list: Optional[List[AbstractRegularization]] = None,
+    regularization_list: List[Optional[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -94,7 +92,7 @@ def inversion_imaging_unpacked_from(
     convolver: Convolver,
     w_tilde: WTildeImaging,
     linear_obj_list: List[LinearObj],
-    regularization_list: Optional[List[AbstractRegularization]] = None,
+    regularization_list: List[Optional[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -120,28 +118,21 @@ def inversion_imaging_unpacked_from(
 
     if use_w_tilde:
 
-        leq = LEqImagingWTilde(
+        return InversionImagingWTilde(
+            data=image,
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
-            linear_obj_list=linear_obj_list,
+            linear_obj_reg_list=linear_obj_reg_list,
             settings=settings,
+            preloads=preloads,
             profiling_dict=profiling_dict,
         )
 
-    else:
-
-        leq = LEqImagingMapping(
-            noise_map=noise_map,
-            convolver=convolver,
-            linear_obj_list=linear_obj_list,
-            settings=settings,
-            profiling_dict=profiling_dict,
-        )
-
-    return InversionMatrices(
+    return InversionImagingMapping(
         data=image,
-        leq=leq,
+        noise_map=noise_map,
+        convolver=convolver,
         linear_obj_reg_list=linear_obj_reg_list,
         settings=settings,
         preloads=preloads,
@@ -155,7 +146,7 @@ def inversion_interferometer_unpacked_from(
     transformer: Union[TransformerDFT, TransformerNUFFT],
     w_tilde: WTildeInterferometer,
     linear_obj_list: List[LinearObj],
-    regularization_list: Optional[List[AbstractRegularization]] = None,
+    regularization_list: List[Optional[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -179,48 +170,37 @@ def inversion_interferometer_unpacked_from(
 
         if use_w_tilde:
 
-            leq = LEqInterferometerWTilde(
+            return InversionInterferometerWTilde(
+                data=visibilities,
                 noise_map=noise_map,
                 transformer=transformer,
                 w_tilde=w_tilde,
-                linear_obj_list=linear_obj_list,
+                linear_obj_reg_list=linear_obj_reg_list,
                 settings=settings,
+                preloads=preloads,
                 profiling_dict=profiling_dict,
             )
 
         else:
 
-            leq = LEqInterferometerMapping(
+            return InversionInterferometerMapping(
+                data=visibilities,
                 noise_map=noise_map,
                 transformer=transformer,
-                linear_obj_list=linear_obj_list,
+                linear_obj_reg_list=linear_obj_reg_list,
+                settings=settings,
+                preloads=preloads,
                 profiling_dict=profiling_dict,
             )
 
     else:
 
-        leq = LEqInterferometerMappingPyLops(
+        return InversionInterferometerMappingPyLops(
+            data=visibilities,
             noise_map=noise_map,
             transformer=transformer,
-            linear_obj_list=linear_obj_list,
-            profiling_dict=profiling_dict,
-        )
-
-    if not settings.use_linear_operators:
-
-        return InversionMatrices(
-            data=visibilities,
-            leq=leq,
             linear_obj_reg_list=linear_obj_reg_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
         )
-
-    return InversionLinearOperator(
-        data=visibilities,
-        leq=leq,
-        linear_obj_reg_list=linear_obj_reg_list,
-        settings=settings,
-        profiling_dict=profiling_dict,
-    )

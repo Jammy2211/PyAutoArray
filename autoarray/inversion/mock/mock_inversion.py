@@ -1,27 +1,28 @@
 import numpy as np
 from typing import List
 
-from autoarray.inversion.inversion.matrices import InversionMatrices
+from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 
-from autoarray.inversion.mock.mock_leq import MockLEq
 from autoarray.inversion.mock.mock_linear_obj_reg import MockLinearObjReg
-from autoarray.inversion.mock.mock_regularization import MockRegularization
 
 
-class MockInversion(InversionMatrices):
+class MockInversion(AbstractInversion):
     def __init__(
         self,
         data=None,
-        leq: MockLEq = None,
+        noise_map=None,
         linear_obj_reg_list: List[MockLinearObjReg] = None,
+        operated_mapping_matrix=None,
         data_vector=None,
         curvature_matrix=None,
         regularization_matrix=None,
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
         reconstruction_dict: List[np.ndarray] = None,
+        mapped_reconstructed_data_dict=None,
+        mapped_reconstructed_image_dict=None,
         errors: np.ndarray = None,
         errors_dict: List[np.ndarray] = None,
         regularization_term=None,
@@ -42,18 +43,22 @@ class MockInversion(InversionMatrices):
 
         super().__init__(
             data=data,
-            leq=leq,
+            noise_map=noise_map,
             linear_obj_reg_list=linear_obj_reg_list,
             settings=settings,
             preloads=preloads,
         )
 
+        self._operated_mapping_matrix = operated_mapping_matrix
         self._data_vector = data_vector
         self._regularization_matrix = regularization_matrix
         self._curvature_matrix = curvature_matrix
         self._curvature_reg_matrix = curvature_reg_matrix
         self._reconstruction = reconstruction
         self._reconstruction_dict = reconstruction_dict
+
+        self._mapped_reconstructed_data_dict = mapped_reconstructed_data_dict
+        self._mapped_reconstructed_image_dict = mapped_reconstructed_image_dict
 
         self._errors = errors
         self._errors_dict = errors_dict
@@ -64,6 +69,13 @@ class MockInversion(InversionMatrices):
 
         self._curvature_matrix_preload = curvature_matrix_preload
         self._curvature_matrix_counts = curvature_matrix_counts
+
+    @property
+    def operated_mapping_matrix(self) -> np.ndarray:
+        if self._operated_mapping_matrix is None:
+            return super().operated_mapping_matrix
+
+        return self._operated_mapping_matrix
 
     @property
     def data_vector(self) -> np.ndarray:
@@ -104,6 +116,48 @@ class MockInversion(InversionMatrices):
         if self._reconstruction_dict is None:
             return super().reconstruction_dict
         return self._reconstruction_dict
+
+    def mapped_reconstructed_data_dict_from(self, reconstruction: np.ndarray):
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image data.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image data which the inversion fits.
+        """
+
+        if self._mapped_reconstructed_data_dict is None:
+            return super().mapped_reconstructed_data_dict_from(
+                reconstruction=reconstruction
+            )
+
+        return self._mapped_reconstructed_data_dict
+
+    def mapped_reconstructed_image_dict_from(self, reconstruction: np.ndarray):
+        """
+        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
+        reconstruct the image image.
+
+        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
+        computed when using the w-tilde formalism.
+
+        Returns
+        -------
+        Array2D
+            The reconstructed image image which the inversion fits.
+        """
+
+        if self._mapped_reconstructed_image_dict is None:
+            return super().mapped_reconstructed_image_dict_from(
+                reconstruction=reconstruction
+            )
+
+        return self._mapped_reconstructed_image_dict
 
     @property
     def errors(self):

@@ -13,13 +13,9 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
-from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
-from autoarray.inversion.linear_eqn.interferometer.abstract import (
-    AbstractLEqInterferometer,
-)
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.preloads import Preloads
 
 from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
@@ -29,10 +25,10 @@ class AbstractInversion:
     def __init__(
         self,
         data: Union[Visibilities, Array2D],
-        leq: Union[AbstractLEqImaging, AbstractLEqInterferometer],
+        noise_map: Union[Visibilities, Array2D],
         linear_obj_reg_list: Optional[List[LinearObjReg]] = None,
         settings: SettingsInversion = SettingsInversion(),
-        preloads: Preloads = Preloads(),
+        preloads = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -40,12 +36,16 @@ class AbstractInversion:
         Parameters
         ----------
         data
-        leq
+        inversion
         linear_obj_reg_list
         settings
         preloads
         profiling_dict
         """
+
+        from autoarray.preloads import Preloads
+
+        preloads = preloads or Preloads()
 
         try:
             import numba
@@ -59,8 +59,8 @@ class AbstractInversion:
             )
 
         self.data = data
+        self.noise_map = noise_map
 
-        self.leq = leq
         self.linear_obj_reg_list = linear_obj_reg_list
 
         self.settings = settings
@@ -69,89 +69,58 @@ class AbstractInversion:
         self.profiling_dict = profiling_dict
 
     @property
-    def linear_obj_list(self):
-        return self.leq.linear_obj_list
+    def mask(self) -> Array2D:
+        return self.data.mask
 
     @property
-    def linear_obj_func_list(self):
-        return self.leq.linear_obj_func_list
+    def linear_obj_list(self) -> List[LinearObj]:
+        return [linear_obj_reg.linear_obj for linear_obj_reg in self.linear_obj_reg_list]
 
-    @property
-    def has_linear_obj_func(self):
-        return self.leq.has_linear_obj_func
-
-    @property
-    def regularization_list(self) -> List[AbstractRegularization]:
-        return [linear_obj_reg.regularization for linear_obj_reg in self.linear_obj_reg_list]
-
-    @property
-    def no_regularization_index_list(self):
-
-        no_regularization_index_list = []
-
-        pixel_count = 0
-
-        for linear_obj_reg in self.linear_obj_reg_list:
-
-            if linear_obj_reg.regularization is None:
-
-                no_regularization_index_list.append(pixel_count)
-
-            pixel_count += linear_obj_reg.pixels
-
-        return no_regularization_index_list
-
-    @property
-    def mapper_list(self):
-        return self.leq.mapper_list
-
-    @property
-    def has_mapper(self):
-        return self.leq.has_mapper
-
-    @property
-    def has_one_mapper(self):
-        return self.leq.has_one_mapper
-
-    @property
-    def total_regularizations(self) -> int:
-        return sum(regularization is not None for regularization in self.regularization_list)
-
-    @property
-    def has_regularization(self):
-        return self.total_regularizations > 0
-
-    @property
-    def noise_map(self):
-        return self.leq.noise_map
-
-    @property
-    def regularization_padded_list(self) -> List[LinearObjReg]:
+    @cached_property
+    @profile_func
+    def mapping_matrix(self) -> np.ndarray:
         """
-        When combining linear function objects with mappers, the linear funciton objects do not have an associated
-        regularization matrix. Thus, the `linear_obj_reg_list` is shorter than the `linear_obj_list`.
+        The `mapping_matrix` of a linear object describes the mappings between the observed data's values and the
+        linear objects model. These are used to construct the simultaneous linear equations which reconstruct the data.
 
-        These two lists are iterated over together when constructing the `regularization_matrix`.
-
-        The `regularization_padded_list` therefore pads entries corresponds to lienar function objects with
-        Nones, so that when this matrix is constructed they do not raise an exception.
+        If there are multiple linear objects, the mapping matrices are stacked such that their simultaneous linear
+        equations are solved simultaneously. This property returns the stacked mapping matrix.
         """
-        i = 0
+        return np.hstack(
+            [linear_obj.mapping_matrix for linear_obj in self.linear_obj_list]
+        )
 
-        linear_obj_reg_list_padded = []
+    @property
+    def operated_mapping_matrix_list(self) -> np.ndarray:
+        raise NotImplementedError
 
-        for linear_obj in self.linear_obj_list:
+    @cached_property
+    @profile_func
+    def operated_mapping_matrix(self) -> np.ndarray:
+        """
+        The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
+        the linear objects model, including a 2D convolution operation.
 
-            if isinstance(linear_obj, AbstractMapper):
+        This is used to construct the simultaneous linear equations which reconstruct the data.
 
-                linear_obj_reg_list_padded.append(self.linear_obj_reg_list[i])
-                i += 1
+        If there are multiple linear objects, the blurred mapping matrices are stacked such that their simultaneous
+        linear equations are solved simultaneously.
+        """
 
-            else:
+        if self.preloads.operated_mapping_matrix is not None:
+            return self.preloads.operated_mapping_matrix
 
-                linear_obj_reg_list_padded.append(None)
+        return np.hstack(self.operated_mapping_matrix_list)
 
-        return linear_obj_reg_list_padded
+    @cached_property
+    @profile_func
+    def data_vector(self) -> np.ndarray:
+        raise NotImplementedError
+
+    @cached_property
+    @profile_func
+    def curvature_matrix(self) -> np.ndarray:
+        raise NotImplementedError
 
     @cached_property
     @profile_func
@@ -171,19 +140,10 @@ class AbstractInversion:
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
 
-        # TODO : This is a speed up for the single mapper case, need to retain by filtering linear_obj_reg_list.
-
-        # if self.has_one_mapper and self.has_linear_obj_func is False:
-        #     return self.linear_obj_reg_list[0].regularization_matrix_from(
-        #         mapper=self.linear_obj_list[0]
-        #     )
-
-        # TODO : Use `pixels` of linear obj in reg instead of (1,1)
-
         return block_diag(
             *[
-                reg.regularization_matrix if reg is not None else np.zeros((1, 1))
-                for reg in self.linear_obj_reg_list
+                linear_obj_reg.regularization_matrix
+                for linear_obj_reg in self.linear_obj_reg_list
             ]
         )
 
@@ -221,8 +181,99 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
+    def curvature_reg_matrix(self):
+        """
+        The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
+
+        For a single mapper, this function overwrites the cached `curvature_matrix`, because for large matrices this
+        avoids overheads in memory allocation. The `curvature_matrix` is removed as a cached property as a result,
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
+        """
+        if not self.has_regularization:
+            return self.curvature_matrix
+
+        # TODO : Done for speed, instead check if there is one regularization
+
+        if len(self.regularization_list) == 1:
+
+            curvature_matrix = self.curvature_matrix
+            curvature_matrix += self.regularization_matrix
+
+            del self.__dict__["curvature_matrix"]
+
+            return curvature_matrix
+
+        return np.add(self.curvature_matrix, self.regularization_matrix)
+
+    @cached_property
+    @profile_func
+    def curvature_reg_matrix_reduced(self):
+        """
+        The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
+
+        This is the curvature reg matrix for only the mappers, which is necessary for computing the log det
+        term without the linear light profiles included.
+        """
+        if self.all_linear_obj_have_regularization:
+            return self.curvature_reg_matrix
+
+        curvature_reg_matrix = self.curvature_reg_matrix
+
+        curvature_reg_matrix = np.delete(
+            curvature_reg_matrix, self.no_regularization_index_list, 0
+        )
+        curvature_reg_matrix = np.delete(
+            curvature_reg_matrix, self.no_regularization_index_list, 1
+        )
+
+        return curvature_reg_matrix
+
+    @cached_property
+    @profile_func
+    def curvature_reg_matrix_cholesky(self):
+        """
+        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
+        linear system of equations of the `Inversion`.
+
+        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
+        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
+        """
+        try:
+            return np.linalg.cholesky(self.curvature_reg_matrix)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
+
+    @cached_property
+    @profile_func
+    def curvature_reg_matrix_reduced_cholesky(self):
+        """
+        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
+        linear system of equations of the `Inversion`.
+
+        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
+        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
+        """
+        try:
+            return np.linalg.cholesky(self.curvature_reg_matrix_reduced)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
+
+    @cached_property
+    @profile_func
     def reconstruction(self):
-        raise NotImplementedError
+        """
+        Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
+        of https://arxiv.org/pdf/astro-ph/0302587.pdf
+
+        S is the vector of reconstructed inversion values.
+        """
+
+        return inversion_util.reconstruction_from(
+            data_vector=self.data_vector,
+            curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
+            settings=self.settings,
+        )
 
     @cached_property
     @profile_func
@@ -234,36 +285,58 @@ class AbstractInversion:
         S is the vector of reconstructed inversion values.
         """
 
-        # This is again for speed, instead check by filtered regularization list if not has any Nones.
-        #
-        # if not self.has_linear_obj_func:
-        #     return self.reconstruction
+        if self.all_linear_obj_have_regularization:
+            return self.reconstruction
 
         return np.delete(self.reconstruction, self.no_regularization_index_list, axis=0)
 
     @property
     def reconstruction_dict(self) -> Dict[LinearObj, np.ndarray]:
-        return self.leq.source_quantity_dict_from(source_quantity=self.reconstruction)
+        return self.source_quantity_dict_from(source_quantity=self.reconstruction)
 
-    @property
-    def mapped_reconstructed_data_dict(
-        self
-    ) -> Dict[LinearObj, Union[Array2D, Visibilities]]:
+    def source_quantity_dict_from(
+        self, source_quantity: np.ndarray
+    ) -> Dict[LinearObj, np.ndarray]:
         """
-        Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
-        reconstruct the image data.
+        When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
+        linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
+        which quantities belong to which linear objects, therefore the linear equation's solutions (which are returned
+        as ndarrays) do not contain information on which linear object(s) they correspond to.
 
-        This uses the unique mappings of every source pixel to image pixels, which is a quantity that is already
-        computed when using the w-tilde formalism.
+        For example, consider if two `Mapper` objects with 50 and 100 source pixels are used in an `Inversion`.
+        The `reconstruction` (which contains the solved for source pixels values) is an ndarray of shape [150], but
+        the ndarray itself does not track which values belong to which `Mapper`.
+
+        This function converts an ndarray of a `source_quantity` (like a `reconstruction`) to a dictionary of ndarrays,
+        where the keys are the instances of each mapper in the inversion.
+
+        Parameters
+        ----------
+        source_quantity
+            The quantity whose values are mapped to a dictionary of values for each individual mapper.
 
         Returns
         -------
-        Array2D
-            The reconstructed image data which the inversion fits.
+        The dictionary of ndarrays of values for each individual mapper.
         """
-        return self.leq.mapped_reconstructed_data_dict_from(
-            reconstruction=self.reconstruction
-        )
+        source_quantity_dict = {}
+
+        index = 0
+
+        for linear_obj in self.linear_obj_list:
+
+            source_quantity_dict[linear_obj] = source_quantity[
+                index : index + linear_obj.pixels
+            ]
+
+            index += linear_obj.pixels
+
+        return source_quantity_dict
+
+    @property
+    @profile_func
+    def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
+        raise NotImplementedError
 
     @property
     def mapped_reconstructed_image_dict(self) -> Dict[LinearObj, Array2D]:
@@ -279,9 +352,7 @@ class AbstractInversion:
         Array2D
             The reconstructed image data which the inversion fits.
         """
-        return self.leq.mapped_reconstructed_image_dict_from(
-            reconstruction=self.reconstruction
-        )
+        return self.mapped_reconstructed_data_dict
 
     @cached_property
     @profile_func
@@ -316,17 +387,92 @@ class AbstractInversion:
         """
         return sum(self.mapped_reconstructed_image_dict.values())
 
-    @property
-    def errors(self):
-        raise NotImplementedError
+    @cached_property
+    @profile_func
+    def log_det_curvature_reg_matrix_term(self):
+        """
+        The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
 
-    @property
-    def errors_dict(self) -> Dict[LinearObj, np.ndarray]:
-        return self.leq.source_quantity_dict_from(source_quantity=self.errors)
+        This uses the Cholesky decomposition which is already computed before solving the reconstruction.
+        """
+        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_reduced_cholesky)))
+
+    @cached_property
+    @profile_func
+    def log_det_regularization_matrix_term(self) -> float:
+        """
+        The Bayesian evidence of an inversion which quantifies its overall goodness-of-fit uses the log determinant
+        of regularization matrix, Log[Det[Lambda*H]].
+
+        Unlike the determinant of the curvature reg matrix, which uses an existing preloading Cholesky decomposition
+        used for the source reconstruction, this uses scipy sparse linear algebra to solve the determinant efficiently.
+
+        Returns
+        -------
+        float
+            The log determinant of the regularization matrix.
+        """
+
+        if not self.has_regularization:
+            return 0.0
+
+        if self.preloads.log_det_regularization_matrix_term is not None:
+            return self.preloads.log_det_regularization_matrix_term
+
+        try:
+
+            lu = splu(csc_matrix(self.regularization_matrix_reduced))
+            diagL = lu.L.diagonal()
+            diagU = lu.U.diagonal()
+            diagL = diagL.astype(np.complex128)
+            diagU = diagU.astype(np.complex128)
+
+            return np.real(np.log(diagL).sum() + np.log(diagU).sum())
+
+        except RuntimeError:
+
+            try:
+                return 2.0 * np.sum(
+                    np.log(
+                        np.diag(np.linalg.cholesky(self.regularization_matrix_reduced))
+                    )
+                )
+            except np.linalg.LinAlgError:
+                raise exc.InversionException()
 
     @property
     def errors_with_covariance(self):
-        raise NotImplementedError
+        return np.linalg.inv(self.curvature_reg_matrix)
+
+    @property
+    def errors(self):
+        return np.diagonal(self.errors_with_covariance)
+
+    @property
+    def curvature_matrix_preload(self) -> np.ndarray:
+        (
+            curvature_matrix_preload,
+            curvature_matrix_counts,
+        ) = inversion_util.curvature_matrix_preload_from(
+            mapping_matrix=self.operated_mapping_matrix
+        )
+
+        return curvature_matrix_preload
+
+    @property
+    def curvature_matrix_counts(self) -> np.ndarray:
+        (
+            curvature_matrix_preload,
+            curvature_matrix_counts,
+        ) = inversion_util.curvature_matrix_preload_from(
+            mapping_matrix=self.operated_mapping_matrix
+        )
+
+        return curvature_matrix_counts
+
+    @property
+    def errors_dict(self) -> Dict[LinearObj, np.ndarray]:
+        return self.source_quantity_dict_from(source_quantity=self.errors)
 
     @property
     def magnification_list(self) -> List[float]:
@@ -457,7 +603,7 @@ class AbstractInversion:
 
     @property
     def error_dict(self) -> Dict[LinearObj, np.ndarray]:
-        return self.leq.source_quantity_dict_from(source_quantity=self.errors)
+        return self.inversion.source_quantity_dict_from(source_quantity=self.errors)
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
@@ -512,10 +658,6 @@ class AbstractInversion:
             )
             for mapper in self.mapper_list
         }
-
-    @property
-    def total_mappers(self):
-        return len(self.mapper_list)
 
     def interpolated_reconstruction_list_from(
         self,
@@ -581,3 +723,99 @@ class AbstractInversion:
             )
             for mapper in self.mapper_list
         ]
+
+
+    @property
+    def linear_obj_func_list(self) -> List[AbstractLinearObjFuncList]:
+        """
+        Returns a list of all linear objects based on analytic functions used to construct the simultaneous linear
+        equations.
+
+        This property removes other linear objects (E.g. `Mapper` objects).
+        """
+        linear_obj_func_list = [
+            linear_obj if isinstance(linear_obj, AbstractLinearObjFuncList) else None
+            for linear_obj in self.linear_obj_list
+        ]
+
+        return list(filter(None, linear_obj_func_list))
+
+    @property
+    def has_linear_obj_func(self):
+        return len(self.linear_obj_func_list) > 0
+
+    @property
+    def regularization_list(self) -> List[AbstractRegularization]:
+        return [linear_obj_reg.regularization for linear_obj_reg in self.linear_obj_reg_list]
+
+    @property
+    def no_regularization_index_list(self):
+
+        # TODO : Needs to be range based on pixels.
+
+        no_regularization_index_list = []
+
+        pixel_count = 0
+
+        for linear_obj_reg in self.linear_obj_reg_list:
+
+            if linear_obj_reg.regularization is None:
+
+                no_regularization_index_list.append(pixel_count)
+
+            pixel_count += linear_obj_reg.pixels
+
+        return no_regularization_index_list
+
+    @property
+    def all_linear_obj_have_regularization(self):
+        return len(self.linear_obj_list) == len(self.regularization_list)
+
+    @property
+    def mapper_list(self) -> List[AbstractMapper]:
+        """
+        Returns a list of all mappers used to construct the simultaneous linear equations.
+
+        This property removes other linear objects (E.g. `LinearObjFuncList` objects).
+        """
+        mapper_list = [
+            linear_obj if isinstance(linear_obj, AbstractMapper) else None
+            for linear_obj in self.linear_obj_list
+        ]
+
+        return list(filter(None, mapper_list))
+
+    @property
+    def has_mapper(self) -> bool:
+        return len(self.mapper_list) > 0
+
+    @property
+    def has_one_mapper(self) -> bool:
+        return len(self.mapper_list) == 1
+
+    @property
+    def total_mappers(self):
+        return len(self.mapper_list)
+
+    @property
+    def no_mapper_list(self) -> List[LinearObj]:
+        """
+        Returns a list of all linear objects that are not mappers which used to construct the simultaneous linear
+        equations.
+
+        This property retains linear objects which are not mappers (E.g. `LinearObjFuncList` objects).
+        """
+        mapper_list = [
+            linear_obj if not isinstance(linear_obj, AbstractMapper) else None
+            for linear_obj in self.linear_obj_list
+        ]
+
+        return list(filter(None, mapper_list))
+
+    @property
+    def total_regularizations(self) -> int:
+        return sum(regularization is not None for regularization in self.regularization_list)
+
+    @property
+    def has_regularization(self):
+        return self.total_regularizations > 0

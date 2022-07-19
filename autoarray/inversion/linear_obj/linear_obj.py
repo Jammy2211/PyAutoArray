@@ -38,5 +38,5 @@ class LinearObj:
 
     @cached_property
     @profile_func
-    def data_unique_mappings(self):
+    def unique_mappings(self):
         raise NotImplementedError

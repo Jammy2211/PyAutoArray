@@ -2,8 +2,8 @@ import numpy as np
 from typing import List, Union
 
 from autoarray.inversion.linear_obj.func_list import LinearObjFuncList
-from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
-from autoarray.inversion.linear_eqn.abstract import AbstractLEq
+from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
+from autoarray.inversion.inversion.abstract import AbstractInversion
 
 from autoarray.inversion.mock.mock_mapper import MockMapper
 

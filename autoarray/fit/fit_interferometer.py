@@ -25,8 +25,8 @@ class FitInterferometer(FitDataset):
             The masked interferometer dataset that is fitted.
         model_visibilities : Visibilities
             The model visibilities the masked imaging is fitted with.
-        inversion : LEq
-            If the fit uses an `LEq` this is the instance of the object used to perform the fit. This determines
+        inversion : Inversion
+            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the

@@ -45,7 +45,7 @@ class AbstractLinearObjFuncList(LinearObj):
 
     @cached_property
     @profile_func
-    def data_unique_mappings(self):
+    def unique_mappings(self):
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
         to their corresponding pixelization pixels (e.g. `pixelization_grid`).

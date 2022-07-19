@@ -126,10 +126,10 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
         visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
     )
 
-    leq = aa.m.MockLEq(linear_obj_list=[aa.m.MockMapper()], data_vector=1)
+    inversion = aa.m.MockInversion(linear_obj_list=[aa.m.MockMapper()], data_vector=1)
 
     inversion = aa.m.MockInversion(
-        leq=leq,
+        inversion=inversion,
         regularization_term=2.0,
         log_det_curvature_reg_matrix_term=3.0,
         log_det_regularization_matrix_term=4.0,

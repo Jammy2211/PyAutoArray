@@ -1,60 +1,34 @@
+import copy
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict
+
+from autoconf import cached_property
 
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
+from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.operators.convolver import Convolver
 
-from autoarray.inversion.linear_eqn import leq_util
+from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
+class InversionImagingMapping(AbstractInversionImaging):
+    """
+    Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+    to be solved (see `inversion.inversion.abstract.AbstractInversion` for a full description.
 
-class LEqImagingMapping(AbstractLEqImaging):
-    def __init__(
-        self,
-        noise_map: Array2D,
-        convolver: Convolver,
-        linear_obj_list: List[LinearObj],
-        settings: SettingsInversion = SettingsInversion(),
-        profiling_dict: Optional[Dict] = None,
-    ):
-        """
-        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
-        to be solved (see `inversion.linear_eqn.abstract.AbstractLEq` for a full description.
+    A linear object describes the mappings between values in observed `data` and the linear object's model via its
+    `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
+    and the mappings may include a convolution operation described by the imaging data's PSF.
 
-        A linear object describes the mappings between values in observed `data` and the linear object's model via its
-        `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
-        and the mappings may include a convolution operation described by the imaging data's PSF.
+    This class uses the mapping formalism, which constructs the simultaneous linear equations using the
+    `mapping_matrix` of every linear object.
+    """
 
-        This class uses the mapping formalism, which constructs the simultaneous linear equations using the
-        `mapping_matrix` of every linear object.
-
-        Parameters
-        -----------
-        noise_map
-            The noise-map of the observed imaging data which values are solved for.
-        convolver
-            The convolver used to include 2D convolution of the mapping matrix with the imaigng data's PSF.
-        linear_obj_list
-            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
-            the simultaneous linear equations are combined and solved simultaneously.
-        profiling_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
-        """
-
-        super().__init__(
-            noise_map=noise_map,
-            convolver=convolver,
-            linear_obj_list=linear_obj_list,
-            settings=settings,
-            profiling_dict=profiling_dict,
-        )
-
+    @cached_property
     @profile_func
-    def data_vector_from(self, data: Array2D, preloads) -> np.ndarray:
+    def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
         by this object.
@@ -65,21 +39,21 @@ class LEqImagingMapping(AbstractLEqImaging):
         If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
         concatenated ensuring their `data_vector` values are solved for simultaneously.
 
-        The calculation is described in more detail in `leq_util.data_vector_via_blurred_mapping_matrix_from`.
+        The calculation is described in more detail in `inversion_util.data_vector_via_blurred_mapping_matrix_from`.
         """
 
-        if preloads.operated_mapping_matrix is not None:
-            operated_mapping_matrix = preloads.operated_mapping_matrix
+        if self.preloads.operated_mapping_matrix is not None:
+            operated_mapping_matrix = self.preloads.operated_mapping_matrix
         else:
             operated_mapping_matrix = self.operated_mapping_matrix
 
-        return leq_util.data_vector_via_blurred_mapping_matrix_from(
+        return inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=operated_mapping_matrix,
-            image=data,
+            image=self.data,
             noise_map=self.noise_map,
         )
 
-    @property
+    @cached_property
     @profile_func
     def curvature_matrix(self):
         """
@@ -92,18 +66,41 @@ class LEqImagingMapping(AbstractLEqImaging):
         If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
         concatenated ensuring their `curvature_matrix` values are solved for simultaneously. This includes all
         diagonal and off-diagonal terms describing the covariances between linear objects.
+
+        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
+        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
         """
-        return leq_util.curvature_matrix_via_mapping_matrix_from(
+
+        if self.preloads.curvature_matrix is not None:
+
+            # Need to copy because of how curvature_reg_matirx overwrites memory.
+
+            return copy.copy(self.preloads.curvature_matrix)
+
+        if (
+            self.preloads.curvature_matrix_preload is None
+            or not self.settings.use_curvature_matrix_preload
+        ):
+
+            return inversion_util.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=self.operated_mapping_matrix,
+                noise_map=self.noise_map,
+                add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
+                no_regularization_index_list=self.no_regularization_index_list,
+            )
+
+        return inversion_util.curvature_matrix_via_sparse_preload_from(
             mapping_matrix=self.operated_mapping_matrix,
             noise_map=self.noise_map,
-            add_to_curvature_diag=self.add_to_curvature_diag,
-            linear_obj_func_index_list=self.linear_obj_func_index_list,
+            curvature_matrix_preload=self.preloads.curvature_matrix_preload,
+            curvature_matrix_counts=self.preloads.curvature_matrix_counts,
         )
 
+    @property
     @profile_func
-    def mapped_reconstructed_data_dict_from(
-        self, reconstruction: np.ndarray
-    ) -> Dict[LinearObj, Array2D]:
+    def mapped_reconstructed_data_dict(self) -> Dict[LinearObj, Array2D]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays via stacking. This does not track
@@ -130,7 +127,7 @@ class LEqImagingMapping(AbstractLEqImaging):
         mapped_reconstructed_data_dict = {}
 
         reconstruction_dict = self.source_quantity_dict_from(
-            source_quantity=reconstruction
+            source_quantity=self.reconstruction
         )
 
         operated_mapping_matrix_list = self.operated_mapping_matrix_list
@@ -139,7 +136,7 @@ class LEqImagingMapping(AbstractLEqImaging):
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = leq_util.mapped_reconstructed_data_via_mapping_matrix_from(
+            mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
                 mapping_matrix=operated_mapping_matrix_list[index],
                 reconstruction=reconstruction,
             )

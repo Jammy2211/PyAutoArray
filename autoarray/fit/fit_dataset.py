@@ -30,8 +30,8 @@ class FitDataset(ABC):
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
         model_data
             The model data the masked dataset is fitted with.
-        inversion : LEq
-            If the fit uses an `LEq` this is the instance of the object used to perform the fit. This determines
+        inversion : Inversion
+            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
@@ -205,7 +205,7 @@ class FitDataset(ABC):
     def log_evidence(self) -> float:
         """
         Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
-        which quantify the complexity of an inversion's reconstruction (see the `LEq` module):
+        which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
 
         Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
                            Log(Regularization_Matrix_Term) + Noise_Term]

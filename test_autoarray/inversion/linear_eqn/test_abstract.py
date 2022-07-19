@@ -7,15 +7,15 @@ import autoarray as aa
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__linear_obj_func_index_list():
+def test__no_regularization_index_list():
 
-    leq = aa.m.MockLEq(
+    inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockLinearObjFunc(), aa.m.MockLinearObjFunc()]
     )
 
-    assert leq.linear_obj_func_index_list == [0, 1]
+    assert inversion.no_regularization_index_list == [0, 1]
 
-    leq = aa.m.MockLEq(
+    inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockMapper(pixels=10),
             aa.m.MockLinearObjFunc(),
@@ -24,31 +24,31 @@ def test__linear_obj_func_index_list():
         ]
     )
 
-    assert leq.linear_obj_func_index_list == [10, 31]
+    assert inversion.no_regularization_index_list == [10, 31]
 
 
 def test__add_to_curvature_diag():
 
-    leq = aa.m.MockLEq(
+    inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockLinearObjFunc()],
-        settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=True),
+        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),
     )
 
-    assert leq.add_to_curvature_diag is True
+    assert inversion.add_to_curvature_diag is True
 
-    leq = aa.m.MockLEq(
+    inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockLinearObjFunc()],
-        settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=False),
+        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=False),
     )
 
-    assert leq.add_to_curvature_diag is False
+    assert inversion.add_to_curvature_diag is False
 
-    leq = aa.m.MockLEq(
+    inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockLinearObjFunc(), aa.m.MockMapper()],
-        settings=aa.SettingsInversion(linear_funcs_add_to_curvature_diag=True),
+        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),
     )
 
-    assert leq.add_to_curvature_diag is True
+    assert inversion.add_to_curvature_diag is True
 
 
 def test__mapping_matrix():
@@ -56,16 +56,16 @@ def test__mapping_matrix():
     mapper_0 = aa.m.MockMapper(mapping_matrix=np.ones((2, 2)))
     mapper_1 = aa.m.MockMapper(mapping_matrix=2.0 * np.ones((2, 3)))
 
-    leq = aa.m.MockLEq(linear_obj_list=[mapper_0, mapper_1])
+    inversion = aa.m.MockInversion(linear_obj_list=[mapper_0, mapper_1])
 
     mapping_matrix = np.array([[1.0, 1.0, 2.0, 2.0, 2.0], [1.0, 1.0, 2.0, 2.0, 2.0]])
 
-    assert leq.mapping_matrix == pytest.approx(mapping_matrix, 1.0e-4)
+    assert inversion.mapping_matrix == pytest.approx(mapping_matrix, 1.0e-4)
 
 
 def test__reconstruction_reduced():
 
-    leq = aa.m.MockLEq(
+    inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObjFunc()]
     )
 
@@ -75,7 +75,7 @@ def test__reconstruction_reduced():
     ]
 
     inversion = aa.m.MockInversion(
-        leq=leq,
+        inversion=inversion,
         linear_obj_reg_list=linear_obj_reg_list,
         reconstruction=np.array([1.0, 2.0, 3.0]),
     )
