@@ -36,7 +36,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
     @cached_property
     @profile_func
-    def data_vector(self, data) -> np.ndarray:
+    def data_vector(self) -> np.ndarray:
         """
         The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
         by this object.
@@ -51,7 +51,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         """
         return inversion_interferometer_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=self.operated_mapping_matrix,
-            visibilities=data,
+            visibilities=self.data,
             noise_map=self.noise_map,
         )
 
@@ -82,7 +82,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
         curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
 
-        if self.add_to_curvature_diag:
+        if self.settings.no_regularization_add_to_curvature_diag:
             curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
                 curvature_matrix=curvature_matrix,
                 no_regularization_index_list=self.no_regularization_index_list,

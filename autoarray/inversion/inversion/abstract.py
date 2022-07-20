@@ -514,6 +514,7 @@ class AbstractInversion:
         """
 
         if self.has_regularization:
+
             return np.matmul(
                 self.reconstruction_reduced.T,
                 np.matmul(
@@ -521,55 +522,6 @@ class AbstractInversion:
                 ),
             )
         return 0.0
-
-    @cached_property
-    @profile_func
-    def log_det_curvature_reg_matrix_term(self):
-        """
-        The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
-
-        This uses the Cholesky decomposition which is already computed before solving the reconstruction.
-        """
-        raise NotImplementedError
-
-    @cached_property
-    @profile_func
-    def log_det_regularization_matrix_term(self) -> float:
-        """
-        The Bayesian evidence of an inversion which quantifies its overall goodness-of-fit uses the log determinant
-        of regularization matrix, Log[Det[Lambda*H]].
-
-        Unlike the determinant of the curvature reg matrix, which uses an existing preloading Cholesky decomposition
-        used for the source reconstruction, this uses scipy sparse linear algebra to solve the determinant efficiently.
-
-        Returns
-        -------
-        float
-            The log determinant of the regularization matrix.
-        """
-        if self.preloads.log_det_regularization_matrix_term is not None:
-            return self.preloads.log_det_regularization_matrix_term
-
-        try:
-
-            lu = splu(csc_matrix(self.regularization_matrix_reduced))
-            diagL = lu.L.diagonal()
-            diagU = lu.U.diagonal()
-            diagL = diagL.astype(np.complex128)
-            diagU = diagU.astype(np.complex128)
-
-            return np.real(np.log(diagL).sum() + np.log(diagU).sum())
-
-        except RuntimeError:
-
-            try:
-                return 2.0 * np.sum(
-                    np.log(
-                        np.diag(np.linalg.cholesky(self.regularization_matrix_reduced))
-                    )
-                )
-            except np.linalg.LinAlgError:
-                raise exc.InversionException()
 
     @property
     def brightest_reconstruction_pixel_list(self):
@@ -769,7 +721,7 @@ class AbstractInversion:
 
     @property
     def all_linear_obj_have_regularization(self):
-        return len(self.linear_obj_list) == len(self.regularization_list)
+        return len(self.linear_obj_list) == len(list(filter(None, self.regularization_list)))
 
     @property
     def mapper_list(self) -> List[AbstractMapper]:

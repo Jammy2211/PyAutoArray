@@ -188,7 +188,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     pix_lengths=mapper.unique_mappings.pix_lengths,
                     pix_pixels=mapper.pixels,
                 )
-                for mapper in self.linear_obj_reg_list
+                for mapper in self.mapper_list
             ]
         )
 
