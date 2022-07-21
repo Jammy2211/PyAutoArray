@@ -10,6 +10,37 @@ from autoarray import exc
 directory = path.dirname(path.realpath(__file__))
 
 
+def test__linear_obj_func_list__filters_other_objects():
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[
+            aa.m.MockMapper(pixels=1),
+            aa.m.MockLinearObjFuncList(grid=3),
+            aa.m.MockMapper(pixels=2),
+            aa.m.MockLinearObjFuncList(grid=4),
+        ]
+    )
+
+    assert inversion.linear_obj_func_list[0].grid == 3
+    assert inversion.linear_obj_func_list[1].grid == 4
+    assert inversion.has_linear_obj_func == True
+
+
+def test__mapper_list__filters_other_objects():
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[
+            aa.m.MockMapper(pixels=1),
+            aa.m.MockLinearObj(),
+            aa.m.MockMapper(pixels=2),
+        ]
+    )
+
+    assert inversion.mapper_list[0].pixels == 1
+    assert inversion.mapper_list[1].pixels == 2
+    assert inversion.has_mapper == True
+
+
 def test__total_regularizations():
 
     reg = aa.m.MockRegularization()
@@ -40,35 +71,43 @@ def test__has_regularization():
     assert inversion.has_regularization is False
 
 
-def test__linear_obj_func_list__filters_other_objects():
+def test__no_regularization_index_list():
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[aa.m.MockLinearObj(pixels=1), aa.m.MockLinearObj(pixels=1)],
+        regularization_list=[None, None],
+    )
+
+    assert inversion.no_regularization_index_list == [0, 1]
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[
-            aa.m.MockMapper(pixels=1),
-            aa.m.MockLinearObjFuncList(grid=3),
-            aa.m.MockMapper(pixels=2),
-            aa.m.MockLinearObjFuncList(grid=4),
-        ]
+            aa.m.MockMapper(pixels=10),
+            aa.m.MockLinearObj(pixels=1),
+            aa.m.MockMapper(pixels=20),
+            aa.m.MockLinearObj(pixels=1),
+        ],
+        regularization_list=[
+            aa.m.MockRegularization(),
+            None,
+            aa.m.MockRegularization(),
+            None,
+        ],
     )
 
-    assert inversion.linear_obj_func_list[0].grid == 3
-    assert inversion.linear_obj_func_list[1].grid == 4
-    assert inversion.has_linear_obj_func == True
+    assert inversion.no_regularization_index_list == [10, 31]
 
 
-def test__mapper_list__filters_other_objects():
+def test__mapping_matrix():
 
-    inversion = aa.m.MockInversion(
-        linear_obj_list=[
-            aa.m.MockMapper(pixels=1),
-            aa.m.MockLinearObj(),
-            aa.m.MockMapper(pixels=2),
-        ]
-    )
+    mapper_0 = aa.m.MockMapper(mapping_matrix=np.ones((2, 2)))
+    mapper_1 = aa.m.MockMapper(mapping_matrix=2.0 * np.ones((2, 3)))
 
-    assert inversion.mapper_list[0].pixels == 1
-    assert inversion.mapper_list[1].pixels == 2
-    assert inversion.has_mapper == True
+    inversion = aa.m.MockInversion(linear_obj_list=[mapper_0, mapper_1])
+
+    mapping_matrix = np.array([[1.0, 1.0, 2.0, 2.0, 2.0], [1.0, 1.0, 2.0, 2.0, 2.0]])
+
+    assert inversion.mapping_matrix == pytest.approx(mapping_matrix, 1.0e-4)
 
 
 def test__curvature_matrix__via_w_tilde__identical_to_mapping():
@@ -279,6 +318,25 @@ def test__preload_of_regularization_matrix__overwrites_calculation():
     )
 
     assert (inversion.regularization_matrix == np.ones((2, 2))).all()
+
+
+def test__reconstruction_reduced():
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObj()]
+    )
+
+    linear_obj_list = [aa.m.MockLinearObj(pixels=2), aa.m.MockLinearObj(pixels=1)]
+
+    regularization_list = [aa.m.MockRegularization(), None]
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=linear_obj_list,
+        regularization_list=regularization_list,
+        reconstruction=np.array([1.0, 2.0, 3.0]),
+    )
+
+    assert (inversion.reconstruction_reduced == np.array([1.0, 2.0])).all()
 
 
 def test__reconstruction_dict():
