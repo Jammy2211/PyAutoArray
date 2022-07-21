@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional
+from typing import Dict, Optional
 
 from autoconf import cached_property
 
@@ -7,6 +7,10 @@ from autoarray.numba_util import profile_func
 
 
 class LinearObj:
+    def __init__(self, profiling_dict: Optional[Dict] = None):
+
+        self.profiling_dict = profiling_dict
+
     @property
     def pixels(self) -> int:
         raise NotImplementedError

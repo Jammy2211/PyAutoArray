@@ -33,9 +33,10 @@ class AbstractLinearObjFuncList(LinearObj):
         profiling_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
-        self.grid = grid
 
-        self.profiling_dict = profiling_dict
+        super().__init__(profiling_dict=profiling_dict)
+
+        self.grid = grid
 
     # TODO : perma store in memory and pass via lazy instantiate somehwere for model fit.
 

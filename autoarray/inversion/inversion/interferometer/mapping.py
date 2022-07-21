@@ -6,8 +6,13 @@ from autoconf import cached_property
 from autoarray.inversion.inversion.interferometer.abstract import (
     AbstractInversionInterferometer,
 )
-from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
+from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.preloads import Preloads
 from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
 from autoarray.inversion.inversion import inversion_util
@@ -16,18 +21,55 @@ from autoarray.numba_util import profile_func
 
 
 class InversionInterferometerMapping(AbstractInversionInterferometer):
-    """
-    Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
-    to be solved (see `inversion.inversion.abstract.AbstractInversion` for a full description).
+    def __init__(
+        self,
+        data: Visibilities,
+        noise_map: VisibilitiesNoiseMap,
+        transformer: TransformerNUFFT,
+        linear_obj_list: List[LinearObj],
+        regularization_list: List[Optional[AbstractRegularization]],
+        settings: SettingsInversion = SettingsInversion(),
+        preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None,
+    ):
+        """
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.inversion.abstract.AbstractInversion` for a full description).
 
-    A linear object describes the mappings between values in observed `data` and the linear object's model via its
-    `mapping_matrix`. This class constructs linear equations for `Interferometer` objects, where the data is an
-    an array of visibilities and the mappings include a non-uniform fast Fourier transform operation described by
-    the interferometer dataset's transformer.
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Interferometer` objects, where the data is an
+        an array of visibilities and the mappings include a non-uniform fast Fourier transform operation described by
+        the interferometer dataset's transformer.
 
-    This class uses the mapping formalism, which constructs the simultaneous linear equations using the
-    `mapping_matrix` of every linear object.
-    """
+        This class uses the mapping formalism, which constructs the simultaneous linear equations using the
+        `mapping_matrix` of every linear object.
+
+        Parameters
+        -----------
+        noise_map
+            The noise-map of the observed interferometer data which values are solved for.
+        transformer
+            The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
+            with the interferometer data's transformer.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
+        """
+
+        super().__init__(
+            data=data,
+            noise_map=noise_map,
+            transformer=transformer,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
+            settings=settings,
+            preloads=preloads,
+            profiling_dict=profiling_dict,
+        )
+
+        self.transformer = transformer
 
     @cached_property
     @profile_func

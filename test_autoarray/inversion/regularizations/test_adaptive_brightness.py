@@ -10,7 +10,7 @@ def test__weight_list__matches_util():
 
     mapper = aa.m.MockMapper(pixel_signals=pixel_signals)
 
-    weight_list = reg.regularization_weights_from(mapper=mapper)
+    weight_list = reg.regularization_weights_from(linear_obj=mapper)
 
     weight_list_util = aa.util.regularization.adaptive_regularization_weights_from(
         inner_coefficient=10.0, outer_coefficient=15.0, pixel_signals=pixel_signals

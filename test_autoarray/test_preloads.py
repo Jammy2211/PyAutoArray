@@ -18,9 +18,7 @@ def test__set_w_tilde():
 
     # Noise maps of fit are different but there is an inversion, so we should not preload w_tilde and use w_tilde.
 
-    inversion = aa.m.MockInversion(
-        inversion=aa.m.MockInversion(linear_obj_list=[aa.m.MockMapper()])
-    )
+    inversion = aa.m.MockInversion(linear_obj_list=[aa.m.MockMapper()])
 
     fit_0 = aa.m.MockFitImaging(
         inversion=inversion,
@@ -57,7 +55,7 @@ def test__set_w_tilde():
     preloads = aa.Preloads(w_tilde=1, use_w_tilde=1)
     preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
 
-    curvature_preload, indexes, lengths = aa.util.inversion.w_tilde_curvature_preload_imaging_from(
+    curvature_preload, indexes, lengths = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
         noise_map_native=fit_0.noise_map.native,
         kernel_native=fit_0.dataset.psf.native,
         native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
@@ -91,8 +89,8 @@ def test__set_relocated_grid():
         linear_obj_list=[aa.m.MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))]
     )
 
-    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_0))
-    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_1))
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads = aa.Preloads(relocated_grid=1)
     preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
@@ -108,8 +106,8 @@ def test__set_relocated_grid():
         linear_obj_list=[aa.m.MockMapper(source_grid_slim=np.ones((3, 2)))]
     )
 
-    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_0))
-    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_1))
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads = aa.Preloads(relocated_grid=1)
     preloads.set_relocated_grid(fit_0=fit_0, fit_1=fit_1)
@@ -138,8 +136,8 @@ def test__set_mapper_list():
         linear_obj_list=[aa.m.MockMapper(mapping_matrix=2.0 * np.ones((3, 2)))]
     )
 
-    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_0))
-    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_1))
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads = aa.Preloads(mapper_list=1)
     preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
@@ -155,8 +153,8 @@ def test__set_mapper_list():
         linear_obj_list=[aa.m.MockMapper(mapping_matrix=np.ones((3, 2)))]
     )
 
-    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_0))
-    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_1))
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads = aa.Preloads(mapper_list=1)
     preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
@@ -178,8 +176,8 @@ def test__set_mapper_list():
         ]
     )
 
-    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_0))
-    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_1))
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads = aa.Preloads(mapper_list=1)
     preloads.set_mapper_list(fit_0=fit_0, fit_1=fit_1)
@@ -226,8 +224,8 @@ def test__set_operated_mapping_matrix_with_preloads():
         operated_mapping_matrix=operated_mapping_matrix_1
     )
 
-    fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_0))
-    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_1))
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads = aa.Preloads(
         operated_mapping_matrix=1,
@@ -243,20 +241,18 @@ def test__set_operated_mapping_matrix_with_preloads():
     # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
     inversion_0 = aa.m.MockInversionImaging(
-        operated_mapping_matrix=operated_mapping_matrix_0
+        operated_mapping_matrix=operated_mapping_matrix_0,
+        curvature_matrix_preload=curvature_matrix_preload,
+        curvature_matrix_counts=curvature_matrix_counts,
     )
     inversion_1 = aa.m.MockInversionImaging(
-        operated_mapping_matrix=operated_mapping_matrix_0
-    )
-
-    inversion_0 = aa.m.MockInversion(
-        inversion=inversion_0,
+        operated_mapping_matrix=operated_mapping_matrix_0,
         curvature_matrix_preload=curvature_matrix_preload,
         curvature_matrix_counts=curvature_matrix_counts,
     )
 
     fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
-    fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_1))
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads = aa.Preloads(
         operated_mapping_matrix=1,
@@ -266,6 +262,10 @@ def test__set_operated_mapping_matrix_with_preloads():
     preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.operated_mapping_matrix == operated_mapping_matrix_0).all()
+
+    print(preloads.curvature_matrix_preload)
+    print(curvature_matrix_preload)
+
     assert (
         preloads.curvature_matrix_preload == curvature_matrix_preload.astype("int")
     ).all()
@@ -337,24 +337,20 @@ def test__set_regularization_matrix_and_term():
 
     # Inversion's log_det_regularization_matrix_term are different thus no preloading.
 
-    inversion = aa.m.MockInversion(linear_obj_list=[None])
-
-    linear_obj_reg = aa.m.MockLinearObjReg(regularization=regularization)
-
-    fit_0 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(
-            log_det_regularization_matrix_term=0,
-            linear_obj_reg_list=[linear_obj_reg],
-            inversion=inversion,
-        )
+    inversion_0 = aa.m.MockInversion(
+        log_det_regularization_matrix_term=0,
+        linear_obj_list=[None],
+        regularization_list=[regularization],
     )
-    fit_1 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(
-            log_det_regularization_matrix_term=1,
-            linear_obj_reg_list=[linear_obj_reg],
-            inversion=inversion,
-        )
+
+    inversion_1 = aa.m.MockInversion(
+        log_det_regularization_matrix_term=1,
+        linear_obj_list=[None],
+        regularization_list=[regularization],
     )
+
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads = aa.Preloads(log_det_regularization_matrix_term=1)
     preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
@@ -362,26 +358,24 @@ def test__set_regularization_matrix_and_term():
     assert preloads.regularization_matrix is None
     assert preloads.log_det_regularization_matrix_term is None
 
-    # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
+    # Inversion's regularization matrix terms are the same therefore preload it and the regularization matrix.
 
     preloads = aa.Preloads(log_det_regularization_matrix_term=2)
 
-    fit_0 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(
-            inversion=aa.m.MockInversion(linear_obj_list=[aa.m.MockMapper()]),
-            log_det_regularization_matrix_term=1,
-            linear_obj_reg_list=[linear_obj_reg],
-            preloads=preloads,
-        )
+    inversion_0 = aa.m.MockInversion(
+        log_det_regularization_matrix_term=1,
+        linear_obj_list=[aa.m.MockMapper()],
+        regularization_list=[regularization],
     )
-    fit_1 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(
-            inversion=aa.m.MockInversion(linear_obj_list=[aa.m.MockMapper()]),
-            log_det_regularization_matrix_term=1,
-            linear_obj_reg_list=[linear_obj_reg],
-            preloads=preloads,
-        )
+
+    inversion_1 = aa.m.MockInversion(
+        log_det_regularization_matrix_term=1,
+        linear_obj_list=[aa.m.MockMapper()],
+        regularization_list=[regularization],
     )
+
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
     preloads.set_regularization_matrix_and_term(fit_0=fit_0, fit_1=fit_1)
 

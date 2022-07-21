@@ -7,14 +7,14 @@ import autoarray as aa
 # TODO : NEed to figure out how we blur linear light profile with blurring gird.
 
 
-def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
+def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur):
 
     mask = masked_imaging_7x7_no_blur.mask
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    linear_obj = aa.m.MockLinearObj(
-        grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
+    linear_obj = aa.m.MockLinearObjFuncList(
+        pixels=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
     )
 
     inversion = aa.Inversion(
@@ -24,7 +24,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
-    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
+    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -37,7 +37,7 @@ def test__inversion_imaging__via_linear_obj_func(masked_imaging_7x7_no_blur):
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
-    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
+    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
@@ -314,7 +314,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
+        pixels=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
     )
 
     inversion = aa.Inversion(
@@ -387,7 +387,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
+        pixels=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
     )
 
     inversion = aa.Inversion(

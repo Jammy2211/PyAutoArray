@@ -1,31 +1,68 @@
 import copy
 import numpy as np
-from typing import Dict
+from typing import Dict, List, Optional
 
 from autoconf import cached_property
 
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
-from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
+from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.operators.convolver import Convolver
 
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 
 class InversionImagingMapping(AbstractInversionImaging):
-    """
-    Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
-    to be solved (see `inversion.inversion.abstract.AbstractInversion` for a full description.
+    def __init__(
+        self,
+        data: Array2D,
+        noise_map: Array2D,
+        convolver: Convolver,
+        linear_obj_list: List[LinearObj],
+        regularization_list: List[Optional[AbstractRegularization]],
+        settings: SettingsInversion = SettingsInversion(),
+        preloads=None,
+        profiling_dict: Optional[Dict] = None,
+    ):
+        """
+        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
+        to be solved (see `inversion.inversion.abstract.AbstractInversion` for a full description.
 
-    A linear object describes the mappings between values in observed `data` and the linear object's model via its
-    `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
-    and the mappings may include a convolution operation described by the imaging data's PSF.
+        A linear object describes the mappings between values in observed `data` and the linear object's model via its
+        `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
+        and the mappings may include a convolution operation described by the imaging data's PSF.
 
-    This class uses the mapping formalism, which constructs the simultaneous linear equations using the
-    `mapping_matrix` of every linear object.
-    """
+        This class uses the mapping formalism, which constructs the simultaneous linear equations using the
+        `mapping_matrix` of every linear object.
+
+        Parameters
+        -----------
+        noise_map
+            The noise-map of the observed imaging data which values are solved for.
+        convolver
+            The convolver which performs a 2D convolution on the mapping matrix with the imaging data's PSF.
+        linear_obj_list
+            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
+            the simultaneous linear equations are combined and solved simultaneously.
+        profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
+        """
+
+        super().__init__(
+            data=data,
+            noise_map=noise_map,
+            convolver=convolver,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
+            settings=settings,
+            preloads=preloads,
+            profiling_dict=profiling_dict,
+        )
 
     @cached_property
     @profile_func

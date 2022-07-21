@@ -6,7 +6,7 @@ from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImag
 
 from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
-
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ class Preloads:
 
             from autoarray.dataset.imaging import WTildeImaging
 
-            preload, indexes, lengths = inversion_util.w_tilde_curvature_preload_imaging_from(
+            preload, indexes, lengths = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=fit_0.noise_map.native,
                 kernel_native=fit_0.dataset.psf.native,
                 native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
@@ -170,11 +170,11 @@ class Preloads:
         if fit_0.inversion.total_mappers == 0:
             return
 
-        from autoarray.inversion.inversion.linear_operator import (
-            InversionLinearOperator,
+        from autoarray.inversion.inversion.interferometer.lop import (
+            InversionInterferometerMappingPyLops,
         )
 
-        if isinstance(fit_0.inversion, InversionLinearOperator):
+        if isinstance(fit_0.inversion, InversionInterferometerMappingPyLops):
             return
 
         inversion_0 = fit_0.inversion
@@ -214,11 +214,11 @@ class Preloads:
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
 
-        from autoarray.inversion.inversion.linear_operator import (
-            InversionLinearOperator,
+        from autoarray.inversion.inversion.interferometer.lop import (
+            InversionInterferometerMappingPyLops,
         )
 
-        if isinstance(fit_0.inversion, InversionLinearOperator):
+        if isinstance(fit_0.inversion, InversionInterferometerMappingPyLops):
             return
 
         inversion_0 = fit_0.inversion
@@ -244,7 +244,7 @@ class Preloads:
 
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
 
-                if isinstance(inversion_0.inversion, AbstractInversionImaging):
+                if isinstance(inversion_0, AbstractInversionImaging):
 
                     self.curvature_matrix_preload = (
                         inversion_0.curvature_matrix_preload

@@ -12,6 +12,8 @@ class MockLinearObj(LinearObj):
         operated_mapping_matrix_override=None,
     ):
 
+        super().__init__()
+
         self.grid = grid
         self._pixels = pixels
         self._mapping_matrix = mapping_matrix
