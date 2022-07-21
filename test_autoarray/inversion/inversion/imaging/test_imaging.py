@@ -142,5 +142,5 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
             linear_obj_list=aa.m.MockMapper(
                 mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
             ),
-            regularization_list=[None, None]
+            regularization_list=[None, None],
         )
