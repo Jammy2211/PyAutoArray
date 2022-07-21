@@ -127,7 +127,8 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
     )
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockMapper()], data_vector=1,
+        linear_obj_list=[aa.m.MockMapper()],
+        data_vector=1,
         regularization_term=2.0,
         log_det_curvature_reg_matrix_term=3.0,
         log_det_regularization_matrix_term=4.0,
