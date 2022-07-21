@@ -17,6 +17,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import exc
+from autoarray.util import misc_util
 from autoarray.inversion.inversion import inversion_util
 
 
@@ -131,19 +132,6 @@ class AbstractInversion:
 
         return regularization.regularization_matrix_from(linear_obj=linear_obj)
 
-    def regularization_weights_from(self, index: int) -> np.ndarray:
-
-        linear_obj = self.linear_obj_list[index]
-        regularization = self.regularization_list[index]
-
-        if regularization is None:
-
-            pixels = linear_obj.pixels
-
-            return np.zero((pixels,))
-
-        return regularization.regularization_weights_from(linear_obj=linear_obj)
-
     @cached_property
     @profile_func
     def regularization_matrix(self) -> Optional[np.ndarray]:
@@ -185,12 +173,10 @@ class AbstractInversion:
         regularization it is bypassed.
         """
 
-        # This is again for speed, instead check by filtered regularization list if not has any Nones.
-
-        # if not self.has_linear_obj_func:
-        #     return self.regularization_matrix
-
         regularization_matrix = self.regularization_matrix
+
+        if self.all_linear_obj_have_regularization:
+            return regularization_matrix
 
         regularization_matrix = np.delete(
             regularization_matrix, self.no_regularization_index_list, 0
@@ -466,58 +452,6 @@ class AbstractInversion:
     def errors_with_covariance(self):
         return np.linalg.inv(self.curvature_reg_matrix)
 
-    @property
-    def errors(self):
-        return np.diagonal(self.errors_with_covariance)
-
-    @property
-    def curvature_matrix_preload(self) -> np.ndarray:
-        (
-            curvature_matrix_preload,
-            curvature_matrix_counts,
-        ) = inversion_util.curvature_matrix_preload_from(
-            mapping_matrix=self.operated_mapping_matrix
-        )
-
-        return curvature_matrix_preload
-
-    @property
-    def curvature_matrix_counts(self) -> np.ndarray:
-        (
-            curvature_matrix_preload,
-            curvature_matrix_counts,
-        ) = inversion_util.curvature_matrix_preload_from(
-            mapping_matrix=self.operated_mapping_matrix
-        )
-
-        return curvature_matrix_counts
-
-    @property
-    def errors_dict(self) -> Dict[LinearObj, np.ndarray]:
-        return self.source_quantity_dict_from(source_quantity=self.errors)
-
-    @property
-    def magnification_list(self) -> List[float]:
-
-        magnification_list = []
-
-        interpolated_reconstruction_list = self.interpolated_reconstruction_list_from(
-            shape_native=(401, 401)
-        )
-
-        for i, linear_obj in enumerate(self.linear_obj_list):
-
-            mapped_reconstructed_image = self.mapped_reconstructed_image_dict[
-                linear_obj
-            ]
-            interpolated_reconstruction = interpolated_reconstruction_list[i]
-
-            magnification_list.append(
-                np.sum(mapped_reconstructed_image) / np.sum(interpolated_reconstruction)
-            )
-
-        return magnification_list
-
     @cached_property
     @profile_func
     def regularization_term(self):
@@ -544,6 +478,101 @@ class AbstractInversion:
                 ),
             )
         return 0.0
+
+    def interpolated_reconstruction_list_from(
+        self,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
+    ) -> List[Array2D]:
+        """
+        The reconstruction of an `Inversion` can be on an irregular pixelization (e.g. a Delaunay triangulation,
+        Voronoi mesh).
+
+        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
+        this irregular grid.
+
+        This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
+        The routine that performs the interpolation is specific to each pixelization and contained in its
+        corresponding `Mapper` and `Grid2DPixelization` objects, which are called by this function.
+
+        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
+        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
+        be returned by instead inputting the optional `shape_scaled` tuple.
+
+        Parameters
+        ----------
+        shape_native
+            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
+        extent
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
+            is input.
+        """
+        return [
+            mapper.interpolated_array_from(
+                values=self.reconstruction_dict[mapper],
+                shape_native=shape_native,
+                extent=extent,
+            )
+            for mapper in self.mapper_list
+        ]
+
+    @property
+    def errors(self):
+        return np.diagonal(self.errors_with_covariance)
+
+    @property
+    def errors_dict(self) -> Dict[LinearObj, np.ndarray]:
+        return self.source_quantity_dict_from(source_quantity=self.errors)
+
+    def interpolated_errors_list_from(
+        self,
+        shape_native: Tuple[int, int] = (401, 401),
+        extent: Optional[Tuple[float, float, float, float]] = None,
+    ) -> List[Array2D]:
+        """
+        Analogous to the function `interpolated_reconstruction_list_from()` but for the error in every reconstructed
+        pixel.
+
+        See this function for a full description.
+
+        Parameters
+        ----------
+        shape_native
+            The 2D shape in pixels of the interpolated errors, which is always returned using square pixels.
+        extent
+            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
+            is input.
+        """
+        return [
+            mapper.interpolated_array_from(
+                values=self.errors_dict[mapper],
+                shape_native=shape_native,
+                extent=extent,
+            )
+            for mapper in self.mapper_list
+        ]
+
+    @property
+    def magnification_list(self) -> List[float]:
+
+        magnification_list = []
+
+        interpolated_reconstruction_list = self.interpolated_reconstruction_list_from(
+            shape_native=(401, 401)
+        )
+
+        for i, linear_obj in enumerate(self.linear_obj_list):
+
+            mapped_reconstructed_image = self.mapped_reconstructed_image_dict[
+                linear_obj
+            ]
+            interpolated_reconstruction = interpolated_reconstruction_list[i]
+
+            magnification_list.append(
+                np.sum(mapped_reconstructed_image) / np.sum(interpolated_reconstruction)
+            )
+
+        return magnification_list
 
     @property
     def brightest_reconstruction_pixel_list(self):
@@ -575,9 +604,18 @@ class AbstractInversion:
 
         return brightest_reconstruction_pixel_centre_list
 
-    @property
-    def error_dict(self) -> Dict[LinearObj, np.ndarray]:
-        return self.source_quantity_dict_from(source_quantity=self.errors)
+    def regularization_weights_from(self, index: int) -> np.ndarray:
+
+        linear_obj = self.linear_obj_list[index]
+        regularization = self.regularization_list[index]
+
+        if regularization is None:
+
+            pixels = linear_obj.pixels
+
+            return np.zero((pixels,))
+
+        return regularization.regularization_weights_from(linear_obj=linear_obj)
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
@@ -632,71 +670,6 @@ class AbstractInversion:
             )
             for mapper in self.mapper_list
         }
-
-    def interpolated_reconstruction_list_from(
-        self,
-        shape_native: Tuple[int, int] = (401, 401),
-        extent: Optional[Tuple[float, float, float, float]] = None,
-    ) -> List[Array2D]:
-        """
-        The reconstruction of an `Inversion` can be on an irregular pixelization (e.g. a Delaunay triangulation,
-        Voronoi mesh).
-
-        Analysing the reconstruction can therefore be difficult and require specific functionality tailored to using
-        this irregular grid.
-
-        This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
-        The routine that performs the interpolation is specific to each pixelization and contained in its
-        corresponding `Mapper` and `Grid2DPixelization` objects, which are called by this function.
-
-        The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
-        can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
-        be returned by instead inputting the optional `shape_scaled` tuple.
-
-        Parameters
-        ----------
-        shape_native
-            The 2D shape in pixels of the interpolated reconstruction, which is always returned using square pixels.
-        extent
-            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
-            is input.
-        """
-        return [
-            mapper.interpolated_array_from(
-                values=self.reconstruction_dict[mapper],
-                shape_native=shape_native,
-                extent=extent,
-            )
-            for mapper in self.mapper_list
-        ]
-
-    def interpolated_errors_list_from(
-        self,
-        shape_native: Tuple[int, int] = (401, 401),
-        extent: Optional[Tuple[float, float, float, float]] = None,
-    ) -> List[Array2D]:
-        """
-        Analogous to the function `interpolated_reconstruction_list_from()` but for the error in every reconstructed
-        pixel.
-
-        See this function for a full description.
-
-        Parameters
-        ----------
-        shape_native
-            The 2D shape in pixels of the interpolated errors, which is always returned using square pixels.
-        extent
-            The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
-            is input.
-        """
-        return [
-            mapper.interpolated_array_from(
-                values=self.errors_dict[mapper],
-                shape_native=shape_native,
-                extent=extent,
-            )
-            for mapper in self.mapper_list
-        ]
 
     @property
     def linear_obj_func_list(self) -> List[AbstractLinearObjFuncList]:
@@ -794,3 +767,25 @@ class AbstractInversion:
     @property
     def has_regularization(self):
         return self.total_regularizations > 0
+
+    @property
+    def curvature_matrix_preload(self) -> np.ndarray:
+        (
+            curvature_matrix_preload,
+            curvature_matrix_counts,
+        ) = inversion_util.curvature_matrix_preload_from(
+            mapping_matrix=self.operated_mapping_matrix
+        )
+
+        return curvature_matrix_preload
+
+    @property
+    def curvature_matrix_counts(self) -> np.ndarray:
+        (
+            curvature_matrix_preload,
+            curvature_matrix_counts,
+        ) = inversion_util.curvature_matrix_preload_from(
+            mapping_matrix=self.operated_mapping_matrix
+        )
+
+        return curvature_matrix_counts

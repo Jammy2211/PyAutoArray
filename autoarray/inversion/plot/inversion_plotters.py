@@ -191,7 +191,7 @@ class InversionPlotter(Plotter):
             try:
 
                 mapper_plotter.plot_source_from(
-                    source_pixelization_values=self.inversion.error_dict[
+                    source_pixelization_values=self.inversion.errors_dict[
                         mapper_plotter.mapper
                     ],
                     auto_labels=AutoLabels(title="Errors", filename="errors"),
