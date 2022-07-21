@@ -276,8 +276,18 @@ class GridPlot(AbstractMatWrap2D):
         grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
         """
+
         try:
-            plt.plot(grid[:, 1], grid[:, 0], **self.config_dict)
+
+            color = self.config_dict["c"]
+
+            if isinstance(color, list):
+                color = color[0]
+
+            config_dict = self.config_dict
+            config_dict.pop("c")
+
+            plt.plot(grid[:, 1], grid[:, 0], c=color, **config_dict)
         except (IndexError, TypeError):
             return self.plot_grid_list(grid_list=grid)
 
