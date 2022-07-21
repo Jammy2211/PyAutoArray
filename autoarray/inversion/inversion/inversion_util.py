@@ -294,7 +294,7 @@ def preconditioner_matrix_via_mapping_matrix_from(
         The sum of (1.0 / noise-map**2.0) every value in the noise-map.
     """
 
-    curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+    curvature_matrix = curvature_matrix_via_mapping_matrix_from(
         mapping_matrix=mapping_matrix,
         noise_map=np.ones(shape=(mapping_matrix.shape[0])),
     )
