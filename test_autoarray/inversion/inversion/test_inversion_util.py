@@ -1,5 +1,140 @@
 import autoarray as aa
 import numpy as np
+import pytest
+
+
+def test__curvature_matrix_from_w_tilde():
+
+    w_tilde = np.array(
+        [
+            [1.0, 2.0, 3.0, 4.0],
+            [2.0, 1.0, 2.0, 3.0],
+            [3.0, 2.0, 1.0, 2.0],
+            [4.0, 3.0, 2.0, 1.0],
+        ]
+    )
+
+    mapping_matrix = np.array(
+        [[1.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
+    )
+
+    curvature_matrix = aa.util.inversion.curvature_matrix_via_w_tilde_from(
+        w_tilde=w_tilde, mapping_matrix=mapping_matrix
+    )
+
+    assert (
+        curvature_matrix
+        == np.array([[6.0, 8.0, 0.0], [8.0, 8.0, 0.0], [0.0, 0.0, 0.0]])
+    ).all()
+
+
+def test__curvature_matrix_via_sparse_preload():
+
+    blurred_mapping_matrix = np.array(
+        [
+            [1.0, 1.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0],
+        ]
+    )
+
+    noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+    curvature_matrix_preload, curvature_matrix_counts = aa.util.inversion.curvature_matrix_preload_from(
+        mapping_matrix=blurred_mapping_matrix
+    )
+
+    curvature_matrix = aa.util.inversion.curvature_matrix_via_sparse_preload_from(
+        mapping_matrix=blurred_mapping_matrix,
+        noise_map=noise_map,
+        curvature_matrix_preload=curvature_matrix_preload.astype("int"),
+        curvature_matrix_counts=curvature_matrix_counts.astype("int"),
+    )
+
+    assert (
+        curvature_matrix
+        == np.array([[2.0, 1.0, 0.0], [1.0, 3.0, 1.0], [0.0, 1.0, 1.0]])
+    ).all()
+
+    blurred_mapping_matrix = np.array(
+        [
+            [1.0, 1.0, 0.0, 0.5],
+            [1.0, 0.0, 0.0, 0.25],
+            [0.0, 1.0, 0.6, 0.75],
+            [0.0, 1.0, 1.0, 0.1],
+            [0.0, 0.0, 0.3, 1.0],
+            [0.0, 0.0, 0.5, 0.7],
+        ]
+    )
+
+    noise_map = np.array([2.0, 1.0, 10.0, 0.5, 3.0, 7.0])
+
+    curvature_matrix_via_mapping_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+        mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+    )
+
+    curvature_matrix_preload, curvature_matrix_counts = aa.util.inversion.curvature_matrix_preload_from(
+        mapping_matrix=blurred_mapping_matrix
+    )
+
+    curvature_matrix = aa.util.inversion.curvature_matrix_via_sparse_preload_from(
+        mapping_matrix=blurred_mapping_matrix,
+        noise_map=noise_map,
+        curvature_matrix_preload=curvature_matrix_preload.astype("int"),
+        curvature_matrix_counts=curvature_matrix_counts.astype("int"),
+    )
+
+    assert curvature_matrix_via_mapping_matrix == pytest.approx(curvature_matrix, 1.0e-4)
+
+
+def test__curvature_matrix_via_mapping_matrix_from():
+
+    blurred_mapping_matrix = np.array(
+        [
+            [1.0, 1.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0],
+        ]
+    )
+
+    noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+    curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+        mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+    )
+
+    assert (
+        curvature_matrix
+        == np.array([[2.0, 1.0, 0.0], [1.0, 3.0, 1.0], [0.0, 1.0, 1.0]])
+    ).all()
+
+    blurred_mapping_matrix = np.array(
+        [
+            [1.0, 1.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0],
+        ]
+    )
+
+    noise_map = np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+    curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+        mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+    )
+
+    assert (
+        curvature_matrix
+        == np.array([[1.25, 0.25, 0.0], [0.25, 2.25, 1.0], [0.0, 1.0, 1.0]])
+    ).all()
 
 
 def test__preconditioner_matrix_via_mapping_matrix_from():
