@@ -7,12 +7,7 @@ from autoarray.inversion.inversion.interferometer.abstract import (
     AbstractInversionInterferometer,
 )
 from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
-from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.preloads import Preloads
-from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.visibilities import Visibilities
-from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.inversion.interferometer import inversion_interferometer_util
 from autoarray.inversion.inversion import inversion_util
@@ -92,9 +87,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
     @property
     @profile_func
-    def mapped_reconstructed_data_dict(
-        self,
-    ) -> Dict[LinearObj, Visibilities]:
+    def mapped_reconstructed_data_dict(self,) -> Dict[LinearObj, Visibilities]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which

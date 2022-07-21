@@ -5,15 +5,14 @@ from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 
-from autoarray.inversion.mock.mock_linear_obj_reg import MockLinearObjReg
-
 
 class MockInversion(AbstractInversion):
     def __init__(
         self,
         data=None,
         noise_map=None,
-        linear_obj_reg_list: List[MockLinearObjReg] = None,
+        linear_obj_list=None,
+        regularization_list=None,
         operated_mapping_matrix=None,
         data_vector=None,
         curvature_matrix=None,
@@ -44,7 +43,8 @@ class MockInversion(AbstractInversion):
         super().__init__(
             data=data,
             noise_map=noise_map,
-            linear_obj_reg_list=linear_obj_reg_list,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
         )

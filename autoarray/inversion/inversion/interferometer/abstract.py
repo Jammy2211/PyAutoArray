@@ -1,13 +1,11 @@
 import numpy as np
 from typing import Dict, List, Optional
 
-from autoconf import cached_property
-
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -25,7 +23,8 @@ class AbstractInversionInterferometer(AbstractInversion):
         data: Visibilities,
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
-        linear_obj_reg_list: List[LinearObjReg],
+        linear_obj_list: List[LinearObj],
+        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -46,7 +45,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         transformer
             The transformer which performs a non-uniform fast Fourier transform operations on the mapping matrix
             with the interferometer data's transformer.
-        linear_obj_reg_list
+        linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         profiling_dict
@@ -56,7 +55,8 @@ class AbstractInversionInterferometer(AbstractInversion):
         super().__init__(
             data=data,
             noise_map=noise_map,
-            linear_obj_reg_list=linear_obj_reg_list,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -87,9 +87,7 @@ class AbstractInversionInterferometer(AbstractInversion):
 
     @property
     @profile_func
-    def mapped_reconstructed_image_dict(
-        self,
-    ) -> Dict[LinearObj, Array2D]:
+    def mapped_reconstructed_image_dict(self,) -> Dict[LinearObj, Array2D]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which

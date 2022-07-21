@@ -7,9 +7,9 @@ from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
-from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
-from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
@@ -18,6 +18,7 @@ from autoarray.dataset.imaging import WTildeImaging
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
+
 class InversionImagingWTilde(AbstractInversionImaging):
     def __init__(
         self,
@@ -25,7 +26,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
         noise_map: Array2D,
         convolver: Convolver,
         w_tilde: WTildeImaging,
-        linear_obj_reg_list: List[LinearObjReg],
+        linear_obj_list: List[LinearObj],
+        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -50,7 +52,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         w_tilde
             An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
             the mapping matrix.
-        linear_obj_reg_list
+        linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         profiling_dict
@@ -61,7 +63,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
             data=data,
             noise_map=noise_map,
             convolver=convolver,
-            linear_obj_reg_list=linear_obj_reg_list,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -131,7 +134,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        if len(self.linear_obj_reg_list) == 1:
+        if len(self.linear_obj_list) == 1:
             return self.curvature_matrix_diag
 
         curvature_matrix = self.curvature_matrix_diag
@@ -174,7 +177,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 ].unique_mappings.data_to_pix_unique,
                 data_weights=self.linear_obj_list[0].unique_mappings.data_weights,
                 pix_lengths=self.linear_obj_list[0].unique_mappings.pix_lengths,
-                pix_pixels=self.linear_obj_reg_list[0].pixels,
+                pix_pixels=self.linear_obj_list[0].pixels,
             )
 
         return block_diag(

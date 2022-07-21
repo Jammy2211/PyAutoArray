@@ -19,7 +19,9 @@ class SettingsInversion:
 
         self.use_w_tilde = use_w_tilde
         self.use_linear_operators = use_linear_operators
-        self.no_regularization_add_to_curvature_diag = no_regularization_add_to_curvature_diag
+        self.no_regularization_add_to_curvature_diag = (
+            no_regularization_add_to_curvature_diag
+        )
         self.tolerance = tolerance
         self.maxiter = maxiter
         self.check_solution = check_solution

@@ -37,7 +37,9 @@ def test__operated_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7
     assert inversion.operated_mapping_matrix_list[1] == pytest.approx(
         operated_mapping_matrix_1, 1.0e-4
     )
-    assert inversion.operated_mapping_matrix == pytest.approx(operated_mapping_matrix, 1.0e-4)
+    assert inversion.operated_mapping_matrix == pytest.approx(
+        operated_mapping_matrix, 1.0e-4
+    )
 
 
 def test__operated_mapping_matrix_property__with_operated_mapping_matrix_override(
@@ -66,7 +68,9 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
     assert inversion.operated_mapping_matrix_list[1] == pytest.approx(
         operated_mapping_matrix_override, 1.0e-4
     )
-    assert inversion.operated_mapping_matrix == pytest.approx(operated_mapping_matrix, 1.0e-4)
+    assert inversion.operated_mapping_matrix == pytest.approx(
+        operated_mapping_matrix, 1.0e-4
+    )
 
 
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):

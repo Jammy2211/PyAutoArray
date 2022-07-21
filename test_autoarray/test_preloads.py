@@ -219,8 +219,12 @@ def test__set_operated_mapping_matrix_with_preloads():
         [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]
     )
 
-    inversion_0 = aa.m.MockInversionImaging(operated_mapping_matrix=operated_mapping_matrix_0)
-    inversion_1 = aa.m.MockInversionImaging(operated_mapping_matrix=operated_mapping_matrix_1)
+    inversion_0 = aa.m.MockInversionImaging(
+        operated_mapping_matrix=operated_mapping_matrix_0
+    )
+    inversion_1 = aa.m.MockInversionImaging(
+        operated_mapping_matrix=operated_mapping_matrix_1
+    )
 
     fit_0 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_0))
     fit_1 = aa.m.MockFitImaging(inversion=aa.m.MockInversion(inversion=inversion_1))
@@ -238,8 +242,12 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
-    inversion_0 = aa.m.MockInversionImaging(operated_mapping_matrix=operated_mapping_matrix_0)
-    inversion_1 = aa.m.MockInversionImaging(operated_mapping_matrix=operated_mapping_matrix_0)
+    inversion_0 = aa.m.MockInversionImaging(
+        operated_mapping_matrix=operated_mapping_matrix_0
+    )
+    inversion_1 = aa.m.MockInversionImaging(
+        operated_mapping_matrix=operated_mapping_matrix_0
+    )
 
     inversion_0 = aa.m.MockInversion(
         inversion=inversion_0,

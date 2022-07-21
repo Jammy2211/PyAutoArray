@@ -57,8 +57,8 @@ class AdaptiveBrightness(AbstractRegularization):
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
 
-    def regularization_weights_from(self, mapper) -> np.ndarray:
-        pixel_signals = mapper.pixel_signals_from(signal_scale=self.signal_scale)
+    def regularization_weights_from(self, linear_obj) -> np.ndarray:
+        pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
 
         return regularization_util.adaptive_regularization_weights_from(
             inner_coefficient=self.inner_coefficient,
@@ -66,14 +66,14 @@ class AdaptiveBrightness(AbstractRegularization):
             pixel_signals=pixel_signals,
         )
 
-    def regularization_matrix_from(self, mapper) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj) -> np.ndarray:
 
-        regularization_weights = self.regularization_weights_from(mapper=mapper)
+        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
         return regularization_util.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
-            pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
+            pixel_neighbors=linear_obj.source_pixelization_grid.pixel_neighbors,
+            pixel_neighbors_sizes=linear_obj.source_pixelization_grid.pixel_neighbors.sizes,
         )
 
 
@@ -135,11 +135,11 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             signal_scale=signal_scale,
         )
 
-    def regularization_matrix_from(self, mapper) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj) -> np.ndarray:
 
-        regularization_weights = self.regularization_weights_from(mapper=mapper)
+        regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
-        pix_sub_weights_split_cross = mapper.pix_sub_weights_split_cross
+        pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
 
         (
             splitted_mappings,

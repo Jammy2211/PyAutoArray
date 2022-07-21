@@ -7,6 +7,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray import numba_util
 from autoarray import exc
 
+
 @numba_util.jit()
 def w_tilde_data_imaging_from(
     image_native: np.ndarray,

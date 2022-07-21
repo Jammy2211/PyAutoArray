@@ -13,6 +13,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
+
 class InversionImagingMapping(AbstractInversionImaging):
     """
     Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations

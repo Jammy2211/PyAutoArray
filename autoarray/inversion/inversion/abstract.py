@@ -12,7 +12,6 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -26,9 +25,10 @@ class AbstractInversion:
         self,
         data: Union[Visibilities, Array2D],
         noise_map: Union[Visibilities, Array2D],
-        linear_obj_reg_list: Optional[List[LinearObjReg]] = None,
+        linear_obj_list: List[LinearObj],
+        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
-        preloads = None,
+        preloads=None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -37,7 +37,6 @@ class AbstractInversion:
         ----------
         data
         inversion
-        linear_obj_reg_list
         settings
         preloads
         profiling_dict
@@ -61,7 +60,8 @@ class AbstractInversion:
         self.data = data
         self.noise_map = noise_map
 
-        self.linear_obj_reg_list = linear_obj_reg_list
+        self.linear_obj_list = linear_obj_list
+        self.regularization_list = regularization_list
 
         self.settings = settings
 
@@ -71,10 +71,6 @@ class AbstractInversion:
     @property
     def mask(self) -> Array2D:
         return self.data.mask
-
-    @property
-    def linear_obj_list(self) -> List[LinearObj]:
-        return [linear_obj_reg.linear_obj for linear_obj_reg in self.linear_obj_reg_list]
 
     @cached_property
     @profile_func
@@ -122,6 +118,32 @@ class AbstractInversion:
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
+    def regularization_matrix_from(self, index: int) -> np.ndarray:
+
+        linear_obj = self.linear_obj_list[index]
+        regularization = self.regularization_list[index]
+
+        if self.regularization_list[index] is None:
+
+            pixels = linear_obj.pixels
+
+            return np.zeros((pixels, pixels))
+
+        return regularization.regularization_matrix_from(linear_obj=linear_obj)
+
+    def regularization_weights_from(self, index: int) -> np.ndarray:
+
+        linear_obj = self.linear_obj_list[index]
+        regularization = self.regularization_list[index]
+
+        if regularization is None:
+
+            pixels = linear_obj.pixels
+
+            return np.zero((pixels,))
+
+        return regularization.regularization_weights_from(linear_obj=linear_obj)
+
     @cached_property
     @profile_func
     def regularization_matrix(self) -> Optional[np.ndarray]:
@@ -142,8 +164,8 @@ class AbstractInversion:
 
         return block_diag(
             *[
-                linear_obj_reg.regularization_matrix
-                for linear_obj_reg in self.linear_obj_reg_list
+                self.regularization_matrix_from(index=index)
+                for index in range(len(self.regularization_list))
             ]
         )
 
@@ -555,18 +577,18 @@ class AbstractInversion:
 
     @property
     def error_dict(self) -> Dict[LinearObj, np.ndarray]:
-        return self.inversion.source_quantity_dict_from(source_quantity=self.errors)
+        return self.source_quantity_dict_from(source_quantity=self.errors)
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
 
         regularization_weights_dict = {}
 
-        for mapper, linear_obj_reg in zip(self.mapper_list, self.linear_obj_reg_list):
+        for index, mapper in enumerate(self.mapper_list):
 
-            regularization_weights = linear_obj_reg.regularization_weights
-
-            regularization_weights_dict[mapper] = regularization_weights
+            regularization_weights_dict[mapper] = self.regularization_weights_from(
+                index=index
+            )
 
         return regularization_weights_dict
 
@@ -676,7 +698,6 @@ class AbstractInversion:
             for mapper in self.mapper_list
         ]
 
-
     @property
     def linear_obj_func_list(self) -> List[AbstractLinearObjFuncList]:
         """
@@ -697,10 +718,6 @@ class AbstractInversion:
         return len(self.linear_obj_func_list) > 0
 
     @property
-    def regularization_list(self) -> List[AbstractRegularization]:
-        return [linear_obj_reg.regularization for linear_obj_reg in self.linear_obj_reg_list]
-
-    @property
     def no_regularization_index_list(self):
 
         # TODO : Needs to be range based on pixels.
@@ -709,19 +726,23 @@ class AbstractInversion:
 
         pixel_count = 0
 
-        for linear_obj_reg in self.linear_obj_reg_list:
+        for linear_obj, regularization in zip(
+            self.linear_obj_list, self.regularization_list
+        ):
 
-            if linear_obj_reg.regularization is None:
+            if regularization is None:
 
                 no_regularization_index_list.append(pixel_count)
 
-            pixel_count += linear_obj_reg.pixels
+            pixel_count += linear_obj.pixels
 
         return no_regularization_index_list
 
     @property
     def all_linear_obj_have_regularization(self):
-        return len(self.linear_obj_list) == len(list(filter(None, self.regularization_list)))
+        return len(self.linear_obj_list) == len(
+            list(filter(None, self.regularization_list))
+        )
 
     @property
     def mapper_list(self) -> List[AbstractMapper]:
@@ -766,7 +787,9 @@ class AbstractInversion:
 
     @property
     def total_regularizations(self) -> int:
-        return sum(regularization is not None for regularization in self.regularization_list)
+        return sum(
+            regularization is not None for regularization in self.regularization_list
+        )
 
     @property
     def has_regularization(self):

@@ -7,6 +7,7 @@ from autoarray import numba_util
 
 logger = logging.getLogger(__name__)
 
+
 @numba_util.jit()
 def w_tilde_data_interferometer_from(
     visibilities_real: np.ndarray,
@@ -114,6 +115,7 @@ def data_vector_via_transformed_mapping_matrix_from(
             data_vector[pix_1d_index] += real_value + imag_value
 
     return data_vector
+
 
 @numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(

@@ -16,7 +16,7 @@ def test__total_regularizations():
     linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=None)
 
     inversion = aa.m.MockInversion(
-        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1],
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1]
     )
 
     assert inversion.total_regularizations == 1
@@ -25,7 +25,7 @@ def test__total_regularizations():
     linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=aa.m.MockRegularization())
 
     inversion = aa.m.MockInversion(
-        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1],
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1]
     )
 
     assert inversion.total_regularizations == 2
@@ -34,7 +34,7 @@ def test__total_regularizations():
     linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=None)
 
     inversion = aa.m.MockInversion(
-        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1],
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1]
     )
 
     assert inversion.total_regularizations == 0
@@ -46,7 +46,7 @@ def test__has_regularization():
     linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=None)
 
     inversion = aa.m.MockInversion(
-        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1],
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1]
     )
 
     assert inversion.has_regularization is True
@@ -55,7 +55,7 @@ def test__has_regularization():
     linear_obj_reg_1 = aa.m.MockLinearObjReg(regularization=None)
 
     inversion = aa.m.MockInversion(
-        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1],
+        linear_obj_reg_list=[linear_obj_reg_0, linear_obj_reg_1]
     )
 
     assert inversion.has_regularization is False
@@ -64,14 +64,12 @@ def test__has_regularization():
 def test__linear_obj_func_list__filters_other_objects():
 
     inversion = aa.m.MockInversion(
-        inversion=aa.m.MockInversion(
-            linear_obj_list=[
-                aa.m.MockMapper(pixels=1),
-                aa.m.MockLinearObjFunc(grid=3),
-                aa.m.MockMapper(pixels=2),
-                aa.m.MockLinearObjFunc(grid=4),
-            ]
-        )
+        linear_obj_list=[
+            aa.m.MockMapper(pixels=1),
+            aa.m.MockLinearObjFunc(grid=3),
+            aa.m.MockMapper(pixels=2),
+            aa.m.MockLinearObjFunc(grid=4),
+        ]
     )
 
     assert inversion.linear_obj_func_list[0].grid == 3
@@ -98,7 +96,9 @@ def test__mapper_list__filters_other_objects():
 
 def test__regularization_matrix():
 
-    inversion = aa.m.MockInversion(linear_obj_list=[aa.m.MockMapper(), aa.m.MockMapper()])
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[aa.m.MockMapper(), aa.m.MockMapper()]
+    )
 
     reg_0 = aa.m.MockRegularization(regularization_matrix=np.ones((2, 2)))
     reg_1 = aa.m.MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
@@ -138,7 +138,9 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
     )
 
     # noinspection PyTypeChecker
-    inversion = aa.m.MockInversion(noise_map=np.ones(9), linear_obj_list=aa.m.MockMapper())
+    inversion = aa.m.MockInversion(
+        noise_map=np.ones(9), linear_obj_list=aa.m.MockMapper()
+    )
 
     inversion = aa.m.MockInversion(inversion=inversion, preloads=preloads)
 
@@ -192,7 +194,9 @@ def test__mapped_reconstructed_data():
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversion(
-        inversion=aa.m.MockInversion(mapped_reconstructed_data_dict=mapped_reconstructed_data_dict),
+        inversion=aa.m.MockInversion(
+            mapped_reconstructed_data_dict=mapped_reconstructed_data_dict
+        ),
         reconstruction=np.ones(3),
         reconstruction_dict=[None],
     )
@@ -209,7 +213,9 @@ def test__mapped_reconstructed_data():
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversion(
-        inversion=aa.m.MockInversion(mapped_reconstructed_data_dict=mapped_reconstructed_data_dict),
+        inversion=aa.m.MockInversion(
+            mapped_reconstructed_data_dict=mapped_reconstructed_data_dict
+        ),
         reconstruction=np.array([1.0, 1.0, 2.0, 2.0]),
         reconstruction_dict=[None, None],
     )
@@ -363,7 +369,9 @@ def test__determinant_of_positive_definite_matrix_via_cholesky():
 
     log_determinant = np.log(np.linalg.det(matrix))
 
-    assert log_determinant == pytest.approx(inversion.log_det_curvature_reg_matrix_term, 1e-4)
+    assert log_determinant == pytest.approx(
+        inversion.log_det_curvature_reg_matrix_term, 1e-4
+    )
 
     matrix = np.array([[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]])
 
@@ -371,7 +379,9 @@ def test__determinant_of_positive_definite_matrix_via_cholesky():
 
     log_determinant = np.log(np.linalg.det(matrix))
 
-    assert log_determinant == pytest.approx(inversion.log_det_curvature_reg_matrix_term, 1e-4)
+    assert log_determinant == pytest.approx(
+        inversion.log_det_curvature_reg_matrix_term, 1e-4
+    )
 
 
 def test__brightest_reconstruction_pixel_and_centre():
@@ -404,7 +414,8 @@ def test__interpolated_reconstruction_list_from():
     mapper = aa.m.MockMapper(pixels=3, interpolated_array=interpolated_array)
 
     inversion = aa.m.MockInversion(
-        inversion=aa.m.MockInversion(linear_obj_list=[mapper]), reconstruction=interpolated_array
+        inversion=aa.m.MockInversion(linear_obj_list=[mapper]),
+        reconstruction=interpolated_array,
     )
 
     interpolated_reconstruction_list = inversion.interpolated_reconstruction_list_from(
@@ -421,7 +432,8 @@ def test__interpolated_errors_list_from():
     mapper = aa.m.MockMapper(pixels=3, interpolated_array=interpolated_array)
 
     inversion = aa.m.MockInversion(
-        inversion=aa.m.MockInversion(linear_obj_list=[mapper]), errors=interpolated_array
+        inversion=aa.m.MockInversion(linear_obj_list=[mapper]),
+        errors=interpolated_array,
     )
 
     interpolated_errors_list = inversion.interpolated_errors_list_from(

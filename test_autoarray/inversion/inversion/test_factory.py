@@ -517,10 +517,10 @@ def test__inversion_matrices__x2_mappers(
     assert inversion.curvature_matrix == pytest.approx(curvature_matrix, 1.0e-4)
 
     regularization_matrix_of_reg_0 = regularization_constant.regularization_matrix_from(
-        mapper=rectangular_mapper_7x7_3x3
+        linear_obj=rectangular_mapper_7x7_3x3
     )
     regularization_matrix_of_reg_1 = regularization_constant.regularization_matrix_from(
-        mapper=voronoi_mapper_9_3x3
+        linear_obj=voronoi_mapper_9_3x3
     )
 
     assert (

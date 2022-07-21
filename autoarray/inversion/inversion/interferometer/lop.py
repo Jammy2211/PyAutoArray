@@ -56,7 +56,9 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
             Regs=None,
             epsNRs=[1.0],
             data=self.data.ordered_1d,
-            Weight=pylops.Diagonal(diag=self.inversion.noise_map.weight_list_ordered_1d),
+            Weight=pylops.Diagonal(
+                diag=self.inversion.noise_map.weight_list_ordered_1d
+            ),
             NRegs=[pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))],
             M=MOp,
             tol=self.settings.tolerance,
@@ -117,7 +119,6 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
     @profile_func
     def preconditioner_matrix_inverse(self):
         return np.linalg.inv(self.preconditioner_matrix)
-
 
     @cached_property
     @profile_func

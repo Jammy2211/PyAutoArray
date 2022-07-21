@@ -8,10 +8,6 @@ from autoarray import numba_util
 from autoarray import exc
 
 
-
-
-
-
 def curvature_matrix_via_w_tilde_from(
     w_tilde: np.ndarray, mapping_matrix: np.ndarray
 ) -> np.ndarray:
@@ -38,9 +34,6 @@ def curvature_matrix_via_w_tilde_from(
     """
 
     return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
-
-
-
 
 
 def curvature_matrix_with_added_to_diag_from(

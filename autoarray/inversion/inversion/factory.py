@@ -23,27 +23,9 @@ from autoarray.inversion.inversion.interferometer.w_tilde import (
 from autoarray.inversion.inversion.interferometer.lop import (
     InversionInterferometerMappingPyLops,
 )
-from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
-
-
-def linear_obj_reg_list_from(
-    linear_obj_list: List[LinearObj],
-    regularization_list: List[Optional[AbstractRegularization]] = None,
-):
-
-    linear_obj_reg_list = []
-
-    for linear_obj, reg in zip(linear_obj_list, regularization_list):
-
-        linear_obj_reg_list.append(
-            LinearObjReg(linear_obj=linear_obj, regularization=reg)
-        )
-
-    return linear_obj_reg_list
 
 
 def inversion_from(
@@ -54,7 +36,6 @@ def inversion_from(
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
 ):
-
 
     if settings.use_w_tilde:
         w_tilde = dataset.w_tilde
@@ -113,10 +94,6 @@ def inversion_imaging_unpacked_from(
 
         w_tilde = preloads.w_tilde
 
-    linear_obj_reg_list = linear_obj_reg_list_from(
-        linear_obj_list=linear_obj_list, regularization_list=regularization_list
-    )
-
     if use_w_tilde:
 
         return InversionImagingWTilde(
@@ -124,7 +101,8 @@ def inversion_imaging_unpacked_from(
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
-            linear_obj_reg_list=linear_obj_reg_list,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -134,7 +112,8 @@ def inversion_imaging_unpacked_from(
         data=image,
         noise_map=noise_map,
         convolver=convolver,
-        linear_obj_reg_list=linear_obj_reg_list,
+        linear_obj_list=linear_obj_list,
+        regularization_list=regularization_list,
         settings=settings,
         preloads=preloads,
         profiling_dict=profiling_dict,
@@ -163,10 +142,6 @@ def inversion_interferometer_unpacked_from(
     else:
         use_w_tilde = settings.use_w_tilde
 
-    linear_obj_reg_list = linear_obj_reg_list_from(
-        linear_obj_list=linear_obj_list, regularization_list=regularization_list
-    )
-
     if not settings.use_linear_operators:
 
         if use_w_tilde:
@@ -176,7 +151,8 @@ def inversion_interferometer_unpacked_from(
                 noise_map=noise_map,
                 transformer=transformer,
                 w_tilde=w_tilde,
-                linear_obj_reg_list=linear_obj_reg_list,
+                linear_obj_list=linear_obj_list,
+                regularization_list=regularization_list,
                 settings=settings,
                 preloads=preloads,
                 profiling_dict=profiling_dict,
@@ -188,7 +164,8 @@ def inversion_interferometer_unpacked_from(
                 data=visibilities,
                 noise_map=noise_map,
                 transformer=transformer,
-                linear_obj_reg_list=linear_obj_reg_list,
+                linear_obj_list=linear_obj_list,
+                regularization_list=regularization_list,
                 settings=settings,
                 preloads=preloads,
                 profiling_dict=profiling_dict,
@@ -200,7 +177,8 @@ def inversion_interferometer_unpacked_from(
             data=visibilities,
             noise_map=noise_map,
             transformer=transformer,
-            linear_obj_reg_list=linear_obj_reg_list,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,

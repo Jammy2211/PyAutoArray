@@ -1,9 +1,10 @@
 import numpy as np
 from typing import Dict, List, Optional
 
-from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
 from autoarray.inversion.inversion.abstract import AbstractInversion
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 
@@ -14,9 +15,10 @@ class AbstractInversionImaging(AbstractInversion):
         data: Array2D,
         noise_map: Array2D,
         convolver: Convolver,
-        linear_obj_reg_list: List[LinearObjReg],
+        linear_obj_list: List[LinearObj],
+        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
-        preloads = None,
+        preloads=None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -33,7 +35,7 @@ class AbstractInversionImaging(AbstractInversion):
             The noise-map of the observed imaging data which values are solved for.
         convolver
             The convolver which performs a 2D convolution on the mapping matrix with the imaging data's PSF.
-        linear_obj_reg_list
+        linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         profiling_dict
@@ -49,7 +51,8 @@ class AbstractInversionImaging(AbstractInversion):
         super().__init__(
             data=data,
             noise_map=noise_map,
-            linear_obj_reg_list=linear_obj_reg_list,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,

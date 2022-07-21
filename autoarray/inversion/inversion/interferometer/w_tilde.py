@@ -7,9 +7,9 @@ from autoarray.inversion.inversion.interferometer.abstract import (
     AbstractInversionInterferometer,
 )
 from autoarray.dataset.interferometer import WTildeInterferometer
-from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.linear_obj.linear_obj_reg import LinearObjReg
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.preloads import Preloads
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.visibilities import Visibilities
@@ -27,7 +27,8 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         noise_map: VisibilitiesNoiseMap,
         transformer: TransformerNUFFT,
         w_tilde: WTildeInterferometer,
-        linear_obj_reg_list: List[LinearObjReg],
+        linear_obj_list: List[LinearObj],
+        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -54,7 +55,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         w_tilde
             An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
             the mapping matrix.
-        linear_obj_reg_list
+        linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
         profiling_dict
@@ -68,7 +69,8 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             data=data,
             noise_map=noise_map,
             transformer=transformer,
-            linear_obj_reg_list=linear_obj_reg_list,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -144,14 +146,12 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
                 0
             ].pix_weights_for_sub_slim_index,
             native_index_for_slim_index=self.transformer.real_space_mask.native_index_for_slim_index,
-            pix_pixels=self.linear_obj_reg_list[0].pixels,
+            pix_pixels=self.linear_obj_list[0].pixels,
         )
 
     @property
     @profile_func
-    def mapped_reconstructed_data_dict(
-        self,
-    ) -> Dict[LinearObj, Visibilities]:
+    def mapped_reconstructed_data_dict(self,) -> Dict[LinearObj, Visibilities]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
