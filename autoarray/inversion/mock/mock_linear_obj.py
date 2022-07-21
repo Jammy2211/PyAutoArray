@@ -1,17 +1,25 @@
 import numpy as np
 
-from autoarray.inversion.linear_obj.func_list import LinearObjFuncList
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
 
-class MockLinearObjFunc(LinearObjFuncList):
+class MockLinearObj(LinearObj):
     def __init__(
-        self, grid=None, mapping_matrix=None, operated_mapping_matrix_override=None
+        self,
+        pixels=None,
+        grid=None,
+        mapping_matrix=None,
+        operated_mapping_matrix_override=None,
     ):
 
-        super().__init__(grid=grid)
-
+        self.grid = grid
+        self._pixels = pixels
         self._mapping_matrix = mapping_matrix
         self._operated_mapping_matrix_override = operated_mapping_matrix_override
+
+    @property
+    def pixels(self) -> int:
+        return self._pixels
 
     @property
     def mapping_matrix(self) -> np.ndarray:

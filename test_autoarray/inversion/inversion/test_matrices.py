@@ -147,7 +147,7 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 def test__curvature_reg_matrix_reduced():
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObjFunc()]
+        linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObj()]
     )
 
     curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])

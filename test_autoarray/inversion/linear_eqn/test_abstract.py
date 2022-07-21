@@ -10,7 +10,7 @@ directory = path.dirname(path.realpath(__file__))
 def test__no_regularization_index_list():
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockLinearObjFunc(), aa.m.MockLinearObjFunc()]
+        linear_obj_list=[aa.m.MockLinearObj(), aa.m.MockLinearObj()]
     )
 
     assert inversion.no_regularization_index_list == [0, 1]
@@ -18,9 +18,9 @@ def test__no_regularization_index_list():
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockMapper(pixels=10),
-            aa.m.MockLinearObjFunc(),
+            aa.m.MockLinearObj(),
             aa.m.MockMapper(pixels=20),
-            aa.m.MockLinearObjFunc(),
+            aa.m.MockLinearObj(),
         ]
     )
 
@@ -30,21 +30,21 @@ def test__no_regularization_index_list():
 def test__add_to_curvature_diag():
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockLinearObjFunc()],
+        linear_obj_list=[aa.m.MockLinearObj()],
         settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),
     )
 
     assert inversion.add_to_curvature_diag is True
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockLinearObjFunc()],
+        linear_obj_list=[aa.m.MockLinearObj()],
         settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=False),
     )
 
     assert inversion.add_to_curvature_diag is False
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockLinearObjFunc(), aa.m.MockMapper()],
+        linear_obj_list=[aa.m.MockLinearObj(), aa.m.MockMapper()],
         settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),
     )
 
@@ -66,7 +66,7 @@ def test__mapping_matrix():
 def test__reconstruction_reduced():
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObjFunc()]
+        linear_obj_list=[aa.m.MockMapper(pixels=2), aa.m.MockLinearObj()]
     )
 
     linear_obj_reg_list = [

@@ -13,6 +13,6 @@ class MockRegularization(AbstractRegularization):
     ):
         return self.regularization_matrix
 
-    def regularization_matrix_from(self, mapper):
+    def regularization_matrix_from(self, linear_obj):
 
         return self.regularization_matrix

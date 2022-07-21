@@ -50,7 +50,7 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
-    linear_obj = aa.m.MockLinearObjFunc(
+    linear_obj = aa.m.MockLinearObj(
         mapping_matrix=None,
         operated_mapping_matrix_override=operated_mapping_matrix_override,
     )
@@ -80,7 +80,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
-    linear_obj = aa.m.MockLinearObjFunc(
+    linear_obj = aa.m.MockLinearObj(
         mapping_matrix=None,
         operated_mapping_matrix_override=operated_mapping_matrix_override,
     )

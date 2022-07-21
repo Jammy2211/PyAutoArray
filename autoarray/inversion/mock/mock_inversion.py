@@ -117,7 +117,8 @@ class MockInversion(AbstractInversion):
             return super().reconstruction_dict
         return self._reconstruction_dict
 
-    def mapped_reconstructed_data_dict_from(self, reconstruction: np.ndarray):
+    @property
+    def mapped_reconstructed_data_dict(self):
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
         reconstruct the image data.
@@ -132,13 +133,12 @@ class MockInversion(AbstractInversion):
         """
 
         if self._mapped_reconstructed_data_dict is None:
-            return super().mapped_reconstructed_data_dict_from(
-                reconstruction=reconstruction
-            )
+            return super().mapped_reconstructed_data_dict
 
         return self._mapped_reconstructed_data_dict
 
-    def mapped_reconstructed_image_dict_from(self, reconstruction: np.ndarray):
+    @property
+    def mapped_reconstructed_image_dict(self):
         """
         Using the reconstructed source pixel fluxes we map each source pixel flux back to the image plane and
         reconstruct the image image.
@@ -153,9 +153,7 @@ class MockInversion(AbstractInversion):
         """
 
         if self._mapped_reconstructed_image_dict is None:
-            return super().mapped_reconstructed_image_dict_from(
-                reconstruction=reconstruction
-            )
+            return super().mapped_reconstructed_image_dict
 
         return self._mapped_reconstructed_image_dict
 
