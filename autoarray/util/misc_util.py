@@ -1,6 +1,31 @@
-from typing import Dict, List, Optional, Type, ValuesView
+from typing import List, Optional, Type, ValuesView, Union
 
-def cls_list_from(dict_values : ValuesView, cls: Type, cls_filtered: Optional[Type] = None) -> List:
+
+def has(values: Union[List, ValuesView], cls: Type) -> bool:
+    """
+    Does an input instance of a class have an attribute which is of type `cls`?
+
+    Parameters
+    ----------
+    values
+        A list or dictionary of values which instances of the input `cls` are checked to see if it has an instance
+        of that class.
+    cls
+        The type of class that is checked if the object has an instance of.
+
+    Returns
+    -------
+    A bool accoridng to whether the input clas dictionary has an instance of the input class.
+    """
+    for value in values:
+        if isinstance(value, cls):
+            return True
+    return False
+
+
+def cls_list_from(
+    values: Union[List, ValuesView], cls: Type, cls_filtered: Optional[Type] = None
+) -> List:
     """
     Returns a list of objects in a class which are an instance of the input `cls`.
 
@@ -15,8 +40,8 @@ def cls_list_from(dict_values : ValuesView, cls: Type, cls_filtered: Optional[Ty
 
     Parameters
     ----------
-    dict_values
-        A class dictionary of values which instances of the input `cls` are extracted from.
+    values
+        A list or dictionary of values which instances of the input `cls` are extracted from.
     cls
         The type of class that a list of instances of this class in the galaxy are returned for.
     cls_filtered
@@ -24,12 +49,31 @@ def cls_list_from(dict_values : ValuesView, cls: Type, cls_filtered: Optional[Ty
 
     Returns
     -------
-        The list of objects in the galaxy that inherit from input `cls`.
+    The list of objects in the galaxy that inherit from input `cls`.
     """
     if cls_filtered is not None:
         return [
             value
-            for value in dict_values
+            for value in values
             if isinstance(value, cls) and not isinstance(value, cls_filtered)
         ]
-    return [value for value in dict_values if isinstance(value, cls)]
+    return [value for value in values if isinstance(value, cls)]
+
+
+def total(values: Union[List, ValuesView], cls: Type) -> int:
+    """
+    Returns the total number of instances of a class dictionary have an attribute which is of type `cls`?
+
+    Parameters
+    ----------
+    values
+        A list or dictionary of values which instances of the input `cls` are checked to see how many instances
+        of that class it contains.
+    cls
+        The type of class that is checked if the object has an instance of.
+
+    Returns
+    -------
+    The number of instances of the input class dictionary.
+    """
+    return len(cls_list_from(values=values, cls=cls))

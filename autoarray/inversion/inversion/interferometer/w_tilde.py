@@ -9,6 +9,7 @@ from autoarray.inversion.inversion.interferometer.abstract import (
 from autoarray.dataset.interferometer import WTildeInterferometer
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.preloads import Preloads
 from autoarray.operators.transformer import TransformerNUFFT
@@ -136,13 +137,13 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
             curvature_preload=self.w_tilde.curvature_preload,
-            pix_indexes_for_sub_slim_index=self.mapper_list[
+            pix_indexes_for_sub_slim_index=self.cls_list_from(cls=AbstractMapper)[
                 0
             ].pix_indexes_for_sub_slim_index,
-            pix_size_for_sub_slim_index=self.mapper_list[
+            pix_size_for_sub_slim_index=self.cls_list_from(cls=AbstractMapper)[
                 0
             ].pix_sizes_for_sub_slim_index,
-            pix_weights_for_sub_slim_index=self.mapper_list[
+            pix_weights_for_sub_slim_index=self.cls_list_from(cls=AbstractMapper)[
                 0
             ].pix_weights_for_sub_slim_index,
             native_index_for_slim_index=self.transformer.real_space_mask.native_index_for_slim_index,

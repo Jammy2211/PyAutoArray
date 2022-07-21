@@ -130,6 +130,9 @@ class AbstractRegularization:
     def __eq__(self, other):
         return self.__dict__ == other.__dict__ and self.__class__ is other.__class__
 
+    def __hash__(self):
+        return id(self)
+
     def regularization_weights_from(self, linear_obj):
         raise NotImplementedError
 

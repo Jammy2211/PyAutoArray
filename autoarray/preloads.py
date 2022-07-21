@@ -3,6 +3,7 @@ import numpy as np
 from typing import List
 
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
+from autoarray.inversion.mappers.abstract import AbstractMapper
 
 from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
@@ -73,7 +74,7 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        if not fit_0.inversion.has_mapper:
+        if not fit_0.inversion.has(cls=AbstractMapper):
             return
 
         if np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8:
@@ -123,11 +124,14 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        if fit_0.inversion.total_mappers > 1 or fit_0.inversion.total_mappers == 0:
+        if (
+            fit_0.inversion.total(cls=AbstractMapper) > 1
+            or fit_0.inversion.total(cls=AbstractMapper) == 0
+        ):
             return
 
-        mapper_0 = fit_0.inversion.mapper_list[0]
-        mapper_1 = fit_1.inversion.mapper_list[0]
+        mapper_0 = fit_0.inversion.cls_list_from(cls=AbstractMapper)[0]
+        mapper_1 = fit_1.inversion.cls_list_from(cls=AbstractMapper)[0]
 
         if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
 
@@ -167,7 +171,7 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        if fit_0.inversion.total_mappers == 0:
+        if fit_0.inversion.total(cls=AbstractMapper) == 0:
             return
 
         from autoarray.inversion.inversion.interferometer.lop import (
@@ -184,7 +188,7 @@ class Preloads:
 
             if np.allclose(inversion_0.mapping_matrix, inversion_1.mapping_matrix):
 
-                self.mapper_list = inversion_0.mapper_list
+                self.mapper_list = inversion_0.cls_list_from(cls=AbstractMapper)
 
                 logger.info(
                     "PRELOADS - Mappers of planes preloaded for this model-fit."
@@ -325,7 +329,7 @@ class Preloads:
         if inversion_0 is None:
             return
 
-        if inversion_0.total_mappers == 0:
+        if inversion_0.total(cls=AbstractMapper) == 0:
             return
 
         if (

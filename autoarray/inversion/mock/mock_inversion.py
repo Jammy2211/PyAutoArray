@@ -43,8 +43,8 @@ class MockInversion(AbstractInversion):
         super().__init__(
             data=data,
             noise_map=noise_map,
-            linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
+            linear_obj_list=linear_obj_list or [],
+            regularization_list=regularization_list or [],
             settings=settings,
             preloads=preloads,
         )

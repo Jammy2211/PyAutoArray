@@ -7,6 +7,8 @@ import warnings
 from autoarray.mask.abstract_mask import Mask
 from autoarray.structures.abstract_structure import Structure
 from autoarray.inversion.inversion.abstract import AbstractInversion
+from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray import type as ty
 from autoarray.fit import fit_util
@@ -225,19 +227,11 @@ class FitDataset(ABC):
             The normalization noise_map-term for the data's noise-map.
         """
         if self.inversion is not None:
-            if self.inversion.has_mapper:
-                return fit_util.log_evidence_from(
-                    chi_squared=self.chi_squared,
-                    regularization_term=self.inversion.regularization_term,
-                    log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
-                    log_regularization_term=self.inversion.log_det_regularization_matrix_term,
-                    noise_normalization=self.noise_normalization,
-                )
             return fit_util.log_evidence_from(
                 chi_squared=self.chi_squared,
-                regularization_term=0.0,
+                regularization_term=self.inversion.regularization_term,
                 log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
-                log_regularization_term=0.0,
+                log_regularization_term=self.inversion.log_det_regularization_matrix_term,
                 noise_normalization=self.noise_normalization,
             )
 
@@ -245,10 +239,7 @@ class FitDataset(ABC):
     @profile_func
     def figure_of_merit(self) -> float:
 
-        if self.inversion is None:
-            return self.log_likelihood
-
-        if self.inversion.has_mapper:
+        if self.inversion is not None:
             return self.log_evidence
 
         return self.log_likelihood

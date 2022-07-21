@@ -1,12 +1,13 @@
 import numpy as np
 
 from autoconf import conf
+
+from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
-from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 
@@ -50,7 +51,7 @@ class InversionPlotter(Plotter):
 
     def get_visuals_2d_for_data(self) -> Visuals2D:
         return self.get_2d.via_mapper_for_data_from(
-            mapper=self.inversion.mapper_list[0]
+            mapper=self.inversion.cls_list_from(cls=AbstractMapper)[0]
         )
 
     def mapper_plotter_from(self, mapper_index: int) -> MapperPlotter:
@@ -69,7 +70,7 @@ class InversionPlotter(Plotter):
             An object that plots mappers which is used for plotting attributes of the inversion.
         """
         return MapperPlotter(
-            mapper=self.inversion.mapper_list[mapper_index],
+            mapper=self.inversion.cls_list_from(cls=AbstractMapper)[mapper_index],
             mat_plot_2d=self.mat_plot_2d,
             visuals_2d=self.visuals_2d,
             include_2d=self.include_2d,
@@ -136,7 +137,7 @@ class InversionPlotter(Plotter):
             weights.
         """
 
-        if not self.inversion.has_mapper:
+        if not self.inversion.has(cls=AbstractMapper):
             return
 
         mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)

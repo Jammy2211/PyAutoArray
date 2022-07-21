@@ -10,35 +10,17 @@ from autoarray import exc
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__linear_obj_func_list__filters_other_objects():
+def test__has():
 
-    inversion = aa.m.MockInversion(
-        linear_obj_list=[
-            aa.m.MockMapper(pixels=1),
-            aa.m.MockLinearObjFuncList(grid=3),
-            aa.m.MockMapper(pixels=2),
-            aa.m.MockLinearObjFuncList(grid=4),
-        ]
-    )
+    reg = aa.m.MockRegularization()
 
-    assert inversion.linear_obj_func_list[0].grid == 3
-    assert inversion.linear_obj_func_list[1].grid == 4
-    assert inversion.has_linear_obj_func == True
+    inversion = aa.m.MockInversion(regularization_list=[reg, None])
 
+    assert inversion.has(cls=aa.AbstractRegularization) is True
 
-def test__mapper_list__filters_other_objects():
+    inversion = aa.m.MockInversion(regularization_list=[None, None])
 
-    inversion = aa.m.MockInversion(
-        linear_obj_list=[
-            aa.m.MockMapper(pixels=1),
-            aa.m.MockLinearObj(),
-            aa.m.MockMapper(pixels=2),
-        ]
-    )
-
-    assert inversion.mapper_list[0].pixels == 1
-    assert inversion.mapper_list[1].pixels == 2
-    assert inversion.has_mapper == True
+    assert inversion.has(cls=aa.AbstractRegularization) is False
 
 
 def test__total_regularizations():
@@ -56,19 +38,6 @@ def test__total_regularizations():
     inversion = aa.m.MockInversion(regularization_list=[None, None])
 
     assert inversion.total_regularizations == 0
-
-
-def test__has_regularization():
-
-    reg = aa.m.MockRegularization()
-
-    inversion = aa.m.MockInversion(regularization_list=[reg, None])
-
-    assert inversion.has_regularization is True
-
-    inversion = aa.m.MockInversion(regularization_list=[None, None])
-
-    assert inversion.has_regularization is False
 
 
 def test__no_regularization_index_list():

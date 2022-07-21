@@ -5,6 +5,7 @@ def test__inversion_figure_of_merit(masked_imaging_7x7, model_image_7x7):
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper()],
+        regularization_list=[aa.m.MockRegularization()],
         data_vector=1,
         regularization_term=2.0,
         log_det_curvature_reg_matrix_term=3.0,
@@ -22,10 +23,8 @@ def test__inversion_figure_of_merit(masked_imaging_7x7, model_image_7x7):
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockLinearObj()],
+        regularization_list=[None],
         data_vector=1,
-        regularization_term=2.0,
-        log_det_curvature_reg_matrix_term=3.0,
-        log_det_regularization_matrix_term=4.0,
     )
 
     fit = aa.m.MockFitImaging(

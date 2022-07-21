@@ -45,7 +45,7 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
             sparse.bsr_matrix(self.linear_obj_list[0].mapping_matrix)
         )
 
-        Fop = self.inversion.transformer
+        Fop = self.transformer
 
         Op = Fop * Aop
 
@@ -56,9 +56,7 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
             Regs=None,
             epsNRs=[1.0],
             data=self.data.ordered_1d,
-            Weight=pylops.Diagonal(
-                diag=self.inversion.noise_map.weight_list_ordered_1d
-            ),
+            Weight=pylops.Diagonal(diag=self.noise_map.weight_list_ordered_1d),
             NRegs=[pylops.MatrixMult(sparse.bsr_matrix(self.regularization_matrix))],
             M=MOp,
             tol=self.settings.tolerance,
@@ -105,7 +103,7 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
     def preconditioner_matrix(self):
 
         curvature_matrix_approx = np.multiply(
-            np.sum(self.inversion.noise_map.weight_list_ordered_1d),
+            np.sum(self.noise_map.weight_list_ordered_1d),
             self.linear_obj_list[0].mapping_matrix.T
             @ self.linear_obj_list[0].mapping_matrix,
         )

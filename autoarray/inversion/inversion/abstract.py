@@ -2,7 +2,7 @@ import numpy as np
 from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import splu
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Type, Union
 
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
@@ -10,9 +10,8 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
-from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
+from autoarray.inversion.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 
@@ -68,6 +67,124 @@ class AbstractInversion:
 
         self.preloads = preloads
         self.profiling_dict = profiling_dict
+
+    def has(self, cls: Type) -> bool:
+        """
+        Does this `Inversion` have an attribute which is of type `cls`?
+
+        Parameters
+        ----------
+        dict_values
+            A class dictionary of values which instances of the input `cls` are checked to see if it has an instance
+            of that class.
+        cls
+            The type of class that is checked if the object has an instance of.
+
+        Returns
+        -------
+        A bool according to whether the input class dictionary has an instance of the input class.
+        """
+        return misc_util.has(
+            values=self.linear_obj_list + self.regularization_list, cls=cls
+        )
+
+    def total(self, cls: Type) -> int:
+        """
+        Returns the total number of attribute in the `Inversion` which are of type `cls`?
+
+        Parameters
+        ----------
+        dict_values
+            A class dictionary of values which instances of the input `cls` are checked to see how many instances
+            of that class it contains.
+        cls
+            The type of class that is checked if the object has an instance of.
+
+        Returns
+        -------
+        The number of instances of the input class dictionary.
+        """
+        return misc_util.total(
+            values=self.linear_obj_list + self.regularization_list, cls=cls
+        )
+
+    def cls_list_from(self, cls: Type, cls_filtered: Optional[Type] = None) -> List:
+        """
+        Returns a list of objects in the `Inversion` which are an instance of the input `cls`.
+
+        The optional `cls_filtered` input removes classes of an input instance type.
+
+        For example:
+
+        - If the input is `cls=aa.pix.Pixelization`, a list containing all pixelizations in the class are returned.
+
+        - If `cls=aa.pix.Pixelization` and `cls_filtered=aa.pix.Rectangular`, a list of all pixelizations
+        excluding those which are `Rectangular` pixelizations will be returned.
+
+        Parameters
+        ----------
+        cls
+            The type of class that a list of instances of this class in the galaxy are returned for.
+        cls_filtered
+            A class type which is filtered and removed from the class list.
+
+        Returns
+        -------
+            The list of objects in the galaxy that inherit from input `cls`.
+        """
+        return misc_util.cls_list_from(
+            values=self.linear_obj_list + self.regularization_list,
+            cls=cls,
+            cls_filtered=cls_filtered,
+        )
+
+    @property
+    def no_mapper_list(self) -> List[LinearObj]:
+        """
+        Returns a list of all linear objects that are not mappers which used to construct the simultaneous linear
+        equations.
+
+        This property retains linear objects which are not mappers (E.g. `LinearObjFuncList` objects).
+        """
+        mapper_list = [
+            linear_obj if not isinstance(linear_obj, AbstractMapper) else None
+            for linear_obj in self.linear_obj_list
+        ]
+
+        return list(filter(None, mapper_list))
+
+    @property
+    def all_linear_obj_have_regularization(self) -> bool:
+        return len(self.linear_obj_list) == len(
+            list(filter(None, self.regularization_list))
+        )
+
+    @property
+    def total_regularizations(self) -> int:
+        return sum(
+            regularization is not None for regularization in self.regularization_list
+        )
+
+    @property
+    def no_regularization_index_list(self) -> List[int]:
+
+        # TODO : Needs to be range based on pixels.
+
+        no_regularization_index_list = []
+
+        pixel_count = 0
+
+        for linear_obj, regularization in zip(
+            self.linear_obj_list, self.regularization_list
+        ):
+
+            if regularization is None:
+
+                no_regularization_index_list.append(pixel_count)
+
+            pixel_count += linear_obj.pixels
+
+        return no_regularization_index_list
 
     @property
     def mask(self) -> Array2D:
@@ -189,7 +306,7 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix(self):
+    def curvature_reg_matrix(self) -> np.ndarray:
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
 
@@ -198,7 +315,7 @@ class AbstractInversion:
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
-        if not self.has_regularization:
+        if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
         # TODO : Done for speed, instead check if there is one regularization
@@ -216,7 +333,7 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix_reduced(self):
+    def curvature_reg_matrix_reduced(self) -> np.ndarray:
         """
         The linear system of equations solves for F + regularization_coefficient*H, which is computed below.
 
@@ -239,7 +356,7 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix_cholesky(self):
+    def curvature_reg_matrix_cholesky(self) -> np.ndarray:
         """
         Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
         linear system of equations of the `Inversion`.
@@ -254,7 +371,7 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix_reduced_cholesky(self):
+    def curvature_reg_matrix_reduced_cholesky(self) -> np.ndarray:
         """
         Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
         linear system of equations of the `Inversion`.
@@ -269,7 +386,7 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def reconstruction(self):
+    def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
         of https://arxiv.org/pdf/astro-ph/0302587.pdf
@@ -285,7 +402,7 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def reconstruction_reduced(self):
+    def reconstruction_reduced(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
         of https://arxiv.org/pdf/astro-ph/0302587.pdf
@@ -397,12 +514,40 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def log_det_curvature_reg_matrix_term(self):
+    def regularization_term(self) -> float:
+        """
+        Returns the regularization term of an inversion. This term represents the sum of the difference in flux
+        between every pair of neighboring pixels.
+
+        This is computed as:
+
+        s_T * H * s = solution_vector.T * regularization_matrix * solution_vector
+
+        The term is referred to as *G_l* in Warren & Dye 2003, Nightingale & Dye 2015.
+
+        The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens,
+        this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
+        """
+
+        if not self.has(cls=AbstractRegularization):
+            return 0.0
+
+        return np.matmul(
+            self.reconstruction_reduced.T,
+            np.matmul(self.regularization_matrix_reduced, self.reconstruction_reduced),
+        )
+
+    @cached_property
+    @profile_func
+    def log_det_curvature_reg_matrix_term(self) -> float:
         """
         The log determinant of [F + reg_coeff*H] is used to determine the Bayesian evidence of the solution.
 
         This uses the Cholesky decomposition which is already computed before solving the reconstruction.
         """
+        if not self.has(cls=AbstractRegularization):
+            return 0.0
+
         return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_reduced_cholesky)))
 
     @cached_property
@@ -421,7 +566,7 @@ class AbstractInversion:
             The log determinant of the regularization matrix.
         """
 
-        if not self.has_regularization:
+        if not self.has(cls=AbstractRegularization):
             return 0.0
 
         if self.preloads.log_det_regularization_matrix_term is not None:
@@ -449,35 +594,8 @@ class AbstractInversion:
                 raise exc.InversionException()
 
     @property
-    def errors_with_covariance(self):
+    def errors_with_covariance(self) -> np.ndarray:
         return np.linalg.inv(self.curvature_reg_matrix)
-
-    @cached_property
-    @profile_func
-    def regularization_term(self):
-        """
-        Returns the regularization term of an inversion. This term represents the sum of the difference in flux
-        between every pair of neighboring pixels.
-
-        This is computed as:
-
-        s_T * H * s = solution_vector.T * regularization_matrix * solution_vector
-
-        The term is referred to as *G_l* in Warren & Dye 2003, Nightingale & Dye 2015.
-
-        The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens,
-        this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
-        """
-
-        if self.has_regularization:
-
-            return np.matmul(
-                self.reconstruction_reduced.T,
-                np.matmul(
-                    self.regularization_matrix_reduced, self.reconstruction_reduced
-                ),
-            )
-        return 0.0
 
     def interpolated_reconstruction_list_from(
         self,
@@ -513,7 +631,7 @@ class AbstractInversion:
                 shape_native=shape_native,
                 extent=extent,
             )
-            for mapper in self.mapper_list
+            for mapper in self.cls_list_from(cls=AbstractMapper)
         ]
 
     @property
@@ -549,7 +667,7 @@ class AbstractInversion:
                 shape_native=shape_native,
                 extent=extent,
             )
-            for mapper in self.mapper_list
+            for mapper in self.cls_list_from(cls=AbstractMapper)
         ]
 
     @property
@@ -579,7 +697,7 @@ class AbstractInversion:
 
         brightest_reconstruction_pixel_list = []
 
-        for mapper in self.mapper_list:
+        for mapper in self.cls_list_from(cls=AbstractMapper):
 
             brightest_reconstruction_pixel_list.append(
                 np.argmax(self.reconstruction_dict[mapper])
@@ -592,7 +710,7 @@ class AbstractInversion:
 
         brightest_reconstruction_pixel_centre_list = []
 
-        for mapper in self.mapper_list:
+        for mapper in self.cls_list_from(cls=AbstractMapper):
 
             brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
 
@@ -622,7 +740,7 @@ class AbstractInversion:
 
         regularization_weights_dict = {}
 
-        for index, mapper in enumerate(self.mapper_list):
+        for index, mapper in enumerate(self.cls_list_from(cls=AbstractMapper)):
 
             regularization_weights_dict[mapper] = self.regularization_weights_from(
                 index=index
@@ -640,7 +758,7 @@ class AbstractInversion:
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
                 sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
-            for mapper in self.mapper_list
+            for mapper in self.cls_list_from(cls=AbstractMapper)
         }
 
     @property
@@ -654,7 +772,7 @@ class AbstractInversion:
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
                 sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
-            for mapper in self.mapper_list
+            for mapper in self.cls_list_from(cls=AbstractMapper)
         }
 
     @property
@@ -668,105 +786,8 @@ class AbstractInversion:
                 slim_index_for_sub_slim_index=mapper.source_grid_slim.mask.slim_index_for_sub_slim_index,
                 sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
-            for mapper in self.mapper_list
+            for mapper in self.cls_list_from(cls=AbstractMapper)
         }
-
-    @property
-    def linear_obj_func_list(self) -> List[AbstractLinearObjFuncList]:
-        """
-        Returns a list of all linear objects based on analytic functions used to construct the simultaneous linear
-        equations.
-
-        This property removes other linear objects (E.g. `Mapper` objects).
-        """
-        linear_obj_func_list = [
-            linear_obj if isinstance(linear_obj, AbstractLinearObjFuncList) else None
-            for linear_obj in self.linear_obj_list
-        ]
-
-        return list(filter(None, linear_obj_func_list))
-
-    @property
-    def has_linear_obj_func(self):
-        return len(self.linear_obj_func_list) > 0
-
-    @property
-    def no_regularization_index_list(self):
-
-        # TODO : Needs to be range based on pixels.
-
-        no_regularization_index_list = []
-
-        pixel_count = 0
-
-        for linear_obj, regularization in zip(
-            self.linear_obj_list, self.regularization_list
-        ):
-
-            if regularization is None:
-
-                no_regularization_index_list.append(pixel_count)
-
-            pixel_count += linear_obj.pixels
-
-        return no_regularization_index_list
-
-    @property
-    def all_linear_obj_have_regularization(self):
-        return len(self.linear_obj_list) == len(
-            list(filter(None, self.regularization_list))
-        )
-
-    @property
-    def mapper_list(self) -> List[AbstractMapper]:
-        """
-        Returns a list of all mappers used to construct the simultaneous linear equations.
-
-        This property removes other linear objects (E.g. `LinearObjFuncList` objects).
-        """
-        mapper_list = [
-            linear_obj if isinstance(linear_obj, AbstractMapper) else None
-            for linear_obj in self.linear_obj_list
-        ]
-
-        return list(filter(None, mapper_list))
-
-    @property
-    def has_mapper(self) -> bool:
-        return len(self.mapper_list) > 0
-
-    @property
-    def has_one_mapper(self) -> bool:
-        return len(self.mapper_list) == 1
-
-    @property
-    def total_mappers(self):
-        return len(self.mapper_list)
-
-    @property
-    def no_mapper_list(self) -> List[LinearObj]:
-        """
-        Returns a list of all linear objects that are not mappers which used to construct the simultaneous linear
-        equations.
-
-        This property retains linear objects which are not mappers (E.g. `LinearObjFuncList` objects).
-        """
-        mapper_list = [
-            linear_obj if not isinstance(linear_obj, AbstractMapper) else None
-            for linear_obj in self.linear_obj_list
-        ]
-
-        return list(filter(None, mapper_list))
-
-    @property
-    def total_regularizations(self) -> int:
-        return sum(
-            regularization is not None for regularization in self.regularization_list
-        )
-
-    @property
-    def has_regularization(self):
-        return self.total_regularizations > 0
 
     @property
     def curvature_matrix_preload(self) -> np.ndarray:

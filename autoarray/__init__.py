@@ -22,6 +22,8 @@ from .inversion.mappers.abstract import AbstractMapper
 from .inversion import pixelizations as pix
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
+from .inversion.inversion.abstract import AbstractInversion
+from .inversion.regularization.abstract import AbstractRegularization
 from .inversion.inversion.factory import inversion_from as Inversion
 from .inversion.inversion.factory import (
     inversion_imaging_unpacked_from as InversionImaging,
