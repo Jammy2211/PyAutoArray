@@ -39,6 +39,7 @@ def test__total_regularizations():
 
     assert inversion.total_regularizations == 0
 
+
 def test__has_regularization():
 
     linear_obj_reg_0 = aa.m.MockLinearObjReg(regularization=aa.m.MockRegularization())
