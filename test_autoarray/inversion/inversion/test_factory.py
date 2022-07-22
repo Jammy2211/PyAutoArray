@@ -27,6 +27,7 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+    assert inversion.reconstruction == pytest.approx(np.array([2.0]), 1.0e-4)
 
     # Overwrites use_w_tilde to false.
 
@@ -40,8 +41,26 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+    assert inversion.reconstruction == pytest.approx(np.array([2.0]), 1.0e-4)
 
     # Works with multiple pixels
+
+    linear_obj = aa.m.MockLinearObjFuncList(
+        pixels=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
+    )
+
+    inversion = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[linear_obj],
+        regularization_list=[None],
+        settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
+    )
+
+    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
+    assert isinstance(inversion, aa.InversionImagingMapping)
+    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+    assert inversion.reconstruction == pytest.approx(np.array([0.0, 2.0]), 1.0e-4)
+
 
 def test__inversion_imaging__via_mapper(
     masked_imaging_7x7_no_blur,
