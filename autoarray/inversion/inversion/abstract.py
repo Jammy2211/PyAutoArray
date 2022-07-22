@@ -139,21 +139,6 @@ class AbstractInversion:
         )
 
     @property
-    def no_mapper_list(self) -> List[LinearObj]:
-        """
-        Returns a list of all linear objects that are not mappers which used to construct the simultaneous linear
-        equations.
-
-        This property retains linear objects which are not mappers (E.g. `LinearObjFuncList` objects).
-        """
-        mapper_list = [
-            linear_obj if not isinstance(linear_obj, AbstractMapper) else None
-            for linear_obj in self.linear_obj_list
-        ]
-
-        return list(filter(None, mapper_list))
-
-    @property
     def all_linear_obj_have_regularization(self) -> bool:
         return len(self.linear_obj_list) == len(
             list(filter(None, self.regularization_list))
