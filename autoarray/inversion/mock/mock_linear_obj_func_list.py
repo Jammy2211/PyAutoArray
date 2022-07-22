@@ -1,9 +1,9 @@
 import numpy as np
 
-from autoarray.inversion.linear_obj.func_list import LinearObjFuncList
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 
 
-class MockLinearObjFuncList(LinearObjFuncList):
+class MockLinearObjFuncList(AbstractLinearObjFuncList):
     def __init__(self, pixels=None, grid=None, mapping_matrix=None):
 
         super().__init__(grid=grid)

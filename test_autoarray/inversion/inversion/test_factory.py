@@ -41,6 +41,7 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
+    # Works with multiple pixels
 
 def test__inversion_imaging__via_mapper(
     masked_imaging_7x7_no_blur,

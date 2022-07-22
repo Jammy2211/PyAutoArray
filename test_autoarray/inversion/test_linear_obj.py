@@ -1,6 +1,5 @@
 import autoarray as aa
 import numpy as np
-import pytest
 
 
 def test__data_to_pix_unique_from():
@@ -41,7 +40,7 @@ def test__data_to_pix_unique_from():
 
     grid = aa.Grid2D.uniform(shape_native=(1, 2), sub_size=2, pixel_scales=0.1)
 
-    linear_obj = aa.LinearObjFuncList(grid=grid)
+    linear_obj = aa.AbstractLinearObjFuncList(grid=grid)
 
     assert (linear_obj.unique_mappings.data_to_pix_unique == data_to_pix_unique).all()
     assert (linear_obj.unique_mappings.data_weights == data_weights).all()

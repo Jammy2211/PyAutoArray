@@ -44,7 +44,7 @@ from .inversion.inversion.interferometer.w_tilde import InversionInterferometerW
 from .inversion.inversion.interferometer.mapping import InversionInterferometerMapping
 from .inversion.inversion.interferometer.lop import InversionInterferometerMappingPyLops
 from .inversion.linear_obj.func_list import LinearObj
-from .inversion.linear_obj.func_list import LinearObjFuncList
+from .inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
 from .operators.convolver import Convolver

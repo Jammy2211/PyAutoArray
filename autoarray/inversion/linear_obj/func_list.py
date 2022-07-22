@@ -38,12 +38,6 @@ class AbstractLinearObjFuncList(LinearObj):
 
         self.grid = grid
 
-    # TODO : perma store in memory and pass via lazy instantiate somehwere for model fit.
-
-    @property
-    def pixels(self):
-        return 1
-
     @cached_property
     @profile_func
     def unique_mappings(self):
@@ -75,30 +69,3 @@ class AbstractLinearObjFuncList(LinearObj):
             data_weights=data_weights,
             pix_lengths=pix_lengths,
         )
-
-
-class LinearObjFuncList(AbstractLinearObjFuncList):
-    def __init__(self, grid: Grid1D2DLike, profiling_dict: Optional[Dict] = None):
-        """
-        An object represented by one or more analytic functions, the solution of which can be solved for linearly via an 
-        inversion.
-        
-        By overwriting the `mapping_matrix` function with a method that fills in its value with the solution of the
-        analytic function, this is then passed through the `inversion` package to perform the linear inversion. The
-        API is identical to `Mapper` objects such that linear functions can easily be combined with mappers.
-
-        For example, in `PyAutoGalaxy` and `PyAutoLens` the light of galaxies is represented using `LightProfile` 
-        objects, which describe the surface brightness of a galaxy as a function. This function can either be assigned
-        an overall intensity (e.g. the normalization) which describes how bright it is. Using the `LinearObjFuncList` the
-        intensity can be solved for linearly instead.
-        
-        Parameters
-        ----------
-        grid
-            The grid of data points representing the data that is fitted and therefore where the analytic function
-            is evaluated.
-        profiling_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
-        """
-
-        super().__init__(grid=grid, profiling_dict=profiling_dict)
