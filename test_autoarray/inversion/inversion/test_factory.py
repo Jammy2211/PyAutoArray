@@ -59,7 +59,7 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-    assert inversion.reconstruction == pytest.approx(np.array([0.0, 2.0]), 1.0e-4)
+    assert inversion.reconstruction == pytest.approx(np.array([1.0, 1.0]), 1.0e-4)
 
 
 def test__inversion_imaging__via_mapper(
@@ -418,10 +418,6 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     )
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
-
-    print(inversion.mapped_reconstructed_data_dict[
-        linear_obj
-    ])
 
     masked_imaging_7x7_no_blur.data -= inversion.mapped_reconstructed_data_dict[
         linear_obj
