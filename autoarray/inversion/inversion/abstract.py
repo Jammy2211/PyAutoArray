@@ -165,7 +165,9 @@ class AbstractInversion:
 
             if regularization is None:
 
-                no_regularization_index_list.append(pixel_count)
+                for pixel in range(pixel_count, pixel_count + linear_obj.pixels):
+
+                    no_regularization_index_list.append(pixel)
 
             pixel_count += linear_obj.pixels
 

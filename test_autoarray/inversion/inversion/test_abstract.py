@@ -43,18 +43,18 @@ def test__total_regularizations():
 def test__no_regularization_index_list():
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockLinearObj(pixels=1), aa.m.MockLinearObj(pixels=1)],
+        linear_obj_list=[aa.m.MockLinearObj(pixels=2), aa.m.MockLinearObj(pixels=1)],
         regularization_list=[None, None],
     )
 
-    assert inversion.no_regularization_index_list == [0, 1]
+    assert inversion.no_regularization_index_list == [0, 1, 2]
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockMapper(pixels=10),
-            aa.m.MockLinearObj(pixels=1),
+            aa.m.MockLinearObj(pixels=3),
             aa.m.MockMapper(pixels=20),
-            aa.m.MockLinearObj(pixels=1),
+            aa.m.MockLinearObj(pixels=4),
         ],
         regularization_list=[
             aa.m.MockRegularization(),
@@ -64,7 +64,7 @@ def test__no_regularization_index_list():
         ],
     )
 
-    assert inversion.no_regularization_index_list == [10, 31]
+    assert inversion.no_regularization_index_list == [10, 11, 12, 33, 34, 35, 36]
 
 
 def test__mapping_matrix():

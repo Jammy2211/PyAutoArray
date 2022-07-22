@@ -407,7 +407,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        pixels=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
+        pixels=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
     )
 
     inversion = aa.Inversion(
@@ -418,6 +418,11 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     )
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
+
+    print(inversion.mapped_reconstructed_data_dict[
+        linear_obj
+    ])
+
     masked_imaging_7x7_no_blur.data -= inversion.mapped_reconstructed_data_dict[
         linear_obj
     ]
