@@ -2,7 +2,7 @@ import numpy as np
 from typing import Tuple
 
 from autoarray.structures.grids.grid_2d_pixelization import AbstractGrid2DPixelization
-from autoarray.structures.grids.grid_2d_pixelization import PixelNeighbors
+from autoarray.structures.grids.grid_2d_pixelization import Neighbors
 
 
 class MockGrid2DPixelization(AbstractGrid2DPixelization):
@@ -51,9 +51,9 @@ class MockGrid2DPixelization(AbstractGrid2DPixelization):
 
 
 class MockPixelizationGrid:
-    def __init__(self, pixel_neighbors=None, pixel_neighbors_sizes=None):
+    def __init__(self, neighbors=None, neighbors_sizes=None):
 
-        self.pixel_neighbors = PixelNeighbors(
-            arr=pixel_neighbors, sizes=pixel_neighbors_sizes
+        self.neighbors = Neighbors(
+            arr=neighbors, sizes=neighbors_sizes
         )
-        self.shape = (len(self.pixel_neighbors.sizes),)
+        self.shape = (len(self.neighbors.sizes),)

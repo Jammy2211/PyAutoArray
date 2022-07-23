@@ -86,6 +86,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
         The calculation is described in more detail in `inversion_util.data_vector_via_transformed_mapping_matrix_from`.
         """
+
         return inversion_interferometer_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=self.operated_mapping_matrix,
             visibilities=self.data,

@@ -76,7 +76,7 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     noise_map = np.ones(2)
-    convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
+    convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 10)))
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
@@ -89,7 +89,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     inversion = aa.InversionImagingMapping(
         data=np.ones(2),
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        regularization_list=[None, None],
+        regularization_list=[None, aa.reg.Constant()],
         noise_map=noise_map,
         convolver=convolver,
         settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=False),
@@ -105,7 +105,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     inversion = aa.InversionImagingMapping(
         data=np.ones(2),
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        regularization_list=[None, None],
+        regularization_list=[None, aa.reg.Constant()],
         noise_map=noise_map,
         convolver=convolver,
         settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),

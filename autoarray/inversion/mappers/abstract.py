@@ -6,6 +6,7 @@ from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
+from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -92,6 +93,10 @@ class AbstractMapper(LinearObj):
     @property
     def pixels(self) -> int:
         return self.source_pixelization_grid.pixels
+
+    @property
+    def neighbors(self) -> Neighbors:
+        return self.source_pixelization_grid.neighbors
 
     @property
     def pix_sub_weights(self) -> "PixSubWeights":

@@ -7,7 +7,7 @@ from autoarray import numba_util
 
 @numba_util.jit()
 def constant_regularization_matrix_from(
-    coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_sizes: np.ndarray
+    coefficient: float, neighbors: np.ndarray, neighbors_sizes: np.ndarray
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
@@ -19,10 +19,10 @@ def constant_regularization_matrix_from(
     ----------
     coefficients
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
-    pixel_neighbors
+    neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_sizes
+    neighbors_sizes
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
 
@@ -33,7 +33,7 @@ def constant_regularization_matrix_from(
         coefficient of every source pixel is the same.
     """
 
-    pixels = len(pixel_neighbors)
+    pixels = len(neighbors)
 
     regularization_matrix = np.zeros(shape=(pixels, pixels))
 
@@ -41,8 +41,8 @@ def constant_regularization_matrix_from(
 
     for i in range(pixels):
         regularization_matrix[i, i] += 1e-8
-        for j in range(pixel_neighbors_sizes[i]):
-            neighbor_index = pixel_neighbors[i, j]
+        for j in range(neighbors_sizes[i]):
+            neighbor_index = neighbors[i, j]
             regularization_matrix[i, i] += regularization_coefficient
             regularization_matrix[i, neighbor_index] -= regularization_coefficient
 
@@ -84,8 +84,8 @@ def adaptive_regularization_weights_from(
 @numba_util.jit()
 def weighted_regularization_matrix_from(
     regularization_weights: np.ndarray,
-    pixel_neighbors: np.ndarray,
-    pixel_neighbors_sizes: np.ndarray,
+    neighbors: np.ndarray,
+    neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
     """
     From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
@@ -94,10 +94,10 @@ def weighted_regularization_matrix_from(
     ----------
     regularization_weights
         The regularization_ weight of each pixel, which governs how much smoothing is applied to that individual pixel.
-    pixel_neighbors
+    neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_sizes
+    neighbors_sizes
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
 
@@ -116,8 +116,8 @@ def weighted_regularization_matrix_from(
 
     for i in range(pixels):
         regularization_matrix[i, i] += 1e-8
-        for j in range(pixel_neighbors_sizes[i]):
-            neighbor_index = pixel_neighbors[i, j]
+        for j in range(neighbors_sizes[i]):
+            neighbor_index = neighbors[i, j]
             regularization_matrix[i, i] += regularization_weight[neighbor_index]
             regularization_matrix[
                 neighbor_index, neighbor_index

@@ -6,6 +6,7 @@ from typing import Optional, List, Union, Tuple
 
 from autoconf import cached_property
 
+from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -16,48 +17,6 @@ from autoarray.structures.grids import grid_2d_util
 from autoarray.inversion.pixelizations import pixelization_util
 
 from autoarray import type as ty
-
-
-class PixelNeighbors(np.ndarray):
-    def __new__(cls, arr: np.ndarray, sizes: np.ndarray):
-        """
-        Class packaging ndarrays describing the neighbors of every pixel in a pixelization (e.g. `Rectangular`,
-        `Voronoi`).
-
-        The array `arr` contains the pixel indexes of the neighbors of every pixel. Its has shape [total_pixels,
-        max_neighbors_in_single_pixel].
-
-        The array `sizes` contains the number of neighbors of every pixel in the pixelixzation.
-
-        For example, for a 3x3 `Rectangular` grid:
-
-        - `total_pixels=9` and `max_neighbors_in_single_pixel=4` (because the central pixel has 4 neighbors whereas
-        edge / corner pixels have 3 and 2).
-
-        - The shape of `arr` is therefore [9, 4], with entries where there is no neighbor (e.g. arr[0, 3]) containing
-        values of -1.
-
-        - Pixel 0 is at the top-left of the rectangular pixelization and has two neighbors, the pixel to its right
-        (with index 1) and the pixel below it (with index 3). Therefore, `arr[0,:] = [1, 3, -1, -1]` and `sizes[0] = 2`.
-
-        - Pixel 1 is at the top-middle and has three neighbors, to its left (index 0, right (index 2) and below it
-        (index 4). Therefore, pixel_neighbors[1,:] = [0, 2, 4, 1] and pixel_neighbors_sizes[1] = 3.
-
-        - For pixel 4, the central pixel, pixel_neighbors[4,:] = [1, 3, 5, 7] and pixel_neighbors_sizes[4] = 4.
-
-        The same arrays can be generalized for other pixelizations, for example a `Voronoi` grid.
-
-        Parameters
-        ----------
-        arr
-            An array which maps every pixelization pixel to the indexes of its neighbors.
-        sizes
-            An array containing the number of neighbors of every pixelization pixel.
-        """
-        obj = arr.view(cls)
-        obj.sizes = sizes
-
-        return obj
 
 
 class AbstractGrid2DPixelization(Structure):
@@ -221,10 +180,10 @@ class Grid2DRectangular(AbstractGrid2DPixelization):
         )
 
     @cached_property
-    def pixel_neighbors(self) -> PixelNeighbors:
+    def neighbors(self) -> Neighbors:
         """
         A class packing the ndarrays describing the neighbors of every pixel in the rectangular pixelization (see
-        `PixelNeighbors` for a complete description of the neighboring scheme).
+        `Neighbors` for a complete description of the neighboring scheme).
 
         The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
         rectangular grid, as described in the method `pixelization_util.rectangular_neighbors_from`.
@@ -233,7 +192,7 @@ class Grid2DRectangular(AbstractGrid2DPixelization):
             shape_native=self.shape_native
         )
 
-        return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+        return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @property
     def pixels(self) -> int:
@@ -577,12 +536,12 @@ class AbstractGrid2DMeshTriangulation(AbstractGrid2DPixelization):
 
 class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
     @cached_property
-    def pixel_neighbors(self) -> PixelNeighbors:
+    def neighbors(self) -> Neighbors:
         """
         Returns a ndarray describing the neighbors of every pixel in a Voronoi mesh, where a neighbor is defined as
         two Voronoi cells which share an adjacent vertex.
 
-        see `PixelNeighbors` for a complete description of the neighboring scheme.
+        see `Neighbors` for a complete description of the neighboring scheme.
 
         The neighbors of a Voronoi pixelization are computed using the `ridge_points` attribute of the scipy `Voronoi`
         object, as described in the method `pixelization_util.voronoi_neighbors_from`.
@@ -591,7 +550,7 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
             pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
         )
 
-        return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+        return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @classmethod
     def manual_slim(cls, grid) -> "Grid2DVoronoi":
@@ -661,12 +620,12 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
 
 class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
     @cached_property
-    def pixel_neighbors(self) -> PixelNeighbors:
+    def neighbors(self) -> Neighbors:
         """
         Returns a ndarray describing the neighbors of every pixel in a Delaunay triangulation, where a neighbor is
         defined as two Delaunay triangles which are directly connected to one another in the triangulation.
 
-        see `PixelNeighbors` for a complete description of the neighboring scheme.
+        see `Neighbors` for a complete description of the neighboring scheme.
 
         The neighbors of a Voronoi pixelization are computed using the `ridge_points` attribute of the scipy `Voronoi`
         object, as described in the method `pixelization_util.voronoi_neighbors_from`.
@@ -680,7 +639,7 @@ class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
         for k in range(self.pixels):
             neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]
 
-        return PixelNeighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+        return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
     @classmethod
     def manual_slim(cls, grid) -> "Grid2DDelaunay":

@@ -6,7 +6,7 @@ np.set_printoptions(threshold=np.inf)
 
 def test__regularization_matrix__matches_util():
 
-    pixel_neighbors = np.array(
+    neighbors = np.array(
         [
             [1, 3, 7, 2],
             [4, 2, 0, -1],
@@ -20,10 +20,10 @@ def test__regularization_matrix__matches_util():
         ]
     )
 
-    pixel_neighbors_sizes = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
+    neighbors_sizes = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
 
     pixelization_grid = aa.m.MockPixelizationGrid(
-        pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
+        neighbors=neighbors, neighbors_sizes=neighbors_sizes
     )
 
     mapper = aa.m.MockMapper(source_pixelization_grid=pixelization_grid)
@@ -33,8 +33,8 @@ def test__regularization_matrix__matches_util():
 
     regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from(
         coefficient=2.0,
-        pixel_neighbors=pixel_neighbors,
-        pixel_neighbors_sizes=pixel_neighbors_sizes,
+        neighbors=neighbors,
+        neighbors_sizes=neighbors_sizes,
     )
 
     assert reg.coefficient == 2.0

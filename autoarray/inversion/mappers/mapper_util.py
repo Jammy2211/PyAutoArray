@@ -184,8 +184,8 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     nearest_pix_index_for_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
     pixelization_grid: np.ndarray,
-    pixel_neighbors: np.ndarray,
-    pixel_neighbors_sizes: np.ndarray,
+    neighbors: np.ndarray,
+    neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the mappings between a set of slimmed sub-grid pixels and pixelization pixels, using information on
@@ -207,10 +207,10 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         The mappings between the data slimmed sub-pixels and their regular pixels.
     pixelization_grid
         The (y,x) centre of every Voronoi pixel in arc-seconds.
-    pixel_neighbors
+    neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_sizes
+    neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     """
@@ -238,9 +238,9 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
 
             closest_separation_pix_to_neighbor = 1.0e8
 
-            for neighbor_pix_index in range(pixel_neighbors_sizes[nearest_pix_index]):
+            for neighbor_pix_index in range(neighbors_sizes[nearest_pix_index]):
 
-                neighbor = pixel_neighbors[nearest_pix_index, neighbor_pix_index]
+                neighbor = neighbors[nearest_pix_index, neighbor_pix_index]
 
                 distance_to_neighbor = (
                     grid[sub_slim_index, 0] - pixelization_grid[neighbor, 0]
@@ -250,7 +250,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
                     closest_separation_pix_to_neighbor = distance_to_neighbor
                     closest_neighbor_pix_index = neighbor_pix_index
 
-            neighboring_pix_index = pixel_neighbors[
+            neighboring_pix_index = neighbors[
                 nearest_pix_index, closest_neighbor_pix_index
             ]
             sub_pixel_to_neighboring_pix_distance = closest_separation_pix_to_neighbor
@@ -359,10 +359,10 @@ def pix_size_weights_voronoi_nn_from(
         The mappings between the data slimmed sub-pixels and their regular pixels.
     pixelization_grid
         The (y,x) centre of every Voronoi pixel in arc-seconds.
-    pixel_neighbors
+    neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_sizes
+    neighbors_sizes
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     """

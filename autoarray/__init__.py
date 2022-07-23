@@ -13,6 +13,7 @@ from .dataset.imaging import WTildeImaging
 from .dataset.interferometer import Interferometer
 from .dataset.interferometer import SettingsInterferometer
 from .dataset.interferometer import SimulatorInterferometer
+from .dataset.interferometer import WTildeInterferometer
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer

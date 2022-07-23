@@ -229,8 +229,8 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
             nearest_pix_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
             pixelization_grid=self.source_pixelization_grid,
-            pixel_neighbors=self.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_sizes=self.source_pixelization_grid.pixel_neighbors.sizes,
+            neighbors=self.source_pixelization_grid.neighbors,
+            neighbors_sizes=self.source_pixelization_grid.neighbors.sizes,
         ).astype("int")
 
         return PixSubWeights(

@@ -3,6 +3,8 @@ from typing import Dict, Optional
 
 from autoconf import cached_property
 
+from autoarray.inversion.linear_obj.neighbors import Neighbors
+
 from autoarray.numba_util import profile_func
 
 
@@ -13,6 +15,10 @@ class LinearObj:
 
     @property
     def pixels(self) -> int:
+        raise NotImplementedError
+
+    @property
+    def neighbors(self) -> Neighbors:
         raise NotImplementedError
 
     @property

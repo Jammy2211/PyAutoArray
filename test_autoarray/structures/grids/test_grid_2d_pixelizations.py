@@ -53,7 +53,7 @@ class TestAbstractGrid2DPixelization:
 
 
 class TestGrid2DRectangular:
-    def test__pixel_neighbors__compare_to_pixelization_util(self):
+    def test__neighbors__compare_to_pixelization_util(self):
         # I0 I 1I 2I 3I
         # I4 I 5I 6I 7I
         # I8 I 9I10I11I
@@ -64,13 +64,13 @@ class TestGrid2DRectangular:
         )
 
         (
-            pixel_neighbors_util,
-            pixel_neighbors_sizes_util,
+            neighbors_util,
+            neighbors_sizes_util,
         ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(7, 5))
 
-        assert (pixelization_grid.pixel_neighbors == pixel_neighbors_util).all()
+        assert (pixelization_grid.neighbors == neighbors_util).all()
         assert (
-            pixelization_grid.pixel_neighbors.sizes == pixel_neighbors_sizes_util
+            pixelization_grid.neighbors.sizes == neighbors_sizes_util
         ).all()
 
     def test__shape_native_and_pixel_scales(self):
@@ -245,7 +245,7 @@ class TestGrid2DRectangular:
 
 
 class TestGrid2DVoronoi:
-    def test__pixel_neighbors__compare_to_pixelization_util(self):
+    def test__neighbors__compare_to_pixelization_util(self):
 
         # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
@@ -270,14 +270,14 @@ class TestGrid2DVoronoi:
         )
 
         (
-            pixel_neighbors_util,
-            pixel_neighbors_sizes_util,
+            neighbors_util,
+            neighbors_sizes_util,
         ) = aa.util.pixelization.voronoi_neighbors_from(
             pixels=9, ridge_points=np.array(voronoi.ridge_points)
         )
 
-        assert (pix.pixel_neighbors == pixel_neighbors_util).all()
-        assert (pix.pixel_neighbors.sizes == pixel_neighbors_sizes_util).all()
+        assert (pix.neighbors == neighbors_util).all()
+        assert (pix.neighbors.sizes == neighbors_sizes_util).all()
 
     def test__pixelization_areas(self):
 

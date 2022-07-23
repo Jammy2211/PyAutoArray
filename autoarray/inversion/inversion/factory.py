@@ -68,6 +68,44 @@ def inversion_from(
     )
 
 
+def inversion_unpacked_from(
+    dataset,
+    data: Union[Array2D, Visibilities],
+    noise_map: Union[Array2D, VisibilitiesNoiseMap],
+    w_tilde: Union[WTildeImaging, WTildeInterferometer],
+    linear_obj_list: List[LinearObj],
+    regularization_list: List[Optional[AbstractRegularization]] = None,
+    settings: SettingsInversion = SettingsInversion(),
+    preloads: Preloads = Preloads(),
+    profiling_dict: Optional[Dict] = None,
+):
+
+    if isinstance(dataset, Imaging):
+
+        return inversion_imaging_unpacked_from(
+            image=data,
+            noise_map=noise_map,
+            convolver=dataset.convolver,
+            w_tilde=w_tilde,
+            linear_obj_list=linear_obj_list,
+            regularization_list=regularization_list,
+            settings=settings,
+            preloads=preloads,
+            profiling_dict=profiling_dict,
+        )
+
+    return inversion_interferometer_unpacked_from(
+        visibilities=data,
+        noise_map=noise_map,
+        transformer=dataset.transformer,
+        w_tilde=w_tilde,
+        linear_obj_list=linear_obj_list,
+        regularization_list=regularization_list,
+        settings=settings,
+        profiling_dict=profiling_dict,
+    )
+
+
 def inversion_imaging_unpacked_from(
     image: Array2D,
     noise_map: Array2D,

@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Tuple
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
@@ -39,8 +38,8 @@ class Constant(AbstractRegularization):
 
         return regularization_util.constant_regularization_matrix_from(
             coefficient=self.coefficient,
-            pixel_neighbors=linear_obj.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_sizes=linear_obj.source_pixelization_grid.pixel_neighbors.sizes,
+            neighbors=linear_obj.neighbors,
+            neighbors_sizes=linear_obj.neighbors.sizes,
         )
 
 
