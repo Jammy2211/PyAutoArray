@@ -4,6 +4,7 @@ from typing import Optional, Dict
 from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.linear_obj.unique_mappings import UniqueMappings
 from autoarray.type import Grid1D2DLike
 
@@ -37,6 +38,27 @@ class AbstractLinearObjFuncList(LinearObj):
         super().__init__(profiling_dict=profiling_dict)
 
         self.grid = grid
+
+    @cached_property
+    def neighbors(self) -> Neighbors:
+
+        neighbors_sizes = 2.0 * np.ones(shape=(self.pixels))
+
+        neighbors_sizes[0] -= 1
+        neighbors_sizes[-1] -= 1
+
+        neighbors = -1 * np.ones(shape=(self.pixels, 2))
+
+        for pixel_index in range(self.pixels):
+
+            neighbors[pixel_index, 0] = pixel_index - 1
+            neighbors[pixel_index, 1] = pixel_index + 1
+
+        neighbors[0, 0] = 1
+        neighbors[0, 1] = -1
+        neighbors[-1, 1] = -1
+
+        return Neighbors(arr=neighbors, sizes=neighbors_sizes)
 
     @cached_property
     @profile_func

@@ -47,34 +47,22 @@ def rectangular_neighbors_from(
     neighbors_sizes = np.zeros(pixels)
 
     neighbors, neighbors_sizes = rectangular_corner_neighbors(
-        neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
-        shape_native=shape_native,
+        neighbors=neighbors, neighbors_sizes=neighbors_sizes, shape_native=shape_native
     )
     neighbors, neighbors_sizes = rectangular_top_edge_neighbors(
-        neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
-        shape_native=shape_native,
+        neighbors=neighbors, neighbors_sizes=neighbors_sizes, shape_native=shape_native
     )
     neighbors, neighbors_sizes = rectangular_left_edge_neighbors(
-        neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
-        shape_native=shape_native,
+        neighbors=neighbors, neighbors_sizes=neighbors_sizes, shape_native=shape_native
     )
     neighbors, neighbors_sizes = rectangular_right_edge_neighbors(
-        neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
-        shape_native=shape_native,
+        neighbors=neighbors, neighbors_sizes=neighbors_sizes, shape_native=shape_native
     )
     neighbors, neighbors_sizes = rectangular_bottom_edge_neighbors(
-        neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
-        shape_native=shape_native,
+        neighbors=neighbors, neighbors_sizes=neighbors_sizes, shape_native=shape_native
     )
     neighbors, neighbors_sizes = rectangular_central_neighbors(
-        neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
-        shape_native=shape_native,
+        neighbors=neighbors, neighbors_sizes=neighbors_sizes, shape_native=shape_native
     )
 
     return neighbors, neighbors_sizes
@@ -82,9 +70,7 @@ def rectangular_neighbors_from(
 
 @numba_util.jit()
 def rectangular_corner_neighbors(
-    neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
-    shape_native: Tuple[int, int],
+    neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the `neighbors` and `neighbors_sizes` arrays described in the function
@@ -121,9 +107,7 @@ def rectangular_corner_neighbors(
     )
     neighbors_sizes[pixels - shape_native[1]] = 2
 
-    neighbors[pixels - 1, 0:2] = np.array(
-        [pixels - shape_native[1] - 1, pixels - 2]
-    )
+    neighbors[pixels - 1, 0:2] = np.array([pixels - shape_native[1] - 1, pixels - 2])
     neighbors_sizes[pixels - 1] = 2
 
     return neighbors, neighbors_sizes
@@ -131,9 +115,7 @@ def rectangular_corner_neighbors(
 
 @numba_util.jit()
 def rectangular_top_edge_neighbors(
-    neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
-    shape_native: Tuple[int, int],
+    neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the `neighbors` and `neighbors_sizes` arrays described in the function
@@ -166,9 +148,7 @@ def rectangular_top_edge_neighbors(
 
 @numba_util.jit()
 def rectangular_left_edge_neighbors(
-    neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
-    shape_native: Tuple[int, int],
+    neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the `neighbors` and `neighbors_sizes` arrays described in the function
@@ -205,9 +185,7 @@ def rectangular_left_edge_neighbors(
 
 @numba_util.jit()
 def rectangular_right_edge_neighbors(
-    neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
-    shape_native: Tuple[int, int],
+    neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the `neighbors` and `neighbors_sizes` arrays described in the function
@@ -244,9 +222,7 @@ def rectangular_right_edge_neighbors(
 
 @numba_util.jit()
 def rectangular_bottom_edge_neighbors(
-    neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
-    shape_native: Tuple[int, int],
+    neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the `neighbors` and `neighbors_sizes` arrays described in the function
@@ -281,9 +257,7 @@ def rectangular_bottom_edge_neighbors(
 
 @numba_util.jit()
 def rectangular_central_neighbors(
-    neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
-    shape_native: Tuple[int, int],
+    neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Updates the `neighbors` and `neighbors_sizes` arrays described in the function

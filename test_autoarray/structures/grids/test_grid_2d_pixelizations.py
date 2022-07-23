@@ -69,9 +69,7 @@ class TestGrid2DRectangular:
         ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(7, 5))
 
         assert (pixelization_grid.neighbors == neighbors_util).all()
-        assert (
-            pixelization_grid.neighbors.sizes == neighbors_sizes_util
-        ).all()
+        assert (pixelization_grid.neighbors.sizes == neighbors_sizes_util).all()
 
     def test__shape_native_and_pixel_scales(self):
         grid = np.array(

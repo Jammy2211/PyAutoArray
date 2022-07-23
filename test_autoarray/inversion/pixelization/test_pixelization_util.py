@@ -11,10 +11,9 @@ def test__rectangular_neighbors_from():
     # I3I4I5I
     # I6I7I8I
 
-    (
-        neighbors,
-        neighbors_sizes,
-    ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(3, 3))
+    (neighbors, neighbors_sizes) = aa.util.pixelization.rectangular_neighbors_from(
+        shape_native=(3, 3)
+    )
 
     assert (neighbors[0] == [1, 3, -1, -1]).all()
     assert (neighbors[1] == [0, 2, 4, -1]).all()
@@ -32,10 +31,9 @@ def test__rectangular_neighbors_from():
     # I4I5I 6I 7I
     # I8I9I10I11I
 
-    (
-        neighbors,
-        neighbors_sizes,
-    ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(3, 4))
+    (neighbors, neighbors_sizes) = aa.util.pixelization.rectangular_neighbors_from(
+        shape_native=(3, 4)
+    )
 
     assert (neighbors[0] == [1, 4, -1, -1]).all()
     assert (neighbors[1] == [0, 2, 5, -1]).all()
@@ -50,19 +48,16 @@ def test__rectangular_neighbors_from():
     assert (neighbors[10] == [6, 9, 11, -1]).all()
     assert (neighbors[11] == [7, 10, -1, -1]).all()
 
-    assert (
-        neighbors_sizes == np.array([2, 3, 3, 2, 3, 4, 4, 3, 2, 3, 3, 2])
-    ).all()
+    assert (neighbors_sizes == np.array([2, 3, 3, 2, 3, 4, 4, 3, 2, 3, 3, 2])).all()
 
     # I0I 1I 2I
     # I3I 4I 5I
     # I6I 7I 8I
     # I9I10I11I
 
-    (
-        neighbors,
-        neighbors_sizes,
-    ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(4, 3))
+    (neighbors, neighbors_sizes) = aa.util.pixelization.rectangular_neighbors_from(
+        shape_native=(4, 3)
+    )
 
     assert (neighbors[0] == [1, 3, -1, -1]).all()
     assert (neighbors[1] == [0, 2, 4, -1]).all()
@@ -77,19 +72,16 @@ def test__rectangular_neighbors_from():
     assert (neighbors[10] == [7, 9, 11, -1]).all()
     assert (neighbors[11] == [8, 10, -1, -1]).all()
 
-    assert (
-        neighbors_sizes == np.array([2, 3, 2, 3, 4, 3, 3, 4, 3, 2, 3, 2])
-    ).all()
+    assert (neighbors_sizes == np.array([2, 3, 2, 3, 4, 3, 3, 4, 3, 2, 3, 2])).all()
 
     # I0 I 1I 2I 3I
     # I4 I 5I 6I 7I
     # I8 I 9I10I11I
     # I12I13I14I15I
 
-    (
-        neighbors,
-        neighbors_sizes,
-    ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(4, 4))
+    (neighbors, neighbors_sizes) = aa.util.pixelization.rectangular_neighbors_from(
+        shape_native=(4, 4)
+    )
 
     assert (neighbors[0] == [1, 4, -1, -1]).all()
     assert (neighbors[1] == [0, 2, 5, -1]).all()
@@ -109,8 +101,7 @@ def test__rectangular_neighbors_from():
     assert (neighbors[15] == [11, 14, -1, -1]).all()
 
     assert (
-        neighbors_sizes
-        == np.array([2, 3, 3, 2, 3, 4, 4, 3, 3, 4, 4, 3, 2, 3, 3, 2])
+        neighbors_sizes == np.array([2, 3, 3, 2, 3, 4, 4, 3, 3, 4, 4, 3, 2, 3, 3, 2])
     ).all()
 
 
@@ -119,10 +110,7 @@ def test__voronoi_neighbors_from():
     points = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
 
     voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-    (
-        neighbors,
-        neighbors_sizes,
-    ) = aa.util.pixelization.voronoi_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.pixelization.voronoi_neighbors_from(
         pixels=5, ridge_points=np.array(voronoi.ridge_points)
     )
 
@@ -151,10 +139,7 @@ def test__voronoi_neighbors_from():
     )
 
     voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-    (
-        neighbors,
-        neighbors_sizes,
-    ) = aa.util.pixelization.voronoi_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.pixelization.voronoi_neighbors_from(
         pixels=9, ridge_points=np.array(voronoi.ridge_points)
     )
 

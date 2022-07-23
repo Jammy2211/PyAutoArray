@@ -8,9 +8,7 @@ class MockRegularization(AbstractRegularization):
 
         self.regularization_matrix = regularization_matrix
 
-    def regularization_matrix_via_neighbors_from(
-        self, neighbors, neighbors_sizes
-    ):
+    def regularization_matrix_via_neighbors_from(self, neighbors, neighbors_sizes):
         return self.regularization_matrix
 
     def regularization_matrix_from(self, linear_obj):

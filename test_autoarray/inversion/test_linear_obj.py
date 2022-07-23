@@ -45,3 +45,24 @@ def test__data_to_pix_unique_from():
     assert (linear_obj.unique_mappings.data_to_pix_unique == data_to_pix_unique).all()
     assert (linear_obj.unique_mappings.data_weights == data_weights).all()
     assert (linear_obj.unique_mappings.pix_lengths == pix_lengths).all()
+
+
+def test__neighbors():
+    class FuncList(aa.AbstractLinearObjFuncList):
+        @property
+        def pixels(self):
+            return 4
+
+    linear_obj = FuncList(grid=None)
+
+    neighbors = linear_obj.neighbors
+
+    assert (neighbors[0] == [1, -1]).all()
+    assert (neighbors[1] == [0, 2]).all()
+    assert (neighbors[2] == [1, 3]).all()
+    assert (neighbors[3] == [2, -1]).all()
+
+    assert neighbors.sizes[0] == 1
+    assert neighbors.sizes[1] == 2
+    assert neighbors.sizes[2] == 2
+    assert neighbors.sizes[3] == 1

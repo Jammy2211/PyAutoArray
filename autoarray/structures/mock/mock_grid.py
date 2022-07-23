@@ -53,7 +53,5 @@ class MockGrid2DPixelization(AbstractGrid2DPixelization):
 class MockPixelizationGrid:
     def __init__(self, neighbors=None, neighbors_sizes=None):
 
-        self.neighbors = Neighbors(
-            arr=neighbors, sizes=neighbors_sizes
-        )
+        self.neighbors = Neighbors(arr=neighbors, sizes=neighbors_sizes)
         self.shape = (len(self.neighbors.sizes),)

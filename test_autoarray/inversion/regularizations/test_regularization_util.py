@@ -27,9 +27,7 @@ class TestConstantMatrix:
         ) + 1e-8 * np.identity(3)
 
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
-            coefficient=1.0,
-            neighbors=neighbors,
-            neighbors_sizes=neighbors_sizes,
+            coefficient=1.0, neighbors=neighbors, neighbors_sizes=neighbors_sizes
         )
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -54,9 +52,7 @@ class TestConstantMatrix:
         neighbors_sizes = np.array([2, 2, 2, 2])
 
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
-            coefficient=1.0,
-            neighbors=neighbors,
-            neighbors_sizes=neighbors_sizes,
+            coefficient=1.0, neighbors=neighbors, neighbors_sizes=neighbors_sizes
         )
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -81,9 +77,7 @@ class TestConstantMatrix:
         ) + 1e-8 * np.identity(4)
 
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
-            coefficient=2.0,
-            neighbors=neighbors,
-            neighbors_sizes=neighbors_sizes,
+            coefficient=2.0, neighbors=neighbors, neighbors_sizes=neighbors_sizes
         )
 
         assert (regularization_matrix == test_regularization_matrix).all()
@@ -147,9 +141,7 @@ class TestConstantMatrix:
         )
 
         regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
-            coefficient=1.0,
-            neighbors=neighbors,
-            neighbors_sizes=neighbors_sizes,
+            coefficient=1.0, neighbors=neighbors, neighbors_sizes=neighbors_sizes
         )
 
         assert (regularization_matrix == test_regularization_matrix).all()
