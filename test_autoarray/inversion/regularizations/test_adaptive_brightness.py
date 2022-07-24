@@ -39,7 +39,7 @@ def test__regularization_matrix__matches_util():
     neighbors_sizes = np.array([2, 3, 4, 2, 4, 3])
     pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
-    pixelization_grid = aa.m.MockPixelizationGrid(
+    pixelization_grid = aa.m.MockMeshGrid(
         neighbors=neighbors, neighbors_sizes=neighbors_sizes
     )
 

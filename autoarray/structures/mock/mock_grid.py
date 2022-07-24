@@ -50,7 +50,7 @@ class MockGrid2DMesh(Abstract2DMesh):
         return self._extent
 
 
-class MockPixelizationGrid:
+class MockMeshGrid:
     def __init__(self, neighbors=None, neighbors_sizes=None):
 
         self.neighbors = Neighbors(arr=neighbors, sizes=neighbors_sizes)

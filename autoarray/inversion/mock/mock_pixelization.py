@@ -1,10 +1,10 @@
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.pixelization.pixelization import Pixelization
 
 
-class MockPixelization(AbstractMesh):
-    def __init__(self, mapper=None, data_mesh_grid=None):
+class MockPixelization(Pixelization):
+    def __init__(self, mesh=None, regularization=None, mapper=None, data_mesh_grid=None):
 
-        super().__init__()
+        super().__init__(mesh=mesh, regularization=regularization)
 
         self.mapper = mapper
         self.data_mesh_grid = data_mesh_grid
