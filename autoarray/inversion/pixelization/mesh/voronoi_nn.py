@@ -1,5 +1,5 @@
-from autoarray.inversion.mesh.voronoi import VoronoiMagnification
-from autoarray.inversion.mesh.voronoi import VoronoiBrightnessImage
+from autoarray.inversion.pixelization.mesh.voronoi import VoronoiMagnification
+from autoarray.inversion.pixelization.mesh.voronoi import VoronoiBrightnessImage
 
 
 class VoronoiNNMagnification(VoronoiMagnification):

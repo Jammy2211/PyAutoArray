@@ -51,7 +51,7 @@ def test__rectangular_mapper():
         mask=mask,
     )
 
-    pix = aa.pix.Rectangular(shape=(3, 3))
+    pix = aa.mesh.Rectangular(shape=(3, 3))
 
     mapper = pix.mapper_from(
         source_grid_slim=grid,
@@ -122,7 +122,7 @@ def test__delaunay_mapper():
 
     grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
 
-    pix = aa.pix.DelaunayMagnification(shape=(3, 3))
+    pix = aa.mesh.DelaunayMagnification(shape=(3, 3))
     sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
         grid=grid, unmasked_sparse_shape=pix.shape
     )
@@ -197,7 +197,7 @@ def test__voronoi_mapper():
 
     grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
 
-    pix = aa.pix.VoronoiMagnification(shape=(3, 3))
+    pix = aa.mesh.VoronoiMagnification(shape=(3, 3))
     sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
         grid=grid, unmasked_sparse_shape=pix.shape
     )

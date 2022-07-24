@@ -6,8 +6,10 @@ from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
 from autoarray.fit.fit_imaging import FitImaging
-from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
+from autoarray.inversion.pixelization.mappers.rectangular import (
+    MapperRectangularNoInterp,
+)
+from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.grids.uniform_2d import Grid2D

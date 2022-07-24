@@ -5,9 +5,11 @@ from typing import Dict, Optional, Tuple
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.preloads import Preloads
-from autoarray.inversion.mesh.abstract import AbstractMesh
-from autoarray.inversion.mesh.settings import SettingsPixelization
-from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.pixelization.settings import SettingsPixelization
+from autoarray.inversion.pixelization.mappers.rectangular import (
+    MapperRectangularNoInterp,
+)
 
 from autoarray import exc
 from autoarray.numba_util import profile_func

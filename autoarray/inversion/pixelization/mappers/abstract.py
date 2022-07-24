@@ -11,7 +11,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.numba_util import profile_func
-from autoarray.inversion.mappers import mapper_util
+from autoarray.inversion.pixelization.mappers import mapper_util
 
 
 class AbstractMapper(LinearObj):

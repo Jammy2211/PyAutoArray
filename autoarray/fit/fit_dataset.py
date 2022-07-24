@@ -7,7 +7,7 @@ import warnings
 from autoarray.mask.abstract_mask import Mask
 from autoarray.structures.abstract_structure import Structure
 from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray import type as ty

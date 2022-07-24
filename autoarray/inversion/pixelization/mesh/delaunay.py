@@ -6,9 +6,9 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.preloads import Preloads
-from autoarray.inversion.mesh.abstract import AbstractMesh
-from autoarray.inversion.mesh.settings import SettingsPixelization
-from autoarray.inversion.mappers.delaunay import MapperDelaunay
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.pixelization.settings import SettingsPixelization
+from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 
 from autoarray.numba_util import profile_func
 

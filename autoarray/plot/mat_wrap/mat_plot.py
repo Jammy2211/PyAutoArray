@@ -10,9 +10,11 @@ from autoconf import conf
 
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
-from autoarray.inversion.mappers.delaunay import MapperDelaunay
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
+from autoarray.inversion.pixelization.mappers.rectangular import (
+    MapperRectangularNoInterp,
+)
+from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
+from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 

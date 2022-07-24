@@ -4,7 +4,7 @@ import autoarray as aa
 class TestRectangular:
     def test__sparse_grid_from__returns_none_as_not_used(self, sub_grid_2d_7x7):
 
-        pixelization = aa.pix.Rectangular(shape=(3, 3))
+        pixelization = aa.mesh.Rectangular(shape=(3, 3))
 
         assert (
             pixelization.data_pixelization_grid_from(data_grid_slim=sub_grid_2d_7x7)
@@ -13,7 +13,7 @@ class TestRectangular:
 
     def test__preloads_used_for_relocated_grid(self, sub_grid_2d_7x7):
 
-        pixelization = aa.pix.Rectangular(shape=(3, 3))
+        pixelization = aa.mesh.Rectangular(shape=(3, 3))
 
         relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 

@@ -82,9 +82,7 @@ def test__mesh_grid__attributes():
     )
 
     assert type(mesh) == aa.Mesh2DVoronoi
-    assert (
-        mesh == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])
-    ).all()
+    assert (mesh == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])).all()
     assert (
         mesh.nearest_pixelization_index_for_slim_index == np.array([0, 1, 2, 3])
     ).all()

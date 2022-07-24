@@ -3,7 +3,7 @@ from typing import Tuple
 
 from autoarray import numba_util
 from autoarray import exc
-from autoarray.inversion.mesh import mesh_util
+from autoarray.inversion.pixelization.mesh import mesh_util
 
 
 @numba_util.jit()

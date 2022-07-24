@@ -3,7 +3,7 @@ import numpy as np
 from typing import List
 
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 
 from autoarray import exc
 from autoarray.inversion.inversion import inversion_util

@@ -12,10 +12,10 @@ from typing import List, Union, Optional, Tuple
 from autoarray.plot.wrap import wrap_base as wb
 
 from autoarray.plot.wrap.wrap_base import AbstractMatWrap
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
-from autoarray.inversion.mappers.voronoi import MapperVoronoi
-from autoarray.inversion.mappers.delaunay import MapperDelaunay
-from autoarray.inversion.mesh import mesh_util
+from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
+from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
+from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
+from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular

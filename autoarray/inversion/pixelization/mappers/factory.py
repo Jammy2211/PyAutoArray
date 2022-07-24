@@ -7,10 +7,12 @@ def mapper_from(
     source_grid_slim, source_mesh_grid, data_mesh_grid=None, hyper_data=None
 ):
 
-    from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
-    from autoarray.inversion.mappers.delaunay import MapperDelaunay
-    from autoarray.inversion.mappers.voronoi import MapperVoronoi
-    from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
+    from autoarray.inversion.pixelization.mappers.rectangular import (
+        MapperRectangularNoInterp,
+    )
+    from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
+    from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
+    from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 
     if isinstance(source_mesh_grid, Mesh2DRectangular):
 

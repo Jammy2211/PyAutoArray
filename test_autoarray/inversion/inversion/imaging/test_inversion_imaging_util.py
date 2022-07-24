@@ -186,7 +186,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
     convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-    pixelization = aa.pix.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     for sub_size in range(1, 3):
 
@@ -252,7 +252,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
 
     convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-    pixelization = aa.pix.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     mapper = pixelization.mapper_from(source_grid_slim=mask.masked_grid_sub_1)
 
@@ -293,7 +293,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
 
     convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-    pixelization = aa.pix.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     for sub_size in range(1, 2, 3):
 

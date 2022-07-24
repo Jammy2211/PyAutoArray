@@ -1,4 +1,4 @@
-from autoarray.inversion.mesh.abstract import AbstractMesh
+from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 
 
 class MockPixelization(AbstractMesh):

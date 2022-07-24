@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Optional, Tuple
 
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 
 
 class MockMapper(AbstractMapper):

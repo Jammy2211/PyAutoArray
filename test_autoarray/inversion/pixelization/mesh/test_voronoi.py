@@ -2,10 +2,10 @@ import autoarray as aa
 import numpy as np
 
 
-class TestDelaunayMagnification:
+class TestVoronoiMagnification:
     def test__number_of_pixels_setup_correct(self):
 
-        pixelization = aa.pix.DelaunayMagnification(shape=(3, 3))
+        pixelization = aa.mesh.VoronoiMagnification(shape=(3, 3))
 
         assert pixelization.shape == (3, 3)
 
@@ -13,13 +13,13 @@ class TestDelaunayMagnification:
         self, sub_grid_2d_7x7
     ):
 
-        pixelization = aa.pix.DelaunayMagnification(shape=(3, 3))
+        pixelization = aa.mesh.VoronoiMagnification(shape=(3, 3))
 
         sparse_grid = pixelization.data_pixelization_grid_from(
             data_grid_slim=sub_grid_2d_7x7
         )
 
-        pixelization_grid = aa.Mesh2DDelaunay(
+        pixelization_grid = aa.Mesh2DVoronoi(
             grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
@@ -32,7 +32,7 @@ class TestDelaunayMagnification:
 
     def test__preloads_used_for_relocated_grid(self, sub_grid_2d_7x7):
 
-        pixelization = aa.pix.DelaunayMagnification(shape=(3, 3))
+        pixelization = aa.mesh.VoronoiMagnification(shape=(3, 3))
 
         relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
@@ -50,12 +50,12 @@ class TestDelaunayMagnification:
         assert (mapper.source_grid_slim == relocated_grid).all()
 
 
-class TestDelaunayBrightness:
+class TestVoronoiBrightness:
     def test__weight_map_from(self):
 
         hyper_image = np.array([0.0, 1.0, 0.0])
 
-        pixelization = aa.pix.DelaunayBrightnessImage(
+        pixelization = aa.mesh.VoronoiBrightnessImage(
             pixels=5, weight_floor=0.0, weight_power=0.0
         )
 
@@ -63,7 +63,7 @@ class TestDelaunayBrightness:
 
         assert (weight_map == np.ones(3)).all()
 
-        pixelization = aa.pix.DelaunayBrightnessImage(
+        pixelization = aa.mesh.VoronoiBrightnessImage(
             pixels=5, weight_floor=0.0, weight_power=1.0
         )
 
@@ -71,7 +71,7 @@ class TestDelaunayBrightness:
 
         assert (weight_map == np.array([0.0, 1.0, 0.0])).all()
 
-        pixelization = aa.pix.DelaunayBrightnessImage(
+        pixelization = aa.mesh.VoronoiBrightnessImage(
             pixels=5, weight_floor=1.0, weight_power=1.0
         )
 
@@ -79,7 +79,7 @@ class TestDelaunayBrightness:
 
         assert (weight_map == np.array([1.0, 2.0, 1.0])).all()
 
-        pixelization = aa.pix.DelaunayBrightnessImage(
+        pixelization = aa.mesh.VoronoiBrightnessImage(
             pixels=5, weight_floor=1.0, weight_power=2.0
         )
 
@@ -89,7 +89,7 @@ class TestDelaunayBrightness:
 
         hyper_image = np.array([-1.0, 1.0, 3.0])
 
-        pixelization = aa.pix.DelaunayBrightnessImage(
+        pixelization = aa.mesh.VoronoiBrightnessImage(
             pixels=5, weight_floor=0.0, weight_power=1.0
         )
 
@@ -97,7 +97,7 @@ class TestDelaunayBrightness:
 
         assert (weight_map == np.array([0.0, 0.5, 1.0])).all()
 
-        pixelization = aa.pix.DelaunayBrightnessImage(
+        pixelization = aa.mesh.VoronoiBrightnessImage(
             pixels=5, weight_floor=0.0, weight_power=2.0
         )
 
@@ -105,7 +105,7 @@ class TestDelaunayBrightness:
 
         assert (weight_map == np.array([0.0, 0.25, 1.0])).all()
 
-        pixelization = aa.pix.DelaunayBrightnessImage(
+        pixelization = aa.mesh.VoronoiBrightnessImage(
             pixels=5, weight_floor=1.0, weight_power=1.0
         )
 
@@ -117,7 +117,7 @@ class TestDelaunayBrightness:
         self, sub_grid_2d_7x7
     ):
 
-        pixelization = aa.pix.DelaunayBrightnessImage(
+        pixelization = aa.mesh.VoronoiBrightnessImage(
             pixels=6, weight_floor=0.1, weight_power=2.0
         )
 
@@ -132,7 +132,7 @@ class TestDelaunayBrightness:
             seed=1,
         )
 
-        pixelization_grid = aa.Mesh2DDelaunay(
+        pixelization_grid = aa.Mesh2DVoronoi(
             grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )

@@ -2,7 +2,7 @@ import numpy as np
 
 import autoarray as aa
 
-from autoarray.inversion.mappers.abstract import PixSubWeights
+from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
 
 def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():

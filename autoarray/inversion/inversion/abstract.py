@@ -11,7 +11,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 
@@ -116,9 +116,9 @@ class AbstractInversion:
 
         For example:
 
-        - If the input is `cls=aa.pix.Mesh`, a list containing all pixelizations in the class are returned.
+        - If the input is `cls=aa.mesh.Mesh`, a list containing all pixelizations in the class are returned.
 
-        - If `cls=aa.pix.Mesh` and `cls_filtered=aa.pix.Rectangular`, a list of all pixelizations
+        - If `cls=aa.mesh.Mesh` and `cls_filtered=aa.mesh.Rectangular`, a list of all pixelizations
         excluding those which are `Rectangular` pixelizations will be returned.
 
         Parameters
