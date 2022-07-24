@@ -70,7 +70,7 @@ def test__get_2d__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
     assert get_2d.origin.in_list == [(0.0, 0.0)]
     assert (get_2d.grid == rectangular_mapper_7x7_3x3.source_grid_slim).all()
     assert (
-        get_2d.pixelization_grid == rectangular_mapper_7x7_3x3.source_pixelization_grid
+        get_2d.pixelization_grid == rectangular_mapper_7x7_3x3.source_mesh_grid
     ).all()
     assert (
         get_2d.border == rectangular_mapper_7x7_3x3.source_grid_slim.sub_border_grid

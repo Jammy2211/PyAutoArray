@@ -44,7 +44,7 @@ def test__regularization_matrix__matches_util():
     )
 
     mapper = aa.m.MockMapper(
-        source_pixelization_grid=pixelization_grid, pixel_signals=pixel_signals
+        source_mesh_grid=pixelization_grid, pixel_signals=pixel_signals
     )
 
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)

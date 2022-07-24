@@ -11,9 +11,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
 
     pixelization_grid = aa.Grid2DDelaunay(grid=pixelization_grid)
 
-    mapper = aa.Mapper(
-        source_grid_slim=grid_2d_7x7, source_pixelization_grid=pixelization_grid
-    )
+    mapper = aa.Mapper(source_grid_slim=grid_2d_7x7, source_mesh_grid=pixelization_grid)
 
     simplex_index_for_sub_slim_index = mapper.delaunay.find_simplex(
         mapper.source_grid_slim

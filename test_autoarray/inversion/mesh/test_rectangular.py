@@ -19,7 +19,7 @@ class TestRectangular:
 
         mapper = pixelization.mapper_from(
             source_grid_slim=relocated_grid,
-            source_pixelization_grid=None,
+            source_mesh_grid=None,
             settings=aa.SettingsPixelization(use_border=True),
             preloads=aa.Preloads(relocated_grid=relocated_grid),
         )

@@ -1,13 +1,10 @@
-from autoarray.structures.grids.grid_2d_pixelization import Grid2DRectangular
-from autoarray.structures.grids.grid_2d_pixelization import Grid2DDelaunay
-from autoarray.structures.grids.grid_2d_pixelization import Grid2DVoronoi
+from autoarray.structures.grids.grid_2d_mesh import Grid2DRectangular
+from autoarray.structures.grids.grid_2d_mesh import Grid2DDelaunay
+from autoarray.structures.grids.grid_2d_mesh import Grid2DVoronoi
 
 
 def mapper_from(
-    source_grid_slim,
-    source_pixelization_grid,
-    data_pixelization_grid=None,
-    hyper_data=None,
+    source_grid_slim, source_mesh_grid, data_mesh_grid=None, hyper_data=None
 ):
 
     from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
@@ -15,30 +12,30 @@ def mapper_from(
     from autoarray.inversion.mappers.voronoi import MapperVoronoi
     from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 
-    if isinstance(source_pixelization_grid, Grid2DRectangular):
+    if isinstance(source_mesh_grid, Grid2DRectangular):
 
         return MapperRectangularNoInterp(
             source_grid_slim=source_grid_slim,
-            source_pixelization_grid=source_pixelization_grid,
-            data_pixelization_grid=data_pixelization_grid,
+            source_mesh_grid=source_mesh_grid,
+            data_mesh_grid=data_mesh_grid,
             hyper_image=hyper_data,
         )
-    elif isinstance(source_pixelization_grid, Grid2DDelaunay):
+    elif isinstance(source_mesh_grid, Grid2DDelaunay):
 
         return MapperDelaunay(
             source_grid_slim=source_grid_slim,
-            source_pixelization_grid=source_pixelization_grid,
-            data_pixelization_grid=data_pixelization_grid,
+            source_mesh_grid=source_mesh_grid,
+            data_mesh_grid=data_mesh_grid,
             hyper_image=hyper_data,
         )
-    elif isinstance(source_pixelization_grid, Grid2DVoronoi):
+    elif isinstance(source_mesh_grid, Grid2DVoronoi):
 
-        if source_pixelization_grid.uses_interpolation:
+        if source_mesh_grid.uses_interpolation:
 
             return MapperVoronoi(
                 source_grid_slim=source_grid_slim,
-                source_pixelization_grid=source_pixelization_grid,
-                data_pixelization_grid=data_pixelization_grid,
+                source_mesh_grid=source_mesh_grid,
+                data_mesh_grid=data_mesh_grid,
                 hyper_image=hyper_data,
             )
 
@@ -46,7 +43,7 @@ def mapper_from(
 
             return MapperVoronoiNoInterp(
                 source_grid_slim=source_grid_slim,
-                source_pixelization_grid=source_pixelization_grid,
-                data_pixelization_grid=data_pixelization_grid,
+                source_mesh_grid=source_mesh_grid,
+                data_mesh_grid=data_mesh_grid,
                 hyper_image=hyper_data,
             )

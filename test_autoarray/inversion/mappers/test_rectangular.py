@@ -25,9 +25,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         shape_native=(3, 3), grid=grid
     )
 
-    mapper = aa.Mapper(
-        source_grid_slim=grid, source_pixelization_grid=pixelization_grid
-    )
+    mapper = aa.Mapper(source_grid_slim=grid, source_mesh_grid=pixelization_grid)
 
     pix_indexes_for_sub_slim_index_util = np.array(
         [
@@ -53,7 +51,7 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
 
     mapper = aa.Mapper(
         source_grid_slim=grid_2d_7x7,
-        source_pixelization_grid=pixelization_grid,
+        source_mesh_grid=pixelization_grid,
         hyper_data=image_7x7,
     )
 

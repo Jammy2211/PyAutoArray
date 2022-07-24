@@ -408,7 +408,7 @@ def test__weights():
 
     source_grid_slim = np.array([[0.1, 0.1], [1.0, 1.0]])
 
-    source_pixelization_grid = np.array([[0.0, 0.0], [0.1, 0.0], [0.2, 0.0]])
+    source_mesh_grid = np.array([[0.0, 0.0], [0.1, 0.0], [0.2, 0.0]])
 
     slim_index_for_sub_slim_index = np.array([0, 1])
 
@@ -416,7 +416,7 @@ def test__weights():
 
     pixel_weights = aa.util.mapper.pixel_weights_delaunay_from(
         source_grid_slim=source_grid_slim,
-        source_pixelization_grid=source_pixelization_grid,
+        source_mesh_grid=source_mesh_grid,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
     )
@@ -509,9 +509,7 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
         nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
     )
 
-    mapper = aa.Mapper(
-        source_grid_slim=grid_2d_7x7, source_pixelization_grid=pixelization_grid
-    )
+    mapper = aa.Mapper(source_grid_slim=grid_2d_7x7, source_mesh_grid=pixelization_grid)
 
     assert (mapper.pix_indexes_for_sub_slim_index == sub_to_pix_nearest_neighbour).all()
 

@@ -306,7 +306,7 @@ def delaunay_triangle_area_from(
     the inputs `corner_a` `corner_b` and `corner_c`.
 
     This function actually returns the area of any triangle, but the term `delaunay` is included in the title to
-    separate it from the `rectangular` and `voronoi` methods in `pixelization_util.py`.
+    separate it from the `rectangular` and `voronoi` methods in `mesh_util.py`.
 
     Parameters
     ----------
@@ -346,7 +346,7 @@ def delaunay_interpolated_array_from(
     output to a .fits file.
 
     The `grid_interpolate_slim`, which gives the (y,x) coordinates the values are evaluated at for interpolation,
-    need not be regular and can have undergone coordinate transforms (e.g. it can be the `source_pixelization_grid`)
+    need not be regular and can have undergone coordinate transforms (e.g. it can be the `source_mesh_grid`)
     of a `Mapper`.
 
     The shape of `grid_interpolate_slim` therefore must be equal to `shape_native[0] * shape_native[1]`, but the (y,x)

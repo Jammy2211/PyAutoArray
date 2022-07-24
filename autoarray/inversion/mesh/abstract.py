@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Dict, Optional
 
-from autoarray.inversion.pixelizations.settings import SettingsPixelization
+from autoarray.inversion.mesh.settings import SettingsPixelization
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.preloads import Preloads
@@ -9,7 +9,7 @@ from autoarray.preloads import Preloads
 from autoarray.numba_util import profile_func
 
 
-class AbstractPixelization:
+class AbstractMesh:
     def __init__(self):
         """
         A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
@@ -34,7 +34,7 @@ class AbstractPixelization:
         the `grid_slim` (y,x)  coordinates (association is always performed in the `source` reference frame).
 
         A pixelization therefore has up to four grids associated with it: `data_grid_slim`, `source_grid_slim`,
-        `data_pixelization_grid` and `source_pixelization_grid`.
+        `data_mesh_grid` and `source_mesh_grid`.
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
@@ -48,8 +48,8 @@ class AbstractPixelization:
     def mapper_from(
         self,
         source_grid_slim: Grid2D,
-        source_pixelization_grid: Grid2D = None,
-        data_pixelization_grid: Grid2D = None,
+        source_mesh_grid: Grid2D = None,
+        data_mesh_grid: Grid2D = None,
         hyper_image: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
@@ -100,7 +100,7 @@ class AbstractPixelization:
     def relocated_pixelization_grid_from(
         self,
         source_grid_slim: Grid2D,
-        source_pixelization_grid: Grid2DSparse,
+        source_mesh_grid: Grid2DSparse,
         settings: SettingsPixelization = SettingsPixelization(),
     ):
         raise NotImplementedError
@@ -108,7 +108,7 @@ class AbstractPixelization:
     def pixelization_grid_from(
         self,
         source_grid_slim: Grid2D,
-        source_pixelization_grid: Grid2DSparse,
+        source_mesh_grid: Grid2DSparse,
         sparse_index_for_slim_index: np.ndarray = None,
     ):
         raise NotImplementedError

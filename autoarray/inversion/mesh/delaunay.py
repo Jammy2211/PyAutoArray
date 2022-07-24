@@ -4,24 +4,24 @@ from typing import Dict, Optional
 
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
-from autoarray.structures.grids.grid_2d_pixelization import Grid2DDelaunay
+from autoarray.structures.grids.grid_2d_mesh import Grid2DDelaunay
 from autoarray.preloads import Preloads
-from autoarray.inversion.pixelizations.abstract import AbstractPixelization
-from autoarray.inversion.pixelizations.settings import SettingsPixelization
+from autoarray.inversion.mesh.abstract import AbstractMesh
+from autoarray.inversion.mesh.settings import SettingsPixelization
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
 
 from autoarray.numba_util import profile_func
 
 
-class Delaunay(AbstractPixelization):
+class Delaunay(AbstractMesh):
     def __init__(self):
         """
-        A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
+        A mesh associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
         dataset) with a 2D grid of pixels.
 
-        The Delaunay pixelization represents pixels as an irregular 2D grid of Delaunay triangles.
+        The Delaunay mesh represents pixels as an irregular 2D grid of Delaunay triangles.
 
-        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay pixelization's pixels)
+        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay mesh's pixels)
         have (y,x) coordinates in two reference frames:
 
         - `data`: the original reference frame of the masked data.
@@ -30,7 +30,7 @@ class Delaunay(AbstractPixelization):
         frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
         on them).
 
-        The grid associated with the masked dataset and Delaunay pixelization have the following variable names:
+        The grid associated with the masked dataset and Delaunay mesh have the following variable names:
 
         - `grid_slim`: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
         given the variable name `data_grid_slim` or in the transformed source frame with the variable
@@ -39,12 +39,12 @@ class Delaunay(AbstractPixelization):
         - `pixelization_grid`: the (y,x) grid of Delaunay pixels which are associated with the `grid_slim` (y,x)
         coordinates (association is always performed in the `source` reference frame).
 
-        A Delaunay pixelization has four grids associated with it: `data_grid_slim`, `source_grid_slim`,
-        `data_pixelization_grid` and `source_pixelization_grid`.
+        A Delaunay mesh has four grids associated with it: `data_grid_slim`, `source_grid_slim`,
+        `data_mesh_grid` and `source_mesh_grid`.
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
-        The (y,x) coordinates of the `source_pixelization_grid` represent the corners of the triangles in the
+        The (y,x) coordinates of the `source_mesh_grid` represent the corners of the triangles in the
         Delaunay triangulation.
 
         Each (y,x) coordinate in the `source_grid_slim` is associated with the three nearest Delaunay triangle
@@ -54,7 +54,7 @@ class Delaunay(AbstractPixelization):
         In the project `PyAutoLens`, one's data is a masked 2D image. Its `data_grid_slim` is a 2D grid where every
         (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
         this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
-        The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
+        The mesh is then applied in the source frame.. In lensing terminology, the `data` frame is
         the `image-plane` and `source` frame the `source-plane`.
         """
         super().__init__()
@@ -66,34 +66,34 @@ class Delaunay(AbstractPixelization):
     def mapper_from(
         self,
         source_grid_slim: Grid2D,
-        source_pixelization_grid: Grid2DSparse = None,
-        data_pixelization_grid: Grid2DSparse = None,
+        source_mesh_grid: Grid2DSparse = None,
+        data_mesh_grid: Grid2DSparse = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
+        Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a mesh,
         in both the `data` and `source` frames.
 
         This function returns a `MapperDelaunay` as follows:
 
         1) Before this routine is called, a sparse grid of (y,x) coordinates are computed from the 2D masked data,
-        the `data_pixelization_grid`, which acts as the Delaunay pixel centres of the pixelization and mapper.
+        the `data_mesh_grid`, which acts as the Delaunay pixel centres of the mesh and mapper.
 
-        2) Before this routine is called, operations are performed on this `data_pixelization_grid` that transform it
+        2) Before this routine is called, operations are performed on this `data_mesh_grid` that transform it
         from a 2D grid which overlaps with the 2D mask of the data in the `data` frame to an irregular grid in
-        the `source` frame, the `source_pixelization_grid`.
+        the `source` frame, the `source_mesh_grid`.
 
         3) If `settings.use_border=True`, the border of the input `source_grid_slim` is used to relocate all of the
         grid's (y,x) coordinates beyond the border to the edge of the border.
 
         4) If `settings.use_border=True`, the border of the input `source_grid_slim` is used to relocate all of the
-        transformed `source_pixelization_grid`'s (y,x) coordinates beyond the border to the edge of the border.
+        transformed `source_mesh_grid`'s (y,x) coordinates beyond the border to the edge of the border.
 
-        5) Use the transformed `source_pixelization_grid`'s (y,x) coordinates as the centres of the Delaunay
-        pixelization.
+        5) Use the transformed `source_mesh_grid`'s (y,x) coordinates as the centres of the Delaunay
+        mesh.
 
         6) Return the `MapperDelaunay`.
 
@@ -102,19 +102,19 @@ class Delaunay(AbstractPixelization):
         source_grid_slim
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
-        source_pixelization_grid
+        source_mesh_grid
             The centres of every Delaunay pixel in the `source` frame, which are initially derived by computing a sparse
             set of (y,x) coordinates computed from the unmasked data in the `data` frame and applying a transformation
             to this.
-        data_pixelization_grid
+        data_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
-            transformation applied to it to create the `source_pixelization_grid`.
+            transformation applied to it to create the `source_mesh_grid`.
         hyper_image
-            Not used for a rectangular pixelization.
+            Not used for a rectangular mesh.
         settings
-            Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
+            Settings controlling the mesh for example if a border is used to relocate its exterior coordinates.
         preloads
-            Object which may contain preloaded arrays of quantities computed in the pixelization, which are passed via
+            Object which may contain preloaded arrays of quantities computed in the mesh, which are passed via
             this object speed up the calculation.
         profiling_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
@@ -127,7 +127,7 @@ class Delaunay(AbstractPixelization):
         )
         relocated_pixelization_grid = self.relocate_pixelization_grid_via_border(
             source_grid_slim=source_grid_slim,
-            source_pixelization_grid=source_pixelization_grid,
+            source_mesh_grid=source_mesh_grid,
             settings=settings,
         )
 
@@ -135,14 +135,14 @@ class Delaunay(AbstractPixelization):
 
             pixelization_grid = self.make_pixelization_grid(
                 source_grid_slim=relocated_grid,
-                source_pixelization_grid=relocated_pixelization_grid,
-                sparse_index_for_slim_index=source_pixelization_grid.sparse_index_for_slim_index,
+                source_mesh_grid=relocated_pixelization_grid,
+                sparse_index_for_slim_index=source_mesh_grid.sparse_index_for_slim_index,
             )
 
             return MapperDelaunay(
                 source_grid_slim=relocated_grid,
-                source_pixelization_grid=pixelization_grid,
-                data_pixelization_grid=data_pixelization_grid,
+                source_mesh_grid=pixelization_grid,
+                data_mesh_grid=data_mesh_grid,
                 hyper_image=hyper_image,
                 profiling_dict=profiling_dict,
             )
@@ -154,11 +154,11 @@ class Delaunay(AbstractPixelization):
     def relocate_pixelization_grid_via_border(
         self,
         source_grid_slim: Grid2D,
-        source_pixelization_grid: Grid2DSparse,
+        source_mesh_grid: Grid2DSparse,
         settings: SettingsPixelization = SettingsPixelization(),
     ):
         """
-        Relocates all coordinates of the input `source_pixelization_grid` that are outside of a border (which
+        Relocates all coordinates of the input `source_mesh_grid` that are outside of a border (which
         is defined by a grid of (y,x) coordinates) to the edge of this border.
 
         The border is determined from the mask of the 2D data in the `data` frame before any transformations of the
@@ -177,36 +177,36 @@ class Delaunay(AbstractPixelization):
         source_grid_slim
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
-        source_pixelization_grid
+        source_mesh_grid
             The (y,x) coordinates of the corner of every Delaunay pixel in the `source` frame, which are initially 
             derived by computing a sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame 
             and applying a transformation to this.
         settings
-            Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
+            Settings controlling the mesh for example if a border is used to relocate its exterior coordinates.
         """
         if settings.use_border:
             return source_grid_slim.relocated_pixelization_grid_from(
-                pixelization_grid=source_pixelization_grid
+                pixelization_grid=source_mesh_grid
             )
-        return source_pixelization_grid
+        return source_mesh_grid
 
     @profile_func
     def make_pixelization_grid(
         self,
         source_grid_slim=None,
-        source_pixelization_grid=None,
+        source_mesh_grid=None,
         sparse_index_for_slim_index=None,
     ):
         """
-        Return the Delaunay `source_pixelization_grid` as a `Grid2DDelaunay` object, which provides additional
-        functionality for performing operations that exploit the geometry of a Delaunay pixelization.
+        Return the Delaunay `source_mesh_grid` as a `Grid2DDelaunay` object, which provides additional
+        functionality for performing operations that exploit the geometry of a Delaunay mesh.
 
         Parameters
         ----------
         source_grid_slim
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
-        source_pixelization_grid
+        source_mesh_grid
             The centres of every Delaunay pixel in the `source` frame, which are initially derived by computing a sparse
             set of (y,x) coordinates computed from the unmasked data in the `data` frame and applying a transformation
             to this.
@@ -215,7 +215,7 @@ class Delaunay(AbstractPixelization):
         """
 
         return Grid2DDelaunay(
-            grid=source_pixelization_grid, uses_interpolation=self.uses_interpolation
+            grid=source_mesh_grid, uses_interpolation=self.uses_interpolation
         )
 
 
@@ -245,7 +245,7 @@ class DelaunayMagnification(Delaunay):
         coordinates (association is always performed in the `source` reference frame).
 
         A Delaunay pixelization has four grids associated with it: `data_grid_slim`, `source_grid_slim`,
-        `data_pixelization_grid` and `source_pixelization_grid`.
+        `data_mesh_grid` and `source_mesh_grid`.
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
@@ -291,11 +291,11 @@ class DelaunayMagnification(Delaunay):
 
         Parameters
         ----------
-        data_pixelization_grid
+        data_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
-            transformation applied to it to create the `source_pixelization_grid`.
+            transformation applied to it to create the `source_mesh_grid`.
         hyper_image
-            An image which is used to determine the `data_pixelization_grid` and therefore adapt the distribution of
+            An image which is used to determine the `data_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
@@ -331,7 +331,7 @@ class DelaunayBrightnessImage(Delaunay):
         coordinates (association is always performed in the `source` reference frame).
 
         A Delaunay pixelization has four grids associated with it: `data_grid_slim`, `source_grid_slim`,
-        `data_pixelization_grid` and `source_pixelization_grid`.
+        `data_mesh_grid` and `source_mesh_grid`.
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
@@ -402,7 +402,7 @@ class DelaunayBrightnessImage(Delaunay):
         Computes the `pixelization_grid` in the `data` frame, by overlaying a uniform grid of coordinates over the
         masked 2D data (see `Grid2DSparse.from_grid_and_unmasked_2d_grid_shape()`).
 
-        The `data_pixelizaiton_grid` is transformed to the `source_pixelization_grid`, and it is these (y,x) values
+        The `data_pixelizaiton_grid` is transformed to the `source_mesh_grid`, and it is these (y,x) values
         which then act the centres of the Delaunay pixelization's pixels.
 
         For a `DelaunayBrightnessImage` this grid is computed by applying a KMeans clustering algorithm to the masked
@@ -411,11 +411,11 @@ class DelaunayBrightnessImage(Delaunay):
 
         Parameters
         ----------
-        data_pixelization_grid
+        data_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
-            transformation applied to it to create the `source_pixelization_grid`.
+            transformation applied to it to create the `source_mesh_grid`.
         hyper_image
-            An image which is used to determine the `data_pixelization_grid` and therefore adapt the distribution of
+            An image which is used to determine the `data_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.

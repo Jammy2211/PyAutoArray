@@ -3,17 +3,17 @@ from typing import Dict, Optional, Tuple
 
 
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.grid_2d_pixelization import Grid2DRectangular
+from autoarray.structures.grids.grid_2d_mesh import Grid2DRectangular
 from autoarray.preloads import Preloads
-from autoarray.inversion.pixelizations.abstract import AbstractPixelization
-from autoarray.inversion.pixelizations.settings import SettingsPixelization
+from autoarray.inversion.mesh.abstract import AbstractMesh
+from autoarray.inversion.mesh.settings import SettingsPixelization
 from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
 
 from autoarray import exc
 from autoarray.numba_util import profile_func
 
 
-class Rectangular(AbstractPixelization):
+class Rectangular(AbstractMesh):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
         A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
@@ -40,13 +40,13 @@ class Rectangular(AbstractPixelization):
         coordinates (association is always performed in the `source` reference frame).
 
         A rectangular pixelization has three grids associated with it: `data_grid_slim`, `source_grid_slim`,
-        and `source_pixelization_grid`. It does not have a `data_pixelization_grid because a rectangular pixelization
+        and `source_mesh_grid`. It does not have a `data_mesh_grid because a rectangular pixelization
         is constructed by overlaying a grid of rectangular over the `source_grid_slim` (it is therefore entirely
         constructed in the `source` frame).
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
-        The (y,x) coordinates of the `source_pixelization_grid` represent the centres of each rectangular pixel.
+        The (y,x) coordinates of the `source_mesh_grid` represent the centres of each rectangular pixel.
 
         Each (y,x) coordinate in the `source_grid_slim` is associated with the rectangular pixelization pixel it falls
         within. No interpolation is performed when making these associations.
@@ -67,7 +67,7 @@ class Rectangular(AbstractPixelization):
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
-            raise exc.PixelizationException(
+            raise exc.MeshException(
                 "The rectangular pixelization must be at least dimensions 3x3"
             )
 
@@ -84,8 +84,8 @@ class Rectangular(AbstractPixelization):
     def mapper_from(
         self,
         source_grid_slim: Grid2D,
-        source_pixelization_grid: Grid2D = None,
-        data_pixelization_grid: Grid2D = None,
+        source_mesh_grid: Grid2D = None,
+        data_mesh_grid: Grid2D = None,
         hyper_image: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
@@ -111,10 +111,10 @@ class Rectangular(AbstractPixelization):
         source_grid_slim
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
-        source_pixelization_grid
+        source_mesh_grid
             Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
             by overlaying the `source_grid_slim` with the rectangular pixelization.
-        data_pixelization_grid
+        data_mesh_grid
             Not used for a rectangular pixelization.
         hyper_image
             Not used for a rectangular pixelization.
@@ -136,7 +136,7 @@ class Rectangular(AbstractPixelization):
 
         return MapperRectangularNoInterp(
             source_grid_slim=relocated_grid,
-            source_pixelization_grid=pixelization_grid,
+            source_mesh_grid=pixelization_grid,
             hyper_image=hyper_image,
             profiling_dict=profiling_dict,
         )
@@ -145,11 +145,11 @@ class Rectangular(AbstractPixelization):
     def pixelization_grid_from(
         self,
         source_grid_slim: Optional[Grid2D] = None,
-        source_pixelization_grid: Optional[Grid2D] = None,
+        source_mesh_grid: Optional[Grid2D] = None,
         sparse_index_for_slim_index: Optional[np.ndarray] = None,
     ) -> Grid2DRectangular:
         """
-        Return the rectangular `source_pixelization_grid` as a `Grid2DRectangular` object, which provides additional
+        Return the rectangular `source_mesh_grid` as a `Grid2DRectangular` object, which provides additional
         functionality for perform operatons that exploit the geometry of a rectangular pixelization.
 
         Parameters
@@ -157,7 +157,7 @@ class Rectangular(AbstractPixelization):
         source_grid_slim
             The (y,x) grid of coordinates over which the rectangular pixelization is overlaid, where this grid may have
             had exterior pixels relocated to its edge via the border.
-        source_pixelization_grid
+        source_mesh_grid
             Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
             by overlaying the `source_grid_slim` with the rectangular pixelization.
         sparse_index_for_slim_index

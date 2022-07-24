@@ -58,7 +58,9 @@ class AbstractLinearObjFuncList(LinearObj):
         neighbors[0, 1] = -1
         neighbors[-1, 1] = -1
 
-        return Neighbors(arr=neighbors.astype("int"), sizes=neighbors_sizes.astype("int"))
+        return Neighbors(
+            arr=neighbors.astype("int"), sizes=neighbors_sizes.astype("int")
+        )
 
     @cached_property
     @profile_func

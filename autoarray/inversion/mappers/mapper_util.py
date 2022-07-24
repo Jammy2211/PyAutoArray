@@ -3,7 +3,7 @@ from typing import Tuple
 
 from autoarray import numba_util
 from autoarray import exc
-from autoarray.inversion.pixelizations import pixelization_util
+from autoarray.inversion.mesh import mesh_util
 
 
 @numba_util.jit()
@@ -181,7 +181,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 @numba_util.jit()
 def pix_indexes_for_sub_slim_index_voronoi_from(
     grid: np.ndarray,
-    nearest_pix_index_for_slim_index: np.ndarray,
+    nearest_pixelization_index_for_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
     pixelization_grid: np.ndarray,
     neighbors: np.ndarray,
@@ -201,7 +201,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pix_index_for_slim_index
+    nearest_pixelization_index_for_slim_index
         A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
@@ -219,7 +219,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
 
     for sub_slim_index in range(grid.shape[0]):
 
-        nearest_pix_index = nearest_pix_index_for_slim_index[
+        nearest_pix_index = nearest_pixelization_index_for_slim_index[
             slim_index_for_sub_slim_index[sub_slim_index]
         ]
 
@@ -228,7 +228,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         while True:
 
             if whiletime > 1000000:
-                raise exc.PixelizationException
+                raise exc.MeshException
 
             nearest_pix_center = pixelization_grid[nearest_pix_index]
 
@@ -272,7 +272,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
 @numba_util.jit()
 def pixel_weights_delaunay_from(
     source_grid_slim,
-    source_pixelization_grid,
+    source_mesh_grid,
     slim_index_for_sub_slim_index: np.ndarray,
     pix_indexes_for_sub_slim_index,
 ) -> np.ndarray:
@@ -288,7 +288,7 @@ def pixel_weights_delaunay_from(
     source_grid_slim
         A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
         `source` reference frame.
-    source_pixelization_grid
+    source_mesh_grid
         The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
     slim_index_for_sub_slim_index
         The mappings between the data's sub slimmed indexes and the slimmed indexes on the non sub-sized indexes.
@@ -304,21 +304,21 @@ def pixel_weights_delaunay_from(
 
         if pix_indexes[1] != -1:
 
-            vertices_of_the_simplex = source_pixelization_grid[pix_indexes]
+            vertices_of_the_simplex = source_mesh_grid[pix_indexes]
 
             sub_gird_coordinate_on_source_place = source_grid_slim[sub_slim_index]
 
-            area_0 = pixelization_util.delaunay_triangle_area_from(
+            area_0 = mesh_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[1],
                 corner_1=vertices_of_the_simplex[2],
                 corner_2=sub_gird_coordinate_on_source_place,
             )
-            area_1 = pixelization_util.delaunay_triangle_area_from(
+            area_1 = mesh_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[0],
                 corner_1=vertices_of_the_simplex[2],
                 corner_2=sub_gird_coordinate_on_source_place,
             )
-            area_2 = pixelization_util.delaunay_triangle_area_from(
+            area_2 = mesh_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[0],
                 corner_1=vertices_of_the_simplex[1],
                 corner_2=sub_gird_coordinate_on_source_place,
@@ -353,7 +353,7 @@ def pix_size_weights_voronoi_nn_from(
     grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pix_index_for_slim_index
+    nearest_pixelization_index_for_slim_index
         A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.

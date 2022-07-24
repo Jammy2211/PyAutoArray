@@ -14,12 +14,12 @@ from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
 from autoarray.structures.grids import grid_2d_util
-from autoarray.inversion.pixelizations import pixelization_util
+from autoarray.inversion.mesh import mesh_util
 
 from autoarray import type as ty
 
 
-class AbstractGrid2DPixelization(Structure):
+class AbstractGrid2DMesh(Structure):
     @property
     def extent(self) -> np.ndarray:
         raise NotImplementedError
@@ -76,7 +76,7 @@ class AbstractGrid2DPixelization(Structure):
         return Grid2D.manual_extent(extent=extent, shape_native=shape_native)
 
 
-class Grid2DRectangular(AbstractGrid2DPixelization):
+class Grid2DRectangular(AbstractGrid2DMesh):
     def __new__(
         cls,
         grid: np.ndarray,
@@ -186,9 +186,9 @@ class Grid2DRectangular(AbstractGrid2DPixelization):
         `Neighbors` for a complete description of the neighboring scheme).
 
         The neighbors of a rectangular pixelization are computed by exploiting the uniform and symmetric nature of the
-        rectangular grid, as described in the method `pixelization_util.rectangular_neighbors_from`.
+        rectangular grid, as described in the method `mesh_util.rectangular_neighbors_from`.
         """
-        neighbors, sizes = pixelization_util.rectangular_neighbors_from(
+        neighbors, sizes = mesh_util.rectangular_neighbors_from(
             shape_native=self.shape_native
         )
 
@@ -296,7 +296,7 @@ class Grid2DRectangular(AbstractGrid2DPixelization):
         )
 
 
-class AbstractGrid2DMeshTriangulation(AbstractGrid2DPixelization):
+class AbstractGrid2DMeshTriangulation(AbstractGrid2DMesh):
     def __new__(
         cls,
         grid: Union[np.ndarray, List],
@@ -372,12 +372,12 @@ class AbstractGrid2DMeshTriangulation(AbstractGrid2DPixelization):
 
         There are numerous exceptions that `scipy.spatial.Voronoi` may raise when the input grid of coordinates used
         to compute the Voronoi mesh are ill posed. These exceptions are caught and combined into a single
-        `PixelizationException`, which helps exception handling in the `inversion` package.
+        `MeshException`, which helps exception handling in the `inversion` package.
         """
         try:
             return scipy.spatial.Delaunay(np.asarray([self[:, 0], self[:, 1]]).T)
         except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
-            raise exc.PixelizationException() from e
+            raise exc.MeshException() from e
 
     @cached_property
     def voronoi(self) -> scipy.spatial.Voronoi:
@@ -390,14 +390,14 @@ class AbstractGrid2DMeshTriangulation(AbstractGrid2DPixelization):
 
         There are numerous exceptions that `scipy.spatial.Delaunay` may raise when the input grid of coordinates used
         to compute the Delaunay triangulation are ill posed. These exceptions are caught and combined into a single
-        `PixelizationException`, which helps exception handling in the `inversion` package.
+        `MeshException`, which helps exception handling in the `inversion` package.
         """
         try:
             return scipy.spatial.Voronoi(
                 np.asarray([self[:, 1], self[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
             )
         except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
-            raise exc.PixelizationException() from e
+            raise exc.MeshException() from e
 
     @cached_property
     def split_cross(self) -> np.ndarray:
@@ -544,9 +544,9 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
         see `Neighbors` for a complete description of the neighboring scheme.
 
         The neighbors of a Voronoi pixelization are computed using the `ridge_points` attribute of the scipy `Voronoi`
-        object, as described in the method `pixelization_util.voronoi_neighbors_from`.
+        object, as described in the method `mesh_util.voronoi_neighbors_from`.
         """
-        neighbors, sizes = pixelization_util.voronoi_neighbors_from(
+        neighbors, sizes = mesh_util.voronoi_neighbors_from(
             pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
         )
 
@@ -596,7 +596,7 @@ class Grid2DVoronoi(AbstractGrid2DMeshTriangulation):
 
         if use_nn:
 
-            interpolated_array = pixelization_util.voronoi_nn_interpolated_array_from(
+            interpolated_array = mesh_util.voronoi_nn_interpolated_array_from(
                 shape_native=shape_native,
                 interpolation_grid_slim=interpolation_grid.slim,
                 pixel_values=values,
@@ -628,7 +628,7 @@ class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
         see `Neighbors` for a complete description of the neighboring scheme.
 
         The neighbors of a Voronoi pixelization are computed using the `ridge_points` attribute of the scipy `Voronoi`
-        object, as described in the method `pixelization_util.voronoi_neighbors_from`.
+        object, as described in the method `mesh_util.voronoi_neighbors_from`.
         """
         indptr, indices = self.delaunay.vertex_neighbor_vertices
 
@@ -680,7 +680,7 @@ class Grid2DDelaunay(AbstractGrid2DMeshTriangulation):
             shape_native=shape_native, extent=extent
         )
 
-        interpolated_array = pixelization_util.delaunay_interpolated_array_from(
+        interpolated_array = mesh_util.delaunay_interpolated_array_from(
             shape_native=shape_native,
             interpolation_grid_slim=interpolation_grid.slim,
             delaunay=self.delaunay,

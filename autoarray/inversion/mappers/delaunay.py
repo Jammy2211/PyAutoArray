@@ -16,26 +16,26 @@ class MapperDelaunay(AbstractMapper):
     def __init__(
         self,
         source_grid_slim: Grid2D,
-        source_pixelization_grid,
-        data_pixelization_grid: Grid2D = None,
+        source_mesh_grid,
+        data_mesh_grid: Grid2D = None,
         hyper_image: Array2D = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        To understand a `Mapper` one must be familiar `Pixelization` objects and the `pixelization` package, where
-        the following four grids are explained: `data_grid_slim`, `source_grid_slim`, `data_pixelization_grid` and
-        `source_pixelization_grid`. If you are not familiar with these grids, read the docstrings of the
+        To understand a `Mapper` one must be familiar `Mesh` objects and the `pixelization` package, where
+        the following four grids are explained: `data_grid_slim`, `source_grid_slim`, `data_mesh_grid` and
+        `source_mesh_grid`. If you are not familiar with these grids, read the docstrings of the
         `pixelization` package first.
 
         A `Mapper` determines the mappings between the masked data grid's pixels (`data_grid_slim` and
-        `source_grid_slim`) and the pxelization's pixels (`data_pixelization_grid` and `source_pixelization_grid`).
+        `source_grid_slim`) and the pxelization's pixels (`data_mesh_grid` and `source_mesh_grid`).
 
         The 1D Indexing of each grid is identical in the `data` and `source` frames (e.g. the transformation does not
         change the indexing, such that `source_grid_slim[0]` corresponds to the transformed value
         of `data_grid_slim[0]` and so on).
 
         A mapper therefore only needs to determine the index mappings between the `grid_slim` and `pixelization_grid`,
-        noting that associations are made by pairing `source_pixelization_grid` with `source_grid_slim`.
+        noting that associations are made by pairing `source_mesh_grid` with `source_grid_slim`.
 
         Mappings are represented in the 2D ndarray `pix_indexes_for_sub_slim_index`, whereby the index of
         a pixel on the `pixelization_grid` maps to the index of a pixel on the `grid_slim` as follows:
@@ -55,35 +55,35 @@ class MapperDelaunay(AbstractMapper):
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
         unmasked data pixel annd the pixels of a pixelization. This matrix is the basis of performing an `Inversion`,
-        which reconstructs the data using the `source_pixelization_grid`.
+        which reconstructs the data using the `source_mesh_grid`.
 
         Parameters
         ----------
         source_grid_slim
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
-        source_pixelization_grid
+        source_mesh_grid
             The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
-        data_pixelization_grid
+        data_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
-            transformation applied to it to create the `source_pixelization_grid`.
+            transformation applied to it to create the `source_mesh_grid`.
         hyper_image
-            An image which is used to determine the `data_pixelization_grid` and therefore adapt the distribution of
+            An image which is used to determine the `data_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
         profiling_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
         super().__init__(
             source_grid_slim=source_grid_slim,
-            source_pixelization_grid=source_pixelization_grid,
-            data_pixelization_grid=data_pixelization_grid,
+            source_mesh_grid=source_mesh_grid,
+            data_mesh_grid=data_mesh_grid,
             hyper_image=hyper_image,
             profiling_dict=profiling_dict,
         )
 
     @property
     def delaunay(self):
-        return self.source_pixelization_grid.delaunay
+        return self.source_mesh_grid.delaunay
 
     @cached_property
     @profile_func
@@ -147,7 +147,7 @@ class MapperDelaunay(AbstractMapper):
 
         weights = mapper_util.pixel_weights_delaunay_from(
             source_grid_slim=self.source_grid_slim,
-            source_pixelization_grid=self.source_pixelization_grid,
+            source_mesh_grid=self.source_mesh_grid,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=mappings,
         )
@@ -160,7 +160,7 @@ class MapperDelaunay(AbstractMapper):
         delaunay = self.delaunay
 
         splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
-            self.source_pixelization_grid.split_cross
+            self.source_mesh_grid.split_cross
         )
         pix_indexes_for_simplex_index = delaunay.simplices
 
@@ -168,16 +168,16 @@ class MapperDelaunay(AbstractMapper):
             splitted_mappings,
             splitted_sizes,
         ) = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
-            source_grid_slim=self.source_pixelization_grid.split_cross,
+            source_grid_slim=self.source_mesh_grid.split_cross,
             simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
             pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
             delaunay_points=delaunay.points,
         )
 
         splitted_weights = mapper_util.pixel_weights_delaunay_from(
-            source_grid_slim=self.source_pixelization_grid.split_cross,
-            source_pixelization_grid=self.source_pixelization_grid,
-            slim_index_for_sub_slim_index=self.source_pixelization_grid.split_cross,
+            source_grid_slim=self.source_mesh_grid.split_cross,
+            source_mesh_grid=self.source_mesh_grid,
+            slim_index_for_sub_slim_index=self.source_mesh_grid.split_cross,
             pix_indexes_for_sub_slim_index=splitted_mappings.astype("int"),
         )
 

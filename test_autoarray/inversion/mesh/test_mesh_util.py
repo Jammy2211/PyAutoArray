@@ -11,7 +11,7 @@ def test__rectangular_neighbors_from():
     # I3I4I5I
     # I6I7I8I
 
-    (neighbors, neighbors_sizes) = aa.util.pixelization.rectangular_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.mesh.rectangular_neighbors_from(
         shape_native=(3, 3)
     )
 
@@ -31,7 +31,7 @@ def test__rectangular_neighbors_from():
     # I4I5I 6I 7I
     # I8I9I10I11I
 
-    (neighbors, neighbors_sizes) = aa.util.pixelization.rectangular_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.mesh.rectangular_neighbors_from(
         shape_native=(3, 4)
     )
 
@@ -55,7 +55,7 @@ def test__rectangular_neighbors_from():
     # I6I 7I 8I
     # I9I10I11I
 
-    (neighbors, neighbors_sizes) = aa.util.pixelization.rectangular_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.mesh.rectangular_neighbors_from(
         shape_native=(4, 3)
     )
 
@@ -79,7 +79,7 @@ def test__rectangular_neighbors_from():
     # I8 I 9I10I11I
     # I12I13I14I15I
 
-    (neighbors, neighbors_sizes) = aa.util.pixelization.rectangular_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.mesh.rectangular_neighbors_from(
         shape_native=(4, 4)
     )
 
@@ -110,7 +110,7 @@ def test__voronoi_neighbors_from():
     points = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
 
     voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-    (neighbors, neighbors_sizes) = aa.util.pixelization.voronoi_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.mesh.voronoi_neighbors_from(
         pixels=5, ridge_points=np.array(voronoi.ridge_points)
     )
 
@@ -139,7 +139,7 @@ def test__voronoi_neighbors_from():
     )
 
     voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-    (neighbors, neighbors_sizes) = aa.util.pixelization.voronoi_neighbors_from(
+    (neighbors, neighbors_sizes) = aa.util.mesh.voronoi_neighbors_from(
         pixels=9, ridge_points=np.array(voronoi.ridge_points)
     )
 
@@ -172,7 +172,7 @@ def test__delaunay_interpolated_grid_from():
 
     values = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
 
-    interpolated_grid = aa.util.pixelization.delaunay_interpolated_array_from(
+    interpolated_grid = aa.util.mesh.delaunay_interpolated_array_from(
         shape_native=shape_native,
         interpolation_grid_slim=grid_interpolate_slim,
         pixel_values=values,

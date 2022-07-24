@@ -15,7 +15,7 @@ from autoarray.plot.wrap.wrap_base import AbstractMatWrap
 from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.mappers.delaunay import MapperDelaunay
-from autoarray.inversion.pixelizations import pixelization_util
+from autoarray.inversion.mesh import mesh_util
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
@@ -74,7 +74,7 @@ class GridScatter(AbstractMatWrap2D):
     - `BorderScatter: plots a border over an image, using the `Mask2d` object's (y,x) `border_grid_sub_1` property.
     - `PositionsScatter`: plots the (y,x) coordinates that are input in a plotter via the `positions` input.
     - `IndexScatter`: plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
-    - `PixelizationGridScatter`: plots the grid of a `Pixelization` object (see `autoarray.inversion`).
+    - `PixelizationGridScatter`: plots the grid of a `Mesh` object (see `autoarray.inversion`).
 
     Parameters
     ----------
@@ -538,9 +538,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         colorbar
             The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
         """
-        regions, vertices = pixelization_util.voronoi_revised_from(
-            voronoi=mapper.voronoi
-        )
+        regions, vertices = mesh_util.voronoi_revised_from(voronoi=mapper.voronoi)
 
         if pixel_values is not None:
 
@@ -582,13 +580,13 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
     Given a `Mapper` and a corresponding array of `pixel_values` (e.g. the reconstruction values of a Delaunay
     triangulation) plot the values using `plt.imshow()`.
 
-    The `pixel_values` are an ndarray of values which correspond to the irregular pixels of the pixelization (e.g. for
+    The `pixel_values` are an ndarray of values which correspond to the irregular pixels of the mesh (e.g. for
     a Delaunay triangulation they are the connecting corners of each triangle or Voronoi mesh). This cannot be plotted
     with `imshow()`, therefore this class first converts the `pixel_values` from this irregular grid to a uniform 2D
     array of square pixels via interpolation.
 
     The interpolation routine depends on the `Mapper`, with most mappers having their own built-in interpolation
-    routine specific to that pixelization.
+    routine specific to that pixelization's mesh.
 
     This object wraps methods described in below:
 
@@ -608,13 +606,13 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         Given a `Mapper` and a corresponding array of `pixel_values` (e.g. the reconstruction values of a Delaunay
         triangulation) plot the values using `plt.imshow()`.
 
-        The `pixel_values` are an ndarray of values which correspond to the irregular pixels of the pixelization (e.g. for
+        The `pixel_values` are an ndarray of values which correspond to the irregular pixels of the mesh (e.g. for
         a Delaunay triangulation they are the connecting corners of each triangle or Voronoi mesh). This cannot be plotted
         with `imshow()`, therefore this class first converts the `pixel_values` from this irregular grid to a uniform 2D
         array of square pixels via interpolation.
 
         The interpolation routine depends on the `Mapper`, with most mappers having their own built-in interpolation
-        routine specific to that pixelization.
+        routine specific to that pixelization's mesh.
 
         This object wraps methods described in below:
 
@@ -623,15 +621,15 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         Parameters
         ----------
         mapper
-            An object which contains a 2D grid of pixelization pixels (e.g. Voronoi mesh cells) and defines how to
-            interpolate values from the pixelization.
+            An object which contains a 2D mesh (e.g. Voronoi mesh cells) and defines how to
+            interpolate values from the pixelization's mesh.
         pixel_values
-            The pixel values of the pixelization (e.g. a Voronoi mesh) which are interpolated to a uniform square
+            The pixel values of the pixelization's mesh (e.g. a Voronoi mesh) which are interpolated to a uniform square
             array for plotting with `imshow()`.
         cmap
-            The colormap used by `imshow()` to plot the pixelization values.
+            The colormap used by `imshow()` to plot the pixelization's mesh values.
         colorbar
-            The `Colorbar` object in `mat_base` used to set the colorbar of the figure the interpolated pixelization
+            The `Colorbar` object in `mat_base` used to set the colorbar of the figure the interpolated pixelization's mesh
             values (e.g. values interpolated from the Voronoi mesh) are plotted on.
         colorbar_tickparams
             Controls the tick parameters of the colorbar.
@@ -661,7 +659,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         plt.imshow(
             X=interpolation_array.native,
             cmap=cmap,
-            extent=mapper.source_pixelization_grid.extent_square,
+            extent=mapper.source_mesh_grid.extent_square,
             aspect=aspect,
         )
 
@@ -718,7 +716,7 @@ class IndexScatter(GridScatter):
 
 class PixelizationGridScatter(GridScatter):
     """
-    Plots the grid of a `Pixelization` object (see `autoarray.inversion`).
+    Plots the grid of a `Mesh` object (see `autoarray.inversion`).
 
     See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """

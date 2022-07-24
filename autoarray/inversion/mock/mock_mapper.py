@@ -8,7 +8,7 @@ class MockMapper(AbstractMapper):
     def __init__(
         self,
         source_grid_slim=None,
-        source_pixelization_grid=None,
+        source_mesh_grid=None,
         hyper_image=None,
         pix_sub_weights=None,
         mapping_matrix=None,
@@ -19,7 +19,7 @@ class MockMapper(AbstractMapper):
 
         super().__init__(
             source_grid_slim=source_grid_slim,
-            source_pixelization_grid=source_pixelization_grid,
+            source_mesh_grid=source_mesh_grid,
             hyper_image=hyper_image,
         )
 

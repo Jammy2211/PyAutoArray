@@ -116,9 +116,9 @@ class AbstractInversion:
 
         For example:
 
-        - If the input is `cls=aa.pix.Pixelization`, a list containing all pixelizations in the class are returned.
+        - If the input is `cls=aa.pix.Mesh`, a list containing all pixelizations in the class are returned.
 
-        - If `cls=aa.pix.Pixelization` and `cls_filtered=aa.pix.Rectangular`, a list of all pixelizations
+        - If `cls=aa.pix.Mesh` and `cls_filtered=aa.pix.Rectangular`, a list of all pixelizations
         excluding those which are `Rectangular` pixelizations will be returned.
 
         Parameters
@@ -598,7 +598,7 @@ class AbstractInversion:
 
         This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
         The routine that performs the interpolation is specific to each pixelization and contained in its
-        corresponding `Mapper` and `Grid2DPixelization` objects, which are called by this function.
+        corresponding `Mapper` and `Grid2DMesh` objects, which are called by this function.
 
         The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
         can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
@@ -702,7 +702,7 @@ class AbstractInversion:
             brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
 
             centre = Grid2DIrregular(
-                grid=[mapper.source_pixelization_grid[brightest_reconstruction_pixel]]
+                grid=[mapper.source_mesh_grid[brightest_reconstruction_pixel]]
             )
 
             brightest_reconstruction_pixel_centre_list.append(centre)

@@ -2,10 +2,10 @@ import autoarray as aa
 import numpy as np
 
 
-class TestVoronoiMagnification:
+class TestDelaunayMagnification:
     def test__number_of_pixels_setup_correct(self):
 
-        pixelization = aa.pix.VoronoiMagnification(shape=(3, 3))
+        pixelization = aa.pix.DelaunayMagnification(shape=(3, 3))
 
         assert pixelization.shape == (3, 3)
 
@@ -13,13 +13,13 @@ class TestVoronoiMagnification:
         self, sub_grid_2d_7x7
     ):
 
-        pixelization = aa.pix.VoronoiMagnification(shape=(3, 3))
+        pixelization = aa.pix.DelaunayMagnification(shape=(3, 3))
 
         sparse_grid = pixelization.data_pixelization_grid_from(
             data_grid_slim=sub_grid_2d_7x7
         )
 
-        pixelization_grid = aa.Grid2DVoronoi(
+        pixelization_grid = aa.Grid2DDelaunay(
             grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
@@ -32,7 +32,7 @@ class TestVoronoiMagnification:
 
     def test__preloads_used_for_relocated_grid(self, sub_grid_2d_7x7):
 
-        pixelization = aa.pix.VoronoiMagnification(shape=(3, 3))
+        pixelization = aa.pix.DelaunayMagnification(shape=(3, 3))
 
         relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
@@ -42,7 +42,7 @@ class TestVoronoiMagnification:
 
         mapper = pixelization.mapper_from(
             source_grid_slim=relocated_grid,
-            source_pixelization_grid=sparse_grid,
+            source_mesh_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
             preloads=aa.Preloads(relocated_grid=relocated_grid),
         )
@@ -50,12 +50,12 @@ class TestVoronoiMagnification:
         assert (mapper.source_grid_slim == relocated_grid).all()
 
 
-class TestVoronoiBrightness:
+class TestDelaunayBrightness:
     def test__weight_map_from(self):
 
         hyper_image = np.array([0.0, 1.0, 0.0])
 
-        pixelization = aa.pix.VoronoiBrightnessImage(
+        pixelization = aa.pix.DelaunayBrightnessImage(
             pixels=5, weight_floor=0.0, weight_power=0.0
         )
 
@@ -63,7 +63,7 @@ class TestVoronoiBrightness:
 
         assert (weight_map == np.ones(3)).all()
 
-        pixelization = aa.pix.VoronoiBrightnessImage(
+        pixelization = aa.pix.DelaunayBrightnessImage(
             pixels=5, weight_floor=0.0, weight_power=1.0
         )
 
@@ -71,7 +71,7 @@ class TestVoronoiBrightness:
 
         assert (weight_map == np.array([0.0, 1.0, 0.0])).all()
 
-        pixelization = aa.pix.VoronoiBrightnessImage(
+        pixelization = aa.pix.DelaunayBrightnessImage(
             pixels=5, weight_floor=1.0, weight_power=1.0
         )
 
@@ -79,7 +79,7 @@ class TestVoronoiBrightness:
 
         assert (weight_map == np.array([1.0, 2.0, 1.0])).all()
 
-        pixelization = aa.pix.VoronoiBrightnessImage(
+        pixelization = aa.pix.DelaunayBrightnessImage(
             pixels=5, weight_floor=1.0, weight_power=2.0
         )
 
@@ -89,7 +89,7 @@ class TestVoronoiBrightness:
 
         hyper_image = np.array([-1.0, 1.0, 3.0])
 
-        pixelization = aa.pix.VoronoiBrightnessImage(
+        pixelization = aa.pix.DelaunayBrightnessImage(
             pixels=5, weight_floor=0.0, weight_power=1.0
         )
 
@@ -97,7 +97,7 @@ class TestVoronoiBrightness:
 
         assert (weight_map == np.array([0.0, 0.5, 1.0])).all()
 
-        pixelization = aa.pix.VoronoiBrightnessImage(
+        pixelization = aa.pix.DelaunayBrightnessImage(
             pixels=5, weight_floor=0.0, weight_power=2.0
         )
 
@@ -105,7 +105,7 @@ class TestVoronoiBrightness:
 
         assert (weight_map == np.array([0.0, 0.25, 1.0])).all()
 
-        pixelization = aa.pix.VoronoiBrightnessImage(
+        pixelization = aa.pix.DelaunayBrightnessImage(
             pixels=5, weight_floor=1.0, weight_power=1.0
         )
 
@@ -117,7 +117,7 @@ class TestVoronoiBrightness:
         self, sub_grid_2d_7x7
     ):
 
-        pixelization = aa.pix.VoronoiBrightnessImage(
+        pixelization = aa.pix.DelaunayBrightnessImage(
             pixels=6, weight_floor=0.1, weight_power=2.0
         )
 
@@ -132,7 +132,7 @@ class TestVoronoiBrightness:
             seed=1,
         )
 
-        pixelization_grid = aa.Grid2DVoronoi(
+        pixelization_grid = aa.Grid2DDelaunay(
             grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )

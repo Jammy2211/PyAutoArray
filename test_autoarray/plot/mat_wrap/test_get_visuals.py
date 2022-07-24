@@ -105,9 +105,9 @@ def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
     ).all()
 
     print(visuals_2d.pixelization_grid)
-    print(voronoi_mapper_9_3x3.source_pixelization_grid)
+    print(voronoi_mapper_9_3x3.source_mesh_grid)
     assert (
-        visuals_2d_via.pixelization_grid == voronoi_mapper_9_3x3.data_pixelization_grid
+        visuals_2d_via.pixelization_grid == voronoi_mapper_9_3x3.data_mesh_grid
     ).all()
 
     include_2d = aplt.Include2D(
@@ -147,8 +147,7 @@ def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
         == rectangular_mapper_7x7_3x3.source_grid_slim.sub_border_grid
     ).all()
     assert (
-        visuals_2d_via.pixelization_grid
-        == rectangular_mapper_7x7_3x3.source_pixelization_grid
+        visuals_2d_via.pixelization_grid == rectangular_mapper_7x7_3x3.source_mesh_grid
     ).all()
 
     include_2d = aplt.Include2D(

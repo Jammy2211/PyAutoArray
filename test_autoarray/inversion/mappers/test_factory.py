@@ -55,16 +55,16 @@ def test__rectangular_mapper():
 
     mapper = pix.mapper_from(
         source_grid_slim=grid,
-        source_pixelization_grid=None,
+        source_mesh_grid=None,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
     assert isinstance(mapper, aa.MapperRectangularNoInterp)
-    assert mapper.data_pixelization_grid == None
-    assert mapper.source_pixelization_grid.shape_native_scaled == pytest.approx(
+    assert mapper.data_mesh_grid == None
+    assert mapper.source_mesh_grid.shape_native_scaled == pytest.approx(
         (2.0, 2.0), 1.0e-4
     )
-    assert mapper.source_pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+    assert mapper.source_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     assert (
         mapper.mapping_matrix
@@ -129,7 +129,7 @@ def test__delaunay_mapper():
 
     mapper = pix.mapper_from(
         source_grid_slim=grid,
-        source_pixelization_grid=sparse_grid,
+        source_mesh_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -137,8 +137,8 @@ def test__delaunay_mapper():
     assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
-    assert (mapper.source_pixelization_grid == sparse_grid).all()
-    assert mapper.source_pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+    assert (mapper.source_mesh_grid == sparse_grid).all()
+    assert mapper.source_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     print(mapper.mapping_matrix)
 
@@ -204,7 +204,7 @@ def test__voronoi_mapper():
 
     mapper = pix.mapper_from(
         source_grid_slim=grid,
-        source_pixelization_grid=sparse_grid,
+        source_mesh_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -212,8 +212,8 @@ def test__voronoi_mapper():
     assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
-    assert (mapper.source_pixelization_grid == sparse_grid).all()
-    assert mapper.source_pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+    assert (mapper.source_mesh_grid == sparse_grid).all()
+    assert mapper.source_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     assert (
         mapper.mapping_matrix

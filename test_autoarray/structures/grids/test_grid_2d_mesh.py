@@ -6,10 +6,10 @@ from autoarray import exc
 import autoarray as aa
 
 
-class TestAbstractGrid2DPixelization:
+class TestAbstractGrid2DMesh:
     def test__interpolation_grid_from(self):
 
-        grid = aa.m.MockGrid2DPixelization(extent=(-1.0, 1.0, -1.0, 1.0))
+        grid = aa.m.MockGrid2DMesh(extent=(-1.0, 1.0, -1.0, 1.0))
 
         interpolation_grid = grid.interpolation_grid_from(shape_native=(3, 2))
 
@@ -36,7 +36,7 @@ class TestAbstractGrid2DPixelization:
         )
         assert interpolation_grid.pixel_scales == (2.0, 1.0)
 
-        grid = aa.m.MockGrid2DPixelization(extent=(-20.0, -5.0, -10.0, -5.0))
+        grid = aa.m.MockGrid2DMesh(extent=(-20.0, -5.0, -10.0, -5.0))
 
         interpolation_grid = grid.interpolation_grid_from(shape_native=(3, 3))
 
@@ -53,23 +53,23 @@ class TestAbstractGrid2DPixelization:
 
 
 class TestGrid2DRectangular:
-    def test__neighbors__compare_to_pixelization_util(self):
+    def test__neighbors__compare_to_mesh_util(self):
         # I0 I 1I 2I 3I
         # I4 I 5I 6I 7I
         # I8 I 9I10I11I
         # I12I13I14I15I
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+        mesh_grid = aa.Grid2DRectangular.overlay_grid(
             shape_native=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
         )
 
         (
             neighbors_util,
             neighbors_sizes_util,
-        ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(7, 5))
+        ) = aa.util.mesh.rectangular_neighbors_from(shape_native=(7, 5))
 
-        assert (pixelization_grid.neighbors == neighbors_util).all()
-        assert (pixelization_grid.neighbors.sizes == neighbors_sizes_util).all()
+        assert (mesh_grid.neighbors == neighbors_util).all()
+        assert (mesh_grid.neighbors.sizes == neighbors_sizes_util).all()
 
     def test__shape_native_and_pixel_scales(self):
         grid = np.array(
@@ -86,14 +86,12 @@ class TestGrid2DRectangular:
             ]
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+        mesh_grid = aa.Grid2DRectangular.overlay_grid(
             shape_native=(3, 3), grid=grid, buffer=1e-8
         )
 
-        assert pixelization_grid.shape_native == (3, 3)
-        assert pixelization_grid.pixel_scales == pytest.approx(
-            (2.0 / 3.0, 2.0 / 3.0), 1e-2
-        )
+        assert mesh_grid.shape_native == (3, 3)
+        assert mesh_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
 
         grid = np.array(
             [
@@ -109,25 +107,21 @@ class TestGrid2DRectangular:
             ]
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+        mesh_grid = aa.Grid2DRectangular.overlay_grid(
             shape_native=(5, 4), grid=grid, buffer=1e-8
         )
 
-        assert pixelization_grid.shape_native == (5, 4)
-        assert pixelization_grid.pixel_scales == pytest.approx(
-            (2.0 / 5.0, 2.0 / 4.0), 1e-2
-        )
+        assert mesh_grid.shape_native == (5, 4)
+        assert mesh_grid.pixel_scales == pytest.approx((2.0 / 5.0, 2.0 / 4.0), 1e-2)
 
         grid = np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+        mesh_grid = aa.Grid2DRectangular.overlay_grid(
             shape_native=(3, 3), grid=grid, buffer=1e-8
         )
 
-        assert pixelization_grid.shape_native == (3, 3)
-        assert pixelization_grid.pixel_scales == pytest.approx(
-            (6.0 / 3.0, 6.0 / 3.0), 1e-2
-        )
+        assert mesh_grid.shape_native == (3, 3)
+        assert mesh_grid.pixel_scales == pytest.approx((6.0 / 3.0, 6.0 / 3.0), 1e-2)
 
     def test__pixel_centres__3x3_grid__pixel_centres(self):
 
@@ -145,11 +139,11 @@ class TestGrid2DRectangular:
             ]
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+        mesh_grid = aa.Grid2DRectangular.overlay_grid(
             shape_native=(3, 3), grid=grid, buffer=1e-8
         )
 
-        assert pixelization_grid == pytest.approx(
+        assert mesh_grid == pytest.approx(
             np.array(
                 [
                     [2.0 / 3.0, -2.0 / 3.0],
@@ -180,11 +174,11 @@ class TestGrid2DRectangular:
             ]
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+        mesh_grid = aa.Grid2DRectangular.overlay_grid(
             shape_native=(4, 3), grid=grid, buffer=1e-8
         )
 
-        assert pixelization_grid == pytest.approx(
+        assert mesh_grid == pytest.approx(
             np.array(
                 [
                     [0.75, -2.0 / 3.0],
@@ -243,7 +237,7 @@ class TestGrid2DRectangular:
 
 
 class TestGrid2DVoronoi:
-    def test__neighbors__compare_to_pixelization_util(self):
+    def test__neighbors__compare_to_mesh_util(self):
 
         # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
@@ -267,17 +261,14 @@ class TestGrid2DVoronoi:
             np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
         )
 
-        (
-            neighbors_util,
-            neighbors_sizes_util,
-        ) = aa.util.pixelization.voronoi_neighbors_from(
+        (neighbors_util, neighbors_sizes_util) = aa.util.mesh.voronoi_neighbors_from(
             pixels=9, ridge_points=np.array(voronoi.ridge_points)
         )
 
         assert (pix.neighbors == neighbors_util).all()
         assert (pix.neighbors.sizes == neighbors_sizes_util).all()
 
-    def test__pixelization_areas(self):
+    def test__mesh_areas(self):
 
         grid = np.array(
             [
@@ -312,20 +303,19 @@ class TestGrid2DVoronoi:
             1e-6,
         )
 
-    def test__pixelization_grid__attributes(self):
+    def test__mesh_grid__attributes(self):
 
-        pixelization_grid = aa.Grid2DVoronoi(
+        mesh_grid = aa.Grid2DVoronoi(
             grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]]),
             nearest_pixelization_index_for_slim_index=np.array([0, 1, 2, 3]),
         )
 
-        assert type(pixelization_grid) == aa.Grid2DVoronoi
+        assert type(mesh_grid) == aa.Grid2DVoronoi
         assert (
-            pixelization_grid
-            == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])
+            mesh_grid == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])
         ).all()
         assert (
-            pixelization_grid.nearest_pixelization_index_for_slim_index
+            mesh_grid.nearest_pixelization_index_for_slim_index
             == np.array([0, 1, 2, 3])
         ).all()
 
@@ -345,15 +335,15 @@ class TestGrid2DVoronoi:
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
-        pixelization_grid = aa.Grid2DVoronoi(
+        mesh_grid = aa.Grid2DVoronoi(
             grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 
-        assert (sparse_grid == pixelization_grid).all()
+        assert (sparse_grid == mesh_grid).all()
         assert (
             sparse_grid.sparse_index_for_slim_index
-            == pixelization_grid.nearest_pixelization_index_for_slim_index
+            == mesh_grid.nearest_pixelization_index_for_slim_index
         ).all()
 
     def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly(self):
@@ -480,7 +470,7 @@ class TestGrid2DVoronoi:
         grid = np.array([[3.0, 0.0]])
         grid = aa.Grid2DVoronoi(grid=grid)
 
-        with pytest.raises(exc.PixelizationException):
+        with pytest.raises(exc.MeshException):
             grid.voronoi
 
     def test__interpolated_array_from(self):
@@ -526,7 +516,7 @@ class TestGrid2DVoronoi:
 
 
 class TestGrid2DDelaunay:
-    def test__pixelization_areas(self):
+    def test__mesh_areas(self):
 
         grid = np.array(
             [

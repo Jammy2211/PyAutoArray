@@ -101,13 +101,13 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
     mapper_0 = pix_0.mapper_from(
         source_grid_slim=grid,
-        source_pixelization_grid=None,
+        source_mesh_grid=None,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper_1 = pix_1.mapper_from(
         source_grid_slim=grid,
-        source_pixelization_grid=None,
+        source_mesh_grid=None,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -173,13 +173,13 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
     mapper_0 = pix_0.mapper_from(
         source_grid_slim=grid,
-        source_pixelization_grid=sparse_grid_0,
+        source_mesh_grid=sparse_grid_0,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper_1 = pix_1.mapper_from(
         source_grid_slim=grid,
-        source_pixelization_grid=sparse_grid_1,
+        source_mesh_grid=sparse_grid_1,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -548,7 +548,7 @@ def test__errors_and_errors_with_covariance():
 def test__brightest_reconstruction_pixel_and_centre():
 
     mapper = aa.m.MockMapper(
-        source_pixelization_grid=aa.Grid2DVoronoi.manual_slim(
+        source_mesh_grid=aa.Grid2DVoronoi.manual_slim(
             [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
         )
     )

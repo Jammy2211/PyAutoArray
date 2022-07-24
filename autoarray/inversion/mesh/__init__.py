@@ -1,4 +1,4 @@
-from .abstract import AbstractPixelization as Pixelization
+from .abstract import AbstractMesh as Mesh
 from .rectangular import Rectangular
 from .voronoi import VoronoiMagnification
 from .voronoi import VoronoiBrightnessImage

@@ -1,11 +1,11 @@
 import numpy as np
 from typing import Tuple
 
-from autoarray.structures.grids.grid_2d_pixelization import AbstractGrid2DPixelization
-from autoarray.structures.grids.grid_2d_pixelization import Neighbors
+from autoarray.structures.grids.grid_2d_mesh import AbstractGrid2DMesh
+from autoarray.structures.grids.grid_2d_mesh import Neighbors
 
 
-class MockGrid2DPixelization(AbstractGrid2DPixelization):
+class MockGrid2DMesh(AbstractGrid2DMesh):
     def __new__(cls, grid: np.ndarray = None, extent: Tuple[int, int, int, int] = None):
         """
         A grid of (y,x) coordinates which represent a uniform rectangular pixelization.

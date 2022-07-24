@@ -21,7 +21,7 @@ class TestRegression:
 
         mapper = pixelization.mapper_from(
             source_grid_slim=grid,
-            source_pixelization_grid=sparse_grid,
+            source_mesh_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
         )
 
@@ -33,22 +33,22 @@ class TestRegression:
 
         mapper = pixelization.mapper_from(
             source_grid_slim=grid,
-            source_pixelization_grid=sparse_grid,
+            source_mesh_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
         )
 
         assert isinstance(mapper, aa.MapperVoronoiNoInterp)
-        assert sparse_grid[0, 0] != mapper.source_pixelization_grid[0, 0]
-        assert mapper.source_pixelization_grid[0, 0] < 5.0
+        assert sparse_grid[0, 0] != mapper.source_mesh_grid[0, 0]
+        assert mapper.source_mesh_grid[0, 0] < 5.0
 
         pixelization = aa.pix.VoronoiNNMagnification(shape=(3, 3))
 
         mapper = pixelization.mapper_from(
             source_grid_slim=grid,
-            source_pixelization_grid=sparse_grid,
+            source_mesh_grid=sparse_grid,
             settings=aa.SettingsPixelization(use_border=True),
         )
 
         assert isinstance(mapper, aa.MapperVoronoi)
-        assert sparse_grid[0, 0] != mapper.source_pixelization_grid[0, 0]
-        assert mapper.source_pixelization_grid[0, 0] < 5.0
+        assert sparse_grid[0, 0] != mapper.source_mesh_grid[0, 0]
+        assert mapper.source_mesh_grid[0, 0] < 5.0

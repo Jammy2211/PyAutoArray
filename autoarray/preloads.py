@@ -148,7 +148,7 @@ class Preloads:
 
     def set_mapper_list(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and the list of `Mapper`'s containing this information can
         be preloaded. This includes preloading the `mapping_matrix`.
 
@@ -196,7 +196,7 @@ class Preloads:
 
     def set_operated_mapping_matrix_with_preloads(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and matrices used to perform the linear algebra in an
         inversion can be preloaded, which help efficiently construct the curvature matrix.
 
@@ -263,7 +263,7 @@ class Preloads:
 
     def set_curvature_matrix(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and therefore its associated cruvature matrix is also
         fixed, meaning the curvature matrix preloaded.
 
@@ -302,7 +302,7 @@ class Preloads:
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and therefore its associated regularization matrices are
         also fixed, meaning the log determinant of the regularization matrix term of the Bayesian evidence can be
         preloaded.

@@ -26,7 +26,7 @@ def test__regularization_matrix__matches_util():
         neighbors=neighbors, neighbors_sizes=neighbors_sizes
     )
 
-    mapper = aa.m.MockMapper(source_pixelization_grid=pixelization_grid)
+    mapper = aa.m.MockMapper(source_mesh_grid=pixelization_grid)
 
     reg = aa.reg.Constant(coefficient=2.0)
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
