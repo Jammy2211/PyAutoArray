@@ -4,7 +4,7 @@ from typing import Dict, Optional
 
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
-from autoarray.structures.grids.grid_2d_mesh import Grid2DDelaunay
+from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.preloads import Preloads
 from autoarray.inversion.mesh.abstract import AbstractMesh
 from autoarray.inversion.mesh.settings import SettingsPixelization
@@ -198,7 +198,7 @@ class Delaunay(AbstractMesh):
         sparse_index_for_slim_index=None,
     ):
         """
-        Return the Delaunay `source_mesh_grid` as a `Grid2DDelaunay` object, which provides additional
+        Return the Delaunay `source_mesh_grid` as a `Mesh2DDelaunay` object, which provides additional
         functionality for performing operations that exploit the geometry of a Delaunay mesh.
 
         Parameters
@@ -214,7 +214,7 @@ class Delaunay(AbstractMesh):
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
 
-        return Grid2DDelaunay(
+        return Mesh2DDelaunay(
             grid=source_mesh_grid, uses_interpolation=self.uses_interpolation
         )
 

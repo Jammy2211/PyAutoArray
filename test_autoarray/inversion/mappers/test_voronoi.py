@@ -12,7 +12,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
 
     nearest_pixelization_index_for_slim_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
-    pixelization_grid = aa.Grid2DVoronoi(
+    pixelization_grid = aa.Mesh2DVoronoi(
         grid=pixelization_grid,
         nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
         uses_interpolation=False,
@@ -37,7 +37,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         mapper.pix_indexes_for_sub_slim_index == pix_indexes_for_sub_slim_index_util
     ).all()
 
-    pixelization_grid = aa.Grid2DVoronoi(
+    pixelization_grid = aa.Mesh2DVoronoi(
         grid=pixelization_grid,
         nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
         uses_interpolation=True,

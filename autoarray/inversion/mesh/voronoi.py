@@ -4,7 +4,7 @@ from typing import Dict, Optional, Tuple
 
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
-from autoarray.structures.grids.grid_2d_mesh import Grid2DVoronoi
+from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.preloads import Preloads
 from autoarray.inversion.mesh.abstract import AbstractMesh
 from autoarray.inversion.mesh.settings import SettingsPixelization
@@ -203,9 +203,9 @@ class Voronoi(AbstractMesh):
         source_grid_slim=None,
         source_mesh_grid=None,
         sparse_index_for_slim_index=None,
-    ) -> Grid2DVoronoi:
+    ) -> Mesh2DVoronoi:
         """
-        Return the Voronoi `source_mesh_grid` as a `Grid2DVoronoi` object, which provides additional
+        Return the Voronoi `source_mesh_grid` as a `Mesh2DVoronoi` object, which provides additional
         functionality for performing operations that exploit the geometry of a Voronoi pixelization.
 
         The array `sparse_index_for_slim_index` encodes the closest source pixel of every pixel on the
@@ -225,7 +225,7 @@ class Voronoi(AbstractMesh):
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
 
-        return Grid2DVoronoi(
+        return Mesh2DVoronoi(
             grid=source_mesh_grid,
             nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
             uses_interpolation=self.uses_interpolation,

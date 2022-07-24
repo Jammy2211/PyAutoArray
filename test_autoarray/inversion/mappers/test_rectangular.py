@@ -21,7 +21,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         shape_native=(3, 3),
     )
 
-    pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+    pixelization_grid = aa.Mesh2DRectangular.overlay_grid(
         shape_native=(3, 3), grid=grid
     )
 
@@ -45,7 +45,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 
 def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
 
-    pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+    pixelization_grid = aa.Mesh2DRectangular.overlay_grid(
         shape_native=(3, 3), grid=grid_2d_7x7
     )
 

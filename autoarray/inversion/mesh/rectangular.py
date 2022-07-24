@@ -3,7 +3,7 @@ from typing import Dict, Optional, Tuple
 
 
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.grid_2d_mesh import Grid2DRectangular
+from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.preloads import Preloads
 from autoarray.inversion.mesh.abstract import AbstractMesh
 from autoarray.inversion.mesh.settings import SettingsPixelization
@@ -147,9 +147,9 @@ class Rectangular(AbstractMesh):
         source_grid_slim: Optional[Grid2D] = None,
         source_mesh_grid: Optional[Grid2D] = None,
         sparse_index_for_slim_index: Optional[np.ndarray] = None,
-    ) -> Grid2DRectangular:
+    ) -> Mesh2DRectangular:
         """
-        Return the rectangular `source_mesh_grid` as a `Grid2DRectangular` object, which provides additional
+        Return the rectangular `source_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
         functionality for perform operatons that exploit the geometry of a rectangular pixelization.
 
         Parameters
@@ -163,7 +163,7 @@ class Rectangular(AbstractMesh):
         sparse_index_for_slim_index
             Not used for a rectangular pixelization.
         """
-        return Grid2DRectangular.overlay_grid(
+        return Mesh2DRectangular.overlay_grid(
             shape_native=self.shape, grid=source_grid_slim
         )
 

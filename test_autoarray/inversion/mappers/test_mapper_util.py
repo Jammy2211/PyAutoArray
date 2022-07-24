@@ -504,7 +504,7 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
 
     nearest_pixelization_index_for_slim_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
-    pixelization_grid = aa.Grid2DVoronoi(
+    pixelization_grid = aa.Mesh2DVoronoi(
         grid=pixelization_grid,
         nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
     )

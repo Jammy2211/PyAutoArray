@@ -344,7 +344,7 @@ def make_regularization_adaptive_brightness_split():
 
 
 def make_rectangular_pixelization_grid_3x3():
-    return aa.Grid2DRectangular.overlay_grid(
+    return aa.Mesh2DRectangular.overlay_grid(
         grid=make_sub_grid_2d_7x7(), shape_native=(3, 3)
     )
 
@@ -367,7 +367,7 @@ def make_delaunay_pixelization_grid_9():
         pixel_scales=1.0,
     )
 
-    return aa.Grid2DDelaunay(grid=grid_9)
+    return aa.Mesh2DDelaunay(grid=grid_9)
 
 
 def make_voronoi_pixelization_grid_9():
@@ -388,7 +388,7 @@ def make_voronoi_pixelization_grid_9():
         pixel_scales=1.0,
     )
 
-    return aa.Grid2DVoronoi(
+    return aa.Mesh2DVoronoi(
         grid=grid_9,
         nearest_pixelization_index_for_slim_index=np.zeros(
             shape=make_grid_2d_7x7().shape_slim, dtype="int"

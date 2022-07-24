@@ -63,9 +63,9 @@ from .structures.grids.sparse_2d import Grid2DSparse
 from .structures.grids.iterate_2d import Grid2DIterate
 from .structures.grids.irregular_2d import Grid2DIrregular
 from .structures.grids.irregular_2d import Grid2DIrregularUniform
-from .structures.grids.grid_2d_mesh import Grid2DRectangular
-from .structures.grids.grid_2d_mesh import Grid2DVoronoi
-from .structures.grids.grid_2d_mesh import Grid2DDelaunay
+from .structures.mesh.rectangular_2d import Mesh2DRectangular
+from .structures.mesh.voronoi_2d import Mesh2DVoronoi
+from .structures.mesh.delaunay_2d import Mesh2DDelaunay
 from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular

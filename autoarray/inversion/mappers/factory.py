@@ -1,6 +1,6 @@
-from autoarray.structures.grids.grid_2d_mesh import Grid2DRectangular
-from autoarray.structures.grids.grid_2d_mesh import Grid2DDelaunay
-from autoarray.structures.grids.grid_2d_mesh import Grid2DVoronoi
+from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
+from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
+from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 
 
 def mapper_from(
@@ -12,7 +12,7 @@ def mapper_from(
     from autoarray.inversion.mappers.voronoi import MapperVoronoi
     from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
 
-    if isinstance(source_mesh_grid, Grid2DRectangular):
+    if isinstance(source_mesh_grid, Mesh2DRectangular):
 
         return MapperRectangularNoInterp(
             source_grid_slim=source_grid_slim,
@@ -20,7 +20,7 @@ def mapper_from(
             data_mesh_grid=data_mesh_grid,
             hyper_image=hyper_data,
         )
-    elif isinstance(source_mesh_grid, Grid2DDelaunay):
+    elif isinstance(source_mesh_grid, Mesh2DDelaunay):
 
         return MapperDelaunay(
             source_grid_slim=source_grid_slim,
@@ -28,7 +28,7 @@ def mapper_from(
             data_mesh_grid=data_mesh_grid,
             hyper_image=hyper_data,
         )
-    elif isinstance(source_mesh_grid, Grid2DVoronoi):
+    elif isinstance(source_mesh_grid, Mesh2DVoronoi):
 
         if source_mesh_grid.uses_interpolation:
 

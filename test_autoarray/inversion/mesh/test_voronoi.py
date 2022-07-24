@@ -19,7 +19,7 @@ class TestVoronoiMagnification:
             data_grid_slim=sub_grid_2d_7x7
         )
 
-        pixelization_grid = aa.Grid2DVoronoi(
+        pixelization_grid = aa.Mesh2DVoronoi(
             grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
@@ -132,7 +132,7 @@ class TestVoronoiBrightness:
             seed=1,
         )
 
-        pixelization_grid = aa.Grid2DVoronoi(
+        pixelization_grid = aa.Mesh2DVoronoi(
             grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
