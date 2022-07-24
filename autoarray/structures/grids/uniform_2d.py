@@ -1285,9 +1285,7 @@ class Grid2D(Structure):
             sub_size=grid.mask.sub_size,
         )
 
-    def relocated_pixelization_grid_from(
-        self, pixelization_grid: Grid2DSparse
-    ) -> Grid2DSparse:
+    def relocated_mesh_grid_from(self, mesh_grid: Grid2DSparse) -> Grid2DSparse:
         """
         Relocate the coordinates of a pixelization grid to the border of this grid. See the method
         `relocated_grid_from()`for a full description of how this grid relocation works.
@@ -1302,11 +1300,11 @@ class Grid2D(Structure):
         """
 
         if len(self.sub_border_grid) == 0:
-            return pixelization_grid
+            return mesh_grid
 
         return Grid2DSparse(
             grid=grid_2d_util.relocated_grid_via_jit_from(
-                grid=pixelization_grid, border_grid=self.sub_border_grid
+                grid=mesh_grid, border_grid=self.sub_border_grid
             ),
-            sparse_index_for_slim_index=pixelization_grid.sparse_index_for_slim_index,
+            sparse_index_for_slim_index=mesh_grid.sparse_index_for_slim_index,
         )

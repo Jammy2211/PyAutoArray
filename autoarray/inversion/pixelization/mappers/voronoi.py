@@ -5,9 +5,9 @@ from autoconf import cached_property
 
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
+from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.sparse_2d import Grid2DSparse
 
 from autoarray.numba_util import profile_func
 from autoarray.inversion.pixelization.mappers import mapper_util
@@ -16,10 +16,8 @@ from autoarray.inversion.pixelization.mappers import mapper_util
 class AbstractMapperVoronoi(AbstractMapper):
     def __init__(
         self,
-        source_grid_slim: Grid2D,
-        source_mesh_grid,
-        data_mesh_grid: Grid2DSparse = None,
-        hyper_image: Array2D = None,
+        mapper_grids: MapperGrids,
+        regularization: Optional[AbstractRegularization],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -35,18 +33,18 @@ class AbstractMapperVoronoi(AbstractMapper):
         change the indexing, such that `source_grid_slim[0]` corresponds to the transformed value
         of `data_grid_slim[0]` and so on).
 
-        A mapper therefore only needs to determine the index mappings between the `grid_slim` and `pixelization_grid`,
+        A mapper therefore only needs to determine the index mappings between the `grid_slim` and `mesh_grid`,
         noting that associations are made by pairing `source_mesh_grid` with `source_grid_slim`.
 
         Mappings are represented in the 2D ndarray `pix_indexes_for_sub_slim_index`, whereby the index of
-        a pixel on the `pixelization_grid` maps to the index of a pixel on the `grid_slim` as follows:
+        a pixel on the `mesh_grid` maps to the index of a pixel on the `grid_slim` as follows:
 
         - pix_indexes_for_sub_slim_index[0, 0] = 0: the data's 1st sub-pixel maps to the mesh's 1st pixel.
         - pix_indexes_for_sub_slim_index[1, 0] = 3: the data's 2nd sub-pixel maps to the mesh's 4th pixel.
         - pix_indexes_for_sub_slim_index[2, 0] = 1: the data's 3rd sub-pixel maps to the mesh's 2nd pixel.
 
         The second dimension of this array (where all three examples above are 0) is used for cases where a
-        single pixel on the `grid_slim` maps to multiple pixels on the `pixelization_grid`. For example, using a
+        single pixel on the `grid_slim` maps to multiple pixels on the `mesh_grid`. For example, using a
         `Delaunay` mesh, where every `grid_slim` pixel maps to three Delaunay pixels (the corners of the
         triangles):
 
@@ -59,6 +57,8 @@ class AbstractMapperVoronoi(AbstractMapper):
 
         Parameters
         ----------
+        pixelization
+            The pixelization object containing this mapper's mesh and regularization.
         source_grid_slim
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
@@ -67,17 +67,15 @@ class AbstractMapperVoronoi(AbstractMapper):
         data_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
             transformation applied to it to create the `source_mesh_grid`.
-        hyper_image
+        hyper_data
             An image which is used to determine the `data_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
         profiling_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
         super().__init__(
-            source_grid_slim=source_grid_slim,
-            source_mesh_grid=source_mesh_grid,
-            data_mesh_grid=data_mesh_grid,
-            hyper_image=hyper_image,
+            mapper_grids=mapper_grids,
+            regularization=regularization,
             profiling_dict=profiling_dict,
         )
 
@@ -88,8 +86,7 @@ class AbstractMapperVoronoi(AbstractMapper):
     @property
     def pix_sub_weights_split_cross(self) -> PixSubWeights:
         (mappings, sizes, weights) = mapper_util.pix_size_weights_voronoi_nn_from(
-            grid=self.source_mesh_grid.split_cross,
-            pixelization_grid=self.source_mesh_grid,
+            grid=self.source_mesh_grid.split_cross, mesh_grid=self.source_mesh_grid
         )
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
@@ -141,7 +138,7 @@ class MapperVoronoi(AbstractMapperVoronoi):
         """
 
         mappings, sizes, weights = mapper_util.pix_size_weights_voronoi_nn_from(
-            grid=self.source_grid_slim, pixelization_grid=self.source_mesh_grid
+            grid=self.source_grid_slim, mesh_grid=self.source_mesh_grid
         )
 
         mappings = mappings.astype("int")
@@ -228,7 +225,7 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
             grid=self.source_grid_slim,
             nearest_pixelization_index_for_slim_index=self.source_mesh_grid.nearest_pixelization_index_for_slim_index,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            pixelization_grid=self.source_mesh_grid,
+            mesh_grid=self.source_mesh_grid,
             neighbors=self.source_mesh_grid.neighbors,
             neighbors_sizes=self.source_mesh_grid.neighbors.sizes,
         ).astype("int")

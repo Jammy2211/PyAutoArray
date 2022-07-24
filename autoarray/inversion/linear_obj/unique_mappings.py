@@ -10,7 +10,7 @@ class UniqueMappings:
     ):
         """
         Packages the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
-        to their corresponding mesh pixels (e.g. `pixelization_grid`).
+        to their corresponding mesh pixels (e.g. `mesh_grid`).
 
         The following quantities are packaged in this class as ndarray:
 

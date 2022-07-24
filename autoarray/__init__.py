@@ -33,6 +33,7 @@ from .inversion.inversion.factory import (
 from .inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
+from .inversion.pixelization.mappers.mapper_grids import MapperGrids
 from .inversion.pixelization.mappers.factory import mapper_from as Mapper
 from .inversion.pixelization.mappers.rectangular import MapperRectangularNoInterp
 from .inversion.pixelization.mappers.delaunay import MapperDelaunay

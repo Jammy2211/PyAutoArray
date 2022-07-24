@@ -5,6 +5,7 @@ from typing import Dict, Optional, Tuple
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.preloads import Preloads
+from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.inversion.pixelization.mappers.rectangular import (
@@ -38,7 +39,7 @@ class Rectangular(AbstractMesh):
         given the variable name `data_grid_slim` or in the transformed source frame with the variable
         name `source_grid_slim`).
 
-        - `pixelization_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
+        - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
         coordinates (association is always performed in the `source` reference frame).
 
         A rectangular pixelization has three grids associated with it: `data_grid_slim`, `source_grid_slim`,
@@ -83,16 +84,16 @@ class Rectangular(AbstractMesh):
     def uses_interpolation(self):
         return False
 
-    def mapper_from(
+    def mapper_grids_from(
         self,
         source_grid_slim: Grid2D,
         source_mesh_grid: Grid2D = None,
         data_mesh_grid: Grid2D = None,
-        hyper_image: np.ndarray = None,
+        hyper_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
-    ) -> MapperRectangularNoInterp:
+    ) -> MapperGrids:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
         in both the `data` and `source` frames.
@@ -118,7 +119,7 @@ class Rectangular(AbstractMesh):
             by overlaying the `source_grid_slim` with the rectangular pixelization.
         data_mesh_grid
             Not used for a rectangular pixelization.
-        hyper_image
+        hyper_data
             Not used for a rectangular pixelization.
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
@@ -134,17 +135,19 @@ class Rectangular(AbstractMesh):
         relocated_grid = self.relocated_grid_from(
             source_grid_slim=source_grid_slim, settings=settings, preloads=preloads
         )
-        pixelization_grid = self.pixelization_grid_from(source_grid_slim=relocated_grid)
+        mesh_grid = self.mesh_grid_from(source_grid_slim=relocated_grid)
 
-        return MapperRectangularNoInterp(
+        return MapperGrids(
             source_grid_slim=relocated_grid,
-            source_mesh_grid=pixelization_grid,
-            hyper_image=hyper_image,
+            source_mesh_grid=mesh_grid,
+            data_mesh_grid=data_mesh_grid,
+            hyper_data=hyper_data,
+            preloads=preloads,
             profiling_dict=profiling_dict,
         )
 
     @profile_func
-    def pixelization_grid_from(
+    def mesh_grid_from(
         self,
         source_grid_slim: Optional[Grid2D] = None,
         source_mesh_grid: Optional[Grid2D] = None,
@@ -169,10 +172,10 @@ class Rectangular(AbstractMesh):
             shape_native=self.shape, grid=source_grid_slim
         )
 
-    def data_pixelization_grid_from(
+    def data_mesh_grid_from(
         self,
         data_grid_slim: Grid2D,
-        hyper_image: np.ndarray = None,
+        hyper_data: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
         """

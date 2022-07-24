@@ -36,9 +36,7 @@ class TestTotalPixels:
 
         assert util.mask_2d.total_edge_pixels_from(mask_2d=mask_2d) == 8
 
-    def test__total_sparse_pixels__mask_full_false__full_pixelization_grid_pixels_in_mask(
-        self
-    ):
+    def test__total_sparse_pixels__mask_full_false__full_mesh_grid_pixels_in_mask(self):
 
         ma = np.array(
             [[False, False, False], [False, False, False], [False, False, False]]
@@ -62,7 +60,7 @@ class TestTotalPixels:
 
         assert total_masked_pixels == 6
 
-    def test__total_sparse_pixels__mask_is_cross__only_pixelization_grid_pixels_in_mask_are_counted(
+    def test__total_sparse_pixels__mask_is_cross__only_mesh_grid_pixels_in_mask_are_counted(
         self,
     ):
 

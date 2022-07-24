@@ -450,7 +450,7 @@ class MatPlot2D(AbstractMatPlot):
         border_scatter: Optional[w2d.BorderScatter] = None,
         positions_scatter: Optional[w2d.PositionsScatter] = None,
         index_scatter: Optional[w2d.IndexScatter] = None,
-        pixelization_grid_scatter: Optional[w2d.PixelizationGridScatter] = None,
+        mesh_grid_scatter: Optional[w2d.PixelizationGridScatter] = None,
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
@@ -530,7 +530,7 @@ class MatPlot2D(AbstractMatPlot):
             Scatters specific (y,x) coordinates input as a `Grid2DIrregular` object over the figure.
         index_scatter
             Scatters specific coordinates of an input `Grid2D` based on input values of the `Grid2D`'s 1D or 2D indexes.
-        pixelization_grid_scatter
+        mesh_grid_scatter
             Scatters the `PixelizationGrid` of a `Mesh` object.
         parallel_overscan_plot
             Plots the parallel overscan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
@@ -577,9 +577,7 @@ class MatPlot2D(AbstractMatPlot):
         self.border_scatter = border_scatter or w2d.BorderScatter()
         self.positions_scatter = positions_scatter or w2d.PositionsScatter()
         self.index_scatter = index_scatter or w2d.IndexScatter()
-        self.pixelization_grid_scatter = (
-            pixelization_grid_scatter or w2d.PixelizationGridScatter()
-        )
+        self.mesh_grid_scatter = mesh_grid_scatter or w2d.PixelizationGridScatter()
 
         self.parallel_overscan_plot = (
             parallel_overscan_plot or w2d.ParallelOverscanPlot()

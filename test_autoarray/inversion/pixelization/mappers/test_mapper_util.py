@@ -492,24 +492,28 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
     assert sub_to_pix[4] == 0
     assert sub_to_pix[5] == 5
 
-    pixelization_grid = aa.Grid2D.manual_slim(
+    mesh_grid = aa.Grid2D.manual_slim(
         [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
 
     sub_to_pix_nearest_neighbour = np.array(
-        [grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7, pixelization_grid)]
+        [grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7, mesh_grid)]
     ).T
 
     nearest_pixelization_index_for_slim_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
-    pixelization_grid = aa.Mesh2DVoronoi(
-        grid=pixelization_grid,
+    mesh_grid = aa.Mesh2DVoronoi(
+        grid=mesh_grid,
         nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
     )
 
-    mapper = aa.Mapper(source_grid_slim=grid_2d_7x7, source_mesh_grid=pixelization_grid)
+    mapper_grids = aa.MapperGrids(
+        source_grid_slim=grid_2d_7x7, source_mesh_grid=mesh_grid
+    )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert (mapper.pix_indexes_for_sub_slim_index == sub_to_pix_nearest_neighbour).all()
 
@@ -529,7 +533,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_image=galaxy_image,
+        hyper_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
@@ -547,7 +551,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_image=galaxy_image,
+        hyper_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
@@ -565,7 +569,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_image=galaxy_image,
+        hyper_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 0.5, 0.5])).all()
@@ -583,7 +587,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_image=galaxy_image,
+        hyper_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 0.25, 0.25])).all()

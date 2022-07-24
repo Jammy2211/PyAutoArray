@@ -240,7 +240,7 @@ class GetVisuals2D(AbstractGetVisuals):
 
         - origin: the (y,x) origin of the `Array2D`'s coordinate system in the data plane.
         - mask : the `Mask2D` defined in the data-plane containing the data that is used by the `Mapper`.
-        - mapper_data_pixelization_grid: the `Mapper`'s pixelization's mesh in the data-plane.
+        - mapper_data_mesh_grid: the `Mapper`'s pixelization's mesh in the data-plane.
         - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
 
         Parameters
@@ -256,14 +256,14 @@ class GetVisuals2D(AbstractGetVisuals):
 
         visuals_via_mask = self.via_mask_from(mask=mapper.source_grid_slim.mask)
 
-        pixelization_grid = self.get(
-            "pixelization_grid", mapper.data_mesh_grid, "mapper_data_pixelization_grid"
+        mesh_grid = self.get(
+            "mesh_grid", mapper.data_mesh_grid, "mapper_data_mesh_grid"
         )
 
         return (
             self.visuals
             + visuals_via_mask
-            + self.visuals.__class__(pixelization_grid=pixelization_grid)
+            + self.visuals.__class__(mesh_grid=mesh_grid)
         )
 
     def via_mapper_for_source_from(
@@ -281,7 +281,7 @@ class GetVisuals2D(AbstractGetVisuals):
         - origin: the (y,x) origin of the coordinate system in the source plane.
         - mapper_source_grid_slim: the (y,x) grid of coordinates in the mapper's source-plane which are paired with
         the mapper's pixelization's mesh pixels.
-        - mapper_source_pixelization_grid: the `Mapper`'s pixelization's mesh grid in the source-plane.
+        - mapper_source_mesh_grid: the `Mapper`'s pixelization's mesh grid in the source-plane.
         - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
 
         Parameters
@@ -303,14 +303,12 @@ class GetVisuals2D(AbstractGetVisuals):
 
         border = self.get("border", mapper.source_grid_slim.sub_border_grid)
 
-        pixelization_grid = self.get(
-            "pixelization_grid",
-            mapper.source_mesh_grid,
-            "mapper_source_pixelization_grid",
+        mesh_grid = self.get(
+            "mesh_grid", mapper.source_mesh_grid, "mapper_source_mesh_grid"
         )
 
         return self.visuals + self.visuals.__class__(
-            origin=origin, grid=grid, border=border, pixelization_grid=pixelization_grid
+            origin=origin, grid=grid, border=border, mesh_grid=mesh_grid
         )
 
     def via_fit_imaging_from(self, fit: FitImaging) -> Visuals2D:

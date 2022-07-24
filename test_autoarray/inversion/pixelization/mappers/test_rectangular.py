@@ -21,19 +21,19 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         shape_native=(3, 3),
     )
 
-    pixelization_grid = aa.Mesh2DRectangular.overlay_grid(
-        shape_native=(3, 3), grid=grid
-    )
+    mesh_grid = aa.Mesh2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
 
-    mapper = aa.Mapper(source_grid_slim=grid, source_mesh_grid=pixelization_grid)
+    mapper_grids = aa.MapperGrids(source_grid_slim=grid, source_mesh_grid=mesh_grid)
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     pix_indexes_for_sub_slim_index_util = np.array(
         [
             aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
                 grid_scaled_2d_slim=grid,
-                shape_native=pixelization_grid.shape_native,
-                pixel_scales=pixelization_grid.pixel_scales,
-                origin=pixelization_grid.origin,
+                shape_native=mesh_grid.shape_native,
+                pixel_scales=mesh_grid.pixel_scales,
+                origin=mesh_grid.origin,
             ).astype("int")
         ]
     ).T
@@ -45,15 +45,13 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 
 def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
 
-    pixelization_grid = aa.Mesh2DRectangular.overlay_grid(
-        shape_native=(3, 3), grid=grid_2d_7x7
+    mesh_grid = aa.Mesh2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid_2d_7x7)
+
+    mapper_grids = aa.MapperGrids(
+        source_grid_slim=grid_2d_7x7, source_mesh_grid=mesh_grid, hyper_data=image_7x7
     )
 
-    mapper = aa.Mapper(
-        source_grid_slim=grid_2d_7x7,
-        source_mesh_grid=pixelization_grid,
-        hyper_data=image_7x7,
-    )
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     pixel_signals = mapper.pixel_signals_from(signal_scale=2.0)
 
@@ -64,7 +62,7 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
         pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
         pixel_weights=mapper.pix_weights_for_sub_slim_index,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
-        hyper_image=image_7x7,
+        hyper_data=image_7x7,
     )
 
     assert (pixel_signals == pixel_signals_util).all()

@@ -1,10 +1,16 @@
+from typing import Dict, Optional
+
+from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 
 
 def mapper_from(
-    source_grid_slim, source_mesh_grid, data_mesh_grid=None, hyper_data=None
+    mapper_grids: MapperGrids,
+    regularization: Optional[AbstractRegularization],
+    profiling_dict: Optional[Dict] = None,
 ):
 
     from autoarray.inversion.pixelization.mappers.rectangular import (
@@ -14,38 +20,32 @@ def mapper_from(
     from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
     from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 
-    if isinstance(source_mesh_grid, Mesh2DRectangular):
+    if isinstance(mapper_grids.source_mesh_grid, Mesh2DRectangular):
 
         return MapperRectangularNoInterp(
-            source_grid_slim=source_grid_slim,
-            source_mesh_grid=source_mesh_grid,
-            data_mesh_grid=data_mesh_grid,
-            hyper_image=hyper_data,
+            mapper_grids=mapper_grids,
+            regularization=regularization,
+            profiling_dict=profiling_dict,
         )
-    elif isinstance(source_mesh_grid, Mesh2DDelaunay):
+    elif isinstance(mapper_grids.source_mesh_grid, Mesh2DDelaunay):
 
         return MapperDelaunay(
-            source_grid_slim=source_grid_slim,
-            source_mesh_grid=source_mesh_grid,
-            data_mesh_grid=data_mesh_grid,
-            hyper_image=hyper_data,
+            mapper_grids=mapper_grids,
+            regularization=regularization,
+            profiling_dict=profiling_dict,
         )
-    elif isinstance(source_mesh_grid, Mesh2DVoronoi):
+    elif isinstance(mapper_grids.source_mesh_grid, Mesh2DVoronoi):
 
-        if source_mesh_grid.uses_interpolation:
+        if mapper_grids.source_mesh_grid.uses_interpolation:
 
             return MapperVoronoi(
-                source_grid_slim=source_grid_slim,
-                source_mesh_grid=source_mesh_grid,
-                data_mesh_grid=data_mesh_grid,
-                hyper_image=hyper_data,
+                mapper_grids=mapper_grids,
+                regularization=regularization,
+                profiling_dict=profiling_dict,
             )
 
-        else:
-
-            return MapperVoronoiNoInterp(
-                source_grid_slim=source_grid_slim,
-                source_mesh_grid=source_mesh_grid,
-                data_mesh_grid=data_mesh_grid,
-                hyper_image=hyper_data,
-            )
+        return MapperVoronoiNoInterp(
+            mapper_grids=mapper_grids,
+            regularization=regularization,
+            profiling_dict=profiling_dict,
+        )

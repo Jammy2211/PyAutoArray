@@ -53,11 +53,13 @@ def test__rectangular_mapper():
 
     pix = aa.mesh.Rectangular(shape=(3, 3))
 
-    mapper = pix.mapper_from(
+    mapper_grids = pix.mapper_grids_from(
         source_grid_slim=grid,
         source_mesh_grid=None,
         settings=aa.SettingsPixelization(use_border=False),
     )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperRectangularNoInterp)
     assert mapper.data_mesh_grid == None
@@ -127,11 +129,13 @@ def test__delaunay_mapper():
         grid=grid, unmasked_sparse_shape=pix.shape
     )
 
-    mapper = pix.mapper_from(
+    mapper_grids = pix.mapper_grids_from(
         source_grid_slim=grid,
         source_mesh_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperDelaunay)
     assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
@@ -202,11 +206,13 @@ def test__voronoi_mapper():
         grid=grid, unmasked_sparse_shape=pix.shape
     )
 
-    mapper = pix.mapper_from(
+    mapper_grids = pix.mapper_grids_from(
         source_grid_slim=grid,
         source_mesh_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperVoronoiNoInterp)
     assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(

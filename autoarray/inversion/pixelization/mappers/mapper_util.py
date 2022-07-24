@@ -183,7 +183,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     grid: np.ndarray,
     nearest_pixelization_index_for_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
-    pixelization_grid: np.ndarray,
+    mesh_grid: np.ndarray,
     neighbors: np.ndarray,
     neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
@@ -205,7 +205,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
-    pixelization_grid
+    mesh_grid
         The (y,x) centre of every Voronoi pixel in arc-seconds.
     neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
@@ -230,7 +230,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
             if whiletime > 1000000:
                 raise exc.MeshException
 
-            nearest_pix_center = pixelization_grid[nearest_pix_index]
+            nearest_pix_center = mesh_grid[nearest_pix_index]
 
             sub_pixel_to_nearest_pix_distance = (
                 grid[sub_slim_index, 0] - nearest_pix_center[0]
@@ -243,8 +243,8 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
                 neighbor = neighbors[nearest_pix_index, neighbor_pix_index]
 
                 distance_to_neighbor = (
-                    grid[sub_slim_index, 0] - pixelization_grid[neighbor, 0]
-                ) ** 2 + (grid[sub_slim_index, 1] - pixelization_grid[neighbor, 1]) ** 2
+                    grid[sub_slim_index, 0] - mesh_grid[neighbor, 0]
+                ) ** 2 + (grid[sub_slim_index, 1] - mesh_grid[neighbor, 1]) ** 2
 
                 if distance_to_neighbor < closest_separation_pix_to_neighbor:
                     closest_separation_pix_to_neighbor = distance_to_neighbor
@@ -337,7 +337,7 @@ def pixel_weights_delaunay_from(
 
 
 def pix_size_weights_voronoi_nn_from(
-    grid: np.ndarray, pixelization_grid: np.ndarray
+    grid: np.ndarray, mesh_grid: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Returns the mappings between a set of slimmed sub-grid pixels and pixelization pixels, using information on
@@ -357,7 +357,7 @@ def pix_size_weights_voronoi_nn_from(
         A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
-    pixelization_grid
+    mesh_grid
         The (y,x) centre of every Voronoi pixel in arc-seconds.
     neighbors
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
@@ -380,8 +380,8 @@ def pix_size_weights_voronoi_nn_from(
     max_nneighbours = 100
 
     pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_py.natural_interpolation_weights(
-        x_in=pixelization_grid[:, 1],
-        y_in=pixelization_grid[:, 0],
+        x_in=mesh_grid[:, 1],
+        y_in=mesh_grid[:, 0],
         x_target=grid[:, 1],
         y_target=grid[:, 0],
         max_nneighbours=max_nneighbours,
@@ -394,7 +394,7 @@ def pix_size_weights_voronoi_nn_from(
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         grid=grid,
-        pixelization_grid=pixelization_grid,
+        mesh_grid=mesh_grid,
     )
 
     bad_indexes = np.argwhere(pix_indexes_for_sub_slim_index[:, 0] == -1)
@@ -404,7 +404,7 @@ def pix_size_weights_voronoi_nn_from(
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         grid=grid,
-        pixelization_grid=pixelization_grid,
+        mesh_grid=mesh_grid,
     )
 
     pix_indexes_for_sub_slim_index_sizes = np.sum(
@@ -423,7 +423,7 @@ def remove_bad_entries_voronoi_nn(
     pix_weights_for_sub_slim_index,
     pix_indexes_for_sub_slim_index,
     grid,
-    pixelization_grid,
+    mesh_grid,
 ):
     """
     The nearest neighbor interpolation can return invalid or bad entries which are removed from the mapping arrays. The
@@ -441,7 +441,7 @@ def remove_bad_entries_voronoi_nn(
     pix_weights_for_sub_slim_index
     pix_indexes_for_sub_slim_index
     grid
-    pixelization_grid
+    mesh_grid
 
     Returns
     -------
@@ -452,7 +452,7 @@ def remove_bad_entries_voronoi_nn(
         ind = item[0]
         pix_indexes_for_sub_slim_index[ind] = -1
         pix_indexes_for_sub_slim_index[ind][0] = np.argmin(
-            np.sum((grid[ind] - pixelization_grid) ** 2.0, axis=1)
+            np.sum((grid[ind] - mesh_grid) ** 2.0, axis=1)
         )
         pix_weights_for_sub_slim_index[ind] = 0.0
         pix_weights_for_sub_slim_index[ind][0] = 1.0
@@ -468,7 +468,7 @@ def adaptive_pixel_signals_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
-    hyper_image: np.ndarray,
+    hyper_data: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the (hyper) signal in each pixel, where the signal is the sum of its mapped data values.
@@ -494,7 +494,7 @@ def adaptive_pixel_signals_from(
         low signal regions.
     regular_to_pix
         A 1D array util every pixel on the grid to a pixel on the pixelization.
-    hyper_image
+    hyper_data
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
@@ -512,11 +512,11 @@ def adaptive_pixel_signals_from(
         if pix_size_tem > 1:
 
             pixel_signals[vertices_indexes[:pix_size_tem]] += (
-                hyper_image[mask_1d_index] * pixel_weights[sub_slim_index]
+                hyper_data[mask_1d_index] * pixel_weights[sub_slim_index]
             )
             pixel_sizes[vertices_indexes] += 1
         else:
-            pixel_signals[vertices_indexes[0]] += hyper_image[mask_1d_index]
+            pixel_signals[vertices_indexes[0]] += hyper_data[mask_1d_index]
             pixel_sizes[vertices_indexes[0]] += 1
 
     pixel_sizes[pixel_sizes == 0] = 1

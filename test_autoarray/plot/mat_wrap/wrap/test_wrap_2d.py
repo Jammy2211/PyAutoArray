@@ -436,12 +436,12 @@ class TestDerivedClasses:
 
         assert index_scatter.config_dict["s"] == 20
 
-        pixelization_grid_scatter = aplt.PixelizationGridScatter()
-        pixelization_grid_scatter.scatter_grid(
+        mesh_grid_scatter = aplt.PixelizationGridScatter()
+        mesh_grid_scatter.scatter_grid(
             grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
         )
 
-        assert pixelization_grid_scatter.config_dict["s"] == 5
+        assert mesh_grid_scatter.config_dict["s"] == 5
 
         parallel_overscan_plot = aplt.ParallelOverscanPlot()
         parallel_overscan_plot.plot_rectangular_grid_lines(

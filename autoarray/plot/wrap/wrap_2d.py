@@ -524,7 +524,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
     ):
         """
-        Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 
+        Draws the Voronoi pixels of the input `mapper` using its `mesh_grid` which contains the (y,x)
         coordinate of the centre of every Voronoi cell. This uses the method `plt.fill`.
         
         Parameters

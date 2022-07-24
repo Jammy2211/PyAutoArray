@@ -7,6 +7,8 @@ from autoconf import cached_property
 from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
 from autoarray.inversion.linear_obj.neighbors import Neighbors
+from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -17,10 +19,8 @@ from autoarray.inversion.pixelization.mappers import mapper_util
 class AbstractMapper(LinearObj):
     def __init__(
         self,
-        source_grid_slim: Grid2D,
-        source_mesh_grid,
-        data_mesh_grid: Grid2D = None,
-        hyper_image: Array2D = None,
+        mapper_grids: MapperGrids,
+        regularization: Optional[AbstractRegularization],
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -36,11 +36,11 @@ class AbstractMapper(LinearObj):
         change the indexing, such that `source_grid_slim[0]` corresponds to the transformed value
         of `data_grid_slim[0]` and so on).
 
-        A mapper therefore only needs to determine the index mappings between the `grid_slim` and `pixelization_grid`,
+        A mapper therefore only needs to determine the index mappings between the `grid_slim` and `mesh_grid`,
         noting that associations are made by pairing `source_mesh_grid` with `source_grid_slim`.
 
         Mappings are represented in the 2D ndarray `pix_indexes_for_sub_slim_index`, whereby the index of
-        a pixel on the `pixelization_grid` maps to the index of a pixel on the `grid_slim` as follows:
+        a pixel on the `mesh_grid` maps to the index of a pixel on the `grid_slim` as follows:
 
         - pix_indexes_for_sub_slim_index[0, 0] = 0: the data's 1st sub-pixel (index 0) maps to the
         pixelization's 1st pixel (index 0).
@@ -50,7 +50,7 @@ class AbstractMapper(LinearObj):
         pixelization's 2nd pixel (index 1).
 
         The second dimension of this array (where all three examples above are 0) is used for cases where a
-        single pixel on the `grid_slim` maps to multiple pixels on the `pixelization_grid`. For example, using a
+        single pixel on the `grid_slim` maps to multiple pixels on the `mesh_grid`. For example, using a
         `Delaunay` pixelization, where every `grid_slim` pixel maps to three Delaunay pixels (the corners of the
         triangles):
 
@@ -67,6 +67,8 @@ class AbstractMapper(LinearObj):
 
         Parameters
         ----------
+        pixelization
+            The pixelization object containing this mapper's mesh and regularization.
         source_grid_slim
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
@@ -75,7 +77,7 @@ class AbstractMapper(LinearObj):
         data_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
             transformation applied to it to create the `source_mesh_grid`.
-        hyper_image
+        hyper_data
             An image which is used to determine the `data_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
         profiling_dict
@@ -84,15 +86,28 @@ class AbstractMapper(LinearObj):
 
         super().__init__(profiling_dict=profiling_dict)
 
-        self.source_grid_slim = source_grid_slim
-        self.source_mesh_grid = source_mesh_grid
-        self.data_mesh_grid = data_mesh_grid
-
-        self.hyper_image = hyper_image
+        self.mapper_grids = mapper_grids
+        self.regularization = regularization
 
     @property
     def pixels(self) -> int:
         return self.source_mesh_grid.pixels
+
+    @property
+    def source_grid_slim(self) -> Grid2D:
+        return self.mapper_grids.source_grid_slim
+
+    @property
+    def source_mesh_grid(self) -> Grid2D:
+        return self.mapper_grids.source_mesh_grid
+
+    @property
+    def data_mesh_grid(self) -> Grid2D:
+        return self.mapper_grids.data_mesh_grid
+
+    @property
+    def hyper_data(self) -> Grid2D:
+        return self.mapper_grids.hyper_data
 
     @property
     def neighbors(self) -> Neighbors:
@@ -164,7 +179,7 @@ class AbstractMapper(LinearObj):
         lists where the first entries are the pixelization index and second entries store the data sub-pixel indexes.
 
         For example, if `sub_slim_indexes_for_pix_index[2][4] = 10`, the pixelization pixel with index 2
-        (e.g. `pixelization_grid[2,:]`) has a mapping to a data sub-pixel with index 10 (e.g. `grid_slim[10, :]).
+        (e.g. `mesh_grid[2,:]`) has a mapping to a data sub-pixel with index 10 (e.g. `grid_slim[10, :]).
 
         This is effectively a reversal of the array `pix_indexes_for_sub_slim_index`.
         """
@@ -190,7 +205,7 @@ class AbstractMapper(LinearObj):
         lists where the first entries are the pixelization index and second entries store the data sub-pixel indexes.
 
         For example, if `sub_slim_indexes_for_pix_index[2][4] = 10`, the pixelization pixel with index 2
-        (e.g. `pixelization_grid[2,:]`) has a mapping to a data sub-pixel with index 10 (e.g. `grid_slim[10, :]).
+        (e.g. `mesh_grid[2,:]`) has a mapping to a data sub-pixel with index 10 (e.g. `grid_slim[10, :]).
 
         This is effectively a reversal of the array `pix_indexes_for_sub_slim_index`.
         """
@@ -206,7 +221,7 @@ class AbstractMapper(LinearObj):
     def unique_mappings(self) -> "UniqueMappings":
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
-        to their corresponding pixelization pixels (e.g. `pixelization_grid`).
+        to their corresponding pixelization pixels (e.g. `mesh_grid`).
 
         To perform an `Inversion` efficiently the linear algebra can bypass the calculation of a `mapping_matrix` and
         instead use the w-tilde formalism, which requires these unique mappings for efficient computation. For
@@ -273,7 +288,7 @@ class AbstractMapper(LinearObj):
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            hyper_image=self.hyper_image,
+            hyper_data=self.hyper_data,
         )
 
     def pix_indexes_for_slim_indexes(self, pix_indexes: List) -> List[List]:

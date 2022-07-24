@@ -115,7 +115,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     mapper = aa.m.MockMapper(
         source_grid_slim=grid_2d_7x7,
         pix_sub_weights=pix_sub_weights,
-        hyper_image=image_7x7,
+        hyper_data=image_7x7,
         pixels=pixels,
     )
 
@@ -128,7 +128,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         pix_indexes_for_sub_slim_index=pix_sub_weights.mappings,
         pix_size_for_sub_slim_index=pix_sub_weights.sizes,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
-        hyper_image=image_7x7,
+        hyper_data=image_7x7,
     )
 
     assert (pixel_signals == pixel_signals_util).all()
@@ -136,15 +136,19 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
 
 def test__interpolated_array_from(grid_2d_7x7):
 
-    pixelization_grid_ndarray = aa.Grid2D.manual_slim(
+    mesh_grid_ndarray = aa.Grid2D.manual_slim(
         [[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
 
-    pixelization_grid = aa.Mesh2DDelaunay(grid=pixelization_grid_ndarray)
+    mesh_grid = aa.Mesh2DDelaunay(grid=mesh_grid_ndarray)
 
-    mapper = aa.Mapper(source_grid_slim=grid_2d_7x7, source_mesh_grid=pixelization_grid)
+    mapper_grids = aa.MapperGrids(
+        source_grid_slim=grid_2d_7x7, source_mesh_grid=mesh_grid
+    )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     interpolated_array_via_mapper = mapper.interpolated_array_from(
         values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
@@ -152,7 +156,7 @@ def test__interpolated_array_from(grid_2d_7x7):
         extent=(-0.2, 0.2, -0.2, 0.2),
     )
 
-    interpolated_array_via_grid = pixelization_grid.interpolated_array_from(
+    interpolated_array_via_grid = mesh_grid.interpolated_array_from(
         values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
         shape_native=(3, 3),
         extent=(-0.2, 0.2, -0.2, 0.2),
@@ -163,15 +167,19 @@ def test__interpolated_array_from(grid_2d_7x7):
 
 def test__mapped_to_source_from(grid_2d_7x7):
 
-    pixelization_grid = aa.Grid2D.manual_slim(
+    mesh_grid = aa.Grid2D.manual_slim(
         [[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
 
-    pixelization_grid = aa.Mesh2DDelaunay(grid=pixelization_grid)
+    mesh_grid = aa.Mesh2DDelaunay(grid=mesh_grid)
 
-    mapper = aa.Mapper(source_grid_slim=grid_2d_7x7, source_mesh_grid=pixelization_grid)
+    mapper_grids = aa.MapperGrids(
+        source_grid_slim=grid_2d_7x7, source_mesh_grid=mesh_grid
+    )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     array_slim = aa.Array2D.manual_slim(
         [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],

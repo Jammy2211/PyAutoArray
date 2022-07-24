@@ -30,7 +30,7 @@ class AbstractMesh:
         given the variable name `data_grid_slim` or in the transformed source frame with the variable
         name `source_grid_slim`).
 
-        - `pixelization_grid`: the (y,x) grid of the pixelization's pixels which are associated with
+        - `mesh_grid`: the (y,x) grid of the pixelization's pixels which are associated with
         the `grid_slim` (y,x)  coordinates (association is always performed in the `source` reference frame).
 
         A pixelization therefore has up to four grids associated with it: `data_grid_slim`, `source_grid_slim`,
@@ -45,17 +45,17 @@ class AbstractMesh:
         the `image-plane` and `source` frame the `source-plane`.
         """
 
-    def mapper_from(
+    def mapper_grids_from(
         self,
         source_grid_slim: Grid2D,
         source_mesh_grid: Grid2D = None,
         data_mesh_grid: Grid2D = None,
-        hyper_image: np.ndarray = None,
+        hyper_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
     ):
-        raise NotImplementedError("pixelization_mapper_from should be overridden")
+        raise NotImplementedError("pixelization_mapper_grids_from should be overridden")
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__ and self.__class__ is other.__class__
@@ -94,10 +94,9 @@ class AbstractMesh:
             return source_grid_slim
 
         else:
-
             return preloads.relocated_grid
 
-    def relocated_pixelization_grid_from(
+    def relocated_mesh_grid_from(
         self,
         source_grid_slim: Grid2D,
         source_mesh_grid: Grid2DSparse,
@@ -105,7 +104,7 @@ class AbstractMesh:
     ):
         raise NotImplementedError
 
-    def pixelization_grid_from(
+    def mesh_grid_from(
         self,
         source_grid_slim: Grid2D,
         source_mesh_grid: Grid2DSparse,
@@ -113,7 +112,7 @@ class AbstractMesh:
     ):
         raise NotImplementedError
 
-    def weight_map_from(self, hyper_image: np.ndarray):
+    def weight_map_from(self, hyper_data: np.ndarray):
 
         raise NotImplementedError()
 

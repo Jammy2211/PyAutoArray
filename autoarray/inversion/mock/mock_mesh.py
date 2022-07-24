@@ -8,9 +8,9 @@ class MockMesh(AbstractMesh):
 
         self.data_mesh_grid = data_mesh_grid
 
-    def data_pixelization_grid_from(self, data_grid_slim, hyper_image, settings=None):
+    def data_mesh_grid_from(self, data_grid_slim, hyper_data, settings=None):
 
-        if hyper_image is not None and self.data_mesh_grid is not None:
-            return hyper_image * self.data_mesh_grid
+        if hyper_data is not None and self.data_mesh_grid is not None:
+            return hyper_data * self.data_mesh_grid
 
         return self.data_mesh_grid

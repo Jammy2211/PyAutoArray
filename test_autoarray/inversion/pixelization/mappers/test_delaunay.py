@@ -3,15 +3,19 @@ import autoarray as aa
 
 
 def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
-    pixelization_grid = aa.Grid2D.manual_slim(
+    mesh_grid = aa.Grid2D.manual_slim(
         [[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
 
-    pixelization_grid = aa.Mesh2DDelaunay(grid=pixelization_grid)
+    mesh_grid = aa.Mesh2DDelaunay(grid=mesh_grid)
 
-    mapper = aa.Mapper(source_grid_slim=grid_2d_7x7, source_mesh_grid=pixelization_grid)
+    mapper_grids = aa.MapperGrids(
+        source_grid_slim=grid_2d_7x7, source_mesh_grid=mesh_grid
+    )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     simplex_index_for_sub_slim_index = mapper.delaunay.find_simplex(
         mapper.source_grid_slim

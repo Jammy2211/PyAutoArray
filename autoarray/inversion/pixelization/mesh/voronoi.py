@@ -5,16 +5,13 @@ from typing import Dict, Optional, Tuple
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
-from autoarray.preloads import Preloads
-from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
+from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
 from autoarray.inversion.pixelization.settings import SettingsPixelization
-from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
-from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 
 from autoarray.numba_util import profile_func
 
 
-class Voronoi(AbstractMesh):
+class Voronoi(Triangulation):
     def __init__(self):
         """
         A mesh associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
@@ -36,7 +33,7 @@ class Voronoi(AbstractMesh):
         given the variable name `data_grid_slim` or in the transformed source frame with the variable
         name `source_grid_slim`).
 
-        - `pixelization_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
+        - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
         coordinates (association is always performed in the `source` reference frame).
 
         A Voronoi mesh has four grids associated with it: `data_grid_slim`, `source_grid_slim`,
@@ -56,149 +53,12 @@ class Voronoi(AbstractMesh):
         """
         super().__init__()
 
-    def mapper_from(
-        self,
-        source_grid_slim: Grid2D,
-        source_mesh_grid: Grid2DSparse = None,
-        data_mesh_grid: Grid2DSparse = None,
-        hyper_image: np.ndarray = None,
-        settings=SettingsPixelization(),
-        preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
-    ):
-        """
-        Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a mesh,
-        in both the `data` and `source` frames.
-
-        This function returns a `MapperVoronoiNoInterp` as follows:
-
-        1) Before this routine is called, a sparse grid of (y,x) coordinates are computed from the 2D masked data,
-        the `data_mesh_grid`, which acts as the Voronoi pixel centres of the mesh and mapper.
-
-        2) Before this routine is called, operations are performed on this `data_mesh_grid` that transform it
-        from a 2D grid which overlaps with the 2D mask of the data in the `data` frame to an irregular grid in
-        the `source` frame, the `source_mesh_grid`.
-
-        3) If `settings.use_border=True`, the border of the input `source_grid_slim` is used to relocate all of the
-        grid's (y,x) coordinates beyond the border to the edge of the border.
-
-        4) If `settings.use_border=True`, the border of the input `source_grid_slim` is used to relocate all of the
-        transformed `source_mesh_grid`'s (y,x) coordinates beyond the border to the edge of the border.
-
-        5) Use the transformed `source_mesh_grid`'s (y,x) coordinates as the centres of the Voronoi
-        mesh.
-
-        6) Return the `MapperVoronoiNoInterp`.
-
-        Parameters
-        ----------
-        source_grid_slim
-            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
-            `source` reference frame.
-        source_mesh_grid
-            The centres of every Voronoi pixel in the `source` frame, which are initially derived by computing a sparse
-            set of (y,x) coordinates computed from the unmasked data in the `data` frame and applying a transformation
-            to this.
-        data_mesh_grid
-            The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
-            transformation applied to it to create the `source_mesh_grid`.
-        hyper_image
-            Not used for a rectangular mesh.
-        settings
-            Settings controlling the mesh for example if a border is used to relocate its exterior coordinates.
-        preloads
-            Object which may contain preloaded arrays of quantities computed in the mesh, which are passed via
-            this object speed up the calculation.
-        profiling_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
-        """
-
-        self.profiling_dict = profiling_dict
-
-        relocated_source_grid_slim = self.relocated_grid_from(
-            source_grid_slim=source_grid_slim, settings=settings, preloads=preloads
-        )
-
-        relocated_source_pixelization_grid = self.relocated_pixelization_grid_from(
-            source_grid_slim=source_grid_slim,
-            source_mesh_grid=source_mesh_grid,
-            settings=settings,
-        )
-
-        try:
-
-            source_mesh_grid = self.pixelization_grid_from(
-                source_grid_slim=relocated_source_grid_slim,
-                source_mesh_grid=relocated_source_pixelization_grid,
-                sparse_index_for_slim_index=source_mesh_grid.sparse_index_for_slim_index,
-            )
-        except ValueError as e:
-            raise e
-
-        if self.uses_interpolation:
-
-            return MapperVoronoi(
-                source_grid_slim=relocated_source_grid_slim,
-                source_mesh_grid=source_mesh_grid,
-                data_mesh_grid=data_mesh_grid,
-                hyper_image=hyper_image,
-                profiling_dict=profiling_dict,
-            )
-
-        return MapperVoronoiNoInterp(
-            source_grid_slim=relocated_source_grid_slim,
-            source_mesh_grid=source_mesh_grid,
-            data_mesh_grid=data_mesh_grid,
-            hyper_image=hyper_image,
-            profiling_dict=profiling_dict,
-        )
-
     @property
     def uses_interpolation(self):
         return False
 
     @profile_func
-    def relocated_pixelization_grid_from(
-        self,
-        source_grid_slim: Grid2D,
-        source_mesh_grid: Grid2DSparse,
-        settings: SettingsPixelization = SettingsPixelization(),
-    ):
-        """
-        Relocates all coordinates of the input `source_mesh_grid` that are outside of a border (which
-        is defined by a grid of (y,x) coordinates) to the edge of this border.
-
-        The border is determined from the mask of the 2D data in the `data` frame before any transformations of the
-        data's grid are performed. The border is all pixels in this mask that are pixels at its extreme edge. These
-        pixel indexes are used to then determine a grid of (y,x) coordinates from the transformed `source_grid_grid` in
-        the `source` reference frame, whereby points located outside of it are relocated to the border's edge.
-
-        A full description of relocation is given in the method grid_2d.relocated_grid_from()`.
-
-        This is used in the project `PyAutoLens` to relocate the coordinates that are ray-traced near the centre of mass
-        of galaxies, which are heavily demagnified and may trace to outskirts of the source-plane well beyond the
-        border.
-
-        Parameters
-        ----------
-        source_grid_slim
-            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
-            `source` reference frame.
-        source_mesh_grid
-            The centres of every Voronoi pixel in the `source` frame, which are initially derived by computing a sparse
-            set of (y,x) coordinates computed from the unmasked data in the `data` frame and applying a transformation
-            to this.
-        settings
-            Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
-        """
-        if settings.use_border:
-            return source_grid_slim.relocated_pixelization_grid_from(
-                pixelization_grid=source_mesh_grid
-            )
-        return source_mesh_grid
-
-    @profile_func
-    def pixelization_grid_from(
+    def mesh_grid_from(
         self,
         source_grid_slim=None,
         source_mesh_grid=None,
@@ -256,7 +116,7 @@ class VoronoiMagnification(Voronoi):
         given the variable name `data_grid_slim` or in the transformed source frame with the variable
         name `source_grid_slim`).
 
-        - `pixelization_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
+        - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
         coordinates (association is always performed in the `source` reference frame).
 
         A Voronoi pixelization has four grids associated with it: `data_grid_slim`, `source_grid_slim`,
@@ -285,7 +145,7 @@ class VoronoiMagnification(Voronoi):
         Parameters
         ----------
         shape
-            The shape of the unmasked `pixelization_grid` in the `data` frame which is laid over the masked image, in
+            The shape of the unmasked `mesh_grid` in the `data` frame which is laid over the masked image, in
             order to derive the centres of the Voronoi pixels in the `data` frame.
         """
         super().__init__()
@@ -293,14 +153,14 @@ class VoronoiMagnification(Voronoi):
         self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
 
-    def data_pixelization_grid_from(
+    def data_mesh_grid_from(
         self,
         data_grid_slim: Grid2D,
-        hyper_image: np.ndarray = None,
+        hyper_data: np.ndarray = None,
         settings=SettingsPixelization(),
     ) -> Grid2DSparse:
         """
-        Computes the `pixelization_grid` in the `data` frame, by overlaying a uniform grid of coordinates over the
+        Computes the `mesh_grid` in the `data` frame, by overlaying a uniform grid of coordinates over the
         masked 2D data (see `Grid2DSparse.from_grid_and_unmasked_2d_grid_shape()`).
 
         For a `VoronoiMagnification` this grid is computed by overlaying a 2D grid with dimensions `shape` over the
@@ -312,7 +172,7 @@ class VoronoiMagnification(Voronoi):
         data_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
             transformation applied to it to create the `source_mesh_grid`.
-        hyper_image
+        hyper_data
             An image which is used to determine the `data_mesh_grid` and therefore adapt the distribution of
             pixels of the Voronoi grid to the data it discretizes.
         settings
@@ -345,7 +205,7 @@ class VoronoiBrightnessImage(Voronoi):
         given the variable name `data_grid_slim` or in the transformed source frame with the variable
         name `source_grid_slim`).
 
-        - `pixelization_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
+        - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
         coordinates (association is always performed in the `source` reference frame).
 
         A Voronoi pixelization has four grids associated with it: `data_grid_slim`, `source_grid_slim`,
@@ -388,42 +248,42 @@ class VoronoiBrightnessImage(Voronoi):
         self.weight_floor = weight_floor
         self.weight_power = weight_power
 
-    def weight_map_from(self, hyper_image: np.ndarray) -> np.ndarray:
+    def weight_map_from(self, hyper_data: np.ndarray) -> np.ndarray:
         """
-        Computes a `weight_map` from an input `hyper_image`, where this image represents components in the masked 2d
+        Computes a `weight_map` from an input `hyper_data`, where this image represents components in the masked 2d
         data in the `data` frame. This applies the `weight_floor` and `weight_power` attributes of the class, which
         scale the weights to make different components upweighted relative to one another.
 
         Parameters
         ----------
-        hyper_image
+        hyper_data
             A image which represents one or more components in the masked 2D data in the `data` frame.
 
         Returns
         -------
         The weight map which is used to adapt the Voronoi pixels in the `data` frame to components in the data.
         """
-        weight_map = (hyper_image - np.min(hyper_image)) / (
-            np.max(hyper_image) - np.min(hyper_image)
-        ) + self.weight_floor * np.max(hyper_image)
+        weight_map = (hyper_data - np.min(hyper_data)) / (
+            np.max(hyper_data) - np.min(hyper_data)
+        ) + self.weight_floor * np.max(hyper_data)
 
         return np.power(weight_map, self.weight_power)
 
-    def data_pixelization_grid_from(
+    def data_mesh_grid_from(
         self,
         data_grid_slim: Grid2D,
-        hyper_image: np.ndarray,
+        hyper_data: np.ndarray,
         settings=SettingsPixelization(),
     ):
         """
-        Computes the `pixelization_grid` in the `data` frame, by overlaying a uniform grid of coordinates over the
+        Computes the `mesh_grid` in the `data` frame, by overlaying a uniform grid of coordinates over the
         masked 2D data (see `Grid2DSparse.from_grid_and_unmasked_2d_grid_shape()`).
 
         The `data_pixelizaiton_grid` is transformed to the `source_mesh_grid`, and it is these (y,x) values
         which then act the centres of the Voronoi pixelization's pixels.
 
         For a `VoronoiBrightnessImage` this grid is computed by applying a KMeans clustering algorithm to the masked
-        data's values, where these values are reweighted by the `hyper_image` so that the algorithm can adapt to
+        data's values, where these values are reweighted by the `hyper_data` so that the algorithm can adapt to
         specific parts of the data.
 
         Parameters
@@ -431,13 +291,13 @@ class VoronoiBrightnessImage(Voronoi):
         data_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
             transformation applied to it to create the `source_mesh_grid`.
-        hyper_image
+        hyper_data
             An image which is used to determine the `data_mesh_grid` and therefore adapt the distribution of
             pixels of the Voronoi grid to the data it discretizes.
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
-        weight_map = self.weight_map_from(hyper_image=hyper_image)
+        weight_map = self.weight_map_from(hyper_data=hyper_data)
 
         return Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,
