@@ -9,3 +9,11 @@ class Pixelization:
 
         self.mesh = mesh
         self.regularization = regularization
+
+    def __repr__(self):
+        string = "{}\n{}".format(self.__class__.__name__, str(self.mesh))
+
+        if self.regularization is not None:
+            string += "{}\n{}".format(self.__class__.__name__, str(self.regularization))
+
+        return string
