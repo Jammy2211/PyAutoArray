@@ -339,14 +339,12 @@ def test__set_regularization_matrix_and_term():
 
     inversion_0 = aa.m.MockInversion(
         log_det_regularization_matrix_term=0,
-        linear_obj_list=[None],
-        regularization_list=[regularization],
+        linear_obj_list=[aa.m.MockLinearObj(regularization=regularization)],
     )
 
     inversion_1 = aa.m.MockInversion(
         log_det_regularization_matrix_term=1,
-        linear_obj_list=[None],
-        regularization_list=[regularization],
+        linear_obj_list=[aa.m.MockLinearObj(regularization=regularization)],
     )
 
     fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
@@ -364,14 +362,12 @@ def test__set_regularization_matrix_and_term():
 
     inversion_0 = aa.m.MockInversion(
         log_det_regularization_matrix_term=1,
-        linear_obj_list=[aa.m.MockMapper()],
-        regularization_list=[regularization],
+        linear_obj_list=[aa.m.MockMapper(regularization=regularization)],
     )
 
     inversion_1 = aa.m.MockInversion(
         log_det_regularization_matrix_term=1,
-        linear_obj_list=[aa.m.MockMapper()],
-        regularization_list=[regularization],
+        linear_obj_list=[aa.m.MockMapper(regularization=regularization)],
     )
 
     fit_0 = aa.m.MockFitImaging(inversion=inversion_0)

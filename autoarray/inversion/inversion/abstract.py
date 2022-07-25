@@ -26,7 +26,6 @@ class AbstractInversion:
         data: Union[Visibilities, Array2D],
         noise_map: Union[Visibilities, Array2D],
         linear_obj_list: List[LinearObj],
-        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
         preloads=None,
         profiling_dict: Optional[Dict] = None,
@@ -61,7 +60,6 @@ class AbstractInversion:
         self.noise_map = noise_map
 
         self.linear_obj_list = linear_obj_list
-        self.regularization_list = regularization_list
 
         self.settings = settings
 
@@ -137,6 +135,10 @@ class AbstractInversion:
             cls=cls,
             cls_filtered=cls_filtered,
         )
+
+    @property
+    def regularization_list(self) -> List[AbstractRegularization]:
+        return [linear_obj.regularization for linear_obj in self.linear_obj_list]
 
     @property
     def all_linear_obj_have_regularization(self) -> bool:
@@ -223,19 +225,6 @@ class AbstractInversion:
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
-    def regularization_matrix_from(self, index: int) -> np.ndarray:
-
-        linear_obj = self.linear_obj_list[index]
-        regularization = self.regularization_list[index]
-
-        if self.regularization_list[index] is None:
-
-            pixels = linear_obj.pixels
-
-            return np.zeros((pixels, pixels))
-
-        return regularization.regularization_matrix_from(linear_obj=linear_obj)
-
     @cached_property
     @profile_func
     def regularization_matrix(self) -> Optional[np.ndarray]:
@@ -256,8 +245,8 @@ class AbstractInversion:
 
         return block_diag(
             *[
-                self.regularization_matrix_from(index=index)
-                for index in range(len(self.regularization_list))
+                linear_obj.regularization_matrix
+                for linear_obj in self.linear_obj_list
             ]
         )
 

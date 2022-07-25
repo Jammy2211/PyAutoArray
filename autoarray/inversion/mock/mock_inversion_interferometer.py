@@ -32,7 +32,6 @@ class MockInversionInterferometer(InversionInterferometerMapping):
             noise_map=noise_map,
             transformer=transformer,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
         )

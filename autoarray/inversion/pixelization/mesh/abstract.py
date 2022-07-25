@@ -122,6 +122,17 @@ class AbstractMesh:
             return source_grid_slim.relocated_mesh_grid_from(mesh_grid=source_mesh_grid)
         return source_mesh_grid
 
+    def mapper_grids_from(self,
+                          source_grid_slim: Grid2D,
+                          source_mesh_grid: Grid2DSparse = None,
+                          data_mesh_grid: Grid2DSparse = None,
+                          hyper_data: np.ndarray = None,
+                          settings=SettingsPixelization(),
+                          preloads: Preloads = Preloads(),
+                          profiling_dict: Optional[Dict] = None,
+                          ) -> MapperGrids:
+        raise NotImplementedError
+
     def mesh_grid_from(
         self,
         source_grid_slim: Grid2D,

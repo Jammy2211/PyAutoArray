@@ -49,3 +49,5 @@ def mapper_from(
             regularization=regularization,
             profiling_dict=profiling_dict,
         )
+
+    returnb

@@ -405,7 +405,7 @@ def make_rectangular_mapper_7x7_3x3():
         hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
-    return aa.MapperRectangularNoInterp(mapper_grids=mapper_grids, regularization=None)
+    return aa.MapperRectangularNoInterp(mapper_grids=mapper_grids, regularization=make_regularization_constant())
 
 
 def make_delaunay_mapper_9_3x3():
@@ -417,7 +417,7 @@ def make_delaunay_mapper_9_3x3():
         hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
-    return aa.MapperDelaunay(mapper_grids=mapper_grids, regularization=None)
+    return aa.MapperDelaunay(mapper_grids=mapper_grids, regularization=make_regularization_constant())
 
 
 def make_voronoi_mapper_9_3x3():
@@ -428,7 +428,7 @@ def make_voronoi_mapper_9_3x3():
         hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
-    return aa.MapperVoronoiNoInterp(mapper_grids=mapper_grids, regularization=None)
+    return aa.MapperVoronoiNoInterp(mapper_grids=mapper_grids, regularization=make_regularization_constant())
 
 
 def make_voronoi_mapper_nn_9_3x3():
@@ -447,7 +447,6 @@ def make_rectangular_inversion_7x7_3x3():
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_rectangular_mapper_7x7_3x3()],
-        regularization_list=[make_regularization_constant()],
     )
 
 
@@ -456,7 +455,6 @@ def make_delaunay_inversion_9_3x3():
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_delaunay_mapper_9_3x3()],
-        regularization_list=[make_regularization_constant()],
     )
 
 
@@ -465,7 +463,6 @@ def make_voronoi_inversion_9_3x3():
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_voronoi_mapper_9_3x3()],
-        regularization_list=[make_regularization_constant()],
     )
 
 

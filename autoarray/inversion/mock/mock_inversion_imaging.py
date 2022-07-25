@@ -12,7 +12,6 @@ class MockInversionImaging(InversionImagingMapping):
         noise_map=None,
         convolver=None,
         linear_obj_list=None,
-        regularization_list=None,
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
@@ -32,7 +31,6 @@ class MockInversionImaging(InversionImagingMapping):
             noise_map=noise_map,
             convolver=convolver,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
         )

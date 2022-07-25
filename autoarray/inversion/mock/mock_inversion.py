@@ -12,7 +12,6 @@ class MockInversion(AbstractInversion):
         data=None,
         noise_map=None,
         linear_obj_list=None,
-        regularization_list=None,
         operated_mapping_matrix=None,
         data_vector=None,
         curvature_matrix=None,
@@ -44,7 +43,6 @@ class MockInversion(AbstractInversion):
             data=data,
             noise_map=noise_map,
             linear_obj_list=linear_obj_list or [],
-            regularization_list=regularization_list or [],
             settings=settings,
             preloads=preloads,
         )

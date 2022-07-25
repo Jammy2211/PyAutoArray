@@ -24,7 +24,6 @@ from .inversion.pixelization import mesh
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.abstract import AbstractInversion
-from .inversion.pixelization.pixelization import Pixelization
 from .inversion.regularization.abstract import AbstractRegularization
 from .inversion.inversion.factory import inversion_from as Inversion
 from .inversion.inversion.factory import (
@@ -33,6 +32,7 @@ from .inversion.inversion.factory import (
 from .inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
+from .inversion.pixelization.pixelization import Pixelization
 from .inversion.pixelization.mappers.mapper_grids import MapperGrids
 from .inversion.pixelization.mappers.factory import mapper_from as Mapper
 from .inversion.pixelization.mappers.rectangular import MapperRectangularNoInterp

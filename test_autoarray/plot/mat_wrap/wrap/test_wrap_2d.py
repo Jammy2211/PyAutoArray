@@ -436,7 +436,7 @@ class TestDerivedClasses:
 
         assert index_scatter.config_dict["s"] == 20
 
-        mesh_grid_scatter = aplt.PixelizationGridScatter()
+        mesh_grid_scatter = aplt.MeshGridScatter()
         mesh_grid_scatter.scatter_grid(
             grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
         )

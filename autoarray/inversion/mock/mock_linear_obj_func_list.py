@@ -4,9 +4,9 @@ from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 
 
 class MockLinearObjFuncList(AbstractLinearObjFuncList):
-    def __init__(self, pixels=None, grid=None, mapping_matrix=None):
+    def __init__(self, pixels=None, grid=None, mapping_matrix=None, regularization=None):
 
-        super().__init__(grid=grid)
+        super().__init__(grid=grid, regularization=regularization)
 
         self._pixels = pixels
         self._mapping_matrix = mapping_matrix

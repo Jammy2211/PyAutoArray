@@ -4,13 +4,15 @@ from typing import Dict, Optional
 from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.neighbors import Neighbors
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray.numba_util import profile_func
 
 
 class LinearObj:
-    def __init__(self, profiling_dict: Optional[Dict] = None):
+    def __init__(self, regularization: Optional[AbstractRegularization], profiling_dict: Optional[Dict] = None):
 
+        self.regularization = regularization
         self.profiling_dict = profiling_dict
 
     @property
@@ -19,6 +21,11 @@ class LinearObj:
 
     @property
     def neighbors(self) -> Neighbors:
+        raise NotImplementedError
+
+    @cached_property
+    @profile_func
+    def unique_mappings(self):
         raise NotImplementedError
 
     @property
@@ -46,7 +53,11 @@ class LinearObj:
         """
         return None
 
-    @cached_property
-    @profile_func
-    def unique_mappings(self):
-        raise NotImplementedError
+    @property
+    def regularization_matrix(self) -> np.ndarray:
+
+        if self.regularization is None:
+
+            return np.zeros((self.pixels, self.pixels))
+
+        return self.regularization.regularization_matrix_from(linear_obj=self)

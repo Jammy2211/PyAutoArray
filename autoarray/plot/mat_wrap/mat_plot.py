@@ -450,7 +450,7 @@ class MatPlot2D(AbstractMatPlot):
         border_scatter: Optional[w2d.BorderScatter] = None,
         positions_scatter: Optional[w2d.PositionsScatter] = None,
         index_scatter: Optional[w2d.IndexScatter] = None,
-        mesh_grid_scatter: Optional[w2d.PixelizationGridScatter] = None,
+        mesh_grid_scatter: Optional[w2d.MeshGridScatter] = None,
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
@@ -577,7 +577,7 @@ class MatPlot2D(AbstractMatPlot):
         self.border_scatter = border_scatter or w2d.BorderScatter()
         self.positions_scatter = positions_scatter or w2d.PositionsScatter()
         self.index_scatter = index_scatter or w2d.IndexScatter()
-        self.mesh_grid_scatter = mesh_grid_scatter or w2d.PixelizationGridScatter()
+        self.mesh_grid_scatter = mesh_grid_scatter or w2d.MeshGridScatter()
 
         self.parallel_overscan_plot = (
             parallel_overscan_plot or w2d.ParallelOverscanPlot()

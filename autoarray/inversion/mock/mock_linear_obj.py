@@ -10,9 +10,10 @@ class MockLinearObj(LinearObj):
         grid=None,
         mapping_matrix=None,
         operated_mapping_matrix_override=None,
+        regularization=None
     ):
 
-        super().__init__()
+        super().__init__(regularization=regularization)
 
         self.grid = grid
         self._pixels = pixels

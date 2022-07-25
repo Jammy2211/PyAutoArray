@@ -84,10 +84,9 @@ class AbstractMapper(LinearObj):
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(profiling_dict=profiling_dict)
+        super().__init__(regularization=regularization, profiling_dict=profiling_dict)
 
         self.mapper_grids = mapper_grids
-        self.regularization = regularization
 
     @property
     def pixels(self) -> int:

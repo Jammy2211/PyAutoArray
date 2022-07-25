@@ -74,7 +74,7 @@ class GridScatter(AbstractMatWrap2D):
     - `BorderScatter: plots a border over an image, using the `Mask2d` object's (y,x) `border_grid_sub_1` property.
     - `PositionsScatter`: plots the (y,x) coordinates that are input in a plotter via the `positions` input.
     - `IndexScatter`: plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
-    - `PixelizationGridScatter`: plots the grid of a `Mesh` object (see `autoarray.inversion`).
+    - `MeshGridScatter`: plots the grid of a `Mesh` object (see `autoarray.inversion`).
 
     Parameters
     ----------
@@ -714,7 +714,7 @@ class IndexScatter(GridScatter):
     pass
 
 
-class PixelizationGridScatter(GridScatter):
+class MeshGridScatter(GridScatter):
     """
     Plots the grid of a `Mesh` object (see `autoarray.inversion`).
 

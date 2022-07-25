@@ -20,7 +20,6 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj],
-        regularization_list=[None],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -34,7 +33,6 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj],
-        regularization_list=[None],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -52,7 +50,6 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj],
-        regularization_list=[None],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -67,13 +64,11 @@ def test__inversion_imaging__via_mapper(
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
-    regularization_constant,
 ):
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -85,7 +80,6 @@ def test__inversion_imaging__via_mapper(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -97,7 +91,6 @@ def test__inversion_imaging__via_mapper(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[delaunay_mapper_9_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -109,7 +102,6 @@ def test__inversion_imaging__via_mapper(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[delaunay_mapper_9_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -121,7 +113,6 @@ def test__inversion_imaging__via_mapper(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -133,7 +124,6 @@ def test__inversion_imaging__via_mapper(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -147,17 +137,18 @@ def test__inversion_imaging__via_regularizations(
     masked_imaging_7x7_no_blur,
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
-    voronoi_mapper_nn_9_3x3,
     regularization_constant,
     regularization_constant_split,
     regularization_adaptive_brightness,
     regularization_adaptive_brightness_split,
 ):
 
+    delaunay_mapper = copy.copy(delaunay_mapper_9_3x3)
+    delaunay_mapper.regularization = regularization_constant
+
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[delaunay_mapper_9_3x3],
-        regularization_list=[regularization_constant],
+        linear_obj_list=[delaunay_mapper],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -168,10 +159,11 @@ def test__inversion_imaging__via_regularizations(
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
+    delaunay_mapper.regularization = regularization_constant_split
+
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[delaunay_mapper_9_3x3],
-        regularization_list=[regularization_constant_split],
+        linear_obj_list=[delaunay_mapper],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -182,10 +174,11 @@ def test__inversion_imaging__via_regularizations(
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
+    delaunay_mapper.regularization = regularization_adaptive_brightness
+
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[delaunay_mapper_9_3x3],
-        regularization_list=[regularization_adaptive_brightness],
+        linear_obj_list=[delaunay_mapper],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -196,10 +189,11 @@ def test__inversion_imaging__via_regularizations(
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
+    delaunay_mapper.regularization = regularization_adaptive_brightness_split
+
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[delaunay_mapper_9_3x3],
-        regularization_list=[regularization_adaptive_brightness_split],
+        linear_obj_list=[delaunay_mapper],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -210,10 +204,12 @@ def test__inversion_imaging__via_regularizations(
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
+    voronoi_mapper = copy.copy(voronoi_mapper_9_3x3)
+    voronoi_mapper.regularization = regularization_constant
+
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_constant],
+        linear_obj_list=[voronoi_mapper],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -222,24 +218,11 @@ def test__inversion_imaging__via_regularizations(
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(10.6763, 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_constant_split],
-        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        10.38417, 1.0e-4
-    )
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+    voronoi_mapper.regularization = regularization_adaptive_brightness
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_adaptive_brightness],
+        linear_obj_list=[voronoi_mapper],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -250,83 +233,12 @@ def test__inversion_imaging__via_regularizations(
     )
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_adaptive_brightness_split],
-        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoiNoInterp)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        -26.31747, 1.0e-4
-    )
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[voronoi_mapper_nn_9_3x3],
-        regularization_list=[regularization_constant],
-        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        10.66505, 1.0e-4
-    )
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[voronoi_mapper_nn_9_3x3],
-        regularization_list=[regularization_constant_split],
-        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        10.37955, 1.0e-4
-    )
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[voronoi_mapper_nn_9_3x3],
-        regularization_list=[regularization_adaptive_brightness],
-        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        49.63744, 1.0e-4
-    )
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-    inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
-        linear_obj_list=[voronoi_mapper_nn_9_3x3],
-        regularization_list=[regularization_adaptive_brightness_split],
-        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
-    )
-
-    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-    assert isinstance(inversion, aa.InversionImagingWTilde)
-    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-        34.90782, 1.0e-4
-    )
-    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
 
 def test__inversion_imaging__via_linear_obj_func_and_mapper(
     masked_imaging_7x7_no_blur,
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
-    regularization_constant,
 ):
 
     mask = masked_imaging_7x7_no_blur.mask
@@ -334,13 +246,12 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        pixels=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
+        pixels=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1)), regularization=None
     )
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        regularization_list=[None, regularization_constant],
         settings=aa.SettingsInversion(
             use_w_tilde=False,
             check_solution=False,
@@ -362,20 +273,18 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
 
 
 def test__inversion_imaging__compare_mapping_and_w_tilde_values(
-    masked_imaging_7x7, voronoi_mapper_9_3x3, regularization_constant
+    masked_imaging_7x7, voronoi_mapper_9_3x3,
 ):
 
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
@@ -396,7 +305,6 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
-    regularization_constant,
 ):
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
@@ -413,7 +321,6 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        regularization_list=[None, regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -426,7 +333,6 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     inversion_no_linear_func = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -446,13 +352,11 @@ def test__inversion_interferometer__via_mapper(
     rectangular_mapper_7x7_3x3,
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
-    regularization_constant,
 ):
 
     inversion = aa.Inversion(
         dataset=interferometer_7_no_fft,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -468,7 +372,6 @@ def test__inversion_interferometer__via_mapper(
     inversion = aa.Inversion(
         dataset=interferometer_7_no_fft,
         linear_obj_list=[delaunay_mapper_9_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -486,7 +389,6 @@ def test__inversion_interferometer__via_mapper(
     inversion = aa.Inversion(
         dataset=interferometer_7_no_fft,
         linear_obj_list=[voronoi_mapper_9_3x3],
-        regularization_list=[regularization_constant],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
@@ -510,7 +412,6 @@ def test__inversion_matrices__x2_mappers(
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3, voronoi_mapper_9_3x3],
-        regularization_list=[regularization_constant, regularization_constant],
         settings=aa.SettingsInversion(check_solution=False),
     )
 
