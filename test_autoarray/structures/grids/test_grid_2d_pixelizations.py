@@ -493,39 +493,44 @@ class TestGrid2DVoronoi:
             pixel_scales=1.0,
         )
 
-        grid_voronoi = aa.Grid2DVoronoi(grid=grid)
+        try:
 
-        interpolated_array = grid_voronoi.interpolated_array_from(
-            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
-            shape_native=(3, 2),
-            use_nn=True,
-        )
+            grid_voronoi = aa.Grid2DVoronoi(grid=grid)
 
-        assert interpolated_array.native == pytest.approx(
-            np.array([[3.0, 5.0], [2.0, 5.0], [1.0, 5.0]]), 1.0e-4
-        )
+            interpolated_array = grid_voronoi.interpolated_array_from(
+                values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
+                shape_native=(3, 2),
+                use_nn=True,
+            )
 
-        interpolated_array = grid_voronoi.interpolated_array_from(
-            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
-            shape_native=(2, 3),
-            use_nn=True,
-        )
+            assert interpolated_array.native == pytest.approx(
+                np.array([[3.0, 5.0], [2.0, 5.0], [1.0, 5.0]]), 1.0e-4
+            )
 
-        assert interpolated_array.native == pytest.approx(
-            np.array([[3.0, 6.0, 5.0], [1.0, 4.0, 5.0]]), 1.0e-4
-        )
+            interpolated_array = grid_voronoi.interpolated_array_from(
+                values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
+                shape_native=(2, 3),
+                use_nn=True,
+            )
 
-        interpolated_array = grid_voronoi.interpolated_array_from(
-            values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
-            extent=(-0.4, 0.4, -0.4, 0.4),
-            shape_native=(2, 3),
-            use_nn=True,
-        )
+            assert interpolated_array.native == pytest.approx(
+                np.array([[3.0, 6.0, 5.0], [1.0, 4.0, 5.0]]), 1.0e-4
+            )
 
-        assert interpolated_array.native == pytest.approx(
-            np.array([[1.0, 1.0, 1.907233], [1.0, 1.0, 1.0]]), 1.0e-4
-        )
+            interpolated_array = grid_voronoi.interpolated_array_from(
+                values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
+                extent=(-0.4, 0.4, -0.4, 0.4),
+                shape_native=(2, 3),
+                use_nn=True,
+            )
 
+            assert interpolated_array.native == pytest.approx(
+                np.array([[1.0, 1.0, 1.907233], [1.0, 1.0, 1.0]]), 1.0e-4
+            )
+
+        except AttributeError:
+
+            pass
 
 class TestGrid2DDelaunay:
     def test__pixelization_areas(self):
