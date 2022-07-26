@@ -266,7 +266,7 @@ def make_interferometer_7_lop():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         settings=aa.SettingsInterferometer(
-            sub_size_pixelized=1, transformer_class=aa.TransformerNUFFT
+            sub_size_pixelization=1, transformer_class=aa.TransformerNUFFT
         ),
     )
 
