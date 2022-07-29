@@ -113,7 +113,7 @@ class MapperRectangularNoInterp(AbstractMapper):
         where each data pixel maps to 3 Delaunay triangles with interpolation weights). The weights of multiple mappings
         are stored in the array `pix_weights_for_sub_slim_index`.
 
-        For a Rectangular pixelizaiton each data sub-pixel maps to a single mesh pixel, thus the second
+        For a Rectangular pixelization each data sub-pixel maps to a single mesh pixel, thus the second
         dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
         are equal to 1.0.
         """

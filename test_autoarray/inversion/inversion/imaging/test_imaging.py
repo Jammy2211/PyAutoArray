@@ -84,7 +84,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         pixels=1,
         mapping_matrix=None,
         operated_mapping_matrix_override=operated_mapping_matrix_override,
-        regularization=None
+        regularization=None,
     )
 
     inversion = aa.InversionImagingMapping(
@@ -138,7 +138,9 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
             noise_map=np.ones(9),
             convolver=aa.m.MockConvolver(matrix_shape),
             w_tilde=w_tilde,
-            linear_obj_list=[aa.m.MockMapper(
-                mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
-            )],
+            linear_obj_list=[
+                aa.m.MockMapper(
+                    mapping_matrix=np.ones(matrix_shape), source_grid_slim=grid
+                )
+            ],
         )

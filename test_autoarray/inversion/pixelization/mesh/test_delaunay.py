@@ -6,7 +6,7 @@ def test__magnification__number_of_pixels_setup_correct():
 
     pixelization = aa.mesh.DelaunayMagnification(shape=(3, 3))
 
-    assert pixelization.shape == (3, 3)
+    assert pixelization.mesh.shape == (3, 3)
 
 
 def test__magnification__sparse_grid_from__returns_same_as_computed_from_grids_module(

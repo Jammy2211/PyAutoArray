@@ -11,6 +11,7 @@ from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 from autoarray.numba_util import profile_func
 from autoarray.inversion.pixelization.mappers import mapper_util
@@ -97,7 +98,7 @@ class AbstractMapper(LinearObj):
         return self.mapper_grids.source_grid_slim
 
     @property
-    def source_mesh_grid(self) -> Grid2D:
+    def source_mesh_grid(self) -> Abstract2DMesh:
         return self.mapper_grids.source_mesh_grid
 
     @property
@@ -105,7 +106,7 @@ class AbstractMapper(LinearObj):
         return self.mapper_grids.data_mesh_grid
 
     @property
-    def hyper_data(self) -> Grid2D:
+    def hyper_data(self) -> np.ndarray:
         return self.mapper_grids.hyper_data
 
     @property
@@ -392,7 +393,7 @@ class PixSubWeights:
         mappings
             The mappings of the masked data's sub-pixels to the pixelization's pixels.
         sizes
-            The number of pixelizaiton pixels each masked data sub-pixel maps too.
+            The number of pixelization pixels each masked data sub-pixel maps too.
         """
         self.mappings = mappings
         self.sizes = sizes

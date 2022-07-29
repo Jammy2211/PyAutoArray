@@ -47,7 +47,10 @@ def test__total_regularizations():
 def test__no_regularization_index_list():
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockLinearObj(pixels=2, regularization=None), aa.m.MockLinearObj(pixels=1, regularization=None)],
+        linear_obj_list=[
+            aa.m.MockLinearObj(pixels=2, regularization=None),
+            aa.m.MockLinearObj(pixels=1, regularization=None),
+        ]
     )
 
     assert inversion.no_regularization_index_list == [0, 1, 2]
@@ -58,7 +61,7 @@ def test__no_regularization_index_list():
             aa.m.MockLinearObj(pixels=3, regularization=None),
             aa.m.MockMapper(pixels=20, regularization=aa.m.MockRegularization()),
             aa.m.MockLinearObj(pixels=4, regularization=None),
-            ]
+        ]
     )
 
     assert inversion.no_regularization_index_list == [10, 11, 12, 33, 34, 35, 36]
@@ -218,11 +221,13 @@ def test__curvature_reg_matrix_reduced():
 
     curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 
-    linear_obj_list = [aa.m.MockLinearObj(pixels=2, regularization=1), aa.m.MockLinearObj(pixels=1, regularization=None)]
+    linear_obj_list = [
+        aa.m.MockLinearObj(pixels=2, regularization=1),
+        aa.m.MockLinearObj(pixels=1, regularization=None),
+    ]
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=linear_obj_list,
-        curvature_reg_matrix=curvature_reg_matrix,
+        linear_obj_list=linear_obj_list, curvature_reg_matrix=curvature_reg_matrix
     )
 
     assert (
@@ -236,7 +241,10 @@ def test__regularization_matrix():
     reg_1 = aa.m.MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockMapper(regularization=reg_0), aa.m.MockMapper(regularization=reg_1)],
+        linear_obj_list=[
+            aa.m.MockMapper(regularization=reg_0),
+            aa.m.MockMapper(regularization=reg_1),
+        ]
     )
 
     regularization_matrix = np.array(
@@ -286,11 +294,13 @@ def test__preload_of_regularization_matrix__overwrites_calculation():
 
 def test__reconstruction_reduced():
 
-    linear_obj_list = [aa.m.MockLinearObj(pixels=2, regularization=aa.m.MockRegularization()), aa.m.MockLinearObj(pixels=1, regularization=None)]
+    linear_obj_list = [
+        aa.m.MockLinearObj(pixels=2, regularization=aa.m.MockRegularization()),
+        aa.m.MockLinearObj(pixels=1, regularization=None),
+    ]
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=linear_obj_list,
-        reconstruction=np.array([1.0, 2.0, 3.0]),
+        linear_obj_list=linear_obj_list, reconstruction=np.array([1.0, 2.0, 3.0])
     )
 
     assert (inversion.reconstruction_reduced == np.array([1.0, 2.0])).all()
@@ -422,7 +432,9 @@ def test__regularization_term():
 
     inversion = aa.m.MockInversion(
         reconstruction=reconstruction,
-        linear_obj_list=[aa.m.MockLinearObj(pixels=3, regularization=aa.m.MockRegularization())],
+        linear_obj_list=[
+            aa.m.MockLinearObj(pixels=3, regularization=aa.m.MockRegularization())
+        ],
         regularization_matrix=regularization_matrix,
     )
 
@@ -450,7 +462,9 @@ def test__regularization_term():
 
     inversion = aa.m.MockInversion(
         reconstruction=reconstruction,
-        linear_obj_list=[aa.m.MockLinearObj(pixels=3,  regularization=aa.m.MockRegularization())],
+        linear_obj_list=[
+            aa.m.MockLinearObj(pixels=3, regularization=aa.m.MockRegularization())
+        ],
         regularization_matrix=regularization_matrix,
     )
 
@@ -474,7 +488,9 @@ def test__regularization_term():
 def test__preload_of_log_det_regularization_term_overwrites_calculation():
 
     inversion = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockLinearObj(pixels=3, regularization=aa.m.MockRegularization())],
+        linear_obj_list=[
+            aa.m.MockLinearObj(pixels=3, regularization=aa.m.MockRegularization())
+        ],
         preloads=aa.Preloads(log_det_regularization_matrix_term=1.0),
     )
 

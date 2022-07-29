@@ -93,7 +93,7 @@ class AbstractSettingsDataset:
     def __init__(
         self,
         grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
-        grid_pixelizaiton_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
+        grid_pixelization_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
         sub_size: int = 2,
         sub_size_pixelization: int = 2,
         fractional_accuracy: float = 0.9999,
@@ -114,22 +114,22 @@ class AbstractSettingsDataset:
         grid_class : ag.Grid2D
             The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D` and
             `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
-        grid_pixelizaiton_class : ag.Grid2D
+        grid_pixelization_class : ag.Grid2D
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are `Grid2D` and `Grid2DIterate` (see the `Grid2D` documentation for a
             description of these options).
         sub_size
-            If the grid and / or grid_pixelizaiton use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
+            If the grid and / or grid_pixelization use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy
-            If the grid and / or grid_pixelizaiton use a `Grid2DIterate`, this sets the fractional accuracy it
+            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the fractional accuracy it
             uses when evaluating functions, where the fraction accuracy is the ratio of the values computed using
             two grids at a higher and lower sub-grid size.
         relative_accuracy
-            If the grid and / or grid_pixelizaiton use a `Grid2DIterate`, this sets the relative accuracy it
+            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the relative accuracy it
             uses when evaluating functions, where the relative accuracy is the absolute difference of the values
             computed using two grids at a higher and lower sub-grid size.
         sub_steps : [int]
-            If the grid and / or grid_pixelizaiton use a `Grid2DIterate`, this sets the steps the sub-size is increased by
+            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
         signal_to_noise_limit
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
@@ -137,7 +137,7 @@ class AbstractSettingsDataset:
         """
 
         self.grid_class = grid_class
-        self.grid_pixelizaiton_class = grid_pixelizaiton_class
+        self.grid_pixelization_class = grid_pixelization_class
         self.sub_size = sub_size
         self.sub_size_pixelization = sub_size_pixelization
         self.fractional_accuracy = fractional_accuracy
@@ -160,11 +160,11 @@ class AbstractSettingsDataset:
             sub_steps=self.sub_steps,
         )
 
-    def grid_pixelizaiton_from(self, mask) -> Union[Grid1D, Grid2D]:
+    def grid_pixelization_from(self, mask) -> Union[Grid1D, Grid2D]:
 
         return grid_via_grid_class_from(
             mask=mask,
-            grid_class=self.grid_pixelizaiton_class,
+            grid_class=self.grid_pixelization_class,
             fractional_accuracy=self.fractional_accuracy,
             relative_accuracy=self.relative_accuracy,
             sub_steps=self.sub_steps,
@@ -239,7 +239,9 @@ class AbstractDataset:
                 mask=mask, sub_size=settings.sub_size_pixelization
             )
 
-            self.grid_pixelizaiton = settings.grid_pixelizaiton_from(mask=mask_inversion)
+            self.grid_pixelization = settings.grid_pixelization_from(
+                mask=mask_inversion
+            )
 
     @property
     def shape_native(self):

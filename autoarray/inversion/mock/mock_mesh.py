@@ -8,6 +8,7 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.preloads import Preloads
 
+
 class MockMesh(AbstractMesh):
     def __init__(self, data_mesh_grid=None):
 
@@ -15,16 +16,16 @@ class MockMesh(AbstractMesh):
 
         self.data_mesh_grid = data_mesh_grid
 
-    def mapper_grids_from(self,
-                          source_grid_slim: Grid2D,
-                          source_mesh_grid: Grid2DSparse = None,
-                          data_mesh_grid: Grid2DSparse = None,
-                          hyper_data: np.ndarray = None,
-                          settings=SettingsPixelization(),
-                          preloads: Preloads = Preloads(),
-                          profiling_dict: Optional[Dict] = None,
-                          ) -> MapperGrids:
-
+    def mapper_grids_from(
+        self,
+        source_grid_slim: Grid2D,
+        source_mesh_grid: Grid2DSparse = None,
+        data_mesh_grid: Grid2DSparse = None,
+        hyper_data: np.ndarray = None,
+        settings=SettingsPixelization(),
+        preloads: Preloads = Preloads(),
+        profiling_dict: Optional[Dict] = None,
+    ) -> MapperGrids:
 
         return MapperGrids(
             source_grid_slim=source_grid_slim,
@@ -33,7 +34,7 @@ class MockMesh(AbstractMesh):
             hyper_data=hyper_data,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict
+            profiling_dict=profiling_dict,
         )
 
     def data_mesh_grid_from(self, data_grid_slim, hyper_data, settings=None):

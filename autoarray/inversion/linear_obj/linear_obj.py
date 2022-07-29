@@ -10,7 +10,11 @@ from autoarray.numba_util import profile_func
 
 
 class LinearObj:
-    def __init__(self, regularization: Optional[AbstractRegularization], profiling_dict: Optional[Dict] = None):
+    def __init__(
+        self,
+        regularization: Optional[AbstractRegularization],
+        profiling_dict: Optional[Dict] = None,
+    ):
 
         self.regularization = regularization
         self.profiling_dict = profiling_dict

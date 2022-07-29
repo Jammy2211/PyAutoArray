@@ -70,7 +70,7 @@ class SettingsInterferometer(AbstractSettingsDataset):
     def __init__(
         self,
         grid_class=Grid2D,
-        grid_pixelizaiton_class=Grid2D,
+        grid_pixelization_class=Grid2D,
         sub_size: int = 1,
         sub_size_pixelization=1,
         fractional_accuracy: float = 0.9999,
@@ -90,17 +90,17 @@ class SettingsInterferometer(AbstractSettingsDataset):
         grid_class : ag.Grid2D
             The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
             and `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
-        grid_pixelizaiton_class : ag.Grid2D
+        grid_pixelization_class : ag.Grid2D
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are `Grid2D` and `Grid2DIterate` (see the `Grid2D` documentation for a
             description of these options).
         sub_size
-            If the grid and / or grid_pixelizaiton use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
+            If the grid and / or grid_pixelization use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy
-            If the grid and / or grid_pixelizaiton use a `Grid2DIterate`, this sets the fractional accuracy it
+            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the fractional accuracy it
             uses when evaluating functions.
         sub_steps : [int]
-            If the grid and / or grid_pixelizaiton use a `Grid2DIterate`, this sets the steps the sub-size is increased by
+            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
         signal_to_noise_limit
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
@@ -109,7 +109,7 @@ class SettingsInterferometer(AbstractSettingsDataset):
 
         super().__init__(
             grid_class=grid_class,
-            grid_pixelizaiton_class=grid_pixelizaiton_class,
+            grid_pixelization_class=grid_pixelization_class,
             sub_size=sub_size,
             sub_size_pixelization=sub_size_pixelization,
             fractional_accuracy=fractional_accuracy,

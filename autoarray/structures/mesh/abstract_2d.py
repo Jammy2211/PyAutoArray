@@ -7,6 +7,10 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 class Abstract2DMesh(Structure):
     @property
+    def pixels(self) -> int:
+        NotImplementedError
+
+    @property
     def extent(self) -> np.ndarray:
         raise NotImplementedError
 

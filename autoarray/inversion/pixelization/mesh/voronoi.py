@@ -279,7 +279,7 @@ class VoronoiBrightnessImage(Voronoi):
         Computes the `mesh_grid` in the `data` frame, by overlaying a uniform grid of coordinates over the
         masked 2D data (see `Grid2DSparse.from_grid_and_unmasked_2d_grid_shape()`).
 
-        The `data_pixelizaiton_grid` is transformed to the `source_mesh_grid`, and it is these (y,x) values
+        The `data_pixelization_grid` is transformed to the `source_mesh_grid`, and it is these (y,x) values
         which then act the centres of the Voronoi pixelization's pixels.
 
         For a `VoronoiBrightnessImage` this grid is computed by applying a KMeans clustering algorithm to the masked

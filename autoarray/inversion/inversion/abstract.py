@@ -244,10 +244,7 @@ class AbstractInversion:
             return self.preloads.regularization_matrix
 
         return block_diag(
-            *[
-                linear_obj.regularization_matrix
-                for linear_obj in self.linear_obj_list
-            ]
+            *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
 
     @cached_property

@@ -133,8 +133,6 @@ def test__inversion_imaging__via_mapper(
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
 
-
-
 def test__inversion_imaging__via_regularizations(
     masked_imaging_7x7_no_blur,
     delaunay_mapper_9_3x3,
@@ -165,7 +163,8 @@ def test__inversion_imaging__via_regularizations(
     mapper.regularization = regularization_adaptive_brightness
 
     inversion = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,            linear_obj_list=[mapper],
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[mapper],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
@@ -298,7 +297,10 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        pixels=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1)), regularization=None
+        pixels=1,
+        grid=grid,
+        mapping_matrix=np.full(fill_value=0.5, shape=(9, 1)),
+        regularization=None,
     )
 
     inversion = aa.Inversion(
@@ -325,7 +327,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
 
 
 def test__inversion_imaging__compare_mapping_and_w_tilde_values(
-    masked_imaging_7x7, voronoi_mapper_9_3x3,
+    masked_imaging_7x7, voronoi_mapper_9_3x3
 ):
 
     inversion_w_tilde = aa.Inversion(

@@ -64,7 +64,7 @@ def data_slim_to_pixelization_unique_from(
     For example, assuming `sub_size=2`:
 
     - If 3 sub-pixels in image pixel 0 map to pixelization pixel 2 then `data_pix_to_unique[0, 0] = 2`.
-    - If the fourth sub-pixel maps to pixelizaiton pixel 4, then `data_to_pix_unique[0, 1] = 4`.
+    - If the fourth sub-pixel maps to pixelization pixel 4, then `data_to_pix_unique[0, 1] = 4`.
 
     The size of the second index depends on the number of unique sub-pixel to pixelization pixels mappings in a given
     data pixel. In the example above, there were only two unique sets of mapping, but for high levels of sub-gridding
@@ -595,9 +595,9 @@ def mapping_matrix_from(
     pix_indexes_for_sub_slim_index
         The mappings from a data sub-pixel index to a pixelization pixel index.
     pix_size_for_sub_slim_index
-        The number of mappings between each data sub pixel and pixelizaiton pixel.
+        The number of mappings between each data sub pixel and pixelization pixel.
     pix_weights_for_sub_slim_index
-        The weights of the mappings of every data sub pixel and pixelizaiton pixel.
+        The weights of the mappings of every data sub pixel and pixelization pixel.
     pixels
         The number of pixels in the pixelization.
     total_mask_pixels

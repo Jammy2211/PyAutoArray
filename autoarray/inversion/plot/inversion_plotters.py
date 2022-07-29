@@ -260,14 +260,22 @@ class InversionPlotter(Plotter):
         """
         self.open_subplot_figure(number_subplots=6)
 
-        self.figures_2d_of_pixelization(pixelization_index=mapper_index, reconstructed_image=True)
-        self.figures_2d_of_pixelization(pixelization_index=mapper_index, reconstruction=True)
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_image=True
+        )
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstruction=True
+        )
         self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
-        self.figures_2d_of_pixelization(pixelization_index=mapper_index, residual_map=True)
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, residual_map=True
+        )
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, normalized_residual_map=True
         )
-        self.figures_2d_of_pixelization(pixelization_index=mapper_index, chi_squared_map=True)
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, chi_squared_map=True
+        )
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{mapper_index}"

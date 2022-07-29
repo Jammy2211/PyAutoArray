@@ -15,7 +15,7 @@ class SettingsPixelization:
             their edge (see `relocated_grid_from()`).
         is_stochastic
             Cetrain pixelizations can create different discretizations using the same parameters / inputs, by changing
-            their random seed (e.g. changing the KMeans seed of the `VoronoiBrightnessImage` pixelizaiton). If `True`,
+            their random seed (e.g. changing the KMeans seed of the `VoronoiBrightnessImage` pixelization). If `True`,
             this random seed changes for every function call, creating completely stochastic pixelizations every time.
         kmeans_seed
             A fixed value for the KMeans seed that dictates the pixelization that is derived for

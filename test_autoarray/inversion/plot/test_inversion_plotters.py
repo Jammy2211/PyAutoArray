@@ -83,7 +83,10 @@ def test__individual_attributes_are_output_for_all_mappers(
     plot_patch.paths = []
 
     inversion_plotter.figures_2d_of_pixelization(
-        pixelization_index=0, reconstructed_image=True, errors=True, chi_squared_map=True
+        pixelization_index=0,
+        reconstructed_image=True,
+        errors=True,
+        chi_squared_map=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths

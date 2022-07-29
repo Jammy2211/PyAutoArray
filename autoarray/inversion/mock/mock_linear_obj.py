@@ -10,7 +10,7 @@ class MockLinearObj(LinearObj):
         grid=None,
         mapping_matrix=None,
         operated_mapping_matrix_override=None,
-        regularization=None
+        regularization=None,
     ):
 
         super().__init__(regularization=regularization)

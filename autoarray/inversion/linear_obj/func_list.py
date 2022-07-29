@@ -13,7 +13,12 @@ from autoarray.numba_util import profile_func
 
 
 class AbstractLinearObjFuncList(LinearObj):
-    def __init__(self, grid: Grid1D2DLike, regularization: Optional[AbstractRegularization], profiling_dict: Optional[Dict] = None):
+    def __init__(
+        self,
+        grid: Grid1D2DLike,
+        regularization: Optional[AbstractRegularization],
+        profiling_dict: Optional[Dict] = None,
+    ):
         """
         An object represented by one or more analytic functions, the solution of which can be solved for linearly via an
         inversion.

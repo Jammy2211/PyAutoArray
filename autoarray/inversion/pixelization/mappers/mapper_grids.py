@@ -2,6 +2,7 @@ import numpy as np
 from typing import Dict, Optional
 
 from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 from autoarray.inversion.pixelization.settings import SettingsPixelization
 
@@ -13,7 +14,7 @@ class MapperGrids:
         self,
         source_grid_slim: Grid2D,
         source_mesh_grid: Abstract2DMesh = None,
-        data_mesh_grid: Grid2D = None,
+        data_mesh_grid: Grid2DSparse = None,
         hyper_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: "Preloads" = None,

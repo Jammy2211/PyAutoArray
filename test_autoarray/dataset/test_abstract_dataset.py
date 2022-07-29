@@ -135,7 +135,7 @@ def test__grid__uses_mask_and_settings(
     assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
 
 
-def test__grid_pixelizaiton__uses_mask_and_settings(
+def test__grid_pixelization__uses_mask_and_settings(
     image_7x7, noise_map_7x7, sub_mask_2d_7x7, grid_2d_7x7, sub_grid_2d_7x7
 ):
 
@@ -159,24 +159,24 @@ def test__grid_pixelizaiton__uses_mask_and_settings(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
         settings=abstract_dataset.AbstractSettingsDataset(
-            grid_pixelizaiton_class=aa.Grid2D, sub_size_pixelization=2
+            grid_pixelization_class=aa.Grid2D, sub_size_pixelization=2
         ),
     )
 
-    assert masked_imaging_7x7.grid_pixelizaiton.sub_size == 2
-    assert (masked_imaging_7x7.grid_pixelizaiton.binned == grid_2d_7x7).all()
-    assert (masked_imaging_7x7.grid_pixelizaiton.slim == sub_grid_2d_7x7).all()
+    assert masked_imaging_7x7.grid_pixelization.sub_size == 2
+    assert (masked_imaging_7x7.grid_pixelization.binned == grid_2d_7x7).all()
+    assert (masked_imaging_7x7.grid_pixelization.slim == sub_grid_2d_7x7).all()
 
     masked_imaging_7x7 = abstract_dataset.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
         settings=abstract_dataset.AbstractSettingsDataset(
-            grid_pixelizaiton_class=aa.Grid2D, sub_size=2, sub_size_pixelization=4
+            grid_pixelization_class=aa.Grid2D, sub_size=2, sub_size_pixelization=4
         ),
     )
 
-    assert isinstance(masked_imaging_7x7.grid_pixelizaiton, aa.Grid2D)
-    assert masked_imaging_7x7.grid_pixelizaiton.sub_size == 4
+    assert isinstance(masked_imaging_7x7.grid_pixelization, aa.Grid2D)
+    assert masked_imaging_7x7.grid_pixelization.sub_size == 4
 
 
 def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
@@ -190,7 +190,7 @@ def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
     )
 
     assert dataset_7x7.grid.mask.sub_size == 1
-    assert dataset_7x7.grid_pixelizaiton.mask.sub_size == 1
+    assert dataset_7x7.grid_pixelization.mask.sub_size == 1
 
     dataset_7x7 = abstract_dataset.AbstractDataset(
         data=image_7x7,
@@ -201,7 +201,7 @@ def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
     )
 
     assert dataset_7x7.grid.mask.sub_size == 2
-    assert dataset_7x7.grid_pixelizaiton.mask.sub_size == 2
+    assert dataset_7x7.grid_pixelization.mask.sub_size == 2
 
 
 def test__new_imaging_with_arrays_trimmed_via_kernel_shape():

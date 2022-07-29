@@ -60,6 +60,7 @@ def test__returning_weights_correct():
 
         pass
 
+
 def test__nn_interpolation_correct():
 
     mesh_grid = aa.Grid2D.manual_slim(

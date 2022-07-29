@@ -123,7 +123,7 @@ class DelaunayMagnification(Delaunay):
         uses weighted interpolation whereby `source_grid_slim` coordinates are associated to the Delaunay corners with
         a higher weight if they are a closer distance to one another.
 
-        For the `DelaunayMagnification` pixelization the corners of the Delaunay pixels are derived in the `data` frame,
+        For the `DelaunayMagnification` mesh the corners of the Delaunay pixels are derived in the `data` frame,
         by overlaying a uniform grid with the input `shape` over the masked data's grid. All coordinates in this
         uniform grid which are contained within the mask are kept, have the same transformation applied to them as the
         masked data's grid to map them to the source frame, where they form the pixelization's Delaunay pixel centres.
@@ -271,7 +271,7 @@ class DelaunayBrightnessImage(Delaunay):
         Computes the `mesh_grid` in the `data` frame, by overlaying a uniform grid of coordinates over the
         masked 2D data (see `Grid2DSparse.from_grid_and_unmasked_2d_grid_shape()`).
 
-        The `data_pixelizaiton_grid` is transformed to the `source_mesh_grid`, and it is these (y,x) values
+        The `data_pixelization_grid` is transformed to the `source_mesh_grid`, and it is these (y,x) values
         which then act the centres of the Delaunay pixelization's pixels.
 
         For a `DelaunayBrightnessImage` this grid is computed by applying a KMeans clustering algorithm to the masked
