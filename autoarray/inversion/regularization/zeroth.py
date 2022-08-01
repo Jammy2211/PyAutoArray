@@ -5,7 +5,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.regularization import regularization_util
 
 
-class Constant(AbstractRegularization):
+class Zeroth(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0):
         """
         A zeroth order regularization scheme (regularization is described in the `Regularization` class above) which
@@ -39,8 +39,7 @@ class Constant(AbstractRegularization):
 
     def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
 
-        return regularization_util.constant_regularization_matrix_from(
+        return regularization_util.zeroth_regularization_matrix_from(
             coefficient=self.coefficient,
-            neighbors=linear_obj.neighbors,
-            neighbors_sizes=linear_obj.neighbors.sizes,
+            pixels=linear_obj.pixels
         )
