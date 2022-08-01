@@ -4,6 +4,29 @@ import numpy as np
 import pytest
 
 
+def test__zeroth_regularization_matrix_from():
+
+    regularization_matrix = aa.util.regularization.zeroth_regularization_matrix_from(
+        coefficient=1.0, pixels=3
+    )
+
+    assert (
+        regularization_matrix
+        == np.array(([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]))
+    ).all()
+    assert abs(np.linalg.det(regularization_matrix)) > 1e-8
+
+    regularization_matrix = aa.util.regularization.zeroth_regularization_matrix_from(
+        coefficient=2.0, pixels=2
+    )
+
+    assert (
+        regularization_matrix
+        == np.array(([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]]))
+    ).all()
+    assert abs(np.linalg.det(regularization_matrix)) > 1e-8
+
+
 def test__constant_regularization_matrix_from():
     # Here, we define the neighbors first here and make the B matrices based on them.
 
