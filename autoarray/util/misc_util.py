@@ -51,13 +51,12 @@ def cls_list_from(
     -------
     The list of objects in the galaxy that inherit from input `cls`.
     """
+    cls_list = [value for value in values if isinstance(value, cls)]
+
     if cls_filtered is not None:
-        return [
-            value
-            for value in values
-            if isinstance(value, cls) and not isinstance(value, cls_filtered)
-        ]
-    return [value for value in values if isinstance(value, cls)]
+        return [value for value in cls_list if not isinstance(value, cls_filtered)]
+
+    return cls_list
 
 
 def total(values: Union[List, ValuesView], cls: Type) -> int:

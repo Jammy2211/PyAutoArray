@@ -2,7 +2,6 @@ import autoarray as aa
 import numpy as np
 
 
-
 def test__magnification__sparse_grid_from__returns_same_as_computed_from_grids_module(
     sub_grid_2d_7x7
 ):

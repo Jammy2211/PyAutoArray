@@ -15,6 +15,8 @@ def test__rectangular_neighbors_from():
         shape_native=(3, 3)
     )
 
+    # TODO : Use pytest.parameterize
+
     assert (neighbors[0] == [1, 3, -1, -1]).all()
     assert (neighbors[1] == [0, 2, 4, -1]).all()
     assert (neighbors[2] == [1, 5, -1, -1]).all()

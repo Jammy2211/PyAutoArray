@@ -7,13 +7,13 @@ from typing import Dict, List, Optional, Tuple, Type, Union
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.visibilities import Visibilities
 from autoarray.inversion.linear_obj.func_list import LinearObj
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.structures.visibilities import Visibilities
 
 from autoarray import exc
 from autoarray.util import misc_util
@@ -27,7 +27,7 @@ class AbstractInversion:
         noise_map: Union[Visibilities, Array2D],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
-        preloads=None,
+        preloads: Optional["Preloads"] = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -77,10 +77,6 @@ class AbstractInversion:
             of that class.
         cls
             The type of class that is checked if the object has an instance of.
-
-        Returns
-        -------
-        A bool according to whether the input class dictionary has an instance of the input class.
         """
         return misc_util.has(
             values=self.linear_obj_list + self.regularization_list, cls=cls
@@ -97,10 +93,6 @@ class AbstractInversion:
             of that class it contains.
         cls
             The type of class that is checked if the object has an instance of.
-
-        Returns
-        -------
-        The number of instances of the input class dictionary.
         """
         return misc_util.total(
             values=self.linear_obj_list + self.regularization_list, cls=cls
@@ -125,10 +117,6 @@ class AbstractInversion:
             The type of class that a list of instances of this class in the galaxy are returned for.
         cls_filtered
             A class type which is filtered and removed from the class list.
-
-        Returns
-        -------
-            The list of objects in the galaxy that inherit from input `cls`.
         """
         return misc_util.cls_list_from(
             values=self.linear_obj_list + self.regularization_list,

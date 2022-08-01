@@ -14,6 +14,10 @@ class Pixelization:
         self.mesh = mesh
         self.regularization = regularization
 
+    @property
+    def mapper_grids_from(self):
+        return self.mesh.mapper_grids_from
+
     def __repr__(self):
 
         string = "{}\n{}".format(self.__class__.__name__, str(self.mesh))

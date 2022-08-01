@@ -188,6 +188,8 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
+    # TODO : Use pytest.parameterize
+
     for sub_size in range(1, 3):
 
         mask_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
