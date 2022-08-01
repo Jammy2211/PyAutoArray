@@ -16,7 +16,6 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     inversion = aa.m.MockInversionInterferometer(
         linear_obj_list=[aa.m.MockLinearObj(pixels=1), rectangular_mapper_7x7_3x3],
-        regularization_list=[None, aa.m.MockRegularization()],
         operated_mapping_matrix=operated_mapping_matrix,
         noise_map=noise_map,
         settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=False),
@@ -31,7 +30,6 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     inversion = aa.m.MockInversionInterferometer(
         linear_obj_list=[aa.m.MockLinearObj(pixels=1), rectangular_mapper_7x7_3x3],
-        regularization_list=[None, aa.m.MockRegularization()],
         operated_mapping_matrix=operated_mapping_matrix,
         noise_map=noise_map,
         settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),

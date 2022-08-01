@@ -110,7 +110,7 @@ class Visuals2D(AbstractVisuals):
         lines: Optional[List[Array1D]] = None,
         positions: Optional[Union[Grid2DIrregular, List[Grid2DIrregular]]] = None,
         grid: Optional[Grid2D] = None,
-        pixelization_grid: Optional[Grid2D] = None,
+        mesh_grid: Optional[Grid2D] = None,
         vectors: Optional[VectorYX2DIrregular] = None,
         patches: Optional[List[ptch.Patch]] = None,
         array_overlay: Optional[Array2D] = None,
@@ -127,7 +127,7 @@ class Visuals2D(AbstractVisuals):
         self.lines = lines
         self.positions = positions
         self.grid = grid
-        self.pixelization_grid = pixelization_grid
+        self.mesh_grid = mesh_grid
         self.vectors = vectors
         self.patches = patches
         self.array_overlay = array_overlay
@@ -151,8 +151,8 @@ class Visuals2D(AbstractVisuals):
         if self.grid is not None:
             plotter.grid_scatter.scatter_grid(grid=self.grid)
 
-        if self.pixelization_grid is not None:
-            plotter.pixelization_grid_scatter.scatter_grid(grid=self.pixelization_grid)
+        if self.mesh_grid is not None:
+            plotter.mesh_grid_scatter.scatter_grid(grid=self.mesh_grid)
 
         if self.positions is not None:
             plotter.positions_scatter.scatter_grid(grid=self.positions)

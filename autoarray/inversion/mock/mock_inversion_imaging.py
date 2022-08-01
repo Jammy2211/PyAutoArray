@@ -12,7 +12,6 @@ class MockInversionImaging(InversionImagingMapping):
         noise_map=None,
         convolver=None,
         linear_obj_list=None,
-        regularization_list=None,
         operated_mapping_matrix=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
@@ -20,19 +19,11 @@ class MockInversionImaging(InversionImagingMapping):
         preloads: Preloads = Preloads(),
     ):
 
-        # self.__dict__["curvature_matrix"] = curvature_matrix
-        # self.__dict__["curvature_reg_matrix_cholesky"] = curvature_reg_matrix_cholesky
-        # self.__dict__["regularization_matrix"] = regularization_matrix
-        # self.__dict__["curvature_reg_matrix"] = curvature_reg_matrix
-        # self.__dict__["reconstruction"] = reconstruction
-        # self.__dict__["mapped_reconstructed_image"] = mapped_reconstructed_image
-
         super().__init__(
             data=data,
             noise_map=noise_map,
             convolver=convolver,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
         )

@@ -6,13 +6,19 @@ from autoconf import cached_property
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.linear_obj.unique_mappings import UniqueMappings
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.type import Grid1D2DLike
 
 from autoarray.numba_util import profile_func
 
 
 class AbstractLinearObjFuncList(LinearObj):
-    def __init__(self, grid: Grid1D2DLike, profiling_dict: Optional[Dict] = None):
+    def __init__(
+        self,
+        grid: Grid1D2DLike,
+        regularization: Optional[AbstractRegularization],
+        profiling_dict: Optional[Dict] = None,
+    ):
         """
         An object represented by one or more analytic functions, the solution of which can be solved for linearly via an
         inversion.
@@ -35,7 +41,7 @@ class AbstractLinearObjFuncList(LinearObj):
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(profiling_dict=profiling_dict)
+        super().__init__(regularization=regularization, profiling_dict=profiling_dict)
 
         self.grid = grid
 
@@ -58,14 +64,16 @@ class AbstractLinearObjFuncList(LinearObj):
         neighbors[0, 1] = -1
         neighbors[-1, 1] = -1
 
-        return Neighbors(arr=neighbors.astype("int"), sizes=neighbors_sizes.astype("int"))
+        return Neighbors(
+            arr=neighbors.astype("int"), sizes=neighbors_sizes.astype("int")
+        )
 
     @cached_property
     @profile_func
     def unique_mappings(self):
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
-        to their corresponding pixelization pixels (e.g. `pixelization_grid`).
+        to their corresponding pixelization pixels (e.g. `mesh_grid`).
 
         To perform an `Inversion` efficiently the linear algebra can bypass the calculation of a `mapping_matrix` and
         instead use the w-tilde formalism, which requires these unique mappings for efficient computation. For

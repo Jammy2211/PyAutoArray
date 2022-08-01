@@ -7,13 +7,13 @@ from typing import Dict, List, Optional, Tuple, Type, Union
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
+from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.visibilities import Visibilities
-from autoarray.inversion.linear_obj.func_list import LinearObj
-from autoarray.inversion.mappers.abstract import AbstractMapper
-from autoarray.inversion.regularization.abstract import AbstractRegularization
-from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import exc
 from autoarray.util import misc_util
@@ -26,9 +26,8 @@ class AbstractInversion:
         data: Union[Visibilities, Array2D],
         noise_map: Union[Visibilities, Array2D],
         linear_obj_list: List[LinearObj],
-        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
-        preloads=None,
+        preloads: Optional["Preloads"] = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """
@@ -61,7 +60,6 @@ class AbstractInversion:
         self.noise_map = noise_map
 
         self.linear_obj_list = linear_obj_list
-        self.regularization_list = regularization_list
 
         self.settings = settings
 
@@ -79,10 +77,6 @@ class AbstractInversion:
             of that class.
         cls
             The type of class that is checked if the object has an instance of.
-
-        Returns
-        -------
-        A bool according to whether the input class dictionary has an instance of the input class.
         """
         return misc_util.has(
             values=self.linear_obj_list + self.regularization_list, cls=cls
@@ -99,10 +93,6 @@ class AbstractInversion:
             of that class it contains.
         cls
             The type of class that is checked if the object has an instance of.
-
-        Returns
-        -------
-        The number of instances of the input class dictionary.
         """
         return misc_util.total(
             values=self.linear_obj_list + self.regularization_list, cls=cls
@@ -116,9 +106,9 @@ class AbstractInversion:
 
         For example:
 
-        - If the input is `cls=aa.pix.Pixelization`, a list containing all pixelizations in the class are returned.
+        - If the input is `cls=aa.mesh.Mesh`, a list containing all pixelizations in the class are returned.
 
-        - If `cls=aa.pix.Pixelization` and `cls_filtered=aa.pix.Rectangular`, a list of all pixelizations
+        - If `cls=aa.mesh.Mesh` and `cls_filtered=aa.mesh.Rectangular`, a list of all pixelizations
         excluding those which are `Rectangular` pixelizations will be returned.
 
         Parameters
@@ -127,16 +117,16 @@ class AbstractInversion:
             The type of class that a list of instances of this class in the galaxy are returned for.
         cls_filtered
             A class type which is filtered and removed from the class list.
-
-        Returns
-        -------
-            The list of objects in the galaxy that inherit from input `cls`.
         """
         return misc_util.cls_list_from(
             values=self.linear_obj_list + self.regularization_list,
             cls=cls,
             cls_filtered=cls_filtered,
         )
+
+    @property
+    def regularization_list(self) -> List[AbstractRegularization]:
+        return [linear_obj.regularization for linear_obj in self.linear_obj_list]
 
     @property
     def all_linear_obj_have_regularization(self) -> bool:
@@ -223,19 +213,6 @@ class AbstractInversion:
     def curvature_matrix(self) -> np.ndarray:
         raise NotImplementedError
 
-    def regularization_matrix_from(self, index: int) -> np.ndarray:
-
-        linear_obj = self.linear_obj_list[index]
-        regularization = self.regularization_list[index]
-
-        if self.regularization_list[index] is None:
-
-            pixels = linear_obj.pixels
-
-            return np.zeros((pixels, pixels))
-
-        return regularization.regularization_matrix_from(linear_obj=linear_obj)
-
     @cached_property
     @profile_func
     def regularization_matrix(self) -> Optional[np.ndarray]:
@@ -255,10 +232,7 @@ class AbstractInversion:
             return self.preloads.regularization_matrix
 
         return block_diag(
-            *[
-                self.regularization_matrix_from(index=index)
-                for index in range(len(self.regularization_list))
-            ]
+            *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
 
     @cached_property
@@ -598,7 +572,7 @@ class AbstractInversion:
 
         This function therefore interpolates the irregular reconstruction on to a regular grid of square pixels.
         The routine that performs the interpolation is specific to each pixelization and contained in its
-        corresponding `Mapper` and `Grid2DPixelization` objects, which are called by this function.
+        corresponding `Mapper` and `Grid2DMesh` objects, which are called by this function.
 
         The output interpolated reconstruction cis by default returned on a grid of 401 x 401 square pixels. This
         can be customized by changing the `shape_native` input, and a rectangular grid with rectangular pixels can
@@ -702,7 +676,7 @@ class AbstractInversion:
             brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
 
             centre = Grid2DIrregular(
-                grid=[mapper.source_pixelization_grid[brightest_reconstruction_pixel]]
+                grid=[mapper.source_mesh_grid[brightest_reconstruction_pixel]]
             )
 
             brightest_reconstruction_pixel_centre_list.append(centre)

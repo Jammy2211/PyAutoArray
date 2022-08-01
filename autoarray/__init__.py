@@ -19,8 +19,8 @@ from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
 from .instruments import acs
 from .instruments import euclid
-from .inversion.mappers.abstract import AbstractMapper
-from .inversion import pixelizations as pix
+from .inversion.pixelization.mappers.abstract import AbstractMapper
+from .inversion.pixelization import mesh
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.abstract import AbstractInversion
@@ -32,13 +32,15 @@ from .inversion.inversion.factory import (
 from .inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
-from .inversion.mappers.factory import mapper_from as Mapper
-from .inversion.mappers.rectangular import MapperRectangularNoInterp
-from .inversion.mappers.delaunay import MapperDelaunay
-from .inversion.mappers.voronoi import MapperVoronoiNoInterp
-from .inversion.mappers.voronoi import MapperVoronoi
-from .inversion.pixelizations.abstract import AbstractPixelization
-from .inversion.pixelizations.settings import SettingsPixelization
+from .inversion.pixelization.pixelization import Pixelization
+from .inversion.pixelization.mappers.mapper_grids import MapperGrids
+from .inversion.pixelization.mappers.factory import mapper_from as Mapper
+from .inversion.pixelization.mappers.rectangular import MapperRectangularNoInterp
+from .inversion.pixelization.mappers.delaunay import MapperDelaunay
+from .inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
+from .inversion.pixelization.mappers.voronoi import MapperVoronoi
+from .inversion.pixelization.mesh.abstract import AbstractMesh
+from .inversion.pixelization.settings import SettingsPixelization
 from .inversion.inversion.imaging.mapping import InversionImagingMapping
 from .inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from .inversion.inversion.interferometer.w_tilde import InversionInterferometerWTilde
@@ -63,9 +65,9 @@ from .structures.grids.sparse_2d import Grid2DSparse
 from .structures.grids.iterate_2d import Grid2DIterate
 from .structures.grids.irregular_2d import Grid2DIrregular
 from .structures.grids.irregular_2d import Grid2DIrregularUniform
-from .structures.grids.grid_2d_pixelization import Grid2DRectangular
-from .structures.grids.grid_2d_pixelization import Grid2DVoronoi
-from .structures.grids.grid_2d_pixelization import Grid2DDelaunay
+from .structures.mesh.rectangular_2d import Mesh2DRectangular
+from .structures.mesh.voronoi_2d import Mesh2DVoronoi
+from .structures.mesh.delaunay_2d import Mesh2DDelaunay
 from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular

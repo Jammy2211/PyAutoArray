@@ -185,7 +185,7 @@ def reg_split_from(
                 flag = 1
 
             if j >= max_j:
-                raise exc.PixelizationException(
+                raise exc.MeshException(
                     "the number of Voronoi natural neighbours exceeds 100."
                 )
 

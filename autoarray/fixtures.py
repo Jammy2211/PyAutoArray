@@ -266,7 +266,7 @@ def make_interferometer_7_lop():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         settings=aa.SettingsInterferometer(
-            sub_size_pixelized=1, transformer_class=aa.TransformerNUFFT
+            sub_size_pixelization=1, transformer_class=aa.TransformerNUFFT
         ),
     )
 
@@ -343,13 +343,13 @@ def make_regularization_adaptive_brightness_split():
     )
 
 
-def make_rectangular_pixelization_grid_3x3():
-    return aa.Grid2DRectangular.overlay_grid(
+def make_rectangular_mesh_grid_3x3():
+    return aa.Mesh2DRectangular.overlay_grid(
         grid=make_sub_grid_2d_7x7(), shape_native=(3, 3)
     )
 
 
-def make_delaunay_pixelization_grid_9():
+def make_delaunay_mesh_grid_9():
 
     grid_9 = aa.Grid2D.manual_slim(
         grid=[
@@ -367,10 +367,10 @@ def make_delaunay_pixelization_grid_9():
         pixel_scales=1.0,
     )
 
-    return aa.Grid2DDelaunay(grid=grid_9)
+    return aa.Mesh2DDelaunay(grid=grid_9)
 
 
-def make_voronoi_pixelization_grid_9():
+def make_voronoi_mesh_grid_9():
 
     grid_9 = aa.Grid2D.manual_slim(
         grid=[
@@ -388,7 +388,7 @@ def make_voronoi_pixelization_grid_9():
         pixel_scales=1.0,
     )
 
-    return aa.Grid2DVoronoi(
+    return aa.Mesh2DVoronoi(
         grid=grid_9,
         nearest_pixelization_index_for_slim_index=np.zeros(
             shape=make_grid_2d_7x7().shape_slim, dtype="int"
@@ -397,39 +397,55 @@ def make_voronoi_pixelization_grid_9():
 
 
 def make_rectangular_mapper_7x7_3x3():
-    return aa.MapperRectangularNoInterp(
+
+    mapper_grids = aa.MapperGrids(
         source_grid_slim=make_sub_grid_2d_7x7(),
-        source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
-        data_pixelization_grid=None,
-        hyper_image=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+        source_mesh_grid=make_rectangular_mesh_grid_3x3(),
+        data_mesh_grid=None,
+        hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+    )
+
+    return aa.MapperRectangularNoInterp(
+        mapper_grids=mapper_grids, regularization=make_regularization_constant()
     )
 
 
 def make_delaunay_mapper_9_3x3():
-    return aa.MapperDelaunay(
+
+    mapper_grids = aa.MapperGrids(
         source_grid_slim=make_sub_grid_2d_7x7(),
-        source_pixelization_grid=make_delaunay_pixelization_grid_9(),
-        data_pixelization_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_image=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+        source_mesh_grid=make_delaunay_mesh_grid_9(),
+        data_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
+        hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+    )
+
+    return aa.MapperDelaunay(
+        mapper_grids=mapper_grids, regularization=make_regularization_constant()
     )
 
 
 def make_voronoi_mapper_9_3x3():
-    return aa.MapperVoronoiNoInterp(
+    mapper_grids = aa.MapperGrids(
         source_grid_slim=make_sub_grid_2d_7x7(),
-        source_pixelization_grid=make_voronoi_pixelization_grid_9(),
-        data_pixelization_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_image=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+        source_mesh_grid=make_voronoi_mesh_grid_9(),
+        data_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
+        hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+    )
+
+    return aa.MapperVoronoiNoInterp(
+        mapper_grids=mapper_grids, regularization=make_regularization_constant()
     )
 
 
 def make_voronoi_mapper_nn_9_3x3():
-    return aa.MapperVoronoi(
+    mapper_grids = aa.MapperGrids(
         source_grid_slim=make_sub_grid_2d_7x7(),
-        source_pixelization_grid=make_voronoi_pixelization_grid_9(),
-        data_pixelization_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_image=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+        source_mesh_grid=make_voronoi_mesh_grid_9(),
+        data_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
+        hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
+
+    return aa.MapperVoronoi(mapper_grids=mapper_grids, regularization=None)
 
 
 def make_rectangular_inversion_7x7_3x3():
@@ -437,7 +453,6 @@ def make_rectangular_inversion_7x7_3x3():
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_rectangular_mapper_7x7_3x3()],
-        regularization_list=[make_regularization_constant()],
     )
 
 
@@ -446,16 +461,13 @@ def make_delaunay_inversion_9_3x3():
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_delaunay_mapper_9_3x3()],
-        regularization_list=[make_regularization_constant()],
     )
 
 
 def make_voronoi_inversion_9_3x3():
 
     return aa.Inversion(
-        dataset=make_masked_imaging_7x7(),
-        linear_obj_list=[make_voronoi_mapper_9_3x3()],
-        regularization_list=[make_regularization_constant()],
+        dataset=make_masked_imaging_7x7(), linear_obj_list=[make_voronoi_mapper_9_3x3()]
     )
 
 

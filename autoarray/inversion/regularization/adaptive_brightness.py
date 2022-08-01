@@ -12,7 +12,7 @@ class AdaptiveBrightness(AbstractRegularization):
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is \
         applied when each set of pixel neighbors are regularized with one another. The motivation of this is that \
-        different regions of a pixelization require different levels of regularization (e.g., high smoothing where the \
+        different regions of a pixelization's mesh require different levels of regularization (e.g., high smoothing where the \
         no signal is present and less smoothing where it is, see (Nightingale, Dye and Massey 2018)).
 
         Unlike the instance regularization_matrix scheme, neighboring pixels must now be regularized with one another \
@@ -72,8 +72,8 @@ class AdaptiveBrightness(AbstractRegularization):
 
         return regularization_util.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
-            neighbors=linear_obj.source_pixelization_grid.neighbors,
-            neighbors_sizes=linear_obj.source_pixelization_grid.neighbors.sizes,
+            neighbors=linear_obj.source_mesh_grid.neighbors,
+            neighbors_sizes=linear_obj.source_mesh_grid.neighbors.sizes,
         )
 
 
@@ -90,7 +90,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is \
         applied when each set of pixel neighbors are regularized with one another. The motivation of this is that \
-        different regions of a pixelization require different levels of regularization (e.g., high smoothing where the \
+        different regions of a pixelization's mesh require different levels of regularization (e.g., high smoothing where the \
         no signal is present and less smoothing where it is, see (Nightingale, Dye and Massey 2018)).
 
         Unlike the instance regularization_matrix scheme, neighboring pixels must now be regularized with one another \

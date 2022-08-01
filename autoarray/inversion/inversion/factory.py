@@ -1,4 +1,3 @@
-import numpy as np
 from typing import Dict, List, Optional, Union
 
 from autoarray.dataset.imaging import Imaging
@@ -23,7 +22,6 @@ from autoarray.inversion.inversion.interferometer.w_tilde import (
 from autoarray.inversion.inversion.interferometer.lop import (
     InversionInterferometerMappingPyLops,
 )
-from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
 
@@ -31,7 +29,6 @@ from autoarray.preloads import Preloads
 def inversion_from(
     dataset,
     linear_obj_list: List[LinearObj],
-    regularization_list: List[Optional[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -50,7 +47,6 @@ def inversion_from(
             convolver=dataset.convolver,
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -62,7 +58,6 @@ def inversion_from(
         transformer=dataset.transformer,
         w_tilde=w_tilde,
         linear_obj_list=linear_obj_list,
-        regularization_list=regularization_list,
         settings=settings,
         profiling_dict=profiling_dict,
     )
@@ -74,7 +69,6 @@ def inversion_unpacked_from(
     noise_map: Union[Array2D, VisibilitiesNoiseMap],
     w_tilde: Union[WTildeImaging, WTildeInterferometer],
     linear_obj_list: List[LinearObj],
-    regularization_list: List[Optional[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -88,7 +82,6 @@ def inversion_unpacked_from(
             convolver=dataset.convolver,
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -100,7 +93,6 @@ def inversion_unpacked_from(
         transformer=dataset.transformer,
         w_tilde=w_tilde,
         linear_obj_list=linear_obj_list,
-        regularization_list=regularization_list,
         settings=settings,
         profiling_dict=profiling_dict,
     )
@@ -112,7 +104,6 @@ def inversion_imaging_unpacked_from(
     convolver: Convolver,
     w_tilde: WTildeImaging,
     linear_obj_list: List[LinearObj],
-    regularization_list: List[Optional[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -143,7 +134,6 @@ def inversion_imaging_unpacked_from(
             convolver=convolver,
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -154,7 +144,6 @@ def inversion_imaging_unpacked_from(
         noise_map=noise_map,
         convolver=convolver,
         linear_obj_list=linear_obj_list,
-        regularization_list=regularization_list,
         settings=settings,
         preloads=preloads,
         profiling_dict=profiling_dict,
@@ -167,7 +156,6 @@ def inversion_interferometer_unpacked_from(
     transformer: Union[TransformerDFT, TransformerNUFFT],
     w_tilde: WTildeInterferometer,
     linear_obj_list: List[LinearObj],
-    regularization_list: List[Optional[AbstractRegularization]] = None,
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
     profiling_dict: Optional[Dict] = None,
@@ -196,7 +184,6 @@ def inversion_interferometer_unpacked_from(
                 transformer=transformer,
                 w_tilde=w_tilde,
                 linear_obj_list=linear_obj_list,
-                regularization_list=regularization_list,
                 settings=settings,
                 preloads=preloads,
                 profiling_dict=profiling_dict,
@@ -209,7 +196,6 @@ def inversion_interferometer_unpacked_from(
                 noise_map=noise_map,
                 transformer=transformer,
                 linear_obj_list=linear_obj_list,
-                regularization_list=regularization_list,
                 settings=settings,
                 preloads=preloads,
                 profiling_dict=profiling_dict,
@@ -222,7 +208,6 @@ def inversion_interferometer_unpacked_from(
             noise_map=noise_map,
             transformer=transformer,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,

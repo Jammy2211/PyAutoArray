@@ -4,7 +4,7 @@ import numpy as np
 class Neighbors(np.ndarray):
     def __new__(cls, arr: np.ndarray, sizes: np.ndarray):
         """
-        Class packaging ndarrays describing the neighbors of every pixel in a pixelization (e.g. `Rectangular`,
+        Class packaging ndarrays describing the neighbors of every pixel in a mesh (e.g. `Rectangular`,
         `Voronoi`).
 
         The array `arr` contains the pixel indexes of the neighbors of every pixel. Its has shape [total_pixels,
@@ -20,7 +20,7 @@ class Neighbors(np.ndarray):
         - The shape of `arr` is therefore [9, 4], with entries where there is no neighbor (e.g. arr[0, 3]) containing
         values of -1.
 
-        - Pixel 0 is at the top-left of the rectangular pixelization and has two neighbors, the pixel to its right
+        - Pixel 0 is at the top-left of the rectangular mesh and has two neighbors, the pixel to its right
         (with index 1) and the pixel below it (with index 3). Therefore, `arr[0,:] = [1, 3, -1, -1]` and `sizes[0] = 2`.
 
         - Pixel 1 is at the top-middle and has three neighbors, to its left (index 0, right (index 2) and below it

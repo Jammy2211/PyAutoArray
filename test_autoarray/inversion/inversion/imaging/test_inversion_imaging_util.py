@@ -186,7 +186,9 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
     convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-    pixelization = aa.pix.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.Rectangular(shape=(20, 20))
+
+    # TODO : Use pytest.parameterize
 
     for sub_size in range(1, 3):
 
@@ -194,7 +196,9 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
         grid = aa.Grid2D.from_mask(mask=mask_sub)
 
-        mapper = pixelization.mapper_from(source_grid_slim=grid)
+        mapper_grids = pixelization.mapper_grids_from(source_grid_slim=grid)
+
+        mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
         mapping_matrix = mapper.mapping_matrix
 
@@ -252,9 +256,13 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
 
     convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-    pixelization = aa.pix.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
-    mapper = pixelization.mapper_from(source_grid_slim=mask.masked_grid_sub_1)
+    mapper_grids = pixelization.mapper_grids_from(
+        source_grid_slim=mask.masked_grid_sub_1
+    )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     mapping_matrix = mapper.mapping_matrix
 
@@ -293,7 +301,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
 
     convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-    pixelization = aa.pix.Rectangular(shape=(20, 20))
+    pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     for sub_size in range(1, 2, 3):
 
@@ -301,7 +309,9 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
 
         grid = aa.Grid2D.from_mask(mask=mask_sub)
 
-        mapper = pixelization.mapper_from(source_grid_slim=grid)
+        mapper_grids = pixelization.mapper_grids_from(source_grid_slim=grid)
+
+        mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
         mapping_matrix = mapper.mapping_matrix
 

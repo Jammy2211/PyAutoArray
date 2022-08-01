@@ -7,8 +7,10 @@ from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
+from autoarray.inversion.pixelization.mappers.rectangular import (
+    MapperRectangularNoInterp,
+)
+from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 
 
 class MapperPlotter(Plotter):

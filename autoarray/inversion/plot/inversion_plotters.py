@@ -2,7 +2,7 @@ import numpy as np
 
 from autoconf import conf
 
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include2D
@@ -98,9 +98,9 @@ class InversionPlotter(Plotter):
                 ),
             )
 
-    def figures_2d_of_mapper(
+    def figures_2d_of_pixelization(
         self,
-        mapper_index: int = 0,
+        pixelization_index: int = 0,
         reconstructed_image: bool = False,
         reconstruction: bool = False,
         errors: bool = False,
@@ -117,7 +117,7 @@ class InversionPlotter(Plotter):
 
         Parameters
         ----------
-        mapper_index
+        pixelization_index
             The index of the `Mapper` in the `Inversion`'s `linear_obj_list` that is plotted.
         reconstructed_image
             Whether or not to make a 2D plot (via `imshow`) of the mapper's reconstructed image data.
@@ -140,7 +140,7 @@ class InversionPlotter(Plotter):
         if not self.inversion.has(cls=AbstractMapper):
             return
 
-        mapper_plotter = self.mapper_plotter_from(mapper_index=mapper_index)
+        mapper_plotter = self.mapper_plotter_from(mapper_index=pixelization_index)
 
         if reconstructed_image:
 
@@ -260,14 +260,22 @@ class InversionPlotter(Plotter):
         """
         self.open_subplot_figure(number_subplots=6)
 
-        self.figures_2d_of_mapper(mapper_index=mapper_index, reconstructed_image=True)
-        self.figures_2d_of_mapper(mapper_index=mapper_index, reconstruction=True)
-        self.figures_2d_of_mapper(mapper_index=mapper_index, errors=True)
-        self.figures_2d_of_mapper(mapper_index=mapper_index, residual_map=True)
-        self.figures_2d_of_mapper(
-            mapper_index=mapper_index, normalized_residual_map=True
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_image=True
         )
-        self.figures_2d_of_mapper(mapper_index=mapper_index, chi_squared_map=True)
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstruction=True
+        )
+        self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, residual_map=True
+        )
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, normalized_residual_map=True
+        )
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, chi_squared_map=True
+        )
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{mapper_index}"

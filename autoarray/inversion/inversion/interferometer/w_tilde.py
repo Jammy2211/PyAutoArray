@@ -9,7 +9,7 @@ from autoarray.inversion.inversion.interferometer.abstract import (
 from autoarray.dataset.interferometer import WTildeInterferometer
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.preloads import Preloads
 from autoarray.operators.transformer import TransformerNUFFT
@@ -29,7 +29,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         transformer: TransformerNUFFT,
         w_tilde: WTildeInterferometer,
         linear_obj_list: List[LinearObj],
-        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -71,7 +70,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             noise_map=noise_map,
             transformer=transformer,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,

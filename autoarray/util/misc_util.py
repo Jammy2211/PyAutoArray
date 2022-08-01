@@ -33,9 +33,9 @@ def cls_list_from(
 
     For example:
 
-    - If the input is `cls=aa.pix.Pixelization`, a list containing all pixelizations in the class are returned.
+    - If the input is `cls=aa.mesh.Mesh`, a list containing all pixelizations in the class are returned.
 
-    - If `cls=aa.pix.Pixelization` and `cls_filtered=aa.pix.Rectangular`, a list of all pixelizations
+    - If `cls=aa.mesh.Mesh` and `cls_filtered=aa.mesh.Rectangular`, a list of all pixelizations
     excluding those which are `Rectangular` pixelizations will be returned.
 
     Parameters
@@ -51,13 +51,12 @@ def cls_list_from(
     -------
     The list of objects in the galaxy that inherit from input `cls`.
     """
+    cls_list = [value for value in values if isinstance(value, cls)]
+
     if cls_filtered is not None:
-        return [
-            value
-            for value in values
-            if isinstance(value, cls) and not isinstance(value, cls_filtered)
-        ]
-    return [value for value in values if isinstance(value, cls)]
+        return [value for value in cls_list if not isinstance(value, cls_filtered)]
+
+    return cls_list
 
 
 def total(values: Union[List, ValuesView], cls: Type) -> int:

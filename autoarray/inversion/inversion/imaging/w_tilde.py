@@ -9,7 +9,7 @@ from autoarray.numba_util import profile_func
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -28,7 +28,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         convolver: Convolver,
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
-        regularization_list: List[Optional[AbstractRegularization]],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -65,7 +64,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
             noise_map=noise_map,
             convolver=convolver,
             linear_obj_list=linear_obj_list,
-            regularization_list=regularization_list,
             settings=settings,
             preloads=preloads,
             profiling_dict=profiling_dict,

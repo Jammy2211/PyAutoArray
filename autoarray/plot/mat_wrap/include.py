@@ -81,8 +81,8 @@ class Include2D(AbstractInclude):
         mask: Optional[bool] = None,
         border: Optional[bool] = None,
         grid: Optional[bool] = None,
-        mapper_data_pixelization_grid: Optional[bool] = None,
-        mapper_source_pixelization_grid: Optional[bool] = None,
+        mapper_data_mesh_grid: Optional[bool] = None,
+        mapper_source_mesh_grid: Optional[bool] = None,
         mapper_source_grid_slim: Optional[bool] = None,
         parallel_overscan: Optional[bool] = None,
         serial_prescan: Optional[bool] = None,
@@ -106,9 +106,9 @@ class Include2D(AbstractInclude):
             if `True`, the `mask` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
         border
             If `True`, the `border` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
-        mapper_data_pixelization_grid
+        mapper_data_mesh_grid
             If `True`, the pixelization grid in the data plane of a plotted `Mapper` is included on the figure.
-        mapper_source_pixelization_grid
+        mapper_source_mesh_grid
             If `True`, the pixelization grid in the source plane of a plotted `Mapper` is included on the figure.
         parallel_overscan
             If `True`, the parallel overscan of a plotted `Frame2D` is included on the figure.
@@ -122,8 +122,8 @@ class Include2D(AbstractInclude):
 
         self._border = border
         self._grid = grid
-        self._mapper_data_pixelization_grid = mapper_data_pixelization_grid
-        self._mapper_source_pixelization_grid = mapper_source_pixelization_grid
+        self._mapper_data_mesh_grid = mapper_data_mesh_grid
+        self._mapper_source_mesh_grid = mapper_source_mesh_grid
         self._mapper_source_grid_slim = mapper_source_grid_slim
         self._parallel_overscan = parallel_overscan
         self._serial_prescan = serial_prescan
@@ -142,17 +142,15 @@ class Include2D(AbstractInclude):
         return self.load(value=self._grid, name="grid")
 
     @property
-    def mapper_data_pixelization_grid(self):
+    def mapper_data_mesh_grid(self):
         return self.load(
-            value=self._mapper_data_pixelization_grid,
-            name="mapper_data_pixelization_grid",
+            value=self._mapper_data_mesh_grid, name="mapper_data_mesh_grid"
         )
 
     @property
-    def mapper_source_pixelization_grid(self):
+    def mapper_source_mesh_grid(self):
         return self.load(
-            value=self._mapper_source_pixelization_grid,
-            name="mapper_source_pixelization_grid",
+            value=self._mapper_source_mesh_grid, name="mapper_source_mesh_grid"
         )
 
     @property

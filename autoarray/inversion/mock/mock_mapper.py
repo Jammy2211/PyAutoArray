@@ -1,15 +1,17 @@
 import numpy as np
 from typing import Optional, Tuple
 
-from autoarray.inversion.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 
 
 class MockMapper(AbstractMapper):
     def __init__(
         self,
         source_grid_slim=None,
-        source_pixelization_grid=None,
-        hyper_image=None,
+        source_mesh_grid=None,
+        hyper_data=None,
+        regularization=None,
         pix_sub_weights=None,
         mapping_matrix=None,
         pixel_signals=None,
@@ -17,11 +19,13 @@ class MockMapper(AbstractMapper):
         interpolated_array=None,
     ):
 
-        super().__init__(
+        mapper_grids = MapperGrids(
             source_grid_slim=source_grid_slim,
-            source_pixelization_grid=source_pixelization_grid,
-            hyper_image=hyper_image,
+            source_mesh_grid=source_mesh_grid,
+            hyper_data=hyper_data,
         )
+
+        super().__init__(mapper_grids=mapper_grids, regularization=regularization)
 
         self._pix_sub_weights = pix_sub_weights
 

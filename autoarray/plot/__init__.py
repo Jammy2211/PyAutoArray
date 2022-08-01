@@ -32,7 +32,7 @@ from autoarray.plot.wrap.wrap_2d import MaskScatter
 from autoarray.plot.wrap.wrap_2d import BorderScatter
 from autoarray.plot.wrap.wrap_2d import PositionsScatter
 from autoarray.plot.wrap.wrap_2d import IndexScatter
-from autoarray.plot.wrap.wrap_2d import PixelizationGridScatter
+from autoarray.plot.wrap.wrap_2d import MeshGridScatter
 from autoarray.plot.wrap.wrap_2d import ParallelOverscanPlot
 from autoarray.plot.wrap.wrap_2d import SerialPrescanPlot
 from autoarray.plot.wrap.wrap_2d import SerialOverscanPlot
