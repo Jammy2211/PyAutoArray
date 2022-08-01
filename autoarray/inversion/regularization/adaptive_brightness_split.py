@@ -1,14 +1,20 @@
 import numpy as np
 
-from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.inversion.regularization.adaptive_brightness import AdaptiveBrightness
 
 from autoarray.inversion.regularization import regularization_util
 
 
-class AdaptiveBrightness(AbstractRegularization):
+class AdaptiveBrightnessSplit(AdaptiveBrightness):
     def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
         """
-        An adaptive regularization scheme (regularization is described in the `Regularization` class above).
+        An adaptive regularization scheme which splits every source pixel into a cross of four regularization points
+        (regularization is described in the `Regularization` class above) and interpolates to these points in order
+        to apply smoothing on the solution of an `Inversion`.
+
+        The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
+        Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
+        the area times 0.5.
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is \
         applied when each set of pixel neighbors are regularized with one another. The motivation of this is that \
@@ -51,27 +57,31 @@ class AdaptiveBrightness(AbstractRegularization):
             low signal regions.
         """
 
-        super().__init__()
-
-        self.inner_coefficient = inner_coefficient
-        self.outer_coefficient = outer_coefficient
-        self.signal_scale = signal_scale
-
-    def regularization_weights_from(self, linear_obj) -> np.ndarray:
-        pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
-
-        return regularization_util.adaptive_regularization_weights_from(
-            inner_coefficient=self.inner_coefficient,
-            outer_coefficient=self.outer_coefficient,
-            pixel_signals=pixel_signals,
+        super().__init__(
+            inner_coefficient=inner_coefficient,
+            outer_coefficient=outer_coefficient,
+            signal_scale=signal_scale,
         )
 
     def regularization_matrix_from(self, linear_obj) -> np.ndarray:
 
         regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
-        return regularization_util.weighted_regularization_matrix_from(
+        pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
+
+        (
+            splitted_mappings,
+            splitted_sizes,
+            splitted_weights,
+        ) = regularization_util.reg_split_from(
+            splitted_mappings=pix_sub_weights_split_cross.mappings,
+            splitted_sizes=pix_sub_weights_split_cross.sizes,
+            splitted_weights=pix_sub_weights_split_cross.weights,
+        )
+
+        return regularization_util.pixel_splitted_regularization_matrix_from(
             regularization_weights=regularization_weights,
-            neighbors=linear_obj.source_mesh_grid.neighbors,
-            neighbors_sizes=linear_obj.source_mesh_grid.neighbors.sizes,
+            splitted_mappings=splitted_mappings,
+            splitted_sizes=splitted_sizes,
+            splitted_weights=splitted_weights,
         )

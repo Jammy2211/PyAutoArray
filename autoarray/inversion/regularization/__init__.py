@@ -1,5 +1,5 @@
 from .abstract import AbstractRegularization as Regularization
 from .constant import Constant
-from .constant import ConstantSplit
+from .constant_split import ConstantSplit
 from .adaptive_brightness import AdaptiveBrightness
-from .adaptive_brightness import AdaptiveBrightnessSplit
+from .adaptive_brightness_split import AdaptiveBrightnessSplit
