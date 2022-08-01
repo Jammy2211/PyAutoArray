@@ -37,7 +37,7 @@ class ConstantSplit(Constant):
 
         super().__init__(coefficient=coefficient)
 
-    def regularization_matrix_from(self, linear_obj):
+    def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
 
         pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
 

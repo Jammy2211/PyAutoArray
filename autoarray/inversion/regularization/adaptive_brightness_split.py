@@ -6,7 +6,12 @@ from autoarray.inversion.regularization import regularization_util
 
 
 class AdaptiveBrightnessSplit(AdaptiveBrightness):
-    def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
+    def __init__(
+        self,
+        inner_coefficient: float = 1.0,
+        outer_coefficient: float = 1.0,
+        signal_scale: float = 1.0,
+    ):
         """
         An adaptive regularization scheme which splits every source pixel into a cross of four regularization points
         (regularization is described in the `Regularization` class above) and interpolates to these points in order
@@ -63,7 +68,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             signal_scale=signal_scale,
         )
 
-    def regularization_matrix_from(self, linear_obj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
 
         regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 

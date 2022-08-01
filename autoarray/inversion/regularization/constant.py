@@ -31,10 +31,10 @@ class Constant(AbstractRegularization):
 
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: "LinearObj") -> np.ndarray:
         return self.coefficient * np.ones(linear_obj.pixels)
 
-    def regularization_matrix_from(self, linear_obj):
+    def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
 
         return regularization_util.constant_regularization_matrix_from(
             coefficient=self.coefficient,

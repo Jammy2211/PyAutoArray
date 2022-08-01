@@ -6,7 +6,12 @@ from autoarray.inversion.regularization import regularization_util
 
 
 class AdaptiveBrightness(AbstractRegularization):
-    def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
+    def __init__(
+        self,
+        inner_coefficient: float = 1.0,
+        outer_coefficient: float = 1.0,
+        signal_scale: float = 1.0,
+    ):
         """
         An adaptive regularization scheme (regularization is described in the `Regularization` class above).
 
@@ -57,7 +62,7 @@ class AdaptiveBrightness(AbstractRegularization):
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
 
-    def regularization_weights_from(self, linear_obj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: "LinearObj") -> np.ndarray:
         pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
 
         return regularization_util.adaptive_regularization_weights_from(
@@ -66,7 +71,7 @@ class AdaptiveBrightness(AbstractRegularization):
             pixel_signals=pixel_signals,
         )
 
-    def regularization_matrix_from(self, linear_obj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
 
         regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
