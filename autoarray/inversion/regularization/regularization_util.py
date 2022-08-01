@@ -6,9 +6,7 @@ from autoarray import numba_util
 
 
 @numba_util.jit()
-def zeroth_regularization_matrix_from(
-    coefficient: float, pixels : int
-) -> np.ndarray:
+def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> np.ndarray:
     """
     Apply zeroth order regularization which penalizes every pixel's deviation from zero by addiing non-zero terms
     to the regularization matrix. 
@@ -38,7 +36,6 @@ def zeroth_regularization_matrix_from(
         regularization_matrix[i, i] += regularization_coefficient
 
     return regularization_matrix
-
 
 
 @numba_util.jit()
