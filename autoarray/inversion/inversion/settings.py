@@ -9,7 +9,7 @@ class SettingsInversion:
         self,
         use_w_tilde: bool = True,
         use_linear_operators: bool = False,
-        linear_funcs_add_to_curvature_diag: bool = True,
+        no_regularization_add_to_curvature_diag: bool = True,
         tolerance: float = 1e-8,
         maxiter: int = 250,
         check_solution: bool = True,
@@ -19,7 +19,9 @@ class SettingsInversion:
 
         self.use_w_tilde = use_w_tilde
         self.use_linear_operators = use_linear_operators
-        self.linear_funcs_add_to_curvature_diag = linear_funcs_add_to_curvature_diag
+        self.no_regularization_add_to_curvature_diag = (
+            no_regularization_add_to_curvature_diag
+        )
         self.tolerance = tolerance
         self.maxiter = maxiter
         self.check_solution = check_solution

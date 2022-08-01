@@ -10,9 +10,11 @@ from autoconf import conf
 
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.inversion.mappers.rectangular import MapperRectangularNoInterp
-from autoarray.inversion.mappers.delaunay import MapperDelaunay
-from autoarray.inversion.mappers.voronoi import MapperVoronoiNoInterp
+from autoarray.inversion.pixelization.mappers.rectangular import (
+    MapperRectangularNoInterp,
+)
+from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
+from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
@@ -448,7 +450,7 @@ class MatPlot2D(AbstractMatPlot):
         border_scatter: Optional[w2d.BorderScatter] = None,
         positions_scatter: Optional[w2d.PositionsScatter] = None,
         index_scatter: Optional[w2d.IndexScatter] = None,
-        pixelization_grid_scatter: Optional[w2d.PixelizationGridScatter] = None,
+        mesh_grid_scatter: Optional[w2d.MeshGridScatter] = None,
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
@@ -528,8 +530,8 @@ class MatPlot2D(AbstractMatPlot):
             Scatters specific (y,x) coordinates input as a `Grid2DIrregular` object over the figure.
         index_scatter
             Scatters specific coordinates of an input `Grid2D` based on input values of the `Grid2D`'s 1D or 2D indexes.
-        pixelization_grid_scatter
-            Scatters the `PixelizationGrid` of a `Pixelization` object.
+        mesh_grid_scatter
+            Scatters the `PixelizationGrid` of a `Mesh` object.
         parallel_overscan_plot
             Plots the parallel overscan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
         serial_prescan_plot
@@ -575,9 +577,7 @@ class MatPlot2D(AbstractMatPlot):
         self.border_scatter = border_scatter or w2d.BorderScatter()
         self.positions_scatter = positions_scatter or w2d.PositionsScatter()
         self.index_scatter = index_scatter or w2d.IndexScatter()
-        self.pixelization_grid_scatter = (
-            pixelization_grid_scatter or w2d.PixelizationGridScatter()
-        )
+        self.mesh_grid_scatter = mesh_grid_scatter or w2d.MeshGridScatter()
 
         self.parallel_overscan_plot = (
             parallel_overscan_plot or w2d.ParallelOverscanPlot()
@@ -851,7 +851,7 @@ class MatPlot2D(AbstractMatPlot):
             solution_array_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=source_pixelilzation_values,
                 mask_2d=np.full(
-                    fill_value=False, shape=mapper.source_pixelization_grid.shape_native
+                    fill_value=False, shape=mapper.source_mesh_grid.shape_native
                 ),
                 sub_size=1,
             )
@@ -859,14 +859,12 @@ class MatPlot2D(AbstractMatPlot):
             source_pixelilzation_values = Array2D.manual(
                 array=solution_array_2d,
                 sub_size=1,
-                pixel_scales=mapper.source_pixelization_grid.pixel_scales,
-                origin=mapper.source_pixelization_grid.origin,
+                pixel_scales=mapper.source_mesh_grid.pixel_scales,
+                origin=mapper.source_mesh_grid.origin,
             )
 
         extent = self.axis.config_dict.get("extent")
-        extent = (
-            extent if extent is not None else mapper.source_pixelization_grid.extent
-        )
+        extent = extent if extent is not None else mapper.source_mesh_grid.extent
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -883,7 +881,7 @@ class MatPlot2D(AbstractMatPlot):
                 bypass=True,
             )
 
-        self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
+        self.axis.set(extent=extent, grid=mapper.source_mesh_grid)
 
         self.yticks.set(
             array=None, min_value=extent[2], max_value=extent[3], units=self.units
@@ -898,8 +896,7 @@ class MatPlot2D(AbstractMatPlot):
             [text.set() for text in self.text]
 
         self.grid_plot.plot_rectangular_grid_lines(
-            extent=mapper.source_pixelization_grid.extent,
-            shape_native=mapper.shape_native,
+            extent=mapper.source_mesh_grid.extent, shape_native=mapper.shape_native
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -925,9 +922,7 @@ class MatPlot2D(AbstractMatPlot):
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = (
-            extent if extent is not None else mapper.source_pixelization_grid.extent
-        )
+        extent = extent if extent is not None else mapper.source_mesh_grid.extent
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -936,7 +931,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             self.setup_subplot(aspect=aspect_inv)
 
-        self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
+        self.axis.set(extent=extent, grid=mapper.source_mesh_grid)
 
         self.tickparams.set()
         self.yticks.set(
@@ -982,9 +977,7 @@ class MatPlot2D(AbstractMatPlot):
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = (
-            extent if extent is not None else mapper.source_pixelization_grid.extent
-        )
+        extent = extent if extent is not None else mapper.source_mesh_grid.extent
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -993,7 +986,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             self.setup_subplot(aspect=aspect_inv)
 
-        self.axis.set(extent=extent, grid=mapper.source_pixelization_grid)
+        self.axis.set(extent=extent, grid=mapper.source_mesh_grid)
 
         plt.gca().set_aspect(aspect_inv)
 

@@ -68,11 +68,19 @@ class DatasetException(Exception):
     pass
 
 
+class MeshException(Exception):
+    """
+    Raises exceptions associated with the `inversion/mesh` modules and `Mesh` classes.
+
+    For example if a `Rectangular` mesh has dimensions below 3x3.
+    """
+
+    pass
+
+
 class PixelizationException(Exception):
     """
     Raises exceptions associated with the `inversion/pixelization` modules and `Pixelization` classes.
-
-    For example if a `Rectangular` pixelization has dimensions below 3x3.
     """
 
     pass

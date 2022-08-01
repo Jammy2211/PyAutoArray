@@ -7,6 +7,8 @@ import warnings
 from autoarray.mask.abstract_mask import Mask
 from autoarray.structures.abstract_structure import Structure
 from autoarray.inversion.inversion.abstract import AbstractInversion
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
+from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray import type as ty
 from autoarray.fit import fit_util
@@ -30,8 +32,8 @@ class FitDataset(ABC):
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
         model_data
             The model data the masked dataset is fitted with.
-        inversion : LEq
-            If the fit uses an `LEq` this is the instance of the object used to perform the fit. This determines
+        inversion : Inversion
+            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
@@ -205,7 +207,7 @@ class FitDataset(ABC):
     def log_evidence(self) -> float:
         """
         Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
-        which quantify the complexity of an inversion's reconstruction (see the `LEq` module):
+        which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
 
         Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
                            Log(Regularization_Matrix_Term) + Noise_Term]
@@ -225,19 +227,11 @@ class FitDataset(ABC):
             The normalization noise_map-term for the data's noise-map.
         """
         if self.inversion is not None:
-            if self.inversion.has_mapper:
-                return fit_util.log_evidence_from(
-                    chi_squared=self.chi_squared,
-                    regularization_term=self.inversion.regularization_term,
-                    log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
-                    log_regularization_term=self.inversion.log_det_regularization_matrix_term,
-                    noise_normalization=self.noise_normalization,
-                )
             return fit_util.log_evidence_from(
                 chi_squared=self.chi_squared,
-                regularization_term=0.0,
+                regularization_term=self.inversion.regularization_term,
                 log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
-                log_regularization_term=0.0,
+                log_regularization_term=self.inversion.log_det_regularization_matrix_term,
                 noise_normalization=self.noise_normalization,
             )
 
@@ -245,10 +239,7 @@ class FitDataset(ABC):
     @profile_func
     def figure_of_merit(self) -> float:
 
-        if self.inversion is None:
-            return self.log_likelihood
-
-        if self.inversion.has_mapper:
+        if self.inversion is not None:
             return self.log_evidence
 
         return self.log_likelihood

@@ -25,7 +25,7 @@ class AbstractRegularization:
            coefficient is a 'hyper_galaxies-parameter' which determines how strongly we smooth the pixelization's reconstruction.
 
         The value of the coefficients(s) is set using the Bayesian framework of (Suyu 2006) and this \
-        is described further in the (*inversion.linear_eqn* class).
+        is described further in the (*inversion.inversion* class).
 
         The regularization matrix, H, is calculated by defining a set of B matrices which describe how the \
         pixels neighbor one another. For example, lets take a 3x3 square grid:
@@ -110,7 +110,7 @@ class AbstractRegularization:
         Infact, going through the rigmarole of computing and multiplying B matrices like this is uncessary. It is \
         more computationally efficiently to directly compute H. This is possible, provided you know know all of the \
         neighboring pixel pairs (which, by definition, you need to know to set up the B matrices anyway). Thus, the \
-       'regularization_matrix_via_pixel_neighbors_from' functions in this module directly compute H from the pixel \
+       'regularization_matrix_via_neighbors_from' functions in this module directly compute H from the pixel \
         neighbors.
 
         # POSITIVE DEFINITE MATRIX #
@@ -130,10 +130,13 @@ class AbstractRegularization:
     def __eq__(self, other):
         return self.__dict__ == other.__dict__ and self.__class__ is other.__class__
 
-    def regularization_weights_from(self, mapper):
+    def __hash__(self):
+        return id(self)
+
+    def regularization_weights_from(self, linear_obj):
         raise NotImplementedError
 
-    def regularization_matrix_from(self, mapper):
+    def regularization_matrix_from(self, linear_obj):
         raise NotImplementedError
 
 

@@ -10,7 +10,7 @@ def test__weight_list__matches_util():
 
     mapper = aa.m.MockMapper(pixel_signals=pixel_signals)
 
-    weight_list = reg.regularization_weights_from(mapper=mapper)
+    weight_list = reg.regularization_weights_from(linear_obj=mapper)
 
     weight_list_util = aa.util.regularization.adaptive_regularization_weights_from(
         inner_coefficient=10.0, outer_coefficient=15.0, pixel_signals=pixel_signals
@@ -25,7 +25,7 @@ def test__regularization_matrix__matches_util():
         inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0
     )
 
-    pixel_neighbors = np.array(
+    neighbors = np.array(
         [
             [1, 4, -1, -1],
             [2, 4, 0, -1],
@@ -36,18 +36,14 @@ def test__regularization_matrix__matches_util():
         ]
     )
 
-    pixel_neighbors_sizes = np.array([2, 3, 4, 2, 4, 3])
+    neighbors_sizes = np.array([2, 3, 4, 2, 4, 3])
     pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
-    pixelization_grid = aa.m.MockPixelizationGrid(
-        pixel_neighbors=pixel_neighbors, pixel_neighbors_sizes=pixel_neighbors_sizes
-    )
+    mesh_grid = aa.m.MockMeshGrid(neighbors=neighbors, neighbors_sizes=neighbors_sizes)
 
-    mapper = aa.m.MockMapper(
-        source_pixelization_grid=pixelization_grid, pixel_signals=pixel_signals
-    )
+    mapper = aa.m.MockMapper(source_mesh_grid=mesh_grid, pixel_signals=pixel_signals)
 
-    regularization_matrix = reg.regularization_matrix_from(mapper=mapper)
+    regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
 
     regularization_weights = aa.util.regularization.adaptive_regularization_weights_from(
         pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
@@ -55,8 +51,8 @@ def test__regularization_matrix__matches_util():
 
     regularization_matrix_util = aa.util.regularization.weighted_regularization_matrix_from(
         regularization_weights=regularization_weights,
-        pixel_neighbors=pixel_neighbors,
-        pixel_neighbors_sizes=pixel_neighbors_sizes,
+        neighbors=neighbors,
+        neighbors_sizes=neighbors_sizes,
     )
 
     assert (regularization_matrix == regularization_matrix_util).all()

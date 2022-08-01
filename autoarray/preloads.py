@@ -2,11 +2,12 @@ import logging
 import numpy as np
 from typing import List
 
-from autoarray.inversion.linear_eqn.imaging.abstract import AbstractLEqImaging
+from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 
 from autoarray import exc
-from autoarray.inversion.linear_eqn import leq_util
-
+from autoarray.inversion.inversion import inversion_util
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +74,7 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        if not fit_0.inversion.has_mapper:
+        if not fit_0.inversion.has(cls=AbstractMapper):
             return
 
         if np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8:
@@ -82,7 +83,7 @@ class Preloads:
 
             from autoarray.dataset.imaging import WTildeImaging
 
-            preload, indexes, lengths = leq_util.w_tilde_curvature_preload_imaging_from(
+            preload, indexes, lengths = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=fit_0.noise_map.native,
                 kernel_native=fit_0.dataset.psf.native,
                 native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,
@@ -123,11 +124,14 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        if fit_0.inversion.total_mappers > 1 or fit_0.inversion.total_mappers == 0:
+        if (
+            fit_0.inversion.total(cls=AbstractMapper) > 1
+            or fit_0.inversion.total(cls=AbstractMapper) == 0
+        ):
             return
 
-        mapper_0 = fit_0.inversion.mapper_list[0]
-        mapper_1 = fit_1.inversion.mapper_list[0]
+        mapper_0 = fit_0.inversion.cls_list_from(cls=AbstractMapper)[0]
+        mapper_1 = fit_1.inversion.cls_list_from(cls=AbstractMapper)[0]
 
         if mapper_0.source_grid_slim.shape[0] == mapper_1.source_grid_slim.shape[0]:
 
@@ -144,7 +148,7 @@ class Preloads:
 
     def set_mapper_list(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and the list of `Mapper`'s containing this information can
         be preloaded. This includes preloading the `mapping_matrix`.
 
@@ -167,14 +171,14 @@ class Preloads:
         if fit_0.inversion is None:
             return
 
-        if fit_0.inversion.total_mappers == 0:
+        if fit_0.inversion.total(cls=AbstractMapper) == 0:
             return
 
-        from autoarray.inversion.inversion.linear_operator import (
-            InversionLinearOperator,
+        from autoarray.inversion.inversion.interferometer.lop import (
+            InversionInterferometerMappingPyLops,
         )
 
-        if isinstance(fit_0.inversion, InversionLinearOperator):
+        if isinstance(fit_0.inversion, InversionInterferometerMappingPyLops):
             return
 
         inversion_0 = fit_0.inversion
@@ -184,7 +188,7 @@ class Preloads:
 
             if np.allclose(inversion_0.mapping_matrix, inversion_1.mapping_matrix):
 
-                self.mapper_list = inversion_0.mapper_list
+                self.mapper_list = inversion_0.cls_list_from(cls=AbstractMapper)
 
                 logger.info(
                     "PRELOADS - Mappers of planes preloaded for this model-fit."
@@ -192,7 +196,7 @@ class Preloads:
 
     def set_operated_mapping_matrix_with_preloads(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and matrices used to perform the linear algebra in an
         inversion can be preloaded, which help efficiently construct the curvature matrix.
 
@@ -214,11 +218,11 @@ class Preloads:
         self.curvature_matrix_preload = None
         self.curvature_matrix_counts = None
 
-        from autoarray.inversion.inversion.linear_operator import (
-            InversionLinearOperator,
+        from autoarray.inversion.inversion.interferometer.lop import (
+            InversionInterferometerMappingPyLops,
         )
 
-        if isinstance(fit_0.inversion, InversionLinearOperator):
+        if isinstance(fit_0.inversion, InversionInterferometerMappingPyLops):
             return
 
         inversion_0 = fit_0.inversion
@@ -244,7 +248,7 @@ class Preloads:
 
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
 
-                if isinstance(inversion_0.leq, AbstractLEqImaging):
+                if isinstance(inversion_0, AbstractInversionImaging):
 
                     self.curvature_matrix_preload = (
                         inversion_0.curvature_matrix_preload
@@ -254,12 +258,12 @@ class Preloads:
                     ).astype("int")
 
                 logger.info(
-                    "PRELOADS - LEq linear algebra quantities preloaded for this model-fit."
+                    "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
                 )
 
     def set_curvature_matrix(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and therefore its associated cruvature matrix is also
         fixed, meaning the curvature matrix preloaded.
 
@@ -293,12 +297,12 @@ class Preloads:
                 self.curvature_matrix = inversion_0.curvature_matrix
 
                 logger.info(
-                    "PRELOADS - LEq Curvature Matrix preloaded for this model-fit."
+                    "PRELOADS - Inversion Curvature Matrix preloaded for this model-fit."
                 )
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
         """
-        If the `MassProfile`'s and `Pixelization`'s in a model are fixed, the mapping of image-pixels to the
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
         source-pixels does not change during the model-fit and therefore its associated regularization matrices are
         also fixed, meaning the log determinant of the regularization matrix term of the Bayesian evidence can be
         preloaded.
@@ -325,7 +329,7 @@ class Preloads:
         if inversion_0 is None:
             return
 
-        if inversion_0.total_mappers == 0:
+        if inversion_0.total(cls=AbstractMapper) == 0:
             return
 
         if (
@@ -342,7 +346,7 @@ class Preloads:
             )
 
             logger.info(
-                "PRELOADS - LEq Log Det Regularization Matrix Term preloaded for this model-fit."
+                "PRELOADS - Inversion Log Det Regularization Matrix Term preloaded for this model-fit."
             )
 
     def check_via_fit(self, fit):

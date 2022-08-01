@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Tuple
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
@@ -32,15 +31,15 @@ class Constant(AbstractRegularization):
 
         super().__init__()
 
-    def regularization_weights_from(self, mapper) -> np.ndarray:
-        return self.coefficient * np.ones(mapper.pixels)
+    def regularization_weights_from(self, linear_obj) -> np.ndarray:
+        return self.coefficient * np.ones(linear_obj.pixels)
 
-    def regularization_matrix_from(self, mapper):
+    def regularization_matrix_from(self, linear_obj):
 
         return regularization_util.constant_regularization_matrix_from(
             coefficient=self.coefficient,
-            pixel_neighbors=mapper.source_pixelization_grid.pixel_neighbors,
-            pixel_neighbors_sizes=mapper.source_pixelization_grid.pixel_neighbors.sizes,
+            neighbors=linear_obj.neighbors,
+            neighbors_sizes=linear_obj.neighbors.sizes,
         )
 
 
@@ -76,9 +75,9 @@ class ConstantSplit(Constant):
 
         super().__init__(coefficient=coefficient)
 
-    def regularization_matrix_from(self, mapper):
+    def regularization_matrix_from(self, linear_obj):
 
-        pix_sub_weights_split_cross = mapper.pix_sub_weights_split_cross
+        pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
 
         (
             splitted_mappings,

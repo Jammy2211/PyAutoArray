@@ -16,13 +16,26 @@ __Visualization__
 - Need to properly make it so one can disable many aspections of visualization.
 
 
+__Inversion With Multiple Multiwavelength Datasets__
+
+Can create a list of InversionMatrix objects for each dataset + tracer and then have a new class which takes a list of
+these objects and creates a combined curvature_reg matrix from them, which solves for all datasets simultaneously.
+
+This is genuine because it can reuse all existing functionality and doesn't require diting of the inner code
+to get multi dataset fits working.
+
+The regularization matrix could addition addition multi-data regularization terms added.
+
+Multi analysis API can easily be used for model parameterization, with CombineAnalysis overwritten to define
+the log likelihood fuinction (which maybe uses a special type of Fit object).
+
 
 __Linear obj Func + Mapper fast leq__
 
 - Create MapperLeq object, which creates curvature / regularization / curvature reg matrix for each mapper (could
 be Mapping or WTilde object).
 
-- Extend LinearObjFunc object to have curvature / regularization / curvature reg matrix, where it always uses
+- Extend LinearObjFuncList object to have curvature / regularization / curvature reg matrix, where it always uses
 Mapping calc and regularization matrix is all zeros.
 
 - Create LeqOffDiag objects, which take two of the above and compute curvature / regularization / curvature reg matrix
@@ -47,7 +60,7 @@ above objects, instead of constructing a large `blurred_mapping_matrix` (albeit 
 - Could aim for LEqImaging / LEqInterferometer to be reduced to just LEq,
 
 - For efficiency, you prob need to preallocate curvature_reg / curvature_reg_mapper (or perhaps even all
-matrices of every individual MapperLEq / LinearObjFunc / LeqOffDiag object?) and copy in memory.
+matrices of every individual MapperLEq / LinearObjFuncList / LeqOffDiag object?) and copy in memory.
 
 
 __Probably Terrible Idea Notes__

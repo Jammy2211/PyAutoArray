@@ -1,16 +1,16 @@
 import numpy as np
 from typing import Tuple
 
-from autoarray.structures.grids.grid_2d_pixelization import AbstractGrid2DPixelization
-from autoarray.structures.grids.grid_2d_pixelization import PixelNeighbors
+from autoarray.inversion.linear_obj.neighbors import Neighbors
+from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 
-class MockGrid2DPixelization(AbstractGrid2DPixelization):
+class MockGrid2DMesh(Abstract2DMesh):
     def __new__(cls, grid: np.ndarray = None, extent: Tuple[int, int, int, int] = None):
         """
         A grid of (y,x) coordinates which represent a uniform rectangular pixelization.
 
-        A `Grid2DRectangular` is ordered such pixels begin from the top-row and go rightwards and then downwards.
+        A `Mesh2DRectangular` is ordered such pixels begin from the top-row and go rightwards and then downwards.
         It is an ndarray of shape [total_pixels, 2], where the first dimension of the ndarray corresponds to the
         pixelization's pixel index and second element whether it is a y or x arc-second coordinate.
 
@@ -50,10 +50,8 @@ class MockGrid2DPixelization(AbstractGrid2DPixelization):
         return self._extent
 
 
-class MockPixelizationGrid:
-    def __init__(self, pixel_neighbors=None, pixel_neighbors_sizes=None):
+class MockMeshGrid:
+    def __init__(self, neighbors=None, neighbors_sizes=None):
 
-        self.pixel_neighbors = PixelNeighbors(
-            arr=pixel_neighbors, sizes=pixel_neighbors_sizes
-        )
-        self.shape = (len(self.pixel_neighbors.sizes),)
+        self.neighbors = Neighbors(arr=neighbors, sizes=neighbors_sizes)
+        self.shape = (len(self.neighbors.sizes),)

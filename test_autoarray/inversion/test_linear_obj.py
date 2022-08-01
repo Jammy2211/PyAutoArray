@@ -1,6 +1,5 @@
 import autoarray as aa
 import numpy as np
-import pytest
 
 
 def test__data_to_pix_unique_from():
@@ -41,10 +40,29 @@ def test__data_to_pix_unique_from():
 
     grid = aa.Grid2D.uniform(shape_native=(1, 2), sub_size=2, pixel_scales=0.1)
 
-    linear_obj = aa.LinearObjFunc(grid=grid)
+    linear_obj = aa.AbstractLinearObjFuncList(grid=grid, regularization=None)
 
-    assert (
-        linear_obj.data_unique_mappings.data_to_pix_unique == data_to_pix_unique
-    ).all()
-    assert (linear_obj.data_unique_mappings.data_weights == data_weights).all()
-    assert (linear_obj.data_unique_mappings.pix_lengths == pix_lengths).all()
+    assert (linear_obj.unique_mappings.data_to_pix_unique == data_to_pix_unique).all()
+    assert (linear_obj.unique_mappings.data_weights == data_weights).all()
+    assert (linear_obj.unique_mappings.pix_lengths == pix_lengths).all()
+
+
+def test__neighbors():
+    class FuncList(aa.AbstractLinearObjFuncList):
+        @property
+        def pixels(self):
+            return 4
+
+    linear_obj = FuncList(grid=None, regularization=None)
+
+    neighbors = linear_obj.neighbors
+
+    assert (neighbors[0] == [1, -1]).all()
+    assert (neighbors[1] == [0, 2]).all()
+    assert (neighbors[2] == [1, 3]).all()
+    assert (neighbors[3] == [2, -1]).all()
+
+    assert neighbors.sizes[0] == 1
+    assert neighbors.sizes[1] == 2
+    assert neighbors.sizes[2] == 2
+    assert neighbors.sizes[3] == 1

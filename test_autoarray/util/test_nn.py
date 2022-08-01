@@ -5,7 +5,7 @@ from autoarray.util.nn import nn_py
 
 def test__returning_weights_correct():
 
-    pixelization_grid = aa.Grid2D.manual_slim(
+    mesh_grid = aa.Grid2D.manual_slim(
         [
             [1.0, 1.0],
             [0.0, 1.0],
@@ -30,8 +30,8 @@ def test__returning_weights_correct():
     try:
 
         weights, neighbour_indexes = nn_py.natural_interpolation_weights(
-            pixelization_grid[:, 1],
-            pixelization_grid[:, 0],
+            mesh_grid[:, 1],
+            mesh_grid[:, 0],
             interpolate_grid[:, 1],
             interpolate_grid[:, 0],
             max_nneighbours,
@@ -60,9 +60,10 @@ def test__returning_weights_correct():
 
         pass
 
+
 def test__nn_interpolation_correct():
 
-    pixelization_grid = aa.Grid2D.manual_slim(
+    mesh_grid = aa.Grid2D.manual_slim(
         [
             [1.0, 1.0],
             [0.0, 1.0],
@@ -87,8 +88,8 @@ def test__nn_interpolation_correct():
     try:
 
         interpolated_values = nn_py.natural_interpolation(
-            pixelization_grid[:, 1],
-            pixelization_grid[:, 0],
+            mesh_grid[:, 1],
+            mesh_grid[:, 0],
             input_values,
             interpolate_grid[:, 1],
             interpolate_grid[:, 0],

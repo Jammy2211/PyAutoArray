@@ -119,10 +119,9 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
 
     model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-    leq = aa.m.MockLEq(linear_obj_list=[aa.m.MockMapper()], data_vector=1)
-
     inversion = aa.m.MockInversion(
-        leq=leq,
+        linear_obj_list=[aa.m.MockMapper()],
+        data_vector=1,
         regularization_term=2.0,
         log_det_curvature_reg_matrix_term=3.0,
         log_det_regularization_matrix_term=4.0,
