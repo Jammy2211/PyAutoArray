@@ -20,10 +20,7 @@ def test__zeroth_regularization_matrix_from():
         coefficient=2.0, pixels=2
     )
 
-    assert (
-        regularization_matrix
-        == np.array(([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]]))
-    ).all()
+    assert (regularization_matrix == np.array(([[4.0, 0.0], [0.0, 4.0]]))).all()
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
