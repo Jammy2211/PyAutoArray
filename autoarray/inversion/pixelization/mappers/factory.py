@@ -12,7 +12,31 @@ def mapper_from(
     regularization: Optional[AbstractRegularization],
     profiling_dict: Optional[Dict] = None,
 ):
+    """
+    Factory which given `MapperGrids` and `Regularization` objects creates a `Mapper`.
 
+    A `Mapper` determines the mappings between a masked dataset's pixels and pixels of a linear object pixelization.
+    The mapper is used in order to fit a dataset via an inversion. Docstrings in the packages `linear_obj`, `mesh`,
+    `pixelization`, `mapper_grids` `mapper` and `inversion` provide more details.
+
+    This factory inspects the type of mesh contained in the `MapperGrids` and uses this to determine the type of
+    `Mapper` it creates. For example, if a Delaunay mesh is used, a `MapperDelaunay` is created.
+
+    Parameters
+    ----------
+    mapper_grids
+        An object containing the data grid and mesh grid in both the data-frame and source-frame used by the
+        mapper to map data-points to linear object parameters.
+    regularization
+        The regularization scheme which may be applied to this linear object in order to smooth its solution,
+        which for a mapper smooths neighboring pixels on the mesh.
+    profiling_dict
+        A dictionary which contains timing of certain functions calls which is used for profiling.
+
+    Returns
+    -------
+    A mapper whose type is determined by the input `mapper_grids` mesh type.
+    """
     from autoarray.inversion.pixelization.mappers.rectangular import (
         MapperRectangularNoInterp,
     )
