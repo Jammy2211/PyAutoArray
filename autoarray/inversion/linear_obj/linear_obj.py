@@ -47,7 +47,7 @@ class LinearObj:
         For example for the following linear objects:
 
         - `AbstractLinearObjFuncList` the number of analytic functions.
-        - `Mapper` the number of parameters in the mesh used to reconstruct the data.
+        - `Mapper` the number of piels in the mesh used to reconstruct the data.
 
         Returns
         -------
@@ -63,7 +63,7 @@ class LinearObj:
         For example for the following linear objects:
 
         - `AbstractLinearObjFuncList` whether certain analytic functions reconstruct nearby components to one another.
-        - `Mapper` how the parameters on the mesh used to reconstruct the data neighbor one another.
+        - `Mapper` how the pixels on the mesh used to reconstruct the data neighbor one another.
 
         Returns
         -------
@@ -74,36 +74,80 @@ class LinearObj:
     @cached_property
     @profile_func
     def unique_mappings(self):
+        """
+        An object describing the unique mappings between data points / pixels in the data and the parameters of the
+        linear object.
+
+        For example for the following linear objects:
+
+        - `AbstractLinearObjFuncList` All pixels in the data map to every analytic function, therefore the unique
+        mappings are one-to-one with each function.
+        - `Mapper` Every group of sub-pixels map to a unique mesh pixel and the unique mappings describe each of these
+        unique group mappings.
+
+        This object is used to speed up the computation of certain matrices for inversions using the w-tilde formalism.
+
+        Returns
+        -------
+        An object describing the unique mappings between data points / pixels in the data and the parameters of the
+        linear object.
+        """
         raise NotImplementedError
 
     @property
     def mapping_matrix(self) -> np.ndarray:
+        """
+        The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
+        and the linear object parameters. It is used to construct the simultaneous linear equations which reconstruct
+        the data.
+
+        The matrix has shape [total_data_points, data_linear_object_parameters], whereby all non-zero entries
+        indicate that a data point maps to a linear object parameter.
+
+        For `Mapper` linear objects it is described in the following paper as
+        matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf and in more detail in the
+        function `mapper_util.mapping_matrix_from()`.
+
+        If there are multiple linear objects, the mapping matrices are stacked such that their simultaneous linear
+        equations are solved simultaneously. This property returns the stacked mapping matrix.
+        """
         raise NotImplementedError
 
     @property
     def operated_mapping_matrix_override(self) -> Optional[np.ndarray]:
         """
-        The `LinearEqn` object takes the `mapping_matrix` of each linear object and combines it with the `Convolver`
-        operator to perform a 2D convolution and compute the `operated_mapping_matrix`.
+        An `Inversion` takes the `mapping_matrix` of each linear object and combines it with the data's operators
+        (e.g. a `Convolver` for `Imaging` data) to compute the `operated_mapping_matrix`.
 
-        If this property is overwritten this operation is not performed, with the `operated_mapping_matrix` output this
-        property automatically used instead.
+        If this property is overwritten this operation is not performed, with the `operated_mapping_matrix` output
+        by this property automatically used instead.
 
-        This is used for linear objects where properly performing the 2D convolution within only the `LinearEqn`
-        object is not possible. For example, images may have flux outside the masked region which is blurred into the
-        masked region which is linear solved for. This flux is outside the region that defines the `mapping_matrix` and
-        thus this override is required to properly incorporate it.
+        This is used for linear objects where properly performing the operator (e.g. 2D convolution) within only
+        the scope of the `Inversion` object is not possible. For example, images may have flux outside the masked
+        region which is blurred into the masked region which is linear solved for. This flux is outside the region
+        that defines the `mapping_matrix` and thus this override is required to properly incorporate it.
 
         Returns
         -------
-        A blurred mapping matrix of dimensions (total_mask_pixels, 1) which overrides the mapping matrix calculations
-        performed in the linear equation solvers.
+        An operated mapping matrix of dimensions (total_mask_pixels, total_parameters) which overrides the mapping
+        matrix calculations performed in the linear equation solvers.
         """
         return None
 
     @property
     def regularization_matrix(self) -> np.ndarray:
+        """
+         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
+         linear algebra system we solve for using D and F above and is given by
+         equation (12) in https://arxiv.org/pdf/astro-ph/0302587.pdf.
 
+         A complete description of regularization is given in the `regularization.py` and `regularization_util.py`
+         modules.
+
+         For multiple mappers, the regularization matrix is computed as the block diagonal of each individual mapper.
+         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
+         regularization it is bypassed.
+         """
         if self.regularization is None:
 
             return np.zeros((self.parameters, self.parameters))

@@ -171,8 +171,15 @@ class AbstractInversion:
     @profile_func
     def mapping_matrix(self) -> np.ndarray:
         """
-        The `mapping_matrix` of a linear object describes the mappings between the observed data's values and the
-        linear objects model. These are used to construct the simultaneous linear equations which reconstruct the data.
+        The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
+        and the linear object parameters. It is used to construct the simultaneous linear equations which reconstruct
+        the data.
+
+        The matrix has shape [total_data_points, data_linear_object_parameters], whereby all non-zero entries
+        indicate that a data point maps to a linear object parameter.
+
+        It is described in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf and in more
+        detail in the function  `mapper_util.mapping_matrix_from()`.
 
         If there are multiple linear objects, the mapping matrices are stacked such that their simultaneous linear
         equations are solved simultaneously. This property returns the stacked mapping matrix.

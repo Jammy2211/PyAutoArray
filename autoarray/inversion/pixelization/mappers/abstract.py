@@ -257,10 +257,15 @@ class AbstractMapper(LinearObj):
     @profile_func
     def mapping_matrix(self) -> np.ndarray:
         """
-        The `mapping_matrix` is a matrix that represents the image-pixel to pixelization-pixel mappings above in a
-        2D matrix. It in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        The `mapping_matrix` of a linear object describes the mappings between the observed data's data-points / pixels
+        and the linear object parameters. It is used to construct the simultaneous linear equations which reconstruct
+        the data.
 
-        A full description is given in `mapper_util.mapping_matrix_from()`.
+        The matrix has shape [total_data_points, data_linear_object_parameters], whereby all non-zero entries
+        indicate that a data point maps to a linear object parameter.
+
+        It is described in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf and in more
+        detail in the function  `mapper_util.mapping_matrix_from()`.
         """
         return mapper_util.mapping_matrix_from(
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
