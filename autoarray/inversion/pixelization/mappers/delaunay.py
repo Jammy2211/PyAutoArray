@@ -20,10 +20,12 @@ class MapperDelaunay(AbstractMapper):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        To understand a `Mapper` one must be familiar `Mesh` objects and the `pixelization` package, where
-        the following four grids are explained: `data_grid_slim`, `source_grid_slim`, `data_mesh_grid` and
-        `source_mesh_grid`. If you are not familiar with these grids, read the docstrings of the
-        `pixelization` package first.
+        To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
+        the four grids grouped in a `MapperGrids` object are explained (`data_grid_slim`, `source_grid_slim`,
+        `dataset_mesh_grid`,`source_mesh_grid`)
+
+        If you are unfamliar withe above objects, read through the docstrings of the `pixelization`, `mesh` and
+        `mapper_grids` packages.
 
         A `Mapper` determines the mappings between the masked data grid's pixels (`data_grid_slim` and
         `source_grid_slim`) and the pxelization's pixels (`data_mesh_grid` and `source_mesh_grid`).
@@ -57,19 +59,12 @@ class MapperDelaunay(AbstractMapper):
 
         Parameters
         ----------
-        pixelization
-            The pixelization object containing this mapper's mesh and regularization.
-        source_grid_slim
-            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
-            `source` reference frame.
-        source_mesh_grid
-            The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
-        data_mesh_grid
-            The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
-            transformation applied to it to create the `source_mesh_grid`.
-        hyper_data
-            An image which is used to determine the `data_mesh_grid` and therefore adapt the distribution of
-            pixels of the Delaunay grid to the data it discretizes.
+        mapper_grids
+            An object containing the data grid and mesh grid in both the data-frame and source-frame used by the
+            mapper to map data-points to linear object parameters.
+        regularization
+            The regularization scheme which may be applied to this linear object in order to smooth its solution,
+            which for a mapper smooths neighboring pixels on the mesh.
         profiling_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
