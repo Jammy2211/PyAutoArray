@@ -13,7 +13,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
             sizes=np.ones(8, dtype="int"),
             weights=np.ones(9),
         ),
-        pixels=9,
+        parameters=9,
     )
 
     pixe_indexes_for_slim_indexes = mapper.pix_indexes_for_slim_indexes(
@@ -28,7 +28,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
             sizes=np.ones(8, dtype="int"),
             weights=np.ones(8),
         ),
-        pixels=9,
+        parameters=9,
     )
 
     pixe_indexes_for_slim_indexes = mapper.pix_indexes_for_slim_indexes(
@@ -59,7 +59,7 @@ def test__sub_slim_indexes_for_pix_index():
                 ]
             ),
         ),
-        pixels=5,
+        parameters=5,
     )
 
     assert mapper.sub_slim_indexes_for_pix_index == [
@@ -116,7 +116,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         source_grid_slim=grid_2d_7x7,
         pix_sub_weights=pix_sub_weights,
         hyper_data=image_7x7,
-        pixels=pixels,
+        parameters=pixels,
     )
 
     pixel_signals = mapper.pixel_signals_from(signal_scale=2.0)

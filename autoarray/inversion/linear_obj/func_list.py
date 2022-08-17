@@ -48,14 +48,14 @@ class AbstractLinearObjFuncList(LinearObj):
     @cached_property
     def neighbors(self) -> Neighbors:
 
-        neighbors_sizes = 2.0 * np.ones(shape=(self.pixels))
+        neighbors_sizes = 2.0 * np.ones(shape=(self.parameters))
 
         neighbors_sizes[0] -= 1
         neighbors_sizes[-1] -= 1
 
-        neighbors = -1 * np.ones(shape=(self.pixels, 2))
+        neighbors = -1 * np.ones(shape=(self.parameters, 2))
 
-        for pixel_index in range(self.pixels):
+        for pixel_index in range(self.parameters):
 
             neighbors[pixel_index, 0] = pixel_index - 1
             neighbors[pixel_index, 1] = pixel_index + 1

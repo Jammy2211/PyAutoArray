@@ -33,13 +33,13 @@ def constant_regularization_matrix_from(
         coefficient of every source pixel is the same.
     """
 
-    pixels = len(neighbors)
+    parameters = len(neighbors)
 
-    regularization_matrix = np.zeros(shape=(pixels, pixels))
+    regularization_matrix = np.zeros(shape=(parameters, parameters))
 
     regularization_coefficient = coefficient ** 2.0
 
-    for i in range(pixels):
+    for i in range(parameters):
         regularization_matrix[i, i] += 1e-8
         for j in range(neighbors_sizes[i]):
             neighbor_index = neighbors[i, j]
@@ -108,13 +108,13 @@ def weighted_regularization_matrix_from(
         coefficient of every source pixel is different.
     """
 
-    pixels = len(regularization_weights)
+    parameters = len(regularization_weights)
 
-    regularization_matrix = np.zeros(shape=(pixels, pixels))
+    regularization_matrix = np.zeros(shape=(parameters, parameters))
 
     regularization_weight = regularization_weights ** 2.0
 
-    for i in range(pixels):
+    for i in range(parameters):
         regularization_matrix[i, i] += 1e-8
         for j in range(neighbors_sizes[i]):
             neighbor_index = neighbors[i, j]
@@ -209,13 +209,13 @@ def pixel_splitted_regularization_matrix_from(
     # Currently, I simply mulitply the i-th weight to the i-th source pixel, but there should be different ways.
     # Need to keep an eye here.
 
-    pixels = int(len(splitted_mappings) / 4)
+    parameters = int(len(splitted_mappings) / 4)
 
-    regularization_matrix = np.zeros(shape=(pixels, pixels))
+    regularization_matrix = np.zeros(shape=(parameters, parameters))
 
     regularization_weight = regularization_weights ** 2.0
 
-    for i in range(pixels):
+    for i in range(parameters):
 
         regularization_matrix[i, i] += 2e-8
 
@@ -236,7 +236,7 @@ def pixel_splitted_regularization_matrix_from(
                         weight[l] * weight[l + m] * regularization_weight[i]
                     )
 
-    for i in range(pixels):
+    for i in range(parameters):
         regularization_matrix[i, i] /= 2.0
 
     return regularization_matrix

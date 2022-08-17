@@ -12,8 +12,8 @@ class Constant(AbstractRegularization):
         uses a single value to apply smoothing on the solution of an `Inversion`.
 
         For this regularization scheme, there is only 1 regularization coefficient that is applied to
-        all neighboring pixels. This means that the matrix B only needs to regularize pixels in one direction
-        (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For example:
+        all neighboring pixels / parameters. This means that the matrix B only needs to regularize pixels / parameters
+        in one direction (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For example:
 
         B = [-1, 1]  [0->1]
             [0, -1]  1 does not regularization with 0
@@ -32,7 +32,7 @@ class Constant(AbstractRegularization):
         super().__init__()
 
     def regularization_weights_from(self, linear_obj) -> np.ndarray:
-        return self.coefficient * np.ones(linear_obj.pixels)
+        return self.coefficient * np.ones(linear_obj.parameters)
 
     def regularization_matrix_from(self, linear_obj):
 
@@ -55,8 +55,8 @@ class ConstantSplit(Constant):
         the area times 0.5.
 
         For this regularization scheme, there is only 1 regularization coefficient that is applied to
-        all neighboring pixels. This means that the matrix B only needs to regularize pixels in one direction
-        (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For example:
+        all neighboring pixels / parameters. This means that the matrix B only needs to regularize pixels / parameters
+        in one direction (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For example:
 
         B = [-1, 1]  [0->1]
             [0, -1]  1 does not regularization with 0
@@ -89,8 +89,10 @@ class ConstantSplit(Constant):
             splitted_weights=pix_sub_weights_split_cross.weights,
         )
 
-        pixels = int(len(splitted_mappings) / 4)
-        regularization_weights = np.full(fill_value=self.coefficient, shape=(pixels,))
+        parameters = int(len(splitted_mappings) / 4)
+        regularization_weights = np.full(
+            fill_value=self.coefficient, shape=(parameters,)
+        )
 
         return regularization_util.pixel_splitted_regularization_matrix_from(
             regularization_weights=regularization_weights,

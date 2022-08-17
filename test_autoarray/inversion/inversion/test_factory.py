@@ -14,7 +14,7 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObjFuncList(
-        pixels=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
+        parameters=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
     )
 
     inversion = aa.Inversion(
@@ -41,10 +41,10 @@ def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
     assert inversion.reconstruction == pytest.approx(np.array([2.0]), 1.0e-4)
 
-    # Works with multiple pixels
+    # Works with multiple parameters
 
     linear_obj = aa.m.MockLinearObjFuncList(
-        pixels=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
+        parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
     )
 
     inversion = aa.Inversion(
@@ -297,7 +297,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        pixels=1,
+        parameters=1,
         grid=grid,
         mapping_matrix=np.full(fill_value=0.5, shape=(9, 1)),
         regularization=None,
@@ -369,7 +369,7 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     linear_obj = aa.m.MockLinearObj(
-        pixels=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
+        parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
     )
 
     inversion = aa.Inversion(

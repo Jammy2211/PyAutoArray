@@ -105,7 +105,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
                     pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                    pix_pixels=linear_obj.pixels,
+                    pix_pixels=linear_obj.parameters,
                 )
                 for linear_obj in self.linear_obj_list
             ]

@@ -155,11 +155,11 @@ class AbstractInversion:
 
             if regularization is None:
 
-                for pixel in range(pixel_count, pixel_count + linear_obj.pixels):
+                for pixel in range(pixel_count, pixel_count + linear_obj.parameters):
 
                     no_regularization_index_list.append(pixel)
 
-            pixel_count += linear_obj.pixels
+            pixel_count += linear_obj.parameters
 
         return no_regularization_index_list
 
@@ -412,10 +412,10 @@ class AbstractInversion:
         for linear_obj in self.linear_obj_list:
 
             source_quantity_dict[linear_obj] = source_quantity[
-                index : index + linear_obj.pixels
+                index : index + linear_obj.parameters
             ]
 
-            index += linear_obj.pixels
+            index += linear_obj.parameters
 
         return source_quantity_dict
 
@@ -690,7 +690,7 @@ class AbstractInversion:
 
         if regularization is None:
 
-            pixels = linear_obj.pixels
+            pixels = linear_obj.parameters
 
             return np.zero((pixels,))
 

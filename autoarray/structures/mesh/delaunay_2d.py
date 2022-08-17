@@ -25,9 +25,11 @@ class Mesh2DDelaunay(Abstract2DMeshTriangulation):
 
         sizes = indptr[1:] - indptr[:-1]
 
-        neighbors = -1 * np.ones(shape=(self.pixels, int(np.max(sizes))), dtype="int")
+        neighbors = -1 * np.ones(
+            shape=(self.parameters, int(np.max(sizes))), dtype="int"
+        )
 
-        for k in range(self.pixels):
+        for k in range(self.parameters):
             neighbors[k][0 : sizes[k]] = indices[indptr[k] : indptr[k + 1]]
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))

@@ -15,7 +15,7 @@ class MockMapper(AbstractMapper):
         pix_sub_weights=None,
         mapping_matrix=None,
         pixel_signals=None,
-        pixels=None,
+        parameters=None,
         interpolated_array=None,
     ):
 
@@ -31,7 +31,7 @@ class MockMapper(AbstractMapper):
 
         self._mapping_matrix = mapping_matrix
 
-        self._pixels = pixels
+        self._parameters = parameters
 
         self._pixel_signals = pixel_signals
 
@@ -43,10 +43,10 @@ class MockMapper(AbstractMapper):
         return self._pixel_signals
 
     @property
-    def pixels(self):
-        if self._pixels is None:
-            return super().pixels
-        return self._pixels
+    def parameters(self):
+        if self._parameters is None:
+            return super().parameters
+        return self._parameters
 
     @property
     def pix_sub_weights(self):

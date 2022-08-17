@@ -5,17 +5,17 @@ from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 
 class MockLinearObjFuncList(AbstractLinearObjFuncList):
     def __init__(
-        self, pixels=None, grid=None, mapping_matrix=None, regularization=None
+        self, parameters=None, grid=None, mapping_matrix=None, regularization=None
     ):
 
         super().__init__(grid=grid, regularization=regularization)
 
-        self._pixels = pixels
+        self._parameters = parameters
         self._mapping_matrix = mapping_matrix
 
     @property
-    def pixels(self) -> int:
-        return self._pixels
+    def parameters(self) -> int:
+        return self._parameters
 
     @property
     def mapping_matrix(self) -> np.ndarray:

@@ -11,7 +11,7 @@ class SettingsPixelization:
         Parameters
         ----------
         use_border
-            If `True`, all coordinates of both `source` frame grids have pixels outside their border relocated to
+            If `True`, all coordinates of both `source` mesh grids have pixels outside their border relocated to
             their edge (see `relocated_grid_from()`).
         is_stochastic
             Cetrain pixelizations can create different discretizations using the same parameters / inputs, by changing

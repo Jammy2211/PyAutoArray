@@ -639,13 +639,6 @@ def prescan_fitted_bias_column(prescan, n_rows=2048, n_rows_ov=20):
     # Map to full image size for easy subtraction
     bias_column = v[0] + v[1] * np.arange(n_rows + n_rows_ov)
 
-    # plt.figure()
-    # pixels = np.arange(n_rows + n_rows_ov)
-    # for i in range(n_columns_fit):
-    #     plt.scatter(pixels, prescan[:, i])
-    # plt.plot(pixels, bias_column)
-    # plt.show()
-
     return np.transpose([bias_column])
 
 

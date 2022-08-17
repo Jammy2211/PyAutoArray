@@ -50,7 +50,7 @@ def test__data_to_pix_unique_from():
 def test__neighbors():
     class FuncList(aa.AbstractLinearObjFuncList):
         @property
-        def pixels(self):
+        def parameters(self):
             return 4
 
     linear_obj = FuncList(grid=None, regularization=None)
