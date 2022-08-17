@@ -13,7 +13,7 @@ def mapper_from(
     profiling_dict: Optional[Dict] = None,
 ):
     """
-    Factory which given `MapperGrids` and `Regularization` objects creates a `Mapper`.
+    Factory which given input `MapperGrids` and `Regularization` objects creates a `Mapper`.
 
     A `Mapper` determines the mappings between a masked dataset's pixels and pixels of a linear object pixelization.
     The mapper is used in order to fit a dataset via an inversion. Docstrings in the packages `linear_obj`, `mesh`,
