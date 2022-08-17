@@ -17,7 +17,7 @@ class LinearObj:
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
-        components of the linear object. For example, the linear obj could map to the data via analytic functions
+        the parameters of the linear object. For example, the linear obj could map to the data via analytic functions
         or discrete pixels on a mesh.
 
         The values of linear object are computed via a regularized linear matrix inversion, which infers a solution
@@ -58,11 +58,13 @@ class LinearObj:
     @property
     def neighbors(self) -> Neighbors:
         """
-        An object describing how the different components in the linear object neighbor one another.
+        An object describing how the different parameters in the linear object neighbor one another, which is used
+        to apply smoothing to neighboring parameters via regularization.
 
         For example for the following linear objects:
 
-        - `AbstractLinearObjFuncList` whether certain analytic functions reconstruct nearby components to one another.
+        - `AbstractLinearObjFuncList` whether certain analytic functions reconstruct nearby components next to
+        one another.
         - `Mapper` how the pixels on the mesh used to reconstruct the data neighbor one another.
 
         Returns

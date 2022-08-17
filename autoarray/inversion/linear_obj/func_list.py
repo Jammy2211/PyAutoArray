@@ -20,8 +20,11 @@ class AbstractLinearObjFuncList(LinearObj):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        An object represented by one or more analytic functions, the solution of which can be solved for linearly via an
-        inversion.
+        A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
+        the parameters of the linear object.
+
+        This linear object's parameters are one or more analytic functions, the solution of which are solved for
+        linearly via an inversion.
 
         By overwriting the `mapping_matrix` function with a method that fills in its value with the solution of the
         analytic function, this is then passed through the `inversion` package to perform the linear inversion. The
@@ -29,14 +32,16 @@ class AbstractLinearObjFuncList(LinearObj):
 
         For example, in `PyAutoGalaxy` and `PyAutoLens` the light of galaxies is represented using `LightProfile`
         objects, which describe the surface brightness of a galaxy as a function. This function can either be assigned
-        an overall intensity (e.g. the normalization) which describes how bright it is. Using the `LinearObjFuncList` the
-        intensity can be solved for linearly instead.
+        an overall intensity (e.g. the normalization) which describes how bright it is. Using the `LinearObjFuncList`
+        the intensity can be solved for linearly instead.
 
         Parameters
         ----------
         grid
             The grid of data points representing the data that is fitted and therefore where the analytic function
             is evaluated.
+        regularization
+            The regularization scheme which may be applied to this linear object in order to smooth its solution.
         profiling_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
@@ -47,7 +52,17 @@ class AbstractLinearObjFuncList(LinearObj):
 
     @cached_property
     def neighbors(self) -> Neighbors:
+        """
+        An object describing how the different parameters in the linear object neighbor one another, which is used
+        to apply smoothing to neighboring parameters via regularization.
 
+        For a `AbstractLinearObjFuncList` this object may describe how certain analytic functions reconstruct nearby
+        components next to one another, which should therefore be regularized with one another.
+
+        Returns
+        -------
+        An object describing how the parameters of the linear object neighbor one another.
+        """
         neighbors_sizes = 2.0 * np.ones(shape=(self.parameters))
 
         neighbors_sizes[0] -= 1
@@ -70,7 +85,7 @@ class AbstractLinearObjFuncList(LinearObj):
 
     @cached_property
     @profile_func
-    def unique_mappings(self):
+    def unique_mappings(self) -> UniqueMappings:
         """
         Returns the unique mappings of every unmasked data pixel's (e.g. `grid_slim`) sub-pixels (e.g. `grid_sub_slim`)
         to their corresponding pixelization pixels (e.g. `mesh_grid`).
