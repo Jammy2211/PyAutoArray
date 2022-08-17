@@ -74,12 +74,12 @@ class MapperRectangularNoInterp(AbstractMapper):
         )
 
     @property
-    def shape_native(self) -> Tuple[int, int]:
+    def shape_native(self) -> Tuple[int, ...]:
         return self.source_mesh_grid.shape_native
 
     @cached_property
     @profile_func
-    def pix_sub_weights(self) -> "PixSubWeights":
+    def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
         and pixel in the `Rectangular` mesh.

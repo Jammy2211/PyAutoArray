@@ -80,6 +80,17 @@ class AbstractMapperVoronoi(AbstractMapper):
 
     @property
     def pix_sub_weights_split_cross(self) -> PixSubWeights:
+        """
+        The property `pix_sub_weights` property describes the calculation of the `PixSubWeights` object, which contains
+        numpy arrays describing how data-points and mapper pixels map to one another and the weights of these mappings.
+
+        For certain regularization schemes (e.g. `ConstantSplit`, `AdaptiveBrightnessSplit`) regularization uses
+        mappings which are split in a cross configuration in order to factor in the derivative of the mapper
+        reconstruction.
+
+        This property returns a unique set of `PixSubWeights` used for these regularization schemes which compute
+        mappings and weights at each point on the split cross.
+        """
         (mappings, sizes, weights) = mapper_util.pix_size_weights_voronoi_nn_from(
             grid=self.source_mesh_grid.split_cross, mesh_grid=self.source_mesh_grid
         )
@@ -90,7 +101,7 @@ class AbstractMapperVoronoi(AbstractMapper):
 class MapperVoronoi(AbstractMapperVoronoi):
     @cached_property
     @profile_func
-    def pix_sub_weights(self) -> "PixSubWeights":
+    def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
         and pixel in the `Voronoi` mesh.
@@ -181,7 +192,7 @@ class MapperVoronoi(AbstractMapperVoronoi):
 class MapperVoronoiNoInterp(AbstractMapperVoronoi):
     @cached_property
     @profile_func
-    def pix_sub_weights(self) -> "PixSubWeights":
+    def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
         and pixel in the `Voronoi` pixelization.

@@ -167,6 +167,10 @@ class AbstractMapper(LinearObj):
 
     @property
     def slim_index_for_sub_slim_index(self) -> np.ndarray:
+        """
+        The mappings between every sub-pixel data point on the sub-gridded data and each data point for a grid which
+        does not use sub gridding (e.g. `sub_size=1`).
+        """
         return self.source_grid_slim.mask.slim_index_for_sub_slim_index
 
     @property
@@ -229,7 +233,6 @@ class AbstractMapper(LinearObj):
         A full description of these mappings is given in the
         function `mapper_util.data_slim_to_pixelization_unique_from()`.
         """
-
         (
             data_to_pix_unique,
             data_weights,
@@ -296,7 +299,22 @@ class AbstractMapper(LinearObj):
         )
 
     def pix_indexes_for_slim_indexes(self, pix_indexes: List) -> List[List]:
+        """
+        Returns the index mappings between every masked data-point (not subgridded) on the data and the mapper
+        pixels / parameters that it maps too.
 
+        The `slim_index` refers to the masked data pixels (without subgridding) and `pix_indexes` the pixelization
+        pixel indexes, for example:
+
+        - `pix_indexes_for_slim_indexes[0] = [2, 3]`: The data's first (index 0) pixel maps to the
+        pixelization's third (index 2) and fourth (index 3) pixels.
+
+        Parameters
+        ----------
+        pix_indexes
+            A list of all pixelization indexes for which the data-points that map to these pixelization pixels are
+            computed.
+        """
         image_for_source = self.sub_slim_indexes_for_pix_index
 
         if not any(isinstance(i, list) for i in pix_indexes):

@@ -80,7 +80,7 @@ class MapperDelaunay(AbstractMapper):
 
     @cached_property
     @profile_func
-    def pix_sub_weights(self) -> "PixSubWeights":
+    def pix_sub_weights(self) -> PixSubWeights:
         """
         Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
         and pixel in the `Delaunay` pixelization.
@@ -149,7 +149,17 @@ class MapperDelaunay(AbstractMapper):
 
     @property
     def pix_sub_weights_split_cross(self) -> PixSubWeights:
+        """
+        The property `pix_sub_weights` property describes the calculation of the `PixSubWeights` object, which contains
+        numpy arrays describing how data-points and mapper pixels map to one another and the weights of these mappings.
 
+        For certain regularization schemes (e.g. `ConstantSplit`, `AdaptiveBrightnessSplit`) regularization uses
+        mappings which are split in a cross configuration in order to factor in the derivative of the mapper
+        reconstruction.
+
+        This property returns a unique set of `PixSubWeights` used for these regularization schemes which compute
+        mappings and weights at each point on the split cross.
+        """
         delaunay = self.delaunay
 
         splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
