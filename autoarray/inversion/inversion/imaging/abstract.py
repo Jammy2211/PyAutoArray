@@ -21,22 +21,48 @@ class AbstractInversionImaging(AbstractInversion):
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
-        to be solved (see `inversion.inversion.abstract.AbstractInversion` for a full description).
+        An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
+        or a pixelized grid).
 
-        A linear object describes the mappings between values in observed `data` and the linear object's model via its
-        `mapping_matrix`. This class constructs linear equations for `Imaging` objects, where the data is an image
-        and the mappings may include a convolution operation described by the imaging data's PSF.
+        The inversion constructs simultaneous linear equations (via vectors and matrices) which allow for the values
+        of the linear object parameters that best reconstruct the dataset to be solved, via linear matrix algebra.
+
+        This object contains matrices and vectors which perform an inversion for fits to an `Imaging` dataset. This
+        includes operations which use a PSF / `Convolver` in order to incorporate blurring into the solved for
+        linear object pixels.
+
+        The inversion may be regularized, whereby the parameters of the linear objects used to reconstruct the data
+        are smoothed with one another such that their solved for values conform to certain properties (e.g. smoothness
+        based regularization requires that parameters in the linear objects which neighbor one another have similar
+        values).
+
+        This object contains properties which compute all of the different matrices necessary to perform the inversion.
+
+        The linear algebra required to perform an `Inversion` depends on the type of dataset being fitted (e.g.
+        `Imaging`, `Interferometer) and the formalism chosen (e.g. a using a `mapping_matrix` or the
+        w_tilde formalism). The children of this class overwrite certain methods in order to be appropriate for
+        certain datasets or use a specific formalism.
+
+        Inversions use the formalism's outlined in the following Astronomy papers:
+
+        https://arxiv.org/pdf/astro-ph/0302587.pdf
+        https://arxiv.org/abs/1708.07377
+        https://arxiv.org/abs/astro-ph/0601493
 
         Parameters
-        -----------
+        ----------
+        data
+            The data of the dataset (e.g. the `image` of `Imaging` data) which may have been changed.
         noise_map
-            The noise-map of the observed imaging data which values are solved for.
-        convolver
-            The convolver which performs a 2D convolution on the mapping matrix with the imaging data's PSF.
+            The noise_map of the noise_mapset (e.g. the `noise_map` of `Imaging` noise_map) which may have been changed.
         linear_obj_list
-            The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
-            the simultaneous linear equations are combined and solved simultaneously.
+            The list of linear objects (e.g. analytic functions, a mapper with a pixelized grid) which reconstruct the
+            input dataset's data and whose values are solved for via the inversion.
+        settings
+            Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
+        preloads
+            Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
+            for example certain matrices used by the linear algebra could be preloaded.
         profiling_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """

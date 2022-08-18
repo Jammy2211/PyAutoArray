@@ -31,14 +31,46 @@ class AbstractInversion:
         profiling_dict: Optional[Dict] = None,
     ):
         """
-        An inversion uses linear matrix
+        An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
+        or a pixelized grid).
+
+        The inversion constructs simultaneous linear equations (via vectors and matrices) which allow for the values
+        of the linear object parameters that best reconstruct the dataset to be solved, via linear matrix algebra.
+
+        The inversion may be regularized, whereby the parameters of the linear objects used to reconstruct the data
+        are smoothed with one another such that their solved for values conform to certain properties (e.g. smoothness
+        based regularization requires that parameters in the linear objects which neighbor one another have similar
+        values).
+
+        This object contains properties which compute all of the different matrices necessary to perform the inversion.
+
+        The linear algebra required to perform an `Inversion` depends on the type of dataset being fitted (e.g.
+        `Imaging`, `Interferometer) and the formalism chosen (e.g. a using a `mapping_matrix` or the
+        w_tilde formalism). The children of this class overwrite certain methods in order to be appropriate for
+        certain datasets or use a specific formalism.
+
+        Inversions use the formalism's outlined in the following Astronomy papers:
+
+        https://arxiv.org/pdf/astro-ph/0302587.pdf
+        https://arxiv.org/abs/1708.07377
+        https://arxiv.org/abs/astro-ph/0601493
+
         Parameters
         ----------
         data
-        inversion
+            The data of the dataset (e.g. the `image` of `Imaging` data) which may have been changed.
+        noise_map
+            The noise_map of the noise_mapset (e.g. the `noise_map` of `Imaging` noise_map) which may have been changed.
+        linear_obj_list
+            The list of linear objects (e.g. analytic functions, a mapper with a pixelized grid) which reconstruct the
+            input dataset's data and whose values are solved for via the inversion.
         settings
+            Settings controlling how an inversion is fitted for example which linear algebra formalism is used.
         preloads
+            Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
+            for example certain matrices used by the linear algebra could be preloaded.
         profiling_dict
+            A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         from autoarray.preloads import Preloads

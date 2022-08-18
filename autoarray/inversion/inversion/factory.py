@@ -36,8 +36,9 @@ def inversion_from(
     """
     Factory which given an input dataset and list of linear objects, creates an `Inversion`.
 
-    An `Inversion` reconstructs the input dataset by using a list of linear objects (e.g. a list of analytic functions
-    of a pixelized grid), where the inversion solves for the values of these linear objects via linear matrix algebra.
+    An `Inversion` reconstructs the input dataset using a list of linear objects (e.g. a list of analytic functions
+    or a pixelized grid). The inversion solves for the values of these linear objects that best reconstruct the
+    dataset, via linear matrix algebra.
 
     Different `Inversion` objects are used for different dataset types (e.g. `Imaging`, `Interferometer`) and
     for different linear algebra formalisms (determined via the input `settings`) which solve for the linear object
@@ -112,8 +113,9 @@ def inversion_unpacked_from(
     performed (for example if the noise-map is scaled before the inversion to downweight certain regions of the
     data).
 
-    An `Inversion` reconstructs the input dataset by using a list of linear objects (e.g. a list of analytic functions
-    of a pixelized grid), where the inversion solves for the values of these linear objects via linear matrix algebra.
+    An `Inversion` reconstructs the input dataset using a list of linear objects (e.g. a list of analytic functions
+    or a pixelized grid). The inversion solves for the values of these linear objects that best reconstruct the
+    dataset, via linear matrix algebra.
 
     Different `Inversion` objects are used for different dataset types (e.g. `Imaging`, `Interferometer`) and
     for different linear algebra formalisms (determined via the input `settings`) which solve for the linear object
@@ -190,9 +192,9 @@ def inversion_imaging_unpacked_from(
     performed (for example if the noise-map is scaled before the inversion to downweight certain regions of the
     data).
 
-    An `Inversion` reconstructs the input `Imaging` dataset by using a list of linear objects (e.g. a list of analytic
-    functions of a pixelized grid), where the inversion solves for the values of these linear objects via linear
-    matrix algebra.
+    An `Inversion` reconstructs the input dataset using a list of linear objects (e.g. a list of analytic functions
+    or a pixelized grid). The inversion solves for the values of these linear objects that best reconstruct the
+    dataset, via linear matrix algebra.
 
     Different `Inversion` objects are used for different linear algebra formalisms (determined via the
     input `settings`) which solve for the linear object parameters in different ways.
@@ -284,9 +286,9 @@ def inversion_interferometer_unpacked_from(
     performed (for example if the noise-map is scaled before the inversion to downweight certain regions of the
     data).
 
-    An `Inversion` reconstructs the input `Imaging` dataset by using a list of linear objects (e.g. a list of analytic
-    functions of a pixelized grid), where the inversion solves for the values of these linear objects via linear
-    matrix algebra.
+    An `Inversion` reconstructs the input dataset using a list of linear objects (e.g. a list of analytic functions
+    or a pixelized grid). The inversion solves for the values of these linear objects that best reconstruct the
+    dataset, via linear matrix algebra.
 
     Different `Inversion` objects are used for different linear algebra formalisms (determined via the
     input `settings`) which solve for the linear object parameters in different ways.
