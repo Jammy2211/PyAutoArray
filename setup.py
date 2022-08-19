@@ -17,6 +17,7 @@ requirements.extend([f"autoconf=={version}"])
 
 
 def package_files(directory):
+    print(os.getcwd())
     paths = []
     for (path, directories, filenames) in os.walk(directory):
         for filename in filenames:
@@ -24,7 +25,11 @@ def package_files(directory):
     return paths
 
 
-extra_files = package_files('autoarray/configs')
+extra_files = package_files('autoarray/config')
+print(extra_files)
+# packages = find_packages(exclude=["docs", "test_autoarray", "test_autoarray*"])
+
+# exit(1)
 
 setup(
     name="autoarray",
