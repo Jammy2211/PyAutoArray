@@ -1,6 +1,7 @@
+import os
 from codecs import open
-from os.path import abspath, dirname, join
 from os import environ
+from os.path import abspath, dirname, join
 
 from setuptools import find_packages, setup
 
@@ -13,6 +14,17 @@ with open(join(this_dir, "requirements.txt")) as f:
 
 version = environ.get("VERSION", "1.0.dev0")
 requirements.extend([f"autoconf=={version}"])
+
+
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(f'../{path}/{filename}')
+    return paths
+
+
+extra_files = package_files('autoarray/configs')
 
 setup(
     name="autoarray",
@@ -44,4 +56,5 @@ setup(
     install_requires=requirements,
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
+    package_data=extra_files,
 )
