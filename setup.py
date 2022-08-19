@@ -16,20 +16,13 @@ version = environ.get("VERSION", "1.0.dev0")
 requirements.extend([f"autoconf=={version}"])
 
 
-def package_files(directory):
-    print(os.getcwd())
-    paths = []
+def config_packages(directory):
+    paths = [directory.replace("/", ".")]
     for (path, directories, filenames) in os.walk(directory):
-        for filename in filenames:
-            paths.append(f'../{path}/{filename}')
+        for directory in directories:
+            paths.append(f'{path}/{directory}'.replace("/", "."))
     return paths
 
-
-extra_files = package_files('autoarray/config')
-print(extra_files)
-# packages = find_packages(exclude=["docs", "test_autoarray", "test_autoarray*"])
-
-# exit(1)
 
 setup(
     name="autoarray",
@@ -57,9 +50,8 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     keywords="cli",
-    packages=find_packages(exclude=["docs", "test_autoarray", "test_autoarray*"]),
+    packages=find_packages(exclude=["docs", "test_autoarray", "test_autoarray*"]) + config_packages('autoarray/config'),
     install_requires=requirements,
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
-    package_data={'': extra_files},
 )
