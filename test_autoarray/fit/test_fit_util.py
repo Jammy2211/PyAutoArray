@@ -113,6 +113,35 @@ def test__normalized_residual_map_complex_with_mask_from():
     assert (normalized_residual_map == np.array([0.5 - 1.0j, 0.0 + 0.0j])).all()
 
 
+def test__sigma_residual_map_from():
+
+    normalized_residual_map = np.array([9.0, 4.0, -9.0])
+
+    sigma_residual_map = aa.util.fit.sigma_residual_map_from(
+        normalized_residual_map=normalized_residual_map
+    )
+
+    assert (sigma_residual_map == np.array([3.0, 2.0, -3.0])).all()
+
+
+def test__sigma_residual_map_with_mask_from():
+
+    data = np.array([10.0, 10.0, 10.0, 10.0])
+    mask = np.array([True, False, False, True])
+    noise_map = np.array([2.0, 2.0, 2.0, 2.0])
+    model_data = np.array([11.0, 10.0, 9.0, 8.0])
+
+    residual_map = aa.util.fit.residual_map_with_mask_from(
+        data=data, mask=mask, model_data=model_data
+    )
+
+    sigma_residual_map = aa.util.fit.sigma_residual_map_with_mask_from(
+        residual_map=residual_map, mask=mask, noise_map=noise_map
+    )
+
+    assert (sigma_residual_map == np.array([0.0, 0.0, (1.0 / 2.0), 0.0])).all()
+
+
 def test__chi_squared_map_from():
 
     data = np.array([10.0, 10.0, 10.0, 10.0])

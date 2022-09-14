@@ -33,13 +33,35 @@ def normalized_residual_map_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
         The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
     return np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
+
+
+def sigma_residual_map_from(*, normalized_residual_map: Structure) -> Structure:
+    """
+    Returns the sigma residual-map of the fit of model-data to a masked dataset, where:
+
+    Sigma_Residual = sqrt[(Data - Model_Data) / Noise] = sqrt(Normalized Residual Map)
+
+    The sigma residual-map therefore informs us how much of a sigma outlier each residual value is, for example a 
+    sigma residual-map value of 3 indicates that there is a 99.7% probability the data point is an outlier.
+
+    The negative and positive signs of each normalized residual map value are kept, therefore meaning there could be
+    -3 sigma values. Like for the residual-map and normalized residual-map, the positive or negative sign signifies 
+    whether the model under or over predicted the data's value.
+
+    Parameters
+    -----------
+    normalized_residual_map
+        The normalized residual-map of the model-data fit to the dataset.
+    """
+
+    return np.sqrt(np.abs(normalized_residual_map)) * np.sign(normalized_residual_map)
 
 
 def chi_squared_map_from(*, residual_map: Structure, noise_map: Structure) -> Structure:
@@ -51,7 +73,7 @@ def chi_squared_map_from(*, residual_map: Structure, noise_map: Structure) -> St
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     """
@@ -67,7 +89,7 @@ def chi_squared_from(*, chi_squared_map: Structure) -> float:
     Parameters
     ----------
     chi_squared_map
-        The chi-squared-map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-data fit to the dataset.
     """
     return float(np.sum(chi_squared_map))
 
@@ -97,7 +119,7 @@ def normalized_residual_map_complex_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     """
@@ -127,7 +149,7 @@ def chi_squared_map_complex_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     """
@@ -150,7 +172,7 @@ def chi_squared_complex_from(*, chi_squared_map: Structure) -> float:
     Parameters
     ----------
     chi_squared_map
-        The chi-squared-map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-data fit to the dataset.
     """
     chi_squared_real = float(np.sum(chi_squared_map.real))
     chi_squared_imag = float(np.sum(chi_squared_map.imag))
@@ -210,7 +232,7 @@ def normalized_residual_map_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -237,7 +259,7 @@ def sigma_residual_map_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -265,7 +287,7 @@ def chi_squared_map_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -291,7 +313,7 @@ def chi_squared_with_mask_from(*, chi_squared_map: Structure, mask: Mask) -> flo
     Parameters
     ----------
     chi_squared_map
-        The chi-squared-map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-data fit to the dataset.
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
@@ -329,7 +351,7 @@ def normalized_residual_map_complex_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -365,7 +387,7 @@ def chi_squared_map_complex_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -403,7 +425,7 @@ def chi_squared_complex_with_mask_from(
     Parameters
     ----------
     chi_squared_map
-        The chi-squared-map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-data fit to the dataset.
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
@@ -447,7 +469,7 @@ def log_likelihood_from(*, chi_squared: float, noise_normalization: float) -> fl
     Parameters
     ----------
     chi_squared
-        The chi-squared term for the model-simulator fit to the dataset.
+        The chi-squared term for the model-data fit to the dataset.
     noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """
