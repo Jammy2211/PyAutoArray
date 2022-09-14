@@ -143,7 +143,7 @@ class FitDataset(ABC):
         """
         Returns the sigma residual-map between the masked dataset and model data, where:
 
-        Sigma_Residual = sqrt[(Data - Model_Data) / Noise] = sqrt(Normalized Residual Map)
+        Sigma_Residual = [(Data - Model_Data) / Noise]**2 = sqrt(Normalized Residual Map)**2
 
         The sigma residual-map therefore informs us how much of a sigma outlier each residual value is, for example a
         sigma residual-map value of 3 indicates that there is a 99.7% probability the data point is an outlier.

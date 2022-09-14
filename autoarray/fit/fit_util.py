@@ -46,7 +46,7 @@ def sigma_residual_map_from(*, normalized_residual_map: Structure) -> Structure:
     """
     Returns the sigma residual-map of the fit of model-data to a masked dataset, where:
 
-    Sigma_Residual = sqrt[(Data - Model_Data) / Noise] = sqrt(Normalized Residual Map)
+    Sigma_Residual = [(Data - Model_Data) / Noise]**2 = (Normalized Residual Map)**2
 
     The sigma residual-map therefore informs us how much of a sigma outlier each residual value is, for example a 
     sigma residual-map value of 3 indicates that there is a 99.7% probability the data point is an outlier.
@@ -60,7 +60,7 @@ def sigma_residual_map_from(*, normalized_residual_map: Structure) -> Structure:
     normalized_residual_map
         The normalized residual-map of the model-data fit to the dataset.
     """
-    return np.sqrt(np.abs(normalized_residual_map)) * np.sign(normalized_residual_map)
+    return np.square(normalized_residual_map) * np.sign(normalized_residual_map)
 
 
 def chi_squared_map_from(*, residual_map: Structure, noise_map: Structure) -> Structure:
@@ -251,7 +251,7 @@ def sigma_residual_map_with_mask_from(
     """
     Returns the sigma residual-map of the fit of model-data to a masked dataset, where:
 
-    Sigma_Residual = sqrt[(Data - Model_Data) / Noise] = sqrt(Normalized Residual Map)
+    Sigma_Residual = [(Data - Model_Data) / Noise]**2 = sqrt(Normalized Residual Map)**2
 
     The sigma residual-map therefore informs us how much of a sigma outlier each residual value is, for example a
     sigma residual-map value of 3 indicates that there is a 99.7% probability the data point is an outlier.
@@ -267,9 +267,9 @@ def sigma_residual_map_with_mask_from(
     normalized_residual_map
         The normalized residual-map of the model-data fit to the dataset.
     """
-    return np.sqrt(
-        np.abs(normalized_residual_map), where=np.asarray(mask) == 0
-    ) * np.sign(normalized_residual_map)
+    normalized_residual_map[np.asarray(mask) == 1] = 0
+
+    return np.square(normalized_residual_map) * np.sign(normalized_residual_map)
 
 
 def chi_squared_map_with_mask_from(

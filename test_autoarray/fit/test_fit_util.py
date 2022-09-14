@@ -121,7 +121,7 @@ def test__sigma_residual_map_from():
         normalized_residual_map=normalized_residual_map
     )
 
-    assert sigma_residual_map == pytest.approx(np.array([3.0, 2.0, -3.0]), 1.0e-4)
+    assert sigma_residual_map == pytest.approx(np.array([81.0, 16.0, -81.0]), 1.0e-4)
 
 
 def test__sigma_residual_map_with_mask_from():
@@ -134,7 +134,11 @@ def test__sigma_residual_map_with_mask_from():
         normalized_residual_map=normalized_residual_map, mask=mask
     )
 
-    assert sigma_residual_map == pytest.approx(np.array([0.0, 2.0, -3.0, 0.0]), 1.0e-4)
+    print(sigma_residual_map)
+
+    assert sigma_residual_map == pytest.approx(
+        np.array([0.0, 16.0, -81.0, 0.0]), 1.0e-4
+    )
 
 
 def test__chi_squared_map_from():
