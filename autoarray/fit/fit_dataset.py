@@ -141,16 +141,23 @@ class FitDataset(ABC):
     @property
     def sigma_residual_map(self) -> Structure:
         """
-        Returns the normalized residual-map between the masked dataset and model data, where:
+        Returns the sigma residual-map between the masked dataset and model data, where:
 
-        Normalized_Residual = (Data - Model_Data) / Noise
+        Sigma_Residual = sqrt[(Data - Model_Data) / Noise] = sqrt(Normalized Residual Map)
+
+        The sigma residual-map therefore informs us how much of a sigma outlier each residual value is, for example a
+        sigma residual-map value of 3 indicates that there is a 99.7% probability the data point is an outlier.
+
+        The negative and positive signs of each normalized residual map value are kept, therefore meaning there could be
+        -3 sigma values. Like for the residual-map and normalized residual-map, the positive or negative sign signifies
+        whether the model under or over predicted the data's value.
         """
         if self.use_mask_in_fit:
-            return fit_util.normalized_residual_map_with_mask_from(
-                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+            return fit_util.sigma_residual_map_with_mask_from(
+                normalized_residual_map=self.normalized_residual_map, mask=self.mask
             )
-        return fit_util.normalized_residual_map_from(
-            residual_map=self.residual_map, noise_map=self.noise_map
+        return fit_util.sigma_residual_map_from(
+            normalized_residual_map=self.normalized_residual_map
         )
 
     @property
