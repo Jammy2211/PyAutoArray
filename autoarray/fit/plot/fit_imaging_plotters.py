@@ -57,7 +57,6 @@ class FitImagingPlotterMeta(Plotter):
         model_image: bool = False,
         residual_map: bool = False,
         normalized_residual_map: bool = False,
-        sigma_residual_map: bool = False,
         chi_squared_map: bool = False,
         suffix: str = "",
     ):
@@ -81,8 +80,6 @@ class FitImagingPlotterMeta(Plotter):
             Whether or not to make a 2D plot (via `imshow`) of the residual map.
         normalized_residual_map
             Whether or not to make a 2D plot (via `imshow`) of the normalized residual map.
-        sigma_residual_map
-            Whether or not to make a 2D plot (via `imshow`) of the sigma residual map.
         chi_squared_map
             Whether or not to make a 2D plot (via `imshow`) of the chi-squared map.
         """
@@ -146,16 +143,6 @@ class FitImagingPlotterMeta(Plotter):
                 ),
             )
 
-        if sigma_residual_map:
-
-            self.mat_plot_2d.plot_array(
-                array=self.fit.sigma_residual_map,
-                visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(
-                    title="Sigma Residual Map", filename=f"sigma_residual_map{suffix}"
-                ),
-            )
-
         if chi_squared_map:
 
             self.mat_plot_2d.plot_array(
@@ -174,7 +161,6 @@ class FitImagingPlotterMeta(Plotter):
         model_image: bool = False,
         residual_map: bool = False,
         normalized_residual_map: bool = False,
-        sigma_residual_map: bool = False,
         chi_squared_map: bool = False,
         auto_filename: str = "subplot_fit_imaging",
     ):
@@ -200,8 +186,6 @@ class FitImagingPlotterMeta(Plotter):
             Whether or not to include a 2D plot (via `imshow`) of the residual map.
         normalized_residual_map
             Whether or not to include a 2D plot (via `imshow`) of the normalized residual map.
-        sigma_residual_map
-            Whether or not to include a 2D plot (via `imshow`) of the sigma residual map.
         chi_squared_map
             Whether or not to include a 2D plot (via `imshow`) of the chi-squared map.
         auto_filename
@@ -214,7 +198,6 @@ class FitImagingPlotterMeta(Plotter):
             model_image=model_image,
             residual_map=residual_map,
             normalized_residual_map=normalized_residual_map,
-            sigma_residual_map=sigma_residual_map,
             chi_squared_map=chi_squared_map,
             auto_labels=AutoLabels(filename=auto_filename),
         )

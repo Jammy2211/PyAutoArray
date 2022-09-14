@@ -31,7 +31,6 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
         model_image=True,
         residual_map=True,
         normalized_residual_map=True,
-        sigma_residual_map=True,
         chi_squared_map=True,
     )
 
@@ -41,7 +40,6 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
     assert path.join(plot_path, "model_image.png") in plot_patch.paths
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
-    assert path.join(plot_path, "sigma_residual_map.png") in plot_patch.paths
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
     plot_patch.paths = []
@@ -60,7 +58,6 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
     assert path.join(plot_path, "model_image.png") in plot_patch.paths
     assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
     assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "sigma_residual_map.png") not in plot_patch.paths
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
 

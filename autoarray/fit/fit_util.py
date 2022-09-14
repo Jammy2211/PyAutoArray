@@ -42,27 +42,6 @@ def normalized_residual_map_from(
     return np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
 
 
-def sigma_residual_map_from(*, normalized_residual_map: Structure) -> Structure:
-    """
-    Returns the sigma residual-map of the fit of model-data to a masked dataset, where:
-
-    Sigma_Residual = [(Data - Model_Data) / Noise]**2 = (Normalized Residual Map)**2
-
-    The sigma residual-map therefore informs us how much of a sigma outlier each residual value is, for example a 
-    sigma residual-map value of 3 indicates that there is a 99.7% probability the data point is an outlier.
-
-    The negative and positive signs of each normalized residual map value are kept, therefore meaning there could be
-    -3 sigma values. Like for the residual-map and normalized residual-map, the positive or negative sign signifies 
-    whether the model under or over predicted the data's value.
-
-    Parameters
-    -----------
-    normalized_residual_map
-        The normalized residual-map of the model-data fit to the dataset.
-    """
-    return np.square(normalized_residual_map) * np.sign(normalized_residual_map)
-
-
 def chi_squared_map_from(*, residual_map: Structure, noise_map: Structure) -> Structure:
     """
     Returns the chi-squared-map of the fit of model-data to a masked dataset, where:
@@ -244,32 +223,6 @@ def normalized_residual_map_with_mask_from(
         where=np.asarray(mask) == 0,
     )
 
-
-def sigma_residual_map_with_mask_from(
-    *, normalized_residual_map: Structure, mask: Mask
-) -> Structure:
-    """
-    Returns the sigma residual-map of the fit of model-data to a masked dataset, where:
-
-    Sigma_Residual = [(Data - Model_Data) / Noise]**2 = sqrt(Normalized Residual Map)**2
-
-    The sigma residual-map therefore informs us how much of a sigma outlier each residual value is, for example a
-    sigma residual-map value of 3 indicates that there is a 99.7% probability the data point is an outlier.
-
-    The negative and positive signs of each normalized residual map value are kept, therefore meaning there could be
-    -3 sigma values. Like for the residual-map and normalized residual-map, the positive or negative sign signifies
-    whether the model under or over predicted the data's value.
-
-    The sigma residual-map values in masked pixels are returned as zero.
-
-    Parameters
-    -----------
-    normalized_residual_map
-        The normalized residual-map of the model-data fit to the dataset.
-    """
-    normalized_residual_map[np.asarray(mask) == 1] = 0
-
-    return np.square(normalized_residual_map) * np.sign(normalized_residual_map)
 
 
 def chi_squared_map_with_mask_from(
