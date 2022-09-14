@@ -121,25 +121,20 @@ def test__sigma_residual_map_from():
         normalized_residual_map=normalized_residual_map
     )
 
-    assert (sigma_residual_map == np.array([3.0, 2.0, -3.0])).all()
+    assert sigma_residual_map == pytest.approx(np.array([3.0, 2.0, -3.0]), 1.0e-4)
 
 
 def test__sigma_residual_map_with_mask_from():
 
-    data = np.array([10.0, 10.0, 10.0, 10.0])
-    mask = np.array([True, False, False, True])
-    noise_map = np.array([2.0, 2.0, 2.0, 2.0])
-    model_data = np.array([11.0, 10.0, 9.0, 8.0])
+    normalized_residual_map = np.array([9.0, 4.0, -9.0, -4.0])
 
-    residual_map = aa.util.fit.residual_map_with_mask_from(
-        data=data, mask=mask, model_data=model_data
-    )
+    mask = np.array([True, False, False, True])
 
     sigma_residual_map = aa.util.fit.sigma_residual_map_with_mask_from(
-        residual_map=residual_map, mask=mask, noise_map=noise_map
+        normalized_residual_map=normalized_residual_map, mask=mask
     )
 
-    assert (sigma_residual_map == np.array([0.0, 0.0, (1.0 / 2.0), 0.0])).all()
+    assert sigma_residual_map == pytest.approx(np.array([0.0, 2.0, -3.0, 0.0]), 1.0e-4)
 
 
 def test__chi_squared_map_from():
