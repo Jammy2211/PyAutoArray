@@ -224,6 +224,34 @@ def normalized_residual_map_with_mask_from(
     )
 
 
+def sigma_residual_map_with_mask_from(
+    *, normalized_residual_map: Structure, noise_map: Structure, mask: Mask
+) -> Structure:
+    """
+    Returns the normalized residual-map of the fit of model-data to a masked dataset, where:
+
+    Normalized_Residual = (Data - Model_Data) / Noise
+
+    The normalized residual-map values in masked pixels are returned as zero.
+
+    Parameters
+    -----------
+    residual_map
+        The residual-map of the model-simulator fit to the dataset.
+    noise_map
+        The noise-map of the dataset.
+    mask
+        The mask applied to the residual-map, where `False` entries are included in the calculation.
+    """
+
+    return np.divide(
+        residual_map,
+        noise_map,
+        out=np.zeros_like(residual_map),
+        where=np.asarray(mask) == 0,
+    )
+
+
 def chi_squared_map_with_mask_from(
     *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:

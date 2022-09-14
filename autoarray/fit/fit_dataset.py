@@ -139,6 +139,21 @@ class FitDataset(ABC):
         )
 
     @property
+    def sigma_residual_map(self) -> Structure:
+        """
+        Returns the normalized residual-map between the masked dataset and model data, where:
+
+        Normalized_Residual = (Data - Model_Data) / Noise
+        """
+        if self.use_mask_in_fit:
+            return fit_util.normalized_residual_map_with_mask_from(
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+            )
+        return fit_util.normalized_residual_map_from(
+            residual_map=self.residual_map, noise_map=self.noise_map
+        )
+
+    @property
     def chi_squared_map(self) -> Structure:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
