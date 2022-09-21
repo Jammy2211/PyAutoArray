@@ -44,36 +44,33 @@ class Constant(AbstractRegularization):
 
 
 class ConstantSplit(Constant):
-    def __init__(self, coefficient: float = 1.0):
-        """
-        A constant regularization scheme which splits every source pixel into a cross of four regularization points
-        (regularization is described in the `Regularization` class above) and interpolates to these points in order
-        to apply smoothing on the solution of an `Inversion`.
+    """
+    A constant regularization scheme which splits every source pixel into a cross of four regularization points
+    (regularization is described in the `Regularization` class above) and interpolates to these points in order
+    to apply smoothing on the solution of an `Inversion`.
 
-        The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
-        Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
-        the area times 0.5.
+    The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
+    Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
+    the area times 0.5.
 
-        For this regularization scheme, there is only 1 regularization coefficient that is applied to
-        all neighboring pixels / parameters. This means that the matrix B only needs to regularize pixels / parameters
-        in one direction (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For example:
+    For this regularization scheme, there is only 1 regularization coefficient that is applied to
+    all neighboring pixels / parameters. This means that the matrix B only needs to regularize pixels / parameters
+    in one direction (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For example:
 
-        B = [-1, 1]  [0->1]
-            [0, -1]  1 does not regularization with 0
+    B = [-1, 1]  [0->1]
+        [0, -1]  1 does not regularization with 0
 
-        Note that for this scheme the indexes of entries in the regularization matrix are not the source pixel indexes
-        but the indexes of each source pixel index cross.
+    Note that for this scheme the indexes of entries in the regularization matrix are not the source pixel indexes
+    but the indexes of each source pixel index cross.
 
-        A small numerical value of 1.0e-8 is added to all elements in constant regularization matrix, to ensure that
-        it is positive definite.
+    A small numerical value of 1.0e-8 is added to all elements in constant regularization matrix, to ensure that
+    it is positive definite.
 
-        Parameters
-        -----------
-        coefficient
-            The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
-        """
-
-        super().__init__(coefficient=coefficient)
+    Parameters
+    -----------
+    coefficient
+        The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
+    """
 
     def regularization_matrix_from(self, linear_obj):
 
@@ -100,5 +97,3 @@ class ConstantSplit(Constant):
             splitted_sizes=splitted_sizes,
             splitted_weights=splitted_weights,
         )
-=======
->>>>>>> master
