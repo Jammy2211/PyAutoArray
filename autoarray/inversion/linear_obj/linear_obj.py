@@ -115,6 +115,9 @@ class LinearObj:
         """
         raise NotImplementedError
 
+    def pixel_signals_from(self, signal_scale) -> np.ndarray:
+        raise NotImplementedError
+
     @property
     def operated_mapping_matrix_override(self) -> Optional[np.ndarray]:
         """

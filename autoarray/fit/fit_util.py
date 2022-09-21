@@ -33,7 +33,7 @@ def normalized_residual_map_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -51,7 +51,7 @@ def chi_squared_map_from(*, residual_map: Structure, noise_map: Structure) -> St
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     """
@@ -67,7 +67,7 @@ def chi_squared_from(*, chi_squared_map: Structure) -> float:
     Parameters
     ----------
     chi_squared_map
-        The chi-squared-map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-data fit to the dataset.
     """
     return float(np.sum(chi_squared_map))
 
@@ -97,7 +97,7 @@ def normalized_residual_map_complex_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     """
@@ -127,7 +127,7 @@ def chi_squared_map_complex_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     """
@@ -150,7 +150,7 @@ def chi_squared_complex_from(*, chi_squared_map: Structure) -> float:
     Parameters
     ----------
     chi_squared_map
-        The chi-squared-map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-data fit to the dataset.
     """
     chi_squared_real = float(np.sum(chi_squared_map.real))
     chi_squared_imag = float(np.sum(chi_squared_map.imag))
@@ -210,7 +210,7 @@ def normalized_residual_map_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -222,6 +222,7 @@ def normalized_residual_map_with_mask_from(
         out=np.zeros_like(residual_map),
         where=np.asarray(mask) == 0,
     )
+
 
 
 def chi_squared_map_with_mask_from(
@@ -237,7 +238,7 @@ def chi_squared_map_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -263,7 +264,7 @@ def chi_squared_with_mask_from(*, chi_squared_map: Structure, mask: Mask) -> flo
     Parameters
     ----------
     chi_squared_map
-        The chi-squared-map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-data fit to the dataset.
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
@@ -301,7 +302,7 @@ def normalized_residual_map_complex_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -337,7 +338,7 @@ def chi_squared_map_complex_with_mask_from(
     Parameters
     -----------
     residual_map
-        The residual-map of the model-simulator fit to the dataset.
+        The residual-map of the model-data fit to the dataset.
     noise_map
         The noise-map of the dataset.
     mask
@@ -375,7 +376,7 @@ def chi_squared_complex_with_mask_from(
     Parameters
     ----------
     chi_squared_map
-        The chi-squared-map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-data fit to the dataset.
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
@@ -419,7 +420,7 @@ def log_likelihood_from(*, chi_squared: float, noise_normalization: float) -> fl
     Parameters
     ----------
     chi_squared
-        The chi-squared term for the model-simulator fit to the dataset.
+        The chi-squared term for the model-data fit to the dataset.
     noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """

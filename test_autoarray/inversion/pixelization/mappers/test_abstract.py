@@ -38,7 +38,7 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
     assert pixe_indexes_for_slim_indexes == [[0, 1, 2, 3], [5, 6]]
 
 
-def test__sub_slim_indexes_for_pix_index():
+def _test__sub_slim_indexes_for_pix_index():
 
     mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(

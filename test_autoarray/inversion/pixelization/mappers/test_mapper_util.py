@@ -38,7 +38,7 @@ def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
     return image_to_pixelization
 
 
-def test__sub_slim_indexes_for_pix_index():
+def _test__sub_slim_indexes_for_pix_index():
 
     pix_indexes_for_sub_slim_index = np.array(
         [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]

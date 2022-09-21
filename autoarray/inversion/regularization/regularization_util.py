@@ -6,18 +6,51 @@ from autoarray import numba_util
 
 
 @numba_util.jit()
+def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> np.ndarray:
+    """
+    Apply zeroth order regularization which penalizes every pixel's deviation from zero by addiing non-zero terms
+    to the regularization matrix. 
+
+    A complete description of regularization and the `regularization_matrix` can be found in the `Regularization`
+    class in the module `autoarray.inversion.regularization`.
+
+    Parameters
+    ----------
+    pixels
+        The number of pixels in the linear object which is to be regularized, being used to in the inversion.
+    coefficient
+        The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
+
+    Returns
+    -------
+    np.ndarray
+        The regularization matrix computed using a constant regularization scheme where the effective regularization
+        coefficient of every source pixel is the same.
+    """
+
+    regularization_matrix = np.zeros(shape=(pixels, pixels))
+
+    regularization_coefficient = coefficient ** 2.0
+
+    for i in range(pixels):
+        regularization_matrix[i, i] += regularization_coefficient
+
+    return regularization_matrix
+
+
+@numba_util.jit()
 def constant_regularization_matrix_from(
     coefficient: float, neighbors: np.ndarray, neighbors_sizes: np.ndarray
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
 
-    A complete description of regularizatin and the ``regularization_matrix`` can be found in the ``Regularization``
-    class in the module ``autoarray.inversion.regularization``.
+    A complete description of regularizatin and the `regularization_matrix` can be found in the `Regularization`
+    class in the module `autoarray.inversion.regularization`.
 
     Parameters
     ----------
-    coefficients
+    coefficient
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
     neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
@@ -64,8 +97,12 @@ def adaptive_regularization_weights_from(
 
     Parameters
     ----------
-    coefficients
-        The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
+    inner_coefficient
+        The inner regularization coefficients which controls the degree of smoothing of the inversion reconstruction
+        in the inner regions of a mesh's reconstruction.
+    outer_coefficient
+        The outer regularization coefficients which controls the degree of smoothing of the inversion reconstruction
+        in the outer regions of a mesh's reconstruction.        
     pixel_signals
         The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal
         and low signal pixelizations.

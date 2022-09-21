@@ -243,7 +243,7 @@ def test__qhull_error_is_caught():
         mesh.voronoi
 
 
-def test__interpolated_array_from():
+def _test__interpolated_array_from():
 
     grid = aa.Grid2D.manual_slim(
         [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],

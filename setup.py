@@ -1,6 +1,7 @@
+import os
 from codecs import open
-from os.path import abspath, dirname, join
 from os import environ
+from os.path import abspath, dirname, join
 
 from setuptools import find_packages, setup
 
@@ -13,6 +14,15 @@ with open(join(this_dir, "requirements.txt")) as f:
 
 version = environ.get("VERSION", "1.0.dev0")
 requirements.extend([f"autoconf=={version}"])
+
+
+def config_packages(directory):
+    paths = [directory.replace("/", ".")]
+    for (path, directories, filenames) in os.walk(directory):
+        for directory in directories:
+            paths.append(f"{path}/{directory}".replace("/", "."))
+    return paths
+
 
 setup(
     name="autoarray",
@@ -40,7 +50,8 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     keywords="cli",
-    packages=find_packages(exclude=["docs", "test_autoarray", "test_autoarray*"]),
+    packages=find_packages(exclude=["docs", "test_autoarray", "test_autoarray*"])
+    + config_packages("autoarray/config"),
     install_requires=requirements,
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
