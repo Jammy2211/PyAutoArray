@@ -9,7 +9,7 @@ __Refactor__
 - Use composition in visualization MatPlot objects instead of inheritance.
 - Extract geometry from mask package.
 - auto_labels in visuals as a config loady thing.
-
+- Split wrap / mat_wrap up into separate moduels.
 
 __Visualization__
 
