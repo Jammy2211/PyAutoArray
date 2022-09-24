@@ -292,14 +292,14 @@ class Axis(AbstractMatWrap):
 
             extent_symmetric = [-x, x, -y, y]
 
-            plt.axis(extent_symmetric, **config_dict)
+            return plt.axis(extent_symmetric, **config_dict)
 
         else:
 
             if extent_dict is not None:
-                plt.axis(extent_dict, **config_dict)
+                return plt.axis(extent_dict, **config_dict)
             else:
-                plt.axis(extent, **config_dict)
+                return plt.axis(extent, **config_dict)
 
 
 class Cmap(AbstractMatWrap):
@@ -450,16 +450,23 @@ class Colorbar(AbstractMatWrap):
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
 
-        cax = cm.ScalarMappable(cmap=cmap)
-        cax.set_array(color_values)
+        fignums = plt.get_fignums()
+        fig = plt.figure(fignums[0])
+        ax = fig.axes[0]
+
+        mappable = cm.ScalarMappable(cmap=cmap)
+        mappable.set_array(color_values)
 
         if self.manual_tick_values is None and self.manual_tick_labels is None:
-            cb = plt.colorbar(mappable=cax, **self.config_dict)
+            cb = plt.colorbar(mappable=mappable, ax=ax, **self.config_dict)
         elif (
             self.manual_tick_values is not None and self.manual_tick_labels is not None
         ):
             cb = plt.colorbar(
-                mappable=cax, ticks=self.manual_tick_values, **self.config_dict
+                mappable=mappable,
+                ax=ax,
+                ticks=self.manual_tick_values,
+                **self.config_dict,
             )
             cb.ax.set_yticklabels(self.manual_tick_labels)
 

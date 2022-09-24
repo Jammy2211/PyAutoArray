@@ -224,7 +224,6 @@ def normalized_residual_map_with_mask_from(
     )
 
 
-
 def chi_squared_map_with_mask_from(
     *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
