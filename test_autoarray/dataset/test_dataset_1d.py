@@ -1,37 +1,49 @@
-{
-    "location": [
-        13,
-        1196
-    ],
-    "date": 2453963.778275463,
-    "background": 31.30540652532858,
-    "flux": 1155.814851790433,
-    "data": [
-        35.470775778970285,
-        22.680439359351723,
-        22.458214316019433,
-        22.903322446914807,
-        39.25320854121069,
-        34.35964984633442,
-        15.674536179287148,
-        20.234866227454134,
-        37.14086334005039,
-        22.459749911660023,
-        30.13430235441293,
-        17.455188210052075,
-        1155.814851790433,
-        27.13196045830766,
-        32.13717966716765,
-        17.122399174348043,
-        25.57550730524423,
-        36.141837711397436,
-        18.34650129177856,
-        25.020053973189373,
-        27.0222732417133,
-        30.35915945533756,
-        24.79826746690503,
-        15.122153561200577,
-        15.344817618896633
-    ],
-    "noise": None
-}
+import pytest
+
+from autoarray import Array1D
+from autocti import Dataset1D
+
+
+@pytest.fixture(name="pixel_line_dict")
+def make_pixel_line_dict():
+    return {
+        "location": [
+            2,
+            4,
+        ],
+        "date": 2453963.778275463,
+        "background": 31.30540652532858,
+        "flux": 1155.814851790433,
+        "data": [
+            5.0,
+            3.0,
+            2.0,
+            1.0,
+        ],
+        "noise": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+        ]
+    }
+
+
+@pytest.fixture(name="size")
+def make_size():
+    return 10
+
+
+@pytest.fixture(name="dataset_1d")
+def make_dataset_1d(pixel_line_dict, size):
+    return Dataset1D.from_pixel_line_dict(
+        pixel_line_dict,
+        size=size,
+    )
+
+
+def test_parse(dataset_1d, size):
+    assert (dataset_1d.data == Array1D.manual_native(
+        [0., 0., 5., 3., 2., 1., 0., 0., 0., 0.],
+        pixel_scales=0.1
+    )).all()
