@@ -13,7 +13,7 @@ def make_pixel_line_dict():
         ],
         "date": 2453963.778275463,
         "background": 31.30540652532858,
-        "flux": 1155.814851790433,
+        "flux": 1234.,
         "data": [
             5.0,
             3.0,
@@ -42,8 +42,22 @@ def make_dataset_1d(pixel_line_dict, size):
     )
 
 
-def test_parse(dataset_1d, size):
+def test_parse_data(dataset_1d):
     assert (dataset_1d.data == Array1D.manual_native(
         [0., 0., 5., 3., 2., 1., 0., 0., 0., 0.],
+        pixel_scales=0.1
+    )).all()
+
+
+def test_parse_noise(dataset_1d):
+    assert (dataset_1d.noise_map == Array1D.manual_native(
+        [0., 0., 1., 1., 1., 1., 0., 0., 0., 0.],
+        pixel_scales=0.1
+    )).all()
+
+
+def test_pre_cti(dataset_1d):
+    assert (dataset_1d.pre_cti_data == Array1D.manual_native(
+        [0., 0., 1234., 0., 0., 0., 0., 0., 0., 0.],
         pixel_scales=0.1
     )).all()
