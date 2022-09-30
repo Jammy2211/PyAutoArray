@@ -40,8 +40,7 @@ def pynufft_exception():
         "\n--------------------\n"
         "You are attempting to perform interferometer analysis.\n\n"
         "However, the optional library PyNUFFT (https://github.com/jyhmiinlin/pynufft) is not installed.\n\n"
-        "Install it via the command `pip install pynufft==2020.2.7`.\n\n"
-        "See ? for more information.\n"
+        "Install it via the command `pip install pynufft==2022.2.2`.\n\n"
         "----------------------"
     )
 
@@ -52,8 +51,7 @@ def pylops_exception():
         "\n--------------------\n"
         "You are attempting to perform interferometer analysis.\n\n"
         "However, the optional library PyLops (https://github.com/PyLops/pylops) is not installed.\n\n"
-        "Install it via the command `pip install pylops==1.11.1`.\n\n"
-        "See ? for more information.\n"
+        "Install it via the command `pip install pylops==1.18.3`.\n\n"
         "----------------------"
     )
 

@@ -298,8 +298,7 @@ class Axis(AbstractMatWrap):
 
             if extent_dict is not None:
                 return plt.axis(extent_dict, **config_dict)
-            else:
-                return plt.axis(extent, **config_dict)
+            return plt.axis(extent, **config_dict)
 
 
 class Cmap(AbstractMatWrap):
