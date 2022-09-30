@@ -4,8 +4,13 @@ from autoarray import Array1D
 from autocti import Dataset1D
 
 
+@pytest.fixture(name="flux")
+def make_flux():
+    return 1234.
+
+
 @pytest.fixture(name="pixel_line_dict")
-def make_pixel_line_dict():
+def make_pixel_line_dict(flux):
     return {
         "location": [
             2,
@@ -13,7 +18,7 @@ def make_pixel_line_dict():
         ],
         "date": 2453963.778275463,
         "background": 31.30540652532858,
-        "flux": 1234.,
+        "flux": flux,
         "data": [
             5.0,
             3.0,
@@ -56,13 +61,27 @@ def test_parse_noise(dataset_1d):
     )).all()
 
 
-def test_pre_cti(dataset_1d):
-    assert (dataset_1d.pre_cti_data == Array1D.manual_native(
-        [0., 0., 1234., 0., 0., 0., 0., 0., 0., 0.],
+@pytest.fixture(name="pre_cti_data")
+def make_pre_cti_data(dataset_1d):
+    return dataset_1d.pre_cti_data
+
+
+def test_pre_cti(pre_cti_data, flux):
+    assert (pre_cti_data == Array1D.manual_native(
+        [0., 0., flux, 0., 0., 0., 0., 0., 0., 0.],
         pixel_scales=0.1
     )).all()
 
 
-def test_layout(dataset_1d, size):
-    layout = dataset_1d.layout
+@pytest.fixture(name="layout")
+def make_layout(dataset_1d):
+    return dataset_1d.layout
+
+
+def test_layout(layout, size):
     assert layout.shape_1d == (size,)
+
+
+def test_region(layout, pre_cti_data, flux):
+    region, = layout.region_list
+    assert pre_cti_data[region.slice] == flux
