@@ -61,3 +61,8 @@ def test_pre_cti(dataset_1d):
         [0., 0., 1234., 0., 0., 0., 0., 0., 0., 0.],
         pixel_scales=0.1
     )).all()
+
+
+def test_layout(dataset_1d, size):
+    layout = dataset_1d.layout
+    assert layout.shape_1d == (size,)
