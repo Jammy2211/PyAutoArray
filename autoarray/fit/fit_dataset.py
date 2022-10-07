@@ -1,28 +1,123 @@
+import warnings
 from abc import ABC
 from abc import abstractmethod
-import numpy as np
 from typing import Dict, Optional
-import warnings
 
-from autoarray.mask.abstract_mask import Mask
-from autoarray.structures.abstract_structure import Structure
-from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.inversion.regularization.abstract import AbstractRegularization
+import numpy as np
 
 from autoarray import type as ty
 from autoarray.fit import fit_util
+from autoarray.inversion.inversion.abstract import AbstractInversion
+from autoarray.mask.abstract_mask import Mask
 from autoarray.numba_util import profile_func
+from autoarray.structures.abstract_structure import Structure
 
 
-class FitDataset(ABC):
+class AbstractFit(ABC):
+    @property
+    @abstractmethod
+    def data(self) -> ty.DataLike:
+        pass
+
+    @property
+    @abstractmethod
+    def noise_map(self) -> ty.NoiseMapLike:
+        pass
+
+    @property
+    @abstractmethod
+    def model_data(self) -> ty.DataLike:
+        """
+        Overwrite this method so it returns the model-data which is fitted to the input data.
+        """
+
+    @property
+    def signal_to_noise_map(self) -> ty.DataLike:
+        """
+        The signal-to-noise_map of the dataset and noise-map which are fitted.
+        """
+        warnings.filterwarnings("ignore")
+
+        signal_to_noise_map = np.divide(self.data, self.noise_map)
+        signal_to_noise_map[signal_to_noise_map < 0] = 0
+        return signal_to_noise_map
+
+    @property
+    def potential_chi_squared_map(self) -> ty.DataLike:
+        """
+        The signal-to-noise_map of the dataset and noise-map which are fitted.
+        """
+        warnings.filterwarnings("ignore")
+        absolute_signal_to_noise_map = np.divide(np.abs(self.data), self.noise_map)
+        return np.square(absolute_signal_to_noise_map)
+
+    @property
+    def residual_map(self) -> Structure:
+        """
+        Returns the residual-map between the masked dataset and model data, where:
+
+        Residuals = (Data - Model_Data).
+        """
+        return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
+
+    @property
+    def normalized_residual_map(self) -> Structure:
+        """
+        Returns the normalized residual-map between the masked dataset and model data, where:
+
+        Normalized_Residual = (Data - Model_Data) / Noise
+        """
+        return fit_util.normalized_residual_map_from(
+            residual_map=self.residual_map, noise_map=self.noise_map
+        )
+
+    @property
+    def chi_squared_map(self) -> Structure:
+        """
+        Returns the chi-squared-map between the residual-map and noise-map, where:
+
+        Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
+        """
+        return fit_util.chi_squared_map_from(
+            residual_map=self.residual_map, noise_map=self.noise_map
+        )
+
+    @property
+    def chi_squared(self) -> float:
+        """
+        Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
+        """
+        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
+
+    @property
+    def noise_normalization(self) -> float:
+        """
+        Returns the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
+
+        [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
+        """
+        return fit_util.noise_normalization_from(noise_map=self.noise_map)
+
+    @property
+    def log_likelihood(self) -> float:
+        """
+        Returns the log likelihood of each model data point's fit to the dataset, where:
+
+        Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
+        """
+        return fit_util.log_likelihood_from(
+            chi_squared=self.chi_squared, noise_normalization=self.noise_normalization
+        )
+
+
+class FitDataset(AbstractFit):
 
     # noinspection PyUnresolvedReferences
     def __init__(
-        self,
-        dataset,
-        use_mask_in_fit: bool = False,
-        profiling_dict: Optional[Dict] = None,
+            self,
+            dataset,
+            use_mask_in_fit: bool = False,
+            profiling_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
@@ -68,46 +163,12 @@ class FitDataset(ABC):
         """
 
     @property
-    def inversion(self) -> Optional[AbstractInversion]:
-        """
-        Overwrite this method so it returns the inversion used to fit the dataset.
-        """
-        return None
-
-    @property
     def data(self) -> ty.DataLike:
         return self.dataset.data
 
     @property
     def noise_map(self) -> ty.NoiseMapLike:
         return self.dataset.noise_map
-
-    @property
-    @abstractmethod
-    def model_data(self) -> ty.DataLike:
-        """
-        Overwrite this method so it returns the model-data which is fitted to the input data.
-        """
-
-    @property
-    def signal_to_noise_map(self) -> ty.DataLike:
-        """
-        The signal-to-noise_map of the dataset and noise-map which are fitted.
-        """
-        warnings.filterwarnings("ignore")
-
-        signal_to_noise_map = np.divide(self.data, self.noise_map)
-        signal_to_noise_map[signal_to_noise_map < 0] = 0
-        return signal_to_noise_map
-
-    @property
-    def potential_chi_squared_map(self) -> ty.DataLike:
-        """
-        The signal-to-noise_map of the dataset and noise-map which are fitted.
-        """
-        warnings.filterwarnings("ignore")
-        absolute_signal_to_noise_map = np.divide(np.abs(self.data), self.noise_map)
-        return np.square(absolute_signal_to_noise_map)
 
     @property
     def residual_map(self) -> Structure:
@@ -121,7 +182,7 @@ class FitDataset(ABC):
             return fit_util.residual_map_with_mask_from(
                 data=self.data, model_data=self.model_data, mask=self.mask
             )
-        return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
+        return super().residual_map
 
     @property
     def normalized_residual_map(self) -> Structure:
@@ -134,9 +195,7 @@ class FitDataset(ABC):
             return fit_util.normalized_residual_map_with_mask_from(
                 residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
             )
-        return fit_util.normalized_residual_map_from(
-            residual_map=self.residual_map, noise_map=self.noise_map
-        )
+        return super().normalized_residual_map
 
     @property
     def chi_squared_map(self) -> Structure:
@@ -149,9 +208,7 @@ class FitDataset(ABC):
             return fit_util.chi_squared_map_with_mask_from(
                 residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
             )
-        return fit_util.chi_squared_map_from(
-            residual_map=self.residual_map, noise_map=self.noise_map
-        )
+        return super().chi_squared_map
 
     @property
     def chi_squared(self) -> float:
@@ -162,7 +219,7 @@ class FitDataset(ABC):
             return fit_util.chi_squared_with_mask_from(
                 chi_squared_map=self.chi_squared_map, mask=self.mask
             )
-        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
+        return super().chi_squared
 
     @property
     def noise_normalization(self) -> float:
@@ -175,18 +232,7 @@ class FitDataset(ABC):
             return fit_util.noise_normalization_with_mask_from(
                 noise_map=self.noise_map, mask=self.mask
             )
-        return fit_util.noise_normalization_from(noise_map=self.noise_map)
-
-    @property
-    def log_likelihood(self) -> float:
-        """
-        Returns the log likelihood of each model data point's fit to the dataset, where:
-
-        Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
-        """
-        return fit_util.log_likelihood_from(
-            chi_squared=self.chi_squared, noise_normalization=self.noise_normalization
-        )
+        return super().noise_normalization
 
     @property
     def log_likelihood_with_regularization(self) -> float:
@@ -245,5 +291,8 @@ class FitDataset(ABC):
         return self.log_likelihood
 
     @property
-    def reduced_chi_squared(self) -> float:
-        return self.chi_squared / int(np.size(self.mask) - np.sum(self.mask))
+    def inversion(self) -> Optional[AbstractInversion]:
+        """
+        Overwrite this method so it returns the inversion used to fit the dataset.
+        """
+        return None
