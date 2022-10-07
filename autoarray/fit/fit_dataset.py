@@ -110,6 +110,25 @@ class AbstractFit(ABC):
         )
 
 
+class SimpleFit(AbstractFit):
+    def __init__(self, data, model_data, noise_map):
+        self._data = data
+        self._model_data = model_data
+        self._noise_map = noise_map
+
+    @property
+    def data(self) -> ty.DataLike:
+        return self._data
+
+    @property
+    def noise_map(self) -> ty.NoiseMapLike:
+        return self._noise_map
+
+    @property
+    def model_data(self) -> ty.DataLike:
+        return self._model_data
+
+
 class FitDataset(AbstractFit):
 
     # noinspection PyUnresolvedReferences
