@@ -5,8 +5,6 @@ from typing import List, Tuple, Union
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
-from autoarray.structures.arrays import array_2d_util
-
 from autoarray import exc
 
 
@@ -21,13 +19,6 @@ class Structure(AbstractNDArray, ABC):
     def slim(self) -> "Structure":
         """
         Returns the data structure in its `slim` format which flattens all unmasked values to a 1D array.
-        """
-
-    @property
-    @abstractmethod
-    def native(self) -> "Structure":
-        """
-        Returns the data structure in its `native` format which contains all unmaksed values to the native dimensions.
         """
 
     @property
@@ -89,17 +80,3 @@ class Structure(AbstractNDArray, ABC):
     def structure_2d_from(self, result: np.ndarray) -> "Structure":
         raise NotImplementedError
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
-        """
-        Output the grid to a .fits file.
-
-        Parameters
-        ----------
-        file_path
-            The path the file is output to, including the filename and the .fits extension, e.g. '/path/to/filename.fits'
-        overwrite
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
-        """
-        array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.native, file_path=file_path, overwrite=overwrite
-        )

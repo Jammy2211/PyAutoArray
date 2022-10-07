@@ -40,6 +40,5 @@ class Zeroth(AbstractRegularization):
     def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
 
         return regularization_util.zeroth_regularization_matrix_from(
-            coefficient=self.coefficient,
-            pixels=linear_obj.pixels
+            coefficient=self.coefficient, pixels=linear_obj.pixels
         )

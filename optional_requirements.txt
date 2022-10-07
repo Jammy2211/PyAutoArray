@@ -1,4 +1,4 @@
 numba
 llvmlite
 pylops>=1.10.0
-pynufft==2020.2.7
+pynufft
