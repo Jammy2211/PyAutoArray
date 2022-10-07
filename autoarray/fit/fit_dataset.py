@@ -315,3 +315,7 @@ class FitDataset(AbstractFit):
         Overwrite this method so it returns the inversion used to fit the dataset.
         """
         return None
+
+    @property
+    def reduced_chi_squared(self) -> float:
+        return self.chi_squared / int(np.size(self.mask) - np.sum(self.mask))
