@@ -1,4 +1,4 @@
 numba
 llvmlite
-pylops>=1.10.0
+pylops>=1.10.0,<=1.18.3
 pynufft
