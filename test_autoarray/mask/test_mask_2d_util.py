@@ -2521,8 +2521,10 @@ class TestMask2DIndexFromSubMask1DIndex:
     ):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        slim_index_for_sub_slim_index = util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask, sub_size=2
+        slim_index_for_sub_slim_index = (
+            util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
+                mask, sub_size=2
+            )
         )
 
         assert (slim_index_for_sub_slim_index == np.array([0, 0, 0, 0])).all()
@@ -2532,8 +2534,10 @@ class TestMask2DIndexFromSubMask1DIndex:
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        slim_index_for_sub_slim_index = util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask, sub_size=2
+        slim_index_for_sub_slim_index = (
+            util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
+                mask, sub_size=2
+            )
         )
 
         assert (
@@ -2546,8 +2550,10 @@ class TestMask2DIndexFromSubMask1DIndex:
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        slim_index_for_sub_slim_index = util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask, sub_size=3
+        slim_index_for_sub_slim_index = (
+            util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
+                mask, sub_size=3
+            )
         )
 
         assert (
@@ -2593,8 +2599,10 @@ class TestSubMask1DIndexFromMask1DIndexes:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
-            mask, sub_size=2
+        sub_mask_1d_indexes_for_mask_1d_index = (
+            util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
+                mask, sub_size=2
+            )
         )
 
         assert sub_mask_1d_indexes_for_mask_1d_index == [[0, 1, 2, 3]]
@@ -2604,8 +2612,10 @@ class TestSubMask1DIndexFromMask1DIndexes:
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
-            mask, sub_size=2
+        sub_mask_1d_indexes_for_mask_1d_index = (
+            util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
+                mask, sub_size=2
+            )
         )
 
         assert sub_mask_1d_indexes_for_mask_1d_index == [
@@ -2619,8 +2629,10 @@ class TestSubMask1DIndexFromMask1DIndexes:
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
-            mask, sub_size=3
+        sub_mask_1d_indexes_for_mask_1d_index = (
+            util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
+                mask, sub_size=3
+            )
         )
 
         assert sub_mask_1d_indexes_for_mask_1d_index == [
@@ -2635,8 +2647,8 @@ class TestSubMask2dToSubMask1D:
 
         mask = np.full(fill_value=False, shape=(3, 3))
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
-            sub_mask_2d=mask
+        sub_mask_1d_index_for_sub_mask_index = (
+            util.mask_2d.sub_slim_index_for_sub_native_index_from(sub_mask_2d=mask)
         )
 
         assert (
@@ -2646,8 +2658,8 @@ class TestSubMask2dToSubMask1D:
 
         mask = np.full(fill_value=False, shape=(2, 3))
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
-            sub_mask_2d=mask
+        sub_mask_1d_index_for_sub_mask_index = (
+            util.mask_2d.sub_slim_index_for_sub_native_index_from(sub_mask_2d=mask)
         )
 
         assert (
@@ -2656,8 +2668,8 @@ class TestSubMask2dToSubMask1D:
 
         mask = np.full(fill_value=False, shape=(3, 2))
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
-            sub_mask_2d=mask
+        sub_mask_1d_index_for_sub_mask_index = (
+            util.mask_2d.sub_slim_index_for_sub_native_index_from(sub_mask_2d=mask)
         )
 
         assert (
@@ -2672,8 +2684,8 @@ class TestSubMask2dToSubMask1D:
             [[False, True, False], [True, True, False], [False, False, True]]
         )
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
-            sub_mask_2d=mask
+        sub_mask_1d_index_for_sub_mask_index = (
+            util.mask_2d.sub_slim_index_for_sub_native_index_from(sub_mask_2d=mask)
         )
 
         assert (
@@ -2689,8 +2701,8 @@ class TestSubMask2dToSubMask1D:
             ]
         )
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
-            sub_mask_2d=mask
+        sub_mask_1d_index_for_sub_mask_index = (
+            util.mask_2d.sub_slim_index_for_sub_native_index_from(sub_mask_2d=mask)
         )
 
         assert (
@@ -2707,8 +2719,8 @@ class TestSubMask2dToSubMask1D:
             ]
         )
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
-            sub_mask_2d=mask
+        sub_mask_1d_index_for_sub_mask_index = (
+            util.mask_2d.sub_slim_index_for_sub_native_index_from(sub_mask_2d=mask)
         )
 
         assert (
@@ -2722,8 +2734,8 @@ class TestSubMask2DForSubMask1D:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=1
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=1)
         )
 
         assert (sub_mask_index_for_sub_mask_1d_index == np.array([[1, 1]])).all()
@@ -2732,8 +2744,8 @@ class TestSubMask2DForSubMask1D:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=1
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=1)
         )
 
         assert (
@@ -2749,8 +2761,8 @@ class TestSubMask2DForSubMask1D:
             ]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=1
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=1)
         )
 
         assert (
@@ -2767,8 +2779,8 @@ class TestSubMask2DForSubMask1D:
             ]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=1
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=1)
         )
 
         assert (
@@ -2780,8 +2792,8 @@ class TestSubMask2DForSubMask1D:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=2
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
         )
 
         assert (
@@ -2789,8 +2801,8 @@ class TestSubMask2DForSubMask1D:
             == np.array([[2, 2], [2, 3], [3, 2], [3, 3]])
         ).all()
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=3
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=3)
         )
 
         assert (
@@ -2804,8 +2816,8 @@ class TestSubMask2DForSubMask1D:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=2
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
         )
 
         assert (
@@ -2844,8 +2856,8 @@ class TestSubMask2DForSubMask1D:
             ]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=2
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
         )
 
         assert (
@@ -2864,8 +2876,8 @@ class TestSubMask2DForSubMask1D:
             ]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=mask, sub_size=2
+        sub_mask_index_for_sub_mask_1d_index = (
+            util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
         )
 
         assert (

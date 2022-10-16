@@ -312,8 +312,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[3.0, 5.0], [1.0, 2.0]])
 
-        transformed_mapping_matrix_preload = transformer_preload.transform_mapping_matrix(
-            mapping_matrix=mapping_matrix
+        transformed_mapping_matrix_preload = (
+            transformer_preload.transform_mapping_matrix(mapping_matrix=mapping_matrix)
         )
 
         transformed_mapping_matrix = transformer.transform_mapping_matrix(

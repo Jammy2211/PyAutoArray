@@ -82,7 +82,7 @@ class InterferometerPlotter(Plotter):
         """
         Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D.
 
-        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type 
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type
         bool of the function, which if switched to `True` means that it is plotted.
 
         Parameters
@@ -92,11 +92,11 @@ class InterferometerPlotter(Plotter):
         noise_map
             Whether or not to make a 2D plot (via `scatter`) of the noise-map.
         u_wavelengths
-            Whether or not to make a 1D plot (via `plot`) of the u-wavelengths.          
+            Whether or not to make a 1D plot (via `plot`) of the u-wavelengths.
         v_wavelengths
-            Whether or not to make a 1D plot (via `plot`) of the v-wavelengths.      
+            Whether or not to make a 1D plot (via `plot`) of the v-wavelengths.
         amplitudes_vs_uv_distances
-            Whether or not to make a 1D plot (via `plot`) of the amplitudes versis the uv distances.   
+            Whether or not to make a 1D plot (via `plot`) of the amplitudes versis the uv distances.
         phases_vs_uv_distances
             Whether or not to make a 1D plot (via `plot`) of the phases versis the uv distances.
         dirty_image
@@ -158,8 +158,8 @@ class InterferometerPlotter(Plotter):
 
             self.mat_plot_2d.plot_grid(
                 grid=Grid2DIrregular.from_yx_1d(
-                    y=self.interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
-                    x=self.interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
+                    y=self.interferometer.uv_wavelengths[:, 1] / 10**3.0,
+                    x=self.interferometer.uv_wavelengths[:, 0] / 10**3.0,
                 ),
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
@@ -171,7 +171,7 @@ class InterferometerPlotter(Plotter):
 
             self.mat_plot_1d.plot_yx(
                 y=self.interferometer.amplitudes,
-                x=self.interferometer.uv_distances / 10 ** 3.0,
+                x=self.interferometer.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Amplitudes vs UV-distances",
@@ -186,7 +186,7 @@ class InterferometerPlotter(Plotter):
 
             self.mat_plot_1d.plot_yx(
                 y=self.interferometer.phases,
-                x=self.interferometer.uv_distances / 10 ** 3.0,
+                x=self.interferometer.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Phases vs UV-distances",
@@ -255,7 +255,7 @@ class InterferometerPlotter(Plotter):
         """
         Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D on a subplot.
 
-        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type 
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type
         bool of the function, which if switched to `True` means that it is included on the subplot.
 
         Parameters
@@ -265,11 +265,11 @@ class InterferometerPlotter(Plotter):
         noise_map
             Whether or not to include a 2D plot (via `scatter`) of the noise-map.
         u_wavelengths
-            Whether or not to include a 1D plot (via `plot`) of the u-wavelengths.          
+            Whether or not to include a 1D plot (via `plot`) of the u-wavelengths.
         v_wavelengths
-            Whether or not to include a 1D plot (via `plot`) of the v-wavelengths.      
+            Whether or not to include a 1D plot (via `plot`) of the v-wavelengths.
         amplitudes_vs_uv_distances
-            Whether or not to include a 1D plot (via `plot`) of the amplitudes versis the uv distances.   
+            Whether or not to include a 1D plot (via `plot`) of the amplitudes versis the uv distances.
         phases_vs_uv_distances
             Whether or not to include a 1D plot (via `plot`) of the phases versis the uv distances.
         dirty_image

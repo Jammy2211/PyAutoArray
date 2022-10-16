@@ -82,11 +82,11 @@ def rectangular_corner_neighbors(
         An array of dimensions [total_pixels, 4] which provides the index of all neighbors of every pixel in
         the rectangular pixelization (entries of -1 correspond to no neighbor).
     neighbors_sizes
-        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular 
+        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular
         pixelization.
     shape_native
         The shape of the rectangular 2D pixelization which pixels are defined on.
-        
+
     Returns
     -------
     The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
@@ -127,11 +127,11 @@ def rectangular_top_edge_neighbors(
         An array of dimensions [total_pixels, 4] which provides the index of all neighbors of every pixel in
         the rectangular pixelization (entries of -1 correspond to no neighbor).
     neighbors_sizes
-        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular 
+        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular
         pixelization.
     shape_native
         The shape of the rectangular 2D pixelization which pixels are defined on.
-        
+
     Returns
     -------
     The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
@@ -160,11 +160,11 @@ def rectangular_left_edge_neighbors(
         An array of dimensions [total_pixels, 4] which provides the index of all neighbors of every pixel in
         the rectangular pixelization (entries of -1 correspond to no neighbor).
     neighbors_sizes
-        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular 
+        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular
         pixelization.
     shape_native
         The shape of the rectangular 2D pixelization which pixels are defined on.
-        
+
     Returns
     -------
     The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
@@ -197,11 +197,11 @@ def rectangular_right_edge_neighbors(
         An array of dimensions [total_pixels, 4] which provides the index of all neighbors of every pixel in
         the rectangular pixelization (entries of -1 correspond to no neighbor).
     neighbors_sizes
-        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular 
+        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular
         pixelization.
     shape_native
         The shape of the rectangular 2D pixelization which pixels are defined on.
-        
+
     Returns
     -------
     The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
@@ -234,11 +234,11 @@ def rectangular_bottom_edge_neighbors(
         An array of dimensions [total_pixels, 4] which provides the index of all neighbors of every pixel in
         the rectangular pixelization (entries of -1 correspond to no neighbor).
     neighbors_sizes
-        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular 
+        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular
         pixelization.
     shape_native
         The shape of the rectangular 2D pixelization which pixels are defined on.
-        
+
     Returns
     -------
     The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
@@ -270,11 +270,11 @@ def rectangular_central_neighbors(
         An array of dimensions [total_pixels, 4] which provides the index of all neighbors of every pixel in
         the rectangular pixelization (entries of -1 correspond to no neighbor).
     neighbors_sizes
-        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular 
+        An array of dimensions [total_pixels] which gives the number of neighbors of every pixel in the rectangular
         pixelization.
     shape_native
         The shape of the rectangular 2D pixelization which pixels are defined on.
-        
+
     Returns
     -------
     The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
@@ -468,7 +468,7 @@ def voronoi_neighbors_from(
 
 
 def voronoi_revised_from(
-    voronoi: scipy.spatial.Voronoi
+    voronoi: scipy.spatial.Voronoi,
 ) -> Union[List[Tuple], np.ndarray]:
     """
     To plot a Voronoi pixelization using the `matplotlib.fill()` function a revised Voronoi pixelization must be

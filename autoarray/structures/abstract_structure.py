@@ -79,4 +79,3 @@ class Structure(AbstractNDArray, ABC):
 
     def structure_2d_from(self, result: np.ndarray) -> "Structure":
         raise NotImplementedError
-

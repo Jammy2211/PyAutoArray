@@ -55,7 +55,11 @@ def test__set_w_tilde():
     preloads = aa.Preloads(w_tilde=1, use_w_tilde=1)
     preloads.set_w_tilde_imaging(fit_0=fit_0, fit_1=fit_1)
 
-    curvature_preload, indexes, lengths = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
+    (
+        curvature_preload,
+        indexes,
+        lengths,
+    ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
         noise_map_native=fit_0.noise_map.native,
         kernel_native=fit_0.dataset.psf.native,
         native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,

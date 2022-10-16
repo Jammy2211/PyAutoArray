@@ -408,7 +408,9 @@ class TestIteratedArray:
 
         assert (values == values_sub_2.binned).all()
 
-    def test__iterated_array_from__check_values_computed_to_fractional_accuracy(self,):
+    def test__iterated_array_from__check_values_computed_to_fractional_accuracy(
+        self,
+    ):
 
         mask = aa.Mask2D.manual(
             mask=[
@@ -725,7 +727,9 @@ class TestIteratedGrid:
 
         assert (values == values_sub_2.binned).all()
 
-    def test__iterated_grid_from__check_values_computed_to_fractional_accuracy(self,):
+    def test__iterated_grid_from__check_values_computed_to_fractional_accuracy(
+        self,
+    ):
 
         mask = aa.Mask2D.manual(
             mask=[

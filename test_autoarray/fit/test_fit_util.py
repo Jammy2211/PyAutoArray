@@ -106,8 +106,10 @@ def test__normalized_residual_map_complex_with_mask_from():
         data=data, mask=mask, model_data=model_data
     )
 
-    normalized_residual_map = aa.util.fit.normalized_residual_map_complex_with_mask_from(
-        residual_map=residual_map, mask=mask, noise_map=noise_map
+    normalized_residual_map = (
+        aa.util.fit.normalized_residual_map_complex_with_mask_from(
+            residual_map=residual_map, mask=mask, noise_map=noise_map
+        )
     )
 
     assert (normalized_residual_map == np.array([0.5 - 1.0j, 0.0 + 0.0j])).all()
@@ -226,10 +228,10 @@ def test__log_likelihood_from():
 
     chi_squared = 0.0
     noise_normalization = (
-        np.log(2.0 * np.pi * (2.0 ** 2.0))
-        + np.log(2.0 * np.pi * (2.0 ** 2.0))
-        + np.log(2.0 * np.pi * (2.0 ** 2.0))
-        + np.log(2.0 * np.pi * (2.0 ** 2.0))
+        np.log(2.0 * np.pi * (2.0**2.0))
+        + np.log(2.0 * np.pi * (2.0**2.0))
+        + np.log(2.0 * np.pi * (2.0**2.0))
+        + np.log(2.0 * np.pi * (2.0**2.0))
     )
 
     assert log_likelihood == pytest.approx(
@@ -259,10 +261,10 @@ def test__log_likelihood_from():
         ((1.0 / 2.0) ** 2.0) + 0.0 + ((1.0 / 2.0) ** 2.0) + ((2.0 / 2.0) ** 2.0)
     )
     noise_normalization = (
-        np.log(2.0 * np.pi * (2.0 ** 2.0))
-        + np.log(2.0 * np.pi * (2.0 ** 2.0))
-        + np.log(2.0 * np.pi * (2.0 ** 2.0))
-        + np.log(2.0 * np.pi * (2.0 ** 2.0))
+        np.log(2.0 * np.pi * (2.0**2.0))
+        + np.log(2.0 * np.pi * (2.0**2.0))
+        + np.log(2.0 * np.pi * (2.0**2.0))
+        + np.log(2.0 * np.pi * (2.0**2.0))
     )
 
     assert log_likelihood == pytest.approx(
@@ -287,12 +289,12 @@ def test__log_likelihood_from():
 
     # chi squared = (1.0/1.0)**2, (0.0), (-1.0/3.0)**2.0, (2.0/4.0)**2.0
 
-    chi_squared = 1.0 + (1.0 / (3.0 ** 2.0)) + 0.25
+    chi_squared = 1.0 + (1.0 / (3.0**2.0)) + 0.25
     noise_normalization = (
-        np.log(2 * np.pi * (1.0 ** 2.0))
-        + np.log(2 * np.pi * (2.0 ** 2.0))
-        + np.log(2 * np.pi * (3.0 ** 2.0))
-        + np.log(2 * np.pi * (4.0 ** 2.0))
+        np.log(2 * np.pi * (1.0**2.0))
+        + np.log(2 * np.pi * (2.0**2.0))
+        + np.log(2 * np.pi * (3.0**2.0))
+        + np.log(2 * np.pi * (4.0**2.0))
     )
 
     assert log_likelihood == pytest.approx(
@@ -330,8 +332,8 @@ def test__log_likelihood_from__with_mask():
     # chi squared = 0, 0.25, (0.25 and 1.0 are masked)
 
     chi_squared = 0.0 + (1.0 / 3.0) ** 2.0
-    noise_normalization = np.log(2 * np.pi * (2.0 ** 2.0)) + np.log(
-        2 * np.pi * (3.0 ** 2.0)
+    noise_normalization = np.log(2 * np.pi * (2.0**2.0)) + np.log(
+        2 * np.pi * (3.0**2.0)
     )
 
     assert log_likelihood == pytest.approx(
@@ -366,8 +368,8 @@ def test__log_likelihood_from__with_mask():
     # chi squared = 0, 0.25, (0.25 and 1.0 are masked)
 
     chi_squared = 0.0 + (1.0 / 3.0) ** 2.0
-    noise_normalization = np.log(2 * np.pi * (2.0 ** 2.0)) + np.log(
-        2 * np.pi * (3.0 ** 2.0)
+    noise_normalization = np.log(2 * np.pi * (2.0**2.0)) + np.log(
+        2 * np.pi * (3.0**2.0)
     )
 
     assert log_likelihood == pytest.approx(
@@ -400,8 +402,8 @@ def test__log_likelihood_from__complex_data():
     # chi squared = 0.25 and 4.0
 
     chi_squared = 4.25
-    noise_normalization = np.log(2 * np.pi * (2.0 ** 2.0)) + np.log(
-        2 * np.pi * (1.0 ** 2.0)
+    noise_normalization = np.log(2 * np.pi * (2.0**2.0)) + np.log(
+        2 * np.pi * (1.0**2.0)
     )
 
     assert log_likelihood == pytest.approx(
@@ -436,8 +438,8 @@ def test__log_likelihood_from__complex_data():
     # chi squared = 0.25 and 4.0
 
     chi_squared = 4.25
-    noise_normalization = np.log(2 * np.pi * (2.0 ** 2.0)) + np.log(
-        2 * np.pi * (1.0 ** 2.0)
+    noise_normalization = np.log(2 * np.pi * (2.0**2.0)) + np.log(
+        2 * np.pi * (1.0**2.0)
     )
 
     assert log_likelihood == pytest.approx(
@@ -447,8 +449,10 @@ def test__log_likelihood_from__complex_data():
 
 def test__log_evidence_from():
 
-    likelihood_with_regularization_terms = aa.util.fit.log_likelihood_with_regularization_from(
-        chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
+    likelihood_with_regularization_terms = (
+        aa.util.fit.log_likelihood_with_regularization_from(
+            chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
+        )
     )
 
     assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)

@@ -99,38 +99,38 @@ class AbstractMatWrap:
     def __init__(self, **kwargs):
         """
         An abstract base class for wrapping matplotlib plotting methods.
-        
-        Classes are used to wrap matplotlib so that the data structures in the `autoarray.structures` package can be 
+
+        Classes are used to wrap matplotlib so that the data structures in the `autoarray.structures` package can be
         plotted in standardized withs. This exploits how these structures have specific formats, units, properties etc.
         This allows us to make a simple API for plotting structures, for example to plot an `Array2D` structure:
-        
+
         import autoarray as aa
         import autoarray.plot as aplt
-        
+
         arr = aa.Array2D.manual_native(array=[[1.0, 1.0], [2.0, 2.0]], pixel_scales=2.0)
         aplt.Array2D(array=arr)
-        
+
         The wrapped Mat objects make it simple to customize how matplotlib visualizes this data structure, for example
         we can customize the figure size and colormap using the `Figure` and `Cmap` objects.
-        
+
         figure = aplt.Figure(figsize=(7,7), aspect="square")
         cmap = aplt.Cmap(cmap="jet", vmin=1.0, vmax=2.0)
-        
+
         plotter = aplt.MatPlot2D(figure=figure, cmap=cmap)
-        
+
         aplt.Array2D(array=arr, plotter=plotter)
-        
+
         The `Plotter` object is detailed in the `autoarray.plot.plotter` package.
-        
+
         The matplotlib wrapper objects in ths module also use configuration files to choose their default settings.
         For example, in `autoarray.config.visualize.mat_base.Figure.ini` you will note the section:
-        
+
         [figure]
         figsize=(7, 7)
-        
+
         [subplot]
         figsize=auto
-        
+
         This specifies that when a data structure (like the `Array2D` above) is plotted, the figsize will always
         be  (7,7) when a single figure is plotted and it will be chosen automatically if a subplot is plotted. This
         allows one to customize the matplotlib settings of every plot in a project.

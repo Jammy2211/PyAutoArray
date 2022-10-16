@@ -99,20 +99,20 @@ def data_slim_to_pixelization_unique_from(
         that give the weights and total number of mappings.
     """
 
-    sub_fraction = 1.0 / (sub_size ** 2.0)
+    sub_fraction = 1.0 / (sub_size**2.0)
 
     max_pix_mappings = int(np.max(pix_sizes_for_sub_slim_index))
 
-    data_to_pix_unique = -1 * np.ones((data_pixels, max_pix_mappings * sub_size ** 2))
-    data_weights = np.zeros((data_pixels, max_pix_mappings * sub_size ** 2))
+    data_to_pix_unique = -1 * np.ones((data_pixels, max_pix_mappings * sub_size**2))
+    data_weights = np.zeros((data_pixels, max_pix_mappings * sub_size**2))
     pix_lengths = np.zeros(data_pixels)
 
     for ip in range(data_pixels):
 
         pix_size = 0
 
-        ip_sub_start = ip * sub_size ** 2
-        ip_sub_end = ip_sub_start + sub_size ** 2
+        ip_sub_start = ip * sub_size**2
+        ip_sub_end = ip_sub_start + sub_size**2
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
 
@@ -379,7 +379,10 @@ def pix_size_weights_voronoi_nn_from(
 
     max_nneighbours = 100
 
-    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = nn_py.natural_interpolation_weights(
+    (
+        pix_weights_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index,
+    ) = nn_py.natural_interpolation_weights(
         x_in=mesh_grid[:, 1],
         y_in=mesh_grid[:, 0],
         x_target=grid[:, 1],
@@ -389,7 +392,10 @@ def pix_size_weights_voronoi_nn_from(
 
     bad_indexes = np.argwhere(np.sum(pix_weights_for_sub_slim_index < 0.0, axis=1) > 0)
 
-    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = remove_bad_entries_voronoi_nn(
+    (
+        pix_weights_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index,
+    ) = remove_bad_entries_voronoi_nn(
         bad_indexes=bad_indexes,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
@@ -399,7 +405,10 @@ def pix_size_weights_voronoi_nn_from(
 
     bad_indexes = np.argwhere(pix_indexes_for_sub_slim_index[:, 0] == -1)
 
-    pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index = remove_bad_entries_voronoi_nn(
+    (
+        pix_weights_for_sub_slim_index,
+        pix_indexes_for_sub_slim_index,
+    ) = remove_bad_entries_voronoi_nn(
         bad_indexes=bad_indexes,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
@@ -523,7 +532,7 @@ def adaptive_pixel_signals_from(
     pixel_signals /= pixel_sizes
     pixel_signals /= np.max(pixel_signals)
 
-    return pixel_signals ** signal_scale
+    return pixel_signals**signal_scale
 
 
 @numba_util.jit()

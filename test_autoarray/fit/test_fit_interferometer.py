@@ -49,7 +49,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
     assert fit.chi_squared == 0.0
     assert fit.reduced_chi_squared == 0.0
     assert fit.noise_normalization == pytest.approx(
-        4.0 * np.log(2 * np.pi * 2.0 ** 2.0), 1.0e-4
+        4.0 * np.log(2 * np.pi * 2.0**2.0), 1.0e-4
     )
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
@@ -99,7 +99,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
     assert fit.chi_squared == 0.25
     assert fit.reduced_chi_squared == 0.25 / 2.0
     assert fit.noise_normalization == pytest.approx(
-        4.0 * np.log(2 * np.pi * 2.0 ** 2.0), 1.0e-4
+        4.0 * np.log(2 * np.pi * 2.0**2.0), 1.0e-4
     )
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
@@ -144,7 +144,7 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
     assert fit.chi_squared == 0.0
     assert fit.reduced_chi_squared == 0.0
     assert fit.noise_normalization == pytest.approx(
-        4.0 * np.log(2 * np.pi * 2.0 ** 2.0), 1.0e-4
+        4.0 * np.log(2 * np.pi * 2.0**2.0), 1.0e-4
     )
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 

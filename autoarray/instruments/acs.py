@@ -70,7 +70,7 @@ class Array2DACS(Array2D):
 
         See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
-        
+
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 
@@ -95,7 +95,7 @@ class Array2DACS(Array2D):
 
         See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
-        
+
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
         if quadrant_letter == "A":
@@ -166,7 +166,7 @@ class Array2DACS(Array2D):
 
         See the docstring of the `FrameACS` class for a complete description of the HST FPA, quadrants and
         rotations.
-        
+
         Also see https://github.com/spacetelescope/hstcal/blob/master/pkg/acs/calacs/acscte/dopcte-gen2.c#L418
         """
 

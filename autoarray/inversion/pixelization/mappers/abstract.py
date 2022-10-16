@@ -199,7 +199,7 @@ class AbstractMapper(LinearObj):
     @property
     @profile_func
     def sub_slim_indexes_for_pix_index_arr(
-        self
+        self,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """
         Returns the index mappings between each of the pixelization's pixels and the masked data's sub-pixels.

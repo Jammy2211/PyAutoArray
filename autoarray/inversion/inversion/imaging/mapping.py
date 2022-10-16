@@ -172,9 +172,11 @@ class InversionImagingMapping(AbstractInversionImaging):
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                mapping_matrix=operated_mapping_matrix_list[index],
-                reconstruction=reconstruction,
+            mapped_reconstructed_image = (
+                inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
+                    mapping_matrix=operated_mapping_matrix_list[index],
+                    reconstruction=reconstruction,
+                )
             )
 
             mapped_reconstructed_image = Array2D(

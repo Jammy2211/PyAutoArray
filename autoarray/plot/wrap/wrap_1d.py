@@ -211,8 +211,8 @@ class FillBetween(AbstractMatWrap1D):
         y2: Union[np.ndarray, Array1D, List],
     ):
         """
-        Fill in between two lines `y1` and `y2` on a plot of y vs x. 
-        
+        Fill in between two lines `y1` and `y2` on a plot of y vs x.
+
         Parameters
         ----------
         x

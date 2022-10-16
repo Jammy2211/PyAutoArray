@@ -3,7 +3,7 @@ import numpy as np
 
 
 def test__magnification__sparse_grid_from__returns_same_as_computed_from_grids_module(
-    sub_grid_2d_7x7
+    sub_grid_2d_7x7,
 ):
 
     pixelization = aa.mesh.VoronoiMagnification(shape=(3, 3))
@@ -104,7 +104,7 @@ def test__brightness__weight_map_from():
 
 
 def test__brightness__mesh_grid__matches_manual_comparison_to_grids_module(
-    sub_grid_2d_7x7
+    sub_grid_2d_7x7,
 ):
 
     pixelization = aa.mesh.VoronoiBrightnessImage(

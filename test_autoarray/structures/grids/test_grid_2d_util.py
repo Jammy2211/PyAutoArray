@@ -864,7 +864,7 @@ class TestGridRadialProjected:
         assert shape_slim == 4
 
     def test__grid_radial_projected_from_scaled_2d__vary_all_x_dimension_parameters(
-        self
+        self,
     ):
 
         grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(

@@ -26,14 +26,14 @@ class VectorYX2D(AbstractVectorYX2D):
         """
         A collection of (y,x) vectors which are located on a regular 2D grid of (y,x) coordinates.
 
-        The vectors are paired to a uniform 2D mask of pixels and sub-pixels. Each vector corresponds to a value at 
+        The vectors are paired to a uniform 2D mask of pixels and sub-pixels. Each vector corresponds to a value at
         the centre of a sub-pixel in an unmasked pixel.
 
         The `VectorYX2D` is ordered such that pixels begin from the top-row of the corresponding mask and go right
         and down. The positive y-axis is upwards and positive x-axis to the right.
 
-        The (y,x) vectors are stored as a NumPy array which has the `slim` and `native shapes described below. 
-        Irrespective of this shape, the last dimension of the data structure storing the vectors is always shape 2, 
+        The (y,x) vectors are stored as a NumPy array which has the `slim` and `native shapes described below.
+        Irrespective of this shape, the last dimension of the data structure storing the vectors is always shape 2,
         corresponding to the y and x vectors. [total_vectors, 2].
 
         Calculations should use the NumPy array structure wherever possible for efficient calculations.
@@ -44,7 +44,7 @@ class VectorYX2D(AbstractVectorYX2D):
         [[vector_0_y, vector_0_x], [vector_1_y, vector_1_x]]
         [(vector_0_y, vector_0_x), (vector_1_y, vector_1_x)]
 
-        If your vector field lies on a 2D irregular grid of data the `VectorFieldIrregular2D` data structure should be 
+        If your vector field lies on a 2D irregular grid of data the `VectorFieldIrregular2D` data structure should be
         used.
 
         Case 1: [sub-size=1, slim]:
@@ -92,7 +92,7 @@ class VectorYX2D(AbstractVectorYX2D):
         Case 2: [sub-size>1, slim]:
         ------------------
 
-        If the masks's sub size is > 1, the vector is defined as a sub-vector where each entry corresponds to the 
+        If the masks's sub size is > 1, the vector is defined as a sub-vector where each entry corresponds to the
         values at the centre of each sub-pixel of an unmasked pixel.
 
         The sub-vector indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first
@@ -202,7 +202,7 @@ class VectorYX2D(AbstractVectorYX2D):
             The regular grid of (y,x) coordinates where each vector is located.
         mask
             The 2D mask associated with the array, defining the pixels each array value is paired with and
-            originates from.            
+            originates from.
         """
 
         if len(vectors) == 0:
@@ -421,7 +421,7 @@ class VectorYX2D(AbstractVectorYX2D):
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "VectorYX2D":
         """
-        Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with 1.0, analogous to 
+        Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with 1.0, analogous to
         the method np.ones().
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
@@ -456,7 +456,7 @@ class VectorYX2D(AbstractVectorYX2D):
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "VectorYX2D":
         """
-        Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with 1.0, analogous to 
+        Create a `VectorYX2D` (see `AbstractVectorYX2D.__new__`) where all values are filled with 1.0, analogous to
         the method np.zeros().
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be

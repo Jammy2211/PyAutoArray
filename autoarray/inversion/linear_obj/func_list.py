@@ -100,10 +100,10 @@ class AbstractLinearObjFuncList(LinearObj):
         sub_size = self.grid.sub_size
         shape_slim = self.grid.mask.shape_slim
 
-        data_to_pix_unique = -1.0 * np.ones(shape=(shape_slim, sub_size ** 2)).astype(
+        data_to_pix_unique = -1.0 * np.ones(shape=(shape_slim, sub_size**2)).astype(
             "int"
         )
-        data_weights = np.zeros(shape=(shape_slim, sub_size ** 2))
+        data_weights = np.zeros(shape=(shape_slim, sub_size**2))
         pix_lengths = np.ones(shape=shape_slim).astype("int")
 
         data_to_pix_unique[:, 0] = 0

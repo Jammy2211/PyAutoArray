@@ -45,14 +45,18 @@ def test__regularization_matrix__matches_util():
 
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
 
-    regularization_weights = aa.util.regularization.adaptive_regularization_weights_from(
-        pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
+    regularization_weights = (
+        aa.util.regularization.adaptive_regularization_weights_from(
+            pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
+        )
     )
 
-    regularization_matrix_util = aa.util.regularization.weighted_regularization_matrix_from(
-        regularization_weights=regularization_weights,
-        neighbors=neighbors,
-        neighbors_sizes=neighbors_sizes,
+    regularization_matrix_util = (
+        aa.util.regularization.weighted_regularization_matrix_from(
+            regularization_weights=regularization_weights,
+            neighbors=neighbors,
+            neighbors_sizes=neighbors_sizes,
+        )
     )
 
     assert (regularization_matrix == regularization_matrix_util).all()

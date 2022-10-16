@@ -91,7 +91,7 @@ class FitInterferometerPlotterMeta(Plotter):
         """
         Plots the individual attributes of the plotter's `FitInterferometer` object in 1D and 2D.
 
-        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type 
+        The API is such that every plottable attribute of the `Interferometer` object is an input parameter of type
         bool of the function, which if switched to `True` means that it is plotted.
 
         Parameters
@@ -169,7 +169,7 @@ class FitInterferometerPlotterMeta(Plotter):
         if residual_map_real:
             self.mat_plot_1d.plot_yx(
                 y=np.real(self.fit.residual_map),
-                x=self.fit.interferometer.uv_distances / 10 ** 3.0,
+                x=self.fit.interferometer.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Residual Map vs UV-Distance (real)",
@@ -182,7 +182,7 @@ class FitInterferometerPlotterMeta(Plotter):
         if residual_map_imag:
             self.mat_plot_1d.plot_yx(
                 y=np.imag(self.fit.residual_map),
-                x=self.fit.interferometer.uv_distances / 10 ** 3.0,
+                x=self.fit.interferometer.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Residual Map vs UV-Distance (imag)",
@@ -197,7 +197,7 @@ class FitInterferometerPlotterMeta(Plotter):
 
             self.mat_plot_1d.plot_yx(
                 y=np.real(self.fit.residual_map),
-                x=self.fit.interferometer.uv_distances / 10 ** 3.0,
+                x=self.fit.interferometer.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map vs UV-Distance (real)",
@@ -210,7 +210,7 @@ class FitInterferometerPlotterMeta(Plotter):
         if normalized_residual_map_imag:
             self.mat_plot_1d.plot_yx(
                 y=np.imag(self.fit.residual_map),
-                x=self.fit.interferometer.uv_distances / 10 ** 3.0,
+                x=self.fit.interferometer.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Normalized Residual Map vs UV-Distance (imag)",
@@ -225,7 +225,7 @@ class FitInterferometerPlotterMeta(Plotter):
 
             self.mat_plot_1d.plot_yx(
                 y=np.real(self.fit.residual_map),
-                x=self.fit.interferometer.uv_distances / 10 ** 3.0,
+                x=self.fit.interferometer.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map vs UV-Distance (real)",
@@ -238,7 +238,7 @@ class FitInterferometerPlotterMeta(Plotter):
         if chi_squared_map_imag:
             self.mat_plot_1d.plot_yx(
                 y=np.imag(self.fit.residual_map),
-                x=self.fit.interferometer.uv_distances / 10 ** 3.0,
+                x=self.fit.interferometer.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Chi-Squared Map vs UV-Distance (imag)",

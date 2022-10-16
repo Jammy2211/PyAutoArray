@@ -75,7 +75,7 @@ def convert_grid_2d_to_slim(
     grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
 ) -> np.ndarray:
     """
-    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
+    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
 
     This function checks the dimensions of the input `grid_2d` and maps it to its `slim` representation.
 
@@ -99,7 +99,7 @@ def convert_grid_2d_to_native(
     grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
 ) -> np.ndarray:
     """
-    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D. 
+    he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
 
     This function checks the dimensions of the input `grid_2d` and maps it to its `native` representation.
 
@@ -1061,7 +1061,7 @@ def grid_2d_slim_upscaled_from(
     """
 
     grid_2d_slim_upscaled = np.zeros(
-        shape=(grid_slim.shape[0] * upscale_factor ** 2, 2)
+        shape=(grid_slim.shape[0] * upscale_factor**2, 2)
     )
 
     upscale_index = 0
@@ -1107,7 +1107,7 @@ def grid_2d_of_points_within_radius(
     for i in range(len(grid_2d[:, 0])):
         if (grid_2d[i, 0] - centre[0]) ** 2 + (
             grid_2d[i, 1] - centre[1]
-        ) ** 2 > radius ** 2:
+        ) ** 2 > radius**2:
             y_inside.append(grid_2d[i, 0])
             x_inside.append(grid_2d[i, 1])
 

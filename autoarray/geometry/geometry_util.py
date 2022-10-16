@@ -7,7 +7,7 @@ from autoarray import type as ty
 
 def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:
     """
-    Converts an input `shape_native` of type int to a tuple (int,). If the input is already a (int, ) tuple it 
+    Converts an input `shape_native` of type int to a tuple (int,). If the input is already a (int, ) tuple it
     is unchanged
 
     This enables users to input `shape_native` as a single value and have the type automatically converted to type
@@ -32,7 +32,7 @@ def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:
 
 def convert_pixel_scales_1d(pixel_scales: ty.PixelScales) -> Tuple[float]:
     """
-    Converts an input pixel-scale of type float to a tuple (float,). If the input is already a (float, ) it is 
+    Converts an input pixel-scale of type float to a tuple (float,). If the input is already a (float, ) it is
     unchanged
 
     This enables users to input the pixel scale as a single value and have the type automatically converted to type
@@ -57,7 +57,7 @@ def convert_pixel_scales_1d(pixel_scales: ty.PixelScales) -> Tuple[float]:
 
 @numba_util.jit()
 def central_pixel_coordinates_1d_from(
-    shape_slim: Tuple[int]
+    shape_slim: Tuple[int],
 ) -> Union[Tuple[float], Tuple[float]]:
     """
     Returns the central pixel coordinates of a data structure of any dimension (e.g. in 1D a `Line`, 1d an `Array2D`,
@@ -313,7 +313,7 @@ def transform_grid_2d_to_reference_frame(
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
     shifted_grid_2d = np.subtract(grid_2d, centre)
-    radius = np.sqrt(np.sum(shifted_grid_2d ** 2.0, 1))
+    radius = np.sqrt(np.sum(shifted_grid_2d**2.0, 1))
     theta_coordinate_to_profile = np.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
     ) - np.radians(angle)

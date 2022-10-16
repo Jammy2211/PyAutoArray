@@ -71,7 +71,9 @@ class TestAPI:
 
         assert (kernel.native == 2.0 * np.ones((3, 2))).all()
 
-    def test__from_fits__loads_and_stores_header_info(self,):
+    def test__from_fits__loads_and_stores_header_info(
+        self,
+    ):
         kernel = aa.Kernel2D.from_fits(
             file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0, pixel_scales=1.0
         )

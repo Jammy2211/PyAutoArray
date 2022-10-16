@@ -252,7 +252,11 @@ class Imaging(AbstractDataset):
 
         logger.info("IMAGING - Computing W-Tilde... May take a moment.")
 
-        curvature_preload, indexes, lengths = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
+        (
+            curvature_preload,
+            indexes,
+            lengths,
+        ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=self.noise_map.native,
             kernel_native=self.psf.native,
             native_index_for_slim_index=self.mask.native_index_for_slim_index,

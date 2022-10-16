@@ -24,7 +24,7 @@ class Array2DPlotter(Plotter):
         include_2d: Include2D = Include2D(),
     ):
         """
-        Plots `Array2D` objects using the matplotlib method `imshow()` and many other matplotlib functions which 
+        Plots `Array2D` objects using the matplotlib method `imshow()` and many other matplotlib functions which
         customize the plot's appearance.
 
         The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
@@ -75,7 +75,7 @@ class Grid2DPlotter(Plotter):
         include_2d: Include2D = Include2D(),
     ):
         """
-        Plots `Grid2D` objects using the matplotlib method `scatter()` and many other matplotlib functions which 
+        Plots `Grid2D` objects using the matplotlib method `scatter()` and many other matplotlib functions which
         customize the plot's appearance.
 
         The `mat_plot_2d` attribute wraps matplotlib function calls to make the figure. By default, the settings
@@ -133,7 +133,7 @@ class YX1DPlotter(Plotter):
         include_1d: Include1D = Include1D(),
     ):
         """
-        Plots two 1D objects using the matplotlib method `plot()` (or a similar method) and many other matplotlib 
+        Plots two 1D objects using the matplotlib method `plot()` (or a similar method) and many other matplotlib
         functions which customize the plot's appearance.
 
         The `mat_plot_1d` attribute wraps matplotlib function calls to make the figure. By default, the settings

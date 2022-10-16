@@ -410,7 +410,7 @@ class TestGrid2DToStructreList:
         assert ndarray_2d_list[1].in_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
 
     def test__grid_2d_iterate_in__output_is_list_of_arrays__use_maximum_sub_size_in_all_pixels(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(
@@ -441,7 +441,7 @@ class TestGrid2DToStructreList:
         assert (ndarray_1d_list[0] == values_sub_3.binned).all()
 
     def test__grid_2d_iterate_in__output_is_list_of_grids__use_maximum_sub_size_in_all_pixels(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(
@@ -641,7 +641,7 @@ class TestGrid2DToVectorYXList:
         assert ndarray_yx_2d_list[1].in_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
 
     def test__grid_2d_iterate_in__output_is_list_of_grids__use_maximum_sub_size_in_all_pixels(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(

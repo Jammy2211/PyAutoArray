@@ -231,8 +231,8 @@ class Interferometer(AbstractDataset):
         )
 
         dirty_image = self.transformer.image_from(
-            visibilities=self.visibilities.real * self.noise_map.real ** -2.0
-            + 1j * self.visibilities.imag * self.noise_map.imag ** -2.0,
+            visibilities=self.visibilities.real * self.noise_map.real**-2.0
+            + 1j * self.visibilities.imag * self.noise_map.imag**-2.0,
             use_adjoint_scaling=True,
         )
 

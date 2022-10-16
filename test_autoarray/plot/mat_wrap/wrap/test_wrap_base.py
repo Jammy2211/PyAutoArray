@@ -171,7 +171,9 @@ class TestCmap:
         assert norm.vmax == 1.0
         assert norm.linthresh == 2.0
 
-    def test__norm_from__uses_array_to_get_vmin_and_max_if_no_manual_input(self,):
+    def test__norm_from__uses_array_to_get_vmin_and_max_if_no_manual_input(
+        self,
+    ):
 
         array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
         array[0] = 0.0

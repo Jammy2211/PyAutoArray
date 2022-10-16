@@ -956,7 +956,7 @@ class TestGrid:
         assert grid.total_area == 108
 
     def test__grid_radial_projected_from__same_as_grid_util_but_also_includes_angle(
-        self
+        self,
     ):
 
         grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=(1.0, 2.0))
@@ -1142,8 +1142,8 @@ class TestGrid:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        sub_border_flat_indexes_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
-            mask_2d=mask, sub_size=2
+        sub_border_flat_indexes_util = (
+            aa.util.mask_2d.sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
         )
 
         grid = aa.Grid2D.from_mask(mask=mask)
@@ -1259,7 +1259,7 @@ class TestGrid:
         ).all()
 
     def test__grid_with_coordinates_within_distance_removed_from__multiple_coordinates(
-        self
+        self,
     ):
 
         grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)

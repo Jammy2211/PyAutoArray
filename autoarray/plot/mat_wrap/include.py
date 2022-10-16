@@ -53,7 +53,7 @@ class Include1D(AbstractInclude):
         """
         Sets which `Visuals1D` are included on a figure plotting 1D data that is plotted using a `Plotter1D`.
 
-        The `Include` object is used to extract the visuals of the plotted 1D data structures so they can be used in 
+        The `Include` object is used to extract the visuals of the plotted 1D data structures so they can be used in
         plot functions. Only visuals with a `True` entry in the `Include` object are extracted and plotted.
 
         If an entry is not input into the class (e.g. it retains its default entry of `None`) then the bool is
@@ -91,7 +91,7 @@ class Include2D(AbstractInclude):
         """
         Sets which `Visuals2D` are included on a figure plotting 2D data that is plotted using a `Plotter`.
 
-        The `Include` object is used to extract the visuals of the plotted 2D data structures so they can be used in 
+        The `Include` object is used to extract the visuals of the plotted 2D data structures so they can be used in
         plot functions. Only visuals with a `True` entry in the `Include` object are extracted and plotted.
 
         If an entry is not input into the class (e.g. it retains its default entry of `None`) then the bool is

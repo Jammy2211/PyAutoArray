@@ -1126,12 +1126,14 @@ class Grid2D(Structure):
             positive x-axis.
         """
 
-        grid_radial_projected_2d = grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
-            extent=self.extent,
-            centre=centre,
-            pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
-            shape_slim=shape_slim,
+        grid_radial_projected_2d = (
+            grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
+                extent=self.extent,
+                centre=centre,
+                pixel_scales=self.mask.pixel_scales,
+                sub_size=self.mask.sub_size,
+                shape_slim=shape_slim,
+            )
         )
 
         grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(

@@ -8,7 +8,7 @@ from autoarray import exc
 
 class TestRegion1D:
     def test__sanity_check__first_pixel_or_column_equal_too_or_bigger_than_second__raise_errors(
-        self
+        self,
     ):
 
         with pytest.raises(exc.RegionException):
@@ -90,7 +90,9 @@ class TestRegion1D:
 
         assert (arr_1d == np.array([1.0, 2.0, 0.0, 0.0])).all()
 
-    def test__front_edge_region_from__extracts_pixels_within_bottom_of_region(self,):
+    def test__front_edge_region_from__extracts_pixels_within_bottom_of_region(
+        self,
+    ):
 
         region = aa.Region1D(region=(0, 3))
 
@@ -137,7 +139,7 @@ class TestRegion1D:
 
 class TestRegion2D:
     def test__sanity_check__first_row_or_column_equal_too_or_bigger_than_second__raise_errors(
-        self
+        self,
     ):
         with pytest.raises(exc.RegionException):
             aa.Region2D(region=(2, 2, 1, 2))
@@ -242,7 +244,9 @@ class TestRegion2D:
             array == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 0.0], [1.0, 1.0, 0.0]])
         ).all()
 
-    def test__parallel_front_region_from(self,):
+    def test__parallel_front_region_from(
+        self,
+    ):
 
         region = aa.Region2D(region=(0, 3, 0, 3))
 
@@ -274,7 +278,9 @@ class TestRegion2D:
 
         assert trails == (4, 6, 0, 3)
 
-    def test__parallel_full_region_from(self,):
+    def test__parallel_full_region_from(
+        self,
+    ):
 
         region = aa.Region2D(region=(1, 3, 0, 5))
 

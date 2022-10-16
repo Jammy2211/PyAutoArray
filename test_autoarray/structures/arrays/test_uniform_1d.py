@@ -19,7 +19,9 @@ output_data_dir = path.join(
 )
 
 
-def create_fits(fits_path,):
+def create_fits(
+    fits_path,
+):
 
     if path.exists(fits_path):
         shutil.rmtree(fits_path)
@@ -109,7 +111,7 @@ class TestAPI:
         assert array_1d.origin == (4.0,)
 
     def test__ones_zeros__makes_array_1d_with_pixel_scale__filled_with_input_value(
-        self
+        self,
     ):
 
         array_1d = aa.Array1D.ones(

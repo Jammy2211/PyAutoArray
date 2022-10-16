@@ -133,10 +133,10 @@ class FitDataset(AbstractFit):
 
     # noinspection PyUnresolvedReferences
     def __init__(
-            self,
-            dataset,
-            use_mask_in_fit: bool = False,
-            profiling_dict: Optional[Dict] = None,
+        self,
+        dataset,
+        use_mask_in_fit: bool = False,
+        profiling_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 

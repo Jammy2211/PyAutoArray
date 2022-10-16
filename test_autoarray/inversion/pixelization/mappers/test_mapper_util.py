@@ -57,7 +57,11 @@ def _test__sub_slim_indexes_for_pix_index():
         ]
     )
 
-    sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index, sub_slim_weights_for_pix_index = aa.util.mapper.sub_slim_indexes_for_pix_index(
+    (
+        sub_slim_indexes_for_pix_index,
+        sub_slim_sizes_for_pix_index,
+        sub_slim_weights_for_pix_index,
+    ) = aa.util.mapper.sub_slim_indexes_for_pix_index(
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_pixels=pix_pixels,
@@ -354,7 +358,11 @@ def test__data_to_pix_unique_from():
         ]
     )
 
-    data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
+    (
+        data_to_pix_unique,
+        data_weights,
+        pix_lengths,
+    ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
         data_pixels=image_pixels,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
@@ -385,7 +393,11 @@ def test__data_to_pix_unique_from():
         ]
     )
 
-    data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
+    (
+        data_to_pix_unique,
+        data_weights,
+        pix_lengths,
+    ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
         data_pixels=image_pixels,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,

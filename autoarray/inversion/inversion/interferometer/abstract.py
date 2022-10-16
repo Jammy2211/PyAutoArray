@@ -85,7 +85,9 @@ class AbstractInversionInterferometer(AbstractInversion):
 
     @property
     @profile_func
-    def mapped_reconstructed_image_dict(self,) -> Dict[LinearObj, Array2D]:
+    def mapped_reconstructed_image_dict(
+        self,
+    ) -> Dict[LinearObj, Array2D]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
@@ -119,8 +121,11 @@ class AbstractInversionInterferometer(AbstractInversion):
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
-                mapping_matrix=linear_obj.mapping_matrix, reconstruction=reconstruction
+            mapped_reconstructed_image = (
+                inversion_util.mapped_reconstructed_data_via_mapping_matrix_from(
+                    mapping_matrix=linear_obj.mapping_matrix,
+                    reconstruction=reconstruction,
+                )
             )
 
             mapped_reconstructed_image = Array2D(

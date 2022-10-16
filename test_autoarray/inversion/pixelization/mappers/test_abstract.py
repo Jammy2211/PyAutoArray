@@ -70,9 +70,11 @@ def _test__sub_slim_indexes_for_pix_index():
         [0, 1, 2, 3, 4, 5, 6, 7],
     ]
 
-    sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index, sub_slim_weights_for_pix_index = (
-        mapper.sub_slim_indexes_for_pix_index_arr
-    )
+    (
+        sub_slim_indexes_for_pix_index,
+        sub_slim_sizes_for_pix_index,
+        sub_slim_weights_for_pix_index,
+    ) = mapper.sub_slim_indexes_for_pix_index_arr
 
     assert (
         sub_slim_indexes_for_pix_index

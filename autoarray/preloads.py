@@ -83,7 +83,11 @@ class Preloads:
 
             from autoarray.dataset.imaging import WTildeImaging
 
-            preload, indexes, lengths = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
+            (
+                preload,
+                indexes,
+                lengths,
+            ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
                 noise_map_native=fit_0.noise_map.native,
                 kernel_native=fit_0.dataset.psf.native,
                 native_index_for_slim_index=fit_0.dataset.mask.native_index_for_slim_index,

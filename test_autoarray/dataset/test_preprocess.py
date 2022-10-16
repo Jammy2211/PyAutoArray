@@ -155,7 +155,7 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     background_noise_map = aa.Array2D.full(
-        fill_value=3.0 ** 0.5, shape_native=(3, 3), pixel_scales=1.0
+        fill_value=3.0**0.5, shape_native=(3, 3), pixel_scales=1.0
     )
 
     noise_map = aa.preprocess.noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from(
@@ -262,8 +262,8 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     assert noise_map.native == pytest.approx(
         np.array(
             [
-                [np.sqrt(5.0 + 81.0), np.sqrt(6.0 + 18.0 ** 2.0) / 2.0],
-                [np.sqrt(30.0 + 27.0 ** 2.0) / 3.0, np.sqrt(80.0 + 36.0 ** 2.0) / 4.0],
+                [np.sqrt(5.0 + 81.0), np.sqrt(6.0 + 18.0**2.0) / 2.0],
+                [np.sqrt(30.0 + 27.0**2.0) / 3.0, np.sqrt(80.0 + 36.0**2.0) / 4.0],
             ]
         ),
         1e-2,
@@ -286,8 +286,8 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     assert noise_map.native == pytest.approx(
         np.array(
             [
-                [np.sqrt(5.0 + 5.0 ** 2.0), np.sqrt(6.0 + 12.0 ** 2.0) / 2.0],
-                [np.sqrt(30.0 + 21.0 ** 2.0) / 3.0, np.sqrt(80.0 + 32.0 ** 2.0) / 4.0],
+                [np.sqrt(5.0 + 5.0**2.0), np.sqrt(6.0 + 12.0**2.0) / 2.0],
+                [np.sqrt(30.0 + 21.0**2.0) / 3.0, np.sqrt(80.0 + 32.0**2.0) / 4.0],
             ]
         ),
         1e-2,
@@ -299,7 +299,7 @@ def test__noise_map_from_image_exposure_time_map_and_background_variances():
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     background_variances = aa.Array2D.full(
-        fill_value=3.0 ** 0.5, shape_native=(3, 3), pixel_scales=1.0
+        fill_value=3.0**0.5, shape_native=(3, 3), pixel_scales=1.0
     )
 
     noise_map = aa.preprocess.noise_map_via_data_eps_exposure_time_map_and_background_variances_from(
@@ -504,8 +504,10 @@ def test__exposure_time_map_from_exposure_time_and_inverse_noise_map():
     )
     background_noise_map[0] = 0.5
 
-    exposure_time_map = aa.preprocess.exposure_time_map_via_exposure_time_and_background_noise_map_from(
-        exposure_time=exposure_time, background_noise_map=background_noise_map
+    exposure_time_map = (
+        aa.preprocess.exposure_time_map_via_exposure_time_and_background_noise_map_from(
+            exposure_time=exposure_time, background_noise_map=background_noise_map
+        )
     )
 
     assert (

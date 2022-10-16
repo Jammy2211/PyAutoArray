@@ -19,15 +19,23 @@ def test__data_vector_via_transformed_mapping_matrix_from():
     data_real = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
     noise_map_real = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-    data_vector_real_via_blurred = aa.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
-        blurred_mapping_matrix=mapping_matrix, image=data_real, noise_map=noise_map_real
+    data_vector_real_via_blurred = (
+        aa.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
+            blurred_mapping_matrix=mapping_matrix,
+            image=data_real,
+            noise_map=noise_map_real,
+        )
     )
 
     data_imag = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
     noise_map_imag = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-    data_vector_imag_via_blurred = aa.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
-        blurred_mapping_matrix=mapping_matrix, image=data_imag, noise_map=noise_map_imag
+    data_vector_imag_via_blurred = (
+        aa.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
+            blurred_mapping_matrix=mapping_matrix,
+            image=data_imag,
+            noise_map=noise_map_imag,
+        )
     )
 
     data_vector_complex_via_blurred = (

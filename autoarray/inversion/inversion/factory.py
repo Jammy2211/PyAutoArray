@@ -106,8 +106,8 @@ def inversion_unpacked_from(
     profiling_dict: Optional[Dict] = None,
 ):
     """
-    Factory which given an input dataset and list of linear objects, creates an `Inversion`. 
-    
+    Factory which given an input dataset and list of linear objects, creates an `Inversion`.
+
     Unlike the `inversion_from` factory this function takes the `data`, `noise_map` and `w_tilde` objects as separate
     inputs, which facilitates certain computations where the `dataset` object is unpacked before the `Inversion` is
     performed (for example if the noise-map is scaled before the inversion to downweight certain regions of the

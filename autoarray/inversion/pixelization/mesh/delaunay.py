@@ -133,7 +133,7 @@ class DelaunayMagnification(Delaunay):
         this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
         The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
         the `image-plane` and `source` frame the `source-plane`.
-        
+
         Parameters
         ----------
         shape
@@ -209,9 +209,9 @@ class DelaunayBrightnessImage(Delaunay):
         uses weighted interpolation whereby `source_grid_slim` coordinates are associated to the Delaunay corners with
         a higher weight if they are a closer distance to one another.
 
-        For the `DelaunayBrightnessImage` pixelization the corners of the Delaunay trinagles are derived in 
-        the `data` frame, by applying a KMeans clustering algorithm to the masked data's values. These values are use 
-        compute `pixels` number of pixels, where the `weight_floor` and `weight_power` allow the KMeans algorithm to 
+        For the `DelaunayBrightnessImage` pixelization the corners of the Delaunay trinagles are derived in
+        the `data` frame, by applying a KMeans clustering algorithm to the masked data's values. These values are use
+        compute `pixels` number of pixels, where the `weight_floor` and `weight_power` allow the KMeans algorithm to
         adapt the derived pixel centre locations to the data's brighest or faintest values.
 
         In the project `PyAutoLens`, one's data is a masked 2D image. Its `data_grid_slim` is a 2D grid where every
@@ -219,7 +219,7 @@ class DelaunayBrightnessImage(Delaunay):
         this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
         The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
         the `image-plane` and `source` frame the `source-plane`.
-        
+
         Parameters
         ----------
         pixels

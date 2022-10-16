@@ -83,7 +83,7 @@ def noise_normalization_from(*, noise_map: Structure) -> float:
     noise_map
         The masked noise-map of the dataset.
     """
-    return float(np.sum(np.log(2 * np.pi * noise_map ** 2.0)))
+    return float(np.sum(np.log(2 * np.pi * noise_map**2.0)))
 
 
 def normalized_residual_map_complex_from(
@@ -168,8 +168,8 @@ def noise_normalization_complex_from(*, noise_map: Structure) -> float:
     noise_map
         The masked noise-map of the dataset.
     """
-    noise_normalization_real = float(np.sum(np.log(2 * np.pi * noise_map.real ** 2.0)))
-    noise_normalization_imag = float(np.sum(np.log(2 * np.pi * noise_map.imag ** 2.0)))
+    noise_normalization_real = float(np.sum(np.log(2 * np.pi * noise_map.real**2.0)))
+    noise_normalization_imag = float(np.sum(np.log(2 * np.pi * noise_map.imag**2.0)))
     return noise_normalization_real + noise_normalization_imag
 
 

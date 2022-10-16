@@ -107,16 +107,16 @@ class GridScatter(AbstractMatWrap2D):
 
     def scatter_grid_list(self, grid_list: Union[List[Grid2D], List[Grid2DIrregular]]):
         """
-         Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.scatter`.
+        Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
-         This method colors each grid in each entry of the list the same, so that the different grids are visible in
-         the plot.
+        This method colors each grid in each entry of the list the same, so that the different grids are visible in
+        the plot.
 
-         Parameters
-         ----------
-         grid_list
-             The list of grids of (y,x) coordinates that are plotted.
-         """
+        Parameters
+        ----------
+        grid_list
+            The list of grids of (y,x) coordinates that are plotted.
+        """
         if len(grid_list) == 0:
             return
 
@@ -304,7 +304,7 @@ class GridPlot(AbstractMatWrap2D):
          ----------
          grid_list : Grid2DIrregular
              The list of grids of (y,x) coordinates that are plotted.
-         """
+        """
 
         if len(grid_list) == 0:
             return None
@@ -388,7 +388,7 @@ class GridErrorbar(AbstractMatWrap2D):
         ----------
         grid_list
             The list of grids of (y,x) coordinates that are plotted.
-         """
+        """
         if len(grid_list) == 0:
             return
 
@@ -460,14 +460,14 @@ class VectorYXQuiver(AbstractMatWrap2D):
 
     def quiver_vectors(self, vectors: VectorYX2DIrregular):
         """
-         Plot a vector field using the matplotlib method `plt.quiver` such that each vector appears as an arrow whose
-         direction depends on the y and x magnitudes of the vector.
+        Plot a vector field using the matplotlib method `plt.quiver` such that each vector appears as an arrow whose
+        direction depends on the y and x magnitudes of the vector.
 
-         Parameters
-         ----------
-         vectors : VectorYX2DIrregular
-             The vector field that is plotted using `plt.quiver`.
-         """
+        Parameters
+        ----------
+        vectors : VectorYX2DIrregular
+            The vector field that is plotted using `plt.quiver`.
+        """
         plt.quiver(
             vectors.grid[:, 1],
             vectors.grid[:, 0],
@@ -526,7 +526,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         """
         Draws the Voronoi pixels of the input `mapper` using its `mesh_grid` which contains the (y,x)
         coordinate of the centre of every Voronoi cell. This uses the method `plt.fill`.
-        
+
         Parameters
         ----------
         mapper
@@ -617,7 +617,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         This object wraps methods described in below:
 
         - plt.imshow: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
-        
+
         Parameters
         ----------
         mapper

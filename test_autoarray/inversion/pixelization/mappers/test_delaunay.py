@@ -22,7 +22,10 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     )
     pix_indexes_for_simplex_index = mapper.delaunay.simplices
 
-    pix_indexes_for_sub_slim_index_util, sizes = aa.util.mapper.pix_indexes_for_sub_slim_index_delaunay_from(
+    (
+        pix_indexes_for_sub_slim_index_util,
+        sizes,
+    ) = aa.util.mapper.pix_indexes_for_sub_slim_index_delaunay_from(
         source_grid_slim=mapper.source_grid_slim,
         simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
         pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,

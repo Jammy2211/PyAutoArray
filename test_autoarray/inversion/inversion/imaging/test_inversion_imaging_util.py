@@ -86,7 +86,11 @@ def test__w_tilde_curvature_preload_imaging_from():
 
     native_index_for_slim_index = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
 
-    w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
+    (
+        w_tilde_preload,
+        w_tilde_indexes,
+        w_tilde_lengths,
+    ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
         noise_map_native=noise_map_2d,
         kernel_native=kernel,
         native_index_for_slim_index=native_index_for_slim_index,
@@ -206,10 +210,12 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             mapping_matrix=mapping_matrix
         )
 
-        data_vector = aa.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix,
-            image=image,
-            noise_map=noise_map,
+        data_vector = (
+            aa.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
+                blurred_mapping_matrix=blurred_mapping_matrix,
+                image=image,
+                noise_map=noise_map,
+            )
         )
 
         w_tilde_data = aa.util.inversion_imaging.w_tilde_data_imaging_from(
@@ -219,7 +225,11 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             native_index_for_slim_index=mask.native_index_for_slim_index,
         )
 
-        data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
+        (
+            data_to_pix_unique,
+            data_weights,
+            pix_lengths,
+        ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=w_tilde_data.shape[0],
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
@@ -227,12 +237,14 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             sub_size=sub_size,
         )
 
-        data_vector_via_w_tilde = aa.util.inversion_imaging.data_vector_via_w_tilde_data_imaging_from(
-            w_tilde_data=w_tilde_data,
-            data_to_pix_unique=data_to_pix_unique.astype("int"),
-            data_weights=data_weights,
-            pix_lengths=pix_lengths.astype("int"),
-            pix_pixels=pixelization.pixels,
+        data_vector_via_w_tilde = (
+            aa.util.inversion_imaging.data_vector_via_w_tilde_data_imaging_from(
+                w_tilde_data=w_tilde_data,
+                data_to_pix_unique=data_to_pix_unique.astype("int"),
+                data_weights=data_weights,
+                pix_lengths=pix_lengths.astype("int"),
+                pix_pixels=pixelization.pixels,
+            )
         )
 
         # print(data_vector_via_w_tilde)
@@ -315,13 +327,21 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
 
         mapping_matrix = mapper.mapping_matrix
 
-        w_tilde_preload, w_tilde_indexes, w_tilde_lengths = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
+        (
+            w_tilde_preload,
+            w_tilde_indexes,
+            w_tilde_lengths,
+        ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
             noise_map_native=noise_map.native,
             kernel_native=kernel.native,
             native_index_for_slim_index=mask.native_index_for_slim_index,
         )
 
-        data_to_pix_unique, data_weights, pix_lengths = aa.util.mapper.data_slim_to_pixelization_unique_from(
+        (
+            data_to_pix_unique,
+            data_weights,
+            pix_lengths,
+        ) = aa.util.mapper.data_slim_to_pixelization_unique_from(
             data_pixels=w_tilde_lengths.shape[0],
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,

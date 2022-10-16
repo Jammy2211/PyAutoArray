@@ -29,8 +29,10 @@ def test__regularization_matrix__matches_util():
     reg = aa.reg.Constant(coefficient=2.0)
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
 
-    regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from(
-        coefficient=2.0, neighbors=neighbors, neighbors_sizes=neighbors_sizes
+    regularization_matrix_util = (
+        aa.util.regularization.constant_regularization_matrix_from(
+            coefficient=2.0, neighbors=neighbors, neighbors_sizes=neighbors_sizes
+        )
     )
 
     assert reg.coefficient == 2.0

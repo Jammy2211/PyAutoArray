@@ -19,12 +19,14 @@ class Mask1D(Mask):
         mask: np.ndarray,
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
-        origin: Tuple[float,] = (0.0,),
+        origin: Tuple[
+            float,
+        ] = (0.0,),
     ):
         """
         A 1D mask, representing 1D data on a uniform line of pixels with equal spacing.
 
-        When applied to 1D data it extracts or masks the unmasked image pixels corresponding to mask entries that 
+        When applied to 1D data it extracts or masks the unmasked image pixels corresponding to mask entries that
         are `False` or 0).
 
         The mask also defines the geometry of the 1D data structure it is paired to, for example how every pixel

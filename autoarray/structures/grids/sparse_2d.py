@@ -92,12 +92,12 @@ class Grid2DSparse(Structure):
             origin=origin,
         )
 
-        unmasked_sparse_grid_pixel_centres = grid_2d_util.grid_pixel_centres_2d_slim_from(
-            grid_scaled_2d_slim=unmasked_sparse_grid_1d,
-            shape_native=grid.mask.shape,
-            pixel_scales=grid.mask.pixel_scales,
-        ).astype(
-            "int"
+        unmasked_sparse_grid_pixel_centres = (
+            grid_2d_util.grid_pixel_centres_2d_slim_from(
+                grid_scaled_2d_slim=unmasked_sparse_grid_1d,
+                shape_native=grid.mask.shape,
+                pixel_scales=grid.mask.pixel_scales,
+            ).astype("int")
         )
 
         total_sparse_pixels = mask_2d_util.total_sparse_pixels_2d_from(
@@ -124,11 +124,11 @@ class Grid2DSparse(Structure):
             origin=origin,
         ).astype("int")
 
-        sparse_index_for_slim_index = sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-        ).astype(
-            "int"
+        sparse_index_for_slim_index = (
+            sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            ).astype("int")
         )
 
         sparse_grid = sparse_2d_util.sparse_grid_via_unmasked_from(
@@ -181,7 +181,7 @@ class Grid2DSparse(Structure):
         warnings.filterwarnings("ignore")
 
         if stochastic:
-            seed = np.random.randint(low=1, high=2 ** 31)
+            seed = np.random.randint(low=1, high=2**31)
 
         if total_pixels > grid.shape[0]:
             raise exc.GridException

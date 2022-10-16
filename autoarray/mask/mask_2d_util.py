@@ -105,7 +105,7 @@ def total_sub_pixels_2d_from(mask_2d: np.ndarray, sub_size: int) -> int:
 
     total_sub_pixels = total_sub_pixels_from(mask=mask, sub_size=2)
     """
-    return total_pixels_2d_from(mask_2d) * sub_size ** 2
+    return total_pixels_2d_from(mask_2d) * sub_size**2
 
 
 @numba_util.jit()
@@ -185,7 +185,7 @@ def mask_2d_circular_from(
             y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-            r_scaled = np.sqrt(x_scaled ** 2 + y_scaled ** 2)
+            r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
 
             if r_scaled <= radius:
                 mask_2d[y, x] = False
@@ -242,7 +242,7 @@ def mask_2d_circular_annular_from(
             y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-            r_scaled = np.sqrt(x_scaled ** 2 + y_scaled ** 2)
+            r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
 
             if outer_radius >= r_scaled >= inner_radius:
                 mask_2d[y, x] = False
@@ -305,7 +305,7 @@ def mask_2d_circular_anti_annular_from(
             y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-            r_scaled = np.sqrt(x_scaled ** 2 + y_scaled ** 2)
+            r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
 
             if (
                 inner_radius >= r_scaled
@@ -375,7 +375,7 @@ def elliptical_radius_from(
     float
         The radius of the input scaled (y,x) coordinate on the ellipse's ellipitcal coordinate system.
     """
-    r_scaled = np.sqrt(x_scaled ** 2 + y_scaled ** 2)
+    r_scaled = np.sqrt(x_scaled**2 + y_scaled**2)
 
     theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(angle)
 
@@ -383,7 +383,7 @@ def elliptical_radius_from(
     x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
 
     return np.sqrt(
-        x_scaled_elliptical ** 2.0 + (y_scaled_elliptical / axis_ratio) ** 2.0
+        x_scaled_elliptical**2.0 + (y_scaled_elliptical / axis_ratio) ** 2.0
     )
 
 
@@ -604,11 +604,11 @@ def mask_2d_via_shape_native_and_native_for_slim(
     shape_native: Tuple[int, int], native_for_slim: np.ndarray
 ) -> np.ndarray:
     """
-    For a slimmed set of data that was computed by mapping unmasked values from a native 2D array of shape 
-    (total_y_pixels, total_x_pixels), map its slimmed indexes back to the original 2D array to create the 
+    For a slimmed set of data that was computed by mapping unmasked values from a native 2D array of shape
+    (total_y_pixels, total_x_pixels), map its slimmed indexes back to the original 2D array to create the
     native 2D mask.
 
-    This uses an array 'native_for_slim' of shape [total_masked_pixels[ where each index gives the native 2D pixel 
+    This uses an array 'native_for_slim' of shape [total_masked_pixels[ where each index gives the native 2D pixel
     indexes of the slimmed array's unmasked pixels, for example:
 
     - If native_for_slim[0] = [0,0], the first value of the slimmed array maps to the pixel [0,0] of the native 2D array.

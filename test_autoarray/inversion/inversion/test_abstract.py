@@ -264,7 +264,10 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
 
     operated_mapping_matrix = 2.0 * np.ones((9, 3))
 
-    curvature_matrix_preload, curvature_matrix_counts = aa.util.inversion.curvature_matrix_preload_from(
+    (
+        curvature_matrix_preload,
+        curvature_matrix_counts,
+    ) = aa.util.inversion.curvature_matrix_preload_from(
         mapping_matrix=operated_mapping_matrix
     )
 

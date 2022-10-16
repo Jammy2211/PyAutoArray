@@ -142,17 +142,17 @@ class LinearObj:
     @property
     def regularization_matrix(self) -> np.ndarray:
         """
-         The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
-         linear algebra system we solve for using D and F above and is given by
-         equation (12) in https://arxiv.org/pdf/astro-ph/0302587.pdf.
+        The regularization matrix H is used to impose smoothness on our inversion's reconstruction. This enters the
+        linear algebra system we solve for using D and F above and is given by
+        equation (12) in https://arxiv.org/pdf/astro-ph/0302587.pdf.
 
-         A complete description of regularization is given in the `regularization.py` and `regularization_util.py`
-         modules.
+        A complete description of regularization is given in the `regularization.py` and `regularization_util.py`
+        modules.
 
-         For multiple mappers, the regularization matrix is computed as the block diagonal of each individual mapper.
-         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
-         regularization it is bypassed.
-         """
+        For multiple mappers, the regularization matrix is computed as the block diagonal of each individual mapper.
+        The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
+        regularization it is bypassed.
+        """
         if self.regularization is None:
 
             return np.zeros((self.parameters, self.parameters))

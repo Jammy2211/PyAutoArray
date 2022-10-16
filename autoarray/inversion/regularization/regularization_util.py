@@ -9,7 +9,7 @@ from autoarray import numba_util
 def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> np.ndarray:
     """
     Apply zeroth order regularization which penalizes every pixel's deviation from zero by addiing non-zero terms
-    to the regularization matrix. 
+    to the regularization matrix.
 
     A complete description of regularization and the `regularization_matrix` can be found in the `Regularization`
     class in the module `autoarray.inversion.regularization`.
@@ -30,7 +30,7 @@ def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> np.nda
 
     regularization_matrix = np.zeros(shape=(pixels, pixels))
 
-    regularization_coefficient = coefficient ** 2.0
+    regularization_coefficient = coefficient**2.0
 
     for i in range(pixels):
         regularization_matrix[i, i] += regularization_coefficient
@@ -70,7 +70,7 @@ def constant_regularization_matrix_from(
 
     regularization_matrix = np.zeros(shape=(parameters, parameters))
 
-    regularization_coefficient = coefficient ** 2.0
+    regularization_coefficient = coefficient**2.0
 
     for i in range(parameters):
         regularization_matrix[i, i] += 1e-8
@@ -102,7 +102,7 @@ def adaptive_regularization_weights_from(
         in the inner regions of a mesh's reconstruction.
     outer_coefficient
         The outer regularization coefficients which controls the degree of smoothing of the inversion reconstruction
-        in the outer regions of a mesh's reconstruction.        
+        in the outer regions of a mesh's reconstruction.
     pixel_signals
         The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal
         and low signal pixelizations.
@@ -149,7 +149,7 @@ def weighted_regularization_matrix_from(
 
     regularization_matrix = np.zeros(shape=(parameters, parameters))
 
-    regularization_weight = regularization_weights ** 2.0
+    regularization_weight = regularization_weights**2.0
 
     for i in range(parameters):
         regularization_matrix[i, i] += 1e-8
@@ -250,7 +250,7 @@ def pixel_splitted_regularization_matrix_from(
 
     regularization_matrix = np.zeros(shape=(parameters, parameters))
 
-    regularization_weight = regularization_weights ** 2.0
+    regularization_weight = regularization_weights**2.0
 
     for i in range(parameters):
 

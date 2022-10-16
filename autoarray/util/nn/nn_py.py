@@ -105,7 +105,6 @@ try:
 
         return z_target
 
-
 except OSError:
     print("natural neighbour interpolation not loaded.")
     pass

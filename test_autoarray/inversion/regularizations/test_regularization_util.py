@@ -169,7 +169,7 @@ def test__adaptive_regularization_weights_from():
         inner_coefficient=1.0, outer_coefficient=0.0, pixel_signals=pixel_signals
     )
 
-    assert (weight_list == np.array([0.25 ** 2.0, 0.5 ** 2.0, 0.75 ** 2.0])).all()
+    assert (weight_list == np.array([0.25**2.0, 0.5**2.0, 0.75**2.0])).all()
 
     pixel_signals = np.array([0.25, 0.5, 0.75])
 
@@ -177,7 +177,7 @@ def test__adaptive_regularization_weights_from():
         inner_coefficient=0.0, outer_coefficient=1.0, pixel_signals=pixel_signals
     )
 
-    assert (weight_list == np.array([0.75 ** 2.0, 0.5 ** 2.0, 0.25 ** 2.0])).all()
+    assert (weight_list == np.array([0.75**2.0, 0.5**2.0, 0.25**2.0])).all()
 
 
 def test__weighted_regularization_matrix_from():
@@ -536,11 +536,13 @@ def test__constant_pixel_splitted_regularization_matrix():
 
     pixels = int(len(splitted_mappings) / 4)
 
-    regularization_matrix = aa.util.regularization.pixel_splitted_regularization_matrix_from(
-        regularization_weights=np.full(fill_value=1.0, shape=(pixels,)),
-        splitted_mappings=splitted_mappings,
-        splitted_sizes=splitted_sizes,
-        splitted_weights=splitted_weights,
+    regularization_matrix = (
+        aa.util.regularization.pixel_splitted_regularization_matrix_from(
+            regularization_weights=np.full(fill_value=1.0, shape=(pixels,)),
+            splitted_mappings=splitted_mappings,
+            splitted_sizes=splitted_sizes,
+            splitted_weights=splitted_weights,
+        )
     )
 
     assert pytest.approx(regularization_matrix[0], 1e-4) == np.array(
@@ -549,11 +551,13 @@ def test__constant_pixel_splitted_regularization_matrix():
 
     regularization_weights = np.array([2.0, 4.0, 2.0, 2.0, 2.0])
 
-    regularization_matrix = aa.util.regularization.pixel_splitted_regularization_matrix_from(
-        regularization_weights=regularization_weights,
-        splitted_mappings=splitted_mappings,
-        splitted_sizes=splitted_sizes,
-        splitted_weights=splitted_weights,
+    regularization_matrix = (
+        aa.util.regularization.pixel_splitted_regularization_matrix_from(
+            regularization_weights=regularization_weights,
+            splitted_mappings=splitted_mappings,
+            splitted_sizes=splitted_sizes,
+            splitted_weights=splitted_weights,
+        )
     )
 
     assert pytest.approx(regularization_matrix[0], 1e-4) == np.array(

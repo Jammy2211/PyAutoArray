@@ -128,7 +128,9 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
     @property
     @profile_func
-    def mapped_reconstructed_data_dict(self,) -> Dict[LinearObj, Visibilities]:
+    def mapped_reconstructed_data_dict(
+        self,
+    ) -> Dict[LinearObj, Visibilities]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which
@@ -164,9 +166,11 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            visibilities = inversion_interferometer_util.mapped_reconstructed_visibilities_from(
-                transformed_mapping_matrix=operated_mapping_matrix_list[index],
-                reconstruction=reconstruction,
+            visibilities = (
+                inversion_interferometer_util.mapped_reconstructed_visibilities_from(
+                    transformed_mapping_matrix=operated_mapping_matrix_list[index],
+                    reconstruction=reconstruction,
+                )
             )
 
             visibilities = Visibilities(visibilities=visibilities)

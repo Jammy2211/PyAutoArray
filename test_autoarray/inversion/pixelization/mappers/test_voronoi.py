@@ -54,7 +54,11 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     try:
         mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
-        pix_indexes_for_sub_slim_index_util, sizes, weights = aa.util.mapper.pix_size_weights_voronoi_nn_from(
+        (
+            pix_indexes_for_sub_slim_index_util,
+            sizes,
+            weights,
+        ) = aa.util.mapper.pix_size_weights_voronoi_nn_from(
             grid=grid_2d_7x7, mesh_grid=source_mesh_grid
         )
 

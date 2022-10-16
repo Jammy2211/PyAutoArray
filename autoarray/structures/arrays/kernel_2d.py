@@ -339,7 +339,7 @@ class Kernel2D(AbstractArray2D):
 
         grid = Grid2D.uniform(shape_native=shape_native, pixel_scales=pixel_scales)
         grid_shifted = np.subtract(grid, centre)
-        grid_radius = np.sqrt(np.sum(grid_shifted ** 2.0, 1))
+        grid_radius = np.sqrt(np.sum(grid_shifted**2.0, 1))
         theta_coordinate_to_profile = np.arctan2(
             grid_shifted[:, 0], grid_shifted[:, 1]
         ) - np.radians(angle)

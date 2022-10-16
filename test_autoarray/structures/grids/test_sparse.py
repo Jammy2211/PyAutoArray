@@ -27,12 +27,12 @@ def test__unmasked_2d__properties_consistent_with_util():
         shape_native=(10, 10), pixel_scales=(0.15, 0.15), sub_size=1, origin=(0.0, 0.0)
     )
 
-    unmasked_sparse_grid_pixel_centres = aa.util.grid_2d.grid_pixel_centres_2d_slim_from(
-        grid_scaled_2d_slim=unmasked_sparse_grid_util,
-        shape_native=grid.mask.shape,
-        pixel_scales=grid.pixel_scales,
-    ).astype(
-        "int"
+    unmasked_sparse_grid_pixel_centres = (
+        aa.util.grid_2d.grid_pixel_centres_2d_slim_from(
+            grid_scaled_2d_slim=unmasked_sparse_grid_util,
+            shape_native=grid.mask.shape,
+            pixel_scales=grid.pixel_scales,
+        ).astype("int")
     )
 
     total_sparse_pixels = aa.util.mask_2d.total_sparse_pixels_2d_from(
@@ -40,13 +40,13 @@ def test__unmasked_2d__properties_consistent_with_util():
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
-    regular_to_unmasked_sparse_2d_util = aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
-        grid_scaled_2d_slim=grid,
-        shape_native=(10, 10),
-        pixel_scales=(0.15, 0.15),
-        origin=(0.0, 0.0),
-    ).astype(
-        "int"
+    regular_to_unmasked_sparse_2d_util = (
+        aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=grid,
+            shape_native=(10, 10),
+            pixel_scales=(0.15, 0.15),
+            origin=(0.0, 0.0),
+        ).astype("int")
     )
 
     unmasked_sparse_for_sparse_2d_util = aa.util.sparse.unmasked_sparse_for_sparse_from(
@@ -61,9 +61,11 @@ def test__unmasked_2d__properties_consistent_with_util():
         total_sparse_pixels=total_sparse_pixels,
     ).astype("int")
 
-    sparse_index_for_slim_index_util = aa.util.sparse.sparse_slim_index_for_mask_slim_index_from(
-        regular_to_unmasked_sparse=regular_to_unmasked_sparse_2d_util,
-        sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_2d_util,
+    sparse_index_for_slim_index_util = (
+        aa.util.sparse.sparse_slim_index_for_mask_slim_index_from(
+            regular_to_unmasked_sparse=regular_to_unmasked_sparse_2d_util,
+            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_2d_util,
+        )
     )
 
     sparse_grid_util = aa.util.sparse.sparse_grid_via_unmasked_from(
@@ -196,7 +198,7 @@ def test__unmasked_2d__mask_with_offset_centre__origin_of_sparse_grid_moves_to_g
 
 
 def test__unmasked_2d__from_grid_and_unmasked_shape__sets_up_with_correct_shape_and_pixel_scales(
-    mask_2d_7x7
+    mask_2d_7x7,
 ):
 
     mask = aa.Mask2D.manual(

@@ -278,11 +278,13 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
-                data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
-                data_weights=linear_obj.unique_mappings.data_weights,
-                pix_lengths=linear_obj.unique_mappings.pix_lengths,
-                reconstruction=reconstruction,
+            mapped_reconstructed_image = (
+                inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
+                    data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
+                    data_weights=linear_obj.unique_mappings.data_weights,
+                    pix_lengths=linear_obj.unique_mappings.pix_lengths,
+                    reconstruction=reconstruction,
+                )
             )
 
             mapped_reconstructed_image = Array2D(

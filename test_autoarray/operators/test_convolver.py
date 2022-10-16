@@ -892,7 +892,7 @@ def test__blurring_frame_kernels__blurring_region_3x3_kernel(cross_mask):
 
 
 def test__frame_lengths__frames_are_from_examples_above__lengths_are_right(
-    simple_mask_2d_7x7
+    simple_mask_2d_7x7,
 ):
 
     convolver = aa.Convolver(

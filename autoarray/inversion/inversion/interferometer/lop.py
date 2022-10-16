@@ -66,7 +66,9 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
 
     @property
     @profile_func
-    def mapped_reconstructed_data_dict(self,) -> Dict[LinearObj, Visibilities]:
+    def mapped_reconstructed_data_dict(
+        self,
+    ) -> Dict[LinearObj, Visibilities]:
         """
         When constructing the simultaneous linear equations (via vectors and matrices) the quantities of each individual
         linear object (e.g. their `mapping_matrix`) are combined into single ndarrays. This does not track which

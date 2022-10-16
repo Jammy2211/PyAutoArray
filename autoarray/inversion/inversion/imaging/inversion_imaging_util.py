@@ -55,7 +55,7 @@ def w_tilde_data_imaging_from(
 
     w_tilde_data = np.zeros((image_pixels,))
 
-    weight_map_native = image_native / noise_map_native ** 2.0
+    weight_map_native = image_native / noise_map_native**2.0
 
     for ip0 in range(image_pixels):
 
