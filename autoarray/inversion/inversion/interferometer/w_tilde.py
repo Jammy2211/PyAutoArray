@@ -133,20 +133,30 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
 
         from autoarray.inversion.inversion import inversion_util_secret
 
-        return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
+        mapper = self.cls_list_from(cls=AbstractMapper)[0]
+
+        if not self.settings.use_source_loop:
+
+            return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
+                curvature_preload=self.w_tilde.curvature_preload,
+                pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
+                pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
+                pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+                native_index_for_slim_index=self.transformer.real_space_mask.native_index_for_slim_index,
+                pix_pixels=self.linear_obj_list[0].pixels,
+            )
+
+        sub_slim_indexes_for_pix_index, sub_slim_sizes_for_pix_index, sub_slim_weights_for_pix_index = mapper.sub_slim_indexes_for_pix_index_arr
+
+        return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
             curvature_preload=self.w_tilde.curvature_preload,
-            pix_indexes_for_sub_slim_index=self.cls_list_from(cls=AbstractMapper)[
-                0
-            ].pix_indexes_for_sub_slim_index,
-            pix_size_for_sub_slim_index=self.cls_list_from(cls=AbstractMapper)[
-                0
-            ].pix_sizes_for_sub_slim_index,
-            pix_weights_for_sub_slim_index=self.cls_list_from(cls=AbstractMapper)[
-                0
-            ].pix_weights_for_sub_slim_index,
             native_index_for_slim_index=self.transformer.real_space_mask.native_index_for_slim_index,
             pix_pixels=self.linear_obj_list[0].pixels,
+            sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index.astype("int"),
+            sub_slim_sizes_for_pix_index=sub_slim_sizes_for_pix_index.astype("int"),
+            sub_slim_weights_for_pix_index=sub_slim_weights_for_pix_index
         )
+
 
     @property
     @profile_func
