@@ -15,7 +15,7 @@ class SettingsInversion:
         check_solution: bool = True,
         use_curvature_matrix_preload: bool = True,
         use_w_tilde_numpy: bool = False,
-        use_source_loop : bool = False,
+        use_source_loop: bool = False,
     ):
 
         self.use_w_tilde = use_w_tilde

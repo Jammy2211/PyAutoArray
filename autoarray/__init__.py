@@ -17,8 +17,6 @@ from .dataset.interferometer import WTildeInterferometer
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
-from .instruments import acs
-from .instruments import euclid
 from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization import mesh
 from .inversion import regularization as reg
