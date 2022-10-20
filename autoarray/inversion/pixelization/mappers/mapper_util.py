@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Tuple
 
+from autoconf import conf
+
 from autoarray import numba_util
 from autoarray import exc
 from autoarray.inversion.pixelization.mesh import mesh_util
@@ -377,7 +379,7 @@ def pix_size_weights_voronoi_nn_from(
             "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
         ) from e
 
-    max_nneighbours = 100
+    max_nneighbours = conf["general"]["pixelization"]["voronoi_nn_max_interpolation_neighbors"]
 
     (
         pix_weights_for_sub_slim_index,
