@@ -422,6 +422,12 @@ def pix_size_weights_voronoi_nn_from(
         pix_indexes_for_sub_slim_index != -1, axis=1
     )
 
+
+    if np.max(pix_indexes_for_sub_slim_index_sizes) > max_nneighbours:
+        raise exc.MeshException(
+            "the number of Voronoi natural neighbours exceeds 100."
+        )
+
     return (
         pix_indexes_for_sub_slim_index,
         pix_indexes_for_sub_slim_index_sizes,
