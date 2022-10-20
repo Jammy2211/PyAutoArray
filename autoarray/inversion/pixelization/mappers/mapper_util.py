@@ -422,10 +422,15 @@ def pix_size_weights_voronoi_nn_from(
         pix_indexes_for_sub_slim_index != -1, axis=1
     )
 
-
     if np.max(pix_indexes_for_sub_slim_index_sizes) > max_nneighbours:
         raise exc.MeshException(
-            "the number of Voronoi natural neighbours exceeds 100."
+            f"""
+            The number of Voronoi natural neighbours interpolations in one or more pixelization pixel's 
+            exceeds the maximum allowed: max_nneighbors = {max_nneighbours}.
+
+            To fix this, increase the value of `voronoi_nn_max_interpolation_neighbors` in the [pixelization]
+            section of the `general.ini` config file.
+            """
         )
 
     return (
