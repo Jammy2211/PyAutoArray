@@ -379,7 +379,7 @@ def pix_size_weights_voronoi_nn_from(
             "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"
         ) from e
 
-    max_nneighbours = conf["general"]["pixelization"]["voronoi_nn_max_interpolation_neighbors"]
+    max_nneighbours = conf.instance["general"]["pixelization"]["voronoi_nn_max_interpolation_neighbors"]
 
     (
         pix_weights_for_sub_slim_index,
