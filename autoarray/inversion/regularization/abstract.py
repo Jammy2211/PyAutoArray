@@ -10,7 +10,8 @@ except ModuleNotFoundError:
 
 class AbstractRegularization:
     def __init__(self):
-        """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
+        """
+        Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
         smooth-source solution and prevent over-fitting noise_map in the hyper_galaxies. This is achieved by computing a \
         'regularization term' - which is the sum of differences in reconstructed flux between every set of neighboring \
         pixels. This regularization term is added to the solution's chi-squared as a penalty term. This effects \
