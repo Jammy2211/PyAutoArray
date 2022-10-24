@@ -206,6 +206,26 @@ def test__chi_squared_map_complex_with_mask_from():
     assert (chi_squared_map == np.array([0.25 + 1.0j, 0.0 + 0.0j])).all()
 
 
+def test__chi_squared_with_correlated_noise_from():
+
+    resdiual_map = aa.Array2D.manual_native([[1.0, 1.0], [2.0, 2.0]], pixel_scales=1.0)
+
+    inverse_covariance_matrix = np.array(
+        [
+            [1.0, 1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 1.0, 1.0, 0.0],
+            [0.0, 2.0, 0.0, 1.0],
+        ]
+    )
+
+    chi_squared = aa.util.fit.chi_squared_with_correlated_noise_from(
+        residual_map=resdiual_map, inverse_covariance_matrix=inverse_covariance_matrix
+    )
+
+    assert chi_squared == 17
+
+
 def test__log_likelihood_from():
 
     data = np.array([10.0, 10.0, 10.0, 10.0])
