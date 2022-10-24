@@ -26,8 +26,8 @@ class Imaging(AbstractImaging):
         image: Array2D,
         noise_map: Array2D,
         psf: Kernel2D = None,
-        settings=SettingsImaging(),
-        pad_for_convolver=False,
+        settings: SettingsImaging = SettingsImaging(),
+        pad_for_convolver: bool = False,
     ):
         """
         A class containing an imaging dataset, including the image data, noise-map and a point spread function (PSF).
@@ -177,27 +177,6 @@ class Imaging(AbstractImaging):
             settings=settings,
             pad_for_convolver=self.pad_for_convolver,
         )
-
-    def signal_to_noise_limited_from(self, signal_to_noise_limit, mask=None):
-
-        imaging = copy.deepcopy(self)
-
-        if mask is None:
-            mask = Mask2D.unmasked(
-                shape_native=self.shape_native, pixel_scales=self.pixel_scales
-            )
-
-        noise_map_limit = np.where(
-            (self.signal_to_noise_map.native > signal_to_noise_limit) & (mask == False),
-            np.abs(self.image.native) / signal_to_noise_limit,
-            self.noise_map.native,
-        )
-
-        imaging.noise_map = Array2D.manual_mask(
-            array=noise_map_limit, mask=self.image.mask
-        )
-
-        return imaging
 
     def output_to_fits(
         self, image_path, psf_path=None, noise_map_path=None, overwrite=False

@@ -55,47 +55,6 @@ class TestInterferometer:
             )
         ).all()
 
-    def test__signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
-        self, sub_mask_2d_7x7, uv_wavelengths_7x2
-    ):
-
-        interferometer = aa.Interferometer(
-            real_space_mask=sub_mask_2d_7x7,
-            visibilities=aa.Visibilities(visibilities=np.array([1 + 1j, 1 + 1j])),
-            noise_map=aa.VisibilitiesNoiseMap(
-                visibilities=np.array([1 + 0.25j, 1 + 0.25j])
-            ),
-            uv_wavelengths=uv_wavelengths_7x2,
-        )
-
-        interferometer_capped = interferometer.signal_to_noise_limited_from(
-            signal_to_noise_limit=2.0
-        )
-
-        assert (
-            interferometer_capped.visibilities == np.array([1.0 + 1.0j, 1.0 + 1.0j])
-        ).all()
-        assert (
-            interferometer_capped.noise_map == np.array([1.0 + 0.5j, 1.0 + 0.5j])
-        ).all()
-        assert (
-            interferometer_capped.signal_to_noise_map == np.array([1.0 + 2.0j])
-        ).all()
-
-        interferometer_capped = interferometer.signal_to_noise_limited_from(
-            signal_to_noise_limit=0.25
-        )
-
-        assert (
-            interferometer_capped.visibilities == np.array([1.0 + 1.0j, 1.0 + 1.0j])
-        ).all()
-        assert (
-            interferometer_capped.noise_map == np.array([4.0 + 4.0j, 4.0 + 4.0j])
-        ).all()
-        assert (
-            interferometer_capped.signal_to_noise_map == np.array([0.25 + 0.25j])
-        ).all()
-
     def test__from_fits__all_files_in_one_fits__load_using_different_hdus(
         self, sub_mask_2d_7x7
     ):

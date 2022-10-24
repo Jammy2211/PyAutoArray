@@ -1,6 +1,5 @@
-import copy
 import logging
-import numpy as np
+from typing import Optional
 
 from autoconf import cached_property
 
@@ -11,7 +10,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
-from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
@@ -23,10 +21,10 @@ class AbstractImaging(AbstractDataset):
     def __init__(
         self,
         image: Array2D,
-        noise_map: Array2D,
+        noise_map: Optional[Array2D] = None,
         psf: Kernel2D = None,
-        settings=SettingsImaging(),
-        pad_for_convolver=False,
+        settings: SettingsImaging = SettingsImaging(),
+        pad_for_convolver: bool = False,
     ):
         """
         An abstract class for an imaging dataset, including the image data, noise-map and a point spread function (PSF).
@@ -55,9 +53,10 @@ class AbstractImaging(AbstractDataset):
                 image = image.padded_before_convolution_from(
                     kernel_shape=psf.shape_native, mask_pad_value=1
                 )
-                noise_map = noise_map.padded_before_convolution_from(
-                    kernel_shape=psf.shape_native, mask_pad_value=1
-                )
+                if noise_map is not None:
+                    noise_map = noise_map.padded_before_convolution_from(
+                        kernel_shape=psf.shape_native, mask_pad_value=1
+                    )
                 logger.info(
                     f"The image and noise map of the `Imaging` objected have been padded to the dimensions"
                     f"{image.shape}. This is because the blurring region around the mask (which defines where"

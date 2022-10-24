@@ -17,8 +17,6 @@ class SettingsImaging(AbstractSettingsDataset):
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
         sub_steps: List[int] = None,
-        signal_to_noise_limit: Optional[float] = None,
-        signal_to_noise_limit_radii: Optional[float] = None,
         use_normalized_psf: Optional[bool] = True,
     ):
         """
@@ -50,9 +48,6 @@ class SettingsImaging(AbstractSettingsDataset):
         sub_steps : [int]
             If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        signal_to_noise_limit
-            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
-            signa to noise limit.
         psf_shape_2d
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
@@ -66,8 +61,6 @@ class SettingsImaging(AbstractSettingsDataset):
             fractional_accuracy=fractional_accuracy,
             relative_accuracy=relative_accuracy,
             sub_steps=sub_steps,
-            signal_to_noise_limit=signal_to_noise_limit,
-            signal_to_noise_limit_radii=signal_to_noise_limit_radii,
         )
 
         self.use_normalized_psf = use_normalized_psf

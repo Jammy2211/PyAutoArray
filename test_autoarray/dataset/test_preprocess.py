@@ -669,3 +669,78 @@ def test__data_with_complex_gaussian_noise_added():
     assert data_with_noise == pytest.approx(
         np.array([2.62434 + 0.38824j, 0.47182 - 0.07298j, 1.86540 - 1.30153j]), 1e-3
     )
+
+
+def test__noise_map_with_signal_to_noise_limit_from():
+
+    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
+    image[3] = 5.0
+
+    noise_map_array = aa.Array2D.full(
+        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
+    )
+    noise_map_array[3] = 2.0
+
+    noise_map = aa.preprocess.noise_map_with_signal_to_noise_limit_from(
+        data=image, noise_map=noise_map_array, signal_to_noise_limit=100.0
+    )
+
+    assert (noise_map.slim == np.array([5.0, 5.0, 5.0, 2.0])).all()
+
+    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
+    image[3] = 5.0
+
+    noise_map_array = aa.Array2D.full(
+        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
+    )
+    noise_map_array[3] = 2.0
+
+    noise_map = aa.preprocess.noise_map_with_signal_to_noise_limit_from(
+        data=image, noise_map=noise_map_array, signal_to_noise_limit=2.0
+    )
+
+    assert (noise_map.native == np.array([[10.0, 10.0], [10.0, 2.5]])).all()
+
+    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
+    image[2] = 5.0
+    image[3] = 5.0
+
+    noise_map_array = aa.Array2D.full(
+        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
+    )
+    noise_map_array[2] = 2.0
+    noise_map_array[3] = 2.0
+
+    mask = aa.Mask2D.manual(mask=[[True, False], [False, True]], pixel_scales=1.0)
+
+    noise_map = aa.preprocess.noise_map_with_signal_to_noise_limit_from(
+        data=image,
+        noise_map=noise_map_array,
+        signal_to_noise_limit=2.0,
+        noise_limit_mask=mask,
+    )
+
+    assert (noise_map.native == np.array([[5.0, 10.0], [2.5, 2.0]])).all()
+
+
+def test__visibilities_noise_map_with_signal_to_noise_limit(
+    sub_mask_2d_7x7, uv_wavelengths_7x2
+):
+    data = aa.Visibilities(visibilities=np.array([1 + 1j, 1 + 1j]))
+    noise_map = aa.VisibilitiesNoiseMap(visibilities=np.array([1 + 0.25j, 1 + 0.25j]))
+
+    noise_map_limit = (
+        aa.preprocess.visibilities_noise_map_with_signal_to_noise_limit_from(
+            data=data, noise_map=noise_map, signal_to_noise_limit=2.0
+        )
+    )
+
+    assert (noise_map_limit == np.array([1.0 + 0.5j, 1.0 + 0.5j])).all()
+
+    noise_map_limit = (
+        aa.preprocess.visibilities_noise_map_with_signal_to_noise_limit_from(
+            data=data, noise_map=noise_map, signal_to_noise_limit=0.25
+        )
+    )
+
+    assert (noise_map_limit == np.array([4.0 + 4.0j, 4.0 + 4.0j])).all()

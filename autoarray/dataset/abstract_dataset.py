@@ -99,8 +99,6 @@ class AbstractSettingsDataset:
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
         sub_steps: Optional[List[int]] = None,
-        signal_to_noise_limit: Optional[float] = None,
-        signal_to_noise_limit_radii: Optional[float] = None,
     ):
         """
         A dataset is a collection of data structures (e.g. the data, noise-map, PSF), a mask, grid, convolver
@@ -131,9 +129,6 @@ class AbstractSettingsDataset:
         sub_steps : [int]
             If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        signal_to_noise_limit
-            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
-            signa to noise limit.
         """
 
         self.grid_class = grid_class
@@ -147,8 +142,6 @@ class AbstractSettingsDataset:
             sub_steps = [2, 4, 8, 16]
 
         self.sub_steps = sub_steps
-        self.signal_to_noise_limit = signal_to_noise_limit
-        self.signal_to_noise_limit_radii = signal_to_noise_limit_radii
 
     def grid_from(self, mask) -> Union[Grid1D, Grid2D]:
 
@@ -195,34 +188,6 @@ class AbstractDataset:
         self.settings = settings
 
         mask = self.mask
-
-        if settings.signal_to_noise_limit is not None:
-
-            if settings.signal_to_noise_limit_radii is not None:
-
-                signal_to_noise_mask = Mask2D.circular(
-                    shape_native=mask.shape_native,
-                    radius=settings.signal_to_noise_limit_radii,
-                    pixel_scales=mask.pixel_scales,
-                )
-
-            else:
-
-                signal_to_noise_mask = Mask2D.unmasked(
-                    shape_native=data.shape_native, pixel_scales=mask.pixel_scales
-                )
-
-            noise_map_limit = np.where(
-                (self.signal_to_noise_map.native > settings.signal_to_noise_limit)
-                & (signal_to_noise_mask == False),
-                np.abs(data.native) / settings.signal_to_noise_limit,
-                self.noise_map.native,
-            )
-
-            if len(self.noise_map.native) == 1:
-                noise_map = Array1D.manual_mask(array=noise_map_limit, mask=mask)
-            else:
-                noise_map = Array2D.manual_mask(noise_map_limit, mask=mask)
 
         self.noise_map = noise_map
 

@@ -1,7 +1,6 @@
 import logging
 import numpy as np
-import copy
-from typing import List, Optional
+from typing import List
 
 from autoconf import cached_property
 
@@ -75,7 +74,6 @@ class SettingsInterferometer(AbstractSettingsDataset):
         sub_size_pixelization=1,
         fractional_accuracy: float = 0.9999,
         sub_steps: List[int] = None,
-        signal_to_noise_limit: Optional[float] = None,
         transformer_class=TransformerNUFFT,
     ):
         """
@@ -102,10 +100,7 @@ class SettingsInterferometer(AbstractSettingsDataset):
         sub_steps : [int]
             If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        signal_to_noise_limit
-            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
-            signa to noise limit.
-          """
+        """
 
         super().__init__(
             grid_class=grid_class,
@@ -114,7 +109,6 @@ class SettingsInterferometer(AbstractSettingsDataset):
             sub_size_pixelization=sub_size_pixelization,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
-            signal_to_noise_limit=signal_to_noise_limit,
         )
 
         self.transformer_class = transformer_class
@@ -132,9 +126,7 @@ class Interferometer(AbstractDataset):
 
         self.real_space_mask = real_space_mask
 
-        super().__init__(
-            data=visibilities, noise_map=noise_map, settings=settings
-        )
+        super().__init__(data=visibilities, noise_map=noise_map, settings=settings)
 
         self.uv_wavelengths = uv_wavelengths
 
@@ -301,28 +293,6 @@ class Interferometer(AbstractDataset):
     @property
     def convolver(self):
         return None
-
-    def signal_to_noise_limited_from(self, signal_to_noise_limit, mask=None):
-
-        interferometer = copy.deepcopy(self)
-
-        noise_map_limit_real = np.where(
-            np.real(self.signal_to_noise_map) > signal_to_noise_limit,
-            np.real(self.visibilities) / signal_to_noise_limit,
-            np.real(self.noise_map),
-        )
-
-        noise_map_limit_imag = np.where(
-            np.imag(self.signal_to_noise_map) > signal_to_noise_limit,
-            np.imag(self.visibilities) / signal_to_noise_limit,
-            np.imag(self.noise_map),
-        )
-
-        interferometer.noise_map = VisibilitiesNoiseMap(
-            visibilities=noise_map_limit_real + 1j * noise_map_limit_imag
-        )
-
-        return interferometer
 
     def output_to_fits(
         self,

@@ -36,89 +36,6 @@ def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
     assert imaging.image.mask[1, 1] == False
 
 
-def test__signal_to_noise_limited_from():
-
-    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
-    image[3] = 5.0
-
-    noise_map_array = aa.Array2D.full(
-        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
-    )
-    noise_map_array[3] = 2.0
-
-    imaging = aa.Imaging(
-        image=image,
-        psf=aa.Kernel2D.zeros(shape_native=(3, 3), pixel_scales=1.0),
-        noise_map=noise_map_array,
-    )
-
-    imaging = imaging.signal_to_noise_limited_from(signal_to_noise_limit=100.0)
-
-    assert (imaging.image.slim == np.array([20.0, 20.0, 20.0, 5.0])).all()
-
-    assert (imaging.noise_map.slim == np.array([5.0, 5.0, 5.0, 2.0])).all()
-
-    assert (imaging.signal_to_noise_map.slim == np.array([4.0, 4.0, 4.0, 2.5])).all()
-
-    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
-    image[3] = 5.0
-
-    noise_map_array = aa.Array2D.full(
-        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
-    )
-    noise_map_array[3] = 2.0
-
-    imaging = aa.Imaging(
-        image=image,
-        psf=aa.Kernel2D.zeros(shape_native=(3, 3), pixel_scales=1.0),
-        noise_map=noise_map_array,
-    )
-
-    imaging_capped = imaging.signal_to_noise_limited_from(signal_to_noise_limit=2.0)
-
-    assert (imaging_capped.image.native == np.array([[20.0, 20.0], [20.0, 5.0]])).all()
-
-    assert (
-        imaging_capped.noise_map.native == np.array([[10.0, 10.0], [10.0, 2.5]])
-    ).all()
-
-    assert (
-        imaging_capped.signal_to_noise_map.native == np.array([[2.0, 2.0], [2.0, 2.0]])
-    ).all()
-
-    image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
-    image[2] = 5.0
-    image[3] = 5.0
-
-    noise_map_array = aa.Array2D.full(
-        fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
-    )
-    noise_map_array[2] = 2.0
-    noise_map_array[3] = 2.0
-
-    mask = aa.Mask2D.manual(mask=[[True, False], [False, True]], pixel_scales=1.0)
-
-    imaging = aa.Imaging(
-        image=image,
-        psf=aa.Kernel2D.zeros(shape_native=(3, 3), pixel_scales=1.0),
-        noise_map=noise_map_array,
-    )
-
-    imaging_capped = imaging.signal_to_noise_limited_from(
-        signal_to_noise_limit=2.0, mask=mask
-    )
-
-    assert (imaging_capped.image.native == np.array([[20.0, 20.0], [5.0, 5.0]])).all()
-
-    assert (
-        imaging_capped.noise_map.native == np.array([[5.0, 10.0], [2.5, 2.0]])
-    ).all()
-
-    assert (
-        imaging_capped.signal_to_noise_map.native == np.array([[4.0, 2.0], [2.0, 2.5]])
-    ).all()
-
-
 def test__from_fits():
 
     imaging = aa.Imaging.from_fits(
@@ -252,43 +169,6 @@ def test__apply_mask__apply_settings__grids(
     assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
     assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DIterate)
     assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_2d_7x7).all()
-
-
-def test__masked_imaging__signal_to_noise_limited_from(imaging_7x7, mask_2d_7x7):
-
-    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7)
-    masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-        settings=aa.SettingsImaging(grid_class=aa.Grid2D, signal_to_noise_limit=0.1)
-    )
-
-    imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from(
-        signal_to_noise_limit=0.1
-    )
-
-    assert (
-        masked_imaging_7x7.image.native
-        == imaging_snr_limit.image.native * np.invert(mask_2d_7x7)
-    ).all()
-    assert (
-        masked_imaging_7x7.noise_map.native
-        == imaging_snr_limit.noise_map.native * np.invert(mask_2d_7x7)
-    ).all()
-
-    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7)
-    masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-        settings=aa.SettingsImaging(
-            grid_class=aa.Grid2D,
-            signal_to_noise_limit=0.1,
-            signal_to_noise_limit_radii=1.0,
-        )
-    )
-
-    assert (
-        masked_imaging_7x7.noise_map.native[3, 3] != imaging_7x7.noise_map.native[3, 3]
-    )
-    assert masked_imaging_7x7.noise_map.native[3, 3] == 10.0
-    assert masked_imaging_7x7.noise_map.native[3, 4] == 10.0
-    assert masked_imaging_7x7.noise_map.native[4, 4] == 2.0
 
 
 def test__different_imaging_without_mock_objects__customize_constructor_inputs():
