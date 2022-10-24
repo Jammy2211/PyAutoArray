@@ -385,7 +385,7 @@ def chi_squared_complex_with_mask_from(
 
 
 def chi_squared_with_correlated_noise_from(
-    *, residual_map: Structure, inverse_covariance_matrix: np.ndarray
+    *, residual_map: Structure, noise_covariance_matrix_inv: np.ndarray
 ) -> float:
     """
     Returns the chi-squared value of the fit of model-data to a masked dataset, where
@@ -397,12 +397,12 @@ def chi_squared_with_correlated_noise_from(
     -----------
     residual_map
         The residual-map of the model-data fit to the dataset.
-    invcov
-        The inverse of the covariance matrix.
+    noise_covariance_matrix_inv
+        The inverse of the noise covariance matrix.
     """
     return (
         residual_map.native.ravel()
-        @ inverse_covariance_matrix
+        @ noise_covariance_matrix_inv
         @ residual_map.native.ravel()
     )
 

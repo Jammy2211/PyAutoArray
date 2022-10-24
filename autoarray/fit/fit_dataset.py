@@ -13,7 +13,7 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.abstract_structure import Structure
 
 
-class AbstractFit(ABC):
+class AbstractFitInversion(ABC):
     @property
     @abstractmethod
     def data(self) -> ty.DataLike:
@@ -110,7 +110,7 @@ class AbstractFit(ABC):
         )
 
 
-class SimpleFit(AbstractFit):
+class SimpleFit(AbstractFitInversion):
     def __init__(self, data, model_data, noise_map):
         self._data = data
         self._model_data = model_data
@@ -129,7 +129,7 @@ class SimpleFit(AbstractFit):
         return self._model_data
 
 
-class FitDataset(AbstractFit):
+class FitDataset(AbstractFitInversion):
 
     # noinspection PyUnresolvedReferences
     def __init__(

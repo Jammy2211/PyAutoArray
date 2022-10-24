@@ -210,7 +210,7 @@ def test__chi_squared_with_correlated_noise_from():
 
     resdiual_map = aa.Array2D.manual_native([[1.0, 1.0], [2.0, 2.0]], pixel_scales=1.0)
 
-    inverse_covariance_matrix = np.array(
+    noise_covariance_matrix_inv = np.array(
         [
             [1.0, 1.0, 0.0, 0.0],
             [0.0, 1.0, 0.0, 0.0],
@@ -220,7 +220,8 @@ def test__chi_squared_with_correlated_noise_from():
     )
 
     chi_squared = aa.util.fit.chi_squared_with_correlated_noise_from(
-        residual_map=resdiual_map, inverse_covariance_matrix=inverse_covariance_matrix
+        residual_map=resdiual_map,
+        noise_covariance_matrix_inv=noise_covariance_matrix_inv,
     )
 
     assert chi_squared == 17
