@@ -26,7 +26,6 @@ class AbstractImaging(AbstractDataset):
         noise_map: Array2D,
         psf: Kernel2D = None,
         settings=SettingsImaging(),
-        name: str = None,
         pad_for_convolver=False,
     ):
         """
@@ -68,7 +67,7 @@ class AbstractImaging(AbstractDataset):
                     f"the image and noise-map yourself."
                 )
 
-        super().__init__(data=image, noise_map=noise_map, settings=settings, name=name)
+        super().__init__(data=image, noise_map=noise_map, settings=settings)
 
         self.psf_unormalized = psf
 

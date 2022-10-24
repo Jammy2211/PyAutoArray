@@ -177,7 +177,6 @@ class AbstractDataset:
         data: Union[Array1D, Array2D, VectorYX2D, Visibilities],
         noise_map: Union[Array1D, Array2D, VectorYX2D, VisibilitiesNoiseMap],
         settings=AbstractSettingsDataset(),
-        name: str = None,
     ):
         """
         A collection of abstract data structures for different types of data (an image, pixel-scale, noise-map, etc.)
@@ -194,7 +193,6 @@ class AbstractDataset:
         self.data = data
         self.noise_map = noise_map
         self.settings = settings
-        self._name = name if name is not None else "dataset"
 
         mask = self.mask
 
@@ -258,27 +256,6 @@ class AbstractDataset:
     @property
     def mask(self) -> Union[Mask1D, Mask2D]:
         return self.data.mask
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @classmethod
-    def load(cls, filename) -> "AbstractDataset":
-        """
-        Load the dataset at the specified filename
-
-        Parameters
-        ----------
-        filename
-            The filename containing the dataset
-
-        Returns
-        -------
-        The dataset
-        """
-        with open(filename, "rb") as f:
-            return pickle.load(f)
 
     @property
     def inverse_noise_map(self) -> Union[Array1D, Array2D]:

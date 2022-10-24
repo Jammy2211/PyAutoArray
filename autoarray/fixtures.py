@@ -183,7 +183,6 @@ def make_imaging_7x7():
         image=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        name="mock_imaging_7x7",
     )
 
 
@@ -192,7 +191,6 @@ def make_imaging_7x7_no_blur():
         image=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        name="mock_imaging_7x7",
     )
 
 

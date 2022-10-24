@@ -128,13 +128,12 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask,
         settings=SettingsInterferometer(),
-        name=None,
     ):
 
         self.real_space_mask = real_space_mask
 
         super().__init__(
-            data=visibilities, noise_map=noise_map, name=name, settings=settings
+            data=visibilities, noise_map=noise_map, settings=settings
         )
 
         self.uv_wavelengths = uv_wavelengths
@@ -193,7 +192,6 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=self.uv_wavelengths,
             real_space_mask=self.real_space_mask,
             settings=settings,
-            name=self.name,
         )
 
     @cached_property
@@ -383,13 +381,12 @@ class AbstractSimulatorInterferometer:
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
-    def via_image_from(self, image, name=None):
+    def via_image_from(self, image):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        name
         real_space_image
             The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
         real_space_pixel_scales
@@ -435,7 +432,6 @@ class AbstractSimulatorInterferometer:
             noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
             real_space_mask=image.mask,
-            name=name,
         )
 
 

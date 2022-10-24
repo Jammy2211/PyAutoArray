@@ -27,7 +27,6 @@ class Imaging(AbstractImaging):
         noise_map: Array2D,
         psf: Kernel2D = None,
         settings=SettingsImaging(),
-        name: str = None,
         pad_for_convolver=False,
     ):
         """
@@ -54,7 +53,6 @@ class Imaging(AbstractImaging):
             noise_map=noise_map,
             psf=psf,
             settings=settings,
-            name=name,
             pad_for_convolver=pad_for_convolver,
         )
 
@@ -68,7 +66,6 @@ class Imaging(AbstractImaging):
         noise_map_hdu=0,
         psf_path=None,
         psf_hdu=0,
-        name=None,
     ):
         """
         Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
@@ -80,7 +77,6 @@ class Imaging(AbstractImaging):
         Parameters
         ----------
         noise_map_non_constant
-        name
         image_path
             The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
         pixel_scales
@@ -118,7 +114,7 @@ class Imaging(AbstractImaging):
 
             psf = None
 
-        return Imaging(image=image, noise_map=noise_map, psf=psf, name=name)
+        return Imaging(image=image, noise_map=noise_map, psf=psf)
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
         """
@@ -151,7 +147,6 @@ class Imaging(AbstractImaging):
             noise_map=noise_map,
             psf=self.psf_unormalized,
             settings=self.settings,
-            name=self.name,
             pad_for_convolver=True,
         )
 
@@ -180,7 +175,6 @@ class Imaging(AbstractImaging):
             noise_map=self.noise_map,
             psf=self.psf_unormalized,
             settings=settings,
-            name=self.name,
             pad_for_convolver=self.pad_for_convolver,
         )
 
