@@ -1,13 +1,12 @@
 import copy
 import logging
 import numpy as np
-from typing import List, Optional
 
 from autoconf import cached_property
 
-from autoarray.dataset.abstract_dataset import AbstractWTilde
-from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
 from autoarray.dataset.abstract_dataset import AbstractDataset
+from autoarray.dataset.imaging.settings import SettingsImaging
+from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -15,116 +14,9 @@ from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
-from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
-from autoarray.dataset import preprocess
 
 logger = logging.getLogger(__name__)
-
-
-class WTildeImaging(AbstractWTilde):
-    def __init__(
-        self,
-        curvature_preload: np.ndarray,
-        indexes: np.ndim,
-        lengths: np.ndarray,
-        noise_map_value: float,
-    ):
-        """
-        Packages together all derived data quantities necessary to fit `Imaging` data using an ` Inversion` via the
-        w_tilde formalism.
-
-        The w_tilde formalism performs linear algebra formalism in a way that speeds up the construction of the
-        simultaneous linear equations by bypassing the construction of a `mapping_matrix` and precomputing the
-        blurring operations performed using the imaging's PSF.
-
-        Parameters
-        ----------
-        curvature_preload
-            A matrix which uses the imaging's noise-map and PSF to preload as much of the computation of the
-            curvature matrix as possible.
-        indexes
-            The image-pixel indexes of the curvature preload matrix, which are used to compute the curvature matrix
-            efficiently when performing an inversion.
-        lengths
-            The lengths of how many indexes each curvature preload contains, again used to compute the curvature
-            matrix efficienctly.
-        noise_map_value
-            The first value of the noise-map used to construct the curvature preload, which is used as a sanity
-            check when performing the inversion to ensure the preload corresponds to the data being fitted.
-        """
-        super().__init__(
-            curvature_preload=curvature_preload, noise_map_value=noise_map_value
-        )
-
-        self.indexes = indexes
-        self.lengths = lengths
-
-
-class SettingsImaging(AbstractSettingsDataset):
-    def __init__(
-        self,
-        grid_class=Grid2D,
-        grid_pixelization_class=Grid2D,
-        sub_size: int = 1,
-        sub_size_pixelization=4,
-        fractional_accuracy: float = 0.9999,
-        relative_accuracy: Optional[float] = None,
-        sub_steps: List[int] = None,
-        signal_to_noise_limit: Optional[float] = None,
-        signal_to_noise_limit_radii: Optional[float] = None,
-        use_normalized_psf: Optional[bool] = True,
-    ):
-        """
-        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver
-        and other utilities that are used for modeling and fitting an image of a strong lens.
-
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each
-        for lens calculations.
-
-        Parameters
-        ----------
-        grid_class : ag.Grid2D
-            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
-            and `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
-        grid_pixelization_class : ag.Grid2D
-            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D` and `Grid2DIterate`.
-            (see the `Grid2D` documentation for a description of these options).
-        sub_size
-            If the grid and / or grid_pixelization use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
-        fractional_accuracy
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the fractional accuracy it
-            uses when evaluating functions, where the fraction accuracy is the ratio of the values computed using
-            two grids at a higher and lower sub-grid size.
-        relative_accuracy
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the relative accuracy it
-            uses when evaluating functions, where the relative accuracy is the absolute difference of the values
-            computed using two grids at a higher and lower sub-grid size.
-        sub_steps : [int]
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
-            to meet the fractional accuracy when evaluating functions.
-        signal_to_noise_limit
-            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
-            signa to noise limit.
-        psf_shape_2d
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        """
-
-        super().__init__(
-            grid_class=grid_class,
-            grid_pixelization_class=grid_pixelization_class,
-            sub_size=sub_size,
-            sub_size_pixelization=sub_size_pixelization,
-            fractional_accuracy=fractional_accuracy,
-            relative_accuracy=relative_accuracy,
-            sub_steps=sub_steps,
-            signal_to_noise_limit=signal_to_noise_limit,
-            signal_to_noise_limit_radii=signal_to_noise_limit_radii,
-        )
-
-        self.use_normalized_psf = use_normalized_psf
 
 
 class Imaging(AbstractDataset):
@@ -438,119 +330,3 @@ class Imaging(AbstractDataset):
 
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
-
-
-class AbstractSimulatorImaging:
-    def __init__(
-        self,
-        exposure_time: float,
-        background_sky_level: float = 0.0,
-        psf: Kernel2D = None,
-        normalize_psf: bool = True,
-        read_noise: float = None,
-        add_poisson_noise: bool = True,
-        noise_if_add_noise_false: float = 0.1,
-        noise_seed: int = -1,
-    ):
-        """
-        A class representing a Imaging observation, using the shape of the image, the pixel scale,
-        psf, exposure time, etc.
-
-        Parameters
-        ----------
-        psf : Kernel2D
-            An arrays describing the PSF kernel of the image.
-        exposure_time
-            The exposure time of the simulated imaging.
-        background_sky_level
-            The level of the background sky of the simulated imaging.
-        normalize_psf
-            If `True`, the PSF kernel is normalized so all values sum to 1.0.
-        read_noise
-            The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
-            sigma equal to the value `read_noise`.
-        add_poisson_noise
-            Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
-        noise_if_add_noise_false
-            If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
-            the value of noise assigned to every pixel in the noise-map.
-        noise_seed
-            The random seed used to add random noise, where -1 corresponds to a random seed every run.
-        """
-
-        if psf is not None:
-            if psf is not None and normalize_psf:
-                psf = psf.normalized
-            self.psf = psf
-        else:
-            self.psf = Kernel2D.no_blur(pixel_scales=1.0)
-
-        self.exposure_time = exposure_time
-        self.background_sky_level = background_sky_level
-
-        self.read_noise = read_noise
-        self.add_poisson_noise = add_poisson_noise
-        self.noise_if_add_noise_false = noise_if_add_noise_false
-        self.noise_seed = noise_seed
-
-
-class SimulatorImaging(AbstractSimulatorImaging):
-    def via_image_from(self, image: Array2D, name: str = None):
-        """
-        Returns a realistic simulated image by applying effects to a plain simulated image.
-
-        Parameters
-        ----------
-        image
-            The image before simulating which has noise added, PSF convolution, etc performed to it.
-        """
-
-        exposure_time_map = Array2D.full(
-            fill_value=self.exposure_time,
-            shape_native=image.shape_native,
-            pixel_scales=image.pixel_scales,
-        )
-
-        background_sky_map = Array2D.full(
-            fill_value=self.background_sky_level,
-            shape_native=image.shape_native,
-            pixel_scales=image.pixel_scales,
-        )
-
-        image = self.psf.convolved_array_from(array=image)
-
-        image = image + background_sky_map
-
-        if self.add_poisson_noise is True:
-            image = preprocess.data_eps_with_poisson_noise_added(
-                data_eps=image,
-                exposure_time_map=exposure_time_map,
-                seed=self.noise_seed,
-            )
-
-            noise_map = preprocess.noise_map_via_data_eps_and_exposure_time_map_from(
-                data_eps=image, exposure_time_map=exposure_time_map
-            )
-
-        else:
-            noise_map = Array2D.full(
-                fill_value=self.noise_if_add_noise_false,
-                shape_native=image.shape_native,
-                pixel_scales=image.pixel_scales,
-            )
-
-        if np.isnan(noise_map).any():
-            raise exc.DatasetException(
-                "The noise-map has NaN values in it. This suggests your exposure time and / or"
-                "background sky levels are too low, creating signal counts at or close to 0.0."
-            )
-
-        image = image - background_sky_map
-
-        mask = Mask2D.unmasked(
-            shape_native=image.shape_native, pixel_scales=image.pixel_scales
-        )
-
-        image = Array2D.manual_mask(array=image, mask=mask)
-
-        return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)

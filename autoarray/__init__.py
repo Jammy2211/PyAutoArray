@@ -6,10 +6,10 @@ from . import mock as m
 from .numba_util import profile_func
 from .preloads import Preloads
 from .dataset import preprocess
-from .dataset.imaging import SettingsImaging
-from .dataset.imaging import Imaging
-from .dataset.imaging import SimulatorImaging
-from .dataset.imaging import WTildeImaging
+from .dataset.imaging.settings import SettingsImaging
+from .dataset.imaging.imaging import Imaging
+from .dataset.imaging.simulator import SimulatorImaging
+from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer import Interferometer
 from .dataset.interferometer import SettingsInterferometer
 from .dataset.interferometer import SimulatorInterferometer

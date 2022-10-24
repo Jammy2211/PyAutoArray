@@ -81,7 +81,7 @@ class Preloads:
 
             logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
 
-            from autoarray.dataset.imaging import WTildeImaging
+            from autoarray.dataset.imaging.w_tilde import WTildeImaging
 
             (
                 preload,

@@ -1,5 +1,5 @@
 import autoarray as aa
-from autoarray.dataset.imaging import WTildeImaging
+from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 
 from autoarray import exc
