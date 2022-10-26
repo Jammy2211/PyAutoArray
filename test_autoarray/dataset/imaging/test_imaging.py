@@ -48,6 +48,15 @@ def test__noise_covariance_input__noise_map_uses_diag():
     assert (imaging.noise_map.native == noise_map.native).all()
 
 
+def test__no_noise_map__raises_exception():
+
+    image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+
+    with pytest.raises(aa.exc.DatasetException):
+
+        aa.Imaging(image=image)
+
+
 def test__from_fits():
 
     imaging = aa.Imaging.from_fits(
