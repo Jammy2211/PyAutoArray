@@ -72,6 +72,37 @@ class Imaging(AbstractDataset):
                     f"the image and noise-map yourself."
                 )
 
+        self.noise_covariance_matrix = noise_covariance_matrix
+
+        if noise_map is None and noise_covariance_matrix is not None:
+
+            logger.info(
+                """
+                No noise map was input into the Imaging class, but a `noise_covariance_matrix` was.
+                
+                Using the diagonal of the `noise_covariance_matrix` to create the `noise_map`. 
+                
+                This `noise-map` is used only for visualization where it is not appropriate to plot covariance.
+                """
+            )
+
+            print(noise_covariance_matrix.shape)
+            print(np.diag(noise_covariance_matrix).shape)
+
+            noise_map = Array2D.manual_slim(
+                array=np.diag(noise_covariance_matrix),
+                shape_native=image.shape_native,
+                pixel_scales=image.shape_native,
+            )
+
+        elif noise_map is None and noise_covariance_matrix is None:
+
+            raise exc.DatasetException(
+                """
+                No noise map or noise_covariance_matrix was passed to the Imaging object.
+                """
+            )
+
         super().__init__(
             data=image,
             noise_map=noise_map,

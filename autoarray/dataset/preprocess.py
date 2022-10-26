@@ -544,13 +544,9 @@ def visibilities_noise_map_with_signal_to_noise_limit_from(
 
     # TODO : Refacotr into a util
 
-    signal_to_noise_map_real = np.divide(
-        np.real(data), np.real(noise_map)
-    )
+    signal_to_noise_map_real = np.divide(np.real(data), np.real(noise_map))
     signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0
-    signal_to_noise_map_imag = np.divide(
-        np.imag(data), np.imag(noise_map)
-    )
+    signal_to_noise_map_imag = np.divide(np.imag(data), np.imag(noise_map))
     signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
 
     signal_to_noise_map = signal_to_noise_map_real + 1j * signal_to_noise_map_imag

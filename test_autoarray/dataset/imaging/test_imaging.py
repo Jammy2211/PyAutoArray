@@ -36,6 +36,18 @@ def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
     assert imaging.image.mask[1, 1] == False
 
 
+def test__noise_covariance_input__noise_map_uses_diag():
+
+    image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+    noise_covariance_matrix = np.ones(shape=(9, 9))
+
+    imaging = aa.Imaging(image=image, noise_covariance_matrix=noise_covariance_matrix)
+
+    noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+
+    assert (imaging.noise_map.native == noise_map.native).all()
+
+
 def test__from_fits():
 
     imaging = aa.Imaging.from_fits(
