@@ -846,7 +846,7 @@ class Mask2D(Mask):
     @property
     def edge_grid_sub_1(self) -> "Grid2D":
         """
-        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
@@ -859,7 +859,7 @@ class Mask2D(Mask):
     @property
     def border_grid_1d(self) -> "Grid2D":
         """
-        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
@@ -868,7 +868,7 @@ class Mask2D(Mask):
     @property
     def border_grid_sub_1(self) -> "Grid2D":
         """
-        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
@@ -1018,9 +1018,16 @@ class Mask2D(Mask):
         ).astype("int")
 
     @property
+    def unmasked_1d_indexes(self) -> np.ndarray:
+        """
+        The 1D indexes of the mask's unmasked pixels (e.g. `value=False`).
+        """
+        return mask_2d_util.unmasked_1d_indexes_from(mask_2d=self).astype("int")
+
+    @property
     def edge_1d_indexes(self) -> np.ndarray:
         """
-        The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
+        The indexes of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
         (next to at least one pixel with a `True` value).
         """
         return mask_2d_util.edge_1d_indexes_from(mask_2d=self).astype("int")
@@ -1028,7 +1035,7 @@ class Mask2D(Mask):
     @property
     def edge_2d_indexes(self) -> np.ndarray:
         """
-        The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
+        The indexes of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
         (next to at least one pixel with a `True` value).
         """
         return self.native_index_for_slim_index[self.edge_1d_indexes].astype("int")
@@ -1036,7 +1043,7 @@ class Mask2D(Mask):
     @property
     def border_1d_indexes(self) -> np.ndarray:
         """
-        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
@@ -1044,7 +1051,7 @@ class Mask2D(Mask):
 
     @property
     def border_2d_indexes(self) -> np.ndarray:
-        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        """The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
@@ -1053,7 +1060,7 @@ class Mask2D(Mask):
     @cached_property
     def sub_border_flat_indexes(self) -> np.ndarray:
         """
-        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
@@ -1089,7 +1096,7 @@ class Mask2D(Mask):
     @property
     def unmasked_mask(self) -> "Mask2D":
         """
-        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
@@ -1103,7 +1110,7 @@ class Mask2D(Mask):
     @property
     def edge_mask(self) -> "Mask2D":
         """
-        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
@@ -1119,7 +1126,7 @@ class Mask2D(Mask):
     @property
     def border_mask(self) -> "Mask2D":
         """
-        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
