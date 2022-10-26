@@ -702,6 +702,28 @@ class TestRegions:
 
         assert (blurring_mask == blurring_mask_via_util).all()
 
+    def test__masked_image_pixels__compare_to_array_util(self):
+        mask = aa.Mask2D.manual(
+            mask=[
+                [True, True, True, True, True, True, True, True, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, False, True, False, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ],
+            pixel_scales=1.0,
+        )
+
+        masked_pixels_util = aa.util.mask_2d.mask_1d_indexes_from(
+            mask_2d=mask, return_masked_indexes=True
+        )
+
+        assert mask.masked_1d_indexes == pytest.approx(masked_pixels_util, 1e-4)
+
     def test__unmasked_image_pixels__compare_to_array_util(self):
         mask = aa.Mask2D.manual(
             mask=[
@@ -718,7 +740,9 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        unmasked_pixels_util = aa.util.mask_2d.mask_1d_indexes_from(mask_2d=mask)
+        unmasked_pixels_util = aa.util.mask_2d.mask_1d_indexes_from(
+            mask_2d=mask, return_masked_indexes=False
+        )
 
         assert mask.unmasked_1d_indexes == pytest.approx(unmasked_pixels_util, 1e-4)
 
