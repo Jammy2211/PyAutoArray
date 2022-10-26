@@ -171,7 +171,8 @@ def make_noise_covariance_matrix_7x7():
 
     noise_covariance_matrix_7x7 = np.eye(N=49, M=49)
 
-    noise_covariance_matrix_7x7[0, 1] = 1.0
+    noise_covariance_matrix_7x7[:, 0] = 1.0
+    noise_covariance_matrix_7x7[0, :] = 1.0
 
     return noise_covariance_matrix_7x7
 
@@ -298,6 +299,13 @@ def make_transformer_7x7_7():
 def make_masked_imaging_7x7():
 
     imaging_7x7 = make_imaging_7x7()
+
+    return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
+
+
+def make_masked_imaging_covariance_7x7():
+
+    imaging_7x7 = make_imaging_covariance_7x7()
 
     return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
 

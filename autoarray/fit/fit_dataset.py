@@ -241,7 +241,7 @@ class FitDataset(AbstractFitInversion):
 
         if self.dataset.noise_covariance_matrix is not None:
 
-            return fit_util.chi_squared_with_correlated_noise_from(
+            return fit_util.chi_squared_with_noise_covariance_from(
                 residual_map=self.residual_map,
                 noise_covariance_matrix_inv=self.dataset.noise_covariance_matrix_inv,
             )

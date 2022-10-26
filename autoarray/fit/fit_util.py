@@ -384,7 +384,7 @@ def chi_squared_complex_with_mask_from(
     return chi_squared_real + chi_squared_imag
 
 
-def chi_squared_with_correlated_noise_from(
+def chi_squared_with_noise_covariance_from(
     *, residual_map: Structure, noise_covariance_matrix_inv: np.ndarray
 ) -> float:
     """
@@ -400,11 +400,8 @@ def chi_squared_with_correlated_noise_from(
     noise_covariance_matrix_inv
         The inverse of the noise covariance matrix.
     """
-    return (
-        residual_map.native.ravel()
-        @ noise_covariance_matrix_inv
-        @ residual_map.native.ravel()
-    )
+
+    return residual_map @ noise_covariance_matrix_inv @ residual_map
 
 
 def noise_normalization_complex_with_mask_from(

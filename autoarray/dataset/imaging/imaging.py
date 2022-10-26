@@ -234,7 +234,8 @@ class Imaging(AbstractDataset):
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
         """
-        Apply a mask to the imaging dataset, whereby the mask is applied to the image data and noise-map one-by-one.
+        Apply a mask to the imaging dataset, whereby the mask is applied to the image data, noise-map and other
+        quantities one-by-one.
 
         The original unmasked imaging data is stored as the `self.unmasked` attribute. This is used to ensure that if
         the `apply_mask` function is called multiple times, every mask is always applied to the original unmasked
