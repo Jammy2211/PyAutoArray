@@ -263,10 +263,10 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix = unmasked_imaging.noise_covariance_matrix
 
             noise_covariance_matrix = np.delete(
-                noise_covariance_matrix, mask.unmasked_1d_indexes, 0
+                noise_covariance_matrix, mask.masked_1d_indexes, 0
             )
             noise_covariance_matrix = np.delete(
-                noise_covariance_matrix, mask.unmasked_1d_indexes, 1
+                noise_covariance_matrix, mask.masked_1d_indexes, 1
             )
 
         else:
