@@ -171,8 +171,8 @@ def make_noise_covariance_matrix_7x7():
 
     noise_covariance_matrix_7x7 = np.eye(N=49, M=49)
 
-    noise_covariance_matrix_7x7[:, 0] = 1.0
-    noise_covariance_matrix_7x7[0, :] = 1.0
+    noise_covariance_matrix_7x7[:, 24] = 1.0
+    noise_covariance_matrix_7x7[24, :] = 1.0
 
     return noise_covariance_matrix_7x7
 
