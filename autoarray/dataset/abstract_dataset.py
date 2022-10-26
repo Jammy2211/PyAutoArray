@@ -309,7 +309,7 @@ class AbstractDataset:
         """
         return np.max(self.potential_chi_squared_map)
 
-    @property
+    @cached_property
     def noise_covariance_matrix_inv(self) -> np.ndarray:
         """
         Returns the inverse of the noise covariance matrix, which is used when computing a chi-squared which accounts
