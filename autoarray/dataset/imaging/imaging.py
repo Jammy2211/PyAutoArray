@@ -182,6 +182,7 @@ class Imaging(AbstractDataset):
         noise_map_hdu=0,
         psf_path=None,
         psf_hdu=0,
+        noise_covariance_matrix: Optional[np.ndarray] = None,
     ):
         """
         Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
@@ -230,7 +231,12 @@ class Imaging(AbstractDataset):
 
             psf = None
 
-        return Imaging(image=image, noise_map=noise_map, psf=psf)
+        return Imaging(
+            image=image,
+            noise_map=noise_map,
+            psf=psf,
+            noise_covariance_matrix=noise_covariance_matrix,
+        )
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
         """
