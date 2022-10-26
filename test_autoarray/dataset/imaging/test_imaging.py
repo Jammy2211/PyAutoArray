@@ -161,6 +161,35 @@ def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):
     assert masked_imaging_7x7.w_tilde.lengths.shape == (9,)
 
 
+def test__apply_mask__noise_covariance_matrix():
+
+    image = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=(1.0, 1.0))
+
+    noise_covariance_matrix = np.array(
+        [
+            [1.0, 1.0, 1.0, 1.0],
+            [2.0, 2.0, 2.0, 2.0],
+            [3.0, 3.0, 3.0, 3.0],
+            [4.0, 4.0, 4.0, 4.0],
+        ]
+    )
+
+    mask = np.array(
+        [
+            [False, True],
+            [True, False],
+        ]
+    )
+
+    mask_2d = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+
+    imaging = aa.Imaging(image=image, noise_covariance_matrix=noise_covariance_matrix)
+
+    masked_imaging = imaging.apply_mask(mask=mask_2d)
+
+    assert masked_imaging.noise_covariance_matrix == np.array([[1.0, 1.0], [4.0, 4.0]])
+
+
 def test__apply_mask__apply_settings__grids(
     imaging_7x7,
     sub_mask_2d_7x7,

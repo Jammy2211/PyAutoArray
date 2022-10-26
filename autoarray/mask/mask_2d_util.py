@@ -643,6 +643,48 @@ def mask_2d_via_shape_native_and_native_for_slim(
 
 
 @numba_util.jit()
+def unmasked_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
+    """
+    Returns a 1D array listing all unmasked pixel indexes (`value=False`) in the mask.
+
+    Parameters
+    ----------
+    mask_2d
+        The mask for which the 1D unmasked pixel indexes are computed.
+
+    Returns
+    -------
+    np.ndarray
+        The 1D indexes of all unmasked pixels on the mask.
+    """
+
+    unmasked_pixel_total = 0
+
+    for y in range(0, mask_2d.shape[0]):
+        for x in range(0, mask_2d.shape[1]):
+
+            if not mask_2d[y, x]:
+
+                unmasked_pixel_total += 1
+
+    unmasked_pixels = np.zeros(unmasked_pixel_total)
+    unmasked_index = 0
+    regular_index = 0
+
+    for y in range(0, mask_2d.shape[0]):
+        for x in range(0, mask_2d.shape[1]):
+
+            if not mask_2d[y, x]:
+
+                unmasked_pixels[unmasked_index] = regular_index
+                unmasked_index += 1
+
+            regular_index += 1
+
+    return unmasked_pixels
+
+
+@numba_util.jit()
 def check_if_edge_pixel(mask_2d: np.ndarray, y: int, x: int) -> bool:
     """
     Checks if an input [y,x] pixel on the input `mask` is an edge-pixel.

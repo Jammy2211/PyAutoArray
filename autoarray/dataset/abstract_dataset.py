@@ -1,10 +1,11 @@
 import copy
 import numpy as np
-import pickle
 from typing import List, Optional, Type, Union
 import warnings
 
+from autoconf import cached_property
 from autoconf import conf
+
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -169,6 +170,7 @@ class AbstractDataset:
         self,
         data: Union[Array1D, Array2D, VectorYX2D, Visibilities],
         noise_map: Union[Array1D, Array2D, VectorYX2D, VisibilitiesNoiseMap],
+        noise_covariance_matrix: Optional[np.ndarray] = None,
         settings=AbstractSettingsDataset(),
     ):
         """
@@ -188,6 +190,34 @@ class AbstractDataset:
         self.settings = settings
 
         mask = self.mask
+
+        self.noise_covariance_matrix = noise_covariance_matrix
+
+        if noise_map is None and noise_covariance_matrix is not None:
+
+            logger.info(
+                """
+                No noise map was input into the Imaging class, but a `noise_covariance_matrix` was.
+
+                Using the diagonal of the `noise_covariance_matrix` to create the `noise_map`. 
+
+                This `noise-map` is used only for visualization where it is not appropriate to plot covariance.
+                """
+            )
+
+            noise_map = Array2D.manual_slim(
+                array=np.diag(noise_covariance_matrix),
+                shape_native=image.shape_native,
+                pixel_scales=image.shape_native,
+            )
+
+        elif noise_map is None and noise_covariance_matrix is None:
+
+            raise exc.DatasetException(
+                """
+                No noise map or noise_covariance_matrix was passed to the Imaging object.
+                """
+            )
 
         self.noise_map = noise_map
 
@@ -275,6 +305,18 @@ class AbstractDataset:
         The maximum value of the potential chi-squared-map.
         """
         return np.max(self.potential_chi_squared_map)
+
+    @cached_property
+    def noise_covariance_matrix_inv(self) -> Grid2D:
+        """
+        Returns the inverse of the noise covariance matrix, which is used when computing a chi-squared which accounts
+        for covariance via a fit.
+
+        Returns
+        -------
+        The inverse of the noise covariance matrix.
+        """
+        return np.linalg.inv(self.noise_covariance_matrix)
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
 

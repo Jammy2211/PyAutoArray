@@ -1843,6 +1843,26 @@ class TestMaskFromShapeAndMask2dIndexForMask1DIndex:
         ).all()
 
 
+class TestUnmaskedPixels:
+    def test__unmasked_1d_indexes_from(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, False, False, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, False, True],
+            ]
+        )
+
+        unmasked_pixels = util.mask_2d.unmasked_1d_indexes_from(mask_2d=mask)
+
+        assert (unmasked_pixels == np.array([23, 24, 25, 47])).all()
+
+
 class TestEdgePixels:
     def test__7x7_mask_one_central_pixel__is_entire_edge(self):
         mask = np.array(

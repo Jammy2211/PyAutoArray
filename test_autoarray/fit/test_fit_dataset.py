@@ -1,7 +1,7 @@
 import autoarray as aa
 
 
-def test__inversion_figure_of_merit(masked_imaging_7x7, model_image_7x7):
+def test__figure_of_merit__with_inversion(masked_imaging_7x7, model_image_7x7):
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper(regularization=aa.m.MockRegularization())],
@@ -32,3 +32,6 @@ def test__inversion_figure_of_merit(masked_imaging_7x7, model_image_7x7):
     )
 
     assert fit.figure_of_merit == fit.log_likelihood
+
+
+# def test__figure_of_merit__with_noise_covariance_matrix_in_dataset(masked_imaging_7x7, model_image_7x7):
