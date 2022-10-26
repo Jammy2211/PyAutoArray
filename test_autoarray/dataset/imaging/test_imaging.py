@@ -187,7 +187,9 @@ def test__apply_mask__noise_covariance_matrix():
 
     masked_imaging = imaging.apply_mask(mask=mask_2d)
 
-    assert masked_imaging.noise_covariance_matrix == np.array([[1.0, 1.0], [4.0, 4.0]])
+    assert masked_imaging.noise_covariance_matrix == pytest.approx(
+        np.array([[1.0, 1.0], [4.0, 4.0]]), 1.0e-4
+    )
 
 
 def test__apply_mask__apply_settings__grids(

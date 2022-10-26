@@ -1022,7 +1022,7 @@ class Mask2D(Mask):
         """
         The 1D indexes of the mask's unmasked pixels (e.g. `value=False`).
         """
-        return mask_2d_util.unmasked_1d_indexes_from(mask_2d=self).astype("int")
+        return mask_2d_util.mask_1d_indexes_from(mask_2d=self).astype("int")
 
     @property
     def edge_1d_indexes(self) -> np.ndarray:

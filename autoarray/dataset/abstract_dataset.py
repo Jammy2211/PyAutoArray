@@ -1,4 +1,5 @@
 import copy
+import logging
 import numpy as np
 from typing import List, Optional, Type, Union
 import warnings
@@ -18,6 +19,8 @@ from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
+
+logger = logging.getLogger(__name__)
 
 
 class AbstractWTilde:
@@ -207,8 +210,8 @@ class AbstractDataset:
 
             noise_map = Array2D.manual_slim(
                 array=np.diag(noise_covariance_matrix),
-                shape_native=image.shape_native,
-                pixel_scales=image.shape_native,
+                shape_native=data.shape_native,
+                pixel_scales=data.shape_native,
             )
 
         elif noise_map is None and noise_covariance_matrix is None:

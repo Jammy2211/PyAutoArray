@@ -258,14 +258,26 @@ class Imaging(AbstractDataset):
             array=unmasked_imaging.noise_map.native, mask=mask.mask_sub_1
         )
 
-        # if unmasked_imaging.noise_covariance_matrix is not None:
-        #
-        #     noise_covariance_matrix =
+        if unmasked_imaging.noise_covariance_matrix is not None:
+
+            noise_covariance_matrix = unmasked_imaging.noise_covariance_matrix
+
+            noise_covariance_matrix = np.delete(
+                noise_covariance_matrix, mask.unmasked_1d_indexes, 0
+            )
+            noise_covariance_matrix = np.delete(
+                noise_covariance_matrix, mask.unmasked_1d_indexes, 1
+            )
+
+        else:
+
+            noise_covariance_matrix = None
 
         imaging = Imaging(
             image=image,
             noise_map=noise_map,
             psf=self.psf_unormalized,
+            noise_covariance_matrix=noise_covariance_matrix,
             settings=self.settings,
             pad_for_convolver=True,
         )

@@ -643,14 +643,18 @@ def mask_2d_via_shape_native_and_native_for_slim(
 
 
 @numba_util.jit()
-def unmasked_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
+def mask_1d_indexes_from(
+    mask_2d: np.ndarray, return_masked_indexes: bool = True
+) -> np.ndarray:
     """
-    Returns a 1D array listing all unmasked pixel indexes (`value=False`) in the mask.
+    Returns a 1D array listing all masked (`value=True`) or unmasked pixel indexes (`value=False`) in the mask.
 
     Parameters
     ----------
     mask_2d
         The mask for which the 1D unmasked pixel indexes are computed.
+    return_masked_indexes
+        Whether to return the masked index values (`value=True`) or the unmasked index values (`value=False`).
 
     Returns
     -------
@@ -658,30 +662,30 @@ def unmasked_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
         The 1D indexes of all unmasked pixels on the mask.
     """
 
-    unmasked_pixel_total = 0
+    mask_pixel_total = 0
 
     for y in range(0, mask_2d.shape[0]):
         for x in range(0, mask_2d.shape[1]):
 
-            if not mask_2d[y, x]:
+            if mask_2d[y, x] == return_masked_indexes:
 
-                unmasked_pixel_total += 1
+                mask_pixel_total += 1
 
-    unmasked_pixels = np.zeros(unmasked_pixel_total)
-    unmasked_index = 0
+    mask_pixels = np.zeros(mask_pixel_total)
+    mask_index = 0
     regular_index = 0
 
     for y in range(0, mask_2d.shape[0]):
         for x in range(0, mask_2d.shape[1]):
 
-            if not mask_2d[y, x]:
+            if mask_2d[y, x] == return_masked_indexes:
 
-                unmasked_pixels[unmasked_index] = regular_index
-                unmasked_index += 1
+                mask_pixels[mask_index] = regular_index
+                mask_index += 1
 
             regular_index += 1
 
-    return unmasked_pixels
+    return mask_pixels
 
 
 @numba_util.jit()

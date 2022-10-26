@@ -718,7 +718,7 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        unmasked_pixels_util = aa.util.mask_2d.unmasked_1d_indexes_from(mask_2d=mask)
+        unmasked_pixels_util = aa.util.mask_2d.mask_1d_indexes_from(mask_2d=mask)
 
         assert mask.unmasked_1d_indexes == pytest.approx(unmasked_pixels_util, 1e-4)
 
