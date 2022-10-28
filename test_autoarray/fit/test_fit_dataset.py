@@ -1,7 +1,9 @@
+import pytest
+
 import autoarray as aa
 
 
-def test__inversion_figure_of_merit(masked_imaging_7x7, model_image_7x7):
+def test__figure_of_merit__with_inversion(masked_imaging_7x7, model_image_7x7):
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper(regularization=aa.m.MockRegularization())],
@@ -32,3 +34,33 @@ def test__inversion_figure_of_merit(masked_imaging_7x7, model_image_7x7):
     )
 
     assert fit.figure_of_merit == fit.log_likelihood
+
+
+def test__figure_of_merit__with_noise_covariance_matrix_in_dataset(
+    masked_imaging_covariance_7x7, model_image_7x7, masked_imaging_7x7
+):
+
+    fit = aa.m.MockFitImaging(
+        dataset=masked_imaging_covariance_7x7,
+        use_mask_in_fit=False,
+        model_data=model_image_7x7,
+    )
+
+    chi_squared = aa.util.fit.chi_squared_with_noise_covariance_from(
+        residual_map=fit.residual_map,
+        noise_covariance_matrix_inv=masked_imaging_covariance_7x7.noise_covariance_matrix_inv,
+    )
+
+    assert fit.chi_squared == chi_squared
+
+    assert fit.figure_of_merit == pytest.approx(
+        -0.5 * (fit.chi_squared + fit.noise_normalization), 1.0e-4
+    )
+
+    fit = aa.m.MockFitImaging(
+        dataset=masked_imaging_7x7,
+        use_mask_in_fit=False,
+        model_data=model_image_7x7,
+    )
+
+    assert fit.chi_squared != pytest.approx(chi_squared, 1.0e-4)

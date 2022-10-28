@@ -5,7 +5,7 @@ from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.mat_plot import AutoLabels
 from autoarray.plot.abstract_plotters import Plotter
-from autoarray.dataset.imaging import Imaging
+from autoarray.dataset.imaging.imaging import Imaging
 
 
 class ImagingPlotterMeta(Plotter):

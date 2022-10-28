@@ -14,7 +14,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
-from autoarray.dataset.imaging import WTildeImaging
+from autoarray.dataset.imaging.w_tilde import WTildeImaging
 
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util

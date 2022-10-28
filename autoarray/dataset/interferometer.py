@@ -1,7 +1,6 @@
 import logging
 import numpy as np
-import copy
-from typing import List, Optional
+from typing import List
 
 from autoconf import cached_property
 
@@ -75,7 +74,6 @@ class SettingsInterferometer(AbstractSettingsDataset):
         sub_size_pixelization=1,
         fractional_accuracy: float = 0.9999,
         sub_steps: List[int] = None,
-        signal_to_noise_limit: Optional[float] = None,
         transformer_class=TransformerNUFFT,
     ):
         """
@@ -102,10 +100,7 @@ class SettingsInterferometer(AbstractSettingsDataset):
         sub_steps : [int]
             If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        signal_to_noise_limit
-            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
-            signa to noise limit.
-          """
+        """
 
         super().__init__(
             grid_class=grid_class,
@@ -114,7 +109,6 @@ class SettingsInterferometer(AbstractSettingsDataset):
             sub_size_pixelization=sub_size_pixelization,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
-            signal_to_noise_limit=signal_to_noise_limit,
         )
 
         self.transformer_class = transformer_class
@@ -128,14 +122,11 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask,
         settings=SettingsInterferometer(),
-        name=None,
     ):
 
         self.real_space_mask = real_space_mask
 
-        super().__init__(
-            data=visibilities, noise_map=noise_map, name=name, settings=settings
-        )
+        super().__init__(data=visibilities, noise_map=noise_map, settings=settings)
 
         self.uv_wavelengths = uv_wavelengths
 
@@ -193,7 +184,6 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=self.uv_wavelengths,
             real_space_mask=self.real_space_mask,
             settings=settings,
-            name=self.name,
         )
 
     @cached_property
@@ -304,28 +294,6 @@ class Interferometer(AbstractDataset):
     def convolver(self):
         return None
 
-    def signal_to_noise_limited_from(self, signal_to_noise_limit, mask=None):
-
-        interferometer = copy.deepcopy(self)
-
-        noise_map_limit_real = np.where(
-            np.real(self.signal_to_noise_map) > signal_to_noise_limit,
-            np.real(self.visibilities) / signal_to_noise_limit,
-            np.real(self.noise_map),
-        )
-
-        noise_map_limit_imag = np.where(
-            np.imag(self.signal_to_noise_map) > signal_to_noise_limit,
-            np.imag(self.visibilities) / signal_to_noise_limit,
-            np.imag(self.noise_map),
-        )
-
-        interferometer.noise_map = VisibilitiesNoiseMap(
-            visibilities=noise_map_limit_real + 1j * noise_map_limit_imag
-        )
-
-        return interferometer
-
     def output_to_fits(
         self,
         visibilities_path=None,
@@ -383,13 +351,12 @@ class AbstractSimulatorInterferometer:
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
-    def via_image_from(self, image, name=None):
+    def via_image_from(self, image):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        name
         real_space_image
             The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
         real_space_pixel_scales
@@ -435,7 +402,6 @@ class AbstractSimulatorInterferometer:
             noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
             real_space_mask=image.mask,
-            name=name,
         )
 
 

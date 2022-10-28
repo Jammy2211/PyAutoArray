@@ -6,6 +6,7 @@ from typing import Dict, Optional
 import numpy as np
 
 from autoarray import type as ty
+from autoarray.dataset.abstract_dataset import AbstractDataset
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.abstract_mask import Mask
@@ -13,7 +14,7 @@ from autoarray.numba_util import profile_func
 from autoarray.structures.abstract_structure import Structure
 
 
-class AbstractFit(ABC):
+class AbstractFitInversion(ABC):
     @property
     @abstractmethod
     def data(self) -> ty.DataLike:
@@ -110,7 +111,7 @@ class AbstractFit(ABC):
         )
 
 
-class SimpleFit(AbstractFit):
+class SimpleFit(AbstractFitInversion):
     def __init__(self, data, model_data, noise_map):
         self._data = data
         self._model_data = model_data
@@ -129,12 +130,12 @@ class SimpleFit(AbstractFit):
         return self._model_data
 
 
-class FitDataset(AbstractFit):
+class FitDataset(AbstractFitInversion):
 
     # noinspection PyUnresolvedReferences
     def __init__(
         self,
-        dataset,
+        dataset: AbstractDataset,
         use_mask_in_fit: bool = False,
         profiling_dict: Optional[Dict] = None,
     ):
@@ -233,7 +234,18 @@ class FitDataset(AbstractFit):
     def chi_squared(self) -> float:
         """
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
+
+        If the dataset includes a noise covariance matrix, this is used instead to account for covariance in the
+        goodness-of-fit.
         """
+
+        if self.dataset.noise_covariance_matrix is not None:
+
+            return fit_util.chi_squared_with_noise_covariance_from(
+                residual_map=self.residual_map,
+                noise_covariance_matrix_inv=self.dataset.noise_covariance_matrix_inv,
+            )
+
         if self.use_mask_in_fit:
             return fit_util.chi_squared_with_mask_from(
                 chi_squared_map=self.chi_squared_map, mask=self.mask

@@ -384,6 +384,26 @@ def chi_squared_complex_with_mask_from(
     return chi_squared_real + chi_squared_imag
 
 
+def chi_squared_with_noise_covariance_from(
+    *, residual_map: Structure, noise_covariance_matrix_inv: np.ndarray
+) -> float:
+    """
+    Returns the chi-squared value of the fit of model-data to a masked dataset, where
+    the noise correlation is described by a covariance matrix of n^2 x n^2 dimensions.
+
+    Chi_Squared = r C^{-1} r, where C^{-1} is the inverse of the covariance matrix
+
+    Parameters
+    -----------
+    residual_map
+        The residual-map of the model-data fit to the dataset.
+    noise_covariance_matrix_inv
+        The inverse of the noise covariance matrix.
+    """
+
+    return residual_map @ noise_covariance_matrix_inv @ residual_map
+
+
 def noise_normalization_complex_with_mask_from(
     *, noise_map: Structure, mask: Mask
 ) -> float:

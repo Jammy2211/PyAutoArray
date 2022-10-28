@@ -167,6 +167,16 @@ def make_noise_map_7x7():
     return aa.Array2D.full(fill_value=2.0, shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
+def make_noise_covariance_matrix_7x7():
+
+    noise_covariance_matrix_7x7 = np.eye(N=49, M=49)
+
+    noise_covariance_matrix_7x7[:, 24] = 1.0
+    noise_covariance_matrix_7x7[24, :] = 1.0
+
+    return noise_covariance_matrix_7x7
+
+
 def make_grid_2d_irregular_7x7():
     return aa.Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)])
 
@@ -183,7 +193,14 @@ def make_imaging_7x7():
         image=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        name="mock_imaging_7x7",
+    )
+
+
+def make_imaging_covariance_7x7():
+    return aa.Imaging(
+        image=make_image_7x7(),
+        psf=make_psf_3x3(),
+        noise_covariance_matrix=make_noise_covariance_matrix_7x7(),
     )
 
 
@@ -192,7 +209,6 @@ def make_imaging_7x7_no_blur():
         image=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        name="mock_imaging_7x7",
     )
 
 
@@ -283,6 +299,13 @@ def make_transformer_7x7_7():
 def make_masked_imaging_7x7():
 
     imaging_7x7 = make_imaging_7x7()
+
+    return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
+
+
+def make_masked_imaging_covariance_7x7():
+
+    imaging_7x7 = make_imaging_covariance_7x7()
 
     return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
 

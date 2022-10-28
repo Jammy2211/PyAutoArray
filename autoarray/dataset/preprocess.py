@@ -475,3 +475,94 @@ def data_with_complex_gaussian_noise_added(data, sigma, seed=-1):
     )
 
     return data + gaussian_noise[:, 0] + 1.0j * gaussian_noise[:, 1]
+
+
+def noise_map_with_signal_to_noise_limit_from(
+    data, noise_map, signal_to_noise_limit, noise_limit_mask=None
+):
+    """
+    Given data and its noise map, increase the noise-values of all data points which signal to noise is above an input
+    `signal_to_noise_limit`, such that the signal to noise values do not exceed this limit.
+
+    This may be performed for imaging data with extremely high signal-to-noise regions in the data which are poorly
+    fit my the model. By downweighting their signal to noise values, the model-fit with focus on other parts of the
+    data with low S/N.
+
+    A `noise_limit_mask` can be input, such that only noise values corresponding to `False` entries are scaled to the
+    capped value.
+
+    Parameters
+    ----------
+    data
+        The data values whose S/N is used to scale the noise-map.
+    noise_map
+        The noise-map whose values are increased to limit the S/N values.
+    signal_to_noise_limit
+        The value of signal-to-noise which noise values are increased to match, if the original value exceeds
+        this S/N value.
+    noise_limit_mask
+        A mask where noise-map scaling is applied to all `False` entries.
+
+    Returns
+    -------
+    The noise map with values scaled such that the signal-to-noise values do not exceed the limit value.
+    """
+
+    from autoarray.mask.mask_2d import Mask2D
+    from autoarray.structures.arrays.uniform_1d import Array1D
+    from autoarray.structures.arrays.uniform_2d import Array2D
+
+    # TODO : Refacotr into a util
+
+    signal_to_noise_map = np.divide(data, noise_map)
+    signal_to_noise_map[signal_to_noise_map < 0] = 0
+
+    if noise_limit_mask is None:
+        noise_limit_mask = np.full(fill_value=False, shape=data.shape_native)
+
+    noise_map_limit = np.where(
+        (signal_to_noise_map.native > signal_to_noise_limit)
+        & (noise_limit_mask == False),
+        np.abs(data.native) / signal_to_noise_limit,
+        noise_map.native,
+    )
+
+    mask = Mask2D.unmasked(
+        shape_native=data.shape_native, pixel_scales=data.pixel_scales
+    )
+
+    if len(noise_map.native) == 1:
+        return Array1D.manual_mask(array=noise_map_limit, mask=mask)
+    return Array2D.manual_mask(noise_map_limit, mask=mask)
+
+
+def visibilities_noise_map_with_signal_to_noise_limit_from(
+    data, noise_map, signal_to_noise_limit
+):
+
+    from autoarray.structures.visibilities import VisibilitiesNoiseMap
+
+    # TODO : Refacotr into a util
+
+    signal_to_noise_map_real = np.divide(np.real(data), np.real(noise_map))
+    signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0
+    signal_to_noise_map_imag = np.divide(np.imag(data), np.imag(noise_map))
+    signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
+
+    signal_to_noise_map = signal_to_noise_map_real + 1j * signal_to_noise_map_imag
+
+    noise_map_limit_real = np.where(
+        np.real(signal_to_noise_map) > signal_to_noise_limit,
+        np.real(data) / signal_to_noise_limit,
+        np.real(noise_map),
+    )
+
+    noise_map_limit_imag = np.where(
+        np.imag(signal_to_noise_map) > signal_to_noise_limit,
+        np.imag(data) / signal_to_noise_limit,
+        np.imag(noise_map),
+    )
+
+    return VisibilitiesNoiseMap(
+        visibilities=noise_map_limit_real + 1j * noise_map_limit_imag
+    )

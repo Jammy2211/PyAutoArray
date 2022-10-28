@@ -1,10 +1,12 @@
 import copy
+import logging
 import numpy as np
-import pickle
 from typing import List, Optional, Type, Union
 import warnings
 
+from autoconf import cached_property
 from autoconf import conf
+
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -17,6 +19,8 @@ from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
+
+logger = logging.getLogger(__name__)
 
 
 class AbstractWTilde:
@@ -99,8 +103,6 @@ class AbstractSettingsDataset:
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
         sub_steps: Optional[List[int]] = None,
-        signal_to_noise_limit: Optional[float] = None,
-        signal_to_noise_limit_radii: Optional[float] = None,
     ):
         """
         A dataset is a collection of data structures (e.g. the data, noise-map, PSF), a mask, grid, convolver
@@ -131,9 +133,6 @@ class AbstractSettingsDataset:
         sub_steps : [int]
             If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
-        signal_to_noise_limit
-            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
-            signa to noise limit.
         """
 
         self.grid_class = grid_class
@@ -147,8 +146,6 @@ class AbstractSettingsDataset:
             sub_steps = [2, 4, 8, 16]
 
         self.sub_steps = sub_steps
-        self.signal_to_noise_limit = signal_to_noise_limit
-        self.signal_to_noise_limit_radii = signal_to_noise_limit_radii
 
     def grid_from(self, mask) -> Union[Grid1D, Grid2D]:
 
@@ -176,8 +173,8 @@ class AbstractDataset:
         self,
         data: Union[Array1D, Array2D, VectorYX2D, Visibilities],
         noise_map: Union[Array1D, Array2D, VectorYX2D, VisibilitiesNoiseMap],
+        noise_covariance_matrix: Optional[np.ndarray] = None,
         settings=AbstractSettingsDataset(),
-        name: str = None,
     ):
         """
         A collection of abstract data structures for different types of data (an image, pixel-scale, noise-map, etc.)
@@ -194,37 +191,36 @@ class AbstractDataset:
         self.data = data
         self.noise_map = noise_map
         self.settings = settings
-        self._name = name if name is not None else "dataset"
 
         mask = self.mask
 
-        if settings.signal_to_noise_limit is not None:
+        self.noise_covariance_matrix = noise_covariance_matrix
 
-            if settings.signal_to_noise_limit_radii is not None:
+        if noise_map is None and noise_covariance_matrix is not None:
 
-                signal_to_noise_mask = Mask2D.circular(
-                    shape_native=mask.shape_native,
-                    radius=settings.signal_to_noise_limit_radii,
-                    pixel_scales=mask.pixel_scales,
-                )
+            logger.info(
+                """
+                No noise map was input into the Imaging class, but a `noise_covariance_matrix` was.
 
-            else:
+                Using the diagonal of the `noise_covariance_matrix` to create the `noise_map`. 
 
-                signal_to_noise_mask = Mask2D.unmasked(
-                    shape_native=data.shape_native, pixel_scales=mask.pixel_scales
-                )
-
-            noise_map_limit = np.where(
-                (self.signal_to_noise_map.native > settings.signal_to_noise_limit)
-                & (signal_to_noise_mask == False),
-                np.abs(data.native) / settings.signal_to_noise_limit,
-                self.noise_map.native,
+                This `noise-map` is used only for visualization where it is not appropriate to plot covariance.
+                """
             )
 
-            if len(self.noise_map.native) == 1:
-                noise_map = Array1D.manual_mask(array=noise_map_limit, mask=mask)
-            else:
-                noise_map = Array2D.manual_mask(noise_map_limit, mask=mask)
+            noise_map = Array2D.manual_slim(
+                array=np.diag(noise_covariance_matrix),
+                shape_native=data.shape_native,
+                pixel_scales=data.shape_native,
+            )
+
+        elif noise_map is None and noise_covariance_matrix is None:
+
+            raise exc.DatasetException(
+                """
+                No noise map or noise_covariance_matrix was passed to the Imaging object.
+                """
+            )
 
         self.noise_map = noise_map
 
@@ -258,27 +254,6 @@ class AbstractDataset:
     @property
     def mask(self) -> Union[Mask1D, Mask2D]:
         return self.data.mask
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @classmethod
-    def load(cls, filename) -> "AbstractDataset":
-        """
-        Load the dataset at the specified filename
-
-        Parameters
-        ----------
-        filename
-            The filename containing the dataset
-
-        Returns
-        -------
-        The dataset
-        """
-        with open(filename, "rb") as f:
-            return pickle.load(f)
 
     @property
     def inverse_noise_map(self) -> Union[Array1D, Array2D]:
@@ -333,6 +308,18 @@ class AbstractDataset:
         The maximum value of the potential chi-squared-map.
         """
         return np.max(self.potential_chi_squared_map)
+
+    @cached_property
+    def noise_covariance_matrix_inv(self) -> np.ndarray:
+        """
+        Returns the inverse of the noise covariance matrix, which is used when computing a chi-squared which accounts
+        for covariance via a fit.
+
+        Returns
+        -------
+        The inverse of the noise covariance matrix.
+        """
+        return np.linalg.inv(self.noise_covariance_matrix)
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
 

@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-from autoarray.dataset.imaging import Imaging
+from autoarray.dataset.imaging.imaging import Imaging
 from autoarray.fit.fit_dataset import FitDataset
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
