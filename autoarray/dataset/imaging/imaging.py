@@ -12,6 +12,7 @@ from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
+from autoarray import type as ty
 
 from autoarray import exc
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
@@ -78,23 +79,18 @@ class Imaging(AbstractDataset):
             settings=settings,
         )
 
-        self.psf_unormalized = psf
+        if psf is not None and settings.use_normalized_psf:
 
-        if psf is not None:
-
-            self.psf_normalized = Kernel2D.manual_native(
+            psf = Kernel2D.manual_native(
                 array=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
+
+        self.psf = psf
+
 
     @property
     def image(self):
         return self.data
-
-    @property
-    def psf(self):
-        if self.settings.use_normalized_psf:
-            return self.psf_normalized
-        return self.psf_unormalized
 
     @cached_property
     def blurring_grid(self) -> Grid2D:
@@ -175,15 +171,15 @@ class Imaging(AbstractDataset):
     @classmethod
     def from_fits(
         cls,
-        image_path,
-        pixel_scales,
-        noise_map_path,
-        image_hdu=0,
-        noise_map_hdu=0,
-        psf_path=None,
-        psf_hdu=0,
+        image_path : str,
+        pixel_scales: ty.PixelScales,
+        noise_map_path: str,
+        image_hdu:int=0,
+        noise_map_hdu:int=0,
+        psf_path:str=None,
+        psf_hdu:int=0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-    ):
+    ) -> "Imaging":
         """
         Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the imaging-data.
@@ -283,7 +279,7 @@ class Imaging(AbstractDataset):
         imaging = Imaging(
             image=image,
             noise_map=noise_map,
-            psf=self.psf_unormalized,
+            psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
             settings=self.settings,
             pad_for_convolver=True,
@@ -312,14 +308,14 @@ class Imaging(AbstractDataset):
         return Imaging(
             image=self.image,
             noise_map=self.noise_map,
-            psf=self.psf_unormalized,
+            psf=self.psf,
             noise_covariance_matrix=self.noise_covariance_matrix,
             settings=settings,
             pad_for_convolver=self.pad_for_convolver,
         )
 
     def output_to_fits(
-        self, image_path, psf_path=None, noise_map_path=None, overwrite=False
+        self, image_path:str, psf_path:str=None, noise_map_path:str=None, overwrite:bool=False
     ):
         self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
 
