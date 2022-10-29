@@ -234,7 +234,9 @@ class Figure(AbstractMatWrap):
         if not plt.fignum_exists(num=1):
             config_dict = self.config_dict
             config_dict.pop("aspect")
-            plt.figure(**config_dict)
+            fig = plt.figure(**config_dict)
+            return fig, plt.gca()
+        return None, None
 
     def close(self):
         """
@@ -413,17 +415,17 @@ class Colorbar(AbstractMatWrap):
         self.manual_tick_labels = manual_tick_labels
         self.manual_tick_values = manual_tick_values
 
-    def set(self):
+    def set(self, ax=None):
         """
         Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
         """
 
         if self.manual_tick_values is None and self.manual_tick_labels is None:
-            cb = plt.colorbar(**self.config_dict)
+            cb = plt.colorbar(**self.config_dict, ax=ax)
         elif (
             self.manual_tick_values is not None and self.manual_tick_labels is not None
         ):
-            cb = plt.colorbar(ticks=self.manual_tick_values, **self.config_dict)
+            cb = plt.colorbar(ticks=self.manual_tick_values, ax=ax, **self.config_dict)
             cb.ax.set_yticklabels(labels=self.manual_tick_labels)
         else:
             raise exc.PlottingException(
@@ -433,7 +435,7 @@ class Colorbar(AbstractMatWrap):
 
         return cb
 
-    def set_with_color_values(self, cmap: str, color_values: np.ndarray):
+    def set_with_color_values(self, cmap: str, color_values: np.ndarray, ax=None):
         """
         Set the figure's colorbar using an array of already known color values.
 
@@ -449,9 +451,9 @@ class Colorbar(AbstractMatWrap):
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
 
-        fignums = plt.get_fignums()
-        fig = plt.figure(fignums[0])
-        ax = fig.axes[0]
+        # fignums = plt.get_fignums()
+        # fig = plt.figure(fignums[0])
+        # ax = fig.axes[0]
 
         mappable = cm.ScalarMappable(cmap=cmap)
         mappable.set_array(color_values)

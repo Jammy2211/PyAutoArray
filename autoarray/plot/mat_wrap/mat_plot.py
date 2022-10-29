@@ -197,11 +197,13 @@ class AbstractMatPlot:
             columns = subplot_rows_columns[1]
 
         if aspect is None:
-            plt.subplot(rows, columns, self.subplot_index)
+            ax = plt.subplot(rows, columns, self.subplot_index)
         else:
-            plt.subplot(rows, columns, self.subplot_index, aspect=float(aspect))
+            ax = plt.subplot(rows, columns, self.subplot_index, aspect=float(aspect))
 
         self.subplot_index += 1
+
+        return ax
 
 
 class MatPlot1D(AbstractMatPlot):
@@ -341,12 +343,14 @@ class MatPlot1D(AbstractMatPlot):
         if (y is None) or np.count_nonzero(y) == 0:
             return
 
+        ax = None
+
         if (not self.is_for_subplot) and (not self.is_for_multi_plot):
-            self.figure.open()
+            fig, ax = self.figure.open()
         else:
             if not bypass:
                 if self.is_for_subplot:
-                    self.setup_subplot()
+                    ax = self.setup_subplot()
 
         self.title.set(auto_title=auto_labels.title)
 
@@ -634,11 +638,13 @@ class MatPlot2D(AbstractMatPlot):
 
             extent = array.extent
 
+        ax = None
+
         if not self.is_for_subplot:
-            self.figure.open()
+            fig, ax = self.figure.open()
         else:
             if not bypass:
-                self.setup_subplot()
+                ax = self.setup_subplot()
 
         aspect = self.figure.aspect_from(shape_native=array.shape_native)
         norm_scale = self.cmap.norm_from(array=array)
@@ -693,7 +699,7 @@ class MatPlot2D(AbstractMatPlot):
             [text.set() for text in self.text]
 
         if self.colorbar is not False:
-            cb = self.colorbar.set()
+            cb = self.colorbar.set(ax=ax)
             self.colorbar_tickparams.set(cb=cb)
 
         grid_indexes = None
@@ -729,9 +735,9 @@ class MatPlot2D(AbstractMatPlot):
         """
 
         if not self.is_for_subplot:
-            self.figure.open()
+            fig, ax = self.figure.open()
         else:
-            self.setup_subplot()
+            ax = self.setup_subplot()
 
         if color_array is None:
 
@@ -762,7 +768,7 @@ class MatPlot2D(AbstractMatPlot):
             if self.colorbar is not None:
 
                 colorbar = self.colorbar.set_with_color_values(
-                    cmap=self.cmap.cmap, color_values=color_array
+                    cmap=self.cmap.cmap, color_values=color_array, ax=ax
                 )
                 if colorbar is not None and self.colorbar_tickparams is not None:
                     self.colorbar_tickparams.set(cb=colorbar)
@@ -869,9 +875,9 @@ class MatPlot2D(AbstractMatPlot):
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
         if not self.is_for_subplot:
-            self.figure.open()
+            fig, ax = self.figure.open()
         else:
-            self.setup_subplot(aspect=aspect_inv)
+            ax = self.setup_subplot(aspect=aspect_inv)
 
         if source_pixelilzation_values is not None:
             self.plot_array(
@@ -927,9 +933,9 @@ class MatPlot2D(AbstractMatPlot):
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
         if not self.is_for_subplot:
-            self.figure.open()
+            fig, ax = self.figure.open()
         else:
-            self.setup_subplot(aspect=aspect_inv)
+            ax = self.setup_subplot(aspect=aspect_inv)
 
         self.axis.set(extent=extent, grid=mapper.source_mesh_grid)
 
@@ -953,6 +959,7 @@ class MatPlot2D(AbstractMatPlot):
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,
             aspect=aspect_inv,
+            ax=ax
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -982,9 +989,9 @@ class MatPlot2D(AbstractMatPlot):
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
         if not self.is_for_subplot:
-            self.figure.open()
+            fig, ax = self.figure.open()
         else:
-            self.setup_subplot(aspect=aspect_inv)
+            ax = self.setup_subplot(aspect=aspect_inv)
 
         self.axis.set(extent=extent, grid=mapper.source_mesh_grid)
 
@@ -1011,6 +1018,7 @@ class MatPlot2D(AbstractMatPlot):
                 cmap=self.cmap,
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
+                ax=ax
             )
 
         else:
@@ -1022,6 +1030,7 @@ class MatPlot2D(AbstractMatPlot):
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
                 aspect=aspect_inv,
+                ax=ax
             )
 
         self.title.set(auto_title=auto_labels.title)

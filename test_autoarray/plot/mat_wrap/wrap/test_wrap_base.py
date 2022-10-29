@@ -236,13 +236,13 @@ class TestColorbar:
 
         figure = aplt.Figure()
 
-        figure.open()
+        fig, ax = figure.open()
         plt.imshow(np.ones((2, 2)))
         cb = aplt.Colorbar(fraction=1.0, pad=2.0)
-        cb.set()
+        cb.set(ax=ax)
         figure.close()
 
-        figure.open()
+        fig, ax = figure.open()
         plt.imshow(np.ones((2, 2)))
         cb = aplt.Colorbar(
             fraction=0.1,
@@ -250,13 +250,13 @@ class TestColorbar:
             manual_tick_values=[0.25, 0.5, 0.75],
             manual_tick_labels=[1.0, 2.0, 3.0],
         )
-        cb.set()
+        cb.set(ax=ax)
         figure.close()
 
-        figure.open()
+        fig, ax = figure.open()
         plt.imshow(np.ones((2, 2)))
         cb = aplt.Colorbar(fraction=0.1, pad=0.5)
-        cb.set_with_color_values(cmap=aplt.Cmap().cmap, color_values=[1.0, 2.0, 3.0])
+        cb.set_with_color_values(cmap=aplt.Cmap().cmap, color_values=[1.0, 2.0, 3.0], ax=ax)
         figure.close()
 
 

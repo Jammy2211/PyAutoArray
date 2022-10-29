@@ -522,6 +522,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         cmap: Optional[wb.Cmap],
         colorbar: Optional[wb.Colorbar],
         colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
+        ax=None
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `mesh_grid` which contains the (y,x)
@@ -538,6 +539,10 @@ class VoronoiDrawer(AbstractMatWrap2D):
         colorbar
             The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
         """
+
+        if ax is None:
+            ax = plt.gca()
+
         regions, vertices = mesh_util.voronoi_revised_from(voronoi=mapper.voronoi)
 
         if pixel_values is not None:
@@ -558,7 +563,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
             if colorbar is not None:
 
                 cb = colorbar.set_with_color_values(
-                    cmap=cmap, color_values=color_values
+                    cmap=cmap, color_values=color_values, ax=ax
                 )
 
                 if cb is not None and colorbar_tickparams is not None:
@@ -601,6 +606,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         colorbar: wb.Colorbar,
         colorbar_tickparams: wb.ColorbarTickParams = None,
         aspect=None,
+        ax=None,
     ):
         """
         Given a `Mapper` and a corresponding array of `pixel_values` (e.g. the reconstruction values of a Delaunay
@@ -649,7 +655,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         if colorbar is not None:
 
             colorbar = colorbar.set_with_color_values(
-                cmap=cmap, color_values=color_values
+                cmap=cmap, color_values=color_values, ax=ax
             )
             if colorbar is not None and colorbar_tickparams is not None:
                 colorbar_tickparams.set(cb=colorbar)
