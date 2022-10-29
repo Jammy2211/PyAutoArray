@@ -959,7 +959,7 @@ class MatPlot2D(AbstractMatPlot):
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,
             aspect=aspect_inv,
-            ax=ax
+            ax=ax,
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -1018,7 +1018,7 @@ class MatPlot2D(AbstractMatPlot):
                 cmap=self.cmap,
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
-                ax=ax
+                ax=ax,
             )
 
         else:
@@ -1030,7 +1030,7 @@ class MatPlot2D(AbstractMatPlot):
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
                 aspect=aspect_inv,
-                ax=ax
+                ax=ax,
             )
 
         self.title.set(auto_title=auto_labels.title)

@@ -522,7 +522,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         cmap: Optional[wb.Cmap],
         colorbar: Optional[wb.Colorbar],
         colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
-        ax=None
+        ax=None,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `mesh_grid` which contains the (y,x)

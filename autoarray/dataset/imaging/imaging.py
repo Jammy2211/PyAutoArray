@@ -87,7 +87,6 @@ class Imaging(AbstractDataset):
 
         self.psf = psf
 
-
     @property
     def image(self):
         return self.data
@@ -171,13 +170,13 @@ class Imaging(AbstractDataset):
     @classmethod
     def from_fits(
         cls,
-        image_path : str,
+        image_path: str,
         pixel_scales: ty.PixelScales,
         noise_map_path: str,
-        image_hdu:int=0,
-        noise_map_hdu:int=0,
-        psf_path:str=None,
-        psf_hdu:int=0,
+        image_hdu: int = 0,
+        noise_map_hdu: int = 0,
+        psf_path: str = None,
+        psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
     ) -> "Imaging":
         """
@@ -315,7 +314,11 @@ class Imaging(AbstractDataset):
         )
 
     def output_to_fits(
-        self, image_path:str, psf_path:str=None, noise_map_path:str=None, overwrite:bool=False
+        self,
+        image_path: str,
+        psf_path: str = None,
+        noise_map_path: str = None,
+        overwrite: bool = False,
     ):
         self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
 

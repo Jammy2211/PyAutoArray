@@ -256,7 +256,9 @@ class TestColorbar:
         fig, ax = figure.open()
         plt.imshow(np.ones((2, 2)))
         cb = aplt.Colorbar(fraction=0.1, pad=0.5)
-        cb.set_with_color_values(cmap=aplt.Cmap().cmap, color_values=[1.0, 2.0, 3.0], ax=ax)
+        cb.set_with_color_values(
+            cmap=aplt.Cmap().cmap, color_values=[1.0, 2.0, 3.0], ax=ax
+        )
         figure.close()
 
 

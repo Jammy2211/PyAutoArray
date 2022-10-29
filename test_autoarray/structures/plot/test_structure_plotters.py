@@ -36,6 +36,7 @@ def test__plot_yx_line__works_with_all_extras_included(plot_path, plot_patch):
 
     assert path.join(plot_path, "yx_1.png") in plot_patch.paths
 
+
 def test__array__works_with_all_extras_included(
     array_2d_7x7,
     mask_2d_7x7,
@@ -89,6 +90,7 @@ def test__array__works_with_all_extras_included(
     array_plotter.figure_2d()
 
     assert path.join(plot_path, "array3.png") in plot_patch.paths
+
 
 def test__array__fits_files_output_correctly(array_2d_7x7, plot_path):
 
