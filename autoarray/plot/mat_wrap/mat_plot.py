@@ -596,6 +596,7 @@ class MatPlot2D(AbstractMatPlot):
         array: Array2D,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
+        cmap_symmetric:bool = False,
         bypass: bool = False,
     ):
         """

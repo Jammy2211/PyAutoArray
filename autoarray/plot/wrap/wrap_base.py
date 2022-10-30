@@ -1,12 +1,12 @@
+import logging
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
-import pickle
+from typing import Union, List, Optional, Tuple
 
 from autoconf import conf
 from autoarray.structures.arrays.uniform_2d import Array2D
 
-from typing import Union, List, Optional, Tuple
-
+logger = logging.getLogger(__name__)
 
 def set_backend():
 
@@ -332,7 +332,7 @@ class Cmap(AbstractMatWrap):
         else:
             return self.config_dict["vmax"]
 
-    def norm_from(self, array: np.ndarray) -> object:
+    def norm_from(self, array: np.ndarray, cmap_symmetric:bool = False) -> object:
         """
         Returns the `Normalization` object which scales of the colormap.
 
@@ -347,6 +347,20 @@ class Cmap(AbstractMatWrap):
 
         vmin = self.vmin_from(array=array)
         vmax = self.vmax_from(array=array)
+
+        if cmap_symmetric:
+            if vmin < 0.0 and vmax > 0.0:
+                if abs(vmin) > abs(vmax):
+                    vmax = abs(vmin)
+                else:
+                    vmin = -vmax
+            else:
+                logger.info(
+                    """
+                    Cannot make symmetric Cmap (e.g. vmax = -vmin) because 
+                    both vmin and vmax are positive or negative.
+                    """
+                )
 
         if isinstance(self.config_dict["norm"], colors.Normalize):
             return self.config_dict["norm"]

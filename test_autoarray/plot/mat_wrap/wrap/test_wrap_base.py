@@ -171,6 +171,24 @@ class TestCmap:
         assert norm.vmax == 1.0
         assert norm.linthresh == 2.0
 
+    def test__norm_from__cmap_symmetric_true(self):
+
+        cmap = aplt.Cmap(vmin=-0.5, vmax=1.0, norm="linear")
+
+        norm = cmap.norm_from(array=None, cmap_symmetric=True)
+
+        assert isinstance(norm, colors.Normalize)
+        assert norm.vmin == -1.0
+        assert norm.vmax == 1.0
+
+        cmap = aplt.Cmap(vmin=-2.0, vmax=1.0, norm="linear")
+
+        norm = cmap.norm_from(array=None, cmap_symmetric=True)
+
+        assert isinstance(norm, colors.Normalize)
+        assert norm.vmin == -2.0
+        assert norm.vmax == 2.0
+
     def test__norm_from__uses_array_to_get_vmin_and_max_if_no_manual_input(
         self,
     ):
