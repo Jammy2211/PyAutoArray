@@ -1,3 +1,4 @@
+from copy import copy
 from typing import Callable
 
 from autoarray.plot.abstract_plotters import Plotter
@@ -16,6 +17,7 @@ class FitImagingPlotterMeta(Plotter):
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
+        residuals_symmetric_cmap : bool = True
     ):
         """
         Plots the attributes of `FitImaging` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -41,6 +43,9 @@ class FitImagingPlotterMeta(Plotter):
             Contains visuals that can be overlaid on the plot.
         include_2d
             Specifies which attributes of the `Array2D` are extracted and plotted as visuals.
+        residuals_symmetric_cmap
+            If true, the `residual_map` and `normalized_residual_map` are plotted with a symmetric color map such
+            that `abs(vmin) = abs(vmax)`.
         """
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
@@ -48,6 +53,7 @@ class FitImagingPlotterMeta(Plotter):
 
         self.fit = fit
         self.get_visuals_2d = get_visuals_2d
+        self.residuals_symmetric_cmap = residuals_symmetric_cmap
 
     def figures_2d(
         self,
@@ -122,6 +128,12 @@ class FitImagingPlotterMeta(Plotter):
                 ),
             )
 
+        if self.residuals_symmetric_cmap:
+
+            cmap_original = self.mat_plot_2d.cmap
+
+            self.mat_plot_2d.cmap = self.mat_plot_2d.cmap.symmetric
+
         if residual_map:
 
             self.mat_plot_2d.plot_array(
@@ -142,6 +154,8 @@ class FitImagingPlotterMeta(Plotter):
                     filename=f"normalized_residual_map{suffix}",
                 ),
             )
+
+        self.mat_plot_2d.cmap = cmap_original
 
         if chi_squared_map:
 
