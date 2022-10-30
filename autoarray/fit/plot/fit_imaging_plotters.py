@@ -1,4 +1,3 @@
-from copy import copy
 from typing import Callable
 
 from autoarray.plot.abstract_plotters import Plotter
@@ -128,9 +127,9 @@ class FitImagingPlotterMeta(Plotter):
                 ),
             )
 
-        if self.residuals_symmetric_cmap:
+        cmap_original = self.mat_plot_2d.cmap
 
-            cmap_original = self.mat_plot_2d.cmap
+        if self.residuals_symmetric_cmap:
 
             self.mat_plot_2d.cmap = self.mat_plot_2d.cmap.symmetric
 
@@ -155,7 +154,9 @@ class FitImagingPlotterMeta(Plotter):
                 ),
             )
 
-        self.mat_plot_2d.cmap = cmap_original
+        if self.residuals_symmetric_cmap:
+
+            self.mat_plot_2d.cmap = cmap_original
 
         if chi_squared_map:
 
