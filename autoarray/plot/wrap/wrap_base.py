@@ -1,3 +1,4 @@
+import copy
 import logging
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
@@ -304,19 +305,40 @@ class Axis(AbstractMatWrap):
 
 
 class Cmap(AbstractMatWrap):
-    """
-    Customizes the Matplotlib colormap and its normalization.
 
-    This object wraps the following Matplotlib methods:
+    def __init__(self, symmetric:bool = False, **kwargs):
+        """
+        Customizes the Matplotlib colormap and its normalization.
 
-    - colors.Linear: https://matplotlib.org/3.3.2/tutorials/colors/colormaps.html
-    - colors.LogNorm: https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html
-    - colors.SymLogNorm: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.colors.SymLogNorm.html
+        This object wraps the following Matplotlib methods:
 
-    The cmap that is created is passed into various Matplotlib methods, most notably imshow:
+        - colors.Linear: https://matplotlib.org/3.3.2/tutorials/colors/colormaps.html
+        - colors.LogNorm: https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html
+        - colors.SymLogNorm: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.colors.SymLogNorm.html
 
-    - https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
-    """
+        The cmap that is created is passed into various Matplotlib methods, most notably imshow:
+
+        - https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
+
+        Parameters
+        ----------
+        symmetric
+            If True, the colormap normalization (e.g. `vmin` and `vmax`) span the same absolute values producing a
+            symmetric color bar.
+        """
+
+        super().__init__(**kwargs)
+
+        self._symmetric = symmetric
+
+    @property
+    def symmetric(self):
+
+        cmap = copy.copy(self)
+
+        cmap._symmetric = True
+
+        return cmap
 
     def vmin_from(self, array: np.ndarray):
 
@@ -332,7 +354,7 @@ class Cmap(AbstractMatWrap):
         else:
             return self.config_dict["vmax"]
 
-    def norm_from(self, array: np.ndarray, cmap_symmetric:bool = False) -> object:
+    def norm_from(self, array: np.ndarray) -> object:
         """
         Returns the `Normalization` object which scales of the colormap.
 
@@ -348,7 +370,7 @@ class Cmap(AbstractMatWrap):
         vmin = self.vmin_from(array=array)
         vmax = self.vmax_from(array=array)
 
-        if cmap_symmetric:
+        if self._symmetric:
             if vmin < 0.0 and vmax > 0.0:
                 if abs(vmin) > abs(vmax):
                     vmax = abs(vmin)

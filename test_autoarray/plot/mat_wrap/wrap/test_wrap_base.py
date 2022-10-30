@@ -173,17 +173,18 @@ class TestCmap:
 
     def test__norm_from__cmap_symmetric_true(self):
 
-        cmap = aplt.Cmap(vmin=-0.5, vmax=1.0, norm="linear")
+        cmap = aplt.Cmap(vmin=-0.5, vmax=1.0, norm="linear", symmetric=True)
 
-        norm = cmap.norm_from(array=None, cmap_symmetric=True)
+        norm = cmap.norm_from(array=None)
 
         assert isinstance(norm, colors.Normalize)
         assert norm.vmin == -1.0
         assert norm.vmax == 1.0
 
         cmap = aplt.Cmap(vmin=-2.0, vmax=1.0, norm="linear")
+        cmap = cmap.symmetric
 
-        norm = cmap.norm_from(array=None, cmap_symmetric=True)
+        norm = cmap.norm_from(array=None)
 
         assert isinstance(norm, colors.Normalize)
         assert norm.vmin == -2.0
