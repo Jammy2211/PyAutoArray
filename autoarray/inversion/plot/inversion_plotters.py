@@ -19,6 +19,7 @@ class InversionPlotter(Plotter):
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
+        residuals_symmetric_cmap: bool = True
     ):
         """
         Plots the attributes of `Inversion` objects using the matplotlib method `imshow()` and many other matplotlib
@@ -42,12 +43,16 @@ class InversionPlotter(Plotter):
             Contains 2D visuals that can be overlaid on 2D plots.
         include_2d
             Specifies which attributes of the `Inversion` are extracted and plotted as visuals for 2D plots.
+        residuals_symmetric_cmap
+            If true, the `residual_map` and `normalized_residual_map` are plotted with a symmetric color map such
+            that `abs(vmin) = abs(vmax)`.
         """
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
         self.inversion = inversion
+        self.residuals_symmetric_cmap = residuals_symmetric_cmap
 
     def get_visuals_2d_for_data(self) -> Visuals2D:
         return self.get_2d.via_mapper_for_data_from(
@@ -203,6 +208,12 @@ class InversionPlotter(Plotter):
 
                 pass
 
+        cmap_original = self.mat_plot_2d.cmap
+
+        if self.residuals_symmetric_cmap:
+
+            self.mat_plot_2d.cmap = self.mat_plot_2d.cmap.symmetric
+
         if residual_map:
 
             mapper_plotter.plot_source_from(
@@ -222,6 +233,8 @@ class InversionPlotter(Plotter):
                     title="Normalized Residual Map", filename="normalized_residual_map"
                 ),
             )
+
+        self.mat_plot_2d.cmap = cmap_original
 
         if chi_squared_map:
 

@@ -154,9 +154,7 @@ class FitImagingPlotterMeta(Plotter):
                 ),
             )
 
-        if self.residuals_symmetric_cmap:
-
-            self.mat_plot_2d.cmap = cmap_original
+        self.mat_plot_2d.cmap = cmap_original
 
         if chi_squared_map:
 
