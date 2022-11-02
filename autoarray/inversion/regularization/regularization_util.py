@@ -223,7 +223,7 @@ def reg_split_from(
 
             if j >= max_j:
                 raise exc.MeshException(
-                    "the number of Voronoi natural neighbours exceeds 100."
+                    f"The number of Voronoi natural neighbours exceeds {max_j}."
                 )
 
         if flag == 0:
