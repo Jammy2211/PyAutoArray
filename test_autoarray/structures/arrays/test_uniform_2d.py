@@ -6,8 +6,6 @@ import pytest
 import shutil
 
 import autoarray as aa
-from autoconf import conf
-from autoarray import exc
 
 test_data_dir = path.join(
     "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
@@ -126,15 +124,15 @@ class TestAPI:
     def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask(
         self,
     ):
-        with pytest.raises(exc.ArrayException):
+        with pytest.raises(aa.exc.ArrayException):
             mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
             aa.Array2D.manual_mask(array=[[1.0], [3.0]], mask=mask)
 
-        with pytest.raises(exc.ArrayException):
+        with pytest.raises(aa.exc.ArrayException):
             mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
             aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
-        with pytest.raises(exc.ArrayException):
+        with pytest.raises(aa.exc.ArrayException):
             mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
             aa.Array2D.manual_mask(
                 array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], mask=mask
@@ -143,25 +141,25 @@ class TestAPI:
     def test__exception_raised_if_input_array_is_1d_and_not_number_of_masked_sub_pixels(
         self,
     ):
-        with pytest.raises(exc.ArrayException):
+        with pytest.raises(aa.exc.ArrayException):
             mask = aa.Mask2D.manual(
                 mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
             )
             aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-        with pytest.raises(exc.ArrayException):
+        with pytest.raises(aa.exc.ArrayException):
             mask = aa.Mask2D.manual(
                 mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
             )
             aa.Array2D.manual_mask(array=[1.0, 2.0], mask=mask)
 
-        with pytest.raises(exc.ArrayException):
+        with pytest.raises(aa.exc.ArrayException):
             mask = aa.Mask2D.manual(
                 mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
             )
             aa.Array2D.manual_mask(array=[1.0, 2.0, 4.0], mask=mask)
 
-        with pytest.raises(exc.ArrayException):
+        with pytest.raises(aa.exc.ArrayException):
             mask = aa.Mask2D.manual(
                 mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
             )
