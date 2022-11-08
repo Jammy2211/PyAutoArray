@@ -4,7 +4,7 @@ from typing import Optional
 
 from autoconf import cached_property
 
-from autoarray.dataset.abstract_dataset import AbstractDataset
+from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.imaging.settings import SettingsImaging
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.structures.arrays.uniform_2d import Array2D

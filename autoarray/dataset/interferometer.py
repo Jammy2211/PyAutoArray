@@ -4,9 +4,9 @@ from typing import List
 
 from autoconf import cached_property
 
-from autoarray.dataset.abstract_dataset import AbstractWTilde
-from autoarray.dataset.abstract_dataset import AbstractSettingsDataset
-from autoarray.dataset.abstract_dataset import AbstractDataset
+from autoarray.dataset.abstract.w_tilde import AbstractWTilde
+from autoarray.dataset.abstract.settings import AbstractSettingsDataset
+from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.operators.transformer import TransformerDFT

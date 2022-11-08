@@ -7,6 +7,7 @@ import warnings
 from autoconf import cached_property
 from autoconf import conf
 
+from autoarray.dataset.abstract.settings import AbstractSettingsDataset
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -23,150 +24,6 @@ from autoarray import exc
 logger = logging.getLogger(__name__)
 
 
-class AbstractWTilde:
-    def __init__(self, curvature_preload, noise_map_value):
-        """
-        Packages together all derived data quantities necessary to fit `data (e.g. `Imaging`, Interferometer`) using
-        an ` Inversion` via the w_tilde formalism.
-
-        The w_tilde formalism performs linear algebra formalism in a way that speeds up the construction of the
-        simultaneous linear equations by bypassing the construction of a `mapping_matrix` and precomputing
-        operations like blurring or a Fourier transform.
-
-        Parameters
-        ----------
-        curvature_preload
-            A matrix which uses the imaging's noise-map and PSF to preload as much of the computation of the
-            curvature matrix as possible.
-        noise_map_value
-            The first value of the noise-map used to construct the curvature preload, which is used as a sanity
-            check when performing the inversion to ensure the preload corresponds to the data being fitted.
-        """
-        self.curvature_preload = curvature_preload
-        self.noise_map_value = noise_map_value
-
-    def check_noise_map(self, noise_map):
-
-        if noise_map[0] != self.noise_map_value:
-            raise exc.InversionException(
-                "The preloaded values of WTildeImaging are not consistent with the noise-map passed to them, thus "
-                "they cannot be used for the inversion."
-                ""
-                f"The value of the noise map is {noise_map[0]} whereas in WTildeImaging it is {self.noise_map_value}"
-                ""
-                "Update WTildeImaging or do not use the w_tilde formalism to perform the Inversion."
-            )
-
-
-def grid_via_grid_class_from(
-    mask: Union[Mask1D, Mask2D],
-    grid_class: Union[Type[Grid1D], Type[Grid2D]],
-    fractional_accuracy: float,
-    relative_accuracy: Optional[float],
-    sub_steps: List[int],
-) -> Optional[Union[Grid1D, Grid2D, Grid2DIterate]]:
-
-    if mask.pixel_scales is None:
-        return None
-
-    if grid_class is None:
-        if isinstance(mask, Mask1D):
-            grid_class = Grid1D
-        elif isinstance(mask, Mask2D):
-            grid_class = Grid2D
-
-    if grid_class is Grid1D:
-
-        return Grid1D.from_mask(mask=mask)
-
-    if grid_class is Grid2D:
-
-        return Grid2D.from_mask(mask=mask)
-
-    elif grid_class is Grid2DIterate:
-
-        return Grid2DIterate.from_mask(
-            mask=mask,
-            fractional_accuracy=fractional_accuracy,
-            relative_accuracy=relative_accuracy,
-            sub_steps=sub_steps,
-        )
-
-
-class AbstractSettingsDataset:
-    def __init__(
-        self,
-        grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
-        grid_pixelization_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
-        sub_size: int = 2,
-        sub_size_pixelization: int = 2,
-        fractional_accuracy: float = 0.9999,
-        relative_accuracy: Optional[float] = None,
-        sub_steps: Optional[List[int]] = None,
-    ):
-        """
-        A dataset is a collection of data structures (e.g. the data, noise-map, PSF), a mask, grid, convolver
-        and other utilities that are used for modeling and fitting an image of a strong lens.
-
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lens calculations.
-
-        Parameters
-        ----------
-        grid_class : ag.Grid2D
-            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D` and
-            `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
-        grid_pixelization_class : ag.Grid2D
-            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D` and `Grid2DIterate` (see the `Grid2D` documentation for a
-            description of these options).
-        sub_size
-            If the grid and / or grid_pixelization use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
-        fractional_accuracy
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the fractional accuracy it
-            uses when evaluating functions, where the fraction accuracy is the ratio of the values computed using
-            two grids at a higher and lower sub-grid size.
-        relative_accuracy
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the relative accuracy it
-            uses when evaluating functions, where the relative accuracy is the absolute difference of the values
-            computed using two grids at a higher and lower sub-grid size.
-        sub_steps : [int]
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
-            to meet the fractional accuracy when evaluating functions.
-        """
-
-        self.grid_class = grid_class
-        self.grid_pixelization_class = grid_pixelization_class
-        self.sub_size = sub_size
-        self.sub_size_pixelization = sub_size_pixelization
-        self.fractional_accuracy = fractional_accuracy
-        self.relative_accuracy = relative_accuracy
-
-        if sub_steps is None:
-            sub_steps = [2, 4, 8, 16]
-
-        self.sub_steps = sub_steps
-
-    def grid_from(self, mask) -> Union[Grid1D, Grid2D]:
-
-        return grid_via_grid_class_from(
-            mask=mask,
-            grid_class=self.grid_class,
-            fractional_accuracy=self.fractional_accuracy,
-            relative_accuracy=self.relative_accuracy,
-            sub_steps=self.sub_steps,
-        )
-
-    def grid_pixelization_from(self, mask) -> Union[Grid1D, Grid2D]:
-
-        return grid_via_grid_class_from(
-            mask=mask,
-            grid_class=self.grid_pixelization_class,
-            fractional_accuracy=self.fractional_accuracy,
-            relative_accuracy=self.relative_accuracy,
-            sub_steps=self.sub_steps,
-        )
-
 
 class AbstractDataset:
     def __init__(
@@ -174,7 +31,7 @@ class AbstractDataset:
         data: Union[Array1D, Array2D, VectorYX2D, Visibilities],
         noise_map: Union[Array1D, Array2D, VectorYX2D, VisibilitiesNoiseMap],
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        settings=AbstractSettingsDataset(),
+        settings : AbstractSettingsDataset = AbstractSettingsDataset(),
     ):
         """
         A collection of abstract data structures for different types of data (an image, pixel-scale, noise-map, etc.)
