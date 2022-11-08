@@ -10,10 +10,10 @@ from .dataset.imaging.settings import SettingsImaging
 from .dataset.imaging.imaging import Imaging
 from .dataset.imaging.simulator import SimulatorImaging
 from .dataset.imaging.w_tilde import WTildeImaging
-from .dataset.interferometer import Interferometer
-from .dataset.interferometer import SettingsInterferometer
-from .dataset.interferometer import SimulatorInterferometer
-from .dataset.interferometer import WTildeInterferometer
+from .dataset.interferometer.interferometer import Interferometer
+from .dataset.interferometer.settings import SettingsInterferometer
+from .dataset.interferometer.simulator import SimulatorInterferometer
+from .dataset.interferometer.w_tilde import WTildeInterferometer
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
