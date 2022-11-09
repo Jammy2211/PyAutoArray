@@ -76,10 +76,7 @@ class AbstractDataset:
                 """
             )
 
-        print(noise_map)
-        print(noise_map.mask)
-
-        if any(np.less_equal(noise_map, 0.0)):
+        if ((noise_map.native <= 0.0) * np.invert(noise_map.mask)).any():
             raise exc.DatasetException(
                 """
                 A value in the noise-map of the dataset is less than or equal to zero.

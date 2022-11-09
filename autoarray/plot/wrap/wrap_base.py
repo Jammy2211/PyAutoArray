@@ -662,6 +662,7 @@ class AbstractTicks(AbstractMatWrap):
             return labels
         return [f"{label}{self.suffix}" for label in labels]
 
+
 class YTicks(AbstractTicks):
     def set(
         self, array: Optional[Array2D], min_value: float, max_value: float, units: Units,
@@ -696,7 +697,7 @@ class YTicks(AbstractTicks):
 
         if not units.use_scaled:
             plt.gca().invert_yaxis()
-        labels = [f'{label}"' for label in labels]
+
 
 class XTicks(AbstractTicks):
     def set(

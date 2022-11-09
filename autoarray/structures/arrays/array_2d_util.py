@@ -93,8 +93,16 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.ndar
 
     if array_2d.shape != mask_2d.sub_shape_native:
         raise exc.ArrayException(
-            "The input array is 2D but not the same dimensions as the sub-mask "
-            "(e.g. the mask 2D shape multipled by its sub size.)"
+            f"""
+            The input array is 2D but not the same dimensions as the mask.
+            
+            This indicates the mask's shape, multiplied by its `sub_size`, is different to the input array shape.
+            
+            The shapes of the two arrays are as follows:
+
+            Input array_2d shape = {array_2d.shape}
+            Input mask_2d sub_shape_native = {mask_2d.sub_shape_native}
+            """
         )
 
     return array_2d_slim_from(
