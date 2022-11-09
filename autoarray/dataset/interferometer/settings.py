@@ -4,6 +4,7 @@ from autoarray.dataset.abstract.settings import AbstractSettingsDataset
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.operators.transformer import TransformerNUFFT
 
+
 class SettingsInterferometer(AbstractSettingsDataset):
     def __init__(
         self,

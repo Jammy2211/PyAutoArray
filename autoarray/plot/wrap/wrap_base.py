@@ -9,6 +9,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 logger = logging.getLogger(__name__)
 
+
 def set_backend():
 
     backend = conf.get_matplotlib_backend()
@@ -305,8 +306,7 @@ class Axis(AbstractMatWrap):
 
 
 class Cmap(AbstractMatWrap):
-
-    def __init__(self, symmetric:bool = False, **kwargs):
+    def __init__(self, symmetric: bool = False, **kwargs):
         """
         Customizes the Matplotlib colormap and its normalization.
 
@@ -646,7 +646,7 @@ class AbstractTicks(AbstractMatWrap):
                 "The tick labels cannot be computed using the input options."
             )
 
-    def labels_with_suffix_from(self, labels:List[str]):
+    def labels_with_suffix_from(self, labels: List[str]):
         """
         The labels used for the y and x ticks can be append with a suffix.
 
@@ -665,7 +665,11 @@ class AbstractTicks(AbstractMatWrap):
 
 class YTicks(AbstractTicks):
     def set(
-        self, array: Optional[Array2D], min_value: float, max_value: float, units: Units,
+        self,
+        array: Optional[Array2D],
+        min_value: float,
+        max_value: float,
+        units: Units,
     ):
         """
         Set the y ticks of a figure using the shape of an input `Array2D` object and input units.

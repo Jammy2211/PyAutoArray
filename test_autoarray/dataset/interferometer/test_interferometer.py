@@ -8,7 +8,8 @@ import autoarray as aa
 from autoarray.operators import transformer
 
 test_data_dir = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "files",
+    "{}".format(path.dirname(path.realpath(__file__))),
+    "files",
 )
 
 
@@ -28,9 +29,7 @@ def test__dirty_properties(
 
     assert interferometer.dirty_image.shape_native == (7, 7)
     assert (
-        interferometer.transformer.image_from(
-            visibilities=interferometer.visibilities
-        )
+        interferometer.transformer.image_from(visibilities=interferometer.visibilities)
     ).all()
 
     assert interferometer.dirty_noise_map.shape_native == (7, 7)
@@ -52,9 +51,8 @@ def test__dirty_properties(
         )
     ).all()
 
-def test__from_fits__all_files_in_one_fits__load_using_different_hdus(
-    sub_mask_2d_7x7
-):
+
+def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2d_7x7):
 
     interferometer = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
@@ -67,14 +65,14 @@ def test__from_fits__all_files_in_one_fits__load_using_different_hdus(
     )
 
     assert (
-        interferometer.visibilities
-        == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])
+        interferometer.visibilities == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])
     ).all()
     assert (
         interferometer.noise_map == np.array([2.0 + 2.0j, 2.0 + 2.0j, 2.0 + 2.0j])
     ).all()
     assert (interferometer.uv_wavelengths[:, 0] == 3.0 * np.ones(3)).all()
     assert (interferometer.uv_wavelengths[:, 1] == 3.0 * np.ones(3)).all()
+
 
 def test__output_all_arrays(sub_mask_2d_7x7):
 
@@ -112,14 +110,14 @@ def test__output_all_arrays(sub_mask_2d_7x7):
     )
 
     assert (
-        interferometer.visibilities
-        == np.array([1.0 + 2.0j, 1.0 + 2.0j, 1.0 + 2.0j])
+        interferometer.visibilities == np.array([1.0 + 2.0j, 1.0 + 2.0j, 1.0 + 2.0j])
     ).all()
     assert (
         interferometer.noise_map == np.array([3.0 + 4.0j, 3.0 + 4.0j, 3.0 + 4.0j])
     ).all()
     assert (interferometer.uv_wavelengths[:, 0] == 5.0 * np.ones(3)).all()
     assert (interferometer.uv_wavelengths[:, 1] == 6.0 * np.ones(3)).all()
+
 
 def test__transformer(
     visibilities_7,
@@ -152,8 +150,9 @@ def test__transformer(
 
     assert type(interferometer_7.transformer) == transformer.TransformerNUFFT
 
+
 def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
-    sub_mask_2d_7x7
+    sub_mask_2d_7x7,
 ):
 
     interferometer = aa.Interferometer(
@@ -171,8 +170,3 @@ def test__different_interferometer_without_mock_objects__customize_constructor_i
     assert (interferometer.visibilities == 1.0 + 1.0j * np.ones((19,))).all()
     assert (interferometer.noise_map == 2.0 + 2.0j * np.ones((19,))).all()
     assert (interferometer.uv_wavelengths == 3.0 * np.ones((19, 2))).all()
-
-
-
-
-

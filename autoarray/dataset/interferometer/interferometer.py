@@ -21,7 +21,7 @@ class Interferometer(AbstractDataset):
         noise_map: VisibilitiesNoiseMap,
         uv_wavelengths: np.ndarray,
         real_space_mask,
-        settings:SettingsInterferometer=SettingsInterferometer(),
+        settings: SettingsInterferometer = SettingsInterferometer(),
     ):
 
         self.real_space_mask = real_space_mask
@@ -44,7 +44,7 @@ class Interferometer(AbstractDataset):
         visibilities_hdu=0,
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
-        settings:SettingsInterferometer=SettingsInterferometer(),
+        settings: SettingsInterferometer = SettingsInterferometer(),
     ):
         """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the interferometer-data_type.

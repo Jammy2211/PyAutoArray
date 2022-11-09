@@ -33,6 +33,7 @@ def test__from_image__setup_with_all_features_off(
 
     assert interferometer.visibilities == pytest.approx(visibilities, 1.0e-4)
 
+
 def test__setup_with_noise(uv_wavelengths_7x2, transformer_7x7_7):
 
     image = aa.Array2D.manual_native(
@@ -50,8 +51,6 @@ def test__setup_with_noise(uv_wavelengths_7x2, transformer_7x7_7):
 
     interferometer = simulator.via_image_from(image=image)
 
-    assert interferometer.visibilities[0] == pytest.approx(
-        -0.005364 - 2.36682j, 1.0e-4
-    )
+    assert interferometer.visibilities[0] == pytest.approx(-0.005364 - 2.36682j, 1.0e-4)
 
     assert (interferometer.noise_map == 0.1 + 0.1j * np.ones((7,))).all()

@@ -64,21 +64,21 @@ def test__via_image_from__psf_blurs_image_with_edge_trimming(image_central_delta
 
 def test__via_image_from__setup_with_noise(image_central_delta_3x3):
 
+    image = image_central_delta_3x3 + 1.0
+
     simulator = aa.SimulatorImaging(
         exposure_time=20.0, add_poisson_noise=True, noise_seed=1
     )
 
-    imaging = simulator.via_image_from(image=image_central_delta_3x3)
+    imaging = simulator.via_image_from(image=image)
 
     assert imaging.image.native == pytest.approx(
-        np.array([[0.0, 0.0, 0.0], [0.0, 1.05, 0.0], [0.0, 0.0, 0.0]]), 1e-2
+        np.array([[1.05, 1.3, 1.25], [1.05, 2.1, 1.2], [1.05, 1.3, 1.15]]), 1e-2
     )
 
-    # Because of the value is 1.05, the estimated Poisson noise_map_1d is:
-    # sqrt((1.05 * 20))/20 = 0.2291
-
     assert imaging.noise_map.native == pytest.approx(
-        np.array([[0.0, 0.0, 0.0], [0.0, 0.2291, 0.0], [0.0, 0.0, 0.0]]), 1e-2
+        np.array([[0.229, 0.255, 0.25], [0.229, 0.324, 0.245], [0.229, 0.255, 0.240]]),
+        1e-2,
     )
 
 
@@ -103,6 +103,8 @@ def test__via_image_from__background_sky_on(image_central_delta_3x3):
 
 def test__via_image_from__psf_and_noise_both_on(image_central_delta_3x3):
 
+    image = image_central_delta_3x3 + 1.0
+
     psf = aa.Kernel2D.manual_native(
         array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
@@ -116,8 +118,8 @@ def test__via_image_from__psf_and_noise_both_on(image_central_delta_3x3):
         normalize_psf=False,
     )
 
-    imaging = simulator.via_image_from(image=image_central_delta_3x3)
+    imaging = simulator.via_image_from(image=image)
 
     assert imaging.image.native == pytest.approx(
-        np.array([[0.0, 1.05, 0.0], [1.3, 2.35, 1.05], [0.0, 1.05, 0.0]]), 1e-2
+        np.array([[4.1, 6.65, 4.45], [6.15, 8.15, 6.5], [4.1, 6.7, 4.25]]), 1e-2
     )

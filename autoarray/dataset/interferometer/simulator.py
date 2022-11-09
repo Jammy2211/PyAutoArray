@@ -98,4 +98,3 @@ class AbstractSimulatorInterferometer:
 class SimulatorInterferometer(AbstractSimulatorInterferometer):
 
     pass
-

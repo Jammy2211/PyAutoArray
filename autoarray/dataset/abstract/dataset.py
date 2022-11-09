@@ -1,7 +1,7 @@
 import copy
 import logging
 import numpy as np
-from typing import  Optional, Union
+from typing import Optional, Union
 import warnings
 
 from autoconf import cached_property
@@ -21,14 +21,13 @@ from autoarray import exc
 logger = logging.getLogger(__name__)
 
 
-
 class AbstractDataset:
     def __init__(
         self,
         data: Union[Array1D, Array2D, VectorYX2D, Visibilities],
         noise_map: Union[Array1D, Array2D, VectorYX2D, VisibilitiesNoiseMap],
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        settings : AbstractSettingsDataset = AbstractSettingsDataset(),
+        settings: AbstractSettingsDataset = AbstractSettingsDataset(),
     ):
         """
         A collection of abstract data structures for different types of data (an image, pixel-scale, noise-map, etc.)
@@ -76,14 +75,16 @@ class AbstractDataset:
                 """
             )
 
-        if ((noise_map.native <= 0.0) * np.invert(noise_map.mask)).any():
-            raise exc.DatasetException(
-                """
-                A value in the noise-map of the dataset is less than or equal to zero.
-                
-                This is an ill-defined value and must be corrected.
-                """
-            )
+        if noise_map.native is not None:
+
+            if ((noise_map.native <= 0.0) * np.invert(noise_map.mask)).any():
+                raise exc.DatasetException(
+                    """
+                    A value in the noise-map of the dataset is less than or equal to zero.
+                    
+                    This is an ill-defined value and must be corrected.
+                    """
+                )
 
         self.noise_map = noise_map
 

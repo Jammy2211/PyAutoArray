@@ -186,9 +186,7 @@ def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
     dataset_7x7 = ds.AbstractDataset(
         data=image_7x7,
         noise_map=noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(
-            sub_size=1, sub_size_pixelization=1
-        ),
+        settings=ds.AbstractSettingsDataset(sub_size=1, sub_size_pixelization=1),
     )
 
     assert dataset_7x7.grid.mask.sub_size == 1
@@ -197,9 +195,7 @@ def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
     dataset_7x7 = ds.AbstractDataset(
         data=image_7x7,
         noise_map=noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(
-            sub_size=2, sub_size_pixelization=2
-        ),
+        settings=ds.AbstractSettingsDataset(sub_size=2, sub_size_pixelization=2),
     )
 
     assert dataset_7x7.grid.mask.sub_size == 2

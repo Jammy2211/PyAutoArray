@@ -324,7 +324,6 @@ class TestTicksParams:
 
 
 class TestAbstractTicks:
-
     def test__labels_with_suffix_from(self):
 
         yticks = aplt.YTicks()
