@@ -85,8 +85,18 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.ndar
 
         if array_2d_slim.shape[0] != mask_2d.sub_pixels_in_mask:
             raise exc.ArrayException(
-                "The input 1D array does not have the same number of entries as sub-pixels in"
-                "the mask."
+                f"""
+                The input array is a slim 1D array, but it does not have the same number of entries as sub-pixels in
+                the mask.
+                
+                This indicates that the number of unmaksed pixels in the mask  is different to the input slim array 
+                shape.
+                
+                The shapes of the two arrays (which this exception is raised because they are different) are as follows:
+
+                Input array_2d_slim.shape = {array_2d_slim.shape[0]}
+                Input mask_2d.sub_pixels_in_mask = {mask_2d.sub_pixels_in_mask}
+                """
             )
 
         return array_2d_slim
@@ -98,7 +108,7 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.ndar
             
             This indicates the mask's shape, multiplied by its `sub_size`, is different to the input array shape.
             
-            The shapes of the two arrays are as follows:
+            The shapes of the two arrays (which this exception is raised because they are different) are as follows:
 
             Input array_2d shape = {array_2d.shape}
             Input mask_2d sub_shape_native = {mask_2d.sub_shape_native}

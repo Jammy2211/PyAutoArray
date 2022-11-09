@@ -79,6 +79,17 @@ class Imaging(AbstractDataset):
             settings=settings,
         )
 
+        if self.noise_map.native is not None:
+
+            if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
+                raise exc.DatasetException(
+                    """
+                    A value in the noise-map of the dataset is less than or equal to zero.
+
+                    This is an ill-defined value and must be corrected.
+                    """
+                )
+
         if psf is not None and settings.use_normalized_psf:
 
             psf = Kernel2D.manual_native(

@@ -75,17 +75,6 @@ class AbstractDataset:
                 """
             )
 
-        if noise_map.native is not None:
-
-            if ((noise_map.native <= 0.0) * np.invert(noise_map.mask)).any():
-                raise exc.DatasetException(
-                    """
-                    A value in the noise-map of the dataset is less than or equal to zero.
-                    
-                    This is an ill-defined value and must be corrected.
-                    """
-                )
-
         self.noise_map = noise_map
 
         if conf.instance["general"]["structures"]["use_dataset_grids"]:

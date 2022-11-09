@@ -218,27 +218,3 @@ def test__new_imaging_with_arrays_trimmed_via_kernel_shape():
     assert (dataset_trimmed.data.native == np.array([[5.0]])).all()
 
     assert (dataset_trimmed.noise_map.native == np.array([[2.0]])).all()
-
-
-def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
-
-    array = aa.Array1D.manual_native([1.0, 2.0, 3.0], pixel_scales=1.0)
-
-    noise_map = aa.Array1D.manual_native([0.0, 3.0, 3.0], pixel_scales=1.0)
-
-    with pytest.raises(aa.exc.DatasetException):
-
-        ds.AbstractDataset(data=array, noise_map=noise_map)
-
-    noise_map = aa.Array1D.manual_native([-1.0, 3.0, 3.0], pixel_scales=1.0)
-
-    with pytest.raises(aa.exc.DatasetException):
-
-        ds.AbstractDataset(data=array, noise_map=noise_map)
-
-    mask = aa.Mask1D(mask=np.array([True, False, False]), pixel_scales=(1.0,))
-
-    array = aa.Array1D.manual_mask(array=array, mask=mask)
-    noise_map = aa.Array1D.manual_mask(array=noise_map, mask=mask)
-
-    ds.AbstractDataset(data=array, noise_map=noise_map)
