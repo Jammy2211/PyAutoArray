@@ -647,6 +647,17 @@ class AbstractTicks(AbstractMatWrap):
             )
 
     def labels_with_suffix_from(self, labels:List[str]):
+        """
+        The labels used for the y and x ticks can be append with a suffix.
+
+        For example, if the labels were [-1.0, 0.0, 1.0] and the suffix is ", the labels with the suffix appended
+        is [-1.0", 0.0", 1.0"].
+
+        Parameters
+        ----------
+        labels
+            The y and x labels which are append with the suffix.
+        """
         if self.suffix is None:
             return labels
         return [f"{label}{self.suffix}" for label in labels]
