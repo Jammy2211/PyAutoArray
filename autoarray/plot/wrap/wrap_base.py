@@ -543,6 +543,7 @@ class AbstractTicks(AbstractMatWrap):
         self,
         manual_values: Optional[List[float]] = None,
         manual_units: Optional[str] = None,
+        suffix: Optional[str] = None
         **kwargs,
     ):
         """
@@ -557,11 +558,16 @@ class AbstractTicks(AbstractMatWrap):
         ----------
         manual_values
             Manually override the tick labels to display the labels as the input list of floats.
+        manual_units
+            Manually override the units in brackets of the tick label.
+        suffix
+            A suffix applied to every tick label (e.g. for the suffix `kpc` 0.0 becomes 0.0kpc).
         """
         super().__init__(**kwargs)
 
         self.manual_values = manual_values
         self.manual_units = manual_units
+        self.suffix = suffix
 
     def tick_values_from(self, min_value: float, max_value: float) -> np.ndarray:
         """
@@ -640,6 +646,10 @@ class AbstractTicks(AbstractMatWrap):
                 "The tick labels cannot be computed using the input options."
             )
 
+    def labels_with_suffix_from(self, labels:List[str]):
+        if self.suffix is None:
+            return labels
+        return [f"{label}{self.suffix}" for label in labels]
 
 class YTicks(AbstractTicks):
     def set(
@@ -664,6 +674,8 @@ class YTicks(AbstractTicks):
         labels = self.tick_values_in_units_from(
             array=array, min_value=min_value, max_value=max_value, units=units, axis=0
         )
+        labels = self.labels_with_suffix_from(labels=labels)
+
         plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
 
         if self.manual_units is not None:
@@ -714,6 +726,8 @@ class XTicks(AbstractTicks):
                 units=units,
                 axis=1,
             )
+
+        labels = self.labels_with_suffix_from(labels=labels)
 
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
 
