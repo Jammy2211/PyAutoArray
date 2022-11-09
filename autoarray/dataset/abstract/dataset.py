@@ -1,7 +1,7 @@
 import copy
 import logging
 import numpy as np
-from typing import List, Optional, Type, Union
+from typing import  Optional, Union
 import warnings
 
 from autoconf import cached_property
@@ -10,9 +10,6 @@ from autoconf import conf
 from autoarray.dataset.abstract.settings import AbstractSettingsDataset
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.uniform_1d import Grid1D
-from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.iterate_2d import Grid2DIterate
 from autoarray.structures.vectors.uniform import VectorYX2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
@@ -76,6 +73,18 @@ class AbstractDataset:
             raise exc.DatasetException(
                 """
                 No noise map or noise_covariance_matrix was passed to the Imaging object.
+                """
+            )
+
+        print(noise_map)
+        print(noise_map.mask)
+
+        if any(np.less_equal(noise_map, 0.0)):
+            raise exc.DatasetException(
+                """
+                A value in the noise-map of the dataset is less than or equal to zero.
+                
+                This is an ill-defined value and must be corrected.
                 """
             )
 

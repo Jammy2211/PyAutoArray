@@ -673,7 +673,7 @@ class YTicks(AbstractTicks):
 
         if not units.use_scaled:
             plt.gca().invert_yaxis()
-
+        labels = [f'{label}"' for label in labels]
 
 class XTicks(AbstractTicks):
     def set(
