@@ -543,7 +543,7 @@ class AbstractTicks(AbstractMatWrap):
         self,
         manual_values: Optional[List[float]] = None,
         manual_units: Optional[str] = None,
-        suffix: Optional[str] = None
+        suffix: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -653,7 +653,7 @@ class AbstractTicks(AbstractMatWrap):
 
 class YTicks(AbstractTicks):
     def set(
-        self, array: Optional[Array2D], min_value: float, max_value: float, units: Units
+        self, array: Optional[Array2D], min_value: float, max_value: float, units: Units,
     ):
         """
         Set the y ticks of a figure using the shape of an input `Array2D` object and input units.
