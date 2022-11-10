@@ -135,6 +135,53 @@ class AbstractMatPlot:
         self.subplot_shape = None
         self.subplot_index = None
 
+    def __add__(self, other):
+        """
+        Adds two `MatPlot` classes together.
+
+        A `MatPlot` class contains many of the `MatWrap` objects which customize matplotlib figures. One
+        may have a standard `MatPlot` object, which customizes many figures in the same way, for example:
+
+        mat_plot_2d_base = aplt.MatPlot2D(
+            yticks=aplt.YTicks(fontsize=18),
+            xticks=aplt.XTicks(fontsize=18),
+            ylabel=aplt.YLabel(label=""),
+            xlabel=aplt.XLabel(label=""),
+        )
+
+        However, one may require many unique `MatPlot` objects for a number of different figures, which all use
+        these settings. These can be created by creating the unique `MatPlot` objects and adding the above object
+        to each:
+
+        mat_plot_2d = aplt.MatPlot2D(
+            title=aplt.Title(label="Example Figure 1"),
+        )
+
+        mat_plot_2d = mat_plot_2d + mat_plot_2d_base
+
+        mat_plot_2d = aplt.MatPlot2D(
+            title=aplt.Title(label="Example Figure 2"),
+        )
+
+        mat_plot_2d = mat_plot_2d + mat_plot_2d_base
+        """
+
+        for attr, value in self.__dict__.items():
+            try:
+                if value.kwargs:
+                    other.__dict__[attr] = value
+            except AttributeError:
+                pass
+
+        for attr, value in other.__dict__.items():
+            try:
+                if value.kwargs:
+                    other.__dict__[attr] = value
+            except AttributeError:
+                pass
+
+        return other
+
     def set_for_subplot(self, is_for_subplot: bool):
         """
         Sets the `is_for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
