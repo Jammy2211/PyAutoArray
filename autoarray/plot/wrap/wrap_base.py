@@ -46,6 +46,7 @@ class Units:
         use_scaled: Optional[bool] = None,
         conversion_factor: Optional[float] = None,
         in_kpc: Optional[bool] = None,
+        **kwargs
     ):
         """
         This object controls the units of a plotted figure, and performs multiple tasks when making the plot:
@@ -96,6 +97,7 @@ class Units:
         except:
             self.in_kpc = None
 
+        self.kwargs = kwargs
 
 class AbstractMatWrap:
     def __init__(self, **kwargs):
@@ -164,6 +166,9 @@ class AbstractMatWrap:
         if "c" in config_dict:
             if config_dict["c"] is None:
                 config_dict.pop("c")
+
+        if "is_default" in config_dict:
+            config_dict.pop("is_default")
 
         return config_dict
 
@@ -956,6 +961,7 @@ class Output:
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
+        **kwargs
     ):
         """
         Sets how the figure or subplot is output, either by displaying it on the screen or writing it to hard-disk.
@@ -998,6 +1004,8 @@ class Output:
         self._format = format
         self.format_folder = format_folder
         self.bypass = bypass
+
+        self.kwargs = kwargs
 
     @property
     def format(self) -> str:
