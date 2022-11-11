@@ -1,9 +1,8 @@
-import copy
-
-from autoarray.plot.wrap.wrap_base import set_backend
+from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
 
+import copy
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import Iterable, Optional, List, Union
@@ -23,9 +22,9 @@ from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.structures.arrays import array_2d_util
 
 from autoarray import exc
-from autoarray.plot.wrap import wrap_base as wb
-from autoarray.plot.wrap import wrap_1d as w1d
-from autoarray.plot.wrap import wrap_2d as w2d
+from autoarray.plot.wrap import base as wb
+from autoarray.plot.wrap import one_d as w1d
+from autoarray.plot.wrap import two_d as w2d
 
 
 class AutoLabels:
