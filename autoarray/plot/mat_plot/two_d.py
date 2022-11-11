@@ -11,7 +11,7 @@ from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
-from autoarray.plot.mat_wrap.visuals import Visuals2D
+from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.structures.arrays import array_2d_util

@@ -4,7 +4,7 @@ from typing import Iterable, Optional, List, Union
 
 from autoarray.plot.mat_plot.abstract import AbstractMatPlot
 from autoarray.plot.auto_labels import AutoLabels
-from autoarray.plot.mat_wrap.visuals import Visuals1D
+from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.wrap import base as wb
 from autoarray.plot.wrap import one_d as w1d
 from autoarray.structures.arrays.uniform_1d import Array1D

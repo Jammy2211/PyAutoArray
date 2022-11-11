@@ -2,8 +2,8 @@ from typing import Optional, Union
 
 from autoarray.plot.mat_wrap.include import Include1D
 from autoarray.plot.mat_wrap.include import Include2D
-from autoarray.plot.mat_wrap.visuals import Visuals1D
-from autoarray.plot.mat_wrap.visuals import Visuals2D
+from autoarray.plot.visuals.one_d import Visuals1D
+from autoarray.plot.visuals.two_d import Visuals2D
 
 from autoarray.fit.fit_imaging import FitImaging
 from autoarray.inversion.pixelization.mappers.rectangular import (

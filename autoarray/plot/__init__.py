@@ -42,9 +42,9 @@ from autoarray.plot.wrap.two_d.serial_overscan_plot import SerialOverscanPlot
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.mat_wrap.include import Include1D
-from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.include import Include2D
-from autoarray.plot.mat_wrap.visuals import Visuals2D
+from autoarray.plot.visuals.one_d import Visuals1D
+from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.auto_labels import AutoLabels
 
 from autoarray.structures.plot.structure_plotters import Array2DPlotter
