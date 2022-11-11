@@ -3,9 +3,9 @@ from autoarray.plot.mat_wrap.visuals import Visuals1D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 from autoarray.plot.mat_wrap.include import Include1D
 from autoarray.plot.mat_wrap.include import Include2D
-from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
-from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
-from autoarray.plot.mat_wrap.mat_plot import AutoLabels
+from autoarray.plot.mat_plot.one_d import MatPlot1D
+from autoarray.plot.mat_plot.two_d import MatPlot2D
+from autoarray.plot.auto_labels import AutoLabels
 from autoarray.dataset.interferometer.interferometer import Interferometer
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
