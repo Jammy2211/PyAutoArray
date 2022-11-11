@@ -25,6 +25,7 @@ def test__legend__from_config_or_via_manual_input():
     assert legend.include is False
     assert legend.config_dict["fontsize"] == 14
 
+
 def test__set_legend_works_for_plot():
 
     figure = aplt.Figure(aspect="auto")
