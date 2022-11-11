@@ -12,7 +12,7 @@ from autoarray.dataset import preprocess
 logger = logging.getLogger(__name__)
 
 
-class AbstractSimulatorImaging:
+class SimulatorImaging:
     def __init__(
         self,
         exposure_time: float,
@@ -65,8 +65,6 @@ class AbstractSimulatorImaging:
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
-
-class SimulatorImaging(AbstractSimulatorImaging):
     def via_image_from(self, image: Array2D):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
@@ -126,3 +124,4 @@ class SimulatorImaging(AbstractSimulatorImaging):
         image = Array2D.manual_mask(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map)
+

@@ -1,3 +1,5 @@
+import copy
+
 from autoarray.plot.wrap.wrap_base import set_backend
 
 set_backend()
@@ -165,6 +167,8 @@ class AbstractMatPlot:
 
         mat_plot_2d = mat_plot_2d + mat_plot_2d_base
         """
+
+        other = copy.deepcopy(other)
 
         for attr, value in self.__dict__.items():
 

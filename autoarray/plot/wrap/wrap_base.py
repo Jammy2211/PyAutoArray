@@ -548,7 +548,7 @@ class AbstractTicks(AbstractMatWrap):
         self,
         manual_values: Optional[List[float]] = None,
         manual_units: Optional[str] = None,
-        suffix: Optional[str] = None,
+        suffix: [str] = "",
         **kwargs,
     ):
         """
@@ -663,8 +663,6 @@ class AbstractTicks(AbstractMatWrap):
         labels
             The y and x labels which are append with the suffix.
         """
-        if self.suffix is None:
-            return labels
         return [f"{label}{self.suffix}" for label in labels]
 
 

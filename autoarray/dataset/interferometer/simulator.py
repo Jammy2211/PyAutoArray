@@ -8,7 +8,7 @@ from autoarray import exc
 from autoarray.dataset import preprocess
 
 
-class AbstractSimulatorInterferometer:
+class SimulatorInterferometer:
     def __init__(
         self,
         uv_wavelengths,
@@ -93,8 +93,3 @@ class AbstractSimulatorInterferometer:
             uv_wavelengths=transformer.uv_wavelengths,
             real_space_mask=image.mask,
         )
-
-
-class SimulatorInterferometer(AbstractSimulatorInterferometer):
-
-    pass

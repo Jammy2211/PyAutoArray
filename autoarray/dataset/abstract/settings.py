@@ -1,4 +1,4 @@
-from typing import List, Optional, Type, Union
+from typing import List, Optional, Tuple, Type, Union
 
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -51,7 +51,7 @@ class AbstractSettingsDataset:
         sub_size_pixelization: int = 2,
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
-        sub_steps: Optional[List[int]] = None,
+        sub_steps: Tuple[int] = (2, 4, 8, 16),
     ):
         """
         A dataset is a collection of data structures (e.g. the data, noise-map, PSF), a mask, grid, convolver
@@ -62,10 +62,10 @@ class AbstractSettingsDataset:
 
         Parameters
         ----------
-        grid_class : ag.Grid2D
+        grid_class
             The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D` and
             `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
-        grid_pixelization_class : ag.Grid2D
+        grid_pixelization_class
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are `Grid2D` and `Grid2DIterate` (see the `Grid2D` documentation for a
             description of these options).
@@ -90,10 +90,6 @@ class AbstractSettingsDataset:
         self.sub_size_pixelization = sub_size_pixelization
         self.fractional_accuracy = fractional_accuracy
         self.relative_accuracy = relative_accuracy
-
-        if sub_steps is None:
-            sub_steps = [2, 4, 8, 16]
-
         self.sub_steps = sub_steps
 
     def grid_from(self, mask) -> Union[Grid1D, Grid2D]:
