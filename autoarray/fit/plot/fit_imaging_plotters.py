@@ -16,7 +16,7 @@ class FitImagingPlotterMeta(Plotter):
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
-        residuals_symmetric_cmap : bool = True
+        residuals_symmetric_cmap: bool = True,
     ):
         """
         Plots the attributes of `FitImaging` objects using the matplotlib method `imshow()` and many other matplotlib

@@ -1,3 +1,5 @@
+import copy
+
 from autoarray.plot.wrap.wrap_base import set_backend
 
 set_backend()
@@ -110,30 +112,73 @@ class AbstractMatPlot:
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
         """
 
-        self.units = units or wb.Units()
-        self.figure = figure or wb.Figure()
-        self.axis = axis or wb.Axis()
+        self.units = units or wb.Units(is_default=True)
+        self.figure = figure or wb.Figure(is_default=True)
+        self.axis = axis or wb.Axis(is_default=True)
 
-        self.cmap = cmap or wb.Cmap()
+        self.cmap = cmap or wb.Cmap(is_default=True)
 
-        self.colorbar = colorbar or wb.Colorbar()
-        self.colorbar_tickparams = colorbar_tickparams or wb.ColorbarTickParams()
+        self.colorbar = colorbar or wb.Colorbar(is_default=True)
+        self.colorbar_tickparams = colorbar_tickparams or wb.ColorbarTickParams(is_default=True)
 
-        self.tickparams = tickparams or wb.TickParams()
-        self.yticks = yticks or wb.YTicks()
-        self.xticks = xticks or wb.XTicks()
+        self.tickparams = tickparams or wb.TickParams(is_default=True)
+        self.yticks = yticks or wb.YTicks(is_default=True)
+        self.xticks = xticks or wb.XTicks(is_default=True)
 
-        self.title = title or wb.Title()
-        self.ylabel = ylabel or wb.YLabel()
-        self.xlabel = xlabel or wb.XLabel()
+        self.title = title or wb.Title(is_default=True)
+        self.ylabel = ylabel or wb.YLabel(is_default=True)
+        self.xlabel = xlabel or wb.XLabel(is_default=True)
 
-        self.text = text or wb.Text()
-        self.legend = legend or wb.Legend()
-        self.output = output or wb.Output()
+        self.text = text or wb.Text(is_default=True)
+        self.legend = legend or wb.Legend(is_default=True)
+        self.output = output or wb.Output(is_default=True)
 
         self.number_subplots = None
         self.subplot_shape = None
         self.subplot_index = None
+
+    def __add__(self, other):
+        """
+        Adds two `MatPlot` classes together.
+
+        A `MatPlot` class contains many of the `MatWrap` objects which customize matplotlib figures. One
+        may have a standard `MatPlot` object, which customizes many figures in the same way, for example:
+
+        mat_plot_2d_base = aplt.MatPlot2D(
+            yticks=aplt.YTicks(fontsize=18),
+            xticks=aplt.XTicks(fontsize=18),
+            ylabel=aplt.YLabel(label=""),
+            xlabel=aplt.XLabel(label=""),
+        )
+
+        However, one may require many unique `MatPlot` objects for a number of different figures, which all use
+        these settings. These can be created by creating the unique `MatPlot` objects and adding the above object
+        to each:
+
+        mat_plot_2d = aplt.MatPlot2D(
+            title=aplt.Title(label="Example Figure 1"),
+        )
+
+        mat_plot_2d = mat_plot_2d + mat_plot_2d_base
+
+        mat_plot_2d = aplt.MatPlot2D(
+            title=aplt.Title(label="Example Figure 2"),
+        )
+
+        mat_plot_2d = mat_plot_2d + mat_plot_2d_base
+        """
+
+        other = copy.deepcopy(other)
+
+        for attr, value in self.__dict__.items():
+
+            try:
+                if value.kwargs.get("is_default") is not True:
+                    other.__dict__[attr] = value
+            except AttributeError:
+                pass
+
+        return other
 
     def set_for_subplot(self, is_for_subplot: bool):
         """
@@ -299,10 +344,10 @@ class MatPlot1D(AbstractMatPlot):
             output=output,
         )
 
-        self.yx_plot = yx_plot or w1d.YXPlot()
-        self.vertical_line_axvline = vertical_line_axvline or w1d.AXVLine()
-        self.yx_scatter = yx_scatter or w1d.YXScatter()
-        self.fill_between = fill_between or w1d.FillBetween()
+        self.yx_plot = yx_plot or w1d.YXPlot(is_default=True)
+        self.vertical_line_axvline = vertical_line_axvline or w1d.AXVLine(is_default=True)
+        self.yx_scatter = yx_scatter or w1d.YXScatter(is_default=True)
+        self.fill_between = fill_between or w1d.FillBetween(is_default=True)
 
         self.is_for_multi_plot = False
         self.is_for_subplot = False
@@ -562,32 +607,32 @@ class MatPlot2D(AbstractMatPlot):
             output=output,
         )
 
-        self.array_overlay = array_overlay or w2d.ArrayOverlay()
+        self.array_overlay = array_overlay or w2d.ArrayOverlay(is_default=True)
 
-        self.grid_scatter = grid_scatter or w2d.GridScatter()
-        self.grid_plot = grid_plot or w2d.GridPlot()
-        self.grid_errorbar = grid_errorbar or w2d.GridErrorbar()
+        self.grid_scatter = grid_scatter or w2d.GridScatter(is_default=True)
+        self.grid_plot = grid_plot or w2d.GridPlot(is_default=True)
+        self.grid_errorbar = grid_errorbar or w2d.GridErrorbar(is_default=True)
 
-        self.vector_yx_quiver = vector_yx_quiver or w2d.VectorYXQuiver()
-        self.patch_overlay = patch_overlay or w2d.PatchOverlay()
+        self.vector_yx_quiver = vector_yx_quiver or w2d.VectorYXQuiver(is_default=True)
+        self.patch_overlay = patch_overlay or w2d.PatchOverlay(is_default=True)
 
         self.interpolated_reconstruction = (
-            interpolated_reconstruction or w2d.InterpolatedReconstruction()
+            interpolated_reconstruction or w2d.InterpolatedReconstruction(is_default=True)
         )
-        self.voronoi_drawer = voronoi_drawer or w2d.VoronoiDrawer()
+        self.voronoi_drawer = voronoi_drawer or w2d.VoronoiDrawer(is_default=True)
 
-        self.origin_scatter = origin_scatter or w2d.OriginScatter()
-        self.mask_scatter = mask_scatter or w2d.MaskScatter()
-        self.border_scatter = border_scatter or w2d.BorderScatter()
-        self.positions_scatter = positions_scatter or w2d.PositionsScatter()
-        self.index_scatter = index_scatter or w2d.IndexScatter()
-        self.mesh_grid_scatter = mesh_grid_scatter or w2d.MeshGridScatter()
+        self.origin_scatter = origin_scatter or w2d.OriginScatter(is_default=True)
+        self.mask_scatter = mask_scatter or w2d.MaskScatter(is_default=True)
+        self.border_scatter = border_scatter or w2d.BorderScatter(is_default=True)
+        self.positions_scatter = positions_scatter or w2d.PositionsScatter(is_default=True)
+        self.index_scatter = index_scatter or w2d.IndexScatter(is_default=True)
+        self.mesh_grid_scatter = mesh_grid_scatter or w2d.MeshGridScatter(is_default=True)
 
         self.parallel_overscan_plot = (
-            parallel_overscan_plot or w2d.ParallelOverscanPlot()
+            parallel_overscan_plot or w2d.ParallelOverscanPlot(is_default=True)
         )
-        self.serial_prescan_plot = serial_prescan_plot or w2d.SerialPrescanPlot()
-        self.serial_overscan_plot = serial_overscan_plot or w2d.SerialOverscanPlot()
+        self.serial_prescan_plot = serial_prescan_plot or w2d.SerialPrescanPlot(is_default=True)
+        self.serial_overscan_plot = serial_overscan_plot or w2d.SerialOverscanPlot(is_default=True)
 
         self.is_for_subplot = False
 

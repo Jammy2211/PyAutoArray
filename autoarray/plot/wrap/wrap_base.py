@@ -9,6 +9,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 logger = logging.getLogger(__name__)
 
+
 def set_backend():
 
     backend = conf.get_matplotlib_backend()
@@ -45,6 +46,7 @@ class Units:
         use_scaled: Optional[bool] = None,
         conversion_factor: Optional[float] = None,
         in_kpc: Optional[bool] = None,
+        **kwargs
     ):
         """
         This object controls the units of a plotted figure, and performs multiple tasks when making the plot:
@@ -95,6 +97,7 @@ class Units:
         except:
             self.in_kpc = None
 
+        self.kwargs = kwargs
 
 class AbstractMatWrap:
     def __init__(self, **kwargs):
@@ -163,6 +166,9 @@ class AbstractMatWrap:
         if "c" in config_dict:
             if config_dict["c"] is None:
                 config_dict.pop("c")
+
+        if "is_default" in config_dict:
+            config_dict.pop("is_default")
 
         return config_dict
 
@@ -305,8 +311,7 @@ class Axis(AbstractMatWrap):
 
 
 class Cmap(AbstractMatWrap):
-
-    def __init__(self, symmetric:bool = False, **kwargs):
+    def __init__(self, symmetric: bool = False, **kwargs):
         """
         Customizes the Matplotlib colormap and its normalization.
 
@@ -543,6 +548,7 @@ class AbstractTicks(AbstractMatWrap):
         self,
         manual_values: Optional[List[float]] = None,
         manual_units: Optional[str] = None,
+        suffix: [str] = "",
         **kwargs,
     ):
         """
@@ -557,11 +563,16 @@ class AbstractTicks(AbstractMatWrap):
         ----------
         manual_values
             Manually override the tick labels to display the labels as the input list of floats.
+        manual_units
+            Manually override the units in brackets of the tick label.
+        suffix
+            A suffix applied to every tick label (e.g. for the suffix `kpc` 0.0 becomes 0.0kpc).
         """
         super().__init__(**kwargs)
 
         self.manual_values = manual_values
         self.manual_units = manual_units
+        self.suffix = suffix
 
     def tick_values_from(self, min_value: float, max_value: float) -> np.ndarray:
         """
@@ -640,10 +651,28 @@ class AbstractTicks(AbstractMatWrap):
                 "The tick labels cannot be computed using the input options."
             )
 
+    def labels_with_suffix_from(self, labels: List[str]):
+        """
+        The labels used for the y and x ticks can be append with a suffix.
+
+        For example, if the labels were [-1.0, 0.0, 1.0] and the suffix is ", the labels with the suffix appended
+        is [-1.0", 0.0", 1.0"].
+
+        Parameters
+        ----------
+        labels
+            The y and x labels which are append with the suffix.
+        """
+        return [f"{label}{self.suffix}" for label in labels]
+
 
 class YTicks(AbstractTicks):
     def set(
-        self, array: Optional[Array2D], min_value: float, max_value: float, units: Units
+        self,
+        array: Optional[Array2D],
+        min_value: float,
+        max_value: float,
+        units: Units,
     ):
         """
         Set the y ticks of a figure using the shape of an input `Array2D` object and input units.
@@ -664,6 +693,8 @@ class YTicks(AbstractTicks):
         labels = self.tick_values_in_units_from(
             array=array, min_value=min_value, max_value=max_value, units=units, axis=0
         )
+        labels = self.labels_with_suffix_from(labels=labels)
+
         plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
 
         if self.manual_units is not None:
@@ -714,6 +745,8 @@ class XTicks(AbstractTicks):
                 units=units,
                 axis=1,
             )
+
+        labels = self.labels_with_suffix_from(labels=labels)
 
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
 
@@ -926,6 +959,7 @@ class Output:
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
+        **kwargs
     ):
         """
         Sets how the figure or subplot is output, either by displaying it on the screen or writing it to hard-disk.
@@ -968,6 +1002,8 @@ class Output:
         self._format = format
         self.format_folder = format_folder
         self.bypass = bypass
+
+        self.kwargs = kwargs
 
     @property
     def format(self) -> str:

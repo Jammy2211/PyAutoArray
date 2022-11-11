@@ -25,8 +25,8 @@ Grid1D2DLike = Union[np.ndarray, "Grid1D", Grid2D, Grid2DIterate, Grid2DIrregula
 Grid2DLike = Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular]
 
 from autoarray.structures.values import ValuesIrregular
-from autoarray.dataset.interferometer import Visibilities
-from autoarray.dataset.interferometer import VisibilitiesNoiseMap
+from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 DataLike = Union[Array1D, Array2D, ValuesIrregular, Visibilities]
 NoiseMapLike = Union[Array1D, Array2D, ValuesIrregular, VisibilitiesNoiseMap]

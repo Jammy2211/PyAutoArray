@@ -85,6 +85,10 @@ class AbstractVisibilities(Structure):
     def shape_slim(self) -> int:
         return self.shape[0]
 
+    @property
+    def mask(self):
+        return np.full(fill_value=False, shape=self.shape)
+
     @cached_property
     def amplitudes(self) -> np.ndarray:
         return np.sqrt(np.square(self.real) + np.square(self.imag))

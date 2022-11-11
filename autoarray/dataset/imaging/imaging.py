@@ -4,7 +4,7 @@ from typing import Optional
 
 from autoconf import cached_property
 
-from autoarray.dataset.abstract_dataset import AbstractDataset
+from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.imaging.settings import SettingsImaging
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -78,6 +78,17 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=noise_covariance_matrix,
             settings=settings,
         )
+
+        if self.noise_map.native is not None:
+
+            if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
+                raise exc.DatasetException(
+                    """
+                    A value in the noise-map of the dataset is less than or equal to zero.
+
+                    This is an ill-defined value and must be corrected.
+                    """
+                )
 
         if psf is not None and settings.use_normalized_psf:
 

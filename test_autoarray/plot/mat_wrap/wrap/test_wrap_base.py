@@ -323,6 +323,22 @@ class TestTicksParams:
         assert tick_params.config_dict["labelsize"] == 25
 
 
+class TestAbstractTicks:
+    def test__labels_with_suffix_from(self):
+
+        yticks = aplt.YTicks()
+
+        labels = yticks.labels_with_suffix_from(labels=["hi", "hello"])
+
+        assert labels == ["hi", "hello"]
+
+        yticks = aplt.YTicks(suffix="22")
+
+        labels = yticks.labels_with_suffix_from(labels=["hi", "hello"])
+
+        assert labels == ["hi22", "hello22"]
+
+
 class TestYTicks:
     def test__ticks_loads_values_from_config_if_not_manually_input(self):
 

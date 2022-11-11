@@ -6,7 +6,7 @@ from typing import Dict, Optional
 import numpy as np
 
 from autoarray import type as ty
-from autoarray.dataset.abstract_dataset import AbstractDataset
+from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.abstract_mask import Mask

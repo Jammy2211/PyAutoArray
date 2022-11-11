@@ -247,3 +247,20 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
     assert masked_imaging.convolver.kernel.shape_native == (7, 7)
     assert (masked_imaging.image == np.array([1.0])).all()
     assert (masked_imaging.noise_map == np.array([2.0])).all()
+
+
+def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
+
+    array = aa.Array2D.manual_native([[1.0, 2.0]], pixel_scales=1.0)
+
+    noise_map = aa.Array2D.manual_native([[0.0, 3.0]], pixel_scales=1.0)
+
+    with pytest.raises(aa.exc.DatasetException):
+
+        aa.Imaging(image=array, noise_map=noise_map)
+
+    noise_map = aa.Array2D.manual_native([[-1.0, 3.0]], pixel_scales=1.0)
+
+    with pytest.raises(aa.exc.DatasetException):
+
+        aa.Imaging(image=array, noise_map=noise_map)
