@@ -15,9 +15,7 @@ class Visuals1D(AbstractVisuals):
         mask: Optional[Mask1D] = None,
         points: Optional[Grid1D] = None,
         vertical_line: Optional[float] = None,
-        shaded_region: Optional[
-            Union[List[List], List[Array1D], List[np.ndarray]]
-        ] = None,
+        shaded_region: Optional[List[Union[List, Array1D, np.ndarray]]] = None,
     ):
 
         self.origin = origin
