@@ -5,6 +5,7 @@ from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
 
+
 class AbstractGetVisuals:
     def __init__(
         self, include: Union[Include1D, Include2D], visuals: Union[Visuals1D, Visuals2D]

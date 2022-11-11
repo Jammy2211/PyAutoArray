@@ -1,5 +1,6 @@
 import autoarray.plot as aplt
 
+
 def test__add_visuals_together__replaces_nones():
 
     visuals_1 = aplt.Visuals2D(mask=1)

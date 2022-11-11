@@ -3,6 +3,7 @@ import pytest
 
 import autoarray.plot as aplt
 
+
 @pytest.fixture(name="plot_path")
 def make_plot_path_setup():
     return path.join(

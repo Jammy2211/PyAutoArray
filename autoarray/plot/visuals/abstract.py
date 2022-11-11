@@ -1,5 +1,6 @@
 from abc import ABC
 
+
 class AbstractVisuals(ABC):
     def __add__(self, other):
         """
