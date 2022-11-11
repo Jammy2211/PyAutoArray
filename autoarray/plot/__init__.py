@@ -39,6 +39,8 @@ from autoarray.plot.wrap.two_d.parallel_overscan_plot import ParallelOverscanPlo
 from autoarray.plot.wrap.two_d.serial_prescan_plot import SerialPrescanPlot
 from autoarray.plot.wrap.two_d.serial_overscan_plot import SerialOverscanPlot
 
+from autoarray.plot.get_visuals.one_d import GetVisuals1D
+from autoarray.plot.get_visuals.two_d import GetVisuals2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.mat_wrap.include import Include1D
