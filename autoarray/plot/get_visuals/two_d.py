@@ -7,7 +7,7 @@ from autoarray.inversion.pixelization.mappers.rectangular import (
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.plot.get_visuals.abstract import AbstractGetVisuals
-from autoarray.plot.mat_wrap.include import Include2D
+from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular

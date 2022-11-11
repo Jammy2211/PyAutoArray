@@ -5,7 +5,7 @@ from autoconf import conf
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.mat_wrap.include import Include2D
+from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.inversion.inversion.abstract import AbstractInversion

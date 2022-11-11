@@ -7,8 +7,8 @@ from typing import Optional, Tuple
 
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
-from autoarray.plot.mat_wrap.include import Include1D
-from autoarray.plot.mat_wrap.include import Include2D
+from autoarray.plot.include.one_d import Include1D
+from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.get_visuals.one_d import GetVisuals1D

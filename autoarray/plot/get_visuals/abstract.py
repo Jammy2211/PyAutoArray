@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
-from autoarray.plot.mat_wrap.include import Include1D
-from autoarray.plot.mat_wrap.include import Include2D
+from autoarray.plot.include.one_d import Include1D
+from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.plot.visuals.two_d import Visuals2D
 

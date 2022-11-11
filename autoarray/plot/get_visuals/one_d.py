@@ -1,5 +1,5 @@
 from autoarray.plot.get_visuals.abstract import AbstractGetVisuals
-from autoarray.plot.mat_wrap.include import Include1D
+from autoarray.plot.include.one_d import Include1D
 from autoarray.plot.visuals.one_d import Visuals1D
 from autoarray.structures.arrays.uniform_1d import Array1D
 
