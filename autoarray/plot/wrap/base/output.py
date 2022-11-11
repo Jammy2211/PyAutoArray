@@ -16,7 +16,7 @@ class Output:
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
-        **kwargs
+        **kwargs,
     ):
         """
         Sets how the figure or subplot is output, either by displaying it on the screen or writing it to hard-disk.
@@ -156,5 +156,3 @@ class Output:
                 plt.savefig(path.join(output_path, f"{filename}.png"))
             elif format == "pdf":
                 plt.savefig(path.join(output_path, f"{filename}.pdf"))
-
-

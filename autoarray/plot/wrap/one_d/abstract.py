@@ -5,7 +5,7 @@ set_backend()
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
-class AbstractMatWrap2D(AbstractMatWrap):
+class AbstractMatWrap1D(AbstractMatWrap):
     """
     An abstract base class for wrapping matplotlib plotting methods which take as input and plot data structures. For
     example, the `ArrayOverlay` object specifically plots `Array2D` data structures.
@@ -15,4 +15,4 @@ class AbstractMatWrap2D(AbstractMatWrap):
 
     @property
     def config_folder(self):
-        return "mat_wrap_2d"
+        return "mat_wrap_1d"

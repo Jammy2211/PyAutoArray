@@ -3,6 +3,7 @@ from typing import Union, Tuple
 
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
+
 class Figure(AbstractMatWrap):
     """
     Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).

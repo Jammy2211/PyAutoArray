@@ -119,7 +119,9 @@ class AbstractMatPlot:
         self.cmap = cmap or wb.Cmap(is_default=True)
 
         self.colorbar = colorbar or wb.Colorbar(is_default=True)
-        self.colorbar_tickparams = colorbar_tickparams or wb.ColorbarTickParams(is_default=True)
+        self.colorbar_tickparams = colorbar_tickparams or wb.ColorbarTickParams(
+            is_default=True
+        )
 
         self.tickparams = tickparams or wb.TickParams(is_default=True)
         self.yticks = yticks or wb.YTicks(is_default=True)
@@ -345,7 +347,9 @@ class MatPlot1D(AbstractMatPlot):
         )
 
         self.yx_plot = yx_plot or w1d.YXPlot(is_default=True)
-        self.vertical_line_axvline = vertical_line_axvline or w1d.AXVLine(is_default=True)
+        self.vertical_line_axvline = vertical_line_axvline or w1d.AXVLine(
+            is_default=True
+        )
         self.yx_scatter = yx_scatter or w1d.YXScatter(is_default=True)
         self.fill_between = fill_between or w1d.FillBetween(is_default=True)
 
@@ -617,22 +621,31 @@ class MatPlot2D(AbstractMatPlot):
         self.patch_overlay = patch_overlay or w2d.PatchOverlay(is_default=True)
 
         self.interpolated_reconstruction = (
-            interpolated_reconstruction or w2d.InterpolatedReconstruction(is_default=True)
+            interpolated_reconstruction
+            or w2d.InterpolatedReconstruction(is_default=True)
         )
         self.voronoi_drawer = voronoi_drawer or w2d.VoronoiDrawer(is_default=True)
 
         self.origin_scatter = origin_scatter or w2d.OriginScatter(is_default=True)
         self.mask_scatter = mask_scatter or w2d.MaskScatter(is_default=True)
         self.border_scatter = border_scatter or w2d.BorderScatter(is_default=True)
-        self.positions_scatter = positions_scatter or w2d.PositionsScatter(is_default=True)
+        self.positions_scatter = positions_scatter or w2d.PositionsScatter(
+            is_default=True
+        )
         self.index_scatter = index_scatter or w2d.IndexScatter(is_default=True)
-        self.mesh_grid_scatter = mesh_grid_scatter or w2d.MeshGridScatter(is_default=True)
+        self.mesh_grid_scatter = mesh_grid_scatter or w2d.MeshGridScatter(
+            is_default=True
+        )
 
         self.parallel_overscan_plot = (
             parallel_overscan_plot or w2d.ParallelOverscanPlot(is_default=True)
         )
-        self.serial_prescan_plot = serial_prescan_plot or w2d.SerialPrescanPlot(is_default=True)
-        self.serial_overscan_plot = serial_overscan_plot or w2d.SerialOverscanPlot(is_default=True)
+        self.serial_prescan_plot = serial_prescan_plot or w2d.SerialPrescanPlot(
+            is_default=True
+        )
+        self.serial_overscan_plot = serial_overscan_plot or w2d.SerialOverscanPlot(
+            is_default=True
+        )
 
         self.is_for_subplot = False
 

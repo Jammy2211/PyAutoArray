@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 
+
 class ArrayOverlay(AbstractMatWrap2D):
     """
     Overlays an `Array2D` data structure over a figure.

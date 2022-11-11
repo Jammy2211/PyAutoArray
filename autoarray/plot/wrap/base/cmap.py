@@ -10,6 +10,7 @@ from autoarray import exc
 
 logger = logging.getLogger(__name__)
 
+
 class Cmap(AbstractMatWrap):
     def __init__(self, symmetric: bool = False, **kwargs):
         """
