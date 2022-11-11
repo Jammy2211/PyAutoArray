@@ -5,7 +5,5 @@ class MeshGridScatter(GridScatter):
     """
     Plots the grid of a `Mesh` object (see `autoarray.inversion`).
 
-    See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
+    See `wrap.base.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
-
-    pass

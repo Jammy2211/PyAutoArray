@@ -5,7 +5,7 @@ class BorderScatter(GridScatter):
     """
     Plots a border over an image, using the `Mask2d` object's (y,x) `border_grid_sub_1` property.
 
-    See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
+    See `wrap.base.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
 
     pass

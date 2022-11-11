@@ -60,6 +60,5 @@ class AbstractGetVisuals:
 
         if getattr(self.visuals, name) is not None:
             return getattr(self.visuals, name)
-        else:
-            if getattr(self.include, include_name):
-                return value
+        elif getattr(self.include, include_name):
+            return value

@@ -4,7 +4,7 @@ set_backend()
 
 import copy
 import matplotlib.pyplot as plt
-from typing import Optional, List, Union
+from typing import Optional, List, Tuple, Union
 
 from autoarray.plot.wrap import base as wb
 
@@ -202,8 +202,30 @@ class AbstractMatPlot:
         else:
             return 6, 6
 
-    def setup_subplot(self, aspect=None, subplot_rows_columns=None):
+    def setup_subplot(
+        self,
+        aspect: Optional[Tuple[float, float]] = None,
+        subplot_rows_columns: Tuple[int, int] = None,
+    ):
+        """
+        Setup a new figure to be plotted on a subplot, which is used by a `Plotter` when plotting multiple images
+        on a subplot.
 
+        Every time a new figure is plotted on the subplot, the counter `subplot_index` increases by 1.
+
+        The shape of the subplot is determined by the number of figures on the subplot.
+
+        The aspect ratio of the subplot can be customized based on the size of the figures.
+
+        Every time
+
+        Parameters
+        ----------
+        aspect
+            The aspect ratio of the overall subplot.
+        subplot_rows_columns
+            The number of rows and columns in the subplot.
+        """
         if subplot_rows_columns is None:
             rows, columns = self.get_subplot_rows_columns(
                 number_subplots=self.number_subplots

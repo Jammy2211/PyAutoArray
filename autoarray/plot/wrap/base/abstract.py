@@ -4,7 +4,17 @@ from autoconf import conf
 
 
 def set_backend():
+    """
+    The matplotlib end used by default is the default matplotlib backend on a user's computer.
 
+    The backend can be customized via the `config.visualize.general.ini` config file, if a user needs to overwrite
+    the backend for visualization to work.
+
+    This has been the case in order to circumvent compatibility issues with MACs.
+
+    It is also common for high perforamcne computers (HPCs) to not support visualization and raise an error when
+    a graphical backend (e.g. TKAgg) is used. Setting the backend to `Agg` addresses this.
+    """
     backend = conf.get_matplotlib_backend()
 
     if backend not in "default":
@@ -21,8 +31,7 @@ def set_backend():
 
 def remove_spaces_and_commas_from(colors):
 
-    colors = [color.strip(",") for color in colors]
-    colors = [color.strip(" ") for color in colors]
+    colors = [color.strip(",").strip(" ") for color in colors]
     colors = list(filter(None, colors))
     if len(colors) == 1:
         return colors[0]
@@ -77,16 +86,13 @@ class AbstractMatWrap:
     def config_dict(self):
 
         if not self.is_for_subplot:
-
-            config_dict = conf.instance["visualize"][self.config_folder][
-                self.__class__.__name__
-            ]["figure"]._dict
-
+            category = "figure"
         else:
+            category = "subplot"
 
-            config_dict = conf.instance["visualize"][self.config_folder][
-                self.__class__.__name__
-            ]["subplot"]._dict
+        config_dict = conf.instance["visualize"][self.config_folder][
+            self.__class__.__name__
+        ][category]._dict
 
         if "c" in config_dict:
             config_dict["c"] = remove_spaces_and_commas_from(colors=config_dict["c"])

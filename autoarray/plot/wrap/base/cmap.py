@@ -50,15 +50,13 @@ class Cmap(AbstractMatWrap):
 
         if self.config_dict["vmin"] is None:
             return np.min(array)
-        else:
-            return self.config_dict["vmin"]
+        return self.config_dict["vmin"]
 
     def vmax_from(self, array: np.ndarray):
 
         if self.config_dict["vmax"] is None:
             return np.max(array)
-        else:
-            return self.config_dict["vmax"]
+        return self.config_dict["vmax"]
 
     def norm_from(self, array: np.ndarray) -> object:
         """
@@ -108,11 +106,11 @@ class Cmap(AbstractMatWrap):
             )
         elif self.config_dict["norm"] in "diverge":
             return colors.TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
-        else:
-            raise exc.PlottingException(
-                "The normalization (norm) supplied to the plotter is not a valid string must be "
-                "{linear, log, symmetric_log}"
-            )
+
+        raise exc.PlottingException(
+            "The normalization (norm) supplied to the plotter is not a valid string must be "
+            "{linear, log, symmetric_log}"
+        )
 
     @property
     def cmap(self):

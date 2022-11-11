@@ -75,10 +75,6 @@ class Colorbar(AbstractMatWrap):
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
 
-        # fignums = plt.get_fignums()
-        # fig = plt.figure(fignums[0])
-        # ax = fig.axes[0]
-
         mappable = cm.ScalarMappable(cmap=cmap)
         mappable.set_array(color_values)
 

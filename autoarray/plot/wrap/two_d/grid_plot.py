@@ -73,7 +73,7 @@ class GridPlot(AbstractMatWrap2D):
 
             plt.plot(grid[:, 1], grid[:, 0], c=color, **config_dict)
         except (IndexError, TypeError):
-            return self.plot_grid_list(grid_list=grid)
+            self.plot_grid_list(grid_list=grid)
 
     def plot_grid_list(self, grid_list: Union[List[Grid2D], List[Grid2DIrregular]]):
         """
@@ -101,4 +101,4 @@ class GridPlot(AbstractMatWrap2D):
             for grid in grid_list:
                 plt.plot(grid[:, 1], grid[:, 0], c=next(color), **config_dict)
         except IndexError:
-            return None
+            pass

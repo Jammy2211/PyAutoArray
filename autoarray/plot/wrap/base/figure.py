@@ -1,7 +1,15 @@
+from enum import Enum
 import matplotlib.pyplot as plt
 from typing import Union, Tuple
 
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
+
+
+class Aspect(Enum):
+
+    square = 1
+    auto = 2
+    equal = 3
 
 
 class Figure(AbstractMatWrap):
@@ -37,12 +45,22 @@ class Figure(AbstractMatWrap):
 
         ratio = float((extent[1] - extent[0]) / (extent[3] - extent[2]))
 
-        if self.config_dict["aspect"] in "square":
+        aspect = Aspect[self.config_dict["aspect"]]
+
+        if aspect == Aspect.square:
             return ratio
-        elif self.config_dict["aspect"] in "auto":
+        elif aspect == Aspect.auto:
             return 1.0 / ratio
-        elif self.config_dict["aspect"] in "equal":
+        elif aspect == Aspect.equal:
             return 1.0
+
+        raise ValueError(
+            f"""
+            The `aspect` variable used to set up the figure is {aspect}. 
+
+            This is not a valid value, which must be one of square / auto / equal.
+            """
+        )
 
     def aspect_from(self, shape_native: Union[Tuple[int, int]]) -> Union[float, str]:
         """
