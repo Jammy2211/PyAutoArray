@@ -1,18 +1,18 @@
-from autoarray.plot.wrap.wrap_base import set_backend
+from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
 
 import matplotlib.pyplot as plt
 from typing import Optional, Tuple
 
-from autoarray.plot.mat_wrap.visuals import Visuals1D
-from autoarray.plot.mat_wrap.visuals import Visuals2D
-from autoarray.plot.mat_wrap.include import Include1D
-from autoarray.plot.mat_wrap.include import Include2D
-from autoarray.plot.mat_wrap.mat_plot import MatPlot1D
-from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
-from autoarray.plot.mat_wrap.get_visuals import GetVisuals1D
-from autoarray.plot.mat_wrap.get_visuals import GetVisuals2D
+from autoarray.plot.visuals.one_d import Visuals1D
+from autoarray.plot.visuals.two_d import Visuals2D
+from autoarray.plot.include.one_d import Include1D
+from autoarray.plot.include.two_d import Include2D
+from autoarray.plot.mat_plot.one_d import MatPlot1D
+from autoarray.plot.mat_plot.two_d import MatPlot2D
+from autoarray.plot.get_visuals.one_d import GetVisuals1D
+from autoarray.plot.get_visuals.two_d import GetVisuals2D
 
 
 class AbstractPlotter:

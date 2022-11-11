@@ -124,4 +124,3 @@ class SimulatorImaging:
         image = Array2D.manual_mask(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map)
-
