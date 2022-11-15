@@ -13,6 +13,7 @@ class Colorbar(AbstractMatWrap):
         self,
         manual_tick_labels: Optional[List[float]] = None,
         manual_tick_values: Optional[List[float]] = None,
+        manual_alignment: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -38,6 +39,7 @@ class Colorbar(AbstractMatWrap):
 
         self.manual_tick_labels = manual_tick_labels
         self.manual_tick_values = manual_tick_values
+        self.manual_alignment = manual_alignment
 
     def set(self, ax=None):
         """
@@ -50,7 +52,9 @@ class Colorbar(AbstractMatWrap):
             self.manual_tick_values is not None and self.manual_tick_labels is not None
         ):
             cb = plt.colorbar(ticks=self.manual_tick_values, ax=ax, **self.config_dict)
-            cb.ax.set_yticklabels(labels=self.manual_tick_labels)
+            cb.ax.set_yticklabels(
+                labels=self.manual_tick_labels, va=self.manual_alignment
+            )
         else:
             raise exc.PlottingException(
                 "Only 1 entry of tick_values or tick_labels was input. You must either supply"

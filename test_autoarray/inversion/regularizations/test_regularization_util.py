@@ -145,6 +145,27 @@ def test__constant_regularization_matrix_from():
     assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
+def test__constant_zeroth_regularization_matrix_from():
+
+    neighbors = np.array([[1, 2, -1], [0, -1, -1], [0, -1, -1]])
+
+    neighbors_sizes = np.array([2, 1, 1])
+
+    regularization_matrix = (
+        aa.util.regularization.constant_zeroth_regularization_matrix_from(
+            coefficient=2.0,
+            coefficient_zeroth=0.5,
+            neighbors=neighbors,
+            neighbors_sizes=neighbors_sizes,
+        )
+    )
+
+    assert regularization_matrix == pytest.approx(
+        np.array([[8.25, -4.0, -4.0], [-4.0, 4.25, 0.0], [-4.0, 0.0, 4.25]]), 1.0e-4
+    )
+    assert abs(np.linalg.det(regularization_matrix)) > 1e-8
+
+
 def test__adaptive_regularization_weights_from():
 
     pixel_signals = np.array([1.0, 1.0, 1.0])
