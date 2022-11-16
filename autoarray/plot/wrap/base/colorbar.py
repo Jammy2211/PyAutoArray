@@ -53,7 +53,7 @@ class Colorbar(AbstractMatWrap):
         ):
             cb = plt.colorbar(ticks=self.manual_tick_values, ax=ax, **self.config_dict)
             cb.ax.set_yticklabels(
-                labels=self.manual_tick_labels, va=self.manual_alignment
+                labels=self.manual_tick_labels, va=self.manual_alignment or "center"
             )
         else:
             raise exc.PlottingException(
