@@ -210,6 +210,15 @@ class MatPlot1D(AbstractMatPlot):
             use_integers=use_integers,
         )
 
+        # TODO : Implement properly
+
+        # self.yticks.set(
+        #     array=y,
+        #     min_value=np.min(y),
+        #     max_value=np.max(y),
+        #     units=self.units,
+        # )
+
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
         self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
