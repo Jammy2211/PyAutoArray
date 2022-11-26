@@ -426,7 +426,7 @@ def mask_2d_elliptical_from(
     Examples
     --------
     mask = mask_elliptical_from(
-        shape=(10, 10), pixel_scales=0.1, major_axis_radius=0.5, elliptical_comps=(0.333333, 0.0), centre=(0.0, 0.0))
+        shape=(10, 10), pixel_scales=0.1, major_axis_radius=0.5, ell_comps=(0.333333, 0.0), centre=(0.0, 0.0))
     """
 
     mask_2d = np.full(shape_native, True)
