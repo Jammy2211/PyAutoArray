@@ -1,0 +1,15 @@
+fits:
+  flip_for_ds9: false
+grid:
+  remove_projected_centre: false
+numba:
+  cache: false
+  nopython: true
+  parallel: false
+  use_numba: true
+pixelization:
+  voronoi_nn_max_interpolation_neighbors: 100
+profiling:
+  repeats: 1
+structures:
+  use_dataset_grids: true
