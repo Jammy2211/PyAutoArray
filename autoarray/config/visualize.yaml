@@ -1,33 +1,61 @@
 general:
   general:
-    backend: default
-    imshow_origin: upper
-    zoom_around_mask: true
+    backend: default                  # The matploblib backend used for visualization. `default` uses the system default, can specifiy specific backend (e.g. TKAgg, Qt5Agg, WXAgg).
+    imshow_origin: upper              # The `origin` input of `imshow`, determining if pixel values are ascending or descending on the y-axis.
+    zoom_around_mask: true            # If True, plots of data structures with a mask automatically zoom in the masked region.
   inversion:
-    reconstruction_vmax_factor: 0.5
+    reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
   units:
-    in_kpc: false
+    in_kpc: false                     # If True, plots that are normally in arc-seconds are instead plotted using kiloparsecs.
+
+# The `include` settings customize every feature that appears on plotted images by default (e.g. a mask, the
+# coordinate system's origin, etc.).
+
+# For example, if `include_2d -> mask:true`, the mask will not be plotted on any applicable figure by default.
+
 include:
   include_1d:
-    mask: false
-    origin: false
+    mask: false                       # Include a Mask ?
+    origin: false                     # Include the (x,) origin of the data's coordinate system ?
   include_2d:
-    border: true
-    grid: false
-    mapper_data_mesh_grid: true
-    mapper_source_grid_slim: false
-    mapper_source_mesh_grid: false
-    mask: true
-    origin: false
+    border: true                      # Include the border of the mask (all pixels on the outside of the mask) ?
+    grid: false                       # Include the data's 2D grid of (y,x) coordinates ?
+    mapper_data_mesh_grid: true       # For an Inversion, include the pixel centres computed in the image-plane / data frame?
+    mapper_source_grid_slim: false    # For an Inversion, include the centres of the image-plane grid mapped to the source-plane / frame in source-plane figures?
+    mapper_source_mesh_grid: false    # For an Inversion, include the centres of the mesh pixels in the source-plane / source-plane?
+    mask: true                        # Include a mask ?
+    origin: false                     # Include the (y,x) origin of the data's coordinate system ?
+    positions: true                   # Include (y,x) coordinates specified via `Visuals2d.positions` ?
     parallel_overscan: true
-    positions: true
     serial_overscan: true
     serial_prescan: true
+
+# `mat_wrap` / `mat_wrap_1d` / mat_wrap_2d` settings specify the default matplotlib settings when figures and
+# subplots are plotted.
+
+# For example, the ``Figure`` section has the following lines:
+
+# Figure:
+#    figure:
+#      aspect: square
+#      figsize: (7,7)
+#    subplot:
+#      aspect: square
+#      figsize: auto
+
+# This means that when a figure (e.g. a single image) is plotted it will use `figsize=(7,7)` and ``aspect="square`` if
+# the values of these parameters are not manually set by the user via a `MatPlot2D` object.
+#
+# In the above example, subplots (e.g. more than one image) will always use `figsize="auto` by default.
+#
+# These configuration options can be customized such that the appearance of figures and subplots for a user is
+# optimal for your computer set up.
+
 mat_wrap:
-  Axis:
+  Axis:                # wrapper for `plt.axis()`: customize the figure axis.
     figure: {}
     subplot: {}
-  Cmap:
+  Cmap:                # wrapper for `plt.cmap()`: customize the figure colormap.
     figure:
       cmap: default
       linscale: 0.01
@@ -42,81 +70,81 @@ mat_wrap:
       norm: linear
       vmax: null
       vmin: null
-  Colorbar:
+  Colorbar:            # wrapper for `plt.colorbar()`: customize the figure colorbar.
     figure:
       fraction: 0.047
       pad: 0.01
     subplot:
       fraction: 0.047
       pad: 0.01
-  ColorbarTickParams:
+  ColorbarTickParams:  # wrapper for `cb.ax.tick_params()`: customize the ticks of the figure's colorbar.
     figure:
       labelsize: 10
     subplot:
       labelsize: 10
-  Figure:
+  Figure:              # wrapper for `plt.figure()`: customize the figure size.
     figure:
       aspect: square
       figsize: (7,7)
     subplot:
       aspect: square
       figsize: auto
-  Legend:
+  Legend:              # wrapper for `plt.legend()`: customize the figure legend.
     figure:
       fontsize: 12
       include: true
     subplot:
       fontsize: 12
       include: true
-  Text:
+  Text:                # wrapper for `plt.text()`: customize the appearance of text placed on the figure.
     figure:
       fontsize: 16
     subplot:
       fontsize: 10
-  TickParams:
+  TickParams:          # wrapper for `plt.tick_params()`: customize the figure tick parameters.
     figure:
       labelsize: 16
     subplot:
       labelsize: 10
-  Title:
+  Title:               # wrapper for `plt.title()`: customize the figure title.
     figure:
       fontsize: 16
     subplot:
       fontsize: 10
-  XLabel:
+  XLabel:              # wrapper for `plt.xlabel()`: customize the figure xlabel.
     figure:
       fontsize: 16
     subplot:
       fontsize: 10
-  XTicks:
+  XTicks:              # wrapper for `plt.xticks()`: customize the figure xticks.
     figure:
       fontsize: 16
     subplot:
       fontsize: 10
-  YLabel:
+  YLabel:              # wrapper for `plt.ylabel()`: customize the figure ylabel. 
     figure:
       fontsize: 16
     subplot:
       fontsize: 10
-  YTicks:
+  YTicks:              # wrapper for `plt.xticks()`: customize the figure yticks.
     figure:
       fontsize: 16
     subplot:
       fontsize: 10
-mat_wrap_1d:
-  AXVLine:
+mat_wrap_1d:           
+  AXVLine:             # wrapper for `plt.axvline()`: customize verticals lines plotted on the figure.
     figure:
       c: k
     subplot:
       c: k
-  FillBetween:
+  FillBetween:         # wrapper for `plt.fill_between()`: customize how fill between plots appear
     figure:
       alpha: 0.7
       color: k
     subplot:
       alpha: 0.7
       color: k
-  YXPlot:
+  YXPlot:              # wrapper for `plt.plot()`: customize plots of y versus x.
     figure:
       c: k
     subplot:
@@ -127,12 +155,12 @@ mat_wrap_1d:
     subplot:
       c: k
 mat_wrap_2d:
-  ArrayOverlay:
+  ArrayOverlay:        # wrapper for `plt.imshow()`: customize arrays overlaid.
     figure:
       alpha: 0.5
     subplot:
       alpha: 0.5
-  BorderScatter:
+  BorderScatter:       # wrapper for `plt.scatter()`: customize the apperance of 2D borders.
     figure:
       c: r
       marker: .
@@ -141,7 +169,7 @@ mat_wrap_2d:
       c: r
       marker: .
       s: 10
-  GridErrorbar:
+  GridErrorbar:        # wrapper for `plt.errrorbar()`: customize grids with errors.
     figure:
       alpha: 0.5
       c: k
@@ -156,7 +184,7 @@ mat_wrap_2d:
       linewidth: 5
       marker: o
       markersize: 8
-  GridPlot:
+  GridPlot:            # wrapper for `plt.plot()`: customize how grids plotted via this method appear.
     figure:
       c: k
     subplot:
@@ -170,7 +198,7 @@ mat_wrap_2d:
       c: k
       marker: .
       s: 1
-  IndexScatter:
+  IndexScatter:        # wrapper for `plt.scatter()`: customize indexes (e.g. data / source plane or frame objects of an Inversion)
     figure:
       c: r,g,b,m,y,k
       marker: .
@@ -179,7 +207,7 @@ mat_wrap_2d:
       c: r,g,b,m,y,k
       marker: .
       s: 20
-  MaskScatter:
+  MaskScatter:         # wrapper for `plt.scatter()`: customize the appearance of 2D masks.
     figure:
       c: k
       marker: x
@@ -188,7 +216,7 @@ mat_wrap_2d:
       c: k
       marker: x
       s: 10
-  MeshGridScatter:
+  MeshGridScatter:     # wrapper for `plt.scatter()`: customize the appearance of mesh grids of Inversions in the source-plane / source-frame.
     figure:
       c: r
       marker: .
@@ -197,7 +225,7 @@ mat_wrap_2d:
       c: r
       marker: .
       s: 2
-  OriginScatter:
+  OriginScatter:       # wrapper for `plt.scatter()`: customize the appearance of the (y,x) origin on figures.
     figure:
       c: k
       marker: x
@@ -206,6 +234,48 @@ mat_wrap_2d:
       c: k
       marker: x
       s: 80
+  PatchOverlay:        # wrapper for `plt.gcf().gca().add_collection`: customize how overlaid patches appear.
+    figure:
+      edgecolor: c
+      facecolor: null
+    subplot:
+      edgecolor: c
+      facecolor: null
+  PositionsScatter:    # wrapper for `plt.scatter()`: customize the appearance of positions input via `Visuals2d.positions`.
+    figure:
+      c: k,m,y,b,r,g
+      marker: .
+      s: 16
+    subplot:
+      c: k,m,y,b,r,g
+      marker: .
+      s: 16
+  VectorYXQuiver:      # wrapper for `plt.quiver()`: customize (y,x) vectors appearances (e.g. a shear field).
+    figure:
+      alpha: 1.0
+      angles: xy
+      headlength: 0
+      headwidth: 1
+      linewidth: 5
+      pivot: middle
+      units: xy
+    subplot:
+      alpha: 1.0
+      angles: xy
+      headlength: 0
+      headwidth: 1
+      linewidth: 5
+      pivot: middle
+      units: xy
+  VoronoiDrawer:       # wrapper for `plt.fill()`: customize the appearance of Voronoi mesh's.
+    figure:
+      alpha: 0.7
+      edgecolor: k
+      linewidth: 0.3
+    subplot:
+      alpha: 0.7
+      edgecolor: k
+      linewidth: 0.3
   ParallelOverscanPlot:
     figure:
       c: k
@@ -216,23 +286,7 @@ mat_wrap_2d:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
-  PatchOverlay:
-    figure:
-      edgecolor: c
-      facecolor: null
-    subplot:
-      edgecolor: c
-      facecolor: null
-  PositionsScatter:
-    figure:
-      c: k,m,y,b,r,g
-      marker: .
-      s: 16
-    subplot:
-      c: k,m,y,b,r,g
-      marker: .
-      s: 16
+      pointsize: 20      
   SerialOverscanPlot:
     figure:
       c: k
@@ -255,29 +309,3 @@ mat_wrap_2d:
       linestyle: '-'
       linewidth: 1
       pointsize: 20
-  VectorYXQuiver:
-    figure:
-      alpha: 1.0
-      angles: xy
-      headlength: 0
-      headwidth: 1
-      linewidth: 5
-      pivot: middle
-      units: xy
-    subplot:
-      alpha: 1.0
-      angles: xy
-      headlength: 0
-      headwidth: 1
-      linewidth: 5
-      pivot: middle
-      units: xy
-  VoronoiDrawer:
-    figure:
-      alpha: 0.7
-      edgecolor: k
-      linewidth: 0.3
-    subplot:
-      alpha: 0.7
-      edgecolor: k
-      linewidth: 0.3
