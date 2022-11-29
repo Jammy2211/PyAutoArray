@@ -281,31 +281,25 @@ mat_wrap_2d:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
     subplot:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20      
   SerialOverscanPlot:
     figure:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
     subplot:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
   SerialPrescanPlot:
     figure:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
     subplot:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
