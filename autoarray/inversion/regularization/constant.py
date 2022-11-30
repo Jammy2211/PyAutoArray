@@ -41,5 +41,3 @@ class Constant(AbstractRegularization):
             neighbors=linear_obj.neighbors,
             neighbors_sizes=linear_obj.neighbors.sizes,
         )
-
-

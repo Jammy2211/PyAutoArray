@@ -44,18 +44,22 @@ class Units:
         self.conversion_factor = conversion_factor
         self.in_kpc = in_kpc
 
-        units_config = conf.instance["visualize"]["general"]["units"]
-
         if use_scaled is not None:
             self.use_scaled = use_scaled
         else:
             try:
-                self.use_scaled = units_config["use_scaled"]
+                self.use_scaled = conf.instance["visualize"]["general"]["units"][
+                    "use_scaled"
+                ]
             except KeyError:
                 self.use_scaled = True
 
         try:
-            self.in_kpc = in_kpc if in_kpc is not None else units_config["in_kpc"]
+            self.in_kpc = (
+                in_kpc
+                if in_kpc is not None
+                else conf.instance["visualize"]["general"]["units"]["in_kpc"]
+            )
         except KeyError:
             self.in_kpc = None
 

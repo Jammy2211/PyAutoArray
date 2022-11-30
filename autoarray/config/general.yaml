@@ -1,15 +1,8 @@
-fits:
-  flip_for_ds9: false                             # If True, a np.flipud() is applied to images before loading so visualization is the same orientation as ds9
-grid:
-  remove_projected_centre: false                 # When making 1D data structures from 2D data structures (e.g. Grid1D from Grid2D), whether the central pixel is removed or not.
-numba:                                           # These are the input variables of the numba.jit() decorator, which are applied to many functions throughout the source code.
-  use_numba: true                                # If True, numba is used by the source code. This allows one to disable numba, albeit the source code will run slower.
-  cache: false                                   # If True, the numba just in time compilations are cached.
-  nopython: true                                 # If True, numba raises an exception if jit-compiled code is in Python.
-  parallel: false                                # If True, numba perform parallel multithreading.
-pixelization:
-  voronoi_nn_max_interpolation_neighbors: 100    # The maximum number of neighbors a Voronoi pixel in the natural neighbor interpolation scheme is allowed (e.g. VoronoiNNMagnification)
-profiling:
-  repeats: 1                                     # The number of repeat function calls used to measure run-times when profiling.
-structures:
-  use_dataset_grids: true                        # If True, dataset objects (e.g. Imaging) have a grid of (y,x) coordinates computed for them.
+  general:
+    backend: default                  # The matploblib backend used for visualization. `default` uses the system default, can specifiy specific backend (e.g. TKAgg, Qt5Agg, WXAgg).
+    imshow_origin: upper              # The `origin` input of `imshow`, determining if pixel values are ascending or descending on the y-axis.
+    zoom_around_mask: true            # If True, plots of data structures with a mask automatically zoom in the masked region.
+  inversion:
+    reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
+  units:
+    in_kpc: false                     # If True, plots that are normally in arc-seconds are instead plotted using kiloparsecs.
