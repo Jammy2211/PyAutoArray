@@ -3,8 +3,16 @@ general:
     backend: default
     imshow_origin: upper
     zoom_around_mask: true
-  inversion:
-    reconstruction_vmax_factor: 0.5
+  include_2d:
+    border: true
+    mapper_data_mesh_grid: true
+    mapper_source_grid_slim: false
+    mapper_source_mesh_grid: false
+    mask: true
+    origin: true
+    parallel_overscan: true
+    serial_overscan: true
+    serial_prescan: true
   units:
     in_kpc: false
 include:
@@ -13,47 +21,48 @@ include:
     origin: false
   include_2d:
     border: true
-    grid: false
     mapper_data_mesh_grid: true
     mapper_source_grid_slim: false
     mapper_source_mesh_grid: false
     mask: true
-    origin: false
+    origin: true
     parallel_overscan: true
     positions: true
-    serial_overscan: true
+    serial_overscan: false
     serial_prescan: true
 mat_wrap:
   Axis:
-    figure: {}
-    subplot: {}
+    figure:
+      emit: true
+    subplot:
+      emit: false
   Cmap:
     figure:
       cmap: default
-      linscale: 0.01
-      linthresh: 0.05
+      linscale: 2.0
+      linthresh: 1.0
       norm: linear
       vmax: null
       vmin: null
     subplot:
       cmap: default
-      linscale: 0.01
-      linthresh: 0.05
+      linscale: 2.0
+      linthresh: 1.0
       norm: linear
       vmax: null
       vmin: null
   Colorbar:
     figure:
-      fraction: 0.047
-      pad: 0.01
+      fraction: 3.0
+      pad: 4.0
     subplot:
-      fraction: 0.047
-      pad: 0.01
+      fraction: 0.1
+      pad: 0.2
   ColorbarTickParams:
     figure:
-      labelsize: 10
+      labelsize: 1
     subplot:
-      labelsize: 10
+      labelsize: 1
   Figure:
     figure:
       aspect: square
@@ -66,8 +75,8 @@ mat_wrap:
       fontsize: 12
       include: true
     subplot:
-      fontsize: 12
-      include: true
+      fontsize: 13
+      include: false
   Text:
     figure:
       fontsize: 16
@@ -80,24 +89,24 @@ mat_wrap:
       labelsize: 10
   Title:
     figure:
-      fontsize: 16
+      fontsize: 11
     subplot:
-      fontsize: 10
+      fontsize: 15
   XLabel:
     figure:
-      fontsize: 16
+      fontsize: 3
     subplot:
-      fontsize: 10
+      fontsize: 4
   XTicks:
     figure:
-      fontsize: 16
+      fontsize: 17
     subplot:
-      fontsize: 10
+      fontsize: 11
   YLabel:
     figure:
-      fontsize: 16
+      fontsize: 1
     subplot:
-      fontsize: 10
+      fontsize: 2
   YTicks:
     figure:
       fontsize: 16
@@ -107,154 +116,152 @@ mat_wrap_1d:
   AXVLine:
     figure:
       c: k
+      ymin: 0.5
     subplot:
       c: k
+      ymin: 0.6
   FillBetween:
     figure:
-      alpha: 0.7
+      alpha: 0.6
       color: k
     subplot:
-      alpha: 0.7
+      alpha: 0.5
       color: k
   YXPlot:
     figure:
       c: k
+      linestyle: '-'
+      linewidth: 3
     subplot:
       c: k
+      linestyle: '-'
+      linewidth: 1
   YXScatter:
     figure:
       c: k
+      marker: .
     subplot:
       c: k
+      marker: x
 mat_wrap_2d:
   ArrayOverlay:
     figure:
       alpha: 0.5
     subplot:
-      alpha: 0.5
+      alpha: 0.7
   BorderScatter:
     figure:
-      c: r
-      marker: .
-      s: 30
+      c: c
+      marker: +
+      s: 13
     subplot:
-      c: r
+      c: k
       marker: .
-      s: 10
+      s: 7
   GridErrorbar:
     figure:
-      alpha: 0.5
       c: k
-      fmt: o
-      linewidth: 5
       marker: o
-      markersize: 8
     subplot:
-      alpha: 0.5
-      c: k
-      fmt: o
-      linewidth: 5
-      marker: o
-      markersize: 8
+      c: b
+      marker: .
   GridPlot:
     figure:
       c: k
+      linestyle: '-'
+      linewidth: 3
     subplot:
       c: k
+      linestyle: '-'
+      linewidth: 1
   GridScatter:
     figure:
-      c: k
-      marker: .
-      s: 1
+      c: y
+      marker: x
+      s: 14
     subplot:
-      c: k
+      c: r
       marker: .
-      s: 1
+      s: 6
   IndexScatter:
     figure:
-      c: r,g,b,m,y,k
+      c: r,g,b,y,k,w
       marker: .
       s: 20
     subplot:
-      c: r,g,b,m,y,k
-      marker: .
-      s: 20
+      c: r,g,b,y,w,k
+      marker: +
+      s: 21
   MaskScatter:
     figure:
-      c: k
-      marker: x
-      s: 10
+      c: g
+      marker: .
+      s: 12
     subplot:
-      c: k
-      marker: x
-      s: 10
+      c: w
+      marker: .
+      s: 8
   MeshGridScatter:
     figure:
       c: r
       marker: .
-      s: 2
+      s: 5
     subplot:
-      c: r
-      marker: .
-      s: 2
+      c: g
+      marker: o
+      s: 6
   OriginScatter:
     figure:
       c: k
       marker: x
       s: 80
     subplot:
-      c: k
-      marker: x
-      s: 80
+      c: r
+      marker: .
+      s: 81
   ParallelOverscanPlot:
     figure:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
     subplot:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
   PatchOverlay:
     figure:
       edgecolor: c
       facecolor: null
     subplot:
-      edgecolor: c
+      edgecolor: y
       facecolor: null
   PositionsScatter:
     figure:
-      c: k,m,y,b,r,g
-      marker: .
-      s: 16
+      c: r,g,b
+      marker: o
+      s: 15
     subplot:
-      c: k,m,y,b,r,g
+      c: c,g,b
       marker: .
-      s: 16
+      s: 5
   SerialOverscanPlot:
     figure:
       c: k
       linestyle: '-'
-      linewidth: 1
-      pointsize: 20
+      linewidth: 2
     subplot:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
   SerialPrescanPlot:
     figure:
       c: k
       linestyle: '-'
-      linewidth: 1
-      pointsize: 20
+      linewidth: 3
     subplot:
       c: k
       linestyle: '-'
       linewidth: 1
-      pointsize: 20
   VectorYXQuiver:
     figure:
       alpha: 1.0
@@ -265,19 +272,19 @@ mat_wrap_2d:
       pivot: middle
       units: xy
     subplot:
-      alpha: 1.0
-      angles: xy
-      headlength: 0
-      headwidth: 1
-      linewidth: 5
-      pivot: middle
-      units: xy
+      alpha: 1.1
+      angles: xy1
+      headlength: 0.1
+      headwidth: 11
+      linewidth: 51
+      pivot: middle1
+      units: xy1
   VoronoiDrawer:
     figure:
       alpha: 0.7
       edgecolor: k
       linewidth: 0.3
     subplot:
-      alpha: 0.7
-      edgecolor: k
-      linewidth: 0.3
+      alpha: 0.5
+      edgecolor: r
+      linewidth: 1.0

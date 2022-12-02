@@ -1,0 +1,8 @@
+interpolate:
+  ndarray_1d_from_grid:
+    MockGridLikeIteratorObj: true
+  ndarray_2d_from_grid:
+    MockGridLikeIteratorObj: true
+radial_minimum:
+  radial_minimum:
+    MockGridRadialMinimum: 2.5

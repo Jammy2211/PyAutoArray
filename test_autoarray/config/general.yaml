@@ -1,0 +1,35 @@
+analysis:
+  n_cores: 1
+  preload_attempts: 250
+fits:
+  flip_for_ds9: false
+grid:
+  remove_projected_centre: false
+hyper:
+  hyper_minimum_percent: 0.01
+  hyper_noise_limit: 100000000.0
+  stochastic_outputs: false
+numba:
+  cache: true
+  nopython: true
+  parallel: false
+  use_numba: true
+output:
+  backup_every_update: 10
+  grid_results_interval: 100
+  log_every_update: 50
+  log_file: output.log
+  log_level: INFO
+  model_results_decimal_places: 3
+  model_results_every_update: 100
+  remove_files: false
+pixelization:
+  voronoi_nn_max_interpolation_neighbors: 100
+profiling:
+  perform: false
+  repeats: 1
+structures:
+  use_dataset_grids: true
+test:
+  check_figure_of_merit_sanity: false
+  check_preloads: false

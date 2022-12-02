@@ -1,8 +1,22 @@
 # MANIFEST.in
+exclude .gitignore
+include README.rst
+include setup.cfg
+include CITATIONS.rst
+include LICENSE
 include requirements.txt
+include optional_requirements.txt
+
+prune .cache
+prune .git
+prune build
+prune dist
+
+recursive-exclude *.egg-info *
+
+recursive-include autoarray/config *
+
+exclude docs
 
 global-exclude test_autoarray
 recursive-exclude test_autoarray *
-
-recursive-include data *
-recursive-include autoarray/config *
