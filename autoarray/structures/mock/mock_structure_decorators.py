@@ -6,7 +6,7 @@ from autoarray.structures import structure_decorators
 ### Grids ###
 
 
-def grid_to_grid_radii(grid):
+def radial_grid_from(grid):
     return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
 
@@ -21,7 +21,7 @@ def ndarray_1d_from(profile, grid):
         - (2194697.0 / (30690717750.0 * 2.0**4))
     )
 
-    grid_radii = grid_to_grid_radii(grid=grid)
+    grid_radii = radial_grid_from(grid=grid)
 
     return np.exp(
         np.multiply(
@@ -42,7 +42,7 @@ def angle_to_profile_grid_from(grid_angles):
     return np.cos(grid_angles), np.sin(grid_angles)
 
 
-def grid_to_grid_cartesian(grid, radius):
+def _cartesian_grid_via_radial_from(grid, radius):
     """
     Convert a grid of (y,x) coordinates with their specified circular radii to their original (y,x) Cartesian
     coordinates.
@@ -60,7 +60,7 @@ def grid_to_grid_cartesian(grid, radius):
 
 
 def ndarray_2d_from(profile, grid):
-    return grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
+    return _cartesian_grid_via_radial_from(grid=grid, radius=np.full(grid.shape[0], 2.0))
 
 
 class MockGridLikeIteratorObj:
@@ -78,7 +78,7 @@ class MockGridLikeIteratorObj:
             - (2194697.0 / (30690717750.0 * 2.0**4))
         )
 
-    def grid_to_grid_radii(self, grid):
+    def radial_grid_from(self, grid):
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
     def angle_to_profile_grid_from(self, grid_angles):
@@ -91,7 +91,7 @@ class MockGridLikeIteratorObj:
         """
         return np.cos(grid_angles), np.sin(grid_angles)
 
-    def grid_to_grid_cartesian(self, grid, radius):
+    def _cartesian_grid_via_radial_from(self, grid, radius):
         """
         Convert a grid of (y,x) coordinates with their specified circular radii to their original (y,x) Cartesian
         coordinates.
@@ -115,7 +115,7 @@ class MockGridLikeIteratorObj:
 
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
-        grid_radii = self.grid_to_grid_radii(grid=grid)
+        grid_radii = self.radial_grid_from(grid=grid)
         return np.exp(
             np.multiply(
                 -self.sersic_constant,
@@ -131,7 +131,7 @@ class MockGridLikeIteratorObj:
 
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
-        return self.grid_to_grid_cartesian(
+        return self._cartesian_grid_via_radial_from(
             grid=grid, radius=np.full(grid.shape[0], 2.0)
         )
 
@@ -144,7 +144,7 @@ class MockGridLikeIteratorObj:
 
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
-        return self.grid_to_grid_cartesian(
+        return self._cartesian_grid_via_radial_from(
             grid=grid, radius=np.full(grid.shape[0], 2.0)
         )
 
@@ -156,7 +156,7 @@ class MockGridLikeIteratorObj:
 
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
-        grid_radii = self.grid_to_grid_radii(grid=grid)
+        grid_radii = self.radial_grid_from(grid=grid)
         return [
             np.exp(
                 np.multiply(
@@ -175,7 +175,7 @@ class MockGridLikeIteratorObj:
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
         return [
-            self.grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
+            self._cartesian_grid_via_radial_from(grid=grid, radius=np.full(grid.shape[0], 2.0))
         ]
 
     @structure_decorators.grid_2d_to_vector_yx
@@ -188,7 +188,7 @@ class MockGridLikeIteratorObj:
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
         return [
-            self.grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
+            self._cartesian_grid_via_radial_from(grid=grid, radius=np.full(grid.shape[0], 2.0))
         ]
 
 
@@ -286,7 +286,7 @@ class MockGridRadialMinimum:
     def __init__(self):
         pass
 
-    def grid_to_grid_radii(self, grid):
+    def radial_grid_from(self, grid):
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
     @structure_decorators.relocate_to_radial_minimum

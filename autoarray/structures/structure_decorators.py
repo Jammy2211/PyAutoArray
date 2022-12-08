@@ -492,7 +492,7 @@ def transform(func):
             (Grid2DTransformed, Grid2DTransformedNumpy, Grid2DIrregularTransformed),
         ):
             result = func(
-                cls, cls.transform_grid_to_reference_frame(grid), *args, **kwargs
+                cls, cls.grid_transformed_to_profile_reference_frame_from(grid), *args, **kwargs
             )
 
             return result
@@ -548,7 +548,7 @@ def relocate_to_radial_minimum(func):
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
 
-            grid_radii = cls.grid_to_grid_radii(grid=grid)
+            grid_radii = cls.radial_grid_from(grid=grid)
 
             grid_radial_scale = np.where(
                 grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
