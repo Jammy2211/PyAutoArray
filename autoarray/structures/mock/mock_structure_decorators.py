@@ -31,15 +31,15 @@ def ndarray_1d_from(profile, grid):
     )
 
 
-def grid_angle_to_profile(grid_thetas):
+def angle_to_profile_grid_from(grid_angles):
     """The angle between each (y,x) coordinate on the grid and the profile, in radians.
 
     Parameters
     -----------
-    grid_thetas
+    grid_angles
         The angle theta counter-clockwise from the positive x-axis to each coordinate in radians.
     """
-    return np.cos(grid_thetas), np.sin(grid_thetas)
+    return np.cos(grid_angles), np.sin(grid_angles)
 
 
 def grid_to_grid_cartesian(grid, radius):
@@ -54,8 +54,8 @@ def grid_to_grid_cartesian(grid, radius):
     radius
         The circular radius of each coordinate from the profile center.
     """
-    grid_thetas = np.arctan2(grid[:, 0], grid[:, 1])
-    cos_theta, sin_theta = grid_angle_to_profile(grid_thetas=grid_thetas)
+    grid_angles = np.arctan2(grid[:, 0], grid[:, 1])
+    cos_theta, sin_theta = angle_to_profile_grid_from(grid_angles=grid_angles)
     return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
 
@@ -81,15 +81,15 @@ class MockGridLikeIteratorObj:
     def grid_to_grid_radii(self, grid):
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
-    def grid_angle_to_profile(self, grid_thetas):
+    def angle_to_profile_grid_from(self, grid_angles):
         """The angle between each (y,x) coordinate on the grid and the profile, in radians.
 
         Parameters
         -----------
-        grid_thetas
+        grid_angles
             The angle theta counter-clockwise from the positive x-axis to each coordinate in radians.
         """
-        return np.cos(grid_thetas), np.sin(grid_thetas)
+        return np.cos(grid_angles), np.sin(grid_angles)
 
     def grid_to_grid_cartesian(self, grid, radius):
         """
@@ -103,8 +103,8 @@ class MockGridLikeIteratorObj:
         radius
             The circular radius of each coordinate from the profile center.
         """
-        grid_thetas = np.arctan2(grid[:, 0], grid[:, 1])
-        cos_theta, sin_theta = self.grid_angle_to_profile(grid_thetas=grid_thetas)
+        grid_angles = np.arctan2(grid[:, 0], grid[:, 1])
+        cos_theta, sin_theta = self.angle_to_profile_grid_from(grid_angles=grid_angles)
         return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
     @structure_decorators.grid_2d_to_structure

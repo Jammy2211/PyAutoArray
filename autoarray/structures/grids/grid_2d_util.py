@@ -375,7 +375,7 @@ def grid_2d_via_shape_native_from(
 
 
 @numba_util.jit()
-def radial_projected_shape_slim_from(
+def _radial_projected_shape_slim_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
     pixel_scales: ty.PixelScales,

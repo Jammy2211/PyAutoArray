@@ -962,7 +962,7 @@ class TestGrid:
         grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=(1.0, 2.0))
 
         grid_radii = grid.grid_2d_radial_projected_from(centre=(0.0, 0.0))
-        grid_radial_shape_slim = grid.grid_2d_radial_projected_shape_slim_from(
+        grid_radial_shape_slim = grid.grid_2d__radial_projected_shape_slim_from(
             centre=(0.0, 0.0)
         )
 
@@ -979,7 +979,7 @@ class TestGrid:
         grid = aa.Grid2D.uniform(shape_native=(3, 4), pixel_scales=(3.0, 2.0))
 
         grid_radii = grid.grid_2d_radial_projected_from(centre=(0.3, 0.1))
-        grid_radial_shape_slim = grid.grid_2d_radial_projected_shape_slim_from(
+        grid_radial_shape_slim = grid.grid_2d__radial_projected_shape_slim_from(
             centre=(0.3, 0.1)
         )
 
@@ -994,7 +994,7 @@ class TestGrid:
         assert grid_radial_shape_slim == grid_radii_util.shape[0]
 
         grid_radii = grid.grid_2d_radial_projected_from(centre=(0.3, 0.1), angle=60.0)
-        grid_radial_shape_slim = grid.grid_2d_radial_projected_shape_slim_from(
+        grid_radial_shape_slim = grid.grid_2d__radial_projected_shape_slim_from(
             centre=(0.3, 0.1)
         )
 
@@ -1012,7 +1012,7 @@ class TestGrid:
         conf.instance["general"]["grid"]["remove_projected_centre"] = True
 
         grid_radii = grid.grid_2d_radial_projected_from(centre=(0.0, 0.0))
-        grid_radial_shape_slim = grid.grid_2d_radial_projected_shape_slim_from(
+        grid_radial_shape_slim = grid.grid_2d__radial_projected_shape_slim_from(
             centre=(0.0, 0.0)
         )
 

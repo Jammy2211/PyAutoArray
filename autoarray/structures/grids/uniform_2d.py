@@ -1013,7 +1013,7 @@ class Grid2D(Structure):
         )
         return Array2D.manual_mask(array=distances, mask=self.mask)
 
-    def grid_2d_radial_projected_shape_slim_from(
+    def grid_2d__radial_projected_shape_slim_from(
         self, centre: Tuple[float, float] = (0.0, 0.0)
     ) -> int:
         """
@@ -1064,7 +1064,7 @@ class Grid2D(Structure):
             extent in along the positive x-axis.
         """
 
-        return grid_2d_util.radial_projected_shape_slim_from(
+        return grid_2d_util._radial_projected_shape_slim_from(
             extent=self.extent,
             centre=centre,
             pixel_scales=self.mask.pixel_scales,
