@@ -492,7 +492,7 @@ def transform(func):
             (Grid2DTransformed, Grid2DTransformedNumpy, Grid2DIrregularTransformed),
         ):
             result = func(
-                cls, cls.grid_transformed_to_profile_reference_frame_from(grid), *args, **kwargs
+                cls, cls.transformed_to_reference_frame_grid_from(grid), *args, **kwargs
             )
 
             return result
