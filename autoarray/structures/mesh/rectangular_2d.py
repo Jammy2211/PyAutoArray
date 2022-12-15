@@ -40,7 +40,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         and mappers that perform an `Inversion`.
 
         Parameters
-        -----------
+        ----------
         grid
             The grid of (y,x) coordinates corresponding to the centres of each pixel in the rectangular pixelization.
         shape_native
@@ -82,7 +82,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         spacing beyond these maximum and minimum coordinates.
 
         Parameters
-        -----------
+        ----------
         shape_native
             The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
         grid

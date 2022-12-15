@@ -142,7 +142,7 @@ class FitDataset(AbstractFitInversion):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
         Parameters
-        -----------
+        ----------
         dataset : MaskedDataset
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
         model_data

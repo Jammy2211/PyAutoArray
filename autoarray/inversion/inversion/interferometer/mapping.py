@@ -44,7 +44,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         `mapping_matrix` of every linear object.
 
         Parameters
-        -----------
+        ----------
         noise_map
             The noise-map of the observed interferometer data which values are solved for.
         transformer

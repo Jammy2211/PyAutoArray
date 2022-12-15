@@ -40,7 +40,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         `mapping_matrix` of every linear object.
 
         Parameters
-        -----------
+        ----------
         noise_map
             The noise-map of the observed imaging data which values are solved for.
         convolver

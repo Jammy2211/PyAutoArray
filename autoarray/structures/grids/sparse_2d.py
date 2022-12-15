@@ -67,7 +67,7 @@ class Grid2DSparse(Structure):
         This function is used in the `Inversion` package to set up the VoronoiMagnification Mesh.
 
         Parameters
-        -----------
+        ----------
         grid : Grid2D
             The grid of (y,x) scaled coordinates at the centre of every image value (e.g. image-pixels).
         unmasked_sparse_shape
@@ -160,7 +160,7 @@ class Grid2DSparse(Structure):
         This function is used in the `Inversion` package to set up the VoronoiMagnification Mesh.
 
         Parameters
-        -----------
+        ----------
         total_pixels
             The total number of pixels in the Grid2DSparse and input into the KMeans algortihm.
         grid : Grid2D

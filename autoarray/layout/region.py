@@ -34,7 +34,7 @@ class Region1D(AbstractRegion):
         40 rows of data.
 
         Parameters
-        -----------
+        ----------
         region
             The coordinates on the 1D data of the region defined following the convention (x0, y1).
         """
@@ -126,7 +126,7 @@ class Region2D(AbstractRegion):
         indicating it spans 20 rows at the end of the array over the columns defined between 10 and 30.
 
         Parameters
-        -----------
+        ----------
         region
             The coordinates on the 2D array of the region defined following the convention (y0, y1, x0, y1).
         """

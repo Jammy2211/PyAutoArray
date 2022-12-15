@@ -313,7 +313,7 @@ class Convolver:
         For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters
-        -----------
+        ----------
         image
             1D array of the values which are to be blurred with the convolver's PSF.
         blurring_image
@@ -385,7 +385,7 @@ class Convolver:
         """For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters
-        -----------
+        ----------
         image
             1D array of the values which are to be blurred with the convolver's PSF.
         blurring_image
@@ -405,7 +405,7 @@ class Convolver:
         """For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters
-        -----------
+        ----------
         image
             1D array of the values which are to be blurred with the convolver's PSF.
         blurring_image
@@ -514,7 +514,7 @@ class Convolver:
         identical fashion to above.
 
         Parameters
-        -----------
+        ----------
         mapping_matrix
             The 2D mapping matrix describing how every inversion pixel maps to a pixel on the data pixel.
         """

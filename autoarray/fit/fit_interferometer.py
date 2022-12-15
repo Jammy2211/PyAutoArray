@@ -20,7 +20,7 @@ class FitInterferometer(FitDataset):
         """Class to fit a masked interferometer dataset.
 
         Parameters
-        -----------
+        ----------
         dataset : MaskedInterferometer
             The masked interferometer dataset that is fitted.
         model_visibilities : Visibilities

@@ -177,7 +177,7 @@ class AbstractMatPlot:
         going to be plotted.
 
         Parameters
-        -----------
+        ----------
         number_subplots
             The number of subplots that are to be plotted in the figure.
         """

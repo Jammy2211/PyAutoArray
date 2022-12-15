@@ -53,7 +53,7 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
             [0, 0, -3 ,3] # [2->3] This is valid!
 
         Parameters
-        -----------
+        ----------
         coefficients
             The regularization coefficients which controls the degree of smoothing of the inversion reconstruction in \
             high and low signal regions of the reconstruction.

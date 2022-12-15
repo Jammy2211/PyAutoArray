@@ -23,7 +23,7 @@ class MockGrid2DMesh(Abstract2DMesh):
         and mappers that perform an `Inversion`.
 
         Parameters
-        -----------
+        ----------
         grid
             The grid of (y,x) coordinates corresponding to the centres of each pixel in the rectangular pixelization.
         shape_native

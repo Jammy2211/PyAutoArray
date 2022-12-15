@@ -44,7 +44,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         bypassing the construction of a `mapping_matrix`.
 
         Parameters
-        -----------
+        ----------
         noise_map
             The noise-map of the observed imaging data which values are solved for.
         convolver

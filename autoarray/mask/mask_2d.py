@@ -623,7 +623,7 @@ class Mask2D(Mask):
         Resized the array to a new shape and at a new origin.
 
         Parameters
-        -----------
+        ----------
         new_shape
             The new two-dimensional shape of the array.
         """
@@ -646,7 +646,7 @@ class Mask2D(Mask):
         Map a padded 1D array of values to its original 2D array, trimming all edge values.
 
         Parameters
-        -----------
+        ----------
         padded_array
             A 1D array of values which were computed using a padded grid
         """

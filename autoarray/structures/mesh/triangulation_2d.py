@@ -42,7 +42,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         and mappers that perform an `Inversion`.
 
         Parameters
-        -----------
+        ----------
         grid
             The grid of (y,x) coordinates corresponding to the Delaunay triangle corners and Voronoi pixel centres.
         nearest_pixelization_index_for_slim_index

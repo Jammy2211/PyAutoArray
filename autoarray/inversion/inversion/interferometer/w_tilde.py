@@ -46,7 +46,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         bypassing the construction of a `mapping_matrix`.
 
         Parameters
-        -----------
+        ----------
         noise_map
             The noise-map of the observed interferometer data which values are solved for.
         transformer

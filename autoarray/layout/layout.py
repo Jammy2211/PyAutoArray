@@ -55,7 +55,7 @@ class Layout2D:
         project **PyAutoCTI** where rectangles of injected charge are contained on the image.
 
         Parameters
-        -----------
+        ----------
         shape_2d
             The two dimensional shape of the charge injection imaging, corresponding to the number of rows (pixels
             in parallel direction) and columns (pixels in serial direction).

@@ -64,7 +64,7 @@ class Rectangular(AbstractMesh):
         the `image-plane` and `source` frame the `source-plane`.
 
         Parameters
-        -----------
+        ----------
         shape
             The 2D dimensions of the rectangular grid of pixels (total_y_pixels, total_x_pixel).
         """

@@ -120,7 +120,7 @@ class AbstractRegularization:
         use its determinant in the calculation.
 
         Parameters
-        -----------
+        ----------
         shape
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
         coefficients : (float,)

@@ -38,7 +38,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         the interferometer dataset's transformer.
 
         Parameters
-        -----------
+        ----------
         noise_map
             The noise-map of the observed interferometer data which values are solved for.
         transformer

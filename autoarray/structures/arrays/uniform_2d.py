@@ -388,7 +388,7 @@ class AbstractArray2D(Structure):
         the top-left pixel of the central quadrant of pixels.
 
         Parameters
-        -----------
+        ----------
         new_shape
             The new 2D shape of the array.
         """

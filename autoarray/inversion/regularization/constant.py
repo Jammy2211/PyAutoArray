@@ -22,7 +22,7 @@ class Constant(AbstractRegularization):
         it is positive definite.
 
         Parameters
-        -----------
+        ----------
         coefficient
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """

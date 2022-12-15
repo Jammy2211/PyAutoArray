@@ -102,7 +102,7 @@ class AbstractPlotter:
         """Setup a figure for plotting an image.
 
         Parameters
-        -----------
+        ----------
         figsize
             The size of the figure in (total_y_pixels, total_x_pixels).
         as_subplot
@@ -134,7 +134,7 @@ class AbstractPlotter:
         """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
 
         Parameters
-        -----------
+        ----------
         number_subplots
             The number of subplots that are to be plotted in the figure.
         """

@@ -211,7 +211,7 @@ class MatPlot2D(AbstractMatPlot):
         This `Array2D` is plotted using `plt.imshow`.
 
         Parameters
-        -----------
+        ----------
         array
             The 2D array of data_type which is plotted.
         visuals_2d
@@ -333,7 +333,7 @@ class MatPlot2D(AbstractMatPlot):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
 
         Parameters
-        -----------
+        ----------
         grid
             The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
         indexes

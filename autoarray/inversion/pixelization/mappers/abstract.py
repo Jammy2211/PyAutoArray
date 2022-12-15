@@ -348,7 +348,7 @@ class AbstractMapper(LinearObj):
         This will produce something similar to a `reconstruction`, albeit it bypasses the linear algebra / inversion.
 
         Parameters
-        -----------
+        ----------
         array_slim
             The masked 2D array of values in its slim representation (e.g. the image data) which are mapped to the
             source domain in order to compute their average values.

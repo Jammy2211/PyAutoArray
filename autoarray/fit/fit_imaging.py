@@ -17,7 +17,7 @@ class FitImaging(FitDataset):
         Class to fit a masked imaging dataset.
 
         Parameters
-        -----------
+        ----------
         dataset : MaskedImaging
             The masked imaging dataset that is fitted.
         model_image
