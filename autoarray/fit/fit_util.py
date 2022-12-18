@@ -270,7 +270,9 @@ def chi_squared_with_mask_from(*, chi_squared_map: Structure, mask: Mask) -> flo
     return float(np.sum(chi_squared_map[np.asarray(mask) == 0]))
 
 
-def chi_squared_with_mask_fast_from(*, data: Structure, mask: Mask, model_data: Structure, noise_map: Structure) -> float:
+def chi_squared_with_mask_fast_from(
+    *, data: Structure, mask: Mask, model_data: Structure, noise_map: Structure
+) -> float:
     """
     Returns the chi-squared terms of each model data's fit to a masked dataset, by summing the masked
     chi-squared-map of the fit.
@@ -292,9 +294,21 @@ def chi_squared_with_mask_fast_from(*, data: Structure, mask: Mask, model_data: 
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
 
-    return float(np.sum(np.square(np.divide(np.subtract(
-        data, model_data, out=np.zeros_like(data), where=np.asarray(mask) == 0
-    ), noise_map))))
+    return float(
+        np.sum(
+            np.square(
+                np.divide(
+                    np.subtract(
+                        data,
+                        model_data,
+                        out=np.zeros_like(data),
+                        where=np.asarray(mask) == 0,
+                    ),
+                    noise_map,
+                )
+            )
+        )
+    )
 
 
 def noise_normalization_with_mask_from(*, noise_map: Structure, mask: Mask) -> float:

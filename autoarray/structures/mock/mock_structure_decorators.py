@@ -60,7 +60,9 @@ def _cartesian_grid_via_radial_from(grid, radius):
 
 
 def ndarray_2d_from(profile, grid):
-    return _cartesian_grid_via_radial_from(grid=grid, radius=np.full(grid.shape[0], 2.0))
+    return _cartesian_grid_via_radial_from(
+        grid=grid, radius=np.full(grid.shape[0], 2.0)
+    )
 
 
 class MockGridLikeIteratorObj:
@@ -175,7 +177,9 @@ class MockGridLikeIteratorObj:
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
         return [
-            self._cartesian_grid_via_radial_from(grid=grid, radius=np.full(grid.shape[0], 2.0))
+            self._cartesian_grid_via_radial_from(
+                grid=grid, radius=np.full(grid.shape[0], 2.0)
+            )
         ]
 
     @structure_decorators.grid_2d_to_vector_yx
@@ -188,7 +192,9 @@ class MockGridLikeIteratorObj:
         Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
         """
         return [
-            self._cartesian_grid_via_radial_from(grid=grid, radius=np.full(grid.shape[0], 2.0))
+            self._cartesian_grid_via_radial_from(
+                grid=grid, radius=np.full(grid.shape[0], 2.0)
+            )
         ]
 
 

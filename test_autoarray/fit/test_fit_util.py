@@ -247,7 +247,10 @@ def test__chi_squared_with_mask_fast_from():
     )
 
     chi_squared_fast = aa.util.fit.chi_squared_with_mask_fast_from(
-        data=data, noise_map=noise_map, mask=mask, model_data=model_data,
+        data=data,
+        noise_map=noise_map,
+        mask=mask,
+        model_data=model_data,
     )
 
     assert chi_squared == pytest.approx(chi_squared_fast, 1.0e-4)
@@ -270,7 +273,10 @@ def test__chi_squared_with_mask_fast_from():
     )
 
     chi_squared_fast = aa.util.fit.chi_squared_with_mask_fast_from(
-        data=data, noise_map=noise_map, mask=mask, model_data=model_data,
+        data=data,
+        noise_map=noise_map,
+        mask=mask,
+        model_data=model_data,
     )
 
     assert chi_squared == pytest.approx(chi_squared_fast, 1.0e-4)
