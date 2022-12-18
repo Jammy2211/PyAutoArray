@@ -635,7 +635,7 @@ class Array2D(AbstractArray2D):
 
     @classmethod
     def manual_mask(
-        cls, array: Union[np.ndarray, List], mask: Mask2D, header: Header = None
+        cls, array: Union[np.ndarray, List], mask: Mask2D, header: Header = None, store_native : bool = False
     ) -> "Array2D":
         """
         Create an `Array2D` (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D with its mask,
@@ -651,8 +651,12 @@ class Array2D(AbstractArray2D):
             lists.
         mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
+        store_native
+            If True, the array is stored in its native format [total_y_pixels, total_x_pixels]. The only use of
+            this is to avoid mapping large data arrays to and from the slim / native formats, which can be a
+            computational bottleneck.
         """
-        array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
+        array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask, store_native=store_native)
         return Array2D(array=array, mask=mask, header=header)
 
     @classmethod
