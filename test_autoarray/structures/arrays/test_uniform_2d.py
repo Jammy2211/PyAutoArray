@@ -121,6 +121,13 @@ class TestAPI:
             arr.native == np.array([[1.0, 2.0], [3.0, 4.0], [0.0, 0.0], [0.0, 0.0]])
         ).all()
 
+        mask = aa.Mask2D.manual(
+            mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0),
+        )
+        arr = aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask, store_native=True)
+
+        assert (arr == np.array([[1.0, 2.0], [0.0, 4.0]])).all()
+
     def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask(
         self,
     ):

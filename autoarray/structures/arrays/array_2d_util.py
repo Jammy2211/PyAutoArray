@@ -34,7 +34,7 @@ def check_array_2d(array_2d: np.ndarray):
 
 
 def convert_array_2d(
-    array_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
+    array_2d: Union[np.ndarray, List], mask_2d: "Mask2D", store_native : bool = False
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -55,9 +55,17 @@ def convert_array_2d(
         The input structure which is converted to an ndarray if it is a list.
     mask_2d
         The mask of the output Array2D.
+    store_native
+        If True, the array is stored in its native format [total_y_pixels, total_x_pixels]. The only use of
+        this is to avoid mapping large data arrays to and from the slim / native formats, which can be a
+        computational bottleneck.
     """
 
     array_2d = convert_array(array=array_2d)
+
+    if store_native:
+        array_2d *= np.invert(mask_2d)
+        return array_2d
 
     return convert_array_2d_to_slim(array_2d=array_2d, mask_2d=mask_2d)
 
