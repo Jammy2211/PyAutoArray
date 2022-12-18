@@ -227,6 +227,55 @@ def test__chi_squared_with_noise_covariance_from():
     assert chi_squared == 43
 
 
+def test__chi_squared_with_mask_fast_from():
+
+    data = np.array([10.0, 10.0, 10.0, 10.0])
+    mask = np.array([True, False, False, True])
+    noise_map = np.array([1.0, 2.0, 3.0, 4.0])
+    model_data = np.array([11.0, 10.0, 9.0, 8.0])
+
+    residual_map = aa.util.fit.residual_map_with_mask_from(
+        data=data, mask=mask, model_data=model_data
+    )
+
+    chi_squared_map = aa.util.fit.chi_squared_map_with_mask_from(
+        residual_map=residual_map, mask=mask, noise_map=noise_map
+    )
+
+    chi_squared = aa.util.fit.chi_squared_with_mask_from(
+        mask=mask, chi_squared_map=chi_squared_map
+    )
+
+    chi_squared_fast = aa.util.fit.chi_squared_with_mask_fast_from(
+        data=data, noise_map=noise_map, mask=mask, model_data=model_data,
+    )
+
+    assert chi_squared == pytest.approx(chi_squared_fast, 1.0e-4)
+
+    data = np.array([[10.0, 10.0], [10.0, 10.0]])
+    mask = np.array([[True, False], [False, True]])
+    noise_map = np.array([[1.0, 2.0], [3.0, 4.0]])
+    model_data = np.array([[11.0, 10.0], [9.0, 8.0]])
+
+    residual_map = aa.util.fit.residual_map_with_mask_from(
+        data=data, mask=mask, model_data=model_data
+    )
+
+    chi_squared_map = aa.util.fit.chi_squared_map_with_mask_from(
+        residual_map=residual_map, mask=mask, noise_map=noise_map
+    )
+
+    chi_squared = aa.util.fit.chi_squared_with_mask_from(
+        mask=mask, chi_squared_map=chi_squared_map
+    )
+
+    chi_squared_fast = aa.util.fit.chi_squared_with_mask_fast_from(
+        data=data, noise_map=noise_map, mask=mask, model_data=model_data,
+    )
+
+    assert chi_squared == pytest.approx(chi_squared_fast, 1.0e-4)
+
+
 def test__log_likelihood_from():
 
     data = np.array([10.0, 10.0, 10.0, 10.0])
