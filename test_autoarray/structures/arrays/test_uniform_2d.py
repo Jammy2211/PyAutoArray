@@ -122,9 +122,13 @@ class TestAPI:
         ).all()
 
         mask = aa.Mask2D.manual(
-            mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0),
+            mask=[[False, False], [True, False]],
+            pixel_scales=1.0,
+            origin=(0.0, 1.0),
         )
-        arr = aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask, store_native=True)
+        arr = aa.Array2D.manual_mask(
+            array=[[1.0, 2.0], [3.0, 4.0]], mask=mask, store_native=True
+        )
 
         assert (arr == np.array([[1.0, 2.0], [0.0, 4.0]])).all()
 

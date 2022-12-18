@@ -34,7 +34,7 @@ def check_array_2d(array_2d: np.ndarray):
 
 
 def convert_array_2d(
-    array_2d: Union[np.ndarray, List], mask_2d: "Mask2D", store_native : bool = False
+    array_2d: Union[np.ndarray, List], mask_2d: "Mask2D", store_native: bool = False
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
