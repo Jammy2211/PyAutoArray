@@ -47,7 +47,7 @@ class Abstract2DMesh(Structure):
         self,
         shape_native: Tuple[int, int] = (401, 401),
         extent: Optional[Tuple[float, float, float, float]] = None,
-    ) -> "Grid2D":
+    ) -> Grid2D:
         """
         Returns a 2D grid of (y,x) coordinates on to which a reconstruction from a pixelization (e.g. a `Delaunay`,
         `Voronoi`) can be interpolated.
