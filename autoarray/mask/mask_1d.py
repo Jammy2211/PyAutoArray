@@ -1,6 +1,11 @@
+from __future__ import annotations
 import logging
 import numpy as np
-from typing import List, Tuple, Union
+from typing import TYPE_CHECKING, List, Tuple, Union
+
+if TYPE_CHECKING:
+    from autoarray.structures.grids.uniform_1d import Grid1D
+    from autoarray.mask.mask_2d import Mask2D
 
 from autoarray.mask.abstract_mask import Mask
 
@@ -172,7 +177,7 @@ class Mask1D(Mask):
         )
 
     @property
-    def unmasked_grid_sub_1(self) -> "Grid1D":
+    def unmasked_grid_sub_1(self) -> Grid1D:
         """
         The scaled-grid of (y,x) coordinates of every pixel.
 
@@ -188,7 +193,7 @@ class Mask1D(Mask):
         return Grid1D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
 
     @property
-    def to_mask_2d(self) -> "Mask2D":
+    def to_mask_2d(self) -> Mask2D:
         """
         Map the Mask1D to a Mask2D of shape [total_mask_1d_pixel, 1].
 
