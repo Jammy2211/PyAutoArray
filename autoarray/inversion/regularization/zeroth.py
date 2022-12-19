@@ -1,4 +1,9 @@
+from __future__ import annotations
 import numpy as np
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
@@ -34,11 +39,40 @@ class Zeroth(AbstractRegularization):
 
         super().__init__()
 
-    def regularization_weights_from(self, linear_obj: "LinearObj") -> np.ndarray:
-        return self.coefficient * np.ones(linear_obj.pixels)
+    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+        """
+        Returns the regularization weights of this regularization scheme.
 
-    def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
+        The regularization weights define the level of regularization applied to each parameter in the linear object
+        (e.g. the ``pixels`` in a ``Mapper``).
 
+        For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
+        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
+
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses these weights when performing regularization.
+
+        Returns
+        -------
+        The regularization weights.
+        """
+        return self.coefficient * np.ones(linear_obj.parameters)
+
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+        """
+        Returns the regularization matrix of this regularization scheme.
+
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses this matrix to perform regularization.
+
+        Returns
+        -------
+        The regularization matrix.
+        """
         return regularization_util.zeroth_regularization_matrix_from(
-            coefficient=self.coefficient, pixels=linear_obj.pixels
+            coefficient=self.coefficient, pixels=linear_obj.parameters
         )

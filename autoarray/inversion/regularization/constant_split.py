@@ -1,4 +1,9 @@
+from __future__ import annotations
 import numpy as np
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
 from autoarray.inversion.regularization.constant import Constant
 
@@ -37,8 +42,19 @@ class ConstantSplit(Constant):
 
         super().__init__(coefficient=coefficient)
 
-    def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+        """
+        Returns the regularization matrix of this regularization scheme.
 
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses this matrix to perform regularization.
+
+        Returns
+        -------
+        The regularization matrix.
+        """
         pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
 
         (
