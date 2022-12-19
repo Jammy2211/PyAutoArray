@@ -1,7 +1,11 @@
+from __future__ import annotations
 from astropy.io import fits
 import numpy as np
 import os
-from typing import Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Tuple, Union
+
+if TYPE_CHECKING:
+    from autoarray.mask.mask_2d import Mask2D
 
 from autoconf import conf
 from autoarray import numba_util
@@ -34,7 +38,7 @@ def check_array_2d(array_2d: np.ndarray):
 
 
 def convert_array_2d(
-    array_2d: Union[np.ndarray, List], mask_2d: "Mask2D", store_native: bool = False
+    array_2d: Union[np.ndarray, List], mask_2d: Mask2D, store_native: bool = False
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -70,7 +74,7 @@ def convert_array_2d(
     return convert_array_2d_to_slim(array_2d=array_2d, mask_2d=mask_2d)
 
 
-def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.ndarray:
+def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.
@@ -128,7 +132,7 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.ndar
     )
 
 
-def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: "Mask2D") -> np.ndarray:
+def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
     Array2D.

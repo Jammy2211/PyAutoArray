@@ -1076,7 +1076,7 @@ class Grid2D(Structure):
         centre: Tuple[float, float] = (0.0, 0.0),
         angle: float = 0.0,
         shape_slim: Optional[int] = 0,
-    ) -> "Grid2DIrregular":
+    ) -> Grid2DIrregular:
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
         extent [xmin, xmax, ymin, ymax] and with a (y,x) centre.

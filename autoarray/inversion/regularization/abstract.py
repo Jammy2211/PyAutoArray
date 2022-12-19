@@ -1,6 +1,5 @@
 from __future__ import annotations
 import numpy as np
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -8,7 +7,6 @@ if TYPE_CHECKING:
 
 try:
     import pylops
-
     PyLopsOperator = pylops.LinearOperator
 except ModuleNotFoundError:
     PyLopsOperator = object
@@ -140,7 +138,7 @@ class AbstractRegularization:
     def __hash__(self):
         return id(self)
 
-    def regularization_weights_from(self, linear_obj : LinearObj) -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
         Returns the regularization weights of this regularization scheme.
 
@@ -161,7 +159,7 @@ class AbstractRegularization:
         """
         raise NotImplementedError
 
-    def regularization_matrix_from(self, linear_obj : LinearObj) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
         Returns the regularization matrix of this regularization scheme.
 

@@ -1,6 +1,11 @@
+from __future__ import annotations
 from copy import deepcopy
 import numpy as np
-from typing import Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
+
+if TYPE_CHECKING:
+    from autoarray.layout.region import Region2D
+    from autoarray.type import Region2DLike
 
 import autoarray as aa
 
@@ -40,10 +45,10 @@ def rotate_array_via_roe_corner_from(
 
 
 def rotate_region_via_roe_corner_from(
-    region: "aa.type.Region2DLike",
+    region: Region2DLike,
     shape_native: Tuple[int, int],
     roe_corner: Tuple[int, int],
-) -> Optional["aa.Region2D"]:
+) -> Optional[Region2D]:
     """
     Rotates a (y0, y1, x0, x1) region such that its read-out electronics corner (``roe_corner``) are positioned at
     the 'bottom-left' (e.g. [1,0]).
@@ -132,8 +137,8 @@ def rotate_pattern_ci_via_roe_corner_from(
 
 
 def region_after_extraction(
-    original_region: "aa.type.Region2DLike", extraction_region: "aa.type.Region2DLike"
-) -> Optional["aa.Region2D"]:
+    original_region: Region2DLike, extraction_region: Region2DLike
+) -> Optional[Region2D]:
 
     if original_region is None:
         return None

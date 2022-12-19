@@ -1,5 +1,9 @@
+from __future__ import annotations
 import numpy as np
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional
+
+if TYPE_CHECKING:
+    from autoarray import Preloads
 
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
@@ -15,7 +19,7 @@ class MapperGrids:
         data_mesh_grid: Grid2DSparse = None,
         hyper_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
-        preloads: "Preloads" = None,
+        preloads: Preloads = None,
         profiling_dict: Optional[Dict] = None,
     ):
         """

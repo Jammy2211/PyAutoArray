@@ -1,6 +1,12 @@
+from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from autoarray.structures.abstract_structure import Structure
 
 from autoarray.structures.arrays import array_2d_util
 
@@ -26,7 +32,7 @@ class AbstractNDArray(np.ndarray, ABC):
 
     @property
     @abstractmethod
-    def native(self) -> "Structure":
+    def native(self) -> Structure:
         """
         Returns the data structure in its `native` format which contains all unmaksed values to the native dimensions.
         """

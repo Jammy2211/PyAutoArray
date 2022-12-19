@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.typing import ArrayLike
 from typing import Tuple
 
 from autoarray import exc
@@ -67,11 +68,11 @@ class Region1D(AbstractRegion):
         return self[1]
 
     @property
-    def slice(self) -> "ArrayLike":
+    def slice(self) -> ArrayLike:
         return np.s_[self.x0 : self.x1]
 
     @property
-    def x_slice(self) -> "ArrayLike":
+    def x_slice(self) -> ArrayLike:
         return np.s_[self.x0 : self.x1]
 
     def front_region_from(self, pixels: Tuple[int, int]) -> "Region1D":
@@ -184,15 +185,15 @@ class Region2D(AbstractRegion):
         return self[3]
 
     @property
-    def slice(self) -> "ArrayLike":
+    def slice(self) -> ArrayLike:
         return np.s_[self.y0 : self.y1, self.x0 : self.x1]
 
     @property
-    def y_slice(self) -> "ArrayLike":
+    def y_slice(self) -> ArrayLike:
         return np.s_[self.y0 : self.y1]
 
     @property
-    def x_slice(self) -> "ArrayLike":
+    def x_slice(self) -> ArrayLike:
         return np.s_[self.x0 : self.x1]
 
     @property

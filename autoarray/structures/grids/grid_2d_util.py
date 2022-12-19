@@ -1,5 +1,9 @@
+from __future__ import annotations
 import numpy as np
-from typing import List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+
+if TYPE_CHECKING:
+    from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
 from autoarray.structures.arrays import array_2d_util
@@ -27,7 +31,7 @@ def check_grid_2d(grid_2d: np.ndarray):
         raise exc.GridException("The dimensions of the input grid array is not 2 or 3")
 
 
-def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: "Mask2D"):
+def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
     if len(grid_2d.shape) == 2:
 
         if grid_2d.shape[0] != mask_2d.sub_pixels_in_mask:
@@ -45,7 +49,7 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: "Mask2D"):
             )
 
 
-def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D") -> np.ndarray:
+def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.ndarray:
     """
     The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
 
@@ -72,7 +76,7 @@ def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D") -> np.n
 
 
 def convert_grid_2d_to_slim(
-    grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
+    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
 ) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
@@ -96,7 +100,7 @@ def convert_grid_2d_to_slim(
 
 
 def convert_grid_2d_to_native(
-    grid_2d: Union[np.ndarray, List], mask_2d: "Mask2D"
+    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D
 ) -> np.ndarray:
     """
     he `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.

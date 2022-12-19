@@ -1,7 +1,11 @@
+from __future__ import annotations
 import numpy as np
 from sklearn.cluster import KMeans
-from typing import Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
 import warnings
+
+if TYPE_CHECKING:
+    from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.structures.abstract_structure import Structure
 
@@ -57,7 +61,7 @@ class Grid2DSparse(Structure):
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(
-        cls, grid: "Grid2D", unmasked_sparse_shape: Tuple[int, int]
+        cls, grid: Grid2D, unmasked_sparse_shape: Tuple[int, int]
     ) -> "Grid2DSparse":
         """Calculate a Grid2DSparse a Grid2D from the unmasked 2D shape of the sparse grid.
 
@@ -144,7 +148,7 @@ class Grid2DSparse(Structure):
     def from_total_pixels_grid_and_weight_map(
         cls,
         total_pixels: int,
-        grid: "Grid2D",
+        grid: Grid2D,
         weight_map: np.ndarray,
         n_iter: int = 1,
         max_iter: int = 5,

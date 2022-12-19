@@ -1,7 +1,12 @@
+from __future__ import annotations
 import logging
 import copy
 import numpy as np
-from typing import List, Tuple, Union
+from typing import TYPE_CHECKING, List, Tuple, Union
+
+if TYPE_CHECKING:
+    from autoarray.structures.arrays.uniform_2d import Array2D
+    from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoconf import cached_property
 
@@ -641,7 +646,7 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-    def trimmed_array_from(self, padded_array, image_shape) -> "Array2D":
+    def trimmed_array_from(self, padded_array, image_shape) -> Array2D:
         """
         Map a padded 1D array of values to its original 2D array, trimming all edge values.
 
@@ -666,7 +671,7 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-    def unmasked_blurred_array_from(self, padded_array, psf, image_shape) -> "Array2D":
+    def unmasked_blurred_array_from(self, padded_array, psf, image_shape) -> Array2D:
         """
         For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
 
@@ -802,7 +807,7 @@ class Mask2D(Mask):
         )
 
     @property
-    def unmasked_grid_sub_1(self) -> "Grid2D":
+    def unmasked_grid_sub_1(self) -> Grid2D:
         """
         The scaled-grid of (y,x) coordinates of every pixel.
 
@@ -821,7 +826,7 @@ class Mask2D(Mask):
         return Grid2D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
 
     @property
-    def masked_grid(self) -> "Grid2D":
+    def masked_grid(self) -> Grid2D:
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -834,7 +839,7 @@ class Mask2D(Mask):
         return Grid2D(grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1)
 
     @property
-    def masked_grid_sub_1(self) -> "Grid2D":
+    def masked_grid_sub_1(self) -> Grid2D:
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -844,7 +849,7 @@ class Mask2D(Mask):
         return Grid2D(grid=grid_slim, mask=self.mask_sub_1)
 
     @property
-    def edge_grid_sub_1(self) -> "Grid2D":
+    def edge_grid_sub_1(self) -> Grid2D:
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
@@ -857,7 +862,7 @@ class Mask2D(Mask):
         return Grid2D(grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1)
 
     @property
-    def border_grid_1d(self) -> "Grid2D":
+    def border_grid_1d(self) -> Grid2D:
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
@@ -866,7 +871,7 @@ class Mask2D(Mask):
         return self.masked_grid[self.sub_border_flat_indexes]
 
     @property
-    def border_grid_sub_1(self) -> "Grid2D":
+    def border_grid_sub_1(self) -> Grid2D:
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
@@ -877,7 +882,7 @@ class Mask2D(Mask):
         border_grid_1d = self.masked_grid_sub_1[self.border_1d_indexes]
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
-    def grid_pixels_from(self, grid_scaled_1d) -> "Grid2D":
+    def grid_pixels_from(self, grid_scaled_1d) -> Grid2D:
         """
         Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
         returned as floats such that they include the decimal offset from each pixel's top-left corner.
@@ -903,7 +908,7 @@ class Mask2D(Mask):
         )
         return Grid2D(grid=grid_pixels_1d, mask=self.mask_sub_1)
 
-    def grid_pixel_centres_from(self, grid_scaled_1d) -> "Grid2D":
+    def grid_pixel_centres_from(self, grid_scaled_1d) -> Grid2D:
         """
         Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
         returned as integers such that they map directly to the pixel they are contained within.
@@ -962,7 +967,7 @@ class Mask2D(Mask):
 
         return Array2D(array=grid_pixel_indexes_1d, mask=self.edge_mask.mask_sub_1)
 
-    def grid_scaled_from(self, grid_pixels_1d) -> "Grid2D":
+    def grid_scaled_from(self, grid_pixels_1d) -> Grid2D:
         """
         Convert a grid of (y,x) pixel coordinates to a grid of (y,x) scaled values.
 
@@ -989,7 +994,7 @@ class Mask2D(Mask):
 
     def grid_scaled_for_marching_squares_from(
         self, grid_pixels_1d, shape_native
-    ) -> "Grid2D":
+    ) -> Grid2D:
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
