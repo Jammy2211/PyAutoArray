@@ -6,7 +6,6 @@ from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImag
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 
 from autoarray import exc
-from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 logger = logging.getLogger(__name__)
