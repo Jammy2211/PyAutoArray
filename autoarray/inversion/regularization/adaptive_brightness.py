@@ -15,12 +15,12 @@ class AdaptiveBrightness(AbstractRegularization):
         """
         An adaptive regularization scheme (regularization is described in the `Regularization` class above).
 
-        For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is \
-        applied when each set of pixel neighbors are regularized with one another. The motivation of this is that \
-        different regions of a pixelization's mesh require different levels of regularization (e.g., high smoothing where the \
+        For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is 
+        applied when each set of pixel neighbors are regularized with one another. The motivation of this is that 
+        different regions of a pixelization's mesh require different levels of regularization (e.g., high smoothing where the 
         no signal is present and less smoothing where it is, see (Nightingale, Dye and Massey 2018)).
 
-        Unlike the instance regularization_matrix scheme, neighboring pixels must now be regularized with one another \
+        Unlike the instance regularization_matrix scheme, neighboring pixels must now be regularized with one another 
         in both directions (e.g. if pixel 0 regularizes pixel 1, pixel 1 must also regularize pixel 0). For example:
 
         B = [-1, 1]  [0->1]
@@ -29,7 +29,7 @@ class AdaptiveBrightness(AbstractRegularization):
         For a instance regularization coefficient this would NOT produce a positive-definite matrix. However, for
         the weighted scheme, it does!
 
-        The regularize weight_list change the B matrix as shown below - we simply multiply each pixel's effective \
+        The regularize weight_list change the B matrix as shown below - we simply multiply each pixel's effective 
         regularization weight by each row of B it has a -1 in, so:
 
         regularization_weights = [1, 2, 3, 4]
@@ -49,10 +49,10 @@ class AdaptiveBrightness(AbstractRegularization):
         Parameters
         ----------
         coefficients
-            The regularization coefficients which controls the degree of smoothing of the inversion reconstruction in \
+            The regularization coefficients which controls the degree of smoothing of the inversion reconstruction in 
             high and low signal regions of the reconstruction.
         signal_scale
-            A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
+            A factor which controls how rapidly the smoothness of regularization varies from high signal regions to 
             low signal regions.
         """
 

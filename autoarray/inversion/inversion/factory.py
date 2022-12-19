@@ -9,7 +9,7 @@ from autoarray.structures.visibilities import VisibilitiesNoiseMap
 from autoarray.operators.convolver import Convolver
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping

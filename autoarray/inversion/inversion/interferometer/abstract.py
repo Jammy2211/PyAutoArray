@@ -5,7 +5,6 @@ from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D

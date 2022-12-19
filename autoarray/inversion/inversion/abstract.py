@@ -7,7 +7,7 @@ from typing import Dict, List, Optional, Tuple, Type, Union
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
-from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion

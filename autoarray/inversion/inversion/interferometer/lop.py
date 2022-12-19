@@ -8,7 +8,7 @@ from autoconf import cached_property
 from autoarray.inversion.inversion.interferometer.abstract import (
     AbstractInversionInterferometer,
 )
-from autoarray.inversion.linear_obj.func_list import LinearObj
+from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.structures.visibilities import Visibilities
 
 from autoarray.numba_util import profile_func
