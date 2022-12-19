@@ -1,5 +1,10 @@
 import numpy as np
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from autoarray.inversion.linear_obj.linear_obj import LinearObj
+
 try:
     import pylops
 
@@ -134,10 +139,40 @@ class AbstractRegularization:
     def __hash__(self):
         return id(self)
 
-    def regularization_weights_from(self, linear_obj):
+    def regularization_weights_from(self, linear_obj : LinearObj) -> np.ndarray:
+        """
+        Returns the regularization weights of this regularization scheme.
+
+        The regularization weights define the level of regularization applied to each parameter in the linear object
+        (e.g. the ``pixels`` in a ``Mapper``).
+
+        For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
+        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
+
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses these weights when performing regularization.
+
+        Returns
+        -------
+        The regularization weights.
+        """
         raise NotImplementedError
 
-    def regularization_matrix_from(self, linear_obj):
+    def regularization_matrix_from(self, linear_obj : LinearObj) -> np.ndarray:
+        """
+        Returns the regularization matrix of this regularization scheme.
+
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses this matrix to perform regularization.
+
+        Returns
+        -------
+        The regularization matrix.
+        """
         raise NotImplementedError
 
 

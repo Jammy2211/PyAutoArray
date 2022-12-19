@@ -1,7 +1,7 @@
-from __future__ import annotations
 import numpy as np
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
@@ -74,7 +74,18 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
         )
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+        """
+        Returns the regularization matrix of this regularization scheme.
 
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses this matrix to perform regularization.
+
+        Returns
+        -------
+        The regularization matrix.
+        """
         regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
         pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross

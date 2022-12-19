@@ -1,4 +1,8 @@
 import numpy as np
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
@@ -62,7 +66,25 @@ class AdaptiveBrightness(AbstractRegularization):
         self.outer_coefficient = outer_coefficient
         self.signal_scale = signal_scale
 
-    def regularization_weights_from(self, linear_obj: "LinearObj") -> np.ndarray:
+    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+        """
+        Returns the regularization weights of this regularization scheme.
+
+        The regularization weights define the level of regularization applied to each parameter in the linear object
+        (e.g. the ``pixels`` in a ``Mapper``).
+
+        For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
+        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
+
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses these weights when performing regularization.
+
+        Returns
+        -------
+        The regularization weights.
+        """
         pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
 
         return regularization_util.adaptive_regularization_weights_from(
@@ -71,8 +93,19 @@ class AdaptiveBrightness(AbstractRegularization):
             pixel_signals=pixel_signals,
         )
 
-    def regularization_matrix_from(self, linear_obj: "LinearObj") -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
+        """
+        Returns the regularization matrix of this regularization scheme.
 
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses this matrix to perform regularization.
+
+        Returns
+        -------
+        The regularization matrix.
+        """
         regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
         return regularization_util.weighted_regularization_matrix_from(
