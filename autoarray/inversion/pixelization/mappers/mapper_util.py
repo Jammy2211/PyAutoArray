@@ -286,7 +286,7 @@ def pixel_weights_delaunay_from(
     coordinate to each vertex, with the highest weight being its closest neighbor,
 
     Parameters
-    -----------
+    ----------
     source_grid_slim
         A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
         `source` reference frame.
@@ -510,7 +510,7 @@ def adaptive_pixel_signals_from(
     contribution regularization in different regions of pixelization.
 
     Parameters
-    -----------
+    ----------
     pixels
         The total number of pixels in the pixelization the regularization scheme is applied to.
     signal_scale
@@ -615,7 +615,7 @@ def mapping_matrix_from(
     `pix_weights_for_sub_slim_index`) when the mapping matrix is constructed.
 
     Parameters
-    -----------
+    ----------
     pix_indexes_for_sub_slim_index
         The mappings from a data sub-pixel index to a pixelization pixel index.
     pix_size_for_sub_slim_index
@@ -661,7 +661,7 @@ def mapped_to_source_via_mapping_matrix_from(
     This will produce something similar to a `reconstruction`, albeit it bypasses the linear algebra / inversion.
 
     Parameters
-    -----------
+    ----------
     mapping_matrix
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
     array_slim

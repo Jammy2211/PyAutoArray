@@ -82,7 +82,7 @@ def data_vector_via_transformed_mapping_matrix_from(
     (see Warren & Dye 2003).
 
     Parameters
-    -----------
+    ----------
     transformed_mapping_matrix
         The matrix representing the transformed mappings between sub-grid pixels and pixelization pixels.
     image
@@ -135,7 +135,7 @@ def mapped_reconstructed_visibilities_from(
     Returns the reconstructed data vector from the blurrred mapping matrix `f` and solution vector *S*.
 
     Parameters
-    -----------
+    ----------
     transformed_mapping_matrix
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 

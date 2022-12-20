@@ -28,8 +28,8 @@ class Grid1D(Structure):
         - native: it retains the original shape of the grid so the ndarray is
           shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
 
-        Case 1: [sub-size=1, slim]:
-        -----------------------------------------
+
+        **Case 1 (sub-size=1, slim):**
 
         The Grid1D is an ndarray of shape [total_unmasked_coordinates].
 
@@ -61,8 +61,8 @@ class Grid1D(Structure):
          grid[1] = [-0.5]
          grid[2] = [1.5]
 
-        Case 2: [sub-size>1, slim]:
-        ------------------
+
+        **Case 2 (sub-size>1, slim):
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (x)
         coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid1D is therefore stored as an ndarray
@@ -107,8 +107,8 @@ class Grid1D(Structure):
         grid[1] = [-0.5]
         grid[2] = [-0.166]
 
-        Case 3: [sub_size=1 native]
-        --------------------------------------
+
+        **Case 3 (sub_size=1 native):**
 
         The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape
         [total_x_coordinates].
@@ -127,16 +127,16 @@ class Grid1D(Structure):
         - grid[5] = 0.0 (it is masked, thus zero)
         - grid[6] = 0.5
 
-        Case 4: [sub_size>1 native]
-        --------------------------------------
+
+        **Case 4 (sub_size>1 native):**
 
         The properties of this grid can be derived by combining Case's 2 and 3 above, whereby the grid is stored as
         an ndarray of shape [total_x_coordinates*sub_size,].
 
         All sub-pixels in masked pixels have value 0.0.
 
-        Grid1D Mapping
-        ------------
+
+        **Grid1D Mapping**
 
         Every set of (x) coordinates in a pixel of the sub-grid maps to an unmasked pixel in the mask. For a uniform
         grid, every x coordinate directly corresponds to the location of its paired unmasked pixel.

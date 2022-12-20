@@ -35,7 +35,7 @@ def angle_to_profile_grid_from(grid_angles):
     """The angle between each (y,x) coordinate on the grid and the profile, in radians.
 
     Parameters
-    -----------
+    ----------
     grid_angles
         The angle theta counter-clockwise from the positive x-axis to each coordinate in radians.
     """

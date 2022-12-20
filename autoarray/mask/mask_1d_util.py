@@ -81,7 +81,7 @@ def native_index_for_slim_index_1d_from(
     - The third sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [3,5]
 
     Parameters
-    -----------
+    ----------
     mask_2d
         A 2D array of bools, where `False` values are unmasked.
     sub_size

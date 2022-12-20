@@ -11,7 +11,7 @@ def residual_map_from(*, data: Structure, model_data: Structure) -> Structure:
     Residuals = (Data - Model_Data).
 
     Parameters
-    -----------
+    ----------
     data
         The data that is fitted.
     mask
@@ -31,7 +31,7 @@ def normalized_residual_map_from(
     Normalized_Residual = (Data - Model_Data) / Noise
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_map
@@ -49,7 +49,7 @@ def chi_squared_map_from(*, residual_map: Structure, noise_map: Structure) -> St
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_map
@@ -95,7 +95,7 @@ def normalized_residual_map_complex_from(
     Normalized_Residual = (Data - Model_Data) / Noise
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_map
@@ -125,7 +125,7 @@ def chi_squared_map_complex_from(
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_map
@@ -184,7 +184,7 @@ def residual_map_with_mask_from(
     The residual-map values in masked pixels are returned as zero.
 
     Parameters
-    -----------
+    ----------
     data
         The data that is fitted.
     mask
@@ -208,7 +208,7 @@ def normalized_residual_map_with_mask_from(
     The normalized residual-map values in masked pixels are returned as zero.
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_map
@@ -235,7 +235,7 @@ def chi_squared_map_with_mask_from(
     The chi-squared-map values in masked pixels are returned as zero.
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_map
@@ -338,7 +338,7 @@ def normalized_residual_map_complex_with_mask_from(
     The normalized residual-map values in masked pixels are returned as zero.
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_map
@@ -374,7 +374,7 @@ def chi_squared_map_complex_with_mask_from(
     The chi-squared-map values in masked pixels are returned as zero.
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_map
@@ -433,7 +433,7 @@ def chi_squared_with_noise_covariance_from(
     Chi_Squared = r C^{-1} r, where C^{-1} is the inverse of the covariance matrix
 
     Parameters
-    -----------
+    ----------
     residual_map
         The residual-map of the model-data fit to the dataset.
     noise_covariance_matrix_inv

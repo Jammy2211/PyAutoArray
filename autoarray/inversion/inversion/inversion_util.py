@@ -71,7 +71,7 @@ def curvature_matrix_via_mapping_matrix_from(
      (see Warren & Dye 2003).
 
     Parameters
-    -----------
+    ----------
     mapping_matrix
         The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
         pixelization pixels.
@@ -102,7 +102,7 @@ def curvature_matrix_preload_from(
     are used to construct that blurred mapping matrix do change.
 
     Parameters
-    -----------
+    ----------
     mapping_matrix
         The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
         pixelization pixels.
@@ -145,7 +145,7 @@ def curvature_matrix_via_sparse_preload_from(
     are used to construct that blurred mapping matrix do change.
 
     Parameters
-    -----------
+    ----------
     mapping_matrix
         The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
         pixelization pixels.
@@ -189,7 +189,7 @@ def mapped_reconstructed_data_via_image_to_pix_unique_from(
     Returns the reconstructed data vector from the blurred mapping matrix `f` and solution vector *S*.
 
     Parameters
-    -----------
+    ----------
     mapping_matrix
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
@@ -219,7 +219,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
     Returns the reconstructed data vector from the blurred mapping matrix `f` and solution vector *S*.
 
     Parameters
-    -----------
+    ----------
     mapping_matrix
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
@@ -285,7 +285,7 @@ def preconditioner_matrix_via_mapping_matrix_from(
     values squared (see Powell et al. 2020).
 
     Parameters
-    -----------
+    ----------
     mapping_matrix
         The matrix representing the mappings between sub-grid pixels and pixelization pixels.
     regularization_matrix

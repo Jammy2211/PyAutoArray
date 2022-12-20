@@ -372,7 +372,7 @@ def data_vector_via_w_tilde_data_imaging_from(
     pixels (see `data_slim_to_pixelization_unique_from`).
 
     Parameters
-    -----------
+    ----------
     w_tilde_data
         A matrix that encodes the PSF convolution values between the imaging divided by the noise map**2 that enables
         efficient calculation of the data vector.
@@ -414,7 +414,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     (see Warren & Dye 2003).
 
     Parameters
-    -----------
+    ----------
     blurred_mapping_matrix
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
     image

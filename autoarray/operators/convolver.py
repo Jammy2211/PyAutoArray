@@ -37,8 +37,8 @@ class Convolver:
         This calculation also accounts for the blurring of light outside of the masked regions which blurs into \
         the masked region.
 
-        IMAGE FRAMES:
-        -------------
+
+        **IMAGE FRAMES:**
 
         For a masked in 2D, one can compute for every pixel all of the unmasked pixels it will blur light into for \
         a given PSF kernel size, e.g.:
@@ -104,8 +104,8 @@ class Convolver:
         Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of a
         masked or the masked of a util in the inversion module.
 
-        BLURRING FRAMES:
-        ---------------
+
+        **BLURRING FRAMES:**
 
         Whilst the scheme above accounts for all blurred light within the masks, it does not account for the fact that \
         pixels outside of the masks will also blur light into it. This effect is accounted for using blurring frames.

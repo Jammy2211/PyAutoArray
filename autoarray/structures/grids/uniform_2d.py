@@ -33,8 +33,8 @@ class Grid2D(Structure):
         - native: it retains the original shape of the grid so the ndarray is
           shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
 
-        Case 1: [sub-size=1, slim]:
-        -----------------------------------------
+
+        **Case 1 (sub-size=1, slim):
 
         The Grid2D is an ndarray of shape [total_unmasked_coordinates, 2], therefore when `slim` the shape of
         the grid is 2, not 1.
@@ -77,8 +77,8 @@ class Grid2D(Structure):
          x x x x x x x x x x \/   grid[8] = [-0.5,  0.5]
          x x x x x x x x x x      grid[9] = [-0.5,  1.5]
 
-        Case 2: [sub-size>1, slim]:
-        ------------------
+
+        **Case 2 (sub-size>1, slim):**
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (y,x)
         coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid2D is therefore stored as an ndarray
@@ -147,8 +147,8 @@ class Grid2D(Structure):
                  grid[7] = [0.25, -0.5]
                  grid[8] = [0.25, -0.25]
 
-        Case 3: [sub_size=1, native]
-        --------------------------------------
+
+        **Case 3 (sub_size=1, native):**
 
         The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape
         [total_y_coordinates, total_x_coordinates, 2]. Therefore when `native` the shape of the
@@ -176,16 +176,16 @@ class Grid2D(Structure):
         - grid[3,4,0] = 1.5
         - grid[3,4,1] = -0.5
 
-        Case 4: [sub_size>1 native]
-        --------------------------------------
+
+        **Case 4 (sub_size>1 native):**
 
         The properties of this grid can be derived by combining Case's 2 and 3 above, whereby the grid is stored as
         an ndarray of shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
 
         All sub-pixels in masked pixels have values (0.0, 0.0).
 
-        Grid2D Mapping
-        ------------
+
+        **Grid2D Mapping:**
 
         Every set of (y,x) coordinates in a pixel of the sub-grid maps to an unmasked pixel in the mask. For a uniform
         grid, every (y,x) coordinate directly corresponds to the location of its paired unmasked pixel.

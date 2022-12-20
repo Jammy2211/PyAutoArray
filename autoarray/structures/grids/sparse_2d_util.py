@@ -18,7 +18,7 @@ def unmasked_sparse_for_sparse_from(
     sparse grid. This is performed by checking whether each pixel is within the masks and then mapping their indexes.
 
     Parameters
-    -----------
+    ----------
     total_sparse_pixels
         The total number of pixels in the sparse grid which fall within the masks.
     mask
@@ -58,7 +58,7 @@ def sparse_for_unmasked_sparse_from(
     unmasked pixels that are referenced when perform certain mapping where this information is not required.
 
     Parameters
-    -----------
+    ----------
     mask
         The masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres
@@ -128,7 +128,7 @@ def sparse_grid_via_unmasked_from(
     inddexes to compute the masked spaase grid of (y,x) coordinates.
 
     Parameters
-    -----------
+    ----------
     unmasked_sparse_grid
         The (y,x) coordinate grid of every unmasked sparse grid pixel.
     unmasked_sparse_for_sparse

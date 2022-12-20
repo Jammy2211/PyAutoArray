@@ -47,8 +47,8 @@ class VectorYX2D(AbstractVectorYX2D):
         If your vector field lies on a 2D irregular grid of data the `VectorFieldIrregular2D` data structure should be
         used.
 
-        Case 1: [sub-size=1, slim]:
-        ---------------------------
+
+        **Case 1 (sub-size=1, slim):**
 
         The Vector2D is an ndarray of shape [total_unmasked_pixels, 2].
 
@@ -89,8 +89,8 @@ class VectorYX2D(AbstractVectorYX2D):
         IxIxIxIxIxIxIxIxIxIxI \/   vector[8, :] = 8
         IxIxIxIxIxIxIxIxIxIxI      vector[9, :] = 9
 
-        Case 2: [sub-size>1, slim]:
-        ------------------
+
+        **Case 2 (sub-size>1, slim):**
 
         If the masks's sub size is > 1, the vector is defined as a sub-vector where each entry corresponds to the
         values at the centre of each sub-pixel of an unmasked pixel.
@@ -158,8 +158,8 @@ class VectorYX2D(AbstractVectorYX2D):
                  vector[7] = y and x values of first sub-pixel in pixel 7.
                  vector[8] = y and x values of first sub-pixel in pixel 8.
 
-        Case 3: [sub_size=1, native]
-        ----------------------------
+
+        **Case 3 (sub_size=1, native):**
 
         The Vector2D has the same properties as Case 1, but is stored as an an ndarray of shape
         [total_y_values, total_x_values, 2].
@@ -186,8 +186,8 @@ class VectorYX2D(AbstractVectorYX2D):
         - vector[3,4, 0:2] = [0, 0]
         - vector[3,4, 0:2] = [-1, -1]
 
-        Case 4: [sub_size>, native]
-        ---------------------------
+
+        **Case 4: (sub_size>, native):**
 
         The properties of this vector can be derived by combining Case's 2 and 3 above, whereby the vector is stored as
         an ndarray of shape [total_y_values*sub_size, total_x_values*sub_size, 2].

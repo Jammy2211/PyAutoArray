@@ -36,8 +36,8 @@ class AbstractArray2D(Structure):
 
         The array can be stored in 1D or 2D, as detailed below.
 
-        Case 1: [sub-size=1, slim]:
-        ---------------------------
+
+        **Case 1 (sub-size=1, slim):**
 
         The Array2D is an ndarray of shape [total_unmasked_pixels].
 
@@ -78,8 +78,8 @@ class AbstractArray2D(Structure):
         IxIxIxIxIxIxIxIxIxIxI \/   array[8] = 8
         IxIxIxIxIxIxIxIxIxIxI      array[9] = 9
 
-        Case 2: [sub-size>1, slim]:
-        ------------------
+
+        **Case 2 (sub-size > 1, slim):**
 
         If the masks's sub size is > 1, the array is defined as a sub-array where each entry corresponds to the values
         at the centre of each sub-pixel of an unmasked pixel.
@@ -147,8 +147,8 @@ class AbstractArray2D(Structure):
                  array[7] = value of first sub-pixel in pixel 7.
                  array[8] = value of first sub-pixel in pixel 8.
 
-        Case 3: [sub_size=1, native]
-        --------------------------------------
+
+        **Case 3 (sub_size=1, native):**
 
         The Array2D has the same properties as Case 1, but is stored as an an ndarray of shape
         [total_y_values, total_x_values].
@@ -175,8 +175,8 @@ class AbstractArray2D(Structure):
         - array[3,4] = 0
         - array[3,4] = -1
 
-        Case 4: [sub_size>, native]
-        --------------------------------------
+
+        **Case 4 (sub_size>, native):**
 
         The properties of this array can be derived by combining Case's 2 and 3 above, whereby the array is stored as
         an ndarray of shape [total_y_values*sub_size, total_x_values*sub_size].
@@ -489,11 +489,7 @@ class Array2D(AbstractArray2D):
         header: Optional[Header] = None,
     ) -> "Array2D":
         """
-        Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 1D, for example:
-
-        array=np.array([1.0, 2.0, 3.0, 4.0])
-
-        array=[1.0, 2.0, 3.0, 4.0]
+        Create an Array2D (see ``AbstractArray2D.__new__``) by inputting the array values in 1D.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
         input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
@@ -512,6 +508,26 @@ class Array2D(AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
+
+        Examples
+        --------
+        import autoarray as aa
+
+        # Make Array2D from np.ndarray
+
+        arr = aa.Array2D.manual_slim(
+            array=np.array([1.0, 2.0, 3.0, 4.0]),
+            shape_native=(2, 2),
+            pixel_scales=1.0
+        )
+
+        # Make Array2D from list
+
+        arr = aa.Array2D.manual_slim(
+            array=[1.0, 2.0, 3.0, 4.0],
+            shape_native=(2, 2),
+            pixel_scales=1.0
+        )
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)

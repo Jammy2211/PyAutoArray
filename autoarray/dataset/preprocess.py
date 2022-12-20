@@ -14,7 +14,7 @@ def array_with_new_shape(array, new_shape):
     the top-left pixel of the central quadrant of pixels.
 
     Parameters
-    -----------
+    ----------
     array
         The array which is trimmed / padded to a new 2D shape.
     new_shape
@@ -165,7 +165,7 @@ def noise_map_via_weight_map_from(weight_map):
     the analysis.
 
     Parameters
-    -----------
+    ----------
     pixel_scales
         The size of each pixel in scaled units.
     weight_map
@@ -186,7 +186,7 @@ def noise_map_via_inverse_noise_map_from(inverse_noise_map):
     Variance = 1.0 / inverse_noise_map.
 
     Parameters
-    -----------
+    ----------
     inverse_noise_map
         The inverse noise_map value of each pixel which is converted to a variance.
     """

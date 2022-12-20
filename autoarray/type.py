@@ -16,12 +16,12 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 Array1D2DLike = Union[Array1D, Array2D]
 
 
-# from autoarray.structures.grids.one_d import grid_1d as g1d
+from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.iterate_2d import Grid2DIterate
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
-Grid1D2DLike = Union[np.ndarray, "Grid1D", Grid2D, Grid2DIterate, Grid2DIrregular]
+Grid1D2DLike = Union[np.ndarray, Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular]
 Grid2DLike = Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular]
 
 from autoarray.structures.values import ValuesIrregular

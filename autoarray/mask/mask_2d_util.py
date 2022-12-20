@@ -117,7 +117,7 @@ def total_sparse_pixels_2d_from(
     by the pixelization grid.
 
     Parameters
-    -----------
+    ----------
     mask_2d
         The mask within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres
@@ -549,7 +549,7 @@ def blurring_mask_2d_from(
     should pad the input mask (and associated images).
 
     Parameters
-    -----------
+    ----------
     mask_2d
         A 2D array of bools, where `False` values are unmasked.
     kernel_shape_native
@@ -1247,7 +1247,7 @@ def native_index_for_slim_index_2d_from(
     - The third sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [3,5]
 
     Parameters
-    -----------
+    ----------
     mask_2d
         A 2D array of bools, where `False` values are unmasked.
     sub_size
@@ -1296,7 +1296,7 @@ def mask_2d_neighbors_from(mask_2d: np.ndarray) -> np.ndarray:
     in each location.
 
     Parameters
-    -----------
+    ----------
     mask_2d
         A 2D array of bools, where `False` values are unmasked.
 
