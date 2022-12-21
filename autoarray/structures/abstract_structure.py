@@ -1,7 +1,12 @@
+from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-from typing import List, Tuple, Union
+from typing import TYPE_CHECKING, List, Tuple, Union
+
+if TYPE_CHECKING:
+    from autoarray.structures.grids.uniform_1d import Grid1D
+    from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
@@ -67,7 +72,7 @@ class Structure(AbstractNDArray, ABC):
         return self.mask.sub_size
 
     @property
-    def unmasked_grid(self) -> Union["Grid1D", "Grid2D"]:
+    def unmasked_grid(self) -> Union[Grid1D, Grid2D]:
         return self.mask.unmasked_grid_sub_1
 
     @property
