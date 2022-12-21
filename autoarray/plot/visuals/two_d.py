@@ -85,5 +85,5 @@ class Visuals2D(AbstractVisuals):
             indexes = mapper.pix_indexes_for_slim_indexes(pix_indexes=self.pix_indexes)
 
             plotter.index_scatter.scatter_grid_indexes(
-                grid=mapper.source_grid_slim, indexes=indexes
+                grid=mapper.source_plane_data_grid, indexes=indexes
             )

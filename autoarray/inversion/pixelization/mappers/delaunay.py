@@ -21,21 +21,21 @@ class MapperDelaunay(AbstractMapper):
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
-        the four grids grouped in a `MapperGrids` object are explained (`data_grid_slim`, `source_grid_slim`,
-        `dataset_mesh_grid`,`source_mesh_grid`)
+        the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
+        `image_plane_mesh_grid`,`source_plane_mesh_grid`)
 
         If you are unfamliar withe above objects, read through the docstrings of the `pixelization`, `mesh` and
         `mapper_grids` packages.
 
-        A `Mapper` determines the mappings between the masked data grid's pixels (`data_grid_slim` and
-        `source_grid_slim`) and the pxelization's pixels (`data_mesh_grid` and `source_mesh_grid`).
+        A `Mapper` determines the mappings between the masked data grid's pixels (`image_plane_data_grid` and
+        `source_plane_data_grid`) and the pxelization's pixels (`image_plane_mesh_grid` and `source_plane_mesh_grid`).
 
         The 1D Indexing of each grid is identical in the `data` and `source` frames (e.g. the transformation does not
-        change the indexing, such that `source_grid_slim[0]` corresponds to the transformed value
-        of `data_grid_slim[0]` and so on).
+        change the indexing, such that `source_plane_data_grid[0]` corresponds to the transformed value
+        of `image_plane_data_grid[0]` and so on).
 
         A mapper therefore only needs to determine the index mappings between the `grid_slim` and `mesh_grid`,
-        noting that associations are made by pairing `source_mesh_grid` with `source_grid_slim`.
+        noting that associations are made by pairing `source_plane_mesh_grid` with `source_plane_data_grid`.
 
         Mappings are represented in the 2D ndarray `pix_indexes_for_sub_slim_index`, whereby the index of
         a pixel on the `mesh_grid` maps to the index of a pixel on the `grid_slim` as follows:
@@ -55,7 +55,7 @@ class MapperDelaunay(AbstractMapper):
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
         unmasked data pixel annd the pixels of a pixelization. This matrix is the basis of performing an `Inversion`,
-        which reconstructs the data using the `source_mesh_grid`.
+        which reconstructs the data using the `source_plane_mesh_grid`.
 
         Parameters
         ----------
@@ -76,7 +76,7 @@ class MapperDelaunay(AbstractMapper):
 
     @property
     def delaunay(self):
-        return self.source_mesh_grid.delaunay
+        return self.source_plane_mesh_grid.delaunay
 
     @cached_property
     @profile_func
@@ -125,11 +125,11 @@ class MapperDelaunay(AbstractMapper):
         """
         delaunay = self.delaunay
 
-        simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_grid_slim)
+        simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_plane_data_grid)
         pix_indexes_for_simplex_index = delaunay.simplices
 
         mappings, sizes = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
-            source_grid_slim=self.source_grid_slim,
+            source_plane_data_grid=self.source_plane_data_grid,
             simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
             pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
             delaunay_points=delaunay.points,
@@ -139,8 +139,8 @@ class MapperDelaunay(AbstractMapper):
         sizes = sizes.astype("int")
 
         weights = mapper_util.pixel_weights_delaunay_from(
-            source_grid_slim=self.source_grid_slim,
-            source_mesh_grid=self.source_mesh_grid,
+            source_plane_data_grid=self.source_plane_data_grid,
+            source_plane_mesh_grid=self.source_plane_mesh_grid,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=mappings,
         )
@@ -163,7 +163,7 @@ class MapperDelaunay(AbstractMapper):
         delaunay = self.delaunay
 
         splitted_simplex_index_for_sub_slim_index = delaunay.find_simplex(
-            self.source_mesh_grid.split_cross
+            self.source_plane_mesh_grid.split_cross
         )
         pix_indexes_for_simplex_index = delaunay.simplices
 
@@ -171,16 +171,16 @@ class MapperDelaunay(AbstractMapper):
             splitted_mappings,
             splitted_sizes,
         ) = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
-            source_grid_slim=self.source_mesh_grid.split_cross,
+            source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
             simplex_index_for_sub_slim_index=splitted_simplex_index_for_sub_slim_index,
             pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
             delaunay_points=delaunay.points,
         )
 
         splitted_weights = mapper_util.pixel_weights_delaunay_from(
-            source_grid_slim=self.source_mesh_grid.split_cross,
-            source_mesh_grid=self.source_mesh_grid,
-            slim_index_for_sub_slim_index=self.source_mesh_grid.split_cross,
+            source_plane_data_grid=self.source_plane_mesh_grid.split_cross,
+            source_plane_mesh_grid=self.source_plane_mesh_grid,
+            slim_index_for_sub_slim_index=self.source_plane_mesh_grid.split_cross,
             pix_indexes_for_sub_slim_index=splitted_mappings.astype("int"),
         )
 

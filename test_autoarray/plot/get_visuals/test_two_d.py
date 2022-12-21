@@ -61,7 +61,7 @@ def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
 
     visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0))
     include_2d = aplt.Include2D(
-        origin=True, mask=True, border=True, mapper_data_mesh_grid=True
+        origin=True, mask=True, border=True, mapper_image_plane_mesh_grid=True
     )
 
     get_visuals = aplt.GetVisuals2D(include=include_2d, visuals=visuals_2d)
@@ -69,18 +69,18 @@ def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
     visuals_2d_via = get_visuals.via_mapper_for_data_from(mapper=voronoi_mapper_9_3x3)
 
     assert visuals_2d.origin == (1.0, 1.0)
-    assert (visuals_2d_via.mask == voronoi_mapper_9_3x3.source_grid_slim.mask).all()
+    assert (visuals_2d_via.mask == voronoi_mapper_9_3x3.source_plane_data_grid.mask).all()
     assert (
         visuals_2d_via.border
-        == voronoi_mapper_9_3x3.source_grid_slim.mask.border_grid_sub_1.binned
+        == voronoi_mapper_9_3x3.source_plane_data_grid.mask.border_grid_sub_1.binned
     ).all()
 
     print(visuals_2d.mesh_grid)
-    print(voronoi_mapper_9_3x3.source_mesh_grid)
-    assert (visuals_2d_via.mesh_grid == voronoi_mapper_9_3x3.data_mesh_grid).all()
+    print(voronoi_mapper_9_3x3.source_plane_mesh_grid)
+    assert (visuals_2d_via.mesh_grid == voronoi_mapper_9_3x3.image_plane_mesh_grid).all()
 
     include_2d = aplt.Include2D(
-        origin=False, mask=False, border=False, mapper_data_mesh_grid=False
+        origin=False, mask=False, border=False, mapper_image_plane_mesh_grid=False
     )
 
     get_visuals = aplt.GetVisuals2D(include=include_2d, visuals=visuals_2d)
@@ -99,8 +99,8 @@ def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
     include_2d = aplt.Include2D(
         origin=True,
         border=True,
-        mapper_source_grid_slim=True,
-        mapper_source_mesh_grid=True,
+        mapper_source_plane_data_grid=True,
+        mapper_source_plane_mesh_grid=True,
     )
 
     get_visuals = aplt.GetVisuals2D(include=include_2d, visuals=visuals_2d)
@@ -110,20 +110,20 @@ def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
     )
 
     assert visuals_2d.origin == (1.0, 1.0)
-    assert (visuals_2d_via.grid == rectangular_mapper_7x7_3x3.source_grid_slim).all()
+    assert (visuals_2d_via.grid == rectangular_mapper_7x7_3x3.source_plane_data_grid).all()
     assert (
         visuals_2d_via.border
-        == rectangular_mapper_7x7_3x3.source_grid_slim.sub_border_grid
+        == rectangular_mapper_7x7_3x3.source_plane_data_grid.sub_border_grid
     ).all()
     assert (
-        visuals_2d_via.mesh_grid == rectangular_mapper_7x7_3x3.source_mesh_grid
+        visuals_2d_via.mesh_grid == rectangular_mapper_7x7_3x3.source_plane_mesh_grid
     ).all()
 
     include_2d = aplt.Include2D(
         origin=False,
         border=False,
-        mapper_source_grid_slim=False,
-        mapper_source_mesh_grid=False,
+        mapper_source_plane_data_grid=False,
+        mapper_source_plane_mesh_grid=False,
     )
 
     get_visuals = aplt.GetVisuals2D(include=include_2d, visuals=visuals_2d)

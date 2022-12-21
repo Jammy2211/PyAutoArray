@@ -44,23 +44,23 @@ def mapper_from(
     from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
     from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 
-    if isinstance(mapper_grids.source_mesh_grid, Mesh2DRectangular):
+    if isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
 
         return MapperRectangularNoInterp(
             mapper_grids=mapper_grids,
             regularization=regularization,
             profiling_dict=profiling_dict,
         )
-    elif isinstance(mapper_grids.source_mesh_grid, Mesh2DDelaunay):
+    elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
 
         return MapperDelaunay(
             mapper_grids=mapper_grids,
             regularization=regularization,
             profiling_dict=profiling_dict,
         )
-    elif isinstance(mapper_grids.source_mesh_grid, Mesh2DVoronoi):
+    elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DVoronoi):
 
-        if mapper_grids.source_mesh_grid.uses_interpolation:
+        if mapper_grids.source_plane_mesh_grid.uses_interpolation:
 
             return MapperVoronoi(
                 mapper_grids=mapper_grids,

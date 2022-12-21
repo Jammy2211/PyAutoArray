@@ -22,21 +22,21 @@ class AbstractMapperVoronoi(AbstractMapper):
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
-        the four grids grouped in a `MapperGrids` object are explained (`data_grid_slim`, `source_grid_slim`,
-        `dataset_mesh_grid`,`source_mesh_grid`)
+        the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
+        `image_plane_mesh_grid`,`source_plane_mesh_grid`)
 
         If you are unfamliar withe above objects, read through the docstrings of the `pixelization`, `mesh` and
         `mapper_grids` packages.
 
-        A `Mapper` determines the mappings between the masked data grid's pixels (`data_grid_slim` and
-        `source_grid_slim`) and the pxelization's pixels (`data_mesh_grid` and `source_mesh_grid`).
+        A `Mapper` determines the mappings between the masked data grid's pixels (`image_plane_data_grid` and
+        `source_plane_data_grid`) and the pxelization's pixels (`image_plane_mesh_grid` and `source_plane_mesh_grid`).
 
         The 1D Indexing of each grid is identical in the `data` and `source` frames (e.g. the transformation does not
-        change the indexing, such that `source_grid_slim[0]` corresponds to the transformed value
-        of `data_grid_slim[0]` and so on).
+        change the indexing, such that `source_plane_data_grid[0]` corresponds to the transformed value
+        of `image_plane_data_grid[0]` and so on).
 
         A mapper therefore only needs to determine the index mappings between the `grid_slim` and `mesh_grid`,
-        noting that associations are made by pairing `source_mesh_grid` with `source_grid_slim`.
+        noting that associations are made by pairing `source_plane_mesh_grid` with `source_plane_data_grid`.
 
         Mappings are represented in the 2D ndarray `pix_indexes_for_sub_slim_index`, whereby the index of
         a pixel on the `mesh_grid` maps to the index of a pixel on the `grid_slim` as follows:
@@ -55,7 +55,7 @@ class AbstractMapperVoronoi(AbstractMapper):
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
         unmasked data pixel annd the pixels of a mesh. This matrix is the basis of performing an `Inversion`,
-        which reconstructs the data using the `source_mesh_grid`.
+        which reconstructs the data using the `source_plane_mesh_grid`.
 
         Parameters
         ----------
@@ -76,7 +76,7 @@ class AbstractMapperVoronoi(AbstractMapper):
 
     @property
     def voronoi(self):
-        return self.source_mesh_grid.voronoi
+        return self.source_plane_mesh_grid.voronoi
 
     @property
     def pix_sub_weights_split_cross(self) -> PixSubWeights:
@@ -92,7 +92,7 @@ class AbstractMapperVoronoi(AbstractMapper):
         mappings and weights at each point on the split cross.
         """
         (mappings, sizes, weights) = mapper_util.pix_size_weights_voronoi_nn_from(
-            grid=self.source_mesh_grid.split_cross, mesh_grid=self.source_mesh_grid
+            grid=self.source_plane_mesh_grid.split_cross, mesh_grid=self.source_plane_mesh_grid
         )
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
@@ -144,7 +144,7 @@ class MapperVoronoi(AbstractMapperVoronoi):
         """
 
         mappings, sizes, weights = mapper_util.pix_size_weights_voronoi_nn_from(
-            grid=self.source_grid_slim, mesh_grid=self.source_mesh_grid
+            grid=self.source_plane_data_grid, mesh_grid=self.source_plane_mesh_grid
         )
 
         mappings = mappings.astype("int")
@@ -184,7 +184,7 @@ class MapperVoronoi(AbstractMapperVoronoi):
             The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
             is input.
         """
-        return self.source_mesh_grid.interpolated_array_from(
+        return self.source_plane_mesh_grid.interpolated_array_from(
             values=values, shape_native=shape_native, extent=extent, use_nn=True
         )
 
@@ -228,16 +228,16 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
         The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
         """
         mappings = mapper_util.pix_indexes_for_sub_slim_index_voronoi_from(
-            grid=self.source_grid_slim,
-            nearest_pixelization_index_for_slim_index=self.source_mesh_grid.nearest_pixelization_index_for_slim_index,
-            slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
-            mesh_grid=self.source_mesh_grid,
-            neighbors=self.source_mesh_grid.neighbors,
-            neighbors_sizes=self.source_mesh_grid.neighbors.sizes,
+            grid=self.source_plane_data_grid,
+            nearest_pixelization_index_for_slim_index=self.source_plane_mesh_grid.nearest_pixelization_index_for_slim_index,
+            slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.slim_index_for_sub_slim_index,
+            mesh_grid=self.source_plane_mesh_grid,
+            neighbors=self.source_plane_mesh_grid.neighbors,
+            neighbors_sizes=self.source_plane_mesh_grid.neighbors.sizes,
         ).astype("int")
 
         return PixSubWeights(
             mappings=mappings,
-            sizes=np.ones(self.source_grid_slim.shape[0], dtype="int"),
-            weights=np.ones((self.source_grid_slim.shape[0], 1), dtype="int"),
+            sizes=np.ones(self.source_plane_data_grid.shape[0], dtype="int"),
+            weights=np.ones((self.source_plane_data_grid.shape[0], 1), dtype="int"),
         )

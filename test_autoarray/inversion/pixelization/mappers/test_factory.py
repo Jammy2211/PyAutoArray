@@ -54,19 +54,19 @@ def test__rectangular_mapper():
     pix = aa.mesh.Rectangular(shape=(3, 3))
 
     mapper_grids = pix.mapper_grids_from(
-        source_grid_slim=grid,
-        source_mesh_grid=None,
+        source_plane_data_grid=grid,
+        source_plane_mesh_grid=None,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperRectangularNoInterp)
-    assert mapper.data_mesh_grid == None
-    assert mapper.source_mesh_grid.shape_native_scaled == pytest.approx(
+    assert mapper.image_plane_mesh_grid == None
+    assert mapper.source_plane_mesh_grid.shape_native_scaled == pytest.approx(
         (2.0, 2.0), 1.0e-4
     )
-    assert mapper.source_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+    assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     assert (
         mapper.mapping_matrix
@@ -130,19 +130,19 @@ def test__delaunay_mapper():
     )
 
     mapper_grids = pix.mapper_grids_from(
-        source_grid_slim=grid,
-        source_mesh_grid=sparse_grid,
+        source_plane_data_grid=grid,
+        source_plane_mesh_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperDelaunay)
-    assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
+    assert mapper.source_plane_data_grid.shape_native_scaled == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
-    assert (mapper.source_mesh_grid == sparse_grid).all()
-    assert mapper.source_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+    assert (mapper.source_plane_mesh_grid == sparse_grid).all()
+    assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     print(mapper.mapping_matrix)
 
@@ -207,19 +207,19 @@ def test__voronoi_mapper():
     )
 
     mapper_grids = pix.mapper_grids_from(
-        source_grid_slim=grid,
-        source_mesh_grid=sparse_grid,
+        source_plane_data_grid=grid,
+        source_plane_mesh_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperVoronoiNoInterp)
-    assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
+    assert mapper.source_plane_data_grid.shape_native_scaled == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
-    assert (mapper.source_mesh_grid == sparse_grid).all()
-    assert mapper.source_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+    assert (mapper.source_plane_mesh_grid == sparse_grid).all()
+    assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     assert (
         mapper.mapping_matrix

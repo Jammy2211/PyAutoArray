@@ -115,7 +115,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     pix_weights_for_sub_slim_index = np.ones((9, 1), dtype="int")
 
     mapper = aa.m.MockMapper(
-        source_grid_slim=grid_2d_7x7,
+        source_plane_data_grid=grid_2d_7x7,
         pix_sub_weights=pix_sub_weights,
         hyper_data=image_7x7,
         parameters=pixels,
@@ -147,7 +147,7 @@ def test__interpolated_array_from(grid_2d_7x7):
     mesh_grid = aa.Mesh2DDelaunay(grid=mesh_grid_ndarray)
 
     mapper_grids = aa.MapperGrids(
-        source_grid_slim=grid_2d_7x7, source_mesh_grid=mesh_grid
+        source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -178,7 +178,7 @@ def test__mapped_to_source_from(grid_2d_7x7):
     mesh_grid = aa.Mesh2DDelaunay(grid=mesh_grid)
 
     mapper_grids = aa.MapperGrids(
-        source_grid_slim=grid_2d_7x7, source_mesh_grid=mesh_grid
+        source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)

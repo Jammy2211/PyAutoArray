@@ -146,7 +146,7 @@ def data_slim_to_pixelization_unique_from(
 
 @numba_util.jit()
 def pix_indexes_for_sub_slim_index_delaunay_from(
-    source_grid_slim,
+    source_plane_data_grid,
     simplex_index_for_sub_slim_index,
     pix_indexes_for_simplex_index,
     delaunay_points,
@@ -160,9 +160,9 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     A row like [A, -1, -1] means that sub pixel only links to source pixel A.
     """
 
-    pix_indexes_for_sub_slim_index = -1 * np.ones(shape=(source_grid_slim.shape[0], 3))
+    pix_indexes_for_sub_slim_index = -1 * np.ones(shape=(source_plane_data_grid.shape[0], 3))
 
-    for i in range(len(source_grid_slim)):
+    for i in range(len(source_plane_data_grid)):
         simplex_index = simplex_index_for_sub_slim_index[i]
         if simplex_index != -1:
             pix_indexes_for_sub_slim_index[i] = pix_indexes_for_simplex_index[
@@ -170,7 +170,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
             ]
         else:
             pix_indexes_for_sub_slim_index[i][0] = np.argmin(
-                np.sum((delaunay_points - source_grid_slim[i]) ** 2.0, axis=1)
+                np.sum((delaunay_points - source_plane_data_grid[i]) ** 2.0, axis=1)
             )
 
     pix_indexes_for_sub_slim_index_sizes = np.sum(
@@ -273,8 +273,8 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
 
 @numba_util.jit()
 def pixel_weights_delaunay_from(
-    source_grid_slim,
-    source_mesh_grid,
+    source_plane_data_grid,
+    source_plane_mesh_grid,
     slim_index_for_sub_slim_index: np.ndarray,
     pix_indexes_for_sub_slim_index,
 ) -> np.ndarray:
@@ -287,10 +287,10 @@ def pixel_weights_delaunay_from(
 
     Parameters
     ----------
-    source_grid_slim
+    source_plane_data_grid
         A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
         `source` reference frame.
-    source_mesh_grid
+    source_plane_mesh_grid
         The 2D grid of (y,x) centres of every pixelization pixel in the `source` frame.
     slim_index_for_sub_slim_index
         The mappings between the data's sub slimmed indexes and the slimmed indexes on the non sub-sized indexes.
@@ -306,9 +306,9 @@ def pixel_weights_delaunay_from(
 
         if pix_indexes[1] != -1:
 
-            vertices_of_the_simplex = source_mesh_grid[pix_indexes]
+            vertices_of_the_simplex = source_plane_mesh_grid[pix_indexes]
 
-            sub_gird_coordinate_on_source_place = source_grid_slim[sub_slim_index]
+            sub_gird_coordinate_on_source_place = source_plane_data_grid[sub_slim_index]
 
             area_0 = mesh_util.delaunay_triangle_area_from(
                 corner_0=vertices_of_the_simplex[1],

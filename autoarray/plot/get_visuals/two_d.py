@@ -128,7 +128,7 @@ class GetVisuals2D(AbstractGetVisuals):
 
         - origin: the (y,x) origin of the `Array2D`'s coordinate system in the data plane.
         - mask : the `Mask2D` defined in the data-plane containing the data that is used by the `Mapper`.
-        - mapper_data_mesh_grid: the `Mapper`'s pixelization's mesh in the data-plane.
+        - mapper_image_plane_mesh_grid: the `Mapper`'s pixelization's mesh in the data-plane.
         - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
 
         Parameters
@@ -142,10 +142,10 @@ class GetVisuals2D(AbstractGetVisuals):
             The collection of attributes that can be plotted by a `Plotter` object.
         """
 
-        visuals_via_mask = self.via_mask_from(mask=mapper.source_grid_slim.mask)
+        visuals_via_mask = self.via_mask_from(mask=mapper.source_plane_data_grid.mask)
 
         mesh_grid = self.get(
-            "mesh_grid", mapper.data_mesh_grid, "mapper_data_mesh_grid"
+            "mesh_grid", mapper.image_plane_mesh_grid, "mapper_image_plane_mesh_grid"
         )
 
         return (
@@ -167,9 +167,9 @@ class GetVisuals2D(AbstractGetVisuals):
         From a `Mapper` the following attributes can be extracted for plotting in the source-plane:
 
         - origin: the (y,x) origin of the coordinate system in the source plane.
-        - mapper_source_grid_slim: the (y,x) grid of coordinates in the mapper's source-plane which are paired with
+        - mapper_source_plane_data_grid: the (y,x) grid of coordinates in the mapper's source-plane which are paired with
         the mapper's pixelization's mesh pixels.
-        - mapper_source_mesh_grid: the `Mapper`'s pixelization's mesh grid in the source-plane.
+        - mapper_source_plane_mesh_grid: the `Mapper`'s pixelization's mesh grid in the source-plane.
         - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
 
         Parameters
@@ -184,15 +184,15 @@ class GetVisuals2D(AbstractGetVisuals):
         """
 
         origin = self.get(
-            "origin", Grid2DIrregular(grid=[mapper.source_mesh_grid.origin])
+            "origin", Grid2DIrregular(grid=[mapper.source_plane_mesh_grid.origin])
         )
 
-        grid = self.get("grid", mapper.source_grid_slim, "mapper_source_grid_slim")
+        grid = self.get("grid", mapper.source_plane_data_grid, "mapper_source_plane_data_grid")
 
-        border = self.get("border", mapper.source_grid_slim.sub_border_grid)
+        border = self.get("border", mapper.source_plane_data_grid.sub_border_grid)
 
         mesh_grid = self.get(
-            "mesh_grid", mapper.source_mesh_grid, "mapper_source_mesh_grid"
+            "mesh_grid", mapper.source_plane_mesh_grid, "mapper_source_plane_mesh_grid"
         )
 
         return self.visuals + self.visuals.__class__(

@@ -464,7 +464,7 @@ class MatPlot2D(AbstractMatPlot):
             solution_array_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=source_pixelilzation_values,
                 mask_2d=np.full(
-                    fill_value=False, shape=mapper.source_mesh_grid.shape_native
+                    fill_value=False, shape=mapper.source_plane_mesh_grid.shape_native
                 ),
                 sub_size=1,
             )
@@ -472,12 +472,12 @@ class MatPlot2D(AbstractMatPlot):
             source_pixelilzation_values = Array2D.manual(
                 array=solution_array_2d,
                 sub_size=1,
-                pixel_scales=mapper.source_mesh_grid.pixel_scales,
-                origin=mapper.source_mesh_grid.origin,
+                pixel_scales=mapper.source_plane_mesh_grid.pixel_scales,
+                origin=mapper.source_plane_mesh_grid.origin,
             )
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_mesh_grid.extent
+        extent = extent if extent is not None else mapper.source_plane_mesh_grid.extent
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -494,7 +494,7 @@ class MatPlot2D(AbstractMatPlot):
                 bypass=True,
             )
 
-        self.axis.set(extent=extent, grid=mapper.source_mesh_grid)
+        self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
 
         self.yticks.set(
             array=None, min_value=extent[2], max_value=extent[3], units=self.units
@@ -509,7 +509,7 @@ class MatPlot2D(AbstractMatPlot):
             [text.set() for text in self.text]
 
         self.grid_plot.plot_rectangular_grid_lines(
-            extent=mapper.source_mesh_grid.extent, shape_native=mapper.shape_native
+            extent=mapper.source_plane_mesh_grid.extent, shape_native=mapper.shape_native
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -518,7 +518,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set(units=self.units, include_brackets=True)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_grid_slim, mapper=mapper
+            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
         )
 
         if not self.is_for_subplot:
@@ -535,7 +535,7 @@ class MatPlot2D(AbstractMatPlot):
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_mesh_grid.extent
+        extent = extent if extent is not None else mapper.source_plane_mesh_grid.extent
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -544,7 +544,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             ax = self.setup_subplot(aspect=aspect_inv)
 
-        self.axis.set(extent=extent, grid=mapper.source_mesh_grid)
+        self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
 
         self.tickparams.set()
         self.yticks.set(
@@ -574,7 +574,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set(units=self.units, include_brackets=True)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_grid_slim, mapper=mapper
+            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
         )
 
         if not self.is_for_subplot:
@@ -591,7 +591,7 @@ class MatPlot2D(AbstractMatPlot):
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_mesh_grid.extent
+        extent = extent if extent is not None else mapper.source_plane_mesh_grid.extent
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -600,7 +600,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             ax = self.setup_subplot(aspect=aspect_inv)
 
-        self.axis.set(extent=extent, grid=mapper.source_mesh_grid)
+        self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
 
         plt.gca().set_aspect(aspect_inv)
 
@@ -645,7 +645,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set(units=self.units, include_brackets=True)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_grid_slim, mapper=mapper
+            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
         )
 
         if not self.is_for_subplot:

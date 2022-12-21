@@ -5,9 +5,9 @@ general:
     zoom_around_mask: true
   include_2d:
     border: true
-    mapper_data_mesh_grid: true
-    mapper_source_grid_slim: false
-    mapper_source_mesh_grid: false
+    mapper_image_plane_mesh_grid: true
+    mapper_source_plane_data_grid: false
+    mapper_source_plane_mesh_grid: false
     mask: true
     origin: true
     parallel_overscan: true
@@ -21,9 +21,9 @@ include:
     origin: false
   include_2d:
     border: true
-    mapper_data_mesh_grid: true
-    mapper_source_grid_slim: false
-    mapper_source_mesh_grid: false
+    mapper_image_plane_mesh_grid: true
+    mapper_source_plane_data_grid: false
+    mapper_source_plane_mesh_grid: false
     mask: true
     origin: true
     parallel_overscan: true

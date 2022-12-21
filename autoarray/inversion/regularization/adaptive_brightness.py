@@ -111,6 +111,6 @@ class AdaptiveBrightness(AbstractRegularization):
 
         return regularization_util.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
-            neighbors=linear_obj.source_mesh_grid.neighbors,
-            neighbors_sizes=linear_obj.source_mesh_grid.neighbors.sizes,
+            neighbors=linear_obj.source_plane_mesh_grid.neighbors,
+            neighbors_sizes=linear_obj.source_plane_mesh_grid.neighbors.sizes,
         )

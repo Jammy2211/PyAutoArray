@@ -16,7 +16,7 @@ def make_plot_path_setup():
 
 def test__get_2d__via_mapper_for_data_from(rectangular_mapper_7x7_3x3):
     include = aplt.Include2D(
-        origin=True, mask=True, mapper_data_mesh_grid=True, border=True
+        origin=True, mask=True, mapper_image_plane_mesh_grid=True, border=True
     )
 
     mapper_plotter = aplt.MapperPlotter(
@@ -28,11 +28,11 @@ def test__get_2d__via_mapper_for_data_from(rectangular_mapper_7x7_3x3):
     )
 
     assert get_2d.origin.in_list == [(0.0, 0.0)]
-    assert (get_2d.mask == rectangular_mapper_7x7_3x3.source_grid_slim.mask).all()
+    assert (get_2d.mask == rectangular_mapper_7x7_3x3.source_plane_data_grid.mask).all()
     assert get_2d.grid == None
 
     include = aplt.Include2D(
-        origin=False, mask=False, mapper_data_mesh_grid=False, border=False
+        origin=False, mask=False, mapper_image_plane_mesh_grid=False, border=False
     )
 
     mapper_plotter = aplt.MapperPlotter(
@@ -53,8 +53,8 @@ def test__get_2d__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
 
     include = aplt.Include2D(
         origin=True,
-        mapper_source_grid_slim=True,
-        mapper_source_mesh_grid=True,
+        mapper_source_plane_data_grid=True,
+        mapper_source_plane_mesh_grid=True,
         border=True,
     )
 
@@ -68,17 +68,17 @@ def test__get_2d__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
 
     assert mapper_plotter.visuals_2d.origin == None
     assert get_2d.origin.in_list == [(0.0, 0.0)]
-    assert (get_2d.grid == rectangular_mapper_7x7_3x3.source_grid_slim).all()
-    assert (get_2d.mesh_grid == rectangular_mapper_7x7_3x3.source_mesh_grid).all()
+    assert (get_2d.grid == rectangular_mapper_7x7_3x3.source_plane_data_grid).all()
+    assert (get_2d.mesh_grid == rectangular_mapper_7x7_3x3.source_plane_mesh_grid).all()
     assert (
-        get_2d.border == rectangular_mapper_7x7_3x3.source_grid_slim.sub_border_grid
+        get_2d.border == rectangular_mapper_7x7_3x3.source_plane_data_grid.sub_border_grid
     ).all()
 
     include = aplt.Include2D(
         origin=False,
         border=False,
-        mapper_source_grid_slim=False,
-        mapper_source_mesh_grid=False,
+        mapper_source_plane_data_grid=False,
+        mapper_source_plane_mesh_grid=False,
     )
 
     mapper_plotter = aplt.MapperPlotter(
@@ -110,7 +110,7 @@ def test__figure_2d(
         output=aplt.Output(path=plot_path, filename="mapper1", format="png")
     )
 
-    include_2d = aplt.Include2D(origin=True, mapper_source_mesh_grid=True)
+    include_2d = aplt.Include2D(origin=True, mapper_source_plane_mesh_grid=True)
 
     mapper_plotter = aplt.MapperPlotter(
         mapper=rectangular_mapper_7x7_3x3,
@@ -167,7 +167,7 @@ def test__subplot_image_and_mapper(
         mapper=rectangular_mapper_7x7_3x3,
         visuals_2d=visuals_2d,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-        include_2d=aplt.Include2D(mapper_source_mesh_grid=True),
+        include_2d=aplt.Include2D(mapper_source_plane_mesh_grid=True),
     )
 
     mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)
@@ -179,7 +179,7 @@ def test__subplot_image_and_mapper(
         mapper=delaunay_mapper_9_3x3,
         visuals_2d=visuals_2d,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-        include_2d=aplt.Include2D(mapper_source_mesh_grid=True),
+        include_2d=aplt.Include2D(mapper_source_plane_mesh_grid=True),
     )
 
     mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)
@@ -191,7 +191,7 @@ def test__subplot_image_and_mapper(
         mapper=voronoi_mapper_9_3x3,
         visuals_2d=visuals_2d,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-        include_2d=aplt.Include2D(mapper_source_mesh_grid=True),
+        include_2d=aplt.Include2D(mapper_source_plane_mesh_grid=True),
     )
 
     mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)

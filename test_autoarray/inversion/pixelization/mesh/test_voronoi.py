@@ -8,7 +8,7 @@ def test__magnification__sparse_grid_from__returns_same_as_computed_from_grids_m
 
     pixelization = aa.mesh.VoronoiMagnification(shape=(3, 3))
 
-    sparse_grid = pixelization.data_mesh_grid_from(data_grid_slim=sub_grid_2d_7x7)
+    sparse_grid = pixelization.image_plane_mesh_grid_from(image_plane_data_grid=sub_grid_2d_7x7)
 
     mesh_grid = aa.Mesh2DVoronoi(
         grid=sparse_grid,
@@ -28,16 +28,16 @@ def test__magnification__preloads_used_for_relocated_grid(sub_grid_2d_7x7):
 
     relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
-    sparse_grid = pixelization.data_mesh_grid_from(data_grid_slim=sub_grid_2d_7x7)
+    sparse_grid = pixelization.image_plane_mesh_grid_from(image_plane_data_grid=sub_grid_2d_7x7)
 
     mapper_grids = pixelization.mapper_grids_from(
-        source_grid_slim=relocated_grid,
-        source_mesh_grid=sparse_grid,
+        source_plane_data_grid=relocated_grid,
+        source_plane_mesh_grid=sparse_grid,
         settings=aa.SettingsPixelization(use_border=True),
         preloads=aa.Preloads(relocated_grid=relocated_grid),
     )
 
-    assert (mapper_grids.source_grid_slim == relocated_grid).all()
+    assert (mapper_grids.source_plane_data_grid == relocated_grid).all()
 
 
 def test__brightness__weight_map_from():

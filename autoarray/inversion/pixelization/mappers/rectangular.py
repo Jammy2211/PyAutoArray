@@ -21,21 +21,21 @@ class MapperRectangularNoInterp(AbstractMapper):
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
-        the four grids grouped in a `MapperGrids` object are explained (`data_grid_slim`, `source_grid_slim`,
-        `dataset_mesh_grid`,`source_mesh_grid`)
+        the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
+        `image_plane_mesh_grid`,`source_plane_mesh_grid`)
 
         If you are unfamliar withe above objects, read through the docstrings of the `pixelization`, `mesh` and
         `mapper_grids` packages.
 
-        A `Mapper` determines the mappings between the masked data grid's pixels (`data_grid_slim` and
-        `source_grid_slim`) and the mesh's pixels (`data_mesh_grid` and `source_mesh_grid`).
+        A `Mapper` determines the mappings between the masked data grid's pixels (`image_plane_data_grid` and
+        `source_plane_data_grid`) and the mesh's pixels (`image_plane_mesh_grid` and `source_plane_mesh_grid`).
 
         The 1D Indexing of each grid is identical in the `data` and `source` frames (e.g. the transformation does not
-        change the indexing, such that `source_grid_slim[0]` corresponds to the transformed value
-        of `data_grid_slim[0]` and so on).
+        change the indexing, such that `source_plane_data_grid[0]` corresponds to the transformed value
+        of `image_plane_data_grid[0]` and so on).
 
         A mapper therefore only needs to determine the index mappings between the `grid_slim` and `mesh_grid`,
-        noting that associations are made by pairing `source_mesh_grid` with `source_grid_slim`.
+        noting that associations are made by pairing `source_plane_mesh_grid` with `source_plane_data_grid`.
 
         Mappings are represented in the 2D ndarray `pix_indexes_for_sub_slim_index`, whereby the index of
         a pixel on the `mesh_grid` maps to the index of a pixel on the `grid_slim` as follows:
@@ -54,7 +54,7 @@ class MapperRectangularNoInterp(AbstractMapper):
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
         unmasked data pixel annd the pixels of a mesh. This matrix is the basis of performing an `Inversion`,
-        which reconstructs the data using the `source_mesh_grid`.
+        which reconstructs the data using the `source_plane_mesh_grid`.
 
         Parameters
         ----------
@@ -75,7 +75,7 @@ class MapperRectangularNoInterp(AbstractMapper):
 
     @property
     def shape_native(self) -> Tuple[int, ...]:
-        return self.source_mesh_grid.shape_native
+        return self.source_plane_mesh_grid.shape_native
 
     @cached_property
     @profile_func
@@ -113,10 +113,10 @@ class MapperRectangularNoInterp(AbstractMapper):
         are equal to 1.0.
         """
         mappings = grid_2d_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=self.source_grid_slim,
-            shape_native=self.source_mesh_grid.shape_native,
-            pixel_scales=self.source_mesh_grid.pixel_scales,
-            origin=self.source_mesh_grid.origin,
+            grid_scaled_2d_slim=self.source_plane_data_grid,
+            shape_native=self.source_plane_mesh_grid.shape_native,
+            pixel_scales=self.source_plane_mesh_grid.pixel_scales,
+            origin=self.source_plane_mesh_grid.origin,
         ).astype("int")
 
         mappings = mappings.reshape((len(mappings), 1))
@@ -124,5 +124,5 @@ class MapperRectangularNoInterp(AbstractMapper):
         return PixSubWeights(
             mappings=mappings.reshape((len(mappings), 1)),
             sizes=np.ones(len(mappings), dtype="int"),
-            weights=np.ones((len(self.source_grid_slim), 1), dtype="int"),
+            weights=np.ones((len(self.source_plane_data_grid), 1), dtype="int"),
         )

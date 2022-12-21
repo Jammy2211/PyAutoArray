@@ -12,13 +12,13 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     mesh_grid = aa.Mesh2DDelaunay(grid=mesh_grid)
 
     mapper_grids = aa.MapperGrids(
-        source_grid_slim=grid_2d_7x7, source_mesh_grid=mesh_grid
+        source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     simplex_index_for_sub_slim_index = mapper.delaunay.find_simplex(
-        mapper.source_grid_slim
+        mapper.source_plane_data_grid
     )
     pix_indexes_for_simplex_index = mapper.delaunay.simplices
 
@@ -26,7 +26,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         pix_indexes_for_sub_slim_index_util,
         sizes,
     ) = aa.util.mapper.pix_indexes_for_sub_slim_index_delaunay_from(
-        source_grid_slim=mapper.source_grid_slim,
+        source_plane_data_grid=mapper.source_plane_data_grid,
         simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
         pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
         delaunay_points=mapper.delaunay.points,

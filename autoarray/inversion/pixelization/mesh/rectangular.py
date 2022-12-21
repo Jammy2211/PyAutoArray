@@ -36,28 +36,28 @@ class Rectangular(AbstractMesh):
         The grid associated with the masked dataset and Voronoi pixelization have the following variable names:
 
         - `grid_slim`: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
-        given the variable name `data_grid_slim` or in the transformed source frame with the variable
-        name `source_grid_slim`).
+        given the variable name `image_plane_data_grid` or in the transformed source frame with the variable
+        name `source_plane_data_grid`).
 
         - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
         coordinates (association is always performed in the `source` reference frame).
 
-        A rectangular pixelization has three grids associated with it: `data_grid_slim`, `source_grid_slim`,
-        and `source_mesh_grid`. It does not have a `data_mesh_grid because a rectangular pixelization
-        is constructed by overlaying a grid of rectangular over the `source_grid_slim` (it is therefore entirely
+        A rectangular pixelization has three grids associated with it: `image_plane_data_grid`, `source_plane_data_grid`,
+        and `source_plane_mesh_grid`. It does not have a `image_plane_mesh_grid because a rectangular pixelization
+        is constructed by overlaying a grid of rectangular over the `source_plane_data_grid` (it is therefore entirely
         constructed in the `source` frame).
 
         If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
 
-        The (y,x) coordinates of the `source_mesh_grid` represent the centres of each rectangular pixel.
+        The (y,x) coordinates of the `source_plane_mesh_grid` represent the centres of each rectangular pixel.
 
-        Each (y,x) coordinate in the `source_grid_slim` is associated with the rectangular pixelization pixel it falls
+        Each (y,x) coordinate in the `source_plane_data_grid` is associated with the rectangular pixelization pixel it falls
         within. No interpolation is performed when making these associations.
 
         The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
         in the top-left corner and going rightwards and downwards.
 
-        In the project `PyAutoLens`, one's data is a masked 2D image. Its `data_grid_slim` is a 2D grid where every
+        In the project `PyAutoLens`, one's data is a masked 2D image. Its `image_plane_data_grid` is a 2D grid where every
         (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
         this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
         The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
@@ -86,9 +86,9 @@ class Rectangular(AbstractMesh):
 
     def mapper_grids_from(
         self,
-        source_grid_slim: Grid2D,
-        source_mesh_grid: Grid2D = None,
-        data_mesh_grid: Grid2D = None,
+        source_plane_data_grid: Grid2D,
+        source_plane_mesh_grid: Grid2D = None,
+        image_plane_mesh_grid: Grid2D = None,
         hyper_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
@@ -100,24 +100,24 @@ class Rectangular(AbstractMesh):
 
         This function returns a `MapperRectangularNoInterp` as follows:
 
-        1) If `settings.use_border=True`, the border of the input `source_grid_slim` is used to relocate all of the
+        1) If `settings.use_border=True`, the border of the input `source_plane_data_grid` is used to relocate all of the
         grid's (y,x) coordinates beyond the border to the edge of the border.
 
         2) Determine the (y,x) coordinates of the pixelization's rectangular pixels, by laying this rectangular grid
-        over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_grid_slim` if step 1
+        over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_plane_data_grid` if step 1
         is bypassed).
 
         3) Return the `MapperRectangularNoInterp`.
 
         Parameters
         ----------
-        source_grid_slim
+        source_plane_data_grid
             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
             `source` reference frame.
-        source_mesh_grid
+        source_plane_mesh_grid
             Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
-            by overlaying the `source_grid_slim` with the rectangular pixelization.
-        data_mesh_grid
+            by overlaying the `source_plane_data_grid` with the rectangular pixelization.
+        image_plane_mesh_grid
             Not used for a rectangular pixelization.
         hyper_data
             Not used for a rectangular pixelization.
@@ -133,14 +133,14 @@ class Rectangular(AbstractMesh):
         self.profiling_dict = profiling_dict
 
         relocated_grid = self.relocated_grid_from(
-            source_grid_slim=source_grid_slim, settings=settings, preloads=preloads
+            source_plane_data_grid=source_plane_data_grid, settings=settings, preloads=preloads
         )
-        mesh_grid = self.mesh_grid_from(source_grid_slim=relocated_grid)
+        mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid)
 
         return MapperGrids(
-            source_grid_slim=relocated_grid,
-            source_mesh_grid=mesh_grid,
-            data_mesh_grid=data_mesh_grid,
+            source_plane_data_grid=relocated_grid,
+            source_plane_mesh_grid=mesh_grid,
+            image_plane_mesh_grid=image_plane_mesh_grid,
             hyper_data=hyper_data,
             preloads=preloads,
             profiling_dict=profiling_dict,
@@ -149,32 +149,32 @@ class Rectangular(AbstractMesh):
     @profile_func
     def mesh_grid_from(
         self,
-        source_grid_slim: Optional[Grid2D] = None,
-        source_mesh_grid: Optional[Grid2D] = None,
+        source_plane_data_grid: Optional[Grid2D] = None,
+        source_plane_mesh_grid: Optional[Grid2D] = None,
         sparse_index_for_slim_index: Optional[np.ndarray] = None,
     ) -> Mesh2DRectangular:
         """
-        Return the rectangular `source_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
+        Return the rectangular `source_plane_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
         functionality for perform operatons that exploit the geometry of a rectangular pixelization.
 
         Parameters
         ----------
-        source_grid_slim
+        source_plane_data_grid
             The (y,x) grid of coordinates over which the rectangular pixelization is overlaid, where this grid may have
             had exterior pixels relocated to its edge via the border.
-        source_mesh_grid
+        source_plane_mesh_grid
             Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
-            by overlaying the `source_grid_slim` with the rectangular pixelization.
+            by overlaying the `source_plane_data_grid` with the rectangular pixelization.
         sparse_index_for_slim_index
             Not used for a rectangular pixelization.
         """
         return Mesh2DRectangular.overlay_grid(
-            shape_native=self.shape, grid=source_grid_slim
+            shape_native=self.shape, grid=source_plane_data_grid
         )
 
-    def data_mesh_grid_from(
+    def image_plane_mesh_grid_from(
         self,
-        data_grid_slim: Grid2D,
+        image_plane_data_grid: Grid2D,
         hyper_data: np.ndarray = None,
         settings=SettingsPixelization(),
     ):

@@ -87,10 +87,10 @@ def test__set_relocated_grid():
     # Mapper's mapping matrices are different, thus preload mapper to None.
 
     inversion_0 = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockMapper(source_grid_slim=np.ones((3, 2)))]
+        linear_obj_list=[aa.m.MockMapper(source_plane_data_grid=np.ones((3, 2)))]
     )
     inversion_1 = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockMapper(source_grid_slim=2.0 * np.ones((3, 2)))]
+        linear_obj_list=[aa.m.MockMapper(source_plane_data_grid=2.0 * np.ones((3, 2)))]
     )
 
     fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
@@ -104,10 +104,10 @@ def test__set_relocated_grid():
     # Mapper's mapping matrices are the same, thus preload mapper.
 
     inversion_0 = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockMapper(source_grid_slim=np.ones((3, 2)))]
+        linear_obj_list=[aa.m.MockMapper(source_plane_data_grid=np.ones((3, 2)))]
     )
     inversion_1 = aa.m.MockInversion(
-        linear_obj_list=[aa.m.MockMapper(source_grid_slim=np.ones((3, 2)))]
+        linear_obj_list=[aa.m.MockMapper(source_plane_data_grid=np.ones((3, 2)))]
     )
 
     fit_0 = aa.m.MockFitImaging(inversion=inversion_0)

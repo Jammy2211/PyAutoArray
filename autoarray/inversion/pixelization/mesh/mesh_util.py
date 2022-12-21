@@ -346,7 +346,7 @@ def delaunay_interpolated_array_from(
     output to a .fits file.
 
     The `grid_interpolate_slim`, which gives the (y,x) coordinates the values are evaluated at for interpolation,
-    need not be regular and can have undergone coordinate transforms (e.g. it can be the `source_mesh_grid`)
+    need not be regular and can have undergone coordinate transforms (e.g. it can be the `source_plane_mesh_grid`)
     of a `Mapper`.
 
     The shape of `grid_interpolate_slim` therefore must be equal to `shape_native[0] * shape_native[1]`, but the (y,x)

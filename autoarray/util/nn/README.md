@@ -1,4 +1,6 @@
-## nn ##
+Natural Neighbour
+=================
+
 (Natural Neighbours interpolation for PyAutoLens)
 
 If you want to use the `VoronoiNN` pixelization, which applies natural neighbor 

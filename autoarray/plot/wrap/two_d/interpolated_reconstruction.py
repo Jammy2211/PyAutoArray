@@ -95,6 +95,6 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         plt.imshow(
             X=interpolation_array.native,
             cmap=cmap,
-            extent=mapper.source_mesh_grid.extent_square,
+            extent=mapper.source_plane_mesh_grid.extent_square,
             aspect=aspect,
         )

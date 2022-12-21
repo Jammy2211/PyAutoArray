@@ -24,7 +24,7 @@ def test__regularization_matrix__matches_util():
 
     mesh_grid = aa.m.MockMeshGrid(neighbors=neighbors, neighbors_sizes=neighbors_sizes)
 
-    mapper = aa.m.MockMapper(source_mesh_grid=mesh_grid)
+    mapper = aa.m.MockMapper(source_plane_mesh_grid=mesh_grid)
 
     reg = aa.reg.Constant(coefficient=2.0)
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)

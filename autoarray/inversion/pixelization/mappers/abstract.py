@@ -26,21 +26,21 @@ class AbstractMapper(LinearObj):
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
-        the four grids grouped in a `MapperGrids` object are explained (`data_grid_slim`, `source_grid_slim`,
-        `dataset_mesh_grid`,`source_mesh_grid`)
+        the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
+        `image_plane_mesh_grid`,`source_plane_mesh_grid`)
 
         If you are unfamliar withe above objects, read through the docstrings of the `pixelization`, `mesh` and
         `mapper_grids` packages.
 
-        A `Mapper` determines the mappings between the masked data grid's pixels (`data_grid_slim` and
-        `source_grid_slim`) and the pxelization's pixels (`data_mesh_grid` and `source_mesh_grid`).
+        A `Mapper` determines the mappings between the masked data grid's pixels (`image_plane_data_grid` and
+        `source_plane_data_grid`) and the pxelization's pixels (`image_plane_mesh_grid` and `source_plane_mesh_grid`).
 
         The 1D Indexing of each grid is identical in the `data` and `source` frames (e.g. the transformation does not
-        change the indexing, such that `source_grid_slim[0]` corresponds to the transformed value
-        of `data_grid_slim[0]` and so on).
+        change the indexing, such that `source_plane_data_grid[0]` corresponds to the transformed value
+        of `image_plane_data_grid[0]` and so on).
 
         A mapper therefore only needs to determine the index mappings between the `grid_slim` and `mesh_grid`,
-        noting that associations are made by pairing `source_mesh_grid` with `source_grid_slim`.
+        noting that associations are made by pairing `source_plane_mesh_grid` with `source_plane_data_grid`.
 
         Mappings are represented in the 2D ndarray `pix_indexes_for_sub_slim_index`, whereby the index of
         a pixel on the `mesh_grid` maps to the index of a pixel on the `grid_slim` as follows:
@@ -66,7 +66,7 @@ class AbstractMapper(LinearObj):
 
         The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
         unmasked data pixel annd the pixels of a pixelization. This matrix is the basis of performing an `Inversion`,
-        which reconstructs the data using the `source_mesh_grid`.
+        which reconstructs the data using the `source_plane_mesh_grid`.
 
         Parameters
         ----------
@@ -86,23 +86,23 @@ class AbstractMapper(LinearObj):
 
     @property
     def parameters(self) -> int:
-        return self.source_mesh_grid.pixels
+        return self.source_plane_mesh_grid.pixels
 
     @property
     def pixels(self) -> int:
         return self.parameters
 
     @property
-    def source_grid_slim(self) -> Grid2D:
-        return self.mapper_grids.source_grid_slim
+    def source_plane_data_grid(self) -> Grid2D:
+        return self.mapper_grids.source_plane_data_grid
 
     @property
-    def source_mesh_grid(self) -> Abstract2DMesh:
-        return self.mapper_grids.source_mesh_grid
+    def source_plane_mesh_grid(self) -> Abstract2DMesh:
+        return self.mapper_grids.source_plane_mesh_grid
 
     @property
-    def data_mesh_grid(self) -> Grid2D:
-        return self.mapper_grids.data_mesh_grid
+    def image_plane_mesh_grid(self) -> Grid2D:
+        return self.mapper_grids.image_plane_mesh_grid
 
     @property
     def hyper_data(self) -> np.ndarray:
@@ -110,7 +110,7 @@ class AbstractMapper(LinearObj):
 
     @property
     def neighbors(self) -> Neighbors:
-        return self.source_mesh_grid.neighbors
+        return self.source_plane_mesh_grid.neighbors
 
     @property
     def pix_sub_weights(self) -> "PixSubWeights":
@@ -171,7 +171,7 @@ class AbstractMapper(LinearObj):
         The mappings between every sub-pixel data point on the sub-gridded data and each data point for a grid which
         does not use sub gridding (e.g. `sub_size=1`).
         """
-        return self.source_grid_slim.mask.slim_index_for_sub_slim_index
+        return self.source_plane_data_grid.mask.slim_index_for_sub_slim_index
 
     @property
     def sub_slim_indexes_for_pix_index(self) -> List[List]:
@@ -238,11 +238,11 @@ class AbstractMapper(LinearObj):
             data_weights,
             pix_lengths,
         ) = mapper_util.data_slim_to_pixelization_unique_from(
-            data_pixels=self.source_grid_slim.shape_slim,
+            data_pixels=self.source_plane_data_grid.shape_slim,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
-            sub_size=self.source_grid_slim.sub_size,
+            sub_size=self.source_plane_data_grid.sub_size,
         )
 
         return UniqueMappings(
@@ -270,9 +270,9 @@ class AbstractMapper(LinearObj):
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pixels=self.pixels,
-            total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
+            total_mask_pixels=self.source_plane_data_grid.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            sub_fraction=self.source_grid_slim.mask.sub_fraction,
+            sub_fraction=self.source_plane_data_grid.mask.sub_fraction,
         )
 
     def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
@@ -294,7 +294,7 @@ class AbstractMapper(LinearObj):
             pixel_weights=self.pix_weights_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
-            slim_index_for_sub_slim_index=self.source_grid_slim.mask.slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.slim_index_for_sub_slim_index,
             hyper_data=self.hyper_data,
         )
 
@@ -389,7 +389,7 @@ class AbstractMapper(LinearObj):
             The (x0, x1, y0, y1) extent of the grid in scaled coordinates over which the grid is created if it
             is input.
         """
-        return self.source_mesh_grid.interpolated_array_from(
+        return self.source_plane_mesh_grid.interpolated_array_from(
             values=values, shape_native=shape_native, extent=extent
         )
 
