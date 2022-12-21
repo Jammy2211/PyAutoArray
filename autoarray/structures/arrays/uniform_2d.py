@@ -49,7 +49,7 @@ class AbstractArray2D(Structure):
         Below is a visual illustration of a array, where a total of 10 pixels are unmasked and are included in \
         the array.
 
-        text:
+        ::
 
             IxIxIxIxIxIxIxIxIxIxI
             IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
@@ -65,7 +65,7 @@ class AbstractArray2D(Structure):
         The mask pixel index's will come out like this (and the direction of scaled values is highlighted
         around the mask.
 
-        text:
+        ::
 
             pixel_scales = 1.0"
 
@@ -100,7 +100,7 @@ class AbstractArray2D(Structure):
         contrast to the array above, our illustration below restricts the mask to just 2 pixels, to keep the
         illustration brief.
 
-        text:
+        ::
 
             IxIxIxIxIxIxIxIxIxIxI
             IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
@@ -115,7 +115,7 @@ class AbstractArray2D(Structure):
 
         Our array with a sub-size looks like it did before:
 
-        text:
+        ::
 
             pixel_scales = 1.0"
 
@@ -135,7 +135,7 @@ class AbstractArray2D(Structure):
         However, if the sub-size is 2,each unmasked pixel has a set of sub-pixels with values. For example, for pixel 0,
         if *sub_size=2*, it has 4 values on a 2x2 sub-array:
 
-        text:
+        ::
 
             Pixel 0 - (2x2):
 
@@ -146,7 +146,7 @@ class AbstractArray2D(Structure):
 
         If we used a sub_size of 3, for the first pixel we we would create a 3x3 sub-array:
 
-        text:
+        ::
 
                      array[0] = value of first sub-pixel in pixel 0.
                      array[1] = value of first sub-pixel in pixel 1.
@@ -168,7 +168,7 @@ class AbstractArray2D(Structure):
 
         For the following example mask:
 
-        text:
+        ::
 
             IxIxIxIxIxIxIxIxIxIxI
             IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:

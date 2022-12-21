@@ -12,18 +12,20 @@ from autoarray.numba_util import profile_func
 class Delaunay(Triangulation):
     def __init__(self):
         """
-        An irregular mesh of Delaunay triangle pixels, which are paired with a 2D grid of (y,x) coordinates.
+        An irregular mesh of Delaunay triangle pixels, which using linear barycentric interpolation are paired with
+        a 2D grid of (y,x) coordinates.
 
         For a full description of how a mesh is paired with another grid, see
 
         The Delaunay mesh represents pixels as an irregular 2D grid of Delaunay triangles.
 
-        A ``Pixelization`` using a ``Delaunay`` mesh has four grids associated with it:
-
-        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh).
-        - ``image_plane_mesh_grid``: The corner of each Delaunay triangle in the image-plane.
-        - ``source_plane_data_grid``: The observed data grid mapped to the source-plane after gravitational lensing.
-        - ``source_plane_mesh_grid``: The corner of each Delaunay triangle in the source-plane.
+        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
+          the source-plane).
+        - ``image_plane_mesh_grid``: The (y,x) mesh coordinates in the image-plane (which are the corners of Delaunay
+          triangles in the source-plane).
+        - ``source_plane_data_grid``: The observed data grid mapped to the source-plane (e.g. after gravitational lensing).
+        - ``source_plane_mesh_grid``: The corner of each Delaunay triangle in the source-plane
+          (the ``image_plane_mesh_grid`` maps to this after gravitational lensing).
 
         Each (y,x) coordinate in the ``source_plane_data_grid`` is paired with the three nearest Delaunay triangle
         corners, using a weighted interpolation scheme.

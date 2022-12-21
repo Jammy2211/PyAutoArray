@@ -17,47 +17,11 @@ from autoarray.numba_util import profile_func
 class Rectangular(AbstractMesh):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
-        A uniform mesh of rectangular pixels, which are paired with a 2D grid of (y,x) coordinates.
+        A uniform mesh of rectangular pixels, which without interpolation are paired with a 2D grid of (y,x)
+        coordinates.
 
-        For a full description of how a mesh is paired with another grid, see
-
-        the :meth:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
-
-        the :meth:`autoarray.inversion.pixelization.pixelization.Pixelization` docstring.
-
-        the :meth:`Pixelization.__init__` docstring.
-
-        the :meth:`Pixelization` docstring.
-
-        the :attr:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
-
-        the :attr:`autoarray.inversion.pixelization.pixelization.Pixelization` docstring.
-
-        the :attr:`Pixelization.__init__` docstring.
-
-        the :attr:`Pixelization` docstring.
-        
-        the :class:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
-
-        the :class:`autoarray.inversion.pixelization.pixelization.Pixelization` docstring.
-
-        the :class:`Pixelization.__init__` docstring.
-
-        the :class:`Pixelization` docstring.
-        
-        the :exc:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
-
-        the :exc:`autoarray.inversion.pixelization.pixelization.Pixelization` docstring.
-
-        the :exc:`Pixelization.__init__` docstring.
-
-        the :exc:`Pixelization` docstring.
-
-
-
-
-
-
+        For a full description of how a mesh is paired with another grid,
+        see the :meth:`Pixelization <autoarray.inversion.pixelization.pixelization.Pixelization>` API documentation.
 
         A ``Pixelization`` using a ``Rectangular`` mesh has three grids associated with it:
 

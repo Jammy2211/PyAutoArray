@@ -14,42 +14,25 @@ from autoarray.numba_util import profile_func
 class Voronoi(Triangulation):
     def __init__(self):
         """
-        A mesh associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The Voronoi mesh represents pixels as an irregular grid of Voronoi
-        cells which can form any shape, size or tesselation.
+        An irregular mesh of Voronoi pixels, which using no interpolation are paired with a 2D grid of (y,x)
+        coordinates.
 
-        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi mesh's pixels)
-        have (y,x) coordinates in two reference frames:
+        For a full description of how a mesh is paired with another grid, see
 
-        - `data`: the original reference frame of the masked data.
+        The Voronoi mesh represents pixels as an irregular 2D grid of Voronoi cells.
 
-        - `source`: a reference frame where grids in the `data` reference frame are transformed to a new reference
-        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
-        on them).
+        A ``Pixelization`` using a ``Delaunay`` mesh has four grids associated with it:
 
-        The grid associated with the masked dataset and Voronoi mesh have the following variable names:
+        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
+          the source-plane).
+        - ``image_plane_mesh_grid``: The (y,x) mesh coordinates in the image-plane (which are the centres of Voronoi
+          cells in the source-plane).
+        - ``source_plane_data_grid``: The observed data grid mapped to the source-plane (e.g. after gravitational lensing).
+        - ``source_plane_mesh_grid``: The centre of each Voronoi cell in the source-plane
+          (the ``image_plane_mesh_grid`` maps to this after gravitational lensing).
 
-        - `grid_slim`: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
-        given the variable name `image_plane_data_grid` or in the transformed source frame with the variable
-        name `source_plane_data_grid`).
-
-        - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
-        coordinates (association is always performed in the `source` reference frame).
-
-        A Voronoi mesh has four grids associated with it: `image_plane_data_grid`, `source_plane_data_grid`,
-        `image_plane_mesh_grid` and `source_plane_mesh_grid`.
-
-        If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
-
-        Each (y,x) coordinate in the `source_plane_data_grid` is associated with the Voronoi pixel whose centre is its
-        nearest neighbor. Voronoi pixelizations do not use a weighted interpolation scheme (unlike the `Delaunay`)
-        mesh.
-
-        In the project `PyAutoLens`, one's data is a masked 2D image. Its `image_plane_data_grid` is a 2D grid where every
-        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
-        this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
-        The mesh is then applied in the source frame.. In lensing terminology, the `data` frame is
-        the `image-plane` and `source` frame the `source-plane`.
+        Each (y,x) coordinate in the ``source_plane_data_grid`` is paired with all Voronoi cells it falls within,
+        without using an interpolation scheme.
         """
         super().__init__()
 
@@ -95,52 +78,10 @@ class Voronoi(Triangulation):
 class VoronoiMagnification(Voronoi):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
-        A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels.
-
-        The Voronoi pixelization represents pixels as an irregular grid of Voronoi cells which can form any shape,
-        size or tesselation.
-
-        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
-        have (y,x) coordinates in two reference frames:
-
-        - `data`: the original reference frame of the masked data.
-
-        - `source`: a reference frame where grids in the `data` reference frame are transformed to a new reference
-        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
-        on them).
-
-        The grid associated with the masked dataset and Voronoi pixelization have the following variable names:
-
-        - `grid_slim`: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
-        given the variable name `image_plane_data_grid` or in the transformed source frame with the variable
-        name `source_plane_data_grid`).
-
-        - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
-        coordinates (association is always performed in the `source` reference frame).
-
-        A Voronoi pixelization has four grids associated with it: `image_plane_data_grid`, `source_plane_data_grid`,
-        `image_plane_mesh_grid` and `source_plane_mesh_grid`.
-
-        If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
-
-        The (y,x) coordinates of the `source_plane_mesh_grid` represent the centres of the Voronoi pixels on the
-        Voronoi mesh.
-
-        Each (y,x) coordinate in the `source_plane_data_grid` is associated with the Voronoi pixel whose centre is its
-        nearest neighbor. Voronoi pixelizations do not use a weighted interpolation scheme (unlike the `Delaunay`)
-        pixelization.
-
         For the `VoronoiMagnification` pixelization the centres of the Voronoi grid are derived in the `data` frame,
         by overlaying a uniform grid with the input `shape` over the masked data's grid. All coordinates in this
         uniform grid which are contained within the mask are kept, have the same transformation applied to them as the
         masked data's grid to map them to the source frame, where they form the pixelization's Voronoi pixel centres.
-
-        In the project `PyAutoLens`, one's data is a masked 2D image. Its `image_plane_data_grid` is a 2D grid where every
-        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
-        this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
-        The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
-        the `image-plane` and `source` frame the `source-plane`.
 
         Parameters
         ----------
@@ -186,47 +127,10 @@ class VoronoiMagnification(Voronoi):
 class VoronoiBrightnessImage(Voronoi):
     def __init__(self, pixels=10, weight_floor: float = 0.0, weight_power: float = 0.0):
         """
-        A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The Voronoi pixelization represents pixels as an irregular grid of Voronoi
-        cells which can form any shape, size or tesselation.
-
-        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
-        have (y,x) coordinates in two reference frames:
-
-        - `data`: the original reference frame of the masked data.
-
-        - `source`: a reference frame where grids in the `data` reference frame are transformed to a new reference
-        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
-        on them).
-
-        The grid associated with the masked dataset and Voronoi pixelization have the following variable names:
-
-        - `grid_slim`: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
-        given the variable name `image_plane_data_grid` or in the transformed source frame with the variable
-        name `source_plane_data_grid`).
-
-        - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
-        coordinates (association is always performed in the `source` reference frame).
-
-        A Voronoi pixelization has four grids associated with it: `image_plane_data_grid`, `source_plane_data_grid`,
-        `image_plane_mesh_grid` and `source_plane_mesh_grid`.
-
-        If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
-
-        Each (y,x) coordinate in the `source_plane_data_grid` is associated with the Voronoi pixel whose centre is its
-        nearest neighbor. Voronoi pixelizations do not use a weighted interpolation scheme (unlike the `Delaunay`)
-        pixelization.
-
         For the `VoronoiBrightnessImage` pixelization the centres of the Voronoi grid are derived in the `data` frame,
         by applying a KMeans clustering algorithm to the masked data's values. These values are use compute `pixels`
         number of pixels, where the `weight_floor` and `weight_power` allow the KMeans algorithm to adapt the derived
         pixel centre locations to the data's brighest or faintest values.
-
-        In the project `PyAutoLens`, one's data is a masked 2D image. Its `image_plane_data_grid` is a 2D grid where every
-        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
-        this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
-        The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
-        the `image-plane` and `source` frame the `source-plane`.
 
         Parameters
         ----------
