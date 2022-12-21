@@ -17,15 +17,7 @@ class Pixelization:
         **Image-Plane Example**
 
         For the simplest case, we have a 2D image whose pixel centres are defined on a (y,x) grid of Cartesian
-        coordinates, which are paired with the ``Mesh`` of the ``Pixelization``.
-
-        The visual below illustrates this, showing:
-
-        - **Left:** Observed image of a galaxy.
-        - **Centre:** The (y,x) grid of coordinates corresponding to the centre of each pixel in the observed image.
-          The centre of each pixel is shown by a magenta point.
-        - Right: An overlaid ``Rectangular`` ``mesh``, where the square pixel boundaries of this mesh are shown by
-          dashed black lines.
+        coordinates, which are paired with the ``Mesh`` of the ``Pixelization``:
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/data_image_plane.png?raw=true
           :width: 200
@@ -35,6 +27,14 @@ class Pixelization:
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/image_plane_mesh.png?raw=true
           :width: 200
+
+        The visual above shows:
+
+        - **Left:** Observed image of a galaxy.
+        - **Centre:** The (y,x) grid of coordinates corresponding to the centre of each pixel in the observed image.
+          The centre of each pixel is shown by a magenta point.
+        - Right: An overlaid ``Rectangular`` ``mesh``, where the square pixel boundaries of this mesh are shown by
+          dashed black lines.
 
         Red points highlight a subset of points. They are used below to illustrate additional behaviour
         of ``Pixelization``'s.

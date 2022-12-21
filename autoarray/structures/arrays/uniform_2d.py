@@ -49,16 +49,18 @@ class AbstractArray2D(Structure):
         Below is a visual illustration of a array, where a total of 10 pixels are unmasked and are included in \
         the array.
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = `True` (Pixel is masked and excluded from the array)
-        IxIxIxIoIoIoIoIxIxIxI     o = `False` (Pixel is not masked and included in the array)
-        IxIxIxIoIoIoIoIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+        ::
+
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIoIoIxIxIxIxI     x = `True` (Pixel is masked and excluded from the array)
+            IxIxIxIoIoIoIoIxIxIxI     o = `False` (Pixel is not masked and included in the array)
+            IxIxIxIoIoIoIoIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
 
         The mask pixel index's will come out like this (and the direction of scaled values is highlighted
         around the mask.
