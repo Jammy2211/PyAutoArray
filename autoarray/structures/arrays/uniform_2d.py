@@ -65,20 +65,22 @@ class AbstractArray2D(Structure):
         The mask pixel index's will come out like this (and the direction of scaled values is highlighted
         around the mask.
 
-        pixel_scales = 1.0"
+        ::
 
-        <--- -ve  x  +ve -->
-                                                        y      x
-        IxIxIxIxIxIxIxIxIxIxI  ^   array[0] = 0
-        IxIxIxIxIxIxIxIxIxIxI  I   array[1] = 1
-        IxIxIxIxIxIxIxIxIxIxI  I   array[2] = 2
-        IxIxIxIxI0I1IxIxIxIxI +ve  array[3] = 3
-        IxIxIxI2I3I4I5IxIxIxI  y   array[4] = 4
-        IxIxIxI6I7I8I9IxIxIxI -ve  array[5] = 5
-        IxIxIxIxIxIxIxIxIxIxI  I   array[6] = 6
-        IxIxIxIxIxIxIxIxIxIxI  I   array[7] = 7
-        IxIxIxIxIxIxIxIxIxIxI \/   array[8] = 8
-        IxIxIxIxIxIxIxIxIxIxI      array[9] = 9
+            pixel_scales = 1.0"
+
+            <--- -ve  x  +ve -->
+                                                            y      x
+            IxIxIxIxIxIxIxIxIxIxI  ^   array[0] = 0
+            IxIxIxIxIxIxIxIxIxIxI  I   array[1] = 1
+            IxIxIxIxIxIxIxIxIxIxI  I   array[2] = 2
+            IxIxIxIxI0I1IxIxIxIxI +ve  array[3] = 3
+            IxIxIxI2I3I4I5IxIxIxI  y   array[4] = 4
+            IxIxIxI6I7I8I9IxIxIxI -ve  array[5] = 5
+            IxIxIxIxIxIxIxIxIxIxI  I   array[6] = 6
+            IxIxIxIxIxIxIxIxIxIxI  I   array[7] = 7
+            IxIxIxIxIxIxIxIxIxIxI \/   array[8] = 8
+            IxIxIxIxIxIxIxIxIxIxI      array[9] = 9
 
 
         **Case 2 (sub-size > 1, slim):**
@@ -98,56 +100,63 @@ class AbstractArray2D(Structure):
         contrast to the array above, our illustration below restricts the mask to just 2 pixels, to keep the
         illustration brief.
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     x = `True` (Pixel is masked and excluded from lens)
-        IxIxIxIxIoIoIxIxIxIxI     o = `False` (Pixel is not masked and included in lens)
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+        ::
+
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI     x = `True` (Pixel is masked and excluded from lens)
+            IxIxIxIxIoIoIxIxIxIxI     o = `False` (Pixel is not masked and included in lens)
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
 
         Our array with a sub-size looks like it did before:
 
-        pixel_scales = 1.0"
+        ::
 
-        <--- -ve  x  +ve -->
+            pixel_scales = 1.0"
 
-        IxIxIxIxIxIxIxIxIxIxI  ^
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI +ve
-        IxIxIxI0I1IxIxIxIxIxI  y
-        IxIxIxIxIxIxIxIxIxIxI -ve
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI \/
-        IxIxIxIxIxIxIxIxIxIxI
+            <--- -ve  x  +ve -->
+
+            IxIxIxIxIxIxIxIxIxIxI  ^
+            IxIxIxIxIxIxIxIxIxIxI  I
+            IxIxIxIxIxIxIxIxIxIxI  I
+            IxIxIxIxIxIxIxIxIxIxI +ve
+            IxIxIxI0I1IxIxIxIxIxI  y
+            IxIxIxIxIxIxIxIxIxIxI -ve
+            IxIxIxIxIxIxIxIxIxIxI  I
+            IxIxIxIxIxIxIxIxIxIxI  I
+            IxIxIxIxIxIxIxIxIxIxI \/
+            IxIxIxIxIxIxIxIxIxIxI
 
         However, if the sub-size is 2,each unmasked pixel has a set of sub-pixels with values. For example, for pixel 0,
         if *sub_size=2*, it has 4 values on a 2x2 sub-array:
 
-        Pixel 0 - (2x2):
+        ::
 
-               array[0] = value of first sub-pixel in pixel 0.
-        I0I1I  array[1] = value of first sub-pixel in pixel 1.
-        I2I3I  array[2] = value of first sub-pixel in pixel 2.
-               array[3] = value of first sub-pixel in pixel 3.
+            Pixel 0 - (2x2):
+
+                   array[0] = value of first sub-pixel in pixel 0.
+            I0I1I  array[1] = value of first sub-pixel in pixel 1.
+            I2I3I  array[2] = value of first sub-pixel in pixel 2.
+                   array[3] = value of first sub-pixel in pixel 3.
 
         If we used a sub_size of 3, for the first pixel we we would create a 3x3 sub-array:
 
+        ::
 
-                 array[0] = value of first sub-pixel in pixel 0.
-                 array[1] = value of first sub-pixel in pixel 1.
-                 array[2] = value of first sub-pixel in pixel 2.
-        I0I1I2I  array[3] = value of first sub-pixel in pixel 3.
-        I3I4I5I  array[4] = value of first sub-pixel in pixel 4.
-        I6I7I8I  array[5] = value of first sub-pixel in pixel 5.
-                 array[6] = value of first sub-pixel in pixel 6.
-                 array[7] = value of first sub-pixel in pixel 7.
-                 array[8] = value of first sub-pixel in pixel 8.
+                     array[0] = value of first sub-pixel in pixel 0.
+                     array[1] = value of first sub-pixel in pixel 1.
+                     array[2] = value of first sub-pixel in pixel 2.
+            I0I1I2I  array[3] = value of first sub-pixel in pixel 3.
+            I3I4I5I  array[4] = value of first sub-pixel in pixel 4.
+            I6I7I8I  array[5] = value of first sub-pixel in pixel 5.
+                     array[6] = value of first sub-pixel in pixel 6.
+                     array[7] = value of first sub-pixel in pixel 7.
+                     array[8] = value of first sub-pixel in pixel 8.
 
 
         **Case 3 (sub_size=1, native):**
@@ -159,23 +168,25 @@ class AbstractArray2D(Structure):
 
         For the following example mask:
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = `True` (Pixel is masked and excluded from the array)
-        IxIxIxIoIoIoIoIxIxIxI     o = `False` (Pixel is not masked and included in the array)
-        IxIxIxIoIoIoIoIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+        ::
 
-        - array[0,0] = 0.0 (it is masked, thus zero)
-        - array[0,0] = 0.0 (it is masked, thus zero)
-        - array[3,3] = 0.0 (it is masked, thus zero)
-        - array[3,3] = 0.0 (it is masked, thus zero)
-        - array[3,4] = 0
-        - array[3,4] = -1
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIoIoIxIxIxIxI     x = `True` (Pixel is masked and excluded from the array)
+            IxIxIxIoIoIoIoIxIxIxI     o = `False` (Pixel is not masked and included in the array)
+            IxIxIxIoIoIoIoIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+            IxIxIxIxIxIxIxIxIxIxI
+
+            - array[0,0] = 0.0 (it is masked, thus zero)
+            - array[0,0] = 0.0 (it is masked, thus zero)
+            - array[3,3] = 0.0 (it is masked, thus zero)
+            - array[3,3] = 0.0 (it is masked, thus zero)
+            - array[3,4] = 0
+            - array[3,4] = -1
 
 
         **Case 4 (sub_size>, native):**

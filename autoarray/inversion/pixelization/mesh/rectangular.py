@@ -20,7 +20,7 @@ class Rectangular(AbstractMesh):
         the coordinates of a 2D image).
 
         For a full description of how a mesh is paired with another grid, see
-        the :meth:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
+        the :func:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
 
         A ``Pixelization`` using a ``Rectangular`` mesh has three grids associated with
         it:
