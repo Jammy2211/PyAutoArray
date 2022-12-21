@@ -25,9 +25,12 @@ class Voronoi(Triangulation):
 
         - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
           the source-plane).
+
         - ``image_plane_mesh_grid``: The (y,x) mesh coordinates in the image-plane (which are the centres of Voronoi
           cells in the source-plane).
+
         - ``source_plane_data_grid``: The observed data grid mapped to the source-plane (e.g. after gravitational lensing).
+
         - ``source_plane_mesh_grid``: The centre of each Voronoi cell in the source-plane
           (the ``image_plane_mesh_grid`` maps to this after gravitational lensing).
 

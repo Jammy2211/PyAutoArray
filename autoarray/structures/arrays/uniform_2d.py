@@ -545,7 +545,8 @@ class Array2D(AbstractArray2D):
                 pixel_scales=1.0
             )
 
-            # Print array's slim (masked 1D data representation) and native (masked 2D data representation)
+            # Print array's slim (masked 1D data representation) and
+            # native (masked 2D data representation)
 
             print(array_2d.slim)
             print(array_2d.native)
@@ -620,7 +621,8 @@ class Array2D(AbstractArray2D):
                 pixel_scales=1.0
             )
 
-            # Print array's slim (masked 1D data representation) and native (masked 2D data representation)
+            # Print array's slim (masked 1D data representation)
+            # and native (masked 2D data representation)
 
             print(array_2d.slim)
             print(array_2d.native)

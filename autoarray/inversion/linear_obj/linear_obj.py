@@ -64,7 +64,8 @@ class LinearObj:
         For example for the following linear objects:
 
         - `AbstractLinearObjFuncList` whether certain analytic functions reconstruct nearby components next to
-        one another.
+          one another.
+
         - `Mapper` how the pixels on the mesh used to reconstruct the data neighbor one another.
 
         Returns
@@ -83,9 +84,10 @@ class LinearObj:
         For example for the following linear objects:
 
         - `AbstractLinearObjFuncList` All pixels in the data map to every analytic function, therefore the unique
-        mappings are one-to-one with each function.
+          mappings are one-to-one with each function.
+
         - `Mapper` Every group of sub-pixels map to a unique mesh pixel and the unique mappings describe each of these
-        unique group mappings.
+          unique group mappings.
 
         This object is used to speed up the computation of certain matrices for inversions using the w-tilde formalism.
 
