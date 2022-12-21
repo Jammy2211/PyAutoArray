@@ -5,6 +5,7 @@ from typing import Dict, Optional, Tuple
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.preloads import Preloads
+from autoarray.inversion.pixelization.pixelization import Pixelization
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.settings import SettingsPixelization
@@ -20,7 +21,15 @@ class Rectangular(AbstractMesh):
         the coordinates of a 2D image).
 
         For a full description of how a mesh is paired with another grid, see
+
         the :func:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
+        the :func:`Pixelization.__init__` docstring.
+        the :func:`Pixelization` docstring.
+        the :py:meth:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
+        the :py:meth:`Pixelization.__init__` docstring.
+        the :py:meth:`Pixelization` docstring.
+
+
 
         A ``Pixelization`` using a ``Rectangular`` mesh has three grids associated with
         it:

@@ -33,7 +33,7 @@ class Pixelization:
         - **Left:** Observed image of a galaxy.
         - **Centre:** The (y,x) grid of coordinates corresponding to the centre of each pixel in the observed image.
           The centre of each pixel is shown by a magenta point.
-        - Right: An overlaid ``Rectangular`` ``mesh``, where the square pixel boundaries of this mesh are shown by
+        - **Right:** An overlaid ``Rectangular`` ``mesh``, where the square pixel boundaries of this mesh are shown by
           dashed black lines.
 
         Red points highlight a subset of points. They are used below to illustrate additional behaviour
