@@ -85,7 +85,7 @@ class Pixelization:
 
         **Pixelization Uses**
 
-        The following objects / packages are used with ``Pixelization``s:
+        The following objects / packages are used with a ``Pixelization``:
 
         - ``Mapper``: Computes the mappings between the the image's (y,x) grid and the mesh's pixels.
         - ``Inversion``: Use the ``Pixelization`` to reconstruct the data on the mesh via linear algebra.
@@ -94,18 +94,17 @@ class Pixelization:
         In the example above, a ``Rectangular`` ``Mesh`` object is used. Other meshes are available (e.g.
         ``Delaunay``, ``Voronoi``).
 
-        ** Source Code API**
+        **Source Code API**
 
         The ``Pixelization`` API uses the following terms for the grids shown above:
 
         - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh).
         - ``image_plane_mesh_grid``: The (y,x) centers of the mesh pixels in the image-plane.
         - ``source_plane_data_grid``: The observed data grid mapped to the source-plane after gravitational lensing.
-        - ``source_plane_mesh_grid``: The (y,x) centers of the mesh pixels mapped to the source-plane after
-           gravitational lensing.
+        - ``source_plane_mesh_grid``: The (y,x) centers of the mesh pixels mapped to the source-plane after gravitational lensing.
 
-        If a transformation of coordinates is not applied (e.g. no gravitational lensing), the `image_plane`
-        and `source_plane` grid are identical (this is the case in **PyAutoGalaxy**).
+        If a transformation of coordinates is not applied (e.g. no gravitational lensing), the ``image_plane``
+        and ``source_plane`` grids are identical (this is the case in **PyAutoGalaxy**).
 
         Parameters
         ----------
@@ -118,33 +117,37 @@ class Pixelization:
 
         Examples
         --------
-        import autogalaxy as ag
 
-        grid_2d = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.1)
+        .. code-block:: python
 
-        mesh = al.mesh.Rectangular(shape=(10, 10))
+            import autogalaxy as ag
 
-        pixelization = al.Pixelization(mesh=mesh)
+            grid_2d = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.1)
 
+            mesh = al.mesh.Rectangular(shape=(10, 10))
 
-        # The example below shows how a `Pixelization` is used in modeling.
+            pixelization = al.Pixelization(mesh=mesh)
 
-        import autofit as af
-        import autogalaxy as ag
+        .. code-block:: python
 
-        mesh = af.Model(ag.mesh.Rectangular)
-        mesh.shape_0 = af.UniformPrior(lower_limit=10, upper_limit=20)
-        mesh.shape_1 = af.UniformPrior(lower_limit=10, upper_limit=20)
+            # The example below shows how a `Pixelization` is used in modeling.
 
-        pixelization = af.Model(
-            ag.Pixelization,
-            mesh=mesh
-            regularization=ag.reg.Constant
-        )
+            import autofit as af
+            import autogalaxy as ag
 
-        galaxy = af.Model(ag.Galaxy, redshift=0.5, pixelization=pixelization)
+            mesh = af.Model(ag.mesh.Rectangular)
+            mesh.shape_0 = af.UniformPrior(lower_limit=10, upper_limit=20)
+            mesh.shape_1 = af.UniformPrior(lower_limit=10, upper_limit=20)
 
-        model = af.Collection(galaxies=af.Collection(galaxy=galaxy))
+            pixelization = af.Model(
+                ag.Pixelization,
+                mesh=mesh
+                regularization=ag.reg.Constant
+            )
+
+            galaxy = af.Model(ag.Galaxy, redshift=0.5, pixelization=pixelization)
+
+            model = af.Collection(galaxies=af.Collection(galaxy=galaxy))
         """
         self.mesh = mesh
         self.regularization = regularization
