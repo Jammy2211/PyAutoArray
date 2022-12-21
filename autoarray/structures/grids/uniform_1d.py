@@ -49,13 +49,13 @@ class Grid1D(Structure):
         Below is a visual illustration of a grid, where a total of 3 pixels are unmasked and are included in
         the grid.
 
-        ::
+        .. code-block:: bash
 
             x x x o o x o x x x
 
         This is an example mask.Mask1D, where:
 
-        ::
+        .. code-block:: bash
 
             x = `True` (Pixel is masked and excluded from the grid)
             o = `False` (Pixel is not masked and included in the grid)
@@ -63,7 +63,7 @@ class Grid1D(Structure):
         The mask pixel index's will come out like this (and the direction of scaled coordinates is highlighted
         around the mask.
 
-        ::
+        .. code-block:: bash
 
             pixel_scales = 1.0"
 
@@ -94,7 +94,7 @@ class Grid1D(Structure):
         contrast to the grid above, our illustration below restricts the mask to just 2 pixels, to keep the
         illustration brief.
 
-        ::
+        .. code-block:: bash
 
             x x x o x o x x x
 
@@ -105,7 +105,7 @@ class Grid1D(Structure):
 
         Our grid with a sub-size=1 looks like it did before:
 
-        ::
+        .. code-block:: bash
 
             pixel_scales = 1.0"
 
@@ -116,14 +116,14 @@ class Grid1D(Structure):
         However, if the sub-size is 2, we go to each unmasked pixel and allocate sub-pixel coordinates for it. For
         example, for pixel 0, if `sub_size=2`:
 
-        ::
+        .. code-block:: bash
 
             grid[0] = [-0.75]
             grid[1] = [-0.25]
 
         If we used a sub_size of 3, for the pixel we we would create a 3x3 sub-grid:
 
-        ::
+        .. code-block:: bash
 
             grid[0] = [-0.833]
             grid[1] = [-0.5]
@@ -138,7 +138,7 @@ class Grid1D(Structure):
 
         For the following example mask:
 
-        ::
+        .. code-block:: bash
 
             x x x o o x o x x x
 
@@ -481,7 +481,7 @@ class Grid1D(Structure):
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
 
-        ::
+        .. code-block:: bash
 
             - 1D np.ndarray   -> aa.Array2D
             - 2D np.ndarray   -> aa.Grid2D
@@ -515,7 +515,7 @@ class Grid1D(Structure):
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
 
-        ::
+        .. code-block:: bash
 
             - [1D np.ndarray] -> [aa.Array2D]
             - [2D np.ndarray] -> [aa.Grid2D]

@@ -509,7 +509,7 @@ class Array2D(AbstractArray2D):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
         shape_native
@@ -524,23 +524,31 @@ class Array2D(AbstractArray2D):
 
         Examples
         --------
-        import autoarray as aa
 
-        # Make Array2D from np.ndarray
+        .. code-block:: python
 
-        arr = aa.Array2D.manual_slim(
-            array=np.array([1.0, 2.0, 3.0, 4.0]),
-            shape_native=(2, 2),
-            pixel_scales=1.0
-        )
+            import autoarray as aa
 
-        # Make Array2D from list
+            # Make Array2D from np.ndarray
 
-        arr = aa.Array2D.manual_slim(
-            array=[1.0, 2.0, 3.0, 4.0],
-            shape_native=(2, 2),
-            pixel_scales=1.0
-        )
+            array_2d = aa.Array2D.manual_slim(
+                array=np.array([1.0, 2.0, 3.0, 4.0]),
+                shape_native=(2, 2),
+                pixel_scales=1.0
+            )
+
+            # Make Array2D from list
+
+            array_2d = aa.Array2D.manual_slim(
+                array=[1.0, 2.0, 3.0, 4.0],
+                shape_native=(2, 2),
+                pixel_scales=1.0
+            )
+
+            # Print array's slim (masked 1D data representation) and native (masked 2D data representation)
+
+            print(array_2d.slim)
+            print(array_2d.native)
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -571,22 +579,16 @@ class Array2D(AbstractArray2D):
         header: Optional[Header] = None,
     ) -> "Array2D":
         """
-        Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 2D, for example:
-
-        array=np.ndarray([[1.0, 2.0],
-                         [3.0, 4.0]])
-
-        array=[[1.0, 2.0],
-              [3.0, 4.0]]
+        Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 2D.
 
         The 2D shape of the array and its mask are determined from the input array and the mask is setup as an
         unmasked `Mask2D` of shape_native.
 
         Parameters
         ----------
-        array or list
+        array
             The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
-             list of lists.
+            list of lists.
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
@@ -594,6 +596,34 @@ class Array2D(AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Array2D from np.ndarray
+
+            array_2d = aa.Array2D.manual_native(
+                array=np.array([[1.0, 2.0], [3.0, 4.0]]),
+                shape_native=(2, 2),
+                pixel_scales=1.0
+            )
+
+            # Make Array2D from list
+
+            array_2d = aa.Array2D.manual_slim(
+                array=[[1.0, 2.0], [3.0, 4.0]],
+                shape_native=(2, 2),
+                pixel_scales=1.0
+            )
+
+            # Print array's slim (masked 1D data representation) and native (masked 2D data representation)
+
+            print(array_2d.slim)
+            print(array_2d.native)
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -631,7 +661,7 @@ class Array2D(AbstractArray2D):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
         shape_native
