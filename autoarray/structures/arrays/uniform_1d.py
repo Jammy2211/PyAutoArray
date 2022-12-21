@@ -47,7 +47,7 @@ class Array1D(Structure):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales
             The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
@@ -88,7 +88,7 @@ class Array1D(Structure):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales
             The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
@@ -123,7 +123,7 @@ class Array1D(Structure):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales
             The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).

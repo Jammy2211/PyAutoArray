@@ -78,11 +78,11 @@ class Rectangular(AbstractMesh):
         This function returns a `MapperRectangularNoInterp` as follows:
 
         1) If `settings.use_border=True`, the border of the input `source_plane_data_grid` is used to relocate all of the
-        grid's (y,x) coordinates beyond the border to the edge of the border.
+           grid's (y,x) coordinates beyond the border to the edge of the border.
 
         2) Determine the (y,x) coordinates of the pixelization's rectangular pixels, by laying this rectangular grid
-        over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_plane_data_grid` if step 1
-        is bypassed).
+           over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_plane_data_grid` if step 1
+           is bypassed).
 
         3) Return the `MapperRectangularNoInterp`.
 

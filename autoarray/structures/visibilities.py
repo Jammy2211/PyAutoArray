@@ -152,7 +152,7 @@ class Visibilities(AbstractVisibilities):
     ) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) by inputting (real, imag) values as a 1D complex
-        NumPy array or 2D NumPy float array or list, for example:
+        NumPy array or 2D NumPy float array, for example:
 
         visibilities=np.array([1.0+1.0j, 2.0+2.0j, 3.0+3.0j, 4.0+4.0j])
         visibilities=np.array([[1.0+1.0], [2.0+2.0], [3.0+3.0], [4.0+4.0]])

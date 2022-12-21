@@ -36,10 +36,10 @@ class AbstractGetVisuals:
         Get an attribute for plotting in a `Visuals1D` object based on the following criteria:
 
         1) If `visuals_1d` already has a value for the attribute this is returned, over-riding the input `value` of
-        that attribute.
+           that attribute.
 
         2) If `visuals_1d` do not contain the attribute, the input `value` is returned provided its corresponding
-        entry in the `Include1D` class is `True`.
+           entry in the `Include1D` class is `True`.
 
         3) If the `Include1D` entry is `False` a None is returned and the attribute is therefore not plotted.
 

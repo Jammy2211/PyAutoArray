@@ -23,7 +23,24 @@ class Interferometer(AbstractDataset):
         real_space_mask,
         settings: SettingsInterferometer = SettingsInterferometer(),
     ):
+        """
+        A class containing an interferometer dataset, including the visibilities data, noise-map and the
+        uv-plane baseline wavelengths.
 
+        Parameters
+        ----------
+        visibilities
+            The array of the visibilities data, containing by real and complex values.
+        noise_map
+            An array describing the RMS standard deviation error in each visibility.
+        uv_wavelengths
+            The uv-plane baseline wavelengths.
+        real_space_mask
+            A 2D mask in real-space (e.g. not Fourier space like the visibilities) which defines in real space
+            how calculations are performed.
+        settings
+            Controls settings of how the dataset is set up (e.g. the types of grids used to perform calculations).
+        """
         self.real_space_mask = real_space_mask
 
         super().__init__(data=visibilities, noise_map=noise_map, settings=settings)

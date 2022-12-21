@@ -27,20 +27,19 @@ class Triangulation(AbstractMesh):
         This function returns a `MapperVoronoiNoInterp` as follows:
 
         1) Before this routine is called, a sparse grid of (y,x) coordinates are computed from the 2D masked data,
-        the `image_plane_mesh_grid`, which acts as the Voronoi pixel centres of the mesh and mapper.
+           the `image_plane_mesh_grid`, which acts as the Voronoi pixel centres of the mesh and mapper.
 
         2) Before this routine is called, operations are performed on this `image_plane_mesh_grid` that transform it
-        from a 2D grid which overlaps with the 2D mask of the data in the `data` frame to an irregular grid in
-        the `source` frame, the `source_plane_mesh_grid`.
+           from a 2D grid which overlaps with the 2D mask of the data in the `data` frame to an irregular grid in
+           the `source` frame, the `source_plane_mesh_grid`.
 
         3) If `settings.use_border=True`, the border of the input `source_plane_data_grid` is used to relocate all of the
-        grid's (y,x) coordinates beyond the border to the edge of the border.
+           grid's (y,x) coordinates beyond the border to the edge of the border.
 
         4) If `settings.use_border=True`, the border of the input `source_plane_data_grid` is used to relocate all of the
-        transformed `source_plane_mesh_grid`'s (y,x) coordinates beyond the border to the edge of the border.
+           transformed `source_plane_mesh_grid`'s (y,x) coordinates beyond the border to the edge of the border.
 
-        5) Use the transformed `source_plane_mesh_grid`'s (y,x) coordinates as the centres of the Voronoi
-        mesh.
+        5) Use the transformed `source_plane_mesh_grid`'s (y,x) coordinates as the centres of the Voronoi mesh.
 
         6) Return the `MapperVoronoiNoInterp`.
 

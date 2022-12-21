@@ -456,10 +456,10 @@ def remove_bad_entries_voronoi_nn(
     current circumstances this arises are:
 
     1) If a point is outside the whole Voronoi region, some weights have negative values. In this case, we reset its
-    neighbor to its closest neighbor.
+       neighbor to its closest neighbor.
 
     2) The nearest neighbor interpolation code may not return even a single neighbor. We mark these as a bad grid by
-    settings their neighbors to the closest ones.
+       settings their neighbors to the closest ones.
 
     Parameters
     ----------
@@ -503,13 +503,13 @@ def adaptive_pixel_signals_from(
     The pixel signals are computed as follows:
 
     1) Divide by the number of mappe data points in the pixel, to ensure all pixels have the same
-    'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
+       'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
 
     2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
-    regularization weight_list are defined identically for any data quantity or signal-to-noise_map ratio.
+       regularization weight_list are defined identically for any data quantity or signal-to-noise_map ratio.
 
     3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative
-    contribution regularization in different regions of pixelization.
+       contribution regularization in different regions of pixelization.
 
     Parameters
     ----------

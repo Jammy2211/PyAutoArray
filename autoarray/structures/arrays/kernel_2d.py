@@ -21,16 +21,16 @@ class Kernel2D(AbstractArray2D):
     ):
         """
         An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
-        on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel. See the *Array2D* class
+        on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel. See the ``Array2D`` class
         for a full description of how Arrays work.
 
-        The *Kernel2D* class is an *Array2D* but with additioonal methods that allow it to be convolved with data.
+        The ``Kernel2D`` class is an ``Array2D`` but with additioonal methods that allow it to be convolved with data.
 
         Parameters
         ----------
         array
             The values of the array.
-        mask :Mask2D
+        mask
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
         normalize
@@ -64,7 +64,7 @@ class Kernel2D(AbstractArray2D):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
         shape_native
@@ -109,7 +109,7 @@ class Kernel2D(AbstractArray2D):
 
         Parameters
         ----------
-        array or list
+        array
             The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
              list of lists.
         pixel_scales
@@ -144,7 +144,7 @@ class Kernel2D(AbstractArray2D):
         See the manual_slim and manual_native methods for examples.
         Parameters
         ----------
-        array or list
+        array
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
         shape_native

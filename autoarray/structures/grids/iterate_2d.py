@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Callable, Union, List, Tuple, Optional
 
-from autoarray.structures.abstract_structure import Structure
-
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -504,13 +502,13 @@ class Grid2DIterate(Grid2D):
         array_higher_mask: Mask2D,
     ) -> np.ndarray:
         """
-        Jitted functioon to determine the fractional mask, which is a mask where:
+        Jitted function to determine the fractional mask, which is a mask where:
 
         - `True` entries signify the function has been evaluated in that pixel to desired accuracy and
-           therefore does not need to be iteratively computed at higher levels of sub-gridding.
+          therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
         - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
-           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
+          therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
         """
 
         if fractional_accuracy_threshold is not None:
@@ -729,10 +727,10 @@ class Grid2DIterate(Grid2D):
         Jitted function to determine the fractional mask, which is a mask where:
 
         - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
-           therefore does not need to be iteratively computed at higher levels of sub-gridding.
+          therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
         - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
-           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
+          therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
         """
 
         for y in range(threshold_mask.shape[0]):

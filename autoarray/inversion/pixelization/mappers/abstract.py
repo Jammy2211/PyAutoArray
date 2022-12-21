@@ -46,11 +46,11 @@ class AbstractMapper(LinearObj):
         a pixel on the `mesh_grid` maps to the index of a pixel on the `grid_slim` as follows:
 
         - pix_indexes_for_sub_slim_index[0, 0] = 0: the data's 1st sub-pixel (index 0) maps to the
-        pixelization's 1st pixel (index 0).
+          pixelization's 1st pixel (index 0).
         - pix_indexes_for_sub_slim_index[1, 0] = 3: the data's 2nd sub-pixel (index 1) maps to the
-        pixelization's 4th pixel (index 3).
+          pixelization's 4th pixel (index 3).
         - pix_indexes_for_sub_slim_index[2, 0] = 1: the data's 3rd sub-pixel (index 2) maps to the
-        pixelization's 2nd pixel (index 1).
+          pixelization's 2nd pixel (index 1).
 
         The second dimension of this array (where all three examples above are 0) is used for cases where a
         single pixel on the `grid_slim` maps to multiple pixels on the `mesh_grid`. For example, using a

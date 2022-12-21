@@ -141,8 +141,7 @@ def adaptive_regularization_weights_from(
     Two regularization coefficients are used, corresponding to the:
 
     1) (pixel_signals) - pixels with a high pixel-signal (i.e. where the signal is located in the pixelization).
-    2) (1.0 - pixel_signals) - pixels with a low pixel-signal (i.e. where the signal is not located in the
-     pixelization).
+    2) (1.0 - pixel_signals) - pixels with a low pixel-signal (i.e. where the signal is not located in the pixelization).
 
     Parameters
     ----------

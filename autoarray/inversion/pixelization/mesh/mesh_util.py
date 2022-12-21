@@ -24,10 +24,10 @@ def rectangular_neighbors_from(
     For example, on a 3x3 grid:
 
     - Pixel 0 is at the top-left and has two neighbors, the pixel to its right  (with index 1) and the pixel below
-    it (with index 3). Therefore, the neighbors[0,:] = [1, 3, -1, -1] and neighbors_sizes[0] = 2.
+      it (with index 3). Therefore, the neighbors[0,:] = [1, 3, -1, -1] and neighbors_sizes[0] = 2.
 
     - Pixel 1 is at the top-middle and has three neighbors, to its left (index 0, right (index 2) and below it
-    (index 4). Therefore, neighbors[1,:] = [0, 2, 4, -1] and neighbors_sizes[1] = 3.
+      (index 4). Therefore, neighbors[1,:] = [0, 2, 4, -1] and neighbors_sizes[1] = 3.
 
     - For pixel 4, the central pixel, neighbors[4,:] = [1, 3, 5, 7] and neighbors_sizes[4] = 4.
 
