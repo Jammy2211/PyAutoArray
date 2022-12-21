@@ -12,46 +12,24 @@ from autoarray.numba_util import profile_func
 class Delaunay(Triangulation):
     def __init__(self):
         """
-        A mesh associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels.
+        An irregular mesh of Delaunay triangle pixels, which are paired with a 2D grid of (y,x) coordinates.
+
+        For a full description of how a mesh is paired with another grid, see
 
         The Delaunay mesh represents pixels as an irregular 2D grid of Delaunay triangles.
 
-        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay mesh's pixels)
-        have (y,x) coordinates in two reference frames:
+        A ``Pixelization`` using a ``Delaunay`` mesh has four grids associated with it:
 
-        - data: the original reference frame of the masked data.
+        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh).
+        - ``image_plane_mesh_grid``: The corner of each Delaunay triangle in the image-plane.
+        - ``source_plane_data_grid``: The observed data grid mapped to the source-plane after gravitational lensing.
+        - ``source_plane_mesh_grid``: The corner of each Delaunay triangle in the source-plane.
 
-        - ``source``: a reference frame where grids in the data reference frame are transformed to a new reference
-        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
-        on them).
+        Each (y,x) coordinate in the ``source_plane_data_grid`` is paired with the three nearest Delaunay triangle
+        corners, using a weighted interpolation scheme.
 
-        The grid associated with the masked dataset and Delaunay mesh have the following variable names:
-
-        - ``grid_slim``: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
-        given the variable name ``image_plane_data_grid`` or in the transformed source frame with the variable
-        name ``source_plane_data_grid``).
-
-        - ``mesh_grid``: the (y,x) grid of Delaunay pixels which are associated with the ``grid_slim`` (y,x)
-        coordinates (association is always performed in the ``source`` reference frame).
-
-        A Delaunay mesh has four grids associated with it: ``image_plane_data_grid``, ``source_plane_data_grid``,
-        ``image_plane_mesh_grid`` and ``source_plane_mesh_grid``.
-
-        If a transformation of coordinates is not applied, the data frame and ``source`` frames are identical.
-
-        The (y,x) coordinates of the ``source_plane_mesh_grid`` represent the corners of the triangles in the
-        Delaunay triangulation.
-
-        Each (y,x) coordinate in the ``source_plane_data_grid`` is associated with the three nearest Delaunay triangle
-        corners. This association uses a weighted interpolation scheme whereby every ``source_plane_data_grid`` coordinate is
-        associated to Delaunay triangle corners with a higher weight if they are a closer distance to it.
-
-        In the project ``PyAutoLens``, one's data is a masked 2D image. Its ``image_plane_data_grid`` is a 2D grid where every
-        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
-        this grid of (y,x) coordinates from the data frame to a new grid of (y,x) coordinates in the ``source`` frame.
-        The mesh is then applied in the source frame.. In lensing terminology, the data frame is
-        the ``image-plane`` and ``source`` frame the ``source-plane``.
+        Coordinates on the ``source_plane_data_grid`` are therefore given higher weights when paired with Delaunay
+        triangle corners they are a closer distance to.
         """
         super().__init__()
 
@@ -91,48 +69,10 @@ class Delaunay(Triangulation):
 class DelaunayMagnification(Delaunay):
     def __init__(self, shape=(3, 3)):
         """
-        A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The Delaunay pixelization represents pixels as an irregular 2D grid of
-        Delaunay triangles.
-
-        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay pixelization's pixels)
-        have (y,x) coordinates in two reference frames:
-
-        - ``data``: the original reference frame of the masked data.
-
-        - ``source``: a reference frame where grids in the data reference frame are transformed to a new reference
-        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
-        on them).
-
-        The grid associated with the masked dataset and Delaunay pixelization have the following variable names:
-
-        - ``grid_slim``: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
-        given the variable name ``image_plane_data_grid`` or in the transformed source frame with the variable
-        name ``source_plane_data_grid``).
-
-        - ``mesh_grid``: the (y,x) grid of Delaunay pixels which are associated with the ``grid_slim`` (y,x)
-        coordinates (association is always performed in the ``source`` reference frame).
-
-        A Delaunay pixelization has four grids associated with it: ``image_plane_data_grid``, ``source_plane_data_grid``,
-        ``image_plane_mesh_grid`` and ``source_plane_mesh_grid``.
-
-        If a transformation of coordinates is not applied, the data frame and ``source`` frames are identical.
-
-        Each (y,x) coordinate in the ``source_plane_data_grid`` is associated with the three nearest Delaunay triangle
-        corners (when joined together with straight lines these corners form Delaunay triangles). This association
-        uses weighted interpolation whereby ``source_plane_data_grid`` coordinates are associated to the Delaunay corners with
-        a higher weight if they are a closer distance to one another.
-
         For the ``DelaunayMagnification`` mesh the corners of the Delaunay pixels are derived in the data frame,
         by overlaying a uniform grid with the input ``shape`` over the masked data's grid. All coordinates in this
         uniform grid which are contained within the mask are kept, have the same transformation applied to them as the
         masked data's grid to map them to the source frame, where they form the pixelization's Delaunay pixel centres.
-
-        In the project ``PyAutoLens``, one's data is a masked 2D image. Its ``image_plane_data_grid`` is a 2D grid where every
-        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
-        this grid of (y,x) coordinates from the data frame to a new grid of (y,x) coordinates in the ``source`` frame.
-        The pixelization is then applied in the source frame.. In lensing terminology, the data frame is
-        the ``image-plane`` and ``source`` frame the ``source-plane``.
 
         Parameters
         ----------
@@ -177,48 +117,10 @@ class DelaunayMagnification(Delaunay):
 class DelaunayBrightnessImage(Delaunay):
     def __init__(self, pixels=10, weight_floor=0.0, weight_power=0.0):
         """
-        A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels. The Delaunay pixelization represents pixels as an irregular 2D grid of
-        Delaunay triangles.
-
-        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Delaunay pixelization's pixels)
-        have (y,x) coordinates in two reference frames:
-
-        - ``data``: the original reference frame of the masked data.
-
-        - ``source``: a reference frame where grids in the data reference frame are transformed to a new reference
-        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
-        on them).
-
-        The grid associated with the masked dataset and Delaunay pixelization have the following variable names:
-
-        - ``grid_slim``: the (y,x) grid of coordinates of the original masked data (which can be in the data frame
-        and given the variable name ``image_plane_data_grid`` or in the transformed source frame with the variable
-        name ``source_plane_data_grid``).
-
-        - ``mesh_grid``: the (y,x) grid of Delaunay pixels which are associated with the ``grid_slim`` (y,x)
-        coordinates (association is always performed in the ``source`` reference frame).
-
-        A Delaunay pixelization has four grids associated with it: ``image_plane_data_grid``, ``source_plane_data_grid``,
-        ``image_plane_mesh_grid`` and ``source_plane_mesh_grid``.
-
-        If a transformation of coordinates is not applied, the data frame and ``source`` frames are identical.
-
-        Each (y,x) coordinate in the ``source_plane_data_grid`` is associated with the three nearest Delaunay triangle
-        corners (when joined together with straight lines these corners form Delaunay triangles). This association
-        uses weighted interpolation whereby ``source_plane_data_grid`` coordinates are associated to the Delaunay corners with
-        a higher weight if they are a closer distance to one another.
-
         For the ``DelaunayBrightnessImage`` pixelization the corners of the Delaunay trinagles are derived in
         the data frame, by applying a KMeans clustering algorithm to the masked data's values. These values are use
         compute ``pixels`` number of pixels, where the ``weight_floor`` and ``weight_power`` allow the KMeans algorithm to
         adapt the derived pixel centre locations to the data's brighest or faintest values.
-
-        In the project ``PyAutoLens``, one's data is a masked 2D image. Its ``image_plane_data_grid`` is a 2D grid where every
-        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
-        this grid of (y,x) coordinates from the data frame to a new grid of (y,x) coordinates in the ``source`` frame.
-        The pixelization is then applied in the source frame.. In lensing terminology, the data frame is
-        the ``image-plane`` and ``source`` frame the ``source-plane``.
 
         Parameters
         ----------
