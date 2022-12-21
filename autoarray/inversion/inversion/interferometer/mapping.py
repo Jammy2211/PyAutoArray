@@ -151,7 +151,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         ----------
         reconstruction
             The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
-            individual mapper (in the data frame).
+            individual mapper (in the image-plane).
         """
         mapped_reconstructed_data_dict = {}
 

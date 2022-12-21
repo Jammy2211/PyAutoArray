@@ -5,7 +5,6 @@ from typing import Dict, Optional, Tuple
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.preloads import Preloads
-from autoarray.inversion.pixelization.pixelization import Pixelization
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.settings import SettingsPixelization
@@ -21,11 +20,15 @@ class Rectangular(AbstractMesh):
         coordinates.
 
         For a full description of how a mesh is paired with another grid,
-        see the :meth:`Pixelization <autoarray.inversion.pixelization.pixelization.Pixelization>` API documentation.
+        see the :meth:`Pixelization API documentation <autoarray.inversion.pixelization.pixelization.Pixelization>`.
+
+        The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
+        in the top-left corner and going rightwards and downwards.
 
         A ``Pixelization`` using a ``Rectangular`` mesh has three grids associated with it:
 
-        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh).
+        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh in
+          the source-plane).
         - ``source_plane_data_grid``: The observed data grid mapped to the source-plane after gravitational lensing.
         - ``source_plane_mesh_grid``: The centres of each rectangular pixel.
 
@@ -34,10 +37,6 @@ class Rectangular(AbstractMesh):
 
         Each (y,x) coordinate in the `source_plane_data_grid` is associated with the rectangular pixelization pixel
         it falls within. No interpolation is performed when making these associations.
-
-        The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
-        in the top-left corner and going rightwards and downwards.
-
         Parameters
         ----------
         shape
@@ -56,7 +55,10 @@ class Rectangular(AbstractMesh):
         self.profiling_dict = {}
 
     @property
-    def uses_interpolation(self):
+    def uses_interpolation(self) -> bool:
+        """
+        Does this ``Mesh`` object use interpolation when pairing with another 2D grid?
+        """
         return False
 
     def mapper_grids_from(

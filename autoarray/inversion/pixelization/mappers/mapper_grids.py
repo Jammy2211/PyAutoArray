@@ -32,7 +32,7 @@ class MapperGrids:
          of the linear object are.
 
         - `image_plane_mesh_grid`: the grid defining where the linear object parameters (e.g. what are used as pixels of
-        the mapper) are in the data frame.
+        the mapper) are in the image-plane.
 
         - `source_plane_mesh_grid`: the grid defining where the mapped coordinates of the linear object parameters
         are in the source frame.

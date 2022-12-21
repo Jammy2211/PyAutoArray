@@ -1,4 +1,3 @@
-import copy
 import numpy as np
 from typing import Dict, Optional
 
@@ -8,8 +7,6 @@ from autoarray.preloads import Preloads
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.settings import SettingsPixelization
-
-from autoarray.numba_util import profile_func
 
 
 class Triangulation(AbstractMesh):

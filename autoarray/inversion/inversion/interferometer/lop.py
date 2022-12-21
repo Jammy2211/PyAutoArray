@@ -83,14 +83,14 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
         object's reconstructed images, where the keys are the instances of each mapper in the inversion.
 
         The PyLops calculation bypasses the calculation of the `mapping_matrix` and it therefore cannot be used to map
-        the reconstruction's values to the data frame. Instead, the unique data-to-pixelization mappings are used,
+        the reconstruction's values to the image-plane. Instead, the unique data-to-pixelization mappings are used,
         including the 2D non-uniform fast Fourier transform operation after mapping is complete.
 
         Parameters
         ----------
         reconstruction
             The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
-            individual mapper (in the data frame).
+            individual mapper (in the image-plane).
         """
 
         mapped_reconstructed_image_dict = self.mapped_reconstructed_image_dict
