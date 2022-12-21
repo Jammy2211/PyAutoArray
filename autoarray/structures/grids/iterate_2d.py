@@ -56,7 +56,7 @@ class Grid2DIterate(Grid2D):
         ----------
         grid
             The (y,x) coordinates of the grid.
-        mask :Mask2D
+        mask
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         fractional_accuracy
@@ -67,7 +67,7 @@ class Grid2DIterate(Grid2D):
             The relative accuracy the function evaluted must meet to be accepted, where this value is the absolute
             difference of the values computed using the higher sub size and lower sub size grids. The relative
             accuracy depends on the units / magnitude of the function being evaluated.
-        sub_steps : [int] or None
+        sub_steps
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
         """
@@ -912,9 +912,9 @@ class Grid2DIterate(Grid2D):
 
         Parameters
         ----------
-        func : func
+        func
             The function which is iterated over to compute a more precise evaluation.
-        cls : object
+        cls
             The class the function belongs to.
         """
         result_sub_1_1d = func(cls, self.grid)

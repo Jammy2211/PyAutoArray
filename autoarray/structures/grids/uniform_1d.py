@@ -1,5 +1,13 @@
+from __future__ import annotations
 import numpy as np
-from typing import List, Union, Tuple
+from typing import TYPE_CHECKING, List, Union, Tuple
+
+if TYPE_CHECKING:
+
+    from autoarray.structures.arrays.uniform_1d import Array1D
+    from autoarray.structures.grids.uniform_2d import Grid2D
+    from autoarray.structures.grids.transformed_2d import Grid2DTransformed
+    from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
 
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -38,28 +46,34 @@ class Grid1D(Structure):
         - grid[3] = the 4th unmasked pixel's x-coordinate.
         - grid[6] = the 7th unmasked pixel's x-coordinate.
 
-        Below is a visual illustration of a grid, where a total of 3 pixels are unmasked and are included in \
+        Below is a visual illustration of a grid, where a total of 3 pixels are unmasked and are included in
         the grid.
 
-        x x x o o x o x x x
+        ::
+
+            x x x o o x o x x x
 
         This is an example mask.Mask1D, where:
 
-        x = `True` (Pixel is masked and excluded from the grid)
-        o = `False` (Pixel is not masked and included in the grid)
+        ::
+
+            x = `True` (Pixel is masked and excluded from the grid)
+            o = `False` (Pixel is not masked and included in the grid)
 
         The mask pixel index's will come out like this (and the direction of scaled coordinates is highlighted
         around the mask.
 
-        pixel_scales = 1.0"
+        ::
 
-        <--- -ve  x  +ve -->
-                                                   x
-         x x x 0 1 x 2 x x x
+            pixel_scales = 1.0"
 
-         grid[0] = [-1.5]
-         grid[1] = [-0.5]
-         grid[2] = [1.5]
+            <--- -ve  x  +ve -->
+                                                       x
+             x x x 0 1 x 2 x x x
+
+             grid[0] = [-1.5]
+             grid[1] = [-0.5]
+             grid[2] = [1.5]
 
 
         **Case 2 (sub-size>1, slim):
@@ -80,52 +94,61 @@ class Grid1D(Structure):
         contrast to the grid above, our illustration below restricts the mask to just 2 pixels, to keep the
         illustration brief.
 
-        x x x o x o x x x
+        ::
 
-        This is an example mask.Mask1D, where:
+            x x x o x o x x x
 
-        x = `True` (Pixel is masked and excluded from the grid)
-        o = `False` (Pixel is not masked and included in the grid)
+            This is an example mask.Mask1D, where:
+
+            x = `True` (Pixel is masked and excluded from the grid)
+            o = `False` (Pixel is not masked and included in the grid)
 
         Our grid with a sub-size=1 looks like it did before:
 
-        pixel_scales = 1.0"
+        ::
 
-        <--- -ve  x  +ve -->
-                                                   x
-         x x x 0 x 1 x x x
+            pixel_scales = 1.0"
+
+            <--- -ve  x  +ve -->
+
+             x x x 0 x 1 x x x
 
         However, if the sub-size is 2, we go to each unmasked pixel and allocate sub-pixel coordinates for it. For
         example, for pixel 0, if `sub_size=2`:
 
-        grid[0] = [-0.75]
-        grid[1] = [-0.25]
+        ::
+
+            grid[0] = [-0.75]
+            grid[1] = [-0.25]
 
         If we used a sub_size of 3, for the pixel we we would create a 3x3 sub-grid:
 
-        grid[0] = [-0.833]
-        grid[1] = [-0.5]
-        grid[2] = [-0.166]
+        ::
+
+            grid[0] = [-0.833]
+            grid[1] = [-0.5]
+            grid[2] = [-0.166]
 
 
         **Case 3 (sub_size=1 native):**
 
-        The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape
-        [total_x_coordinates].
+        The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape [total_x_coordinates].
 
         All masked entries on the grid has (y,x) values of (0.0, 0.0).
 
         For the following example mask:
 
-        x x x o o x o x x x
+        ::
 
-        - grid[0] = 0.0 (it is masked, thus zero)
-        - grid[1] = 0.0 (it is masked, thus zero)
-        - grid[2] = 0.0 (it is masked, thus zero)
-        - grid[3] = -1.5
-        - grid[4] = -0.5
-        - grid[5] = 0.0 (it is masked, thus zero)
-        - grid[6] = 0.5
+            x x x o o x o x x x
+
+            - grid[0] = 0.0 (it is masked, thus zero)
+            - grid[1] = 0.0 (it is masked, thus zero)
+            - grid[2] = 0.0 (it is masked, thus zero)
+            - grid[3] = -1.5
+            - grid[4] = -0.5
+            - grid[5] = 0.0 (it is masked, thus zero)
+            - grid[6] = 0.5
 
 
         **Case 4 (sub_size>1 native):**
@@ -453,20 +476,22 @@ class Grid1D(Structure):
 
     def structure_2d_from(
         self, result: np.ndarray
-    ) -> Union["Array1D", "Grid2D", "Grid2DTransformed", "Grid2DTransformedNumpy"]:
+    ) -> Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
 
-        - 1D np.ndarray   -> aa.Array2D
-        - 2D np.ndarray   -> aa.Grid2D
+        ::
+
+            - 1D np.ndarray   -> aa.Array2D
+            - 2D np.ndarray   -> aa.Grid2D
 
         This function is used by the grid_2d_to_structure decorator to convert the output result of a function
         to an autoarray structure when a `Grid2D` instance is passed to the decorated function.
 
         Parameters
         ----------
-        result or [np.ndarray]
+        result
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         from autoarray.structures.arrays.uniform_1d import Array1D
@@ -484,21 +509,23 @@ class Grid1D(Structure):
     def structure_2d_list_from(
         self, result_list: List
     ) -> List[
-        Union["Array1D", "Grid2D", "Grid2DTransformed", "Grid2DTransformedNumpy"]
+        Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]
     ]:
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
 
-        - [1D np.ndarray] -> [aa.Array2D]
-        - [2D np.ndarray] -> [aa.Grid2D]
+        ::
+
+            - [1D np.ndarray] -> [aa.Array2D]
+            - [2D np.ndarray] -> [aa.Grid2D]
 
         This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
         function to a list of autoarray structure when a `Grid2D` instance is passed to the decorated function.
 
         Parameters
         ----------
-        result_list or [np.ndarray]
+        result_list
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         return [self.structure_2d_from(result=result) for result in result_list]
