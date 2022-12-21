@@ -20,13 +20,13 @@ class Pixelization:
         coordinates, which are paired with the ``Mesh`` of the ``Pixelization``:
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/data_image_plane.png?raw=true
-          :width: 200
+          :width: 240
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/grid_image_plane.png?raw=true
-          :width: 200
+          :width: 240
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/image_plane_mesh.png?raw=true
-          :width: 200
+          :width: 240
 
         The visual above shows:
 
@@ -51,13 +51,13 @@ class Pixelization:
         The images below use the same image, which has had a 2.5" circular mask applied to it:
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_image_plane/data_image_plane.png?raw=true
-          :width: 200
+          :width: 240
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_image_plane/grid_image_plane.png?raw=true
-          :width: 200
+          :width: 240
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_image_plane/image_plane_mesh.png?raw=true
-          :width: 200
+          :width: 240
 
         The behaviour is analogous to the non-masked case, however only unmasked pixel's in the image's (y,x) grid
         of coordinates are included when pairing with the ``Rectangular`` mesh.
@@ -71,13 +71,13 @@ class Pixelization:
         grid of coordinates and the ``mesh`` is overlaid in the source-plane:
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_source_plane/data_image_plane.png?raw=true
-          :width: 200
+          :width: 240
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_source_plane/grid_image_plane.png?raw=true
-          :width: 200
+          :width: 240
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_source_plane/source_plane_mesh.png?raw=true
-          :width: 200
+          :width: 240
 
         The red points, highlighted throughout all visuals above, show that after gravitational lensing the points
         change position from the image-plane to source-plane.
