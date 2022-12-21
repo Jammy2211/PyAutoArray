@@ -16,57 +16,51 @@ class Pixelization:
 
         **Image-Plane Example**
 
-        For the simplest case, we may have a 2D dataset (e.g. an image) whose pixel centres correspond to a
-        (y,x) grid of Cartesian coordinates, which are paired with a ``Pixelization``'s mesh.
+        For the simplest case, we have a 2D image whose pixel centres are defined on a (y,x) grid of Cartesian
+        coordinates, which are paired with the ``Mesh`` of the ``Pixelization``.
 
         The visual below illustrates this, showing:
 
-        - Left: Observed image of a galaxy
-        - Centre: The (y,x) grid of coordinates corresponding to the centre of each pixel in the observed image. The
-        centre of each pixel is shown by a magenta point.
+        - **Left:** Observed image of a galaxy.
+        - **Centre:** The (y,x) grid of coordinates corresponding to the centre of each pixel in the observed image.
+          The centre of each pixel is shown by a magenta point.
         - Right: An overlaid ``Rectangular`` ``mesh``, where the square pixel boundaries of this mesh are shown by
-        dashed black lines.
-
-        The red points highlight a subset of points, and will be used through this documentation to illustrate certain
-        behaviour of ``Pixelization``'s.
+          dashed black lines.
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/data_image_plane.png?raw=true
           :width: 200
-          :alt: Alternative text
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/grid_image_plane.png?raw=true
           :width: 200
-          :alt: Alternative text
 
-          .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/image_plane_mesh.png?raw=true
+        .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_image_plane/image_plane_mesh.png?raw=true
           :width: 200
-          :alt: Alternative text
 
-        Comparison of the central and right panels therefore show the core functionality of a ``Pixelization`` --
-        it represents the mappings between a (y,x) grid of coordinates (in the example above the observed image's
-        grid) and a (y,x) mesh (in the example above the ``Rectangular`` mesh shown by dashed black lines).
+        Red points highlight a subset of points. They are used below to illustrate additional behaviour
+        of ``Pixelization``'s.
+
+        The **centre** and **right** panels show the core functionality of a ``Pixelization``. It represents the
+        mappings between an image's (y,x) grid of coordinates and a ``Mesh``'s (y,x) grid of coordinates (in the
+        example above the centres of ``Rectangular`` pixels, shown by the dashed black lines).
 
 
         **Image-Plane Example (Masked)**
 
-        The mappings above are shown for 2D data which has not been masked.
+        The mappings above are shown for a 2D image which was not been masked.
 
-        We shown below how a ``Pixelization`` treats an image which has had a 2.5" circular maskd applied to it:
+        The images below use the same image, which has had a 2.5" circular mask applied to it:
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_image_plane/data_image_plane.png?raw=true
           :width: 200
-          :alt: Alternative text
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_image_plane/grid_image_plane.png?raw=true
           :width: 200
-          :alt: Alternative text
 
-          .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_image_plane/image_plane_mesh.png?raw=true
+        .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_image_plane/image_plane_mesh.png?raw=true
           :width: 200
-          :alt: Alternative text
 
         The behaviour is analogous to the non-masked case, however only unmasked pixel's in the image's (y,x) grid
-        of coordinates are paired with the mesh.
+        of coordinates are included when pairing with the ``Rectangular`` mesh.
 
 
         **Source-Plane Example (Masked)**
@@ -74,33 +68,30 @@ class Pixelization:
         In **PyAutoGalaxy** the above two cases are representative of how ``Pixelization`` objects are used.
 
         In the strong lensing package **PyAutoLens**, gravitational lensing deflects the observed image's (y,x)
-        grid of coordinates, such that the ``mesh`` is overlaid in the source-plane:
+        grid of coordinates and the ``mesh`` is overlaid in the source-plane:
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_source_plane/data_image_plane.png?raw=true
           :width: 200
-          :alt: Alternative text
 
         .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_source_plane/grid_image_plane.png?raw=true
           :width: 200
-          :alt: Alternative text
 
-          .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_source_plane/source_plane_mesh.png?raw=true
+        .. image:: https://github.com/Jammy2211/PyAutoGalaxy/blob/main/docs/api/images/pixelization_masked_source_plane/source_plane_mesh.png?raw=true
           :width: 200
-          :alt: Alternative text
 
-        The red points, highlighting through all visuals above, now show how after gravitational lensing the points
+        The red points, highlighted throughout all visuals above, show that after gravitational lensing the points
         change position from the image-plane to source-plane.
 
 
         **Pixelization Uses**
 
-        The following objects / packages are used with ``Pixelizations``:
+        The following objects / packages are used with ``Pixelization``s:
 
-        - ``Mapper``s: Computes the mappings between the the data's (y,x) grid and the mesh's pixels.
-        - ``Inversion``s: Use the ``Pixelization`` to reconstruct the data on the mesh via linear algebra.
-        - ``Regularization``: Apply smoothing to the solutions computed using a ``Pixelization`` and ``Inversion``.
+        - ``Mapper``: Computes the mappings between the the image's (y,x) grid and the mesh's pixels.
+        - ``Inversion``: Use the ``Pixelization`` to reconstruct the data on the mesh via linear algebra.
+        - ``Regularization``: Apply smoothing to the solutions computed using an ``Inversion``.
 
-        In the example above, the ``mesh`` uses the ``Rectangular`` object, but other meshes are available (e.g.
+        In the example above, a ``Rectangular`` ``Mesh`` object is used. Other meshes are available (e.g.
         ``Delaunay``, ``Voronoi``).
 
         ** Source Code API**
@@ -111,7 +102,7 @@ class Pixelization:
         - ``image_plane_mesh_grid``: The (y,x) centers of the mesh pixels in the image-plane.
         - ``source_plane_data_grid``: The observed data grid mapped to the source-plane after gravitational lensing.
         - ``source_plane_mesh_grid``: The (y,x) centers of the mesh pixels mapped to the source-plane after
-        gravitational lensing.
+           gravitational lensing.
 
         If a transformation of coordinates is not applied (e.g. no gravitational lensing), the `image_plane`
         and `source_plane` grid are identical (this is the case in **PyAutoGalaxy**).
@@ -129,17 +120,15 @@ class Pixelization:
         --------
         import autogalaxy as ag
 
-        grid_2d = al.Grid2D.uniform(
-            shape_native=(50, 50),
-            pixel_scales=0.1
-        )
+        grid_2d = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.1)
 
         mesh = al.mesh.Rectangular(shape=(10, 10))
 
         pixelization = al.Pixelization(mesh=mesh)
 
-        Examples (Modeling)
-        -------------------
+
+        # The example below shows how a `Pixelization` is used in modeling.
+
         import autofit as af
         import autogalaxy as ag
 
@@ -162,6 +151,11 @@ class Pixelization:
 
     @property
     def mapper_grids_from(self) -> Callable:
+        """
+        Returns a ``MapperGrids`` object, which contains all of the different grids used by a
+        pixelization (``image_plane_data_grid``, ``image_plane_mesh_grid``, ``source_plane_data_grid``,
+        ``source_plane_mesh_grid``).
+        """
         return self.mesh.mapper_grids_from
 
     def __repr__(self):

@@ -8,9 +8,6 @@ from autoarray.preloads import Preloads
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.pixelization.settings import SettingsPixelization
-from autoarray.inversion.pixelization.mappers.rectangular import (
-    MapperRectangularNoInterp,
-)
 
 from autoarray import exc
 from autoarray.numba_util import profile_func
@@ -19,49 +16,27 @@ from autoarray.numba_util import profile_func
 class Rectangular(AbstractMesh):
     def __init__(self, shape: Tuple[int, int] = (3, 3)):
         """
-        A pixelization associates a 2D grid of (y,x) coordinates (which are expected to be aligned with a masked
-        dataset) with a 2D grid of pixels.
+        A mesh of uniform rectangular pixels, which is paired with another 2D grid of (y,x) coordinates (e.g.
+        the coordinates of a 2D image).
 
-        The rectangular pixelization represents pixels using a uniform rectangular grid.
+        For a full description of how a mesh is paired with another grid, see
+        the :meth:`autoarray.inversion.pixelization.pixelization.Pixelization.__init__` docstring.
 
-        Both of these grids (e.g. the masked dataset's 2D grid and the grid of the Voronoi pixelization's pixels)
-        have (y,x) coordinates in two reference frames:
+        A ``Pixelization`` using a ``Rectangular`` mesh has three grids associated with
+        it:
 
-        - `data`: the original reference frame of the masked data.
+        - ``image_plane_data_grid``: The observed data grid in the image-plane (which is paired with the mesh).
+        - ``source_plane_data_grid``: The observed data grid mapped to the source-plane after gravitational lensing.
+        - ``source_plane_mesh_grid``: The centres of each rectangular pixel.
 
-        - `source`: a reference frame where grids in the `data` reference frame are transformed to a new reference
-        frame (e.g. their (y,x) coordinates may be shifted, stretched or have a more complicated operation performed
-        on them).
+        It does not have a ``image_plane_mesh_grid`` because a rectangular pixelization is constructed by overlaying
+        a grid of rectangular over the `source_plane_data_grid`.
 
-        The grid associated with the masked dataset and Voronoi pixelization have the following variable names:
-
-        - `grid_slim`: the (y,x) grid of coordinates of the original masked data (which can be in the data frame and
-        given the variable name `image_plane_data_grid` or in the transformed source frame with the variable
-        name `source_plane_data_grid`).
-
-        - `mesh_grid`: the (y,x) grid of Voronoi pixels which are associated with the `grid_slim` (y,x)
-        coordinates (association is always performed in the `source` reference frame).
-
-        A rectangular pixelization has three grids associated with it: `image_plane_data_grid`, `source_plane_data_grid`,
-        and `source_plane_mesh_grid`. It does not have a `image_plane_mesh_grid because a rectangular pixelization
-        is constructed by overlaying a grid of rectangular over the `source_plane_data_grid` (it is therefore entirely
-        constructed in the `source` frame).
-
-        If a transformation of coordinates is not applied, the `data` frame and `source` frames are identical.
-
-        The (y,x) coordinates of the `source_plane_mesh_grid` represent the centres of each rectangular pixel.
-
-        Each (y,x) coordinate in the `source_plane_data_grid` is associated with the rectangular pixelization pixel it falls
-        within. No interpolation is performed when making these associations.
+        Each (y,x) coordinate in the `source_plane_data_grid` is associated with the rectangular pixelization pixel
+        it falls within. No interpolation is performed when making these associations.
 
         The rectangular grid is uniform, has dimensions (total_y_pixels, total_x_pixels) and has indexing beginning
         in the top-left corner and going rightwards and downwards.
-
-        In the project `PyAutoLens`, one's data is a masked 2D image. Its `image_plane_data_grid` is a 2D grid where every
-        (y,x) coordinate is aligned with the centre of every unmasked image pixel. A "lensing operation" transforms
-        this grid of (y,x) coordinates from the `data` frame to a new grid of (y,x) coordinates in the `source` frame.
-        The pixelization is then applied in the source frame.. In lensing terminology, the `data` frame is
-        the `image-plane` and `source` frame the `source-plane`.
 
         Parameters
         ----------
