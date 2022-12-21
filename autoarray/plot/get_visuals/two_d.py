@@ -187,7 +187,9 @@ class GetVisuals2D(AbstractGetVisuals):
             "origin", Grid2DIrregular(grid=[mapper.source_plane_mesh_grid.origin])
         )
 
-        grid = self.get("grid", mapper.source_plane_data_grid, "mapper_source_plane_data_grid")
+        grid = self.get(
+            "grid", mapper.source_plane_data_grid, "mapper_source_plane_data_grid"
+        )
 
         border = self.get("border", mapper.source_plane_data_grid.sub_border_grid)
 

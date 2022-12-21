@@ -509,7 +509,8 @@ class MatPlot2D(AbstractMatPlot):
             [text.set() for text in self.text]
 
         self.grid_plot.plot_rectangular_grid_lines(
-            extent=mapper.source_plane_mesh_grid.extent, shape_native=mapper.shape_native
+            extent=mapper.source_plane_mesh_grid.extent,
+            shape_native=mapper.shape_native,
         )
 
         self.title.set(auto_title=auto_labels.title)

@@ -136,10 +136,18 @@ class Preloads:
         mapper_0 = fit_0.inversion.cls_list_from(cls=AbstractMapper)[0]
         mapper_1 = fit_1.inversion.cls_list_from(cls=AbstractMapper)[0]
 
-        if mapper_0.source_plane_data_grid.shape[0] == mapper_1.source_plane_data_grid.shape[0]:
+        if (
+            mapper_0.source_plane_data_grid.shape[0]
+            == mapper_1.source_plane_data_grid.shape[0]
+        ):
 
             if (
-                np.max(abs(mapper_0.source_plane_data_grid - mapper_1.source_plane_data_grid))
+                np.max(
+                    abs(
+                        mapper_0.source_plane_data_grid
+                        - mapper_1.source_plane_data_grid
+                    )
+                )
                 < 1.0e-8
             ):
 

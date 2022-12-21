@@ -11,7 +11,6 @@ from autoarray.numba_util import profile_func
 
 
 class AbstractMesh:
-
     def __eq__(self, other):
         return self.__dict__ == other.__dict__ and self.__class__ is other.__class__
 
@@ -45,7 +44,9 @@ class AbstractMesh:
         if preloads.relocated_grid is None:
 
             if settings.use_border:
-                return source_plane_data_grid.relocated_grid_from(grid=source_plane_data_grid)
+                return source_plane_data_grid.relocated_grid_from(
+                    grid=source_plane_data_grid
+                )
             return source_plane_data_grid
 
         return preloads.relocated_grid
@@ -85,7 +86,9 @@ class AbstractMesh:
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
         if settings.use_border:
-            return source_plane_data_grid.relocated_mesh_grid_from(mesh_grid=source_plane_mesh_grid)
+            return source_plane_data_grid.relocated_mesh_grid_from(
+                mesh_grid=source_plane_mesh_grid
+            )
         return source_plane_mesh_grid
 
     def mapper_grids_from(

@@ -76,7 +76,9 @@ class MapperPlotter(Plotter):
             visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
             interpolate_to_uniform=interpolate_to_uniform,
             source_pixelilzation_values=solution_vector,
-            auto_labels=AutoLabels(title="Pixelization Mesh (Image-Plane)", filename="mapper"),
+            auto_labels=AutoLabels(
+                title="Pixelization Mesh (Image-Plane)", filename="mapper"
+            ),
         )
 
     def subplot_image_and_mapper(
@@ -113,7 +115,8 @@ class MapperPlotter(Plotter):
             )
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.source_plane_data_grid.mask.masked_grid, indexes=indexes
+                grid=self.mapper.source_plane_data_grid.mask.masked_grid,
+                indexes=indexes,
             )
 
         self.figure_2d(interpolate_to_uniform=interpolate_to_uniform)

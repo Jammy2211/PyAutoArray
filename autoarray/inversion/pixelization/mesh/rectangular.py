@@ -133,7 +133,9 @@ class Rectangular(AbstractMesh):
         self.profiling_dict = profiling_dict
 
         relocated_grid = self.relocated_grid_from(
-            source_plane_data_grid=source_plane_data_grid, settings=settings, preloads=preloads
+            source_plane_data_grid=source_plane_data_grid,
+            settings=settings,
+            preloads=preloads,
         )
         mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid)
 

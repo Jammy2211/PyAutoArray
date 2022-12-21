@@ -16,7 +16,7 @@ class Output:
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
-        bbox_inches : Optional[str] = None,
+        bbox_inches: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -126,9 +126,15 @@ class Output:
                 if format == "show":
                     plt.show()
                 elif format == "png":
-                    plt.savefig(path.join(output_path, f"{filename}.png"), bbox_inches=self.bbox_inches)
+                    plt.savefig(
+                        path.join(output_path, f"{filename}.png"),
+                        bbox_inches=self.bbox_inches,
+                    )
                 elif format == "pdf":
-                    plt.savefig(path.join(output_path, f"{filename}.pdf"), bbox_inches=self.bbox_inches)
+                    plt.savefig(
+                        path.join(output_path, f"{filename}.pdf"),
+                        bbox_inches=self.bbox_inches,
+                    )
                 elif format == "fits":
                     if structure is not None:
                         structure.output_to_fits(
@@ -155,6 +161,12 @@ class Output:
             if format == "show":
                 plt.show()
             elif format == "png":
-                plt.savefig(path.join(output_path, f"{filename}.png"), bbox_inches=self.bbox_inches)
+                plt.savefig(
+                    path.join(output_path, f"{filename}.png"),
+                    bbox_inches=self.bbox_inches,
+                )
             elif format == "pdf":
-                plt.savefig(path.join(output_path, f"{filename}.pdf"), bbox_inches=self.bbox_inches)
+                plt.savefig(
+                    path.join(output_path, f"{filename}.pdf"),
+                    bbox_inches=self.bbox_inches,
+                )

@@ -125,7 +125,9 @@ class MapperDelaunay(AbstractMapper):
         """
         delaunay = self.delaunay
 
-        simplex_index_for_sub_slim_index = delaunay.find_simplex(self.source_plane_data_grid)
+        simplex_index_for_sub_slim_index = delaunay.find_simplex(
+            self.source_plane_data_grid
+        )
         pix_indexes_for_simplex_index = delaunay.simplices
 
         mappings, sizes = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(

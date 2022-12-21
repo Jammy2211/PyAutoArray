@@ -8,7 +8,9 @@ def test__magnification__sparse_grid_from__returns_same_as_computed_from_grids_m
 
     pixelization = aa.mesh.DelaunayMagnification(shape=(3, 3))
 
-    sparse_grid = pixelization.image_plane_mesh_grid_from(image_plane_data_grid=sub_grid_2d_7x7)
+    sparse_grid = pixelization.image_plane_mesh_grid_from(
+        image_plane_data_grid=sub_grid_2d_7x7
+    )
 
     mesh_grid = aa.Mesh2DDelaunay(
         grid=sparse_grid,
@@ -28,7 +30,9 @@ def test__magnification__preloads_used_for_relocated_grid(sub_grid_2d_7x7):
 
     relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
-    sparse_grid = pixelization.image_plane_mesh_grid_from(image_plane_data_grid=sub_grid_2d_7x7)
+    sparse_grid = pixelization.image_plane_mesh_grid_from(
+        image_plane_data_grid=sub_grid_2d_7x7
+    )
 
     mapper_grids = pixelization.mapper_grids_from(
         source_plane_data_grid=relocated_grid,

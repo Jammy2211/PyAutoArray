@@ -73,7 +73,9 @@ class Triangulation(AbstractMesh):
         self.profiling_dict = profiling_dict
 
         source_plane_data_grid = self.relocated_grid_from(
-            source_plane_data_grid=source_plane_data_grid, settings=settings, preloads=preloads
+            source_plane_data_grid=source_plane_data_grid,
+            settings=settings,
+            preloads=preloads,
         )
 
         relocated_source_plane_mesh_grid = self.relocated_mesh_grid_from(

@@ -92,7 +92,8 @@ class AbstractMapperVoronoi(AbstractMapper):
         mappings and weights at each point on the split cross.
         """
         (mappings, sizes, weights) = mapper_util.pix_size_weights_voronoi_nn_from(
-            grid=self.source_plane_mesh_grid.split_cross, mesh_grid=self.source_plane_mesh_grid
+            grid=self.source_plane_mesh_grid.split_cross,
+            mesh_grid=self.source_plane_mesh_grid,
         )
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)

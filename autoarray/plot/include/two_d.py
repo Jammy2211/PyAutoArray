@@ -73,19 +73,22 @@ class Include2D(AbstractInclude):
     @property
     def mapper_image_plane_mesh_grid(self):
         return self.load(
-            value=self._mapper_image_plane_mesh_grid, name="mapper_image_plane_mesh_grid"
+            value=self._mapper_image_plane_mesh_grid,
+            name="mapper_image_plane_mesh_grid",
         )
 
     @property
     def mapper_source_plane_mesh_grid(self):
         return self.load(
-            value=self._mapper_source_plane_mesh_grid, name="mapper_source_plane_mesh_grid"
+            value=self._mapper_source_plane_mesh_grid,
+            name="mapper_source_plane_mesh_grid",
         )
 
     @property
     def mapper_source_plane_data_grid(self):
         return self.load(
-            value=self._mapper_source_plane_data_grid, name="mapper_source_plane_data_grid"
+            value=self._mapper_source_plane_data_grid,
+            name="mapper_source_plane_data_grid",
         )
 
     @property

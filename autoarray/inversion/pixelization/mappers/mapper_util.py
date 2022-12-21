@@ -160,7 +160,9 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     A row like [A, -1, -1] means that sub pixel only links to source pixel A.
     """
 
-    pix_indexes_for_sub_slim_index = -1 * np.ones(shape=(source_plane_data_grid.shape[0], 3))
+    pix_indexes_for_sub_slim_index = -1 * np.ones(
+        shape=(source_plane_data_grid.shape[0], 3)
+    )
 
     for i in range(len(source_plane_data_grid)):
         simplex_index = simplex_index_for_sub_slim_index[i]

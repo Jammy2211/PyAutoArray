@@ -19,7 +19,8 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     )
 
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=source_plane_mesh_grid
+        source_plane_data_grid=grid_2d_7x7,
+        source_plane_mesh_grid=source_plane_mesh_grid,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -48,7 +49,8 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     )
 
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=source_plane_mesh_grid
+        source_plane_data_grid=grid_2d_7x7,
+        source_plane_mesh_grid=source_plane_mesh_grid,
     )
 
     try:

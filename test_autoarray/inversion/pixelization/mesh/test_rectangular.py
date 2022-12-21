@@ -7,7 +7,10 @@ def test__sparse_grid_from__returns_none_as_not_used(sub_grid_2d_7x7):
 
     pixelization = aa.mesh.Rectangular(shape=(3, 3))
 
-    assert pixelization.image_plane_mesh_grid_from(image_plane_data_grid=sub_grid_2d_7x7) == None
+    assert (
+        pixelization.image_plane_mesh_grid_from(image_plane_data_grid=sub_grid_2d_7x7)
+        == None
+    )
 
 
 def test__preloads_used_for_relocated_grid(sub_grid_2d_7x7):

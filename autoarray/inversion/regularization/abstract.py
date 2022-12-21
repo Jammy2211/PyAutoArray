@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
 try:
     import pylops
+
     PyLopsOperator = pylops.LinearOperator
 except ModuleNotFoundError:
     PyLopsOperator = object

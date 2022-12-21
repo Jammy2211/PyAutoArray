@@ -33,7 +33,7 @@ class Mask2D(Mask):
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         A 2D mask, representing a uniform rectangular grid of neighboring rectangular pixels.
