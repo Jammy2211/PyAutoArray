@@ -39,22 +39,39 @@ class Array1D(Structure):
         header: Optional[Header] = None,
     ) -> "Array1D":
         """
-        Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:
-
-        line=np.array([1.0, 2.0 3.0, 4.0])
-
-        line=[1.0, 2.0, 3.0, 4.0]
+        Create a Array1D (see `Array1D.__new__`) by inputting the array values in 1D
 
         Parameters
         ----------
         array
-            The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
+            The values of the array input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales
-            The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
+            The scaled units to pixel units conversion factor of the array data coordinates (e.g. the x-axis).
         sub_size
-            The size of each unmasked pixels sub-gridded line.
-        origin : (float, )
-            The origin of the line's mask.
+            The size of each unmasked pixels sub-grid.
+        origin
+            The origin of the 1D array's mask.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Array1D from input np.ndarray.
+
+            array_1d = aa.Array1D.manual_slim(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+
+            # Make Array2D from input list.
+
+            array_1d = aa.Array1D.manual_slim(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+
+            # Print array's slim (masked 1D data representation) and
+            # native (masked 1D data representation)
+
+            print(array_1d.slim)
+            print(array_1d.native)
         """
 
         array = array_2d_util.convert_array(array)
@@ -80,22 +97,39 @@ class Array1D(Structure):
         header: Optional[Header] = None,
     ) -> "Array1D":
         """
-        Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:
-
-        line=np.array([1.0, 2.0 3.0, 4.0])
-
-        line=[1.0, 2.0, 3.0, 4.0]
+        Create a Array1D (see `Array1D.__new__`) by inputting the array values in 1D.
 
         Parameters
         ----------
         array
-            The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
+            The values of the array input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales
-            The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
+            The scaled units to pixel units conversion factor of the array data coordinates (e.g. the x-axis).
         sub_size
-            The size of each unmasked pixels sub-gridded line.
-        origin : (float, )
-            The origin of the line's mask.
+            The size of each unmasked pixels sub-grid.
+        origin
+            The origin of the 1D array's mask.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Array1D from input np.ndarray.
+
+            array_1d = aa.Array1D.manual_native(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+
+            # Make Array2D from input list.
+
+            array_1d = aa.Array1D.manual_native(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+
+            # Print array's slim (masked 1D data representation) and
+            # native (masked 1D data representation)
+
+            print(array_1d.slim)
+            print(array_1d.native)
         """
         return cls.manual_slim(
             array=array,
@@ -113,24 +147,44 @@ class Array1D(Structure):
         header: Optional[Header] = None,
     ) -> "Array1D":
         """
-        Create a Line (see `Line.__new__`) by inputting the native line values in 1D and including the mask that is
-        applied to them, for example:
-
-        mask=np.array([True, False, False, True, False, False])
-
-        line=np.array([100.0, 1.0, 2.0, 100.0, 3.0 4.0])
-        line=[100.0, 1.0, 2.0, 100.0, 3.0, 4.0]
+        Create a Array1D (see `Array1D.__new__`) by inputting the native array values in 1D and including the mask
+        that is applied to them.
 
         Parameters
         ----------
         array
-            The values of the line input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
+            The values of the array input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales
-            The scaled units to pixel units conversion factor of the line data coordinates (e.g. the x-axis).
+            The scaled units to pixel units conversion factor of the array data coordinates (e.g. the x-axis).
         sub_size
-            The size of each unmasked pixels sub-gridded line.
+            The size of each unmasked pixels sub-grid.
         origin
-            The origin of the line's mask.
+            The origin of the 1D array's mask.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Array1D from input np.ndarray.
+
+            mask = aa.Mask1D.manual(mask=np.array([True, False, False]), pixel_scales=1.0, sub_size=1)
+
+            array_1d = aa.Array1D.manual_mask(array=np.array([100.0, 1.0, 2.0]), mask=mask)
+
+            # Make Array2D from input list.
+
+            mask = aa.Mask1D.manual(mask=[True, False, False], pixel_scales=1.0, sub_size=1)
+
+            array_1d = aa.Array1D.manual_mask(array=[100.0, 1.0, 2.0], mask=mask)
+
+            # Print array's slim (masked 1D data representation) and
+            # native (masked 1D data representation)
+
+            print(array_1d.slim)
+            print(array_1d.native)
         """
 
         array = array_2d_util.convert_array(array)

@@ -37,7 +37,7 @@ class Grid1D(Structure):
           shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
 
 
-        **Case 1 (sub-size=1, slim):**
+        **Case 1 (sub-size=1, slim)**
 
         The Grid1D is an ndarray of shape [total_unmasked_coordinates].
 
@@ -50,6 +50,8 @@ class Grid1D(Structure):
         the grid.
 
         .. code-block:: bash
+
+            <--- -ve  x  +ve -->
 
             x x x o o x o x x x
 
@@ -68,15 +70,15 @@ class Grid1D(Structure):
             pixel_scales = 1.0"
 
             <--- -ve  x  +ve -->
-                                                       x
-             x x x 0 1 x 2 x x x
 
-             grid[0] = [-1.5]
-             grid[1] = [-0.5]
-             grid[2] = [1.5]
+            x x x 0 1 x 2 x x x
+
+            grid[0] = [-1.5]
+            grid[1] = [-0.5]
+            grid[2] = [1.5]
 
 
-        **Case 2 (sub-size>1, slim):
+        **Case 2 (sub-size>1, slim)
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (x)
         coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid1D is therefore stored as an ndarray
@@ -130,7 +132,7 @@ class Grid1D(Structure):
             grid[2] = [-0.166]
 
 
-        **Case 3 (sub_size=1 native):**
+        **Case 3 (sub_size=1 native)**
 
         The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape [total_x_coordinates].
 
@@ -151,7 +153,7 @@ class Grid1D(Structure):
             - grid[6] = 0.5
 
 
-        **Case 4 (sub_size>1 native):**
+        **Case 4 (sub_size>1 native)**
 
         The properties of this grid can be derived by combining Case's 2 and 3 above, whereby the grid is stored as
         an ndarray of shape [total_x_coordinates*sub_size,].
@@ -196,11 +198,7 @@ class Grid1D(Structure):
         origin: Tuple[float] = (0.0,),
     ) -> "Grid1D":
         """
-        Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D, for example:
-
-        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
+        Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D.
 
         Parameters
         ----------
@@ -214,6 +212,27 @@ class Grid1D(Structure):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
             The origin of the grid's mask.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autogrid as aa
+
+            # Make Grid1D from input np.ndgrid.
+
+            grid_1d = aa.Grid1D.manual_slim(grid=np.grid([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+
+            # Make Grid2D from input list.
+
+            grid_1d = aa.Grid1D.manual_slim(grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+
+            # Print grid's slim (masked 1D data representation) and
+            # native (masked 1D data representation)
+
+            print(grid_1d.slim)
+            print(grid_1d.native)
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
@@ -238,15 +257,11 @@ class Grid1D(Structure):
         origin: Tuple[float] = (0.0,),
     ) -> "Grid1D":
         """
-        Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D, for example:
-
-        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
+        Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D.
 
         Parameters
         ----------
-        grid or list
+        grid
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
         pixel_scales
@@ -256,6 +271,24 @@ class Grid1D(Structure):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
             The origin of the grid's mask.
+
+        .. code-block:: python
+
+            import autogrid as aa
+
+            # Make Grid1D from input np.ndgrid.
+
+            grid_1d = aa.Grid1D.manual_native(grid=np.grid([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+
+            # Make Grid2D from input list.
+
+            grid_1d = aa.Grid1D.manual_native(grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+
+            # Print grid's slim (masked 1D data representation) and
+            # native (masked 1D data representation)
+
+            print(grid_1d.slim)
+            print(grid_1d.native)
         """
         return cls.manual_slim(
             grid=grid, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
@@ -270,7 +303,7 @@ class Grid1D(Structure):
 
         Parameters
         ----------
-        grid or list
+        grid
             The (x) coordinates of the grid input as an ndarray of shape [total_coordinates*sub_size] or a list of lists.
         mask
             The 1D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -508,9 +541,7 @@ class Grid1D(Structure):
 
     def structure_2d_list_from(
         self, result_list: List
-    ) -> List[
-        Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]
-    ]:
+    ) -> List[Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]]:
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:

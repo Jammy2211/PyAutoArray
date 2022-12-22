@@ -38,6 +38,7 @@ class VoronoiNNMagnification(VoronoiMagnification):
         order to derive the image-plane (y,x) coordinates which act as the centres of the Voronoi pixels after
         being mapped to the source-plane via gravitational lensing.
     """
+
     @property
     def uses_interpolation(self):
         return True

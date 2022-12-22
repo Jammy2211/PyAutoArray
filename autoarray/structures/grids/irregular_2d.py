@@ -308,9 +308,7 @@ class Grid2DIrregular(AbstractNDArray):
 
         return self.values_from(array_slim=radial_distances_max)
 
-    def grid_of_closest_from(
-        self, grid_pair: "Grid2DIrregular"
-    ) -> "Grid2DIrregular":
+    def grid_of_closest_from(self, grid_pair: "Grid2DIrregular") -> "Grid2DIrregular":
         """
         From an input grid, find the closest coordinates of this instance of the `Grid2DIrregular` to each coordinate
         on the input grid and return each closest coordinate as a new `Grid2DIrregular`.

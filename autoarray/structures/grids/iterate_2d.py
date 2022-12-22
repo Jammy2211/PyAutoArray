@@ -120,7 +120,7 @@ class Grid2DIterate(Grid2D):
 
         Parameters
         ----------
-        grid or list
+        grid
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
         shape_native

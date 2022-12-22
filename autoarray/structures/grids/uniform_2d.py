@@ -34,12 +34,13 @@ class Grid2D(Structure):
           shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
 
 
-        **Case 1 (sub-size=1, slim):
+        **Case 1 (sub-size=1, slim)**
 
         The Grid2D is an ndarray of shape [total_unmasked_coordinates, 2], therefore when `slim` the shape of
         the grid is 2, not 1.
 
         The first element of the ndarray corresponds to the pixel index and second element the y or x coordinate value.
+
         For example:
 
         - grid[3,0] = the 4th unmasked pixel's y-coordinate.
@@ -82,7 +83,7 @@ class Grid2D(Structure):
              x x x x x x x x x x      grid[9] = [-0.5,  1.5]
 
 
-        **Case 2 (sub-size>1, slim):**
+        **Case 2 (sub-size>1, slim)**
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (y,x)
         coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid2D is therefore stored as an ndarray
@@ -90,7 +91,9 @@ class Grid2D(Structure):
 
         The sub-grid indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first
         unmasked pixel. Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel.
-        Therefore, the sub-grid is an ndarray of shape [total_unmasked_coordinates*(sub_grid_shape)**2, 2]. For example:
+        Therefore, the sub-grid is an ndarray of shape [total_unmasked_coordinates*(sub_grid_shape)**2, 2].
+
+        For example:
 
         - grid[9, 1] - using a 2x2 sub-grid, gives the 3rd unmasked pixel's 2nd sub-pixel x-coordinate.
         - grid[9, 1] - using a 3x3 sub-grid, gives the 2nd unmasked pixel's 1st sub-pixel x-coordinate.
@@ -160,7 +163,7 @@ class Grid2D(Structure):
                      grid[8] = [0.25, -0.25]
 
 
-        **Case 3 (sub_size=1, native):**
+        **Case 3 (sub_size=1, native)**
 
         The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape
         [total_y_coordinates, total_x_coordinates, 2]. Therefore when `native` the shape of the
@@ -191,7 +194,7 @@ class Grid2D(Structure):
             - grid[3,4,1] = -0.5
 
 
-        **Case 4 (sub_size>1 native):**
+        **Case 4 (sub_size>1 native)**
 
         The properties of this grid can be derived by combining Case's 2 and 3 above, whereby the grid is stored as
         an ndarray of shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
@@ -239,18 +242,14 @@ class Grid2D(Structure):
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
         """
-        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D, for example:
-
-        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-
-        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D.
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_native must be
         input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
 
         Parameters
         ----------
-        grid or list
+        grid
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
         shape_native
@@ -262,6 +261,35 @@ class Grid2D(Structure):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
             The origin of the grid's mask.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Grid2D from input np.ndarray.
+
+            grid_2d = aa.Grid2D.manual_slim(
+                grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]),
+                shape_native=(2, 2),
+                pixel_scales=1.0
+            )
+
+            # Make Grid2D from input list.
+
+            grid_2d = aa.Grid2D.manual_slim(
+                grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]],
+                shape_native=(2, 2),
+                pixel_scales=1.0
+            )
+
+            # Print grid's slim (masked 1D data representation) and
+            # native (masked 2D data representation)
+
+            print(grid_2d.slim)
+            print(grid_2d.native)
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -286,20 +314,14 @@ class Grid2D(Structure):
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
         """
-        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 2D, for example:
-
-        grid=np.ndarray([[[1.0, 1.0], [2.0, 2.0]],
-                         [[3.0, 3.0], [4.0, 4.0]]])
-
-        grid=[[[1.0, 1.0], [2.0, 2.0]],
-              [[3.0, 3.0], [4.0, 4.0]]]
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 2D.
 
         The 2D shape of the grid and its mask are determined from the input grid and the mask is setup as an
         unmasked `Mask2D` of shape_native.
 
         Parameters
         ----------
-        grid or list
+        grid
             The (y,x) coordinates of the grid input as an ndarray of shape
             [total_y_coordinates*sub_size, total_x_pixel*sub_size, 2] or a list of lists.
         pixel_scales
@@ -309,6 +331,33 @@ class Grid2D(Structure):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
             The origin of the grid's mask.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Grid2D from input np.ndarray.
+
+            grid_2d = aa.Grid2D.manual_native(
+                grid=np.array([[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]]),
+                pixel_scales=1.0
+            )
+
+            # Make Grid2D from input list.
+
+            grid_2d = aa.Grid2D.manual_native(
+                grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]],
+                pixel_scales=1.0
+            )
+
+            # Print grid's slim (masked 1D data representation) and
+            # native (masked 2D data representation)
+
+            print(grid_2d.slim)
+            print(grid_2d.native)
         """
 
         grid = grid_2d_util.convert_grid(grid=grid)
@@ -345,7 +394,7 @@ class Grid2D(Structure):
 
         Parameters
         ----------
-        grid or list
+        grid
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
         shape_native
@@ -380,7 +429,7 @@ class Grid2D(Structure):
 
         Parameters
         ----------
-        grid or list
+        grid
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
         mask :Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -405,12 +454,7 @@ class Grid2D(Structure):
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
         """
-        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values, for example:
-
-        y = np.array([1.0, 2.0, 3.0, 4.0])
-        x = np.array([1.0, 2.0, 3.0, 4.0])
-        y = [1.0, 2.0, 3.0, 4.0]
-        x = [1.0, 2.0, 3.0, 4.0]
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values.
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_native must be
         input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
@@ -430,6 +474,37 @@ class Grid2D(Structure):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
             The origin of the grid's mask.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Grid2D from input np.ndarray.
+
+            grid_2d = aa.Grid2D.manual_yx_1d(
+                y=np.array([1.0, 3.0, 5.0, 7.0]),
+                x=np.array([2.0, 4.0, 6.0, 8.0]),
+                shape_native=(2, 2),
+                pixel_scales=1.0,
+            )
+
+            # Make Grid2D from input list.
+
+           grid_2d = aa.Grid2D.manual_yx_1d(
+                y=[1.0, 3.0, 5.0, 7.0],
+                x=[2.0, 4.0, 6.0, 8.0],
+                shape_native=(2, 2),
+                pixel_scales=1.0,
+            )
+
+            # Print grid's slim (masked 1D data representation) and
+            # native (masked 2D data representation)
+
+            print(grid_2d.slim)
+            print(grid_2d.native)
         """
         if type(y) is list:
             y = np.asarray(y)
@@ -455,16 +530,7 @@ class Grid2D(Structure):
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Grid2D":
         """
-        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values, for example:
-
-        y = np.array([[1.0, 2.0],
-                     [3.0, 4.0]])
-        x = np.array([[1.0, 2.0],
-                      [3.0, 4.0]])
-        y = [[1.0, 2.0],
-             [3.0, 4.0]]
-        x = [[1.0, 2.0],
-             [3.0, 4.0]]
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values.
 
         The 2D shape of the grid and its mask are determined from the input grid and the mask is setup as an
         unmasked `Mask2D` of shape_native.
@@ -482,6 +548,21 @@ class Grid2D(Structure):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
             The origin of the grid's mask.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Grid2D from input list(s).
+
+            grid_2d = aa.Grid2D.manual_yx_2d(
+                y=[[1.0], [3.0]],
+                x=[[2.0], [4.0]],
+                pixel_scales=1.0
+            )
         """
         if type(y) is list:
             y = np.asarray(y)

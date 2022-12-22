@@ -53,11 +53,7 @@ class Kernel2D(AbstractArray2D):
         normalize: bool = False,
     ):
         """
-        Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D, for example:
-
-        kernel=np.array([1.0, 2.0, 3.0, 4.0])
-
-        kernel=[1.0, 2.0, 3.0, 4.0]
+        Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
         input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
@@ -78,6 +74,35 @@ class Kernel2D(AbstractArray2D):
             The (y,x) scaled units origin of the mask's coordinate system.
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Kernel2D from input np.ndarray.
+
+            kernel_2d = aa.Kernel2D.manual_slim(
+                array=np.array([0.0, 0.1, 0.0, 0.1, 0.2, 0.1, 0.0, 0.1, 0.0]),
+                shape_native=(3, 3),
+                pixel_scales=1.0
+            )
+
+            # Make Kernel2D from input list.
+
+            kernel_2d = aa.Kernel2D.manual_slim(
+                array=[0.0, 0.1, 0.0, 0.1, 0.2, 0.1, 0.0, 0.1, 0.0],
+                shape_native=(2, 2),
+                pixel_scales=1.0
+            )
+
+            # Print array's slim (masked 1D data representation) and
+            # native (masked 2D data representation)
+
+            print(kernel_2d.slim)
+            print(kernel_2d.native)
         """
         array = Array2D.manual_slim(
             array=array,
@@ -97,12 +122,7 @@ class Kernel2D(AbstractArray2D):
         normalize: bool = False,
     ) -> "Kernel2D":
         """
-        Create an Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 2D, for example:
-
-        kernel=np.ndarray([[1.0, 2.0], [3.0, 4.0]])
-
-        kernel=[[1.0, 2.0],
-              [3.0, 4.0]]
+        Create an Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 2D.
 
         The 2D shape of the array and its mask are determined from the input array and the mask is setup as an
         unmasked `Mask2D` of shape_native.
@@ -121,6 +141,30 @@ class Kernel2D(AbstractArray2D):
             The (y,x) scaled units origin of the mask's coordinate system.
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Kernel2D from input np.ndarray.
+
+            kernel_2d = aa.Kernel2D.manual_native(
+                array=np.array([[0.0, 0.1, 0.0], [0.1, 0.2, 0.1], [0.0, 0.1, 0.0]]),
+                pixel_scales=1.0
+            )
+
+            # Make Kernel2D from input list.
+
+            kernel_2d = aa.Kernel2D.manual_slim(
+                array=[[0.0, 0.1, 0.0], [0.1, 0.2, 0.1], [0.0, 0.1, 0.0]],
+                pixel_scales=1.0
+            )
+
+            # Print array's slim (masked 1D data representation) and
+            # native (masked 2D data representation)
+
+            print(kernel_2d.slim)
+            print(kernel_2d.native)
         """
         array = Array2D.manual_native(
             array=array, pixel_scales=pixel_scales, origin=origin
