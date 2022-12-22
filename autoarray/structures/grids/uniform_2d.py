@@ -54,9 +54,9 @@ class Grid2D(Structure):
              x x x x x x x x x x
              x x x x x x x x x x     This is an example mask.Mask2D, where:
              x x x x x x x x x x
-             x x x xIoIo x x x x     x = `True` (Pixel is masked and excluded from the grid)
-             x x xIoIoIoIo x x x     o = `False` (Pixel is not masked and included in the grid)
-             x x xIoIoIoIo x x x
+             x x x x O O x x x x     x = `True` (Pixel is masked and excluded from the grid)
+             x x x O O O O x x x     O = `False` (Pixel is not masked and included in the grid)
+             x x x O O O O x x x
              x x x x x x x x x x
              x x x x x x x x x x
              x x x x x x x x x x
@@ -74,9 +74,9 @@ class Grid2D(Structure):
              x x x x x x x x x x  ^   grid[0] = [ 1.5, -0.5]
              x x x x x x x x x x  I   grid[1] = [ 1.5,  0.5]
              x x x x x x x x x x  I   grid[2] = [ 0.5, -1.5]
-             x x x xI0I1 x x x x +ve  grid[3] = [ 0.5, -0.5]
-             x x xI2I3I4I5 x x x  y   grid[4] = [ 0.5,  0.5]
-             x x xI6I7I8I9 x x x -ve  grid[5] = [ 0.5,  1.5]
+             x x x x 0 1 x x x x +ve  grid[3] = [ 0.5, -0.5]
+             x x x 2 3 4 5 x x x  y   grid[4] = [ 0.5,  0.5]
+             x x x 6 7 8 9 x x x -ve  grid[5] = [ 0.5,  1.5]
              x x x x x x x x x x  I   grid[6] = [-0.5, -1.5]
              x x x x x x x x x x  I   grid[7] = [-0.5, -0.5]
              x x x x x x x x x x \/   grid[8] = [-0.5,  0.5]
@@ -109,7 +109,7 @@ class Grid2D(Structure):
              x x x x x x x x x x     This is an example mask.Mask2D, where:
              x x x x x x x x x x
              x x x x x x x x x x     x = `True` (Pixel is masked and excluded from lens)
-             x x x xIoIo x x x x     o = `False` (Pixel is not masked and included in lens)
+             x x x x O O x x x x     O = `False` (Pixel is not masked and included in lens)
              x x x x x x x x x x
              x x x x x x x x x x
              x x x x x x x x x x
@@ -128,7 +128,7 @@ class Grid2D(Structure):
              x x x x x x x x x x  I
              x x x x x x x x x x  I                        y     x
              x x x x x x x x x x +ve  grid[0] = [0.5,  -1.5]
-             x x x 0 1 x x x x x  y   grid[1] = [0.5,  -0.5]
+             x x x x 0 1 x x x x  y   grid[1] = [0.5,  -0.5]
              x x x x x x x x x x -ve
              x x x x x x x x x x  I
              x x x x x x x x x x  I
@@ -175,16 +175,18 @@ class Grid2D(Structure):
 
         .. code-block:: bash
 
-             x x x x x x x x x xI
-             x x x x x x x x x xI     This is an example mask.Mask2D, where:
-             x x x x x x x x x xI
-             x x x x o o x x x xI     x = `True` (Pixel is masked and excluded from the grid)
-             x x x o o o o x x xI     o = `False` (Pixel is not masked and included in the grid)
-             x x x o o o o x x xI
-             x x x x x x x x x xI
-             x x x x x x x x x xI
-             x x x x x x x x x xI
-             x x x x x x x x x xI
+             x x x x x x x x x x
+             x x x x x x x x x x     This is an example mask.Mask2D, where:
+             x x x x x x x x x x
+             x x x x O O x x x x     x = `True` (Pixel is masked and excluded from the grid)
+             x x x O O O O x x x     O = `False` (Pixel is not masked and included in the grid)
+             x x x O O O O x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+
+        In the above grid:
 
             - grid[0,0,0] = 0.0 (it is masked, thus zero)
             - grid[0,0,1] = 0.0 (it is masked, thus zero)
@@ -806,9 +808,9 @@ class Grid2D(Structure):
              x x x x x x x x x xI     This is an imaging.Mask2D, where
              x x x x x x x x x xI
              x x x x x x x x x xI     x = `True` (Pixel is masked and excluded from lens)
-             x x xIoIoIo x x x xI     o = `False` (Pixel is not masked and included in lens)
-             x x xIoIoIo x x x xI
-             x x xIoIoIo x x x xI
+             x x x O O O x x x xI     O = `False` (Pixel is not masked and included in lens)
+             x x x O O O x x x xI
+             x x x O O O x x x xI
              x x x x x x x x x xI
              x x x x x x x x x xI
              x x x x x x x x x xI
@@ -820,11 +822,11 @@ class Grid2D(Structure):
 
              x x x x x x x x xI     This is an example grid.Mask2D, where
              x x x x x x x x xI
-             x xIoIoIoIoIo x xI     x = `True` (Pixel is masked and excluded from lens)
-             x xIo x x xIo x xI     o = `False` (Pixel is not masked and included in lens)
-             x xIo x x xIo x xI
-             x xIo x x xIo x xI
-             x xIoIoIoIoIo x xI
+             x x O O O O O x xI     x = `True` (Pixel is masked and excluded from lens)
+             x x O x x x O x xI     O = `False` (Pixel is not masked and included in lens)
+             x x O x x x O x xI
+             x x O x x x O x xI
+             x x O O O O O x xI
              x x x x x x x x xI
              x x x x x x x x xI
 
@@ -854,7 +856,7 @@ class Grid2D(Structure):
              x x x x x x x x xI     This is an example grid.Mask2D, where
              xIoIoIoIoIoIoIo xI
              xIoIoIoIoIoIoIo xI     x = `True` (Pixel is masked and excluded from lens)
-             xIoIo x x xIoIo xI     o = `False` (Pixel is not masked and included in lens)
+             xIoIo x x xIoIo xI     O = `False` (Pixel is not masked and included in lens)
              xIoIo x x xIoIo xI
              xIoIo x x xIoIo xI
              xIoIoIoIoIoIoIo xI

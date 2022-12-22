@@ -60,16 +60,16 @@ class VectorYX2D(AbstractVectorYX2D):
         Below is a visual illustration of a vector, where a total of 10 pixels are unmasked and are included in
         the vector.
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example `Mask2D`, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = `True` (Pixel is masked and excluded from the vector)
-        IxIxIxIoIoIoIoIxIxIxI     o = `False` (Pixel is not masked and included in the vector)
-        IxIxIxIoIoIoIoIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x x
+         x x x x x x x x x x     This is an example `Mask2D`, where:
+         x x x x x x x x x x
+         x x x x O O x x x x     x = `True` (Pixel is masked and excluded from the vector)
+         x x x O O O O x x x     O = `False` (Pixel is not masked and included in the vector)
+         x x x O O O O x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
 
         The mask pixel index's will come out like this (and the direction of scaled values is highlighted
         around the mask).
@@ -78,16 +78,16 @@ class VectorYX2D(AbstractVectorYX2D):
 
         <--- -ve  x  +ve -->
                                                         y      x
-        IxIxIxIxIxIxIxIxIxIxI  ^   vector[0, :] = 0
-        IxIxIxIxIxIxIxIxIxIxI  I   vector[1, :] = 1
-        IxIxIxIxIxIxIxIxIxIxI  I   vector[2, :] = 2
-        IxIxIxIxI0I1IxIxIxIxI +ve  vector[3, :] = 3
-        IxIxIxI2I3I4I5IxIxIxI  y   vector[4, :] = 4
-        IxIxIxI6I7I8I9IxIxIxI -ve  vector[5, :] = 5
-        IxIxIxIxIxIxIxIxIxIxI  I   vector[6, :] = 6
-        IxIxIxIxIxIxIxIxIxIxI  I   vector[7, :] = 7
-        IxIxIxIxIxIxIxIxIxIxI \/   vector[8, :] = 8
-        IxIxIxIxIxIxIxIxIxIxI      vector[9, :] = 9
+         x x x x x x x x x x  ^   vector[0, :] = 0
+         x x x x x x x x x x  I   vector[1, :] = 1
+         x x x x x x x x x x  I   vector[2, :] = 2
+         x x x x 0 1 x x x x +ve  vector[3, :] = 3
+         x x x 2 3 4 5 x x x  y   vector[4, :] = 4
+         x x x 6 7 8 9 x x x -ve  vector[5, :] = 5
+         x x x x x x x x x x  I   vector[6, :] = 6
+         x x x x x x x x x x  I   vector[7, :] = 7
+         x x x x x x x x x x \/   vector[8, :] = 8
+         x x x x x x x x x x      vector[9, :] = 9
 
 
         **Case 2 (sub-size>1, slim)**
@@ -107,33 +107,31 @@ class VectorYX2D(AbstractVectorYX2D):
         contrast to the vector above, our illustration below restricts the mask to just 2 pixels, to keep the
         illustration brief.
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example `Mask2D`, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     x = `True` (Pixel is masked and excluded from lens)
-        IxIxIxIxIoIoIxIxIxIxI     o = `False` (Pixel is not masked and included in lens)
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x x
+         x x x x x x x x x x     This is an example `Mask2D`, where:
+         x x x x x x x x x x
+         x x x x x x x x x x     x = `True` (Pixel is masked and excluded from lens)
+         x x x x O O x x x x     O = `False` (Pixel is not masked and included in lens)
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
 
         Our vector with a sub-size looks like it did before:
 
-        pixel_scales = 1.0"
-
         <--- -ve  x  +ve -->
 
-        IxIxIxIxIxIxIxIxIxIxI  ^
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI +ve
-        IxIxIxI0I1IxIxIxIxIxI  y
-        IxIxIxIxIxIxIxIxIxIxI -ve
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI \/
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x x  ^
+         x x x x x x x x x x  I
+         x x x x x x x x x x  I
+         x x x x x x x x x x +ve
+         x x x 0 1 x x x x x  y
+         x x x x x x x x x x -ve
+         x x x x x x x x x x  I
+         x x x x x x x x x x  I
+         x x x x x x x x x x \/
+         x x x x x x x x x x
 
         However, if the sub-size is 2,each unmasked pixel has a set of sub-pixels with values. For example, for pixel 0,
         if `sub_size=2`, it has 4 values on a 2x2 sub-vector:
@@ -168,23 +166,25 @@ class VectorYX2D(AbstractVectorYX2D):
 
         For the following example mask:
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example `Mask2D`, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = `True` (Pixel is masked and excluded from the vector)
-        IxIxIxIoIoIoIoIxIxIxI     o = `False` (Pixel is not masked and included in the vector)
-        IxIxIxIoIoIoIoIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x x
+         x x x x x x x x x x     This is an example `Mask2D`, where:
+         x x x x x x x x x x
+         x x x x O O x x x x     x = `True` (Pixel is masked and excluded from the vector)
+         x x x O O O O x x x     O = `False` (Pixel is not masked and included in the vector)
+         x x x O O O O x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
 
-        - vector[0,0, 0:2] = [0.0, 0.0] (it is masked, thus zero)
-        - vector[0,0, 0:2] = [0.0, 0.0] (it is masked, thus zero)
-        - vector[3,3, 0:2] = [0.0, 0.0] (it is masked, thus zero)
-        - vector[3,3, 0:2] = [0.0, 0.0] (it is masked, thus zero)
-        - vector[3,4, 0:2] = [0, 0]
-        - vector[3,4, 0:2] = [-1, -1]
+        For the example above:
+
+            - vector[0,0, 0:2] = [0.0, 0.0] (it is masked, thus zero)
+            - vector[0,0, 0:2] = [0.0, 0.0] (it is masked, thus zero)
+            - vector[3,3, 0:2] = [0.0, 0.0] (it is masked, thus zero)
+            - vector[3,3, 0:2] = [0.0, 0.0] (it is masked, thus zero)
+            - vector[3,4, 0:2] = [0, 0]
+            - vector[3,4, 0:2] = [-1, -1]
 
 
         **Case 4: (sub_size>, native)**

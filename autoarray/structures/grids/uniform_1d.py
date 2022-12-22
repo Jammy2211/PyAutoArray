@@ -53,14 +53,14 @@ class Grid1D(Structure):
 
             <--- -ve  x  +ve -->
 
-            x x x o o x o x x x
+            x x x O o x O x x x
 
         This is an example mask.Mask1D, where:
 
         .. code-block:: bash
 
             x = `True` (Pixel is masked and excluded from the grid)
-            o = `False` (Pixel is not masked and included in the grid)
+            O = `False` (Pixel is not masked and included in the grid)
 
         The mask pixel index's will come out like this (and the direction of scaled coordinates is highlighted
         around the mask.
@@ -98,12 +98,12 @@ class Grid1D(Structure):
 
         .. code-block:: bash
 
-            x x x o x o x x x
+            x x x O x O x x x
 
             This is an example mask.Mask1D, where:
 
             x = `True` (Pixel is masked and excluded from the grid)
-            o = `False` (Pixel is not masked and included in the grid)
+            O = `False` (Pixel is not masked and included in the grid)
 
         Our grid with a sub-size=1 looks like it did before:
 
@@ -142,7 +142,7 @@ class Grid1D(Structure):
 
         .. code-block:: bash
 
-            x x x o o x o x x x
+            x x x O O x O x x x
 
             - grid[0] = 0.0 (it is masked, thus zero)
             - grid[1] = 0.0 (it is masked, thus zero)
