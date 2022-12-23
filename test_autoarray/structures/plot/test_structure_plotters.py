@@ -15,7 +15,7 @@ def make_plot_path_setup():
     )
 
 
-def test__plot_yx_line__works_with_all_extras_included(plot_path, plot_patch):
+def test__plot_yx_line(plot_path, plot_patch):
 
     visuals_1d = aplt.Visuals1D(vertical_line=1.0)
 
@@ -37,7 +37,7 @@ def test__plot_yx_line__works_with_all_extras_included(plot_path, plot_patch):
     assert path.join(plot_path, "yx_1.png") in plot_patch.paths
 
 
-def test__array__works_with_all_extras_included(
+def test__array(
     array_2d_7x7,
     mask_2d_7x7,
     grid_2d_7x7,
@@ -115,7 +115,7 @@ def test__array__fits_files_output_correctly(array_2d_7x7, plot_path):
     assert (arr == array_2d_7x7.native).all()
 
 
-def test__grid__works_with_all_extras_included(
+def test__grid(
     array_2d_7x7,
     grid_2d_7x7,
     mask_2d_7x7,
