@@ -103,3 +103,23 @@ def test__grid_pixel_centres_2d_from():
     grid_pixels = geometry.grid_pixel_centres_2d_from(grid_scaled_2d=grid_scaled_2d)
 
     assert (grid_pixels == grid_pixels_util).all()
+
+
+def test__grid_pixel_indexes_2d_from():
+
+    geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
+
+    grid_scaled_2d = aa.Grid2D.manual_native(
+        grid=[[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]],
+        pixel_scales=geometry.pixel_scales,
+    )
+
+    grid_pixels_util = aa.util.geometry.grid_pixel_indexes_2d_slim_from(
+        grid_scaled_2d_slim=grid_scaled_2d,
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 4.0),
+    )
+
+    grid_pixels = geometry.grid_pixel_indexes_2d_from(grid_scaled_2d=grid_scaled_2d)
+
+    assert (grid_pixels == grid_pixels_util).all()

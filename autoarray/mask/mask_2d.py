@@ -820,38 +820,6 @@ class Mask2D(Mask):
         border_grid_1d = self.masked_grid_sub_1[self.border_1d_indexes]
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
-    def grid_pixel_indexes_from(self, grid_scaled_1d):
-        """
-        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are
-        returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then
-        downwards.
-
-        For example:
-
-        - The pixel at the top-left, whose 2D index is [0,0], corresponds to 1D index 0.
-        - The fifth pixel on the top row, whose 2D index is [0,5], corresponds to 1D index 4.
-        - The first pixel on the second row, whose 2D index is [0,1], has 1D index 10 if a row has 10 pixels.
-
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
-        origin before computing their 1D grid pixel indexes.
-
-        Parameters
-        ----------
-        grid_scaled_1d: np.ndarray
-            The grid of (y,x) coordinates in scaled units.
-        """
-
-        from autoarray.structures.arrays.uniform_2d import Array2D
-
-        grid_pixel_indexes_1d = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_1d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        ).astype("int")
-
-        return Array2D(array=grid_pixel_indexes_1d, mask=self.edge_mask.mask_sub_1)
-
     def grid_scaled_from(self, grid_pixels_1d) -> Grid2D:
         """
         Convert a grid of (y,x) pixel coordinates to a grid of (y,x) scaled values.
