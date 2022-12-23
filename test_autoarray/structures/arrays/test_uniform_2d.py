@@ -622,6 +622,9 @@ def test__extent_of_zoomed_array():
 
     extent = arr_masked.extent_of_zoomed_array(buffer=1)
 
+    print(extent)
+    print(arr_masked.origin)
+
     assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
 
 

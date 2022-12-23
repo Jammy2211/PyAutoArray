@@ -36,6 +36,31 @@ class Geometry2D:
         self.origin = origin
 
     @property
+    def shape_native_scaled(self) -> Tuple[float, float]:
+        """
+        The (y,x) 2D shape of the mask in scaled units, computed from the 2D `shape` (units pixels) and
+        the `pixel_scales` (units scaled/pixels) conversion factor.
+        """
+        return (
+            float(self.pixel_scales[0] * self.shape_native[0]),
+            float(self.pixel_scales[1] * self.shape_native[1]),
+        )
+
+    @property
+    def scaled_maxima(self) -> Tuple[float, float]:
+        return (
+            (self.shape_native_scaled[0] / 2.0) + self.origin[0],
+            (self.shape_native_scaled[1] / 2.0) + self.origin[1],
+        )
+
+    @property
+    def scaled_minima(self) -> Tuple[float, float]:
+        return (
+            (-(self.shape_native_scaled[0] / 2.0)) + self.origin[0],
+            (-(self.shape_native_scaled[1] / 2.0)) + self.origin[1],
+        )
+
+    @property
     def central_pixel_coordinates(self) -> Tuple[float, float]:
         return geometry_util.central_pixel_coordinates_2d_from(
             shape_native=self.shape_native

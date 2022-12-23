@@ -145,10 +145,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         The (y,x) 2D shape of the rectangular pixelization in scaled units, computed from the 2D `shape_native` (units
         pixels) and the `pixel_scales` (units scaled/pixels) conversion factor.
         """
-        return (
-            (self.shape_native[0] * self.pixel_scales[0]),
-            (self.shape_native[1] * self.pixel_scales[1]),
-        )
+        return self.geometry.shape_native_scaled
 
     @property
     def scaled_maxima(self) -> Tuple[float, float]:
@@ -156,10 +153,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         The maximum (y,x) values of the rectangular pixelization in scaled coordinates returned as a
         tuple (y_max, x_max).
         """
-        return (
-            self.origin[0] + (self.shape_native_scaled[0] / 2.0),
-            self.origin[1] + (self.shape_native_scaled[1] / 2.0),
-        )
+        return self.geometry.scaled_maxima
 
     @property
     def scaled_minima(self) -> Tuple[float, float]:
@@ -167,10 +161,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         The minimum (y,x) values of the rectangular pixelization in scaled coordinates returned as a
         tuple (y_min, x_min).
         """
-        return (
-            (self.origin[0] - (self.shape_native_scaled[0] / 2.0)),
-            (self.origin[1] - (self.shape_native_scaled[1] / 2.0)),
-        )
+        return self.geometry.scaled_minima
 
     @property
     def extent(self) -> np.ndarray:

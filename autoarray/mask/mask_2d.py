@@ -83,7 +83,7 @@ class Mask2D(Mask):
     @property
     def geometry(self):
         return Geometry2D(
-            shape_native=self.shape_native, pixel_scales=self.pixel_scales
+            shape_native=self.shape_native, pixel_scales=self.pixel_scales, origin=self.origin
         )
 
     @classmethod
@@ -734,28 +734,19 @@ class Mask2D(Mask):
         The (y,x) 2D shape of the mask in scaled units, computed from the 2D `shape` (units pixels) and
         the `pixel_scales` (units scaled/pixels) conversion factor.
         """
-        return (
-            float(self.pixel_scales[0] * self.shape[0]),
-            float(self.pixel_scales[1] * self.shape[1]),
-        )
+        return self.geometry.shape_native_scaled
+
+    @property
+    def scaled_maxima(self) -> Tuple[float, float]:
+        return self.geometry.scaled_maxima
+
+    @property
+    def scaled_minima(self) -> Tuple[float, float]:
+        return self.geometry.scaled_minima
 
     @property
     def mask_centre(self) -> Tuple[float, float]:
         return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
-
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        return (
-            (self.shape_native_scaled[0] / 2.0) + self.origin[0],
-            (self.shape_native_scaled[1] / 2.0) + self.origin[1],
-        )
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        return (
-            (-(self.shape_native_scaled[0] / 2.0)) + self.origin[0],
-            (-(self.shape_native_scaled[1] / 2.0)) + self.origin[1],
-        )
 
     @property
     def extent(self) -> np.ndarray:
@@ -767,6 +758,7 @@ class Mask2D(Mask):
                 self.scaled_maxima[0],
             ]
         )
+
 
     @property
     def edge_buffed_mask(self) -> "Mask2D":
