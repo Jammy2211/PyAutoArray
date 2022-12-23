@@ -69,7 +69,7 @@ class Mask1D(Mask):
             self.origin = (0.0,)
 
     @property
-    def geometry(self):
+    def geometry(self) -> Geometry1D:
         return Geometry1D(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
