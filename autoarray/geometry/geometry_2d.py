@@ -218,3 +218,4 @@ class Geometry2D(AbstractGeometry2D):
             origin=self.origin,
         )
         return Grid2D(grid=grid_scaled_1d, mask=grid_pixels_2d.mask)
+

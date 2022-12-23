@@ -820,27 +820,6 @@ class Mask2D(Mask):
         border_grid_1d = self.masked_grid_sub_1[self.border_1d_indexes]
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
-    def grid_scaled_for_marching_squares_from(
-        self, grid_pixels_1d, shape_native
-    ) -> Grid2D:
-
-        from autoarray.structures.grids.uniform_2d import Grid2D
-
-        grid_scaled_1d = geometry_util.grid_scaled_2d_slim_from(
-            grid_pixels_2d_slim=grid_pixels_1d,
-            shape_native=shape_native,
-            pixel_scales=(
-                self.pixel_scales[0] / self.sub_size,
-                self.pixel_scales[1] / self.sub_size,
-            ),
-            origin=self.origin,
-        )
-
-        grid_scaled_1d[:, 0] -= self.pixel_scales[0] / (2.0 * self.sub_size)
-        grid_scaled_1d[:, 1] += self.pixel_scales[1] / (2.0 * self.sub_size)
-
-        return Grid2D(grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1)
-
     @property
     def native_index_for_slim_index(self) -> np.ndarray:
         """
