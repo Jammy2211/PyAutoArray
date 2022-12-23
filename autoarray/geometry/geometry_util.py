@@ -185,7 +185,7 @@ def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]
 @numba_util.jit()
 def central_pixel_coordinates_2d_from(
     shape_native: Tuple[int, int]
-) -> Union[Tuple[float], Tuple[float, float]]:
+) -> Tuple[float, float]:
     """
     Returns the central pixel coordinates of a data structure of any dimension (e.g. in 1D a `Line`, 2D an `Array2D`,
     2d a `Frame2D`, etc.) from the shape of that data structure.

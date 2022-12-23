@@ -22,14 +22,30 @@ from autoarray.mask import mask_2d_util
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
+
 class Geometry2D:
+    def __init__(
+        self,
+        shape_native: Tuple[int, int],
+        pixel_scales: ty.PixelScales,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ):
 
-    def __init__(self, mask):
-
-        self.mask = mask
+        self.shape_native = shape_native
+        self.pixel_scales = pixel_scales
+        self.origin = origin
 
     @property
-    def central_pixel_coordinates(self):
+    def central_pixel_coordinates(self) -> Tuple[float, float]:
         return geometry_util.central_pixel_coordinates_2d_from(
-            shape_native=self.mask.shape_native
+            shape_native=self.shape_native
+        )
+
+    @property
+    def central_scaled_coordinates(self) -> Tuple[float, float]:
+
+        return geometry_util.central_scaled_coordinate_2d_from(
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )

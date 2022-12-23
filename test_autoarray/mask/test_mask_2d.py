@@ -1580,23 +1580,7 @@ def test__pixel_coordinates_2d_from():
     )
 
 
-def test__scaled_coordinates_2d_from():
 
-    mask = aa.Mask2D.unmasked(
-        shape_native=(6, 7), pixel_scales=(2.4, 1.8), origin=(1.0, 1.5)
-    )
-
-    pixel_coordinates_util = aa.util.geometry.scaled_coordinates_2d_from(
-        pixel_coordinates_2d=(5, 4),
-        shape_native=(6, 7),
-        pixel_scales=(2.4, 1.8),
-        origins=(1.0, 1.5),
-    )
-
-    assert (
-        mask.scaled_coordinates_2d_from(pixel_coordinates_2d=(5, 4))
-        == pixel_coordinates_util
-    )
 
 
 def test__grid_pixels_from():
