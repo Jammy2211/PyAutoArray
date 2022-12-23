@@ -753,23 +753,23 @@ def test__shape_native_scaled():
     )
 
     grid_2d = aa.Grid2D(grid=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
-    assert grid_2d.shape_native_scaled == (3.0, 2.0)
+    assert grid_2d.shape_native_scaled_interior == (3.0, 2.0)
 
     grid_2d = aa.Grid2D(
         grid=np.array([[1.5, 1.0], [-1.5, -1.0], [0.1, 0.1]]), mask=mask
     )
-    assert grid_2d.shape_native_scaled == (3.0, 2.0)
+    assert grid_2d.shape_native_scaled_interior == (3.0, 2.0)
 
     grid_2d = aa.Grid2D(
         grid=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0]]), mask=mask
     )
-    assert grid_2d.shape_native_scaled == (4.5, 4.0)
+    assert grid_2d.shape_native_scaled_interior == (4.5, 4.0)
 
     grid_2d = aa.Grid2D(
         grid=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0], [7.0, -5.0]]),
         mask=mask,
     )
-    assert grid_2d.shape_native_scaled == (8.5, 8.0)
+    assert grid_2d.shape_native_scaled_interior == (8.5, 8.0)
 
 
 def test__flipped():

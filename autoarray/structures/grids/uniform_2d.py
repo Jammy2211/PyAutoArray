@@ -1255,10 +1255,14 @@ class Grid2D(Structure):
         return Grid2DIrregular(grid=grid_radial_projected_2d)
 
     @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
+    def shape_native_scaled_interior(self) -> Tuple[float, float]:
         """
-        The (y,x) 2D shape of the grid in scaled units, computed from the minimum and maximum y and x values of the
-        grid.
+        The (y,x) interior 2D shape of the grid in scaled units, computed from the minimum and maximum y and x
+        values of the grid.
+
+        This differs from the `shape_native_scaled` because the edges of the shape are at the maxima and minima
+        of the grid's (y,x) values, whereas the `shape_native_scaled` uses the uniform geometry of the grid and its
+        ``pixel_scales``, which means it has a buffer at each edge of half a ``pixel_scale``.
         """
         return (
             np.amax(self[:, 0]) - np.amin(self[:, 0]),

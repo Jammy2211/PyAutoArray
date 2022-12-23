@@ -81,9 +81,9 @@ class Grid2DSparse(Structure):
         pixel_scales = grid.mask.pixel_scales
 
         pixel_scales = (
-            (grid.shape_native_scaled[0] + pixel_scales[0])
+            (grid.shape_native_scaled_interior[0] + pixel_scales[0])
             / (unmasked_sparse_shape[0]),
-            (grid.shape_native_scaled[1] + pixel_scales[1])
+            (grid.shape_native_scaled_interior[1] + pixel_scales[1])
             / (unmasked_sparse_shape[1]),
         )
 
