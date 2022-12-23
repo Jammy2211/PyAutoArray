@@ -127,7 +127,7 @@ class Grid2DIrregular(AbstractNDArray):
         """
 
         coorindates = [
-            mask.scaled_coordinates_2d_from(pixel_coordinates_2d=pixel_coordinates_2d)
+            mask.geometry.scaled_coordinates_2d_from(pixel_coordinates_2d=pixel_coordinates_2d)
             for pixel_coordinates_2d in pixels
         ]
 

@@ -1143,7 +1143,7 @@ class Mask2D(Mask):
     @property
     def zoom_centre(self) -> Tuple[float, float]:
 
-        extraction_grid_1d = self.grid_pixels_from(
+        extraction_grid_1d = self.geometry.grid_pixels_from(
             grid_scaled_1d=self.masked_grid_sub_1.slim
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
@@ -1160,11 +1160,11 @@ class Mask2D(Mask):
     def zoom_offset_pixels(self) -> Tuple[float, float]:
 
         if self.pixel_scales is None:
-            return self.central_pixel_coordinates
+            return self.geometry.central_pixel_coordinates
 
         return (
-            self.zoom_centre[0] - self.central_pixel_coordinates[0],
-            self.zoom_centre[1] - self.central_pixel_coordinates[1],
+            self.zoom_centre[0] - self.geometry.central_pixel_coordinates[0],
+            self.zoom_centre[1] - self.geometry.central_pixel_coordinates[1],
         )
 
     @property
