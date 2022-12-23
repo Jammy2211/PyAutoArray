@@ -585,59 +585,6 @@ def test__grid_scaled_2d_slim_radial_projected_from():
     assert (grid_radii == np.array([[-1.0, 100.0], [-1.0, 101.5], [-1.0, 103.0]])).all()
 
 
-def test__grid_pixels_2d_slim_from():
-
-    # coordinates in centres_of_pixels
-
-    grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
-
-    grid_pixels = aa.util.grid_2d.grid_pixels_2d_slim_from(
-        grid_scaled_2d_slim=grid_scaled,
-        shape_native=(2, 2),
-        pixel_scales=(2.0, 4.0),
-    )
-
-    assert (
-        grid_pixels == np.array([[0.5, 0.5], [0.5, 1.5], [1.5, 0.5], [1.5, 1.5]])
-    ).all()
-
-    # coordinates top-left of pixels
-
-    grid_scaled = np.array([[2.0, -4], [2.0, 0.0], [0.0, -4], [0.0, 0.0]])
-
-    grid_pixels = aa.util.grid_2d.grid_pixels_2d_slim_from(
-        grid_scaled_2d_slim=grid_scaled,
-        shape_native=(2, 2),
-        pixel_scales=(2.0, 4.0),
-    )
-
-    assert (grid_pixels == np.array([[0, 0], [0, 1], [1, 0], [1, 1]])).all()
-
-    # coordinates bottom-right of pixels
-
-    grid_scaled = np.array([[0.0, 0.0], [0.0, 4.0], [-2.0, 0.0], [-2.0, 4.0]])
-
-    grid_pixels = aa.util.grid_2d.grid_pixels_2d_slim_from(
-        grid_scaled_2d_slim=grid_scaled,
-        shape_native=(2, 2),
-        pixel_scales=(2.0, 4.0),
-    )
-
-    assert (grid_pixels == np.array([[1, 1], [1, 2], [2, 1], [2, 2]])).all()
-
-    # -1.0 from all entries for a origin of (-1.0, -1.0)
-    grid_scaled = np.array([[-1.0, -1.0], [-1.0, 3.0], [-3.0, -1.0], [-3.0, 3.0]])
-
-    grid_pixels = aa.util.grid_2d.grid_pixels_2d_slim_from(
-        grid_scaled_2d_slim=grid_scaled,
-        shape_native=(2, 2),
-        pixel_scales=(2.0, 4.0),
-        origin=(-1.0, -1.0),
-    )
-
-    assert (grid_pixels == np.array([[1, 1], [1, 2], [2, 1], [2, 2]])).all()
-
-
 def test__grid_pixel_centres_2d_slim_from():
 
     # coordinates in centres of pixels

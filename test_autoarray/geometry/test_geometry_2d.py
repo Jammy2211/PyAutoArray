@@ -29,7 +29,7 @@ def test__central_pixel_coordinates():
 
 def test__pixel_coordinates_2d_from():
 
-    mask = aa.Geometry2D(
+    geometry = aa.Geometry2D(
         shape_native=(6, 7), pixel_scales=(2.4, 1.8), origin=(1.0, 1.5)
     )
 
@@ -41,7 +41,7 @@ def test__pixel_coordinates_2d_from():
     )
 
     assert (
-        mask.pixel_coordinates_2d_from(scaled_coordinates_2d=(2.3, 1.2))
+        geometry.pixel_coordinates_2d_from(scaled_coordinates_2d=(2.3, 1.2))
         == pixel_coordinates_util
     )
 
@@ -63,3 +63,23 @@ def test__scaled_coordinates_2d_from():
         geometry.scaled_coordinates_2d_from(pixel_coordinates_2d=(5, 4))
         == pixel_coordinates_util
     )
+
+
+def test__grid_pixels_2d_slim_from():
+
+    geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
+
+    grid_scaled_1d = aa.Grid2D.manual_native(
+        grid=[[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]],
+        pixel_scales=geometry.pixel_scales,
+    )
+
+    grid_pixels_util = aa.util.geometry.grid_pixels_2d_slim_from(
+        grid_scaled_2d_slim=grid_scaled_1d,
+        shape_native=(2, 2),
+        pixel_scales=geometry.pixel_scales,
+    )
+    grid_pixels = geometry.grid_pixels_from(grid_scaled_1d=grid_scaled_1d)
+
+    assert (grid_pixels == grid_pixels_util).all()
+    assert (grid_pixels.slim == grid_pixels_util).all()
