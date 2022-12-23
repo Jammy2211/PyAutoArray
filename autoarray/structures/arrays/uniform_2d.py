@@ -28,34 +28,34 @@ class AbstractArray2D(Structure):
         **kwargs
     ):
         """
-        A uniform 2D array of values, which are paired with a 2D mask of pixels which may be split into sub-pixels. 
-        
+        A uniform 2D array of values, which are paired with a 2D mask of pixels which may be split into sub-pixels.
+
         The ``Array2D`, like all data structures (e.g. ``Grid2D``, ``VectorYX2D``) offers in-built functionality which:
-        
+
         - Applies a mask to the values of the data structure.
-        
-        - Maps the data structure between two data representations: `slim`` (all unmasked values in 
+
+        - Maps the data structure between two data representations: `slim`` (all unmasked values in
           a 1D ``ndarray``) and ``native`` (all unmasked values in a 2D ``ndarray``).
 
         - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
         a (y,x) grid of all unmasked pixels, of all pixels, etc.).
 
-        - Associates sub-grids with the data structure, which permit calculations to be performed at higher resolution 
-          and binned up. 
+        - Associates sub-grids with the data structure, which permit calculations to be performed at higher resolution
+          and binned up.
 
-        Each entry of a ``Array2D`` corresponds to a value at the centre of a sub-pixel in an unmasked pixel. It is 
-        ordered such that pixels begin from the top-row of the corresponding mask and go right and down. The positive 
+        Each entry of a ``Array2D`` corresponds to a value at the centre of a sub-pixel in an unmasked pixel. It is
+        ordered such that pixels begin from the top-row of the corresponding mask and go right and down. The positive
         y-axis is upwards and positive x-axis to the right.
-        
+
         A detailed description of this functionality is provided below, correspond to four cases of increasing
         complexity.
-        
+
 
         **SLIM DATA REPRESENTATION (sub-size=1)**
 
         The ``Array2D`` in its ``slim`` representation is an ``ndarray`` of shape [total_unmasked_pixels].
 
-        Below is a visual illustration of an ``Array2D``'s mask, where a total of 10 pixels are unmasked and are 
+        Below is a visual illustration of an ``Array2D``'s mask, where a total of 10 pixels are unmasked and are
         included in the array.
 
         ::
@@ -77,7 +77,7 @@ class AbstractArray2D(Structure):
         ::
 
             <--- -ve  x  +ve -->
-                  
+
              x x x x x x x x x x  ^   array_2d[0] = 0
              x x x x x x x x x x  I   array_2d[1] = 1
              x x x x x x x x x x  I   array_2d[2] = 2
@@ -102,7 +102,7 @@ class AbstractArray2D(Structure):
 
         **NATIVE DATA REPRESENTATION (sub_size=1)**
 
-        The ``Array2D`` has the same values as the ``slim`` representation above, but is instead stored as an 
+        The ``Array2D`` has the same values as the ``slim`` representation above, but is instead stored as an
         an ``ndarray`` of shape [total_y_values, total_x_values].
 
         All masked entries on the array have values of 0.0.
@@ -123,11 +123,11 @@ class AbstractArray2D(Structure):
              x x x x x x x x x x
 
         Where the array has the following valeus:
-        
+
         ::
 
             <--- -ve  x  +ve -->
-                  
+
              x x x x x x x x x x  ^   array_2d[0] = 0
              x x x x x x x x x x  I   array_2d[1] = 1
              x x x x x x x x x x  I   array_2d[2] = 2
@@ -152,14 +152,14 @@ class AbstractArray2D(Structure):
 
         **SUB GRIDDING**
 
-        If the ``Mask2D`` ``sub_size`` is > 1, the array is a sub-array where each entry corresponds to values at the 
+        If the ``Mask2D`` ``sub_size`` is > 1, the array is a sub-array where each entry corresponds to values at the
         centres of sub-pixels of each unmasked pixel.
 
         The sub-array indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first
         unmasked pixel. Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel.
-        
-        Therefore, the shapes of the sub-array are as follows: 
-        
+
+        Therefore, the shapes of the sub-array are as follows:
+
         - ``slim`` representation: an ``ndarray`` of shape [total_unmasked_pixels*sub_size**2].
         - ``native`` representation: an ``ndarray`` of shape [total_y_values*sub_size, total_x_values*sub_size].
 
@@ -180,7 +180,7 @@ class AbstractArray2D(Structure):
              x x x x x x x x x x
              x x x x x x x x x x
 
-        If ``sub_size=2``, each unmasked pixel has 4 (2x2) sub-pixel values. For the example above, pixels 0 and 1 
+        If ``sub_size=2``, each unmasked pixel has 4 (2x2) sub-pixel values. For the example above, pixels 0 and 1
         each have 4 values which map to the ``array_2d``'s ``slim`` representation as follows:
 
         ::
@@ -191,7 +191,7 @@ class AbstractArray2D(Structure):
              0 1   array_2d.slim[1] = value of first sub-pixel in pixel 1.
              2 3   array_2d.slim[2] = value of first sub-pixel in pixel 2.
                    array_2d.slim[3] = value of first sub-pixel in pixel 3.
-                   
+
             Pixel 1 - (2x2):
 
                    array_2d.slim[4] = value of first sub-pixel in pixel 0.
@@ -200,7 +200,7 @@ class AbstractArray2D(Structure):
                    array_2d.slim[7] = value of first sub-pixel in pixel 3.
 
         For the ``native`` data representation we get the following mappings:
-        
+
         ::
 
             Pixel 0 - (2x2):
@@ -215,7 +215,7 @@ class AbstractArray2D(Structure):
                    array_2d.native[10, 4] = value of first sub-pixel in pixel 0.
              4 5   array_2d.native[10, 5] = value of first sub-pixel in pixel 1.
              6 7   array_2d.native[11, 4] = value of first sub-pixel in pixel 2.
-                   array_2d.native[11, 5] = value of first sub-pixel in pixel 3.     
+                   array_2d.native[11, 5] = value of first sub-pixel in pixel 3.
 
             Other entries (all masked sub-pixels are zero):
 
@@ -924,7 +924,7 @@ class Array2D(AbstractArray2D):
         For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-        
+
         From this input the method cannot determine the 2D shape of the array and its mask. The
         ``shape_native`` must therefore also be input into this method. The mask is setup as a unmasked `Mask2D` of
         ``shape_native``.
@@ -999,7 +999,7 @@ class Array2D(AbstractArray2D):
         For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-        
+
         From this input the method cannot determine the 2D shape of the array and its mask. The
         ``shape_native`` must therefore also be input into this method. The mask is setup as a unmasked `Mask2D` of
         ``shape_native``.
@@ -1067,7 +1067,7 @@ class Array2D(AbstractArray2D):
         For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-        
+
         From this input the method cannot determine the 2D shape of the array and its mask. The
         ``shape_native`` must therefore also be input into this method. The mask is setup as a unmasked `Mask2D` of
         ``shape_native``.
