@@ -1173,27 +1173,6 @@ def test__zoom_mask_unmasked():
 ### GEOMETRY ###
 
 
-def test__central_pixel_coordinates():
-
-    mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(0.1, 0.1))
-
-    central_pixel_coordinates_util = aa.util.geometry.central_pixel_coordinates_2d_from(
-        shape_native=(3, 3)
-    )
-
-    assert mask.central_pixel_coordinates == central_pixel_coordinates_util
-
-    mask = aa.Mask2D.unmasked(
-        shape_native=(5, 3), pixel_scales=(2.0, 1.0), origin=(1.0, 2.0)
-    )
-
-    central_pixel_coordinates_util = aa.util.geometry.central_pixel_coordinates_2d_from(
-        shape_native=(5, 3)
-    )
-
-    assert mask.central_pixel_coordinates == central_pixel_coordinates_util
-
-
 def test__mask_centre():
     mask = np.array(
         [

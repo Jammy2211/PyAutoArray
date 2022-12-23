@@ -14,6 +14,7 @@ from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
 from autoarray import type as ty
+from autoarray.geometry.geometry_2d import Geometry2D
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
@@ -78,6 +79,10 @@ class Mask2D(Mask):
             pass
         else:
             self.origin = (0.0, 0.0)
+
+    @property
+    def geometry(self):
+        return Geometry2D(mask=self)
 
     @classmethod
     def manual(
@@ -730,12 +735,6 @@ class Mask2D(Mask):
         return (
             float(self.pixel_scales[0] * self.shape[0]),
             float(self.pixel_scales[1] * self.shape[1]),
-        )
-
-    @property
-    def central_pixel_coordinates(self):
-        return geometry_util.central_pixel_coordinates_2d_from(
-            shape_native=self.shape_native
         )
 
     @property
