@@ -84,6 +84,10 @@ class Mask2D(Mask):
 
     @property
     def geometry(self) -> Geometry2D:
+        """
+        Return the 2D geometry of the mask, representing its uniform rectangular grid of (y,x) coordinates defined by
+        its ``shape_native``.
+        """
         return Geometry2D(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,

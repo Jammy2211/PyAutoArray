@@ -23,7 +23,10 @@ class Geometry2D(AbstractGeometry2D):
         origin: Tuple[float, float] = (0.0, 0.0),
     ):
         """
-        A 2D geometry, representing a uniform rectangular grid of (y,x) coordinates.
+        A 2D geometry, representing a uniform rectangular grid of (y,x) coordinates which has ``shape_native``.
+
+        This class is used for converting coordinates from pixel-units to scaled coordinates via
+        the geometry's (y,x) ``pixel_scales`` conversion factor and its (y,x) ``origin``.
 
         Parameters
         ----------
@@ -46,7 +49,7 @@ class Geometry2D(AbstractGeometry2D):
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
         """
-        The (y,x) 2D shape of the geometry in scaled units.
+        The (y,x) 2D native shape of the geometry in scaled units.
 
         This is computed by multiplying the 2D ``shape_native`` (units ``pixels``) with
         the ``pixel_scales`` (units ``scaled/pixels``) conversion factor.
@@ -74,8 +77,8 @@ class Geometry2D(AbstractGeometry2D):
         """
         The minimum (y,x) scaled coordinates of the 2D geometry.
 
-        For example, if the geometry's most negative scaled y value is 10.0 and most negative scaled x value is
-        20.0, this returns (10.0, 20.0).
+        For example, if the geometry's most negative scaled y value is -10.0 and most negative scaled x value is
+        -20.0, this returns (-10.0, -20.0).
         """
         return (
             (-(self.shape_native_scaled[0] / 2.0)) + self.origin[0],
@@ -85,7 +88,7 @@ class Geometry2D(AbstractGeometry2D):
     @property
     def extent(self) -> Tuple[float, float, float, float]:
         """
-        The extent of the geometry in scaled units, returned as a tuple [x_min, x_max, y_min, y_max].
+        The extent of the geometry in scaled units, returned as a tuple (x_min, x_max, y_min, y_max).
 
         This format is identical to the ``extent`` input of the ``matplotlib`` method ``imshow`` (and other methods).
         It is used for visualization in the plot module, which is why the x and y coordinates are swapped compared to

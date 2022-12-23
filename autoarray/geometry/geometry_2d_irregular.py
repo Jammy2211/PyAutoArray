@@ -1,4 +1,3 @@
-import numpy as np
 from typing import Tuple
 
 from autoarray.geometry.abstract_2d import AbstractGeometry2D
@@ -11,7 +10,20 @@ class Geometry2DIrregular(AbstractGeometry2D):
         scaled_maxima: Tuple[float, float],
         scaled_minima: Tuple[float, float],
     ):
+        """
+        A 2D geometry, representing an irregular grid of (y,x) coordinates.
 
+        This class is used for defining the extent of the irregular grid when visualizing it.
+
+        Parameters
+        ----------
+        shape_native_scaled
+            The 2D scaled shape of the geometry defining the full extent of this object.
+        scaled_maxima
+            The maximum (y,x) scaled coordinates of the 2D geometry.
+        scaled_minima
+            The minimum (y,x) scaled coordinates of the 2D geometry.
+        """
         self.shape_native_scaled = shape_native_scaled
         self.scaled_maxima = scaled_maxima
         self.scaled_minima = scaled_minima

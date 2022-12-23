@@ -70,6 +70,10 @@ class Mask1D(Mask):
 
     @property
     def geometry(self) -> Geometry1D:
+        """
+        Return the 1D geometry of the mask, representing its uniform rectangular grid of (x) coordinates defined by
+        its ``shape_native``.
+        """
         return Geometry1D(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
@@ -116,7 +120,7 @@ class Mask1D(Mask):
 
         Parameters
         ----------
-        shape
+        shape_slim
             The (y,x) shape of the mask in units of pixels.
         pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
