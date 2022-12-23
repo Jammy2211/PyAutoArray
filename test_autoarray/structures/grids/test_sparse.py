@@ -4,10 +4,8 @@ import pytest
 
 import autoarray as aa
 
-test_grid_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
-
-def test__unmasked_2d__properties_consistent_with_util():
+def test__from_grid_and_unmasked_2d_grid_shap():
 
     mask = aa.Mask2D.manual(
         mask=np.array(
@@ -79,7 +77,7 @@ def test__unmasked_2d__properties_consistent_with_util():
     assert (sparse_grid == sparse_grid_util).all()
 
 
-def test__unmasked_2d__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid():
+def test__from_grid_and_unmasked_2d_grid_shap__sparse_grid_overlaps_mask_perfectly():
     mask = aa.Mask2D.manual(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -138,7 +136,7 @@ def test__unmasked_2d__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_mas
     ).all()
 
 
-def test__unmasked_2d__mask_with_offset_centre__origin_of_sparse_grid_moves_to_give_same_pairings():
+def test__from_grid_and_unmasked_2d_grid_shap__mask_with_offset_centre():
     mask = aa.Mask2D.manual(
         mask=np.array(
             [
@@ -197,7 +195,7 @@ def test__unmasked_2d__mask_with_offset_centre__origin_of_sparse_grid_moves_to_g
     assert (sparse_grid.sparse_index_for_slim_index == np.array([0, 1, 2, 3, 4])).all()
 
 
-def test__unmasked_2d__from_grid_and_unmasked_shape__sets_up_with_correct_shape_and_pixel_scales(
+def test__from_grid_and_unmasked_2d_grid_shape__sets_up_with_correct_shape_and_pixel_scales(
     mask_2d_7x7,
 ):
 
@@ -239,7 +237,7 @@ def test__unmasked_2d__from_grid_and_unmasked_shape__sets_up_with_correct_shape_
     ).all()
 
 
-def test__unmasked_2d__from_grid_and_shape__offset_mask__origin_shift_corrects():
+def test__from_grid_and_unmasked_2d_grid_shape__offset_mask__origin_shift_corrects():
 
     mask = aa.Mask2D.manual(
         mask=np.array(
@@ -281,7 +279,7 @@ def test__unmasked_2d__from_grid_and_shape__offset_mask__origin_shift_corrects()
     ).all()
 
 
-def test__via_kmeans__weight_map_all_ones__kmeans_grid_is_grid_overlapping_image():
+def test__from_total_pixels_grid_and_weight_map():
 
     mask = aa.Mask2D.manual(
         mask=np.array(
@@ -325,9 +323,6 @@ def test__via_kmeans__weight_map_all_ones__kmeans_grid_is_grid_overlapping_image
         == np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])
     ).all()
 
-
-def test__weight_map_changed_from_above():
-
     mask = aa.Mask2D.manual(
         mask=np.array(
             [
@@ -358,7 +353,7 @@ def test__weight_map_changed_from_above():
     ).all()
 
 
-def test__stochastic_true__every_grid_different():
+def test__from_total_pixels_grid_and_weight_map__stochastic_true():
 
     mask = aa.Mask2D.manual(
         mask=np.array(

@@ -9,10 +9,6 @@ from autoarray.structures.mock.mock_structure_decorators import (
 
 import autoarray as aa
 
-test_coordinates_dir = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "files"
-)
-
 
 def test__manual_slim():
 
