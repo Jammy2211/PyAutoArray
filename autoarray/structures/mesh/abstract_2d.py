@@ -14,31 +14,6 @@ class Abstract2DMesh(Structure):
     def pixels(self) -> int:
         raise NotImplementedError
 
-    @property
-    def extent_square(self) -> Tuple[float, float, float, float]:
-        """
-        Returns an extent where the y and x distances from each edge are the same.
-
-        This ensures that a uniform grid with square pixels can be laid over this extent, such that an
-        `interpolation_grid` can be computed which has square pixels. This is not necessary, but benefits visualization.
-        """
-
-        y_mean = 0.5 * (self.geometry.extent[2] + self.geometry.extent[3])
-        y_half_length = 0.5 * (self.geometry.extent[3] - self.geometry.extent[2])
-
-        x_mean = 0.5 * (self.geometry.extent[0] + self.geometry.extent[1])
-        x_half_length = 0.5 * (self.geometry.extent[1] - self.geometry.extent[0])
-
-        half_length = np.max([y_half_length, x_half_length])
-
-        y0 = y_mean - half_length
-        y1 = y_mean + half_length
-
-        x0 = x_mean - half_length
-        x1 = x_mean + half_length
-
-        return (x0, x1, y0, y1)
-
     def interpolation_grid_from(
         self,
         shape_native: Tuple[int, int] = (401, 401),
@@ -61,6 +36,6 @@ class Abstract2DMesh(Structure):
             is input.
         """
 
-        extent = self.extent_square if extent is None else extent
+        extent = self.geometry.extent_square if extent is None else extent
 
         return Grid2D.manual_extent(extent=extent, shape_native=shape_native)

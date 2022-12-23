@@ -1,8 +1,10 @@
 import numpy as np
 from typing import Tuple
 
+from autoarray.geometry.abstract_2d import AbstractGeometry2D
 
-class Geometry2DIrregular:
+
+class Geometry2DIrregular(AbstractGeometry2D):
     def __init__(
         self,
         shape_native_scaled: Tuple[float, float],
