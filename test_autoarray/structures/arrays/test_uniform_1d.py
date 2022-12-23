@@ -10,10 +10,6 @@ fits_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "array_1d"
 )
 
-test_data_dir = path.join(
-    "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
-)
-
 output_data_dir = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "array", "output_test"
 )
