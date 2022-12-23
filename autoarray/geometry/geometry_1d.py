@@ -17,6 +17,7 @@ from autoarray import type as ty
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
+
 class Geometry1D:
     def __init__(
         self,

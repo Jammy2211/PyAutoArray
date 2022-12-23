@@ -83,7 +83,9 @@ class Mask2D(Mask):
     @property
     def geometry(self):
         return Geometry2D(
-            shape_native=self.shape_native, pixel_scales=self.pixel_scales, origin=self.origin
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
 
     @classmethod
@@ -735,14 +737,6 @@ class Mask2D(Mask):
         the `pixel_scales` (units scaled/pixels) conversion factor.
         """
         return self.geometry.shape_native_scaled
-
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        return self.geometry.scaled_maxima
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        return self.geometry.scaled_minima
 
     @property
     def mask_centre(self) -> Tuple[float, float]:

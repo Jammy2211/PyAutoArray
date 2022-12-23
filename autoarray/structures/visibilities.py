@@ -130,6 +130,7 @@ class AbstractVisibilities(Structure):
         """
         return np.min(self.real), np.min(self.imag)
 
+
 class Visibilities(AbstractVisibilities):
     @classmethod
     def manual_slim(

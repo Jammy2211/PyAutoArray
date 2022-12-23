@@ -1265,26 +1265,6 @@ class Grid2D(Structure):
             np.amax(self[:, 1]) - np.amin(self[:, 1]),
         )
 
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        """
-        The maximum values of the grid in scaled coordinates returned as a tuple (y_max, x_max).
-        """
-        return (
-            self.mask.origin[0] + (self.mask.shape_native_scaled[0] / 2.0),
-            self.mask.origin[1] + (self.mask.shape_native_scaled[1] / 2.0),
-        )
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        """
-        The minium values of the grid in scaled coordinates returned as a tuple (y_min, x_min).
-        """
-        return (
-            (self.mask.origin[0] - (self.mask.shape_native_scaled[0] / 2.0)),
-            (self.mask.origin[1] - (self.mask.shape_native_scaled[1] / 2.0)),
-        )
-
     def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:
         """
         The extent of the grid in scaled units returned as a list [x_min, x_max, y_min, y_max], where all values are

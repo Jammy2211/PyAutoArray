@@ -71,7 +71,9 @@ class Mask1D(Mask):
     @property
     def geometry(self):
         return Geometry1D(
-            shape_native=self.shape_native, pixel_scales=self.pixel_scales, origin=self.origin
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
 
     @classmethod

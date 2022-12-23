@@ -477,7 +477,11 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_plane_mesh_grid.geometry.extent
+        extent = (
+            extent
+            if extent is not None
+            else mapper.source_plane_mesh_grid.geometry.extent
+        )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -536,7 +540,11 @@ class MatPlot2D(AbstractMatPlot):
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_plane_mesh_grid.geometry.extent
+        extent = (
+            extent
+            if extent is not None
+            else mapper.source_plane_mesh_grid.geometry.extent
+        )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -592,7 +600,11 @@ class MatPlot2D(AbstractMatPlot):
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_plane_mesh_grid.geometry.extent
+        extent = (
+            extent
+            if extent is not None
+            else mapper.source_plane_mesh_grid.geometry.extent
+        )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 

@@ -5,6 +5,12 @@ from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 
+class MockGeometry:
+    def __init__(self, extent):
+
+        self.extent = extent
+
+
 class MockGrid2DMesh(Abstract2DMesh):
     def __new__(cls, grid: np.ndarray = None, extent: Tuple[int, int, int, int] = None):
         """
@@ -44,6 +50,10 @@ class MockGrid2DMesh(Abstract2DMesh):
         obj._extent = extent
 
         return obj
+
+    @property
+    def geometry(self):
+        return MockGeometry(extent=self.extent)
 
     @property
     def extent(self):

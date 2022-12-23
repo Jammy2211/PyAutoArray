@@ -147,22 +147,6 @@ class Mesh2DRectangular(Abstract2DMesh):
         """
         return self.geometry.shape_native_scaled
 
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        """
-        The maximum (y,x) values of the rectangular pixelization in scaled coordinates returned as a
-        tuple (y_max, x_max).
-        """
-        return self.geometry.scaled_maxima
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        """
-        The minimum (y,x) values of the rectangular pixelization in scaled coordinates returned as a
-        tuple (y_min, x_min).
-        """
-        return self.geometry.scaled_minima
-
     def interpolated_array_from(
         self,
         values: np.ndarray,

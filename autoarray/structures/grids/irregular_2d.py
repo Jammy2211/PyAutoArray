@@ -1,11 +1,11 @@
 import numpy as np
 import os
 from os import path
-import pickle
 from typing import List, Optional, Tuple, Union
 import json
 
 from autoarray.abstract_ndarray import AbstractNDArray
+from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.values import ValuesIrregular
 
@@ -55,34 +55,30 @@ class Grid2DIrregular(AbstractNDArray):
         return obj
 
     @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
+    def geometry(self):
         """
         The (y,x) 2D shape of the irregular grid in scaled units, computed by taking the minimum and
         maximum values of (y,x) coordinates on the grid.
         """
-        return (
+        shape_native_scaled = (
             np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
         )
 
-    @property
-    def scaled_maxima(self) -> Tuple[int, int]:
-        """
-        The maximum values of the coordinates returned as a tuple (y_max, x_max).
-        """
-        return (
+        scaled_maxima = (
             np.amax(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float"),
         )
 
-    @property
-    def scaled_minima(self) -> Tuple[int, int]:
-        """
-        The minimum values of the coordinates returned as a tuple (y_max, x_max).
-        """
-        return (
+        scaled_minima = (
             np.amin(self[:, 0]).astype("float"),
             np.amin(self[:, 1]).astype("float"),
+        )
+
+        return Geometry2DIrregular(
+            shape_native_scaled=shape_native_scaled,
+            scaled_maxima=scaled_maxima,
+            scaled_minima=scaled_minima,
         )
 
     @property
@@ -110,7 +106,9 @@ class Grid2DIrregular(AbstractNDArray):
         """
 
         coorindates = [
-            mask.geometry.scaled_coordinates_2d_from(pixel_coordinates_2d=pixel_coordinates_2d)
+            mask.geometry.scaled_coordinates_2d_from(
+                pixel_coordinates_2d=pixel_coordinates_2d
+            )
             for pixel_coordinates_2d in pixels
         ]
 
