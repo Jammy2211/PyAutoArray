@@ -1109,8 +1109,8 @@ class Mask2D(Mask):
     @property
     def zoom_centre(self) -> Tuple[float, float]:
 
-        extraction_grid_1d = self.geometry.grid_pixels_from(
-            grid_scaled_1d=self.masked_grid_sub_1.slim
+        extraction_grid_1d = self.geometry.grid_pixels_2d_from(
+            grid_scaled_2d=self.masked_grid_sub_1.slim
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])

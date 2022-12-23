@@ -108,10 +108,10 @@ class Geometry2D(AbstractGeometry2D):
             origins=self.origin,
         )
 
-    def grid_pixels_from(self, grid_scaled_1d: Grid2D) -> Grid2D:
+    def grid_pixels_2d_from(self, grid_scaled_2d: Grid2D) -> Grid2D:
         """
-        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
-        returned as floats such that they include the decimal offset from each pixel's top-left corner.
+        Convert a grid of 2D (y,x) scaled coordinates to a grid of 2D (y,x) pixel values, which are returned as floats
+        and include the decimal offset from each pixel's top-left corner.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
         highest y scaled coordinate value and lowest x scaled coordinate.
@@ -121,15 +121,15 @@ class Geometry2D(AbstractGeometry2D):
 
         Parameters
         ----------
-        grid_scaled_1d: np.ndarray
+        grid_scaled_2d
             A grid of (y,x) coordinates in scaled units.
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        grid_pixels_1d = geometry_util.grid_pixels_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_1d,
+        grid_pixels_2d = geometry_util.grid_pixels_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled_2d,
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-        return Grid2D(grid=grid_pixels_1d, mask=grid_scaled_1d.mask)
+        return Grid2D(grid=grid_pixels_2d, mask=grid_scaled_2d.mask)

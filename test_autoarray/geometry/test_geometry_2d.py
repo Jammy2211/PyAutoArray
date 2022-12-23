@@ -79,7 +79,7 @@ def test__grid_pixels_2d_slim_from():
         shape_native=(2, 2),
         pixel_scales=geometry.pixel_scales,
     )
-    grid_pixels = geometry.grid_pixels_from(grid_scaled_1d=grid_scaled_1d)
+    grid_pixels = geometry.grid_pixels_2d_from(grid_scaled_2d=grid_scaled_1d)
 
     assert (grid_pixels == grid_pixels_util).all()
     assert (grid_pixels.slim == grid_pixels_util).all()
