@@ -187,8 +187,8 @@ def central_pixel_coordinates_2d_from(
     shape_native: Tuple[int, int]
 ) -> Tuple[float, float]:
     """
-    Returns the central pixel coordinates of a data structure of any dimension (e.g. in 1D a `Line`, 2D an `Array2D`,
-    2d a `Frame2D`, etc.) from the shape of that data structure.
+    Returns the central pixel coordinates of a 2D geometry (and therefore a 2D data structure like an ``Array2D``)
+    from the shape of that data structure.
 
     Examples of the central pixels are as follows:
 
@@ -197,14 +197,12 @@ def central_pixel_coordinates_2d_from(
 
     Parameters
     ----------
-    shape_native : tuple(int)
+    shape_native
         The dimensions of the data structure, which can be in 1D, 2D or higher dimensions.
 
     Returns
     -------
-    central_pixel_coordinates : tuple(float)
-        The central pixel coordinates of the data structure.
-
+    The central pixel coordinates of the data structure.
     """
     return (float(shape_native[0] - 1) / 2, float(shape_native[1] - 1) / 2)
 
@@ -216,7 +214,8 @@ def central_scaled_coordinate_2d_from(
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> Tuple[float, float]:
     """
-    Returns the central coordinates of a 2D data structure (e.g. a `Frame2D`, `Grid2D`) in scaled units.
+    Returns the central scaled coordinates of a 2D geometry (and therefore a 2D data structure like an ``Array2D``)
+    from the shape of that data structure.
 
     This is computed by using the data structure's shape and converting it to scaled units using an input
     pixel-coordinates to scaled-coordinate conversion factor `pixel_scales`.
@@ -234,8 +233,7 @@ def central_scaled_coordinate_2d_from(
 
     Returns
     -------
-    central_scaled_coordinates_2d
-        The central coordinates of the 2D data structure in scaled units.
+    The central coordinates of the 2D data structure in scaled units.
     """
 
     central_pixel_coordinates = central_pixel_coordinates_2d_from(
@@ -255,6 +253,44 @@ def pixel_coordinates_2d_from(
     pixel_scales: ty.PixelScales,
     origins: Tuple[float, float] = (0.0, 0.0),
 ) -> Tuple[float, float]:
+    """
+    Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, which are returned as floats such that they
+    include the decimal offset from each pixel's top-left corner relative to the input scaled coordinate.
+
+    The conversion is performed according to a 2D geometry on a uniform grid, where the pixel coordinate origin is at
+    the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled coordinate
+    and lowest (most negative) x scaled coordinate on the gird.
+
+    The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
+    1D grid pixel coordinate values.
+
+    Parameters
+    ----------
+    scaled_coordinates_2d
+        The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+    shape_native
+        The (y,x) shape of the original 2D array the scaled coordinates were computed on.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
+    origin
+        The (y,x) origin of the grid, which the scaled grid is shifted to.
+
+    Returns
+    -------
+    A 2D (y,x) pixel-value coordinate.
+
+    Examples
+    --------
+
+    scaled_coordinates_2d = (1.0, 1.0)
+
+    grid_pixels_2d_slim = pixel_coordinates_2d_from(
+        scaled_coordinates_2d=scaled_coordinates_2d,
+        shape=(2,2),
+        pixel_scales=(0.5, 0.5),
+        origin=(0.0, 0.0)
+    )
+    """
 
     central_pixel_coordinates = central_pixel_coordinates_2d_from(
         shape_native=shape_native
@@ -281,7 +317,43 @@ def scaled_coordinates_2d_from(
     pixel_scales: ty.PixelScales,
     origins: Tuple[float, float] = (0.0, 0.0),
 ) -> Tuple[float, float]:
+    """
+    Convert a 2D (y,x) pixel coordinates to a 2D (y,x) scaled values.
 
+    The conversion is performed according to a 2D geometry on a uniform grid, where the pixel coordinate origin is at
+    the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled coordinate
+    and lowest (most negative) x scaled coordinate on the gird.
+
+    The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
+    1D grid pixel coordinate values.
+
+    Parameters
+    ----------
+    scaled_coordinates_2d
+        The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+    shape_native
+        The (y,x) shape of the original 2D array the scaled coordinates were computed on.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
+    origin
+        The (y,x) origin of the grid, which the scaled grid is shifted to.
+
+    Returns
+    -------
+    A 2D (y,x) pixel-value coordinate.
+
+    Examples
+    --------
+
+    scaled_coordinates_2d = (1.0, 1.0)
+
+    grid_pixels_2d_slim = pixel_coordinates_2d_from(
+        scaled_coordinates_2d=scaled_coordinates_2d,
+        shape=(2,2),
+        pixel_scales=(0.5, 0.5),
+        origin=(0.0, 0.0)
+    )
+    """
     central_scaled_coordinates = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origins
     )

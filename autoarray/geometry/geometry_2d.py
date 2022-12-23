@@ -1,6 +1,5 @@
 from __future__ import annotations
 import logging
-import numpy as np
 from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
@@ -23,6 +22,22 @@ class Geometry2D(AbstractGeometry2D):
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
     ):
+        """
+        A 2D geometry, representing a uniform rectangular grid of (y,x) coordinates.
+
+        Parameters
+        ----------
+        shape_native
+            The 2D shape of the array in its ``native`` format (and its 2D mask) whose 2D geometry this object
+            represents.
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
+            it is converted to a (float, float) structure.
+        origin
+            The (y,x) scaled units origin of the mask's coordinate system.
+        """
+
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         self.shape_native = shape_native
         self.pixel_scales = pixel_scales
@@ -31,8 +46,10 @@ class Geometry2D(AbstractGeometry2D):
     @property
     def shape_native_scaled(self) -> Tuple[float, float]:
         """
-        The (y,x) 2D shape of the mask in scaled units, computed from the 2D `shape` (units pixels) and
-        the `pixel_scales` (units scaled/pixels) conversion factor.
+        The (y,x) 2D shape of the geometry in scaled units.
+
+        This is computed by multiplying the 2D ``shape_native`` (units ``pixels``) with
+        the ``pixel_scales`` (units ``scaled/pixels``) conversion factor.
         """
         return (
             float(self.pixel_scales[0] * self.shape_native[0]),
@@ -41,6 +58,12 @@ class Geometry2D(AbstractGeometry2D):
 
     @property
     def scaled_maxima(self) -> Tuple[float, float]:
+        """
+        The maximum (y,x) scaled coordinates of the 2D geometry.
+
+        For example, if the geometry's most positive scaled y value is 10.0 and most positive scaled x value is
+        20.0, this returns (10.0, 20.0).
+        """
         return (
             (self.shape_native_scaled[0] / 2.0) + self.origin[0],
             (self.shape_native_scaled[1] / 2.0) + self.origin[1],
@@ -48,6 +71,12 @@ class Geometry2D(AbstractGeometry2D):
 
     @property
     def scaled_minima(self) -> Tuple[float, float]:
+        """
+        The minimum (y,x) scaled coordinates of the 2D geometry.
+
+        For example, if the geometry's most negative scaled y value is 10.0 and most negative scaled x value is
+        20.0, this returns (10.0, 20.0).
+        """
         return (
             (-(self.shape_native_scaled[0] / 2.0)) + self.origin[0],
             (-(self.shape_native_scaled[1] / 2.0)) + self.origin[1],
@@ -56,11 +85,11 @@ class Geometry2D(AbstractGeometry2D):
     @property
     def extent(self) -> Tuple[float, float, float, float]:
         """
-        The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
+        The extent of the geometry in scaled units, returned as a tuple [x_min, x_max, y_min, y_max].
 
-        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module, which is why the x and y coordinates are swapped compared to
-        the normal PyAutoArray convention.
+        This format is identical to the ``extent`` input of the ``matplotlib`` method ``imshow`` (and other methods).
+        It is used for visualization in the plot module, which is why the x and y coordinates are swapped compared to
+        the normal convention.
         """
         return (
             self.scaled_minima[1],
@@ -71,13 +100,25 @@ class Geometry2D(AbstractGeometry2D):
 
     @property
     def central_pixel_coordinates(self) -> Tuple[float, float]:
+        """
+        Returns the central pixel coordinates of the 2D geometry (and therefore a 2D data structure
+        like an ``Array2D``) from the shape of that data structure.
+
+        Examples of the central pixels are as follows:
+
+        - For a 3x3 image, the central pixel is pixel [1, 1].
+        - For a 4x4 image, the central pixel is [1.5, 1.5].
+        """
         return geometry_util.central_pixel_coordinates_2d_from(
             shape_native=self.shape_native
         )
 
     @property
     def central_scaled_coordinates(self) -> Tuple[float, float]:
-
+        """
+        Returns the central scaled coordinates of a 2D geometry (and therefore a 2D data structure like an ``Array2D``)
+        from the shape of that data structure.
+        """
         return geometry_util.central_scaled_coordinate_2d_from(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
@@ -87,7 +128,26 @@ class Geometry2D(AbstractGeometry2D):
     def pixel_coordinates_2d_from(
         self, scaled_coordinates_2d: Tuple[float, float]
     ) -> Tuple[float, float]:
+        """
+        Convert a 2D (y,x) scaled coordinate to a 2D (y,x) pixel coordinate, which are returned as floats such that they
+        include the decimal offset from each pixel's top-left corner relative to the input scaled coordinate.
 
+        The conversion is performed according to the 2D geometry on a uniform grid, where the pixel coordinate origin
+        is at the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled
+        coordinate and lowest (most negative) x scaled coordinate on the gird.
+
+        The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
+        1D grid pixel coordinate values.
+
+        Parameters
+        ----------
+        scaled_coordinates_2d
+            The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+
+        Returns
+        -------
+        A 2D (y,x) pixel-value coordinate.
+        """
         return geometry_util.pixel_coordinates_2d_from(
             scaled_coordinates_2d=scaled_coordinates_2d,
             shape_native=self.shape_native,
@@ -98,7 +158,25 @@ class Geometry2D(AbstractGeometry2D):
     def scaled_coordinates_2d_from(
         self, pixel_coordinates_2d: Tuple[float, float]
     ) -> Tuple[float, float]:
+        """
+        Convert a 2D (y,x) pixel coordinates to a 2D (y,x) scaled values.
 
+        The conversion is performed according to a 2D geometry on a uniform grid, where the pixel coordinate origin is at
+        the top left corner, such that the pixel [0,0] corresponds to the highest (most positive) y scaled coordinate
+        and lowest (most negative) x scaled coordinate on the gird.
+
+        The scaled coordinate is defined by an origin and coordinates are shifted to this origin before computing their
+        1D grid pixel coordinate values.
+
+        Parameters
+        ----------
+        scaled_coordinates_2d
+            The 2D (y,x) coordinates in scaled units which are converted to pixel coordinates.
+
+        Returns
+        -------
+        A 2D (y,x) pixel-value coordinate.
+        """
         return geometry_util.scaled_coordinates_2d_from(
             pixel_coordinates_2d=pixel_coordinates_2d,
             shape_native=self.shape_native,

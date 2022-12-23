@@ -42,17 +42,19 @@ class Mask2D(Mask):
         When applied to 2D data it extracts or masks the unmasked image pixels corresponding to mask entries that are
         `False` or 0).
 
-        The mask defines the geometry of the 2D uniform grid of pixels for the 2D data structure it is paired with,
-        for example the grid's `pixel scales` (y,x) `origin`. The 2D uniform grid may also be sub-gridded,
-        whereby every pixel is sub-divided into a uniform grid of sub-pixels which are all used to perform
-        calculations more accurate.
+        The mask has a 2D geometry, corresponding to the 2D uniform grid of pixels of the 2D data structure it is
+        paired with, including its ``pixel scales`` and (y,x) ``origin``.
 
-        The mask includes tols to map the 2D data structure between 2D representations (that include all  data-points
-        irrespective of if they are masked or not) and 1D data structures (that only contain the unmasked data).
+        The 2D uniform grid may also be sub-gridded, whereby every pixel is sub-divided into a uniform grid of
+        sub-pixels which are all used to perform calculations more accurate.
+
+        The mask includes functionality which maps the 2D data structure between 2D ``native`` representations (that
+        include all data-points irrespective of if they are masked or not) and 1D ``slim`` representations (that
+        only contain the unmasked data).
 
         Parameters
         ----------
-        mask: np.ndarray
+        mask
             The `ndarray` of shape [total_y_pixels, total_x_pixels] containing the `bool`'s representing the
             `mask`, where `False` signifies an entry is unmasked and used in calculations.
         pixel_scales
@@ -108,7 +110,7 @@ class Mask2D(Mask):
 
         Parameters
         ----------
-        mask or list
+        mask
             The `bool` values of the mask input as an `np.ndarray` of shape [total_y_pixels, total_x_pixels] or a
             list of lists.
         pixel_scales
@@ -208,9 +210,7 @@ class Mask2D(Mask):
             and visa versa.
         """
 
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_circular_from(
             shape_native=shape_native,
@@ -267,9 +267,7 @@ class Mask2D(Mask):
             and visa versa.
         """
 
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_circular_annular_from(
             shape_native=shape_native,
@@ -331,9 +329,7 @@ class Mask2D(Mask):
             and visa versa.
         """
 
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_circular_anti_annular_from(
             shape_native=shape_native,
@@ -394,9 +390,7 @@ class Mask2D(Mask):
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_elliptical_from(
             shape_native=shape_native,
@@ -467,10 +461,7 @@ class Mask2D(Mask):
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
-
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_elliptical_annular_from(
             shape_native=shape_native,
@@ -570,10 +561,7 @@ class Mask2D(Mask):
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
-
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = Mask2D(
             mask=array_2d_util.numpy_array_2d_via_fits_from(
