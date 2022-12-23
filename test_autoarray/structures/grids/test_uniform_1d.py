@@ -4,10 +4,6 @@ import pytest
 
 import autoarray as aa
 
-test_grid_dir = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "files", "grids"
-)
-
 
 def test__manual_native():
 
