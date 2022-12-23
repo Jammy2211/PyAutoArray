@@ -1561,12 +1561,6 @@ def test__border_1d_grid():
     ).all()
 
 
-
-
-
-
-
-
 def test__grid_pixels_from():
     mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
 

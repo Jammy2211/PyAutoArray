@@ -82,7 +82,9 @@ class Mask2D(Mask):
 
     @property
     def geometry(self):
-        return Geometry2D(shape_native=self.shape_native, pixel_scales=self.pixel_scales)
+        return Geometry2D(
+            shape_native=self.shape_native, pixel_scales=self.pixel_scales
+        )
 
     @classmethod
     def manual(
@@ -735,15 +737,6 @@ class Mask2D(Mask):
         return (
             float(self.pixel_scales[0] * self.shape[0]),
             float(self.pixel_scales[1] * self.shape[1]),
-        )
-
-    def scaled_coordinates_2d_from(self, pixel_coordinates_2d):
-
-        return geometry_util.scaled_coordinates_2d_from(
-            pixel_coordinates_2d=pixel_coordinates_2d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origins=self.origin,
         )
 
     @property

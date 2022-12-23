@@ -280,7 +280,7 @@ def scaled_coordinates_2d_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
     origins: Tuple[float, float] = (0.0, 0.0),
-) -> Union[Tuple[float], Tuple[float, float]]:
+) -> Tuple[float, float]:
 
     central_scaled_coordinates = central_scaled_coordinate_2d_from(
         shape_native=shape_native, pixel_scales=pixel_scales, origin=origins
