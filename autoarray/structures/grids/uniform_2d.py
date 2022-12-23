@@ -1172,7 +1172,7 @@ class Grid2D(Structure):
         """
 
         return grid_2d_util._radial_projected_shape_slim_from(
-            extent=self.extent,
+            extent=self.geometry.extent,
             centre=centre,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
@@ -1232,7 +1232,7 @@ class Grid2D(Structure):
 
         grid_radial_projected_2d = (
             grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
-                extent=self.extent,
+                extent=self.geometry.extent,
                 centre=centre,
                 pixel_scales=self.mask.pixel_scales,
                 sub_size=self.mask.sub_size,

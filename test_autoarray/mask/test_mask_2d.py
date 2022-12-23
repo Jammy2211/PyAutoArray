@@ -23,7 +23,7 @@ def test__manual():
     assert mask.pixel_scales == (1.0, 1.0)
     assert mask.origin == (0.0, 0.0)
     assert mask.sub_size == 1
-    assert (mask.extent == np.array([-1.0, 1.0, -1.0, 1.0])).all()
+    assert (mask.geometry.extent == np.array([-1.0, 1.0, -1.0, 1.0])).all()
 
     mask = aa.Mask2D.manual(
         mask=[[False, False], [True, True]],

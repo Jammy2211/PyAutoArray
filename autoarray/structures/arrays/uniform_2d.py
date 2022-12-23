@@ -486,7 +486,7 @@ class AbstractArray2D(Structure):
             origin=self.mask.mask_centre,
         )
 
-        return mask.extent
+        return mask.geometry.extent
 
     def resized_from(
         self, new_shape: Tuple[int, int], mask_pad_value: int = 0.0

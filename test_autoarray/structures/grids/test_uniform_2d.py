@@ -831,7 +831,7 @@ def test__grid_2d_radial_projected_shape_slim_from():
     )
 
     grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
-        extent=grid_2d.extent,
+        extent=grid_2d.geometry.extent,
         centre=(0.0, 0.0),
         pixel_scales=grid_2d.pixel_scales,
         sub_size=grid_2d.sub_size,
@@ -848,7 +848,7 @@ def test__grid_2d_radial_projected_shape_slim_from():
     )
 
     grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
-        extent=grid_2d.extent,
+        extent=grid_2d.geometry.extent,
         centre=(0.3, 0.1),
         pixel_scales=grid_2d.pixel_scales,
         sub_size=grid_2d.sub_size,
@@ -881,7 +881,7 @@ def test__grid_2d_radial_projected_shape_slim_from():
     )
 
     grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
-        extent=grid_2d.extent,
+        extent=grid_2d.geometry.extent,
         centre=(0.0, 0.0),
         pixel_scales=grid_2d.pixel_scales,
         sub_size=grid_2d.sub_size,

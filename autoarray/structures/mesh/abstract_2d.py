@@ -23,11 +23,11 @@ class Abstract2DMesh(Structure):
         `interpolation_grid` can be computed which has square pixels. This is not necessary, but benefits visualization.
         """
 
-        y_mean = 0.5 * (self.extent[2] + self.extent[3])
-        y_half_length = 0.5 * (self.extent[3] - self.extent[2])
+        y_mean = 0.5 * (self.geometry.extent[2] + self.geometry.extent[3])
+        y_half_length = 0.5 * (self.geometry.extent[3] - self.geometry.extent[2])
 
-        x_mean = 0.5 * (self.extent[0] + self.extent[1])
-        x_half_length = 0.5 * (self.extent[1] - self.extent[0])
+        x_mean = 0.5 * (self.geometry.extent[0] + self.geometry.extent[1])
+        x_half_length = 0.5 * (self.geometry.extent[1] - self.geometry.extent[0])
 
         half_length = np.max([y_half_length, x_half_length])
 
