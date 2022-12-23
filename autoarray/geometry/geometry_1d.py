@@ -43,5 +43,5 @@ class Geometry1D:
         return (-float(self.shape_slim_scaled[0] / 2.0) + self.origin[0],)
 
     @property
-    def extent(self):
-        return np.array([self.scaled_minima[0], self.scaled_maxima[0]])
+    def extent(self) -> Tuple[float, float]:
+        return (self.scaled_minima[0], self.scaled_maxima[0])

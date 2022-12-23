@@ -12,7 +12,7 @@ class MockGeometry(AbstractGeometry2D):
         self._extent = extent
 
     @property
-    def extent(self) -> np.ndarray:
+    def extent(self) -> Tuple[float, float, float, float]:
         return self._extent
 
 
@@ -61,7 +61,7 @@ class MockGrid2DMesh(Abstract2DMesh):
         return MockGeometry(extent=self.extent)
 
     @property
-    def extent(self):
+    def extent(self) -> Tuple[float, float, float, float]:
         return self._extent
 
 

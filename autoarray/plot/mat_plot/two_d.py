@@ -393,7 +393,8 @@ class MatPlot2D(AbstractMatPlot):
 
         if extent is None:
 
-            extent = grid.geometry.extent + (buffer * grid.geometry.extent)
+            extent = np.asarray(grid.geometry.extent)
+            extent = extent + (buffer * extent)
 
         self.axis.set(extent=extent, grid=grid)
 

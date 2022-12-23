@@ -4,16 +4,16 @@ from typing import Tuple
 
 class AbstractGeometry2D:
     @property
-    def extent(self) -> np.ndarray:
+    def extent(self) -> Tuple[float, float, float, float]:
         raise NotImplementedError
 
     @property
     def extent_square(self) -> Tuple[float, float, float, float]:
         """
-        Returns an extent where the y and x distances from each edge are the same.
+        Returns an extent where the y and x distances are the same.
 
         This ensures that a uniform grid with square pixels can be laid over this extent, such that an
-        `interpolation_grid` can be computed which has square pixels. This is not necessary, but benefits visualization.
+        `interpolation_grid` can be computed which has square pixels. This benefits visualization.
         """
 
         y_mean = 0.5 * (self.extent[2] + self.extent[3])

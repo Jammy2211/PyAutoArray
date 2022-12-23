@@ -17,7 +17,7 @@ class Geometry2DIrregular(AbstractGeometry2D):
         self.scaled_minima = scaled_minima
 
     @property
-    def extent(self) -> np.ndarray:
+    def extent(self) -> Tuple[float, float, float, float]:
         """
         The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
 
@@ -25,11 +25,9 @@ class Geometry2DIrregular(AbstractGeometry2D):
         is used for visualization in the plot module, which is why the x and y coordinates are swapped compared to
         the normal PyAutoArray convention.
         """
-        return np.array(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
+        return (
+            self.scaled_minima[1],
+            self.scaled_maxima[1],
+            self.scaled_minima[0],
+            self.scaled_maxima[0],
         )
