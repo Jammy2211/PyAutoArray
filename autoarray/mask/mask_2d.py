@@ -843,7 +843,7 @@ class Mask2D(Mask):
 
         from autoarray.structures.arrays.uniform_2d import Array2D
 
-        grid_pixel_indexes_1d = grid_2d_util.grid_pixel_indexes_2d_slim_from(
+        grid_pixel_indexes_1d = geometry_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
             shape_native=self.shape,
             pixel_scales=self.pixel_scales,
@@ -869,7 +869,7 @@ class Mask2D(Mask):
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
+        grid_scaled_1d = geometry_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,
             shape_native=self.shape,
             pixel_scales=self.pixel_scales,
@@ -883,7 +883,7 @@ class Mask2D(Mask):
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
+        grid_scaled_1d = geometry_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,
             shape_native=shape_native,
             pixel_scales=(

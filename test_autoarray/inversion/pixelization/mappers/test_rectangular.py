@@ -31,7 +31,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 
     pix_indexes_for_sub_slim_index_util = np.array(
         [
-            aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
+            aa.util.geometry.grid_pixel_indexes_2d_slim_from(
                 grid_scaled_2d_slim=grid,
                 shape_native=mesh_grid.shape_native,
                 pixel_scales=mesh_grid.pixel_scales,

@@ -9,7 +9,7 @@ from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
 from autoarray.numba_util import profile_func
-from autoarray.structures.grids import grid_2d_util
+from autoarray.geometry import geometry_util
 
 
 class MapperRectangularNoInterp(AbstractMapper):
@@ -112,7 +112,7 @@ class MapperRectangularNoInterp(AbstractMapper):
         dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
         are equal to 1.0.
         """
-        mappings = grid_2d_util.grid_pixel_indexes_2d_slim_from(
+        mappings = geometry_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=self.source_plane_data_grid,
             shape_native=self.source_plane_mesh_grid.shape_native,
             pixel_scales=self.source_plane_mesh_grid.pixel_scales,

@@ -120,12 +120,7 @@ class Grid2DSparse(Structure):
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         ).astype("int")
 
-        print(grid)
-        print(unmasked_sparse_shape)
-        print(pixel_scales)
-        print(origin)
-
-        regular_to_unmasked_sparse = grid_2d_util.grid_pixel_indexes_2d_slim_from(
+        regular_to_unmasked_sparse = geometry_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid,
             shape_native=unmasked_sparse_shape,
             pixel_scales=pixel_scales,

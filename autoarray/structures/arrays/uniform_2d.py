@@ -9,8 +9,9 @@ from autoarray.structures.arrays.uniform_1d import Array1D
 
 from autoarray import exc
 from autoarray import type as ty
-from autoarray.geometry import geometry_util
+
 from autoarray.structures.arrays import array_2d_util
+from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.layout import layout_util
 
@@ -1270,7 +1271,7 @@ class Array2D(AbstractArray2D):
             y=y, x=x, shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1
         )
 
-        grid_pixels = grid_2d_util.grid_pixel_indexes_2d_slim_from(
+        grid_pixels = geometry_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid.slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,

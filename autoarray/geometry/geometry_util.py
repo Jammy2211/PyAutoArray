@@ -304,12 +304,12 @@ def transform_grid_2d_to_reference_frame(
 
     This transformation includes:
 
-    1) A translation to a new (y,x) centre value, by subtracting the centre from every coordinate on the grid.
-    2) A rotation of the grid around this new centre, which is performed clockwise from an input angle.
+     1) A translation to a new (y,x) centre value, by subtracting the centre from every coordinate on the grid.
+     2) A rotation of the grid around this new centre, which is performed clockwise from an input angle.
 
     Parameters
     ----------
-    grid : ndarray
+    grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
     shifted_grid_2d = np.subtract(grid_2d, centre)
@@ -328,16 +328,16 @@ def transform_grid_2d_from_reference_frame(
 ) -> np.ndarray:
     """
     Transform a 2D grid of (y,x) coordinates to a new reference frame, which is the reverse frame computed via the
-     method `transform_grid_2d_to_reference_frame`.
+    method `transform_grid_2d_to_reference_frame`.
 
-     This transformation includes:
+    This transformation includes:
 
-    1) A translation to a new (y,x) centre value, by adding the centre to every coordinate on the grid.
-    2) A rotation of the grid around this new centre, which is performed counter-clockwise from an input angle.
+     1) A translation to a new (y,x) centre value, by adding the centre to every coordinate on the grid.
+     2) A rotation of the grid around this new centre, which is performed counter-clockwise from an input angle.
 
     Parameters
     ----------
-    grid : ndarray
+    grid
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
 
@@ -393,8 +393,7 @@ def grid_pixels_2d_slim_from(
 
     Returns
     -------
-    ndarray
-        A slimmed grid of 2D (y,x) pixel-value coordinates with dimensions (total_pixels, 2).
+    A slimmed grid of 2D (y,x) pixel-value coordinates with dimensions (total_pixels, 2).
 
     Examples
     --------
@@ -486,3 +485,186 @@ def grid_pixel_centres_2d_slim_from(
         )
 
     return grid_pixels_2d_slim
+
+
+@numba_util.jit()
+def grid_pixel_indexes_2d_slim_from(
+    grid_scaled_2d_slim: np.ndarray,
+    shape_native: Tuple[int, int],
+    pixel_scales: ty.PixelScales,
+    origin: Tuple[float, float] = (0.0, 0.0),
+) -> np.ndarray:
+    """
+    Convert a slimmed grid of 2D (y,x) scaled coordinates to a slimmed grid of pixel indexes. Pixel coordinates are
+    returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then downwards.
+
+    The input and output grids are both slimmed and have shapes (total_pixels, 2) and (total_pixels,).
+
+    For example:
+
+    The pixel at the top-left, whose native index is [0,0], corresponds to slimmed pixel index 0.
+    The fifth pixel on the top row, whose native index is [0,5], corresponds to slimmed pixel index 4.
+    The first pixel on the second row, whose native index is [0,1], has slimmed pixel index 10 if a row has 10 pixels.
+
+    The scaled coordinate grid is defined by the class attribute origin, and coordinates are shifted to this
+    origin before computing their 1D grid pixel indexes.
+
+    The input and output grids are both of shape (total_pixels, 2).
+
+    Parameters
+    ----------
+    grid_scaled_2d_slim
+        The slimmed grid of 2D (y,x) coordinates in scaled units which is converted to slimmed pixel indexes.
+    shape_native
+        The (y,x) shape of the original 2D array the scaled coordinates were computed on.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
+    origin
+        The (y,x) origin of the grid, which the scaled grid is shifted.
+
+    Returns
+    -------
+    A grid of slimmed pixel indexes with dimensions (total_pixels,).
+
+    Examples
+    --------
+    grid_scaled_2d_slim = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+    grid_pixel_indexes_2d_slim = grid_pixel_indexes_2d_slim_from(grid_scaled_2d_slim=grid_scaled_2d_slim, shape=(2,2),
+                                                           pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    """
+
+    grid_pixels_2d_slim = grid_pixel_centres_2d_slim_from(
+        grid_scaled_2d_slim=grid_scaled_2d_slim,
+        shape_native=shape_native,
+        pixel_scales=pixel_scales,
+        origin=origin,
+    )
+
+    grid_pixel_indexes_2d_slim = np.zeros(grid_pixels_2d_slim.shape[0])
+
+    for slim_index in range(grid_pixels_2d_slim.shape[0]):
+
+        grid_pixel_indexes_2d_slim[slim_index] = int(
+            grid_pixels_2d_slim[slim_index, 0] * shape_native[1]
+            + grid_pixels_2d_slim[slim_index, 1]
+        )
+
+    return grid_pixel_indexes_2d_slim
+
+
+@numba_util.jit()
+def grid_scaled_2d_slim_from(
+    grid_pixels_2d_slim: np.ndarray,
+    shape_native: Tuple[int, int],
+    pixel_scales: ty.PixelScales,
+    origin: Tuple[float, float] = (0.0, 0.0),
+) -> np.ndarray:
+    """
+    Convert a slimmed grid of 2D (y,x) pixel coordinates to a slimmed grid of 2D (y,x) scaled values.
+
+    The input and output grids are both slimmed and therefore shape (total_pixels, 2).
+
+    The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
+    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the gird.
+
+    The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
+    origin after computing their values from the 1D grid pixel indexes.
+
+    Parameters
+    ----------
+    grid_pixels_2d_slim
+        The slimmed grid of (y,x) coordinates in pixel values which is converted to scaled coordinates.
+    shape_native
+        The (y,x) shape of the original 2D array the scaled coordinates were computed on.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
+    origin
+        The (y,x) origin of the grid, which the scaled grid is shifted.
+
+    Returns
+    -------
+    A slimmed grid of 2d scaled coordinates with dimensions (total_pixels, 2).
+
+    Examples
+    --------
+    grid_pixels_2d_slim = np.array([[0,0], [0,1], [1,0], [1,1])
+    grid_pixels_2d_slim = grid_scaled_2d_slim_from(grid_pixels_2d_slim=grid_pixels_2d_slim, shape=(2,2),
+                                                           pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    """
+
+    grid_scaled_2d_slim = np.zeros((grid_pixels_2d_slim.shape[0], 2))
+
+    centres_scaled = central_scaled_coordinate_2d_from(
+        shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
+    )
+
+    for slim_index in range(grid_scaled_2d_slim.shape[0]):
+
+        grid_scaled_2d_slim[slim_index, 0] = (
+            -(grid_pixels_2d_slim[slim_index, 0] - centres_scaled[0] - 0.5)
+            * pixel_scales[0]
+        )
+        grid_scaled_2d_slim[slim_index, 1] = (
+            grid_pixels_2d_slim[slim_index, 1] - centres_scaled[1] - 0.5
+        ) * pixel_scales[1]
+
+    return grid_scaled_2d_slim
+
+
+@numba_util.jit()
+def grid_pixel_centres_2d_from(
+    grid_scaled_2d: np.ndarray,
+    shape_native: Tuple[int, int],
+    pixel_scales: ty.PixelScales,
+    origin: Tuple[float, float] = (0.0, 0.0),
+) -> np.ndarray:
+    """
+    Convert a native grid of 2D (y,x) scaled coordinates to a native grid of 2D (y,x) pixel values. Pixel coordinates
+    are returned as integers such that they map directly to the pixel they are contained within.
+
+    The input and output grids are both native resolution and therefore have shape (y_pixels, x_pixels, 2).
+
+    The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
+    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the gird.
+
+    The scaled coordinate grid is defined by the class attribute origin, and coordinates are shifted to this
+    origin before computing their 1D grid pixel indexes.
+
+    Parameters
+    ----------
+    grid_scaled_2d
+        The native grid of 2D (y,x) coordinates in scaled units which is converted to pixel indexes.
+    shape_native
+        The (y,x) shape of the original 2D array the scaled coordinates were computed on.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
+    origin
+        The (y,x) origin of the grid, which the scaled grid is shifted
+
+    Returns
+    -------
+    A native grid of 2D (y,x) pixel indexes with dimensions (y_pixels, x_pixels, 2).
+
+    Examples
+    --------
+    grid_scaled_2d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+    grid_pixel_centres_2d = grid_pixel_centres_2d_from(grid_scaled_2d=grid_scaled_2d, shape=(2,2),
+                                                           pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    """
+
+    grid_pixels_2d = np.zeros((grid_scaled_2d.shape[0], grid_scaled_2d.shape[1], 2))
+
+    centres_scaled = central_scaled_coordinate_2d_from(
+        shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
+    )
+
+    for y in range(grid_scaled_2d.shape[0]):
+        for x in range(grid_scaled_2d.shape[1]):
+            grid_pixels_2d[y, x, 0] = int(
+                (-grid_scaled_2d[y, x, 0] / pixel_scales[0]) + centres_scaled[0] + 0.5
+            )
+            grid_pixels_2d[y, x, 1] = int(
+                (grid_scaled_2d[y, x, 1] / pixel_scales[1]) + centres_scaled[1] + 0.5
+            )
+
+    return grid_pixels_2d

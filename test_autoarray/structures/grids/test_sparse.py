@@ -38,7 +38,7 @@ def test__from_grid_and_unmasked_2d_grid_shap():
     )
 
     regular_to_unmasked_sparse_2d_util = (
-        aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
+        aa.util.geometry.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid,
             shape_native=(10, 10),
             pixel_scales=(0.15, 0.15),

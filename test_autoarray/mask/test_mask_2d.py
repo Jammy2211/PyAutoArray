@@ -1567,7 +1567,7 @@ def test__grid_pixel_indexes_from():
 
     grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
-    grid_pixels_util = aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
+    grid_pixels_util = aa.util.geometry.grid_pixel_indexes_2d_slim_from(
         grid_scaled_2d_slim=grid_scaled,
         shape_native=(2, 2),
         pixel_scales=(2.0, 4.0),
@@ -1584,7 +1584,7 @@ def test__grid_scaled_from():
 
     grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
-    grid_pixels_util = aa.util.grid_2d.grid_scaled_2d_slim_from(
+    grid_pixels_util = aa.util.geometry.grid_scaled_2d_slim_from(
         grid_pixels_2d_slim=grid_pixels,
         shape_native=(2, 2),
         pixel_scales=(2.0, 2.0),
