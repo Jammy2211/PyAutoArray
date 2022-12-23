@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 from autoarray.structures.abstract_structure import Structure
 
 from autoarray import exc
+from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.mask.mask_2d import mask_2d_util
 from autoarray.structures.grids import sparse_2d_util
@@ -96,13 +97,11 @@ class Grid2DSparse(Structure):
             origin=origin,
         )
 
-        unmasked_sparse_grid_pixel_centres = (
-            grid_2d_util.grid_pixel_centres_2d_slim_from(
+        unmasked_sparse_grid_pixel_centres = geometry_util.grid_pixel_centres_2d_slim_from(
                 grid_scaled_2d_slim=unmasked_sparse_grid_1d,
-                shape_native=grid.mask.shape,
+                shape_native=grid.mask.shape_native,
                 pixel_scales=grid.mask.pixel_scales,
             ).astype("int")
-        )
 
         total_sparse_pixels = mask_2d_util.total_sparse_pixels_2d_from(
             mask_2d=grid.mask,
@@ -120,6 +119,11 @@ class Grid2DSparse(Structure):
             mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         ).astype("int")
+
+        print(grid)
+        print(unmasked_sparse_shape)
+        print(pixel_scales)
+        print(origin)
 
         regular_to_unmasked_sparse = grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid,

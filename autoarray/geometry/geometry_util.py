@@ -423,3 +423,66 @@ def grid_pixels_2d_slim_from(
         )
 
     return grid_pixels_2d_slim
+
+
+@numba_util.jit()
+def grid_pixel_centres_2d_slim_from(
+    grid_scaled_2d_slim: np.ndarray,
+    shape_native: Tuple[int, int],
+    pixel_scales: ty.PixelScales,
+    origin: Tuple[float, float] = (0.0, 0.0),
+) -> np.ndarray:
+    """
+    Convert a slimmed grid of 2D (y,x) scaled coordinates to a slimmed grid of 2D (y,x) pixel values. Pixel coordinates
+    are returned as integers such that they map directly to the pixel they are contained within.
+
+    The input and output grids are both slimmed and therefore shape (total_pixels, 2).
+
+    The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
+    the highest (most positive) y scaled coordinate and lowest (most negative) x scaled coordinate on the gird.
+
+    The scaled coordinate grid is defined by the class attribute origin, and coordinates are shifted to this
+    origin before computing their 1D grid pixel indexes.
+
+    Parameters
+    ----------
+    grid_scaled_2d_slim
+        The slimmed grid of 2D (y,x) coordinates in scaled units which is converted to pixel indexes.
+    shape_native
+        The (y,x) shape of the original 2D array the scaled coordinates were computed on.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
+    origin
+        The (y,x) origin of the grid, which the scaled grid is shifted
+
+    Returns
+    -------
+    A slimmed grid of 2D (y,x) pixel indexes with dimensions (total_pixels, 2).
+
+    Examples
+    --------
+    grid_scaled_2d_slim = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+    grid_pixels_2d_slim = grid_scaled_2d_slim_from(grid_scaled_2d_slim=grid_scaled_2d_slim, shape=(2,2),
+                                                           pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    """
+
+    grid_pixels_2d_slim = np.zeros((grid_scaled_2d_slim.shape[0], 2))
+
+    centres_scaled = central_scaled_coordinate_2d_from(
+        shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
+    )
+
+    for slim_index in range(grid_scaled_2d_slim.shape[0]):
+
+        grid_pixels_2d_slim[slim_index, 0] = int(
+            (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
+            + centres_scaled[0]
+            + 0.5
+        )
+        grid_pixels_2d_slim[slim_index, 1] = int(
+            (grid_scaled_2d_slim[slim_index, 1] / pixel_scales[1])
+            + centres_scaled[1]
+            + 0.5
+        )
+
+    return grid_pixels_2d_slim

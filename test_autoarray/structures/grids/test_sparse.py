@@ -1,4 +1,3 @@
-from os import path
 import numpy as np
 import pytest
 
@@ -26,7 +25,7 @@ def test__from_grid_and_unmasked_2d_grid_shap():
     )
 
     unmasked_sparse_grid_pixel_centres = (
-        aa.util.grid_2d.grid_pixel_centres_2d_slim_from(
+        aa.util.geometry.grid_pixel_centres_2d_slim_from(
             grid_scaled_2d_slim=unmasked_sparse_grid_util,
             shape_native=grid.mask.shape,
             pixel_scales=grid.pixel_scales,

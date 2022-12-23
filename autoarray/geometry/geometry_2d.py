@@ -133,3 +133,30 @@ class Geometry2D(AbstractGeometry2D):
             origin=self.origin,
         )
         return Grid2D(grid=grid_pixels_2d, mask=grid_scaled_2d.mask)
+
+    def grid_pixel_centres_2d_from(self, grid_scaled_2d: Grid2D) -> Grid2D:
+        """
+        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values, which are
+        returned as integers such that they map directly to the pixel they are contained within.
+
+        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
+        higher y scaled coordinate value and lowest x scaled coordinate.
+
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
+        origin before computing their 1D grid pixel indexes.
+
+        Parameters
+        ----------
+        grid_scaled_2d
+            The grid of (y,x) coordinates in scaled units.
+        """
+        from autoarray.structures.grids.uniform_2d import Grid2D
+
+        grid_pixel_centres_1d = geometry_util.grid_pixel_centres_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled_2d,
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        ).astype("int")
+
+        return Grid2D(grid=grid_pixel_centres_1d, mask=grid_scaled_2d.mask)

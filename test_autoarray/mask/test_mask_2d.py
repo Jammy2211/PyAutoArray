@@ -1561,23 +1561,6 @@ def test__border_1d_grid():
     ).all()
 
 
-def test__grid_pixel_centres_from():
-
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(7.0, 2.0))
-
-    grid_scaled_1d = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
-
-    grid_pixels_util = aa.util.grid_2d.grid_pixel_centres_2d_slim_from(
-        grid_scaled_2d_slim=grid_scaled_1d,
-        shape_native=(2, 2),
-        pixel_scales=(7.0, 2.0),
-    )
-
-    grid_pixels = mask.grid_pixel_centres_from(grid_scaled_1d=grid_scaled_1d)
-
-    assert (grid_pixels == grid_pixels_util).all()
-
-
 def test__grid_pixel_indexes_from():
 
     mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
