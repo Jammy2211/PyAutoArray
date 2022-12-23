@@ -139,14 +139,6 @@ class Mesh2DRectangular(Abstract2DMesh):
         """
         return self.shape_native[0] * self.shape_native[1]
 
-    @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
-        """
-        The (y,x) 2D shape of the rectangular pixelization in scaled units, computed from the 2D `shape_native` (units
-        pixels) and the `pixel_scales` (units scaled/pixels) conversion factor.
-        """
-        return self.geometry.shape_native_scaled
-
     def interpolated_array_from(
         self,
         values: np.ndarray,

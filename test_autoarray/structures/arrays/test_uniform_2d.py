@@ -46,7 +46,7 @@ def test__manual_native():
     assert (array_2d.binned == np.array([2.5, 6.5])).all()
     assert array_2d.pixel_scales == (0.1, 0.1)
     assert array_2d.geometry.central_pixel_coordinates == (0.5, 0.0)
-    assert array_2d.mask.shape_native_scaled == pytest.approx((0.2, 0.1))
+    assert array_2d.geometry.shape_native_scaled == pytest.approx((0.2, 0.1))
     assert array_2d.geometry.scaled_maxima == pytest.approx((1.1, 1.05), 1e-4)
     assert array_2d.geometry.scaled_minima == pytest.approx((0.9, 0.95), 1e-4)
 
@@ -84,7 +84,7 @@ def test__manual_slim():
     assert array_2d.native == pytest.approx(np.ones((3, 3)), 1e-4)
     assert array_2d.pixel_scales == (2.0, 1.0)
     assert array_2d.geometry.central_pixel_coordinates == (1.0, 1.0)
-    assert array_2d.mask.shape_native_scaled == pytest.approx((6.0, 3.0))
+    assert array_2d.geometry.shape_native_scaled == pytest.approx((6.0, 3.0))
     assert array_2d.origin == (-1.0, -2.0)
     assert array_2d.geometry.scaled_maxima == pytest.approx((2.0, -0.5), 1e-4)
     assert array_2d.geometry.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)

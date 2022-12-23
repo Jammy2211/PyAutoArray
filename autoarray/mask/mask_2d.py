@@ -731,14 +731,6 @@ class Mask2D(Mask):
         )
 
     @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
-        """
-        The (y,x) 2D shape of the mask in scaled units, computed from the 2D `shape` (units pixels) and
-        the `pixel_scales` (units scaled/pixels) conversion factor.
-        """
-        return self.geometry.shape_native_scaled
-
-    @property
     def mask_centre(self) -> Tuple[float, float]:
         return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
 
