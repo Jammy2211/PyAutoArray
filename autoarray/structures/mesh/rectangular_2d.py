@@ -163,24 +163,6 @@ class Mesh2DRectangular(Abstract2DMesh):
         """
         return self.geometry.scaled_minima
 
-    @property
-    def extent(self) -> np.ndarray:
-        """
-        The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
-
-        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module, which is why the x and y coordinates are swapped compared to
-        the normal PyAutoArray convention.
-        """
-        return np.asarray(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
-
     def interpolated_array_from(
         self,
         values: np.ndarray,

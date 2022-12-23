@@ -392,10 +392,6 @@ class AbstractArray2D(Structure):
         )
 
     @property
-    def extent(self) -> np.ndarray:
-        return self.mask.extent
-
-    @property
     def in_counts(self) -> "Array2D":
         return self.header.array_eps_to_counts(array_eps=self)
 

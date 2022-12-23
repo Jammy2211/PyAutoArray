@@ -236,14 +236,3 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             np.amin(self[:, 0]).astype("float"),
             np.amin(self[:, 1]).astype("float"),
         )
-
-    @property
-    def extent(self) -> np.ndarray:
-        return np.array(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )

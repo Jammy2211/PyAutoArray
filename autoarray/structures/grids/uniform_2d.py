@@ -1285,23 +1285,6 @@ class Grid2D(Structure):
             (self.mask.origin[1] - (self.mask.shape_native_scaled[1] / 2.0)),
         )
 
-    @property
-    def extent(self) -> np.ndarray:
-        """
-        The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
-
-        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module.
-        """
-        return np.asarray(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
-
     def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:
         """
         The extent of the grid in scaled units returned as a list [x_min, x_max, y_min, y_max], where all values are

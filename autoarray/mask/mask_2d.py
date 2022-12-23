@@ -749,18 +749,6 @@ class Mask2D(Mask):
         return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
 
     @property
-    def extent(self) -> np.ndarray:
-        return np.array(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
-
-
-    @property
     def edge_buffed_mask(self) -> "Mask2D":
         edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(mask_2d=self).astype("bool")
         return Mask2D(

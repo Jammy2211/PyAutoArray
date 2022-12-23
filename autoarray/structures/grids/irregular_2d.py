@@ -86,23 +86,6 @@ class Grid2DIrregular(AbstractNDArray):
         )
 
     @property
-    def extent(self) -> np.ndarray:
-        """
-        The extent of the coordinates returned as a NumPy array [x_min, x_max, y_min, y_max].
-
-        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module.
-        """
-        return np.array(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
-
-    @property
     def slim(self) -> "Grid2DIrregular":
         return self
 

@@ -15,10 +15,6 @@ class Abstract2DMesh(Structure):
         raise NotImplementedError
 
     @property
-    def extent(self) -> np.ndarray:
-        raise NotImplementedError
-
-    @property
     def extent_square(self) -> Tuple[float, float, float, float]:
         """
         Returns an extent where the y and x distances from each edge are the same.
