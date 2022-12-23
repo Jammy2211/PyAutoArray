@@ -1559,19 +1559,3 @@ def test__border_1d_grid():
             ]
         )
     ).all()
-
-
-def test__grid_scaled_from():
-
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(2.0, 2.0))
-
-    grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-
-    grid_pixels_util = aa.util.geometry.grid_scaled_2d_slim_from(
-        grid_pixels_2d_slim=grid_pixels,
-        shape_native=(2, 2),
-        pixel_scales=(2.0, 2.0),
-    )
-    grid_pixels = mask.grid_scaled_from(grid_pixels_1d=grid_pixels)
-
-    assert (grid_pixels == grid_pixels_util).all()

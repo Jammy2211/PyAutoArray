@@ -123,3 +123,22 @@ def test__grid_pixel_indexes_2d_from():
     grid_pixels = geometry.grid_pixel_indexes_2d_from(grid_scaled_2d=grid_scaled_2d)
 
     assert (grid_pixels == grid_pixels_util).all()
+
+
+def test__grid_scaled_2d_from():
+
+    geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 2.0))
+
+    grid_pixels = aa.Grid2D.manual_native(
+        grid=[[0, 0], [0, 1], [1, 0], [1, 1]],
+        pixel_scales=geometry.pixel_scales,
+    )
+
+    grid_pixels_util = aa.util.geometry.grid_scaled_2d_slim_from(
+        grid_pixels_2d_slim=grid_pixels,
+        shape_native=(2, 2),
+        pixel_scales=(2.0, 2.0),
+    )
+    grid_pixels = geometry.grid_scaled_2d_from(grid_pixels_2d=grid_pixels)
+
+    assert (grid_pixels == grid_pixels_util).all()
