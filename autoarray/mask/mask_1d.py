@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
+from autoarray.geometry.geometry_1d import Geometry1D
 from autoarray.structures.arrays import array_1d_util
 from autoarray.structures.grids import grid_1d_util
 from autoarray import type as ty
@@ -67,6 +68,18 @@ class Mask1D(Mask):
         else:
             self.origin = (0.0,)
 
+    @property
+    def geometry(self) -> Geometry1D:
+        """
+        Return the 1D geometry of the mask, representing its uniform rectangular grid of (x) coordinates defined by
+        its ``shape_native``.
+        """
+        return Geometry1D(
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
     @classmethod
     def manual(
         cls,
@@ -107,7 +120,7 @@ class Mask1D(Mask):
 
         Parameters
         ----------
-        shape
+        shape_slim
             The (y,x) shape of the mask in units of pixels.
         pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
@@ -217,22 +230,6 @@ class Mask1D(Mask):
     @property
     def shape_slim(self) -> Tuple[int]:
         return self.shape
-
-    @property
-    def shape_slim_scaled(self) -> Tuple[float]:
-        return (float(self.pixel_scales[0] * self.shape_slim[0]),)
-
-    @property
-    def scaled_maxima(self) -> Tuple[float]:
-        return (float(self.shape_slim_scaled[0] / 2.0 + self.origin[0]),)
-
-    @property
-    def scaled_minima(self) -> Tuple[float]:
-        return (-float(self.shape_slim_scaled[0] / 2.0) + self.origin[0],)
-
-    @property
-    def extent(self):
-        return np.array([self.scaled_minima[0], self.scaled_maxima[0]])
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """

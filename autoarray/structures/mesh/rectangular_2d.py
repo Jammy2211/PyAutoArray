@@ -139,57 +139,6 @@ class Mesh2DRectangular(Abstract2DMesh):
         """
         return self.shape_native[0] * self.shape_native[1]
 
-    @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
-        """
-        The (y,x) 2D shape of the rectangular pixelization in scaled units, computed from the 2D `shape_native` (units
-        pixels) and the `pixel_scales` (units scaled/pixels) conversion factor.
-        """
-        return (
-            (self.shape_native[0] * self.pixel_scales[0]),
-            (self.shape_native[1] * self.pixel_scales[1]),
-        )
-
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        """
-        The maximum (y,x) values of the rectangular pixelization in scaled coordinates returned as a
-        tuple (y_max, x_max).
-        """
-        return (
-            self.origin[0] + (self.shape_native_scaled[0] / 2.0),
-            self.origin[1] + (self.shape_native_scaled[1] / 2.0),
-        )
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        """
-        The minimum (y,x) values of the rectangular pixelization in scaled coordinates returned as a
-        tuple (y_min, x_min).
-        """
-        return (
-            (self.origin[0] - (self.shape_native_scaled[0] / 2.0)),
-            (self.origin[1] - (self.shape_native_scaled[1] / 2.0)),
-        )
-
-    @property
-    def extent(self) -> np.ndarray:
-        """
-        The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
-
-        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module, which is why the x and y coordinates are swapped compared to
-        the normal PyAutoArray convention.
-        """
-        return np.asarray(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
-
     def interpolated_array_from(
         self,
         values: np.ndarray,

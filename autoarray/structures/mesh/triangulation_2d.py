@@ -5,6 +5,7 @@ from typing import Optional, List, Union, Tuple
 
 from autoconf import cached_property
 
+from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 from autoarray import exc
@@ -74,6 +75,30 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
         if hasattr(obj, "uses_interpolation"):
             self.uses_interpolation = obj.uses_interpolation
+
+    @property
+    def geometry(self):
+
+        shape_native_scaled = (
+            np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
+        )
+
+        scaled_maxima = (
+            np.amax(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float"),
+        )
+
+        scaled_minima = (
+            np.amin(self[:, 0]).astype("float"),
+            np.amin(self[:, 1]).astype("float"),
+        )
+
+        return Geometry2DIrregular(
+            shape_native_scaled=shape_native_scaled,
+            scaled_maxima=scaled_maxima,
+            scaled_minima=scaled_minima,
+        )
 
     @cached_property
     def delaunay(self) -> scipy.spatial.Delaunay:
@@ -205,45 +230,3 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         The total number of pixels in the Voronoi pixelization.
         """
         return self.shape[0]
-
-    @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
-        """
-        The (y,x) 2D shape of the Voronoi pixelization in scaled units, computed from the minimum and maximum y and x v
-        alues of the pixelization.
-        """
-        return (
-            np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
-            np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
-        )
-
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        """
-        The maximum (y,x) values of the Voronoi pixelization in scaled coordinates returned as a tuple (y_max, x_max).
-        """
-        return (
-            np.amax(self[:, 0]).astype("float"),
-            np.amax(self[:, 1]).astype("float"),
-        )
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        """
-        The minimum (y,x) values of the Voronoi pixelization in scaled coordinates returned as a tuple (y_min, x_min).
-        """
-        return (
-            np.amin(self[:, 0]).astype("float"),
-            np.amin(self[:, 1]).astype("float"),
-        )
-
-    @property
-    def extent(self) -> np.ndarray:
-        return np.array(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )

@@ -14,6 +14,7 @@ from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
 from autoarray import type as ty
+from autoarray.geometry.geometry_2d import Geometry2D
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
@@ -41,17 +42,19 @@ class Mask2D(Mask):
         When applied to 2D data it extracts or masks the unmasked image pixels corresponding to mask entries that are
         `False` or 0).
 
-        The mask defines the geometry of the 2D uniform grid of pixels for the 2D data structure it is paired with,
-        for example the grid's `pixel scales` (y,x) `origin`. The 2D uniform grid may also be sub-gridded,
-        whereby every pixel is sub-divided into a uniform grid of sub-pixels which are all used to perform
-        calculations more accurate.
+        The mask has a 2D geometry, corresponding to the 2D uniform grid of pixels of the 2D data structure it is
+        paired with, including its ``pixel scales`` and (y,x) ``origin``.
 
-        The mask includes tols to map the 2D data structure between 2D representations (that include all  data-points
-        irrespective of if they are masked or not) and 1D data structures (that only contain the unmasked data).
+        The 2D uniform grid may also be sub-gridded, whereby every pixel is sub-divided into a uniform grid of
+        sub-pixels which are all used to perform calculations more accurate.
+
+        The mask includes functionality which maps the 2D data structure between 2D ``native`` representations (that
+        include all data-points irrespective of if they are masked or not) and 1D ``slim`` representations (that
+        only contain the unmasked data).
 
         Parameters
         ----------
-        mask: np.ndarray
+        mask
             The `ndarray` of shape [total_y_pixels, total_x_pixels] containing the `bool`'s representing the
             `mask`, where `False` signifies an entry is unmasked and used in calculations.
         pixel_scales
@@ -79,6 +82,18 @@ class Mask2D(Mask):
         else:
             self.origin = (0.0, 0.0)
 
+    @property
+    def geometry(self) -> Geometry2D:
+        """
+        Return the 2D geometry of the mask, representing its uniform rectangular grid of (y,x) coordinates defined by
+        its ``shape_native``.
+        """
+        return Geometry2D(
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
     @classmethod
     def manual(
         cls,
@@ -99,7 +114,7 @@ class Mask2D(Mask):
 
         Parameters
         ----------
-        mask or list
+        mask
             The `bool` values of the mask input as an `np.ndarray` of shape [total_y_pixels, total_x_pixels] or a
             list of lists.
         pixel_scales
@@ -199,9 +214,7 @@ class Mask2D(Mask):
             and visa versa.
         """
 
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_circular_from(
             shape_native=shape_native,
@@ -258,9 +271,7 @@ class Mask2D(Mask):
             and visa versa.
         """
 
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_circular_annular_from(
             shape_native=shape_native,
@@ -322,9 +333,7 @@ class Mask2D(Mask):
             and visa versa.
         """
 
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_circular_anti_annular_from(
             shape_native=shape_native,
@@ -385,9 +394,7 @@ class Mask2D(Mask):
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_elliptical_from(
             shape_native=shape_native,
@@ -458,10 +465,7 @@ class Mask2D(Mask):
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
-
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = mask_2d_util.mask_2d_elliptical_annular_from(
             shape_native=shape_native,
@@ -561,10 +565,7 @@ class Mask2D(Mask):
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
-
-        if type(pixel_scales) is not tuple:
-            if type(pixel_scales) is float or int:
-                pixel_scales = (float(pixel_scales), float(pixel_scales))
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = Mask2D(
             mask=array_2d_util.numpy_array_2d_via_fits_from(
@@ -722,79 +723,8 @@ class Mask2D(Mask):
         )
 
     @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
-        """
-        The (y,x) 2D shape of the mask in scaled units, computed from the 2D `shape` (units pixels) and
-        the `pixel_scales` (units scaled/pixels) conversion factor.
-        """
-        return (
-            float(self.pixel_scales[0] * self.shape[0]),
-            float(self.pixel_scales[1] * self.shape[1]),
-        )
-
-    @property
-    def central_pixel_coordinates(self):
-        return geometry_util.central_pixel_coordinates_2d_from(
-            shape_native=self.shape_native
-        )
-
-    @property
-    def central_scaled_coordinates(self):
-
-        return geometry_util.central_scaled_coordinate_2d_from(
-            shape_native=self.shape_native,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-
-    def pixel_coordinates_2d_from(
-        self, scaled_coordinates_2d
-    ) -> Union[Tuple[float], Tuple[float, float]]:
-
-        return geometry_util.pixel_coordinates_2d_from(
-            scaled_coordinates_2d=scaled_coordinates_2d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origins=self.origin,
-        )
-
-    def scaled_coordinates_2d_from(self, pixel_coordinates_2d):
-
-        return geometry_util.scaled_coordinates_2d_from(
-            pixel_coordinates_2d=pixel_coordinates_2d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origins=self.origin,
-        )
-
-    @property
     def mask_centre(self) -> Tuple[float, float]:
         return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
-
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        return (
-            (self.shape_native_scaled[0] / 2.0) + self.origin[0],
-            (self.shape_native_scaled[1] / 2.0) + self.origin[1],
-        )
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        return (
-            (-(self.shape_native_scaled[0] / 2.0)) + self.origin[0],
-            (-(self.shape_native_scaled[1] / 2.0)) + self.origin[1],
-        )
-
-    @property
-    def extent(self) -> np.ndarray:
-        return np.array(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
 
     @property
     def edge_buffed_mask(self) -> "Mask2D":
@@ -881,137 +811,6 @@ class Mask2D(Mask):
 
         border_grid_1d = self.masked_grid_sub_1[self.border_1d_indexes]
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
-
-    def grid_pixels_from(self, grid_scaled_1d) -> Grid2D:
-        """
-        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
-        returned as floats such that they include the decimal offset from each pixel's top-left corner.
-
-        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-        highest y scaled coordinate value and lowest x scaled coordinate.
-
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
-        origin before computing their 1D grid pixel indexes.
-
-        Parameters
-        ----------
-        grid_scaled_1d: np.ndarray
-            A grid of (y,x) coordinates in scaled units.
-        """
-        from autoarray.structures.grids.uniform_2d import Grid2D
-
-        grid_pixels_1d = grid_2d_util.grid_pixels_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_1d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-        return Grid2D(grid=grid_pixels_1d, mask=self.mask_sub_1)
-
-    def grid_pixel_centres_from(self, grid_scaled_1d) -> Grid2D:
-        """
-        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are
-        returned as integers such that they map directly to the pixel they are contained within.
-
-        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-        higher y scaled coordinate value and lowest x scaled coordinate.
-
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
-        origin before computing their 1D grid pixel indexes.
-
-        Parameters
-        ----------
-        grid_scaled_1d: np.ndarray
-            The grid of (y,x) coordinates in scaled units.
-        """
-        from autoarray.structures.grids.uniform_2d import Grid2D
-
-        grid_pixel_centres_1d = grid_2d_util.grid_pixel_centres_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_1d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        ).astype("int")
-
-        return Grid2D(grid=grid_pixel_centres_1d, mask=self.edge_mask.mask_sub_1)
-
-    def grid_pixel_indexes_from(self, grid_scaled_1d):
-        """
-        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are
-        returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then
-        downwards.
-
-        For example:
-
-        - The pixel at the top-left, whose 2D index is [0,0], corresponds to 1D index 0.
-        - The fifth pixel on the top row, whose 2D index is [0,5], corresponds to 1D index 4.
-        - The first pixel on the second row, whose 2D index is [0,1], has 1D index 10 if a row has 10 pixels.
-
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
-        origin before computing their 1D grid pixel indexes.
-
-        Parameters
-        ----------
-        grid_scaled_1d: np.ndarray
-            The grid of (y,x) coordinates in scaled units.
-        """
-
-        from autoarray.structures.arrays.uniform_2d import Array2D
-
-        grid_pixel_indexes_1d = grid_2d_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_1d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        ).astype("int")
-
-        return Array2D(array=grid_pixel_indexes_1d, mask=self.edge_mask.mask_sub_1)
-
-    def grid_scaled_from(self, grid_pixels_1d) -> Grid2D:
-        """
-        Convert a grid of (y,x) pixel coordinates to a grid of (y,x) scaled values.
-
-        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to
-        higher y scaled coordinate value and lowest x scaled coordinate.
-
-        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this
-        origin before computing their 1D grid pixel indexes.
-
-        Parameters
-        ----------
-        grid_pixels_1d
-            The grid of (y,x) coordinates in pixels.
-        """
-        from autoarray.structures.grids.uniform_2d import Grid2D
-
-        grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
-            grid_pixels_2d_slim=grid_pixels_1d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-        return Grid2D(grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1)
-
-    def grid_scaled_for_marching_squares_from(
-        self, grid_pixels_1d, shape_native
-    ) -> Grid2D:
-
-        from autoarray.structures.grids.uniform_2d import Grid2D
-
-        grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
-            grid_pixels_2d_slim=grid_pixels_1d,
-            shape_native=shape_native,
-            pixel_scales=(
-                self.pixel_scales[0] / self.sub_size,
-                self.pixel_scales[1] / self.sub_size,
-            ),
-            origin=self.origin,
-        )
-
-        grid_scaled_1d[:, 0] -= self.pixel_scales[0] / (2.0 * self.sub_size)
-        grid_scaled_1d[:, 1] += self.pixel_scales[1] / (2.0 * self.sub_size)
-
-        return Grid2D(grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1)
 
     @property
     def native_index_for_slim_index(self) -> np.ndarray:
@@ -1197,8 +996,8 @@ class Mask2D(Mask):
     @property
     def zoom_centre(self) -> Tuple[float, float]:
 
-        extraction_grid_1d = self.grid_pixels_from(
-            grid_scaled_1d=self.masked_grid_sub_1.slim
+        extraction_grid_1d = self.geometry.grid_pixels_2d_from(
+            grid_scaled_2d=self.masked_grid_sub_1.slim
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])
@@ -1214,11 +1013,11 @@ class Mask2D(Mask):
     def zoom_offset_pixels(self) -> Tuple[float, float]:
 
         if self.pixel_scales is None:
-            return self.central_pixel_coordinates
+            return self.geometry.central_pixel_coordinates
 
         return (
-            self.zoom_centre[0] - self.central_pixel_coordinates[0],
-            self.zoom_centre[1] - self.central_pixel_coordinates[1],
+            self.zoom_centre[0] - self.geometry.central_pixel_coordinates[0],
+            self.zoom_centre[1] - self.geometry.central_pixel_coordinates[1],
         )
 
     @property

@@ -27,6 +27,10 @@ class Structure(AbstractNDArray, ABC):
         """
 
     @property
+    def geometry(self):
+        return self.mask.geometry
+
+    @property
     def shape_slim(self) -> int:
         return self.mask.shape_slim
 

@@ -14,7 +14,7 @@ def test__manual():
     assert mask.pixel_scale == 1.0
     assert mask.pixel_scales == (1.0,)
     assert mask.origin == (0.0,)
-    assert (mask.extent == np.array([-1.0, 1.0])).all()
+    assert (mask.geometry.extent == np.array([-1.0, 1.0])).all()
 
     mask = aa.Mask1D.manual(mask=[False, False, True], pixel_scales=3.0, origin=(1.0,))
 
@@ -22,7 +22,7 @@ def test__manual():
     assert (mask == np.array([False, False, True])).all()
     assert mask.pixel_scale == 3.0
     assert mask.origin == (1.0,)
-    assert (mask.extent == np.array([-3.5, 5.5])).all()
+    assert (mask.geometry.extent == np.array([-3.5, 5.5])).all()
 
     mask = aa.Mask1D.manual(
         mask=[False, False, True, True], pixel_scales=3.0, sub_size=2, origin=(1.0,)

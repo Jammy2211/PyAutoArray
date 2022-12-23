@@ -243,7 +243,7 @@ class MatPlot2D(AbstractMatPlot):
 
         else:
 
-            extent = array.extent
+            extent = array.geometry.extent
 
         ax = None
 
@@ -393,7 +393,8 @@ class MatPlot2D(AbstractMatPlot):
 
         if extent is None:
 
-            extent = grid.extent + (buffer * grid.extent)
+            extent = np.asarray(grid.geometry.extent)
+            extent = extent + (buffer * extent)
 
         self.axis.set(extent=extent, grid=grid)
 
@@ -477,7 +478,11 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_plane_mesh_grid.extent
+        extent = (
+            extent
+            if extent is not None
+            else mapper.source_plane_mesh_grid.geometry.extent
+        )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -509,7 +514,7 @@ class MatPlot2D(AbstractMatPlot):
             [text.set() for text in self.text]
 
         self.grid_plot.plot_rectangular_grid_lines(
-            extent=mapper.source_plane_mesh_grid.extent,
+            extent=mapper.source_plane_mesh_grid.geometry.extent,
             shape_native=mapper.shape_native,
         )
 
@@ -536,7 +541,11 @@ class MatPlot2D(AbstractMatPlot):
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_plane_mesh_grid.extent
+        extent = (
+            extent
+            if extent is not None
+            else mapper.source_plane_mesh_grid.geometry.extent
+        )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -592,7 +601,11 @@ class MatPlot2D(AbstractMatPlot):
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = extent if extent is not None else mapper.source_plane_mesh_grid.extent
+        extent = (
+            extent
+            if extent is not None
+            else mapper.source_plane_mesh_grid.geometry.extent
+        )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 

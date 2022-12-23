@@ -1172,7 +1172,7 @@ class Grid2D(Structure):
         """
 
         return grid_2d_util._radial_projected_shape_slim_from(
-            extent=self.extent,
+            extent=self.geometry.extent,
             centre=centre,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
@@ -1232,7 +1232,7 @@ class Grid2D(Structure):
 
         grid_radial_projected_2d = (
             grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
-                extent=self.extent,
+                extent=self.geometry.extent,
                 centre=centre,
                 pixel_scales=self.mask.pixel_scales,
                 sub_size=self.mask.sub_size,
@@ -1255,51 +1255,18 @@ class Grid2D(Structure):
         return Grid2DIrregular(grid=grid_radial_projected_2d)
 
     @property
-    def shape_native_scaled(self) -> Tuple[float, float]:
+    def shape_native_scaled_interior(self) -> Tuple[float, float]:
         """
-        The (y,x) 2D shape of the grid in scaled units, computed from the minimum and maximum y and x values of the
-        grid.
+        The (y,x) interior 2D shape of the grid in scaled units, computed from the minimum and maximum y and x
+        values of the grid.
+
+        This differs from the `shape_native_scaled` because the edges of the shape are at the maxima and minima
+        of the grid's (y,x) values, whereas the `shape_native_scaled` uses the uniform geometry of the grid and its
+        ``pixel_scales``, which means it has a buffer at each edge of half a ``pixel_scale``.
         """
         return (
             np.amax(self[:, 0]) - np.amin(self[:, 0]),
             np.amax(self[:, 1]) - np.amin(self[:, 1]),
-        )
-
-    @property
-    def scaled_maxima(self) -> Tuple[float, float]:
-        """
-        The maximum values of the grid in scaled coordinates returned as a tuple (y_max, x_max).
-        """
-        return (
-            self.mask.origin[0] + (self.mask.shape_native_scaled[0] / 2.0),
-            self.mask.origin[1] + (self.mask.shape_native_scaled[1] / 2.0),
-        )
-
-    @property
-    def scaled_minima(self) -> Tuple[float, float]:
-        """
-        The minium values of the grid in scaled coordinates returned as a tuple (y_min, x_min).
-        """
-        return (
-            (self.mask.origin[0] - (self.mask.shape_native_scaled[0] / 2.0)),
-            (self.mask.origin[1] - (self.mask.shape_native_scaled[1] / 2.0)),
-        )
-
-    @property
-    def extent(self) -> np.ndarray:
-        """
-        The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
-
-        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module.
-        """
-        return np.asarray(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
         )
 
     def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:

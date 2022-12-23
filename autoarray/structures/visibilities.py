@@ -130,20 +130,6 @@ class AbstractVisibilities(Structure):
         """
         return np.min(self.real), np.min(self.imag)
 
-    @property
-    def extent(self) -> np.ndarray:
-        """
-        The extent of the visibilities if they are treated as a 2D grid in the complex plane.
-        """
-        return np.array(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
-
 
 class Visibilities(AbstractVisibilities):
     @classmethod

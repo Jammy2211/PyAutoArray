@@ -20,6 +20,7 @@ from .dataset.interferometer.w_tilde import WTildeInterferometer
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
+from .geometry.geometry_2d import Geometry2D
 from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization import mesh
 from .inversion import regularization as reg

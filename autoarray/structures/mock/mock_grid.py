@@ -1,8 +1,19 @@
 import numpy as np
 from typing import Tuple
 
+from autoarray.geometry.abstract_2d import AbstractGeometry2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+
+
+class MockGeometry(AbstractGeometry2D):
+    def __init__(self, extent):
+
+        self._extent = extent
+
+    @property
+    def extent(self) -> Tuple[float, float, float, float]:
+        return self._extent
 
 
 class MockGrid2DMesh(Abstract2DMesh):
@@ -46,7 +57,11 @@ class MockGrid2DMesh(Abstract2DMesh):
         return obj
 
     @property
-    def extent(self):
+    def geometry(self):
+        return MockGeometry(extent=self.extent)
+
+    @property
+    def extent(self) -> Tuple[float, float, float, float]:
         return self._extent
 
 

@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 from autoarray.structures.abstract_structure import Structure
 
 from autoarray import exc
+from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.mask.mask_2d import mask_2d_util
 from autoarray.structures.grids import sparse_2d_util
@@ -81,9 +82,9 @@ class Grid2DSparse(Structure):
         pixel_scales = grid.mask.pixel_scales
 
         pixel_scales = (
-            (grid.shape_native_scaled[0] + pixel_scales[0])
+            (grid.shape_native_scaled_interior[0] + pixel_scales[0])
             / (unmasked_sparse_shape[0]),
-            (grid.shape_native_scaled[1] + pixel_scales[1])
+            (grid.shape_native_scaled_interior[1] + pixel_scales[1])
             / (unmasked_sparse_shape[1]),
         )
 
@@ -97,9 +98,9 @@ class Grid2DSparse(Structure):
         )
 
         unmasked_sparse_grid_pixel_centres = (
-            grid_2d_util.grid_pixel_centres_2d_slim_from(
+            geometry_util.grid_pixel_centres_2d_slim_from(
                 grid_scaled_2d_slim=unmasked_sparse_grid_1d,
-                shape_native=grid.mask.shape,
+                shape_native=grid.mask.shape_native,
                 pixel_scales=grid.mask.pixel_scales,
             ).astype("int")
         )
@@ -121,7 +122,7 @@ class Grid2DSparse(Structure):
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         ).astype("int")
 
-        regular_to_unmasked_sparse = grid_2d_util.grid_pixel_indexes_2d_slim_from(
+        regular_to_unmasked_sparse = geometry_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid,
             shape_native=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
@@ -210,20 +211,3 @@ class Grid2DSparse(Structure):
     @property
     def total_sparse_pixels(self) -> int:
         return len(self)
-
-    @property
-    def extent(self) -> np.ndarray:
-        """
-        The extent of the grid in scaled units returned as an ndarray of the form [x_min, x_max, y_min, y_max].
-
-        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module.
-        """
-        return np.asarray(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )

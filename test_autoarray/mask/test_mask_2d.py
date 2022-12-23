@@ -23,7 +23,7 @@ def test__manual():
     assert mask.pixel_scales == (1.0, 1.0)
     assert mask.origin == (0.0, 0.0)
     assert mask.sub_size == 1
-    assert (mask.extent == np.array([-1.0, 1.0, -1.0, 1.0])).all()
+    assert (mask.geometry.extent == np.array([-1.0, 1.0, -1.0, 1.0])).all()
 
     mask = aa.Mask2D.manual(
         mask=[[False, False], [True, True]],
@@ -1173,27 +1173,6 @@ def test__zoom_mask_unmasked():
 ### GEOMETRY ###
 
 
-def test__central_pixel_coordinates():
-
-    mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(0.1, 0.1))
-
-    central_pixel_coordinates_util = aa.util.geometry.central_pixel_coordinates_2d_from(
-        shape_native=(3, 3)
-    )
-
-    assert mask.central_pixel_coordinates == central_pixel_coordinates_util
-
-    mask = aa.Mask2D.unmasked(
-        shape_native=(5, 3), pixel_scales=(2.0, 1.0), origin=(1.0, 2.0)
-    )
-
-    central_pixel_coordinates_util = aa.util.geometry.central_pixel_coordinates_2d_from(
-        shape_native=(5, 3)
-    )
-
-    assert mask.central_pixel_coordinates == central_pixel_coordinates_util
-
-
 def test__mask_centre():
     mask = np.array(
         [
@@ -1580,107 +1559,3 @@ def test__border_1d_grid():
             ]
         )
     ).all()
-
-
-def test__pixel_coordinates_2d_from():
-
-    mask = aa.Mask2D.unmasked(
-        shape_native=(6, 7), pixel_scales=(2.4, 1.8), origin=(1.0, 1.5)
-    )
-
-    pixel_coordinates_util = aa.util.geometry.pixel_coordinates_2d_from(
-        scaled_coordinates_2d=(2.3, 1.2),
-        shape_native=(6, 7),
-        pixel_scales=(2.4, 1.8),
-        origins=(1.0, 1.5),
-    )
-
-    assert (
-        mask.pixel_coordinates_2d_from(scaled_coordinates_2d=(2.3, 1.2))
-        == pixel_coordinates_util
-    )
-
-
-def test__scaled_coordinates_2d_from():
-
-    mask = aa.Mask2D.unmasked(
-        shape_native=(6, 7), pixel_scales=(2.4, 1.8), origin=(1.0, 1.5)
-    )
-
-    pixel_coordinates_util = aa.util.geometry.scaled_coordinates_2d_from(
-        pixel_coordinates_2d=(5, 4),
-        shape_native=(6, 7),
-        pixel_scales=(2.4, 1.8),
-        origins=(1.0, 1.5),
-    )
-
-    assert (
-        mask.scaled_coordinates_2d_from(pixel_coordinates_2d=(5, 4))
-        == pixel_coordinates_util
-    )
-
-
-def test__grid_pixels_from():
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
-
-    grid_scaled_1d = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
-
-    grid_pixels_util = aa.util.grid_2d.grid_pixels_2d_slim_from(
-        grid_scaled_2d_slim=grid_scaled_1d,
-        shape_native=(2, 2),
-        pixel_scales=(2.0, 4.0),
-    )
-    grid_pixels = mask.grid_pixels_from(grid_scaled_1d=grid_scaled_1d)
-
-    assert (grid_pixels == grid_pixels_util).all()
-    assert (grid_pixels.slim == grid_pixels_util).all()
-
-
-def test__grid_pixel_centres_from():
-
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(7.0, 2.0))
-
-    grid_scaled_1d = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
-
-    grid_pixels_util = aa.util.grid_2d.grid_pixel_centres_2d_slim_from(
-        grid_scaled_2d_slim=grid_scaled_1d,
-        shape_native=(2, 2),
-        pixel_scales=(7.0, 2.0),
-    )
-
-    grid_pixels = mask.grid_pixel_centres_from(grid_scaled_1d=grid_scaled_1d)
-
-    assert (grid_pixels == grid_pixels_util).all()
-
-
-def test__grid_pixel_indexes_from():
-
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
-
-    grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
-
-    grid_pixels_util = aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
-        grid_scaled_2d_slim=grid_scaled,
-        shape_native=(2, 2),
-        pixel_scales=(2.0, 4.0),
-    )
-
-    grid_pixels = mask.grid_pixel_indexes_from(grid_scaled_1d=grid_scaled)
-
-    assert (grid_pixels == grid_pixels_util).all()
-
-
-def test__grid_scaled_from():
-
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(2.0, 2.0))
-
-    grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-
-    grid_pixels_util = aa.util.grid_2d.grid_scaled_2d_slim_from(
-        grid_pixels_2d_slim=grid_pixels,
-        shape_native=(2, 2),
-        pixel_scales=(2.0, 2.0),
-    )
-    grid_pixels = mask.grid_scaled_from(grid_pixels_1d=grid_pixels)
-
-    assert (grid_pixels == grid_pixels_util).all()

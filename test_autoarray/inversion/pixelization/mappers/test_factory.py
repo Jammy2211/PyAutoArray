@@ -63,7 +63,7 @@ def test__rectangular_mapper():
 
     assert isinstance(mapper, aa.MapperRectangularNoInterp)
     assert mapper.image_plane_mesh_grid == None
-    assert mapper.source_plane_mesh_grid.shape_native_scaled == pytest.approx(
+    assert mapper.source_plane_mesh_grid.geometry.shape_native_scaled == pytest.approx(
         (2.0, 2.0), 1.0e-4
     )
     assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
@@ -138,7 +138,7 @@ def test__delaunay_mapper():
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperDelaunay)
-    assert mapper.source_plane_data_grid.shape_native_scaled == pytest.approx(
+    assert mapper.source_plane_data_grid.shape_native_scaled_interior == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
     assert (mapper.source_plane_mesh_grid == sparse_grid).all()
@@ -215,7 +215,7 @@ def test__voronoi_mapper():
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperVoronoiNoInterp)
-    assert mapper.source_plane_data_grid.shape_native_scaled == pytest.approx(
+    assert mapper.source_plane_data_grid.shape_native_scaled_interior == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
     assert (mapper.source_plane_mesh_grid == sparse_grid).all()
