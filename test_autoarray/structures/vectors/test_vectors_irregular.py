@@ -7,12 +7,8 @@ import numpy as np
 import autoarray as aa
 from autoarray import exc
 
-test_vectors_dir = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "files", "vectors"
-)
 
-
-def test__input_vectors_as_different_types__all_converted_to_ndarray_correctly():
+def test__constructor():
 
     # Input tuples
 
@@ -46,7 +42,7 @@ def test__input_vectors_as_different_types__all_converted_to_ndarray_correctly()
     assert vectors.in_list == [(1.0, -1.0), (1.0, 1.0)]
 
 
-def test__input_grids_as_different_types__all_converted_to_grid_irregular_correctly():
+def test__constructor__grid_conversions():
 
     # Input tuples
 
@@ -77,7 +73,7 @@ def test__input_grids_as_different_types__all_converted_to_grid_irregular_correc
     assert (vectors.grid == np.array([[1.0, -1.0], [1.0, 1.0]])).all()
 
 
-def test__vectors_from_grid_within_radius():
+def test__vectors_within_radius():
 
     vectors = aa.VectorYX2DIrregular(
         vectors=[(1.0, 1.0), (2.0, 2.0)], grid=[[0.0, 1.0], [0.0, 2.0]]
