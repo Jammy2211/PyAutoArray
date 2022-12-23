@@ -4,154 +4,152 @@ import numpy as np
 import autoarray as aa
 
 
-path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
+def test__layout_1d__extract_overscan_array_1d_from():
+
+    array = aa.Array1D.manual_native(array=[0.0, 1.0, 2.0], pixel_scales=1.0)
+
+    layout_1d = aa.Layout1D(shape_1d=array.shape, overscan=(0, 1))
+
+    extracted_array = layout_1d.extract_overscan_array_1d_from(array=array)
+
+    assert (extracted_array == np.array([[0.0]])).all()
+
+    layout_1d = aa.Layout1D(shape_1d=array.shape, overscan=(0, 2))
+
+    extracted_array = layout_1d.extract_overscan_array_1d_from(array=array)
+
+    assert (extracted_array.native == np.array([0.0, 1.0])).all()
+
+    layout_1d = aa.Layout1D(shape_1d=array.shape, overscan=(2, 3))
+
+    extracted_array = layout_1d.extract_overscan_array_1d_from(array=array)
+
+    assert (extracted_array.native == np.array([2.0])).all()
 
 
-class TestLayout1D:
-    def test__overscan_array(self):
+def test__layout_2d__extract_parallel_overscan_array_2d_from():
 
-        array = aa.Array1D.manual_native(array=[0.0, 1.0, 2.0], pixel_scales=1.0)
+    array = aa.Array2D.manual_native(
+        array=[
+            [0.0, 1.0, 2.0],
+            [3.0, 4.0, 5.0],
+            [6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0],
+        ],
+        pixel_scales=1.0,
+    )
 
-        layout_1d = aa.Layout1D(shape_1d=array.shape, overscan=(0, 1))
+    layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 1, 0, 1))
 
-        extracted_array = layout_1d.extract_overscan_array_1d_from(array=array)
+    extracted_array = layout_2d.extract_parallel_overscan_array_2d_from(array=array)
 
-        assert (extracted_array == np.array([[0.0]])).all()
+    assert (extracted_array == np.array([[0.0]])).all()
 
-        layout_1d = aa.Layout1D(shape_1d=array.shape, overscan=(0, 2))
+    layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 3, 0, 2))
 
-        extracted_array = layout_1d.extract_overscan_array_1d_from(array=array)
+    extracted_array = layout_2d.extract_parallel_overscan_array_2d_from(array=array)
 
-        assert (extracted_array.native == np.array([0.0, 1.0])).all()
+    assert (
+        extracted_array.native == np.array([[0.0, 1.0], [3.0, 4.0], [6.0, 7.0]])
+    ).all()
 
-        layout_1d = aa.Layout1D(shape_1d=array.shape, overscan=(2, 3))
+    layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 4, 2, 3))
 
-        extracted_array = layout_1d.extract_overscan_array_1d_from(array=array)
+    extracted_array = layout_2d.extract_parallel_overscan_array_2d_from(array=array)
 
-        assert (extracted_array.native == np.array([2.0])).all()
+    assert (extracted_array.native == np.array([[2.0], [5.0], [8.0], [11.0]])).all()
 
 
-class TestLayout2D:
-    def test__parallel_overscan_array(self):
+def test__layout_2d__parallel_overscan_binned_array_1d_from():
 
-        array = aa.Array2D.manual_native(
-            array=[
-                [0.0, 1.0, 2.0],
-                [3.0, 4.0, 5.0],
-                [6.0, 7.0, 8.0],
-                [9.0, 10.0, 11.0],
-            ],
-            pixel_scales=1.0,
-        )
+    array = aa.Array2D.manual_native(
+        array=[
+            [0.0, 1.0, 2.0],
+            [3.0, 4.0, 5.0],
+            [6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0],
+        ],
+        pixel_scales=1.0,
+    )
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 1, 0, 1))
+    layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 1, 0, 1))
 
-        extracted_array = layout_2d.extract_parallel_overscan_array_2d_from(array=array)
+    binned_line = layout_2d.parallel_overscan_binned_array_1d_from(array=array)
 
-        assert (extracted_array == np.array([[0.0]])).all()
+    assert (binned_line == np.array([0.0])).all()
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 3, 0, 2))
+    layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 3, 0, 2))
 
-        extracted_array = layout_2d.extract_parallel_overscan_array_2d_from(array=array)
+    binned_line = layout_2d.parallel_overscan_binned_array_1d_from(array=array)
 
-        assert (
-            extracted_array.native == np.array([[0.0, 1.0], [3.0, 4.0], [6.0, 7.0]])
-        ).all()
+    assert (binned_line == np.array([0.5, 3.5, 6.5])).all()
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 4, 2, 3))
+    layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 4, 2, 3))
 
-        extracted_array = layout_2d.extract_parallel_overscan_array_2d_from(array=array)
+    binned_line = layout_2d.parallel_overscan_binned_array_1d_from(array=array)
 
-        assert (extracted_array.native == np.array([[2.0], [5.0], [8.0], [11.0]])).all()
+    assert (binned_line == np.array([2.0, 5.0, 8.0, 11.0])).all()
 
-    def test__parallel_overscan_binned_line(self):
 
-        array = aa.Array2D.manual_native(
-            array=[
-                [0.0, 1.0, 2.0],
-                [3.0, 4.0, 5.0],
-                [6.0, 7.0, 8.0],
-                [9.0, 10.0, 11.0],
-            ],
-            pixel_scales=1.0,
-        )
+def test__layout_2d__extract_serial_overscan_array_from():
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 1, 0, 1))
+    array = aa.Array2D.manual_native(
+        array=[
+            [0.0, 1.0, 2.0],
+            [3.0, 4.0, 5.0],
+            [6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0],
+        ],
+        pixel_scales=1.0,
+    )
 
-        binned_line = layout_2d.parallel_overscan_binned_array_1d_from(array=array)
+    layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 1, 0, 1))
 
-        assert (binned_line == np.array([0.0])).all()
+    extracted_array = layout_2d.extract_serial_overscan_array_from(array=array)
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 3, 0, 2))
+    assert (extracted_array == np.array([[0.0]])).all()
 
-        binned_line = layout_2d.parallel_overscan_binned_array_1d_from(array=array)
+    layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 3, 0, 2))
 
-        assert (binned_line == np.array([0.5, 3.5, 6.5])).all()
+    extracted_array = layout_2d.extract_serial_overscan_array_from(array=array)
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, parallel_overscan=(0, 4, 2, 3))
+    assert (
+        extracted_array.native == np.array([[0.0, 1.0], [3.0, 4.0], [6.0, 7.0]])
+    ).all()
 
-        binned_line = layout_2d.parallel_overscan_binned_array_1d_from(array=array)
+    layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 4, 2, 3))
 
-        assert (binned_line == np.array([2.0, 5.0, 8.0, 11.0])).all()
+    extracted_array = layout_2d.extract_serial_overscan_array_from(array=array)
 
-    def test__serial_overscan_array(self):
+    assert (extracted_array.native == np.array([[2.0], [5.0], [8.0], [11.0]])).all()
 
-        array = aa.Array2D.manual_native(
-            array=[
-                [0.0, 1.0, 2.0],
-                [3.0, 4.0, 5.0],
-                [6.0, 7.0, 8.0],
-                [9.0, 10.0, 11.0],
-            ],
-            pixel_scales=1.0,
-        )
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 1, 0, 1))
+def test__layout_2d__serial_overscan_binned_array_1d_from():
 
-        extracted_array = layout_2d.extract_serial_overscan_array_from(array=array)
+    array = aa.Array2D.manual_native(
+        array=[
+            [0.0, 1.0, 2.0],
+            [3.0, 4.0, 5.0],
+            [6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0],
+        ],
+        pixel_scales=1.0,
+    )
 
-        assert (extracted_array == np.array([[0.0]])).all()
+    layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 1, 0, 1))
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 3, 0, 2))
+    binned_lined = layout_2d.serial_overscan_binned_array_1d_from(array=array)
 
-        extracted_array = layout_2d.extract_serial_overscan_array_from(array=array)
+    assert (binned_lined == np.array([0.0])).all()
 
-        assert (
-            extracted_array.native == np.array([[0.0, 1.0], [3.0, 4.0], [6.0, 7.0]])
-        ).all()
+    layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 3, 0, 2))
 
-        layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 4, 2, 3))
+    binned_lined = layout_2d.serial_overscan_binned_array_1d_from(array=array)
 
-        extracted_array = layout_2d.extract_serial_overscan_array_from(array=array)
+    assert (binned_lined == np.array([3.0, 4.0])).all()
 
-        assert (extracted_array.native == np.array([[2.0], [5.0], [8.0], [11.0]])).all()
+    layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 4, 2, 3))
 
-    def test__serial_overscan_binned_line(self):
+    binned_lined = layout_2d.serial_overscan_binned_array_1d_from(array=array)
 
-        array = aa.Array2D.manual_native(
-            array=[
-                [0.0, 1.0, 2.0],
-                [3.0, 4.0, 5.0],
-                [6.0, 7.0, 8.0],
-                [9.0, 10.0, 11.0],
-            ],
-            pixel_scales=1.0,
-        )
-
-        layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 1, 0, 1))
-
-        binned_lined = layout_2d.serial_overscan_binned_array_1d_from(array=array)
-
-        assert (binned_lined == np.array([0.0])).all()
-
-        layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 3, 0, 2))
-
-        binned_lined = layout_2d.serial_overscan_binned_array_1d_from(array=array)
-
-        assert (binned_lined == np.array([3.0, 4.0])).all()
-
-        layout_2d = aa.Layout2D(shape_2d=array.shape, serial_overscan=(0, 4, 2, 3))
-
-        binned_lined = layout_2d.serial_overscan_binned_array_1d_from(array=array)
-
-        assert (binned_lined == np.array([6.5])).all()
+    assert (binned_lined == np.array([6.5])).all()
