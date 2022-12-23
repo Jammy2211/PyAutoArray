@@ -254,7 +254,7 @@ def pixel_coordinates_2d_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
     origins: Tuple[float, float] = (0.0, 0.0),
-) -> Union[Tuple[float], Tuple[float, float]]:
+) -> Tuple[float, float]:
 
     central_pixel_coordinates = central_pixel_coordinates_2d_from(
         shape_native=shape_native

@@ -27,6 +27,25 @@ def test__central_pixel_coordinates():
     assert geometry.central_pixel_coordinates == central_pixel_coordinates_util
 
 
+def test__pixel_coordinates_2d_from():
+
+    mask = aa.Geometry2D(
+        shape_native=(6, 7), pixel_scales=(2.4, 1.8), origin=(1.0, 1.5)
+    )
+
+    pixel_coordinates_util = aa.util.geometry.pixel_coordinates_2d_from(
+        scaled_coordinates_2d=(2.3, 1.2),
+        shape_native=(6, 7),
+        pixel_scales=(2.4, 1.8),
+        origins=(1.0, 1.5),
+    )
+
+    assert (
+        mask.pixel_coordinates_2d_from(scaled_coordinates_2d=(2.3, 1.2))
+        == pixel_coordinates_util
+    )
+
+
 def test__scaled_coordinates_2d_from():
 
     geometry = aa.Geometry2D(

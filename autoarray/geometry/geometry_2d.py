@@ -49,3 +49,14 @@ class Geometry2D:
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
+
+    def pixel_coordinates_2d_from(
+        self, scaled_coordinates_2d
+    ) -> Union[Tuple[float], Tuple[float, float]]:
+
+        return geometry_util.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=scaled_coordinates_2d,
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origins=self.origin,
+        )

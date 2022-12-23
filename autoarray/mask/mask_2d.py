@@ -737,17 +737,6 @@ class Mask2D(Mask):
             float(self.pixel_scales[1] * self.shape[1]),
         )
 
-    def pixel_coordinates_2d_from(
-        self, scaled_coordinates_2d
-    ) -> Union[Tuple[float], Tuple[float, float]]:
-
-        return geometry_util.pixel_coordinates_2d_from(
-            scaled_coordinates_2d=scaled_coordinates_2d,
-            shape_native=self.shape,
-            pixel_scales=self.pixel_scales,
-            origins=self.origin,
-        )
-
     def scaled_coordinates_2d_from(self, pixel_coordinates_2d):
 
         return geometry_util.scaled_coordinates_2d_from(
