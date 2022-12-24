@@ -600,7 +600,7 @@ class Mask2D(Mask):
 
         return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
             shape_native=sub_shape,
-            native_for_slim=self.indexes.sub_mask_index_for_sub_mask_1d_index,
+            native_for_slim=self.indexes.sub_mask_native_for_sub_mask_slim,
         ).astype("bool")
 
     def rescaled_mask_from(self, rescale_factor) -> "Mask2D":

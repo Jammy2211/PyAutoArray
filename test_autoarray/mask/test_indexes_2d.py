@@ -55,7 +55,7 @@ def test__sub_mask_index_for_sub_mask_1d_index():
         aa.util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
     )
 
-    assert indexes_2d.sub_mask_index_for_sub_mask_1d_index == pytest.approx(
+    assert indexes_2d.sub_mask_native_for_sub_mask_slim == pytest.approx(
         sub_mask_index_for_sub_mask_1d_index, 1e-4
     )
 
@@ -76,7 +76,7 @@ def test__slim_index_for_sub_slim_index():
     )
 
     assert (
-        indexes_2d.slim_index_for_sub_slim_index == slim_index_for_sub_slim_index_util
+            indexes_2d.slim_for_sub_slim == slim_index_for_sub_slim_index_util
     ).all()
 
 

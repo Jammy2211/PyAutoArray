@@ -29,7 +29,7 @@ class Indexes2D:
         ).astype("int")
 
     @cached_property
-    def sub_mask_index_for_sub_mask_1d_index(self) -> np.ndarray:
+    def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:
         """
         A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates.
         """
@@ -38,7 +38,7 @@ class Indexes2D:
         ).astype("int")
 
     @cached_property
-    def slim_index_for_sub_slim_index(self) -> np.ndarray:
+    def slim_for_sub_slim(self) -> np.ndarray:
         """
         The util between every sub-pixel and its host pixel.
 
