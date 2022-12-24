@@ -678,24 +678,6 @@ def test__border_mask():
     ).all()
 
 
-def test__slim_index_for_sub_slim_index():
-    mask = aa.Mask2D.manual(
-        mask=[[True, False, True], [False, False, False], [True, False, False]],
-        pixel_scales=1.0,
-        sub_size=2,
-    )
-
-    slim_index_for_sub_slim_index_util = (
-        aa.util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=mask, sub_size=2
-        )
-    )
-
-    assert (
-        mask.slim_index_for_sub_slim_index == slim_index_for_sub_slim_index_util
-    ).all()
-
-
 def test__shape_native_masked_pixels():
 
     mask = aa.Mask2D.manual(

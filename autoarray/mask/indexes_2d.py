@@ -47,6 +47,20 @@ class Indexes2D:
             mask_2d=self.mask, sub_size=self.mask.sub_size
         ).astype("int")
 
+    @cached_property
+    def slim_index_for_sub_slim_index(self) -> np.ndarray:
+        """
+        The util between every sub-pixel and its host pixel.
+
+        For example:
+
+        sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd pixel.
+        sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th pixel.
+        """
+        return mask_2d_util.slim_index_for_sub_slim_index_via_mask_2d_from(
+            mask_2d=self.mask, sub_size=self.mask.sub_size
+        ).astype("int")
+
     @property
     def unmasked_1d_indexes(self) -> np.ndarray:
         """
