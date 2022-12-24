@@ -191,7 +191,7 @@ class Mask1D(Mask):
 
         return Grid1D(
             grid=grid_slim,
-            mask=self.derived_masks.unmasked_mask.derived_masks.mask_sub_1,
+            mask=self.derived_masks.unmasked.derived_masks.sub_1,
         )
 
     @property

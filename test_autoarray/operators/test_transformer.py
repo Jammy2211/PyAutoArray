@@ -12,7 +12,7 @@ class MockDerivedMasks1D:
         self.masked_grid_sub_1 = masked_grid_sub_1
 
     @property
-    def mask_sub_1(self):
+    def sub_1(self):
         return self
 
     @property

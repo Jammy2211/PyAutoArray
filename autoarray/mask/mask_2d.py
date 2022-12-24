@@ -583,7 +583,7 @@ class Mask2D(Mask):
         )
 
         if resized_mask_shape is not None:
-            mask = mask.derived_masks.resized_mask_from(new_shape=resized_mask_shape)
+            mask = mask.derived_masks.resized_from(new_shape=resized_mask_shape)
 
         return mask
 
@@ -696,7 +696,7 @@ class Mask2D(Mask):
 
         return Grid2D(
             grid=grid_slim,
-            mask=self.derived_masks.unmasked_mask.derived_masks.mask_sub_1,
+            mask=self.derived_masks.unmasked.derived_masks.sub_1,
         )
 
     @property
@@ -711,7 +711,7 @@ class Mask2D(Mask):
             origin=self.origin,
         )
         return Grid2D(
-            grid=sub_grid_1d, mask=self.derived_masks.edge_mask.derived_masks.mask_sub_1
+            grid=sub_grid_1d, mask=self.derived_masks.edge.derived_masks.sub_1
         )
 
     @property
@@ -722,7 +722,7 @@ class Mask2D(Mask):
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
-        return Grid2D(grid=grid_slim, mask=self.derived_masks.mask_sub_1)
+        return Grid2D(grid=grid_slim, mask=self.derived_masks.sub_1)
 
     @property
     def edge_grid_sub_1(self) -> Grid2D:
@@ -737,7 +737,7 @@ class Mask2D(Mask):
         edge_grid_1d = self.masked_grid_sub_1[self.indexes.edge_slim]
         return Grid2D(
             grid=edge_grid_1d,
-            mask=self.derived_masks.edge_mask.derived_masks.mask_sub_1,
+            mask=self.derived_masks.edge.derived_masks.sub_1,
         )
 
     @property
@@ -761,7 +761,7 @@ class Mask2D(Mask):
         border_grid_1d = self.masked_grid_sub_1[self.indexes.border_slim]
         return Grid2D(
             grid=border_grid_1d,
-            mask=self.derived_masks.border_mask.derived_masks.mask_sub_1,
+            mask=self.derived_masks.border.derived_masks.sub_1,
         )
 
     @property

@@ -395,8 +395,8 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    mask_sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
-    grid_sub_1 = aa.Grid2D.from_mask(mask=mask_sub_1)
+    sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
+    grid_sub_1 = aa.Grid2D.from_mask(mask=sub_1)
     values_sub_1 = ndarray_1d_from(grid=grid_sub_1, profile=None)
     values_sub_1 = grid_sub_1.structure_2d_from(result=values_sub_1)
 
@@ -465,8 +465,8 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
-    mask_sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
-    grid_sub_1 = aa.Grid2D.from_mask(mask=mask_sub_1)
+    sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
+    grid_sub_1 = aa.Grid2D.from_mask(mask=sub_1)
     values_sub_1 = ndarray_1d_from(grid=grid_sub_1, profile=None)
     values_sub_1 = grid_sub_1.structure_2d_from(result=values_sub_1)
 
@@ -677,8 +677,8 @@ def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_s
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    mask_sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
-    grid_sub_1 = aa.Grid2D.from_mask(mask=mask_sub_1)
+    sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
+    grid_sub_1 = aa.Grid2D.from_mask(mask=sub_1)
     values_sub_1 = ndarray_2d_from(grid=grid_sub_1, profile=None)
     values_sub_1 = grid_sub_1.structure_2d_from(result=values_sub_1)
 
@@ -741,8 +741,8 @@ def test__iterated_grid_from__check_values_computed_to_fractional_accuracy():
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
-    mask_sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
-    grid_sub_1 = aa.Grid2D.from_mask(mask=mask_sub_1)
+    sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
+    grid_sub_1 = aa.Grid2D.from_mask(mask=sub_1)
     values_sub_1 = ndarray_2d_from(grid=grid_sub_1, profile=None)
     values_sub_1 = grid_sub_1.structure_2d_from(result=values_sub_1)
 

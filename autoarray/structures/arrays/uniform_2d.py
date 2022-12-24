@@ -390,7 +390,7 @@ class AbstractArray2D(Structure):
 
         return Array2D(
             array=binned_array_1d,
-            mask=self.mask.derived_masks.mask_sub_1,
+            mask=self.mask.derived_masks.sub_1,
             header=self.header,
         )
 
@@ -513,7 +513,7 @@ class AbstractArray2D(Structure):
             array_2d=self.native, resized_shape=new_shape
         )
 
-        resized_mask = self.mask.derived_masks.resized_mask_from(
+        resized_mask = self.mask.derived_masks.resized_from(
             new_shape=new_shape, pad_value=mask_pad_value
         )
 
@@ -569,7 +569,7 @@ class AbstractArray2D(Structure):
             psf_cut_y : array_y - psf_cut_y, psf_cut_x : array_x - psf_cut_x
         ]
 
-        resized_mask = self.mask.derived_masks.resized_mask_from(
+        resized_mask = self.mask.derived_masks.resized_from(
             new_shape=trimmed_array_2d.shape
         )
 

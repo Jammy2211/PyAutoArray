@@ -23,7 +23,7 @@ class DerivedMasks1D:
         self.mask = mask
 
     @property
-    def mask_sub_1(self) -> Mask1D:
+    def sub_1(self) -> Mask1D:
         """
         Returns the mask on the same scaled coordinate system but with a sub-grid of `sub_size`.
         """
@@ -38,7 +38,7 @@ class DerivedMasks1D:
         )
 
     @property
-    def unmasked_mask(self) -> Mask1D:
+    def unmasked(self) -> Mask1D:
 
         from autoarray.mask.mask_1d import Mask1D
 

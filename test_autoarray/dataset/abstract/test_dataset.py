@@ -110,11 +110,11 @@ def test__grid__uses_mask_and_settings(
     assert isinstance(dataset_1d.grid, aa.Grid1D)
 
     masked_image_7x7 = aa.Array2D.manual_mask(
-        array=image_7x7.native, mask=sub_mask_2d_7x7.derived_masks.mask_sub_1
+        array=image_7x7.native, mask=sub_mask_2d_7x7.derived_masks.sub_1
     )
 
     masked_noise_map_7x7 = aa.Array2D.manual_mask(
-        array=noise_map_7x7.native, mask=sub_mask_2d_7x7.derived_masks.mask_sub_1
+        array=noise_map_7x7.native, mask=sub_mask_2d_7x7.derived_masks.sub_1
     )
 
     masked_imaging_7x7 = ds.AbstractDataset(
@@ -150,11 +150,11 @@ def test__grid_pixelization__uses_mask_and_settings(
     assert isinstance(masked_dataset_1d.grid, aa.Grid1D)
 
     masked_image_7x7 = aa.Array2D.manual_mask(
-        array=image_7x7.native, mask=sub_mask_2d_7x7.derived_masks.mask_sub_1
+        array=image_7x7.native, mask=sub_mask_2d_7x7.derived_masks.sub_1
     )
 
     masked_noise_map_7x7 = aa.Array2D.manual_mask(
-        array=noise_map_7x7.native, mask=sub_mask_2d_7x7.derived_masks.mask_sub_1
+        array=noise_map_7x7.native, mask=sub_mask_2d_7x7.derived_masks.sub_1
     )
 
     masked_imaging_7x7 = ds.AbstractDataset(

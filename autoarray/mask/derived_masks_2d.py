@@ -34,7 +34,7 @@ class DerivedMasks2D:
         return self.mask.indexes
 
     @property
-    def mask_sub_1(self) -> Mask2D:
+    def sub_1(self) -> Mask2D:
         """
         Returns the mask on the same scaled coordinate system but with a sub-grid of `sub_size`.
         """
@@ -48,7 +48,7 @@ class DerivedMasks2D:
             origin=self.mask.origin,
         )
 
-    def rescaled_mask_from(self, rescale_factor) -> Mask2D:
+    def rescaled_from(self, rescale_factor) -> Mask2D:
 
         from autoarray.mask.mask_2d import Mask2D
 
@@ -63,7 +63,7 @@ class DerivedMasks2D:
             origin=self.mask.origin,
         )
 
-    def resized_mask_from(self, new_shape, pad_value: int = 0.0) -> Mask2D:
+    def resized_from(self, new_shape, pad_value: int = 0.0) -> Mask2D:
         """
         Resized the array to a new shape and at a new origin.
 
@@ -89,7 +89,7 @@ class DerivedMasks2D:
         )
 
     @property
-    def sub_mask(self) -> np.ndarray:
+    def sub(self) -> np.ndarray:
 
         sub_shape = (
             self.mask.shape[0] * self.mask.sub_size,
@@ -102,7 +102,7 @@ class DerivedMasks2D:
         ).astype("bool")
 
     @property
-    def unmasked_mask(self) -> Mask2D:
+    def unmasked(self) -> Mask2D:
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
@@ -118,7 +118,7 @@ class DerivedMasks2D:
             origin=self.mask.origin,
         )
 
-    def blurring_mask_from(self, kernel_shape_native) -> Mask2D:
+    def blurring_from(self, kernel_shape_native) -> Mask2D:
         """
         Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked
         pixels via PSF convolution (see grid.Grid2D.blurring_grid_from).
@@ -146,7 +146,7 @@ class DerivedMasks2D:
         )
 
     @property
-    def edge_mask(self) -> Mask2D:
+    def edge(self) -> Mask2D:
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
@@ -165,7 +165,7 @@ class DerivedMasks2D:
         )
 
     @property
-    def edge_buffed_mask(self) -> Mask2D:
+    def edge_buffed(self) -> Mask2D:
 
         from autoarray.mask.mask_2d import Mask2D
 
@@ -181,7 +181,7 @@ class DerivedMasks2D:
         )
 
     @property
-    def border_mask(self) -> Mask2D:
+    def border(self) -> Mask2D:
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within

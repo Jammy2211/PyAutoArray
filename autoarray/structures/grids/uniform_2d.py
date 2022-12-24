@@ -871,7 +871,7 @@ class Grid2D(Structure):
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
-        blurring_mask = mask.derived_masks.blurring_mask_from(
+        blurring_mask = mask.derived_masks.blurring_from(
             kernel_shape_native=kernel_shape_native
         )
 
@@ -946,7 +946,7 @@ class Grid2D(Structure):
             (grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1
         )
 
-        return Grid2D(grid=grid_2d_binned, mask=self.mask.derived_masks.mask_sub_1)
+        return Grid2D(grid=grid_2d_binned, mask=self.mask.derived_masks.sub_1)
 
     @property
     def flipped(self) -> "Grid2D":
