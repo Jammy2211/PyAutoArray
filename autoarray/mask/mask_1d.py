@@ -176,25 +176,6 @@ class Mask1D(Mask):
         return (self.shape[0] * self.sub_size,)
 
     @property
-    def unmasked_grid_sub_1(self) -> Grid1D:
-        """
-        The scaled-grid of (y,x) coordinates of every pixel.
-
-        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
-        value y value in scaled units.
-        """
-        from autoarray.structures.grids.uniform_1d import Grid1D
-
-        grid_slim = grid_1d_util.grid_1d_slim_via_mask_from(
-            mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
-        )
-
-        return Grid1D(
-            grid=grid_slim,
-            mask=self.derived_masks.unmasked.derived_masks.sub_1,
-        )
-
-    @property
     def shape_slim(self) -> Tuple[int]:
         return self.shape
 

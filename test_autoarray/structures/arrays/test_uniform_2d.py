@@ -332,8 +332,8 @@ def test__manual_yx_and_values():
         array=[[1.0, 2.0, 3.0], [3.0, 4.0, 6.0]], pixel_scales=1.0
     )
 
-    y = array_2d.mask.unmasked_grid_sub_1[:, 0]
-    x = array_2d.mask.unmasked_grid_sub_1[:, 1]
+    y = array_2d.mask.derived_grids.unmasked_grid_sub_1[:, 0]
+    x = array_2d.mask.derived_grids.unmasked_grid_sub_1[:, 1]
 
     arr_via_yx = aa.Array2D.manual_yx_and_values(
         y=y,

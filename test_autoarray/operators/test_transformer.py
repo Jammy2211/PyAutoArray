@@ -31,6 +31,11 @@ class MockDerivedMasks1D:
     def origin(self):
         return self.grid.origin
 
+    @property
+    def derived_grids(self):
+        return aa.DerivedGrids2D(
+            mask=self.mask,
+        )
 
 class MockRealSpaceMask:
     def __init__(self, grid):
@@ -44,6 +49,23 @@ class MockRealSpaceMask:
             mask=self, grid=self.grid, masked_grid_sub_1=self.masked_grid_sub_1
         )
 
+    @property
+    def derived_grids(self):
+        return aa.DerivedGrids2D(
+            mask=self,
+        )
+
+    @property
+    def pixel_scales(self):
+        return self.grid.pixel_scales
+
+    @property
+    def sub_size(self):
+        return self.grid.sub_size
+
+    @property
+    def origin(self):
+        return self.grid.origin
 
 class MockMaskedGrid:
     def __init__(self, grid):

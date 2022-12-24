@@ -98,7 +98,7 @@ class AbstractArray2D(Structure):
             array[6] = the 7th unmasked pixel's value, given by value 7 above.
 
         A Cartesian grid of (y,x) coordinates, corresponding to all ``slim`` values (e.g. unmasked pixels) is given
-        by ``array_2d.mask.masked_grid``.
+        by ``array_2d.mask.derived_grids.masked_grid``.
 
 
         **NATIVE DATA REPRESENTATION (sub_size=1)**

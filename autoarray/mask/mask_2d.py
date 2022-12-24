@@ -14,6 +14,7 @@ from autoarray import exc
 from autoarray import type as ty
 from autoarray.geometry.geometry_2d import Geometry2D
 from autoarray.mask.derived_masks_2d import DerivedMasks2D
+from autoarray.mask.derived_grids_2d import DerivedGrids2D
 from autoarray.mask.indexes_2d import Indexes2D
 
 from autoarray.structures.arrays import array_2d_util
@@ -99,6 +100,10 @@ class Mask2D(Mask):
     @property
     def derived_masks(self) -> DerivedMasks2D:
         return DerivedMasks2D(mask=self)
+
+    @property
+    def derived_grids(self) -> DerivedGrids2D:
+        return DerivedGrids2D(mask=self)
 
     @classmethod
     def manual(
@@ -675,7 +680,7 @@ class Mask2D(Mask):
 
     @property
     def mask_centre(self) -> Tuple[float, float]:
-        return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
+        return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.derived_grids.masked_grid_sub_1)
 
     @property
     def shape_native_masked_pixels(self) -> Tuple[int, int]:
@@ -697,7 +702,7 @@ class Mask2D(Mask):
     def zoom_centre(self) -> Tuple[float, float]:
 
         extraction_grid_1d = self.geometry.grid_pixels_2d_from(
-            grid_scaled_2d=self.masked_grid_sub_1.slim
+            grid_scaled_2d=self.derived_grids.masked_grid_sub_1.slim
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])

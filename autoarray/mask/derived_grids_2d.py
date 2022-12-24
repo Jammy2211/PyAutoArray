@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
-
-from autoarray.structures.grids.uniform_2d import Grid2D
+    from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.structures.grids import grid_2d_util
 
