@@ -8,13 +8,13 @@ if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
     from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoconf import cached_property
-
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.geometry.geometry_2d import Geometry2D
+from autoarray.mask.indexes_2d import Indexes2D
+
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
@@ -71,6 +71,7 @@ class Mask2D(Mask):
             sub_size=sub_size,
             origin=origin,
         )
+        obj.indexes = Indexes2D(mask=obj)
         return obj
 
     def __array_finalize__(self, obj):
@@ -788,7 +789,7 @@ class Mask2D(Mask):
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        edge_grid_1d = self.masked_grid_sub_1[self.edge_1d_indexes]
+        edge_grid_1d = self.masked_grid_sub_1[self.indexes.edge_slim]
         return Grid2D(grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1)
 
     @property
@@ -798,7 +799,7 @@ class Mask2D(Mask):
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
-        return self.masked_grid[self.sub_border_flat_indexes]
+        return self.masked_grid[self.indexes.sub_border_slim]
 
     @property
     def border_grid_sub_1(self) -> Grid2D:
@@ -809,7 +810,7 @@ class Mask2D(Mask):
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        border_grid_1d = self.masked_grid_sub_1[self.border_1d_indexes]
+        border_grid_1d = self.masked_grid_sub_1[self.indexes.border_slim]
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
     def blurring_mask_from(self, kernel_shape_native) -> "Mask2D":
@@ -859,7 +860,7 @@ class Mask2D(Mask):
         an annulus mask.
         """
         mask = np.full(fill_value=True, shape=self.shape)
-        mask[self.edge_2d_indexes[:, 0], self.edge_2d_indexes[:, 1]] = False
+        mask[self.indexes.edge_native[:, 0], self.indexes.edge_native[:, 1]] = False
         return Mask2D(
             mask=mask,
             sub_size=self.sub_size,
@@ -875,7 +876,7 @@ class Mask2D(Mask):
         an annulus mask.
         """
         mask = np.full(fill_value=True, shape=self.shape)
-        mask[self.border_2d_indexes[:, 0], self.border_2d_indexes[:, 1]] = False
+        mask[self.indexes.border_native[:, 0], self.indexes.border_native[:, 1]] = False
         return Mask2D(
             mask=mask,
             sub_size=self.sub_size,

@@ -1071,18 +1071,18 @@ def test__mask_1d_indexes_from():
         ]
     )
 
-    unmasked_1d_indexes = util.mask_2d.mask_1d_indexes_from(
+    unmasked_slim = util.mask_2d.mask_slim_indexes_from(
         mask_2d=mask, return_masked_indexes=False
     )
 
-    assert (unmasked_1d_indexes == np.array([23, 24, 25, 47])).all()
+    assert (unmasked_slim == np.array([23, 24, 25, 47])).all()
 
-    masked_1d_indexes = util.mask_2d.mask_1d_indexes_from(
+    masked_slim = util.mask_2d.mask_slim_indexes_from(
         mask_2d=mask, return_masked_indexes=True
     )
 
-    assert masked_1d_indexes[0] == 0
-    assert masked_1d_indexes[-1] == 48
+    assert masked_slim[0] == 0
+    assert masked_slim[-1] == 48
 
 
 def test__edge_1d_indexes_from():

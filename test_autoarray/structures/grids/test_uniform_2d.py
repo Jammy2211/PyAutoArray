@@ -1011,7 +1011,7 @@ def test__sub_border_flat_indexes():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    assert grid_2d.mask.sub_border_flat_indexes == pytest.approx(
+    assert grid_2d.mask.sub_border_slim == pytest.approx(
         sub_border_flat_indexes_util, 1e-4
     )
 

@@ -169,7 +169,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         #        self.grid = self.real_space_mask.unmasked_grid.in_radians
         self.grid = Grid2D.from_mask(mask=self.real_space_mask).in_radians
         self.native_index_for_slim_index = copy.copy(
-            real_space_mask.native_index_for_slim_index.astype("int")
+            real_space_mask.indexes.native_index_for_slim_index.astype("int")
         )
 
         # NOTE: The plan need only be initialized once
