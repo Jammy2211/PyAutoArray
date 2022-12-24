@@ -1,11 +1,7 @@
-import os
-from os import path
 import numpy as np
 import pytest
-import shutil
 
 import autoarray as aa
-from autoarray import exc
 
 
 @pytest.fixture(name="indexes_2d_9x9")

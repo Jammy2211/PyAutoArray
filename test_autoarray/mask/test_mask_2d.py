@@ -584,30 +584,7 @@ def test__unmasked_mask():
     assert (mask.unmasked_mask == np.full(fill_value=False, shape=(9, 9))).all()
 
 
-def test__blurring_mask_from():
 
-    mask = aa.Mask2D.manual(
-        mask=[
-            [True, True, True, True, True, True, True, True],
-            [True, False, True, True, True, False, True, True],
-            [True, True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True, True],
-            [True, False, True, True, True, False, True, True],
-            [True, True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-    )
-
-    blurring_mask_via_util = aa.util.mask_2d.blurring_mask_2d_from(
-        mask_2d=mask, kernel_shape_native=(3, 3)
-    )
-
-    blurring_mask = mask.blurring_mask_from(kernel_shape_native=(3, 3))
-
-    assert (blurring_mask == blurring_mask_via_util).all()
 
 
 def test__edge_mask():

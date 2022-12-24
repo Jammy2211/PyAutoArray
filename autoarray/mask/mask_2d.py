@@ -813,31 +813,6 @@ class Mask2D(Mask):
         border_grid_1d = self.masked_grid_sub_1[self.indexes.border_slim]
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
-    def blurring_mask_from(self, kernel_shape_native) -> "Mask2D":
-        """
-        Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked
-        pixels via PSF convolution (see grid.Grid2D.blurring_grid_from).
-
-        Parameters
-        ----------
-        kernel_shape_native
-           The shape of the psf which defines the blurring region (e.g. the shape of the PSF)
-        """
-
-        if kernel_shape_native[0] % 2 == 0 or kernel_shape_native[1] % 2 == 0:
-            raise exc.MaskException("psf_size of exterior region must be odd")
-
-        blurring_mask = mask_2d_util.blurring_mask_2d_from(
-            mask_2d=self, kernel_shape_native=kernel_shape_native
-        )
-
-        return Mask2D(
-            mask=blurring_mask,
-            sub_size=1,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-
     @property
     def unmasked_mask(self) -> "Mask2D":
         """
