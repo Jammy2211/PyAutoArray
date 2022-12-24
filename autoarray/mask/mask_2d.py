@@ -813,15 +813,6 @@ class Mask2D(Mask):
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
     @property
-    def unmasked_1d_indexes(self) -> np.ndarray:
-        """
-        The 1D indexes of the mask's unmasked pixels (e.g. `value=False`).
-        """
-        return mask_2d_util.mask_1d_indexes_from(
-            mask_2d=self, return_masked_indexes=False
-        ).astype("int")
-
-    @property
     def masked_1d_indexes(self) -> np.ndarray:
         """
         The 1D indexes of the mask's unmasked pixels (e.g. `value=False`).

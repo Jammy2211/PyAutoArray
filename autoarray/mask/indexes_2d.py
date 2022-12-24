@@ -30,6 +30,15 @@ class Indexes2D:
         self.mask = mask
 
     @property
+    def unmasked_1d_indexes(self) -> np.ndarray:
+        """
+        The 1D indexes of the mask's unmasked pixels (e.g. `value=False`).
+        """
+        return mask_2d_util.mask_1d_indexes_from(
+            mask_2d=self.mask, return_masked_indexes=False
+        ).astype("int")
+
+    @property
     def native_index_for_slim_index(self) -> np.ndarray:
         """
         A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates.
