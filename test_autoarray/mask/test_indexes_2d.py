@@ -51,6 +51,31 @@ def test__unmasked_1d_indexes():
     assert indexes_2d.unmasked_1d_indexes == pytest.approx(unmasked_pixels_util, 1e-4)
 
 
+def test__masked_1d_indexes():
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True, True, True, True, True, True],
+            [True, False, False, False, False, False, False, False, True],
+            [True, False, True, True, True, True, True, False, True],
+            [True, False, True, False, False, False, True, False, True],
+            [True, False, True, False, True, False, True, False, True],
+            [True, False, True, False, False, False, True, False, True],
+            [True, False, True, True, True, True, True, False, True],
+            [True, False, False, False, False, False, False, False, True],
+            [True, True, True, True, True, True, True, True, True],
+        ],
+        pixel_scales=1.0,
+    )
+
+    indexes_2d = aa.Indexes2D(mask=mask)
+
+    masked_pixels_util = aa.util.mask_2d.mask_1d_indexes_from(
+        mask_2d=mask, return_masked_indexes=True
+    )
+
+    assert indexes_2d.masked_1d_indexes == pytest.approx(masked_pixels_util, 1e-4)
+
+
 def test__edge_1d_indexes():
     mask = aa.Mask2D.manual(
         mask=[
