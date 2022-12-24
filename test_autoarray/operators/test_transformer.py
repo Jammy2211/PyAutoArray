@@ -4,11 +4,12 @@ import numpy as np
 import pytest
 
 
-class MockRealSpaceMask:
-    def __init__(self, grid):
+class MockDerivedMasks1D:
+    def __init__(self, mask, grid, masked_grid_sub_1):
 
+        self.mask = mask
         self.grid = grid
-        self.masked_grid_sub_1 = MockMaskedGrid(grid=grid)
+        self.masked_grid_sub_1 = masked_grid_sub_1
 
     @property
     def mask_sub_1(self):
@@ -29,6 +30,19 @@ class MockRealSpaceMask:
     @property
     def origin(self):
         return self.grid.origin
+
+
+class MockRealSpaceMask:
+    def __init__(self, grid):
+
+        self.grid = grid
+        self.masked_grid_sub_1 = MockMaskedGrid(grid=grid)
+
+    @property
+    def derived_masks(self):
+        return MockDerivedMasks1D(
+            mask=self, grid=self.grid, masked_grid_sub_1=self.masked_grid_sub_1
+        )
 
 
 class MockMaskedGrid:

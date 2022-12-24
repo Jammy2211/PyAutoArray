@@ -537,7 +537,7 @@ class Grid1D(Structure):
 
         if isinstance(result, Grid2DTransformedNumpy):
             return Grid2DTransformed(grid=result, mask=self.mask)
-        return Grid2D(grid=result, mask=self.mask.to_mask_2d)
+        return Grid2D(grid=result, mask=self.mask.derived_masks.to_mask_2d)
 
     def structure_2d_list_from(
         self, result_list: List

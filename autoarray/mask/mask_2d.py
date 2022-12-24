@@ -583,7 +583,7 @@ class Mask2D(Mask):
         )
 
         if resized_mask_shape is not None:
-            mask = mask.resized_mask_from(new_shape=resized_mask_shape)
+            mask = mask.derived_masks.resized_mask_from(new_shape=resized_mask_shape)
 
         return mask
 
