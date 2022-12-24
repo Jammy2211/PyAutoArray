@@ -475,32 +475,6 @@ def test__sub_shape_native():
     assert mask.sub_shape_native == (30, 15)
 
 
-def test__resized_mask_from():
-
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
-    mask[2, 2] = True
-
-    mask_resized = mask.resized_mask_from(new_shape=(7, 7))
-
-    mask_resized_manual = np.full(fill_value=False, shape=(7, 7))
-    mask_resized_manual[3, 3] = True
-
-    assert (mask_resized == mask_resized_manual).all()
-
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
-    mask[2, 2] = True
-
-    mask_resized = mask.resized_mask_from(new_shape=(3, 3))
-
-    mask_resized_manual = np.full(fill_value=False, shape=(3, 3))
-    mask_resized_manual[1, 1] = True
-
-    assert (mask_resized == mask_resized_manual).all()
-
-
-
-
-
 def test__shape_native_masked_pixels():
 
     mask = aa.Mask2D.manual(

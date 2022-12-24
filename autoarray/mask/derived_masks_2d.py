@@ -66,6 +66,31 @@ class DerivedMasks2D:
             origin=self.mask.origin,
         )
 
+    def resized_mask_from(self, new_shape, pad_value: int = 0.0) -> Mask2D:
+        """
+        Resized the array to a new shape and at a new origin.
+
+        Parameters
+        ----------
+        new_shape
+            The new two-dimensional shape of the array.
+        """
+
+        from autoarray.mask.mask_2d import Mask2D
+
+        mask = copy.deepcopy(self.mask)
+
+        resized_mask = array_2d_util.resized_array_2d_from(
+            array_2d=mask, resized_shape=new_shape, pad_value=pad_value
+        ).astype("bool")
+
+        return Mask2D(
+            mask=resized_mask,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            origin=self.mask.origin,
+        )
+
     @property
     def sub_mask(self) -> np.ndarray:
 

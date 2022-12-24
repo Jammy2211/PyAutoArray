@@ -67,6 +67,32 @@ def test__rescaled_mask_from():
     assert (mask_rescaled == mask_rescaled_manual).all()
 
 
+def test__resized_mask_from():
+
+    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
+    mask[2, 2] = True
+
+    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+
+    mask_resized = derived_masks_2d.resized_mask_from(new_shape=(7, 7))
+
+    mask_resized_manual = np.full(fill_value=False, shape=(7, 7))
+    mask_resized_manual[3, 3] = True
+
+    assert (mask_resized == mask_resized_manual).all()
+
+    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
+    mask[2, 2] = True
+    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+
+    mask_resized = derived_masks_2d.resized_mask_from(new_shape=(3, 3))
+
+    mask_resized_manual = np.full(fill_value=False, shape=(3, 3))
+    mask_resized_manual[1, 1] = True
+
+    assert (mask_resized == mask_resized_manual).all()
+
+
 def test__unmasked_mask(derived_masks_2d_9x9):
 
     assert (
