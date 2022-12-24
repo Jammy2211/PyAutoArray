@@ -79,7 +79,7 @@ class Mask2D(Mask):
         super().__array_finalize__(obj=obj)
 
         if isinstance(obj, Mask2D):
-            pass
+            self.indexes = obj.indexes
         else:
             self.origin = (0.0, 0.0)
 
