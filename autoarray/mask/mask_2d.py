@@ -813,12 +813,12 @@ class Mask2D(Mask):
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
     @property
-    def native_index_for_slim_index(self) -> np.ndarray:
+    def unmasked_1d_indexes(self) -> np.ndarray:
         """
-        A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates.
+        The 1D indexes of the mask's unmasked pixels (e.g. `value=False`).
         """
-        return mask_2d_util.native_index_for_slim_index_2d_from(
-            mask_2d=self, sub_size=1
+        return mask_2d_util.mask_1d_indexes_from(
+            mask_2d=self, return_masked_indexes=False
         ).astype("int")
 
     @property
@@ -829,31 +829,6 @@ class Mask2D(Mask):
         return mask_2d_util.mask_1d_indexes_from(
             mask_2d=self, return_masked_indexes=True
         ).astype("int")
-
-    @property
-    def unmasked_1d_indexes(self) -> np.ndarray:
-        """
-        The 1D indexes of the mask's unmasked pixels (e.g. `value=False`).
-        """
-        return mask_2d_util.mask_1d_indexes_from(
-            mask_2d=self, return_masked_indexes=False
-        ).astype("int")
-
-    @property
-    def edge_1d_indexes(self) -> np.ndarray:
-        """
-        The indexes of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
-        (next to at least one pixel with a `True` value).
-        """
-        return mask_2d_util.edge_1d_indexes_from(mask_2d=self).astype("int")
-
-    @property
-    def edge_2d_indexes(self) -> np.ndarray:
-        """
-        The indexes of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
-        (next to at least one pixel with a `True` value).
-        """
-        return self.native_index_for_slim_index[self.edge_1d_indexes].astype("int")
 
     @property
     def border_1d_indexes(self) -> np.ndarray:
