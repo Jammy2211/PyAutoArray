@@ -52,6 +52,16 @@ class DerivedMasks2D:
         return self.mask.indexes
 
     @property
+    def sub_mask(self) -> np.ndarray:
+
+        sub_shape = (self.mask.shape[0] * self.mask.sub_size, self.mask.shape[1] * self.mask.sub_size)
+
+        return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
+            shape_native=sub_shape,
+            native_for_slim=self.indexes.sub_mask_native_for_sub_mask_slim,
+        ).astype("bool")
+
+    @property
     def unmasked_mask(self) -> Mask2D:
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an

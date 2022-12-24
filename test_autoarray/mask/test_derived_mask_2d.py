@@ -25,6 +25,29 @@ def make_derived_masks_2d_9x9():
     return aa.DerivedMasks2D(mask=mask_2d)
 
 
+def test__sub_mask():
+
+    mask = aa.Mask2D.manual(
+        mask=[[False, False, True], [False, True, False]],
+        pixel_scales=1.0,
+        sub_size=2,
+    )
+
+    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+
+    assert (
+        derived_masks_2d.sub_mask
+        == np.array(
+            [
+                [False, False, False, False, True, True],
+                [False, False, False, False, True, True],
+                [False, False, True, True, False, False],
+                [False, False, True, True, False, False],
+            ]
+        )
+    ).all()
+
+
 def test__unmasked_mask(derived_masks_2d_9x9):
 
     assert (

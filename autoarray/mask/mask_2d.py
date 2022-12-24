@@ -593,16 +593,6 @@ class Mask2D(Mask):
         except AttributeError:
             print("bleh")
 
-    @property
-    def sub_mask(self) -> np.ndarray:
-
-        sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
-
-        return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
-            shape_native=sub_shape,
-            native_for_slim=self.indexes.sub_mask_native_for_sub_mask_slim,
-        ).astype("bool")
-
     def rescaled_mask_from(self, rescale_factor) -> "Mask2D":
 
         rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
