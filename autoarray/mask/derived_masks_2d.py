@@ -51,6 +51,18 @@ class DerivedMasks2D:
     def indexes(self) -> Indexes2D:
         return self.mask.indexes
 
+    @property
+    def mask_sub_1(self) -> Mask2D:
+        """
+        Returns the mask on the same scaled coordinate system but with a sub-grid of `sub_size`.
+        """
+
+        from autoarray.mask.mask_2d import Mask2D
+
+        return Mask2D(
+            mask=self.msk, sub_size=1, pixel_scales=self.mask.pixel_scales, origin=self.mask.origin
+        )
+
     def rescaled_mask_from(self, rescale_factor) -> Mask2D:
 
         from autoarray.mask.mask_2d import Mask2D

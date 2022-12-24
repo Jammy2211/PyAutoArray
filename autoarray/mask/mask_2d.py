@@ -593,15 +593,6 @@ class Mask2D(Mask):
         except AttributeError:
             print("bleh")
 
-    @property
-    def mask_sub_1(self) -> "Mask2D":
-        """
-        Returns the mask on the same scaled coordinate system but with a sub-grid of `sub_size`.
-        """
-        return Mask2D(
-            mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
-        )
-
     def trimmed_array_from(self, padded_array, image_shape) -> Array2D:
         """
         Map a padded 1D array of values to its original 2D array, trimming all edge values.
