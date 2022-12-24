@@ -23,6 +23,11 @@ def make_derived_masks_2d_9x9():
 
     return aa.DerivedMasks2D(mask=mask_2d)
 
+def test__unmasked_mask(derived_masks_2d_9x9):
+
+    assert (derived_masks_2d_9x9.unmasked_mask == np.full(fill_value=False, shape=(9, 9))).all()
+
+
 def test__blurring_mask_from(derived_masks_2d_9x9):
 
     blurring_mask_via_util = aa.util.mask_2d.blurring_mask_2d_from(

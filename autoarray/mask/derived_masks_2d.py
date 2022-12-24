@@ -51,6 +51,23 @@ class DerivedMasks2D:
     def indexes(self):
         return self.mask.indexes
 
+    @property
+    def unmasked_mask(self) -> Mask2D:
+        """
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
+        """
+
+        from autoarray.mask.mask_2d import Mask2D
+
+        return Mask2D.unmasked(
+            shape_native=self.mask.shape_native,
+            sub_size=self.mask.sub_size,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
     def blurring_mask_from(self, kernel_shape_native) -> Mask2D:
         """
         Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked
