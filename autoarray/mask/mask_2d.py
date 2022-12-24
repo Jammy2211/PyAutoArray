@@ -602,19 +602,6 @@ class Mask2D(Mask):
             mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
         )
 
-    def rescaled_mask_from(self, rescale_factor) -> "Mask2D":
-
-        rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
-            mask_2d=self, rescale_factor=rescale_factor
-        )
-
-        return Mask2D(
-            mask=rescaled_mask,
-            pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
-            origin=self.origin,
-        )
-
     def resized_mask_from(self, new_shape, pad_value: int = 0.0) -> "Mask2D":
         """
         Resized the array to a new shape and at a new origin.

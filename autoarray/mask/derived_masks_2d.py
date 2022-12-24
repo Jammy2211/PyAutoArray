@@ -51,6 +51,21 @@ class DerivedMasks2D:
     def indexes(self) -> Indexes2D:
         return self.mask.indexes
 
+    def rescaled_mask_from(self, rescale_factor) -> Mask2D:
+
+        from autoarray.mask.mask_2d import Mask2D
+
+        rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
+            mask_2d=self.mask, rescale_factor=rescale_factor
+        )
+
+        return Mask2D(
+            mask=rescaled_mask,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            origin=self.mask.origin,
+        )
+
     @property
     def sub_mask(self) -> np.ndarray:
 
