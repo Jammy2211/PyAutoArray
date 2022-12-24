@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
+from autoarray.mask.derived_masks_1d import DerivedMasks1D
 from autoarray.geometry.geometry_1d import Geometry1D
 from autoarray.structures.arrays import array_1d_util
 from autoarray.structures.grids import grid_1d_util
@@ -79,6 +80,10 @@ class Mask1D(Mask):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
+
+    @property
+    def derived_masks(self) -> DerivedMasks1D:
+        return DerivedMasks1D(mask=self)
 
     @classmethod
     def manual(
@@ -171,25 +176,6 @@ class Mask1D(Mask):
         return (self.shape[0] * self.sub_size,)
 
     @property
-    def mask_sub_1(self) -> "Mask1D":
-        """
-        Returns the mask on the same scaled coordinate system but with a sub-grid of `sub_size`.
-        """
-        return Mask1D(
-            mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
-        )
-
-    @property
-    def unmasked_mask(self) -> "Mask1D":
-
-        return Mask1D.unmasked(
-            shape_slim=self.shape_slim,
-            sub_size=self.sub_size,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-
-    @property
     def unmasked_grid_sub_1(self) -> Grid1D:
         """
         The scaled-grid of (y,x) coordinates of every pixel.
@@ -203,28 +189,9 @@ class Mask1D(Mask):
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
-        return Grid1D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
-
-    @property
-    def to_mask_2d(self) -> Mask2D:
-        """
-        Map the Mask1D to a Mask2D of shape [total_mask_1d_pixel, 1].
-
-        The change in shape and dimensions of the mask is necessary for mapping results from 1D data structures to 2D.
-
-        Returns
-        -------
-        mask_2d
-            The 1D mask mapped to a 2D mask of shape [total_mask_1d_pixel, 1].
-        """
-
-        from autoarray.mask.mask_2d import Mask2D
-
-        return Mask2D.manual(
-            [self],
-            pixel_scales=(self.pixel_scale, self.pixel_scale),
-            sub_size=self.sub_size,
-            origin=(0.0, 0.0),
+        return Grid1D(
+            grid=grid_slim,
+            mask=self.derived_masks.unmasked_mask.derived_masks.mask_sub_1,
         )
 
     @property

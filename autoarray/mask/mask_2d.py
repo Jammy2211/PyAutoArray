@@ -13,6 +13,7 @@ from autoarray.mask.abstract_mask import Mask
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.geometry.geometry_2d import Geometry2D
+from autoarray.mask.derived_masks_2d import DerivedMasks2D
 from autoarray.mask.indexes_2d import Indexes2D
 
 from autoarray.structures.arrays import array_2d_util
@@ -94,6 +95,10 @@ class Mask2D(Mask):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
+
+    @property
+    def derived_masks(self) -> DerivedMasks2D:
+        return DerivedMasks2D(mask=self)
 
     @classmethod
     def manual(
@@ -689,7 +694,10 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-        return Grid2D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
+        return Grid2D(
+            grid=grid_slim,
+            mask=self.derived_masks.unmasked_mask.derived_masks.mask_sub_1,
+        )
 
     @property
     def masked_grid(self) -> Grid2D:
@@ -702,7 +710,9 @@ class Mask2D(Mask):
             sub_size=self.sub_size,
             origin=self.origin,
         )
-        return Grid2D(grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1)
+        return Grid2D(
+            grid=sub_grid_1d, mask=self.derived_masks.edge_mask.derived_masks.mask_sub_1
+        )
 
     @property
     def masked_grid_sub_1(self) -> Grid2D:
@@ -712,7 +722,7 @@ class Mask2D(Mask):
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
-        return Grid2D(grid=grid_slim, mask=self.mask_sub_1)
+        return Grid2D(grid=grid_slim, mask=self.derived_masks.mask_sub_1)
 
     @property
     def edge_grid_sub_1(self) -> Grid2D:
@@ -725,7 +735,10 @@ class Mask2D(Mask):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         edge_grid_1d = self.masked_grid_sub_1[self.indexes.edge_slim]
-        return Grid2D(grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1)
+        return Grid2D(
+            grid=edge_grid_1d,
+            mask=self.derived_masks.edge_mask.derived_masks.mask_sub_1,
+        )
 
     @property
     def border_grid_1d(self) -> Grid2D:
@@ -746,7 +759,10 @@ class Mask2D(Mask):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         border_grid_1d = self.masked_grid_sub_1[self.indexes.border_slim]
-        return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
+        return Grid2D(
+            grid=border_grid_1d,
+            mask=self.derived_masks.border_mask.derived_masks.mask_sub_1,
+        )
 
     @property
     def shape_native_masked_pixels(self) -> Tuple[int, int]:

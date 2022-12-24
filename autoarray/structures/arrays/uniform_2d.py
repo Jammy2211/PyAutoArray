@@ -389,7 +389,9 @@ class AbstractArray2D(Structure):
         )
 
         return Array2D(
-            array=binned_array_1d, mask=self.mask.mask_sub_1, header=self.header
+            array=binned_array_1d,
+            mask=self.mask.derived_masks.mask_sub_1,
+            header=self.header,
         )
 
     @property

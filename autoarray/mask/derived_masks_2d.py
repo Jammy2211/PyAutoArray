@@ -8,13 +8,9 @@ if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
-from autoarray import type as ty
-from autoarray.geometry.geometry_2d import Geometry2D
 from autoarray.mask.indexes_2d import Indexes2D
 
 from autoarray.structures.arrays import array_2d_util
-from autoarray.geometry import geometry_util
-from autoarray.structures.grids import grid_2d_util
 from autoarray.mask import mask_2d_util
 
 logging.basicConfig()
@@ -24,21 +20,7 @@ logger = logging.getLogger(__name__)
 class DerivedMasks2D:
     def __init__(self, mask: Mask2D):
         """
-        Computes the ``slim`` and ``native`` indexes of specific ``Mask2D`` quantities.
-
-        A 2D mask has two data representations, ``slim`` and ``native``, which are described fully at ?.
-
-        The ``Indexes2D`` class contains methods for computing 1D ``ndarrays`` of specific indexes
-        of certain predefined quantities associated with the 2D mask.
-
-        For example, the property ``native_for_slim`` returns an array of shape [total_unmasked_pixels*sub_size] that
-        maps every unmasked sub-pixel to its corresponding native 2D pixel using its (y,x) pixel indexes.
-
-        For example, for a sub-grid size of 2x2, if pixel [2,5] corresponds to the first pixel in the masked slim array:
-
-        - The first sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[4] = [2,5]
-        - The second sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [2,6]
-        - The third sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [3,5]
+        Missing
 
         Parameters
         ----------
@@ -60,7 +42,10 @@ class DerivedMasks2D:
         from autoarray.mask.mask_2d import Mask2D
 
         return Mask2D(
-            mask=self.msk, sub_size=1, pixel_scales=self.mask.pixel_scales, origin=self.mask.origin
+            mask=self.mask,
+            sub_size=1,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
         )
 
     def rescaled_mask_from(self, rescale_factor) -> Mask2D:
@@ -106,7 +91,10 @@ class DerivedMasks2D:
     @property
     def sub_mask(self) -> np.ndarray:
 
-        sub_shape = (self.mask.shape[0] * self.mask.sub_size, self.mask.shape[1] * self.mask.sub_size)
+        sub_shape = (
+            self.mask.shape[0] * self.mask.sub_size,
+            self.mask.shape[1] * self.mask.sub_size,
+        )
 
         return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
             shape_native=sub_shape,
@@ -181,7 +169,9 @@ class DerivedMasks2D:
 
         from autoarray.mask.mask_2d import Mask2D
 
-        edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(mask_2d=self.mask).astype("bool")
+        edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(mask_2d=self.mask).astype(
+            "bool"
+        )
 
         return Mask2D(
             mask=edge_buffed_mask,

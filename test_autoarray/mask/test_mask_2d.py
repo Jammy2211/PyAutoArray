@@ -782,9 +782,6 @@ def test__zoom_mask_unmasked():
     assert zoom_mask.origin == (0.0, -2.0)
 
 
-### GEOMETRY ###
-
-
 def test__mask_centre():
     mask = np.array(
         [

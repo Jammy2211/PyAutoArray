@@ -65,7 +65,7 @@ class TransformerDFT(PyLopsOperator):
         super().__init__()
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
-        self.real_space_mask = real_space_mask.mask_sub_1
+        self.real_space_mask = real_space_mask.derived_masks.mask_sub_1
         self.grid = self.real_space_mask.masked_grid_sub_1.binned.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
@@ -165,7 +165,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         super(TransformerNUFFT, self).__init__()
 
         self.uv_wavelengths = uv_wavelengths
-        self.real_space_mask = real_space_mask.mask_sub_1
+        self.real_space_mask = real_space_mask.derived_masks.mask_sub_1
         #        self.grid = self.real_space_mask.unmasked_grid.in_radians
         self.grid = Grid2D.from_mask(mask=self.real_space_mask).in_radians
         self.native_index_for_slim_index = copy.copy(
