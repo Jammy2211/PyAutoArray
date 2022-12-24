@@ -54,6 +54,7 @@ from .inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from .mask.indexes_2d import Indexes2D
 from .mask.derived_masks_1d import DerivedMasks1D
 from .mask.derived_masks_2d import DerivedMasks2D
+from .mask.derived_grids_2d import DerivedGrids2D
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
 from .operators.convolver import Convolver
