@@ -125,6 +125,20 @@ class DerivedMasks2D:
         )
 
     @property
+    def edge_buffed_mask(self) -> Mask2D:
+
+        from autoarray.mask.mask_2d import Mask2D
+
+        edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(mask_2d=self.mask).astype("bool")
+
+        return Mask2D(
+            mask=edge_buffed_mask,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            origin=self.mask.origin,
+        )
+
+    @property
     def border_mask(self) -> Mask2D:
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an

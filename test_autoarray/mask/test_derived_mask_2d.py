@@ -86,6 +86,20 @@ def test__edge_mask(derived_masks_2d_9x9):
     ).all()
 
 
+def test__edge_buffed_mask():
+
+    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
+    mask[2, 2] = True
+
+    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+
+    edge_buffed_mask_manual = aa.util.mask_2d.buffed_mask_2d_from(mask_2d=mask).astype(
+        "bool"
+    )
+
+    assert (derived_masks_2d.edge_buffed_mask == edge_buffed_mask_manual).all()
+
+
 def test__border_mask(derived_masks_2d_9x9):
 
     assert (

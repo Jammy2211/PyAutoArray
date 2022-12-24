@@ -515,18 +515,6 @@ def test__rescaled_mask_from():
     assert (mask_rescaled == mask_rescaled_manual).all()
 
 
-def test__edge_buffed_mask():
-
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
-    mask[2, 2] = True
-
-    edge_buffed_mask_manual = aa.util.mask_2d.buffed_mask_2d_from(mask_2d=mask).astype(
-        "bool"
-    )
-
-    assert (mask.edge_buffed_mask == edge_buffed_mask_manual).all()
-
-
 def test__shape_native_masked_pixels():
 
     mask = aa.Mask2D.manual(

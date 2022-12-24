@@ -593,6 +593,15 @@ class Mask2D(Mask):
         except AttributeError:
             print("bleh")
 
+    @property
+    def mask_sub_1(self) -> "Mask2D":
+        """
+        Returns the mask on the same scaled coordinate system but with a sub-grid of `sub_size`.
+        """
+        return Mask2D(
+            mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
+        )
+
     def rescaled_mask_from(self, rescale_factor) -> "Mask2D":
 
         rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
@@ -604,15 +613,6 @@ class Mask2D(Mask):
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
             origin=self.origin,
-        )
-
-    @property
-    def mask_sub_1(self) -> "Mask2D":
-        """
-        Returns the mask on the same scaled coordinate system but with a sub-grid of `sub_size`.
-        """
-        return Mask2D(
-            mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
         )
 
     def resized_mask_from(self, new_shape, pad_value: int = 0.0) -> "Mask2D":
@@ -716,16 +716,6 @@ class Mask2D(Mask):
     @property
     def mask_centre(self) -> Tuple[float, float]:
         return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
-
-    @property
-    def edge_buffed_mask(self) -> "Mask2D":
-        edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(mask_2d=self).astype("bool")
-        return Mask2D(
-            mask=edge_buffed_mask,
-            pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
-            origin=self.origin,
-        )
 
     @property
     def unmasked_grid_sub_1(self) -> Grid2D:
