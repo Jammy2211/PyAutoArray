@@ -118,7 +118,52 @@ def test__edge_2d_indexes():
 
     indexes_2d = aa.Indexes2D(mask=mask)
 
-    edge_1d_indexes_util = aa.util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
-
     assert indexes_2d.edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
     assert indexes_2d.edge_2d_indexes[10] == pytest.approx(np.array([3, 3]), 1e-4)
+
+
+def test__border_1d_indexes():
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True, True, True, True, True, True],
+            [True, False, False, False, False, False, False, False, True],
+            [True, False, True, True, True, True, True, False, True],
+            [True, False, True, False, False, False, True, False, True],
+            [True, False, True, False, True, False, True, False, True],
+            [True, False, True, False, False, False, True, False, True],
+            [True, False, True, True, True, True, True, False, True],
+            [True, False, False, False, False, False, False, False, True],
+            [True, True, True, True, True, True, True, True, True],
+        ],
+        pixel_scales=1.0,
+    )
+
+    indexes_2d = aa.Indexes2D(mask=mask)
+
+    border_pixels_util = aa.util.mask_2d.border_slim_indexes_from(mask_2d=mask)
+
+    assert indexes_2d.border_1d_indexes == pytest.approx(border_pixels_util, 1e-4)
+    assert indexes_2d.border_1d_indexes.shape[0] == indexes_2d.border_2d_indexes.shape[0]
+
+def test__border_2d_indexes():
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True, True, True, True, True, True],
+            [True, False, False, False, False, False, False, False, True],
+            [True, False, True, True, True, True, True, False, True],
+            [True, False, True, False, False, False, True, False, True],
+            [True, False, True, False, True, False, True, False, True],
+            [True, False, True, False, False, False, True, False, True],
+            [True, False, True, True, True, True, True, False, True],
+            [True, False, False, False, False, False, False, False, True],
+            [True, True, True, True, True, True, True, True, True],
+        ],
+        pixel_scales=1.0,
+    )
+
+    indexes_2d = aa.Indexes2D(mask=mask)
+
+    border_pixels_util = aa.util.mask_2d.border_slim_indexes_from(mask_2d=mask)
+
+    assert indexes_2d.border_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
+    assert indexes_2d.border_2d_indexes[10] == pytest.approx(np.array([3, 7]), 1e-4)
