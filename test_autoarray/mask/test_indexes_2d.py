@@ -42,6 +42,24 @@ def test__native_index_for_slim_index(indexes_2d_9x9):
     )
 
 
+def test__sub_mask_index_for_sub_mask_1d_index():
+    mask = aa.Mask2D.manual(
+        mask=[[True, True, True], [True, False, False], [True, True, False]],
+        pixel_scales=1.0,
+        sub_size=2,
+    )
+
+    indexes_2d = aa.Indexes2D(mask=mask)
+
+    sub_mask_index_for_sub_mask_1d_index = (
+        aa.util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
+    )
+
+    assert indexes_2d.sub_mask_index_for_sub_mask_1d_index == pytest.approx(
+        sub_mask_index_for_sub_mask_1d_index, 1e-4
+    )
+
+
 def test__unmasked_1d_indexes(indexes_2d_9x9):
 
     unmasked_pixels_util = aa.util.mask_2d.mask_1d_indexes_from(

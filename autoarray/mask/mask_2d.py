@@ -884,15 +884,6 @@ class Mask2D(Mask):
         )
 
     @cached_property
-    def sub_mask_index_for_sub_mask_1d_index(self) -> np.ndarray:
-        """
-        A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates.
-        """
-        return mask_2d_util.native_index_for_slim_index_2d_from(
-            mask_2d=self, sub_size=self.sub_size
-        ).astype("int")
-
-    @cached_property
     def slim_index_for_sub_slim_index(self) -> np.ndarray:
         """
         The util between every sub-pixel and its host pixel.
