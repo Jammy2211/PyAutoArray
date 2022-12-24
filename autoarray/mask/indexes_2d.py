@@ -88,3 +88,14 @@ class Indexes2D:
         an annulus mask.
         """
         return self.native_index_for_slim_index[self.border_1d_indexes].astype("int")
+
+    @cached_property
+    def sub_border_flat_indexes(self) -> np.ndarray:
+        """
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
+        """
+        return mask_2d_util.sub_border_pixel_slim_indexes_from(
+            mask_2d=self.mask, sub_size=self.mask.sub_size
+        ).astype("int")

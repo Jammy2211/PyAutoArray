@@ -678,47 +678,6 @@ def test__border_mask():
     ).all()
 
 
-def test__sub_border_flat_indexes():
-
-    mask = aa.Mask2D.manual(
-        mask=[
-            [False, False, False, False, False, False, False, True],
-            [False, True, True, True, True, True, False, True],
-            [False, True, False, False, False, True, False, True],
-            [False, True, False, True, False, True, False, True],
-            [False, True, False, False, False, True, False, True],
-            [False, True, True, True, True, True, False, True],
-            [False, False, False, False, False, False, False, True],
-        ],
-        pixel_scales=1.0,
-        sub_size=2,
-    )
-
-    sub_border_pixels_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
-        mask_2d=mask, sub_size=2
-    )
-
-    assert mask.sub_border_flat_indexes == pytest.approx(sub_border_pixels_util, 1e-4)
-
-    mask = aa.Mask2D.manual(
-        mask=[
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-        sub_size=2,
-    )
-
-    assert (
-        mask.sub_border_flat_indexes == np.array([0, 5, 9, 14, 23, 26, 31, 35])
-    ).all()
-
-
 def test__slim_index_for_sub_slim_index():
     mask = aa.Mask2D.manual(
         mask=[[True, False, True], [False, False, False], [True, False, False]],

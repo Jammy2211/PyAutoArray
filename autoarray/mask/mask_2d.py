@@ -812,17 +812,6 @@ class Mask2D(Mask):
         border_grid_1d = self.masked_grid_sub_1[self.border_1d_indexes]
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
-    @cached_property
-    def sub_border_flat_indexes(self) -> np.ndarray:
-        """
-        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
-        an annulus mask.
-        """
-        return mask_2d_util.sub_border_pixel_slim_indexes_from(
-            mask_2d=self, sub_size=self.sub_size
-        ).astype("int")
-
     def blurring_mask_from(self, kernel_shape_native) -> "Mask2D":
         """
         Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked
