@@ -20,7 +20,7 @@ class Indexes2D:
         self.mask = mask
 
     @property
-    def native_index_for_slim_index(self) -> np.ndarray:
+    def native_for_slim(self) -> np.ndarray:
         """
         A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates.
         """
@@ -83,7 +83,7 @@ class Indexes2D:
         The indexes of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge
         (next to at least one pixel with a `True` value).
         """
-        return self.native_index_for_slim_index[self.edge_slim].astype("int")
+        return self.native_for_slim[self.edge_slim].astype("int")
 
     @property
     def border_slim(self) -> np.ndarray:
@@ -100,7 +100,7 @@ class Indexes2D:
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
-        return self.native_index_for_slim_index[self.border_slim].astype("int")
+        return self.native_for_slim[self.border_slim].astype("int")
 
     @cached_property
     def sub_border_slim(self) -> np.ndarray:

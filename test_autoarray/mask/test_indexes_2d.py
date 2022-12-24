@@ -37,7 +37,7 @@ def test__native_index_for_slim_index(indexes_2d_9x9):
         )
     )
 
-    assert indexes_2d_9x9.native_index_for_slim_index == pytest.approx(
+    assert indexes_2d_9x9.native_for_slim == pytest.approx(
         sub_native_index_for_sub_slim_index_2d, 1e-4
     )
 
