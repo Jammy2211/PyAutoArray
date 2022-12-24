@@ -113,3 +113,22 @@ class DerivedMasks2D:
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
+
+    @property
+    def border_mask(self) -> Mask2D:
+        """
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
+        """
+
+        from autoarray.mask.mask_2d import Mask2D
+
+        mask = np.full(fill_value=True, shape=self.mask.shape)
+        mask[self.indexes.border_native[:, 0], self.indexes.border_native[:, 1]] = False
+        return Mask2D(
+            mask=mask,
+            sub_size=self.mask.sub_size,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )

@@ -61,3 +61,23 @@ def test__edge_mask(derived_masks_2d_9x9):
             ]
         )
     ).all()
+
+
+def test__border_mask(derived_masks_2d_9x9):
+
+    assert (
+        derived_masks_2d_9x9.border_mask
+        == np.array(
+            [
+                [True, True, True, True, True, True, True, True, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ]
+        )
+    ).all()
