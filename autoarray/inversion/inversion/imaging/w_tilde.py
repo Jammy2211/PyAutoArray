@@ -95,7 +95,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             image_native=self.data.native,
             noise_map_native=self.noise_map.native,
             kernel_native=self.convolver.kernel.native,
-            native_index_for_slim_index=self.data.mask.native_index_for_slim_index,
+            native_index_for_slim_index=self.data.mask.indexes.native_for_slim,
         )
 
         return np.concatenate(

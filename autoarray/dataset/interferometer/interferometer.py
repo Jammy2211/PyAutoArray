@@ -134,7 +134,7 @@ class Interferometer(AbstractDataset):
 
         w_matrix = inversion_util_secret.w_tilde_via_preload_from(
             w_tilde_preload=curvature_preload,
-            native_index_for_slim_index=self.real_space_mask.native_index_for_slim_index,
+            native_index_for_slim_index=self.real_space_mask.indexes.native_for_slim,
         )
 
         dirty_image = self.transformer.image_from(

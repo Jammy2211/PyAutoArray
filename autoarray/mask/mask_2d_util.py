@@ -643,7 +643,7 @@ def mask_2d_via_shape_native_and_native_for_slim(
 
 
 @numba_util.jit()
-def mask_1d_indexes_from(
+def mask_slim_indexes_from(
     mask_2d: np.ndarray, return_masked_indexes: bool = True
 ) -> np.ndarray:
     """

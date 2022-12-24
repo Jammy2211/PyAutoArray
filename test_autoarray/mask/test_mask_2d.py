@@ -564,22 +564,6 @@ def test__edge_buffed_mask():
     assert (mask.edge_buffed_mask == edge_buffed_mask_manual).all()
 
 
-def test__native_index_for_slim_index():
-
-    mask = aa.Mask2D.manual(
-        mask=[[True, True, True], [True, False, False], [True, True, False]],
-        pixel_scales=1.0,
-    )
-
-    sub_native_index_for_sub_slim_index_2d = (
-        aa.util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=1)
-    )
-
-    assert mask.native_index_for_slim_index == pytest.approx(
-        sub_native_index_for_sub_slim_index_2d, 1e-4
-    )
-
-
 def test__unmasked_mask():
 
     mask = aa.Mask2D.manual(
@@ -626,76 +610,6 @@ def test__blurring_mask_from():
     assert (blurring_mask == blurring_mask_via_util).all()
 
 
-def test__masked_1d_indexes():
-    mask = aa.Mask2D.manual(
-        mask=[
-            [True, True, True, True, True, True, True, True, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, False, True, False, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, True, True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-    )
-
-    masked_pixels_util = aa.util.mask_2d.mask_1d_indexes_from(
-        mask_2d=mask, return_masked_indexes=True
-    )
-
-    assert mask.masked_1d_indexes == pytest.approx(masked_pixels_util, 1e-4)
-
-
-def test__unmasked_1d_indexes():
-    mask = aa.Mask2D.manual(
-        mask=[
-            [True, True, True, True, True, True, True, True, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, False, True, False, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, True, True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-    )
-
-    unmasked_pixels_util = aa.util.mask_2d.mask_1d_indexes_from(
-        mask_2d=mask, return_masked_indexes=False
-    )
-
-    assert mask.unmasked_1d_indexes == pytest.approx(unmasked_pixels_util, 1e-4)
-
-
-def test__edge_1d_2d_indexes():
-    mask = aa.Mask2D.manual(
-        mask=[
-            [True, True, True, True, True, True, True, True, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, False, True, False, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, True, True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-    )
-
-    edge_pixels_util = aa.util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
-
-    assert mask.edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
-    assert mask.edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
-    assert mask.edge_2d_indexes[10] == pytest.approx(np.array([3, 3]), 1e-4)
-    assert mask.edge_1d_indexes.shape[0] == mask.edge_2d_indexes.shape[0]
-
-
 def test__edge_mask():
     mask = aa.Mask2D.manual(
         mask=[
@@ -730,30 +644,6 @@ def test__edge_mask():
     ).all()
 
 
-def test__border_1d_2d_indexes():
-    mask = aa.Mask2D.manual(
-        mask=[
-            [True, True, True, True, True, True, True, True, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, False, True, False, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, True, True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-    )
-
-    border_pixels_util = aa.util.mask_2d.border_slim_indexes_from(mask_2d=mask)
-
-    assert mask.border_1d_indexes == pytest.approx(border_pixels_util, 1e-4)
-    assert mask.border_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
-    assert mask.border_2d_indexes[10] == pytest.approx(np.array([3, 7]), 1e-4)
-    assert mask.border_1d_indexes.shape[0] == mask.border_2d_indexes.shape[0]
-
-
 def test__border_mask():
     mask = aa.Mask2D.manual(
         mask=[
@@ -786,81 +676,6 @@ def test__border_mask():
             ]
         )
     ).all()
-
-
-def test__sub_border_flat_indexes():
-
-    mask = aa.Mask2D.manual(
-        mask=[
-            [False, False, False, False, False, False, False, True],
-            [False, True, True, True, True, True, False, True],
-            [False, True, False, False, False, True, False, True],
-            [False, True, False, True, False, True, False, True],
-            [False, True, False, False, False, True, False, True],
-            [False, True, True, True, True, True, False, True],
-            [False, False, False, False, False, False, False, True],
-        ],
-        pixel_scales=1.0,
-        sub_size=2,
-    )
-
-    sub_border_pixels_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
-        mask_2d=mask, sub_size=2
-    )
-
-    assert mask.sub_border_flat_indexes == pytest.approx(sub_border_pixels_util, 1e-4)
-
-    mask = aa.Mask2D.manual(
-        mask=[
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-        sub_size=2,
-    )
-
-    assert (
-        mask.sub_border_flat_indexes == np.array([0, 5, 9, 14, 23, 26, 31, 35])
-    ).all()
-
-
-def test__slim_index_for_sub_slim_index():
-    mask = aa.Mask2D.manual(
-        mask=[[True, False, True], [False, False, False], [True, False, False]],
-        pixel_scales=1.0,
-        sub_size=2,
-    )
-
-    slim_index_for_sub_slim_index_util = (
-        aa.util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=mask, sub_size=2
-        )
-    )
-
-    assert (
-        mask.slim_index_for_sub_slim_index == slim_index_for_sub_slim_index_util
-    ).all()
-
-
-def test__sub_mask_index_for_sub_mask_1d_index():
-    mask = aa.Mask2D.manual(
-        mask=[[True, True, True], [True, False, False], [True, True, False]],
-        pixel_scales=1.0,
-        sub_size=2,
-    )
-
-    sub_mask_index_for_sub_mask_1d_index = (
-        aa.util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
-    )
-
-    assert mask.sub_mask_index_for_sub_mask_1d_index == pytest.approx(
-        sub_mask_index_for_sub_mask_1d_index, 1e-4
-    )
 
 
 def test__shape_native_masked_pixels():

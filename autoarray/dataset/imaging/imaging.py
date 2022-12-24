@@ -168,7 +168,7 @@ class Imaging(AbstractDataset):
         ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=self.noise_map.native,
             kernel_native=self.psf.native,
-            native_index_for_slim_index=self.mask.native_index_for_slim_index,
+            native_index_for_slim_index=self.mask.indexes.native_for_slim,
         )
 
         return WTildeImaging(
@@ -276,10 +276,10 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix = unmasked_imaging.noise_covariance_matrix
 
             noise_covariance_matrix = np.delete(
-                noise_covariance_matrix, mask.masked_1d_indexes, 0
+                noise_covariance_matrix, mask.indexes.masked_slim, 0
             )
             noise_covariance_matrix = np.delete(
-                noise_covariance_matrix, mask.masked_1d_indexes, 1
+                noise_covariance_matrix, mask.indexes.masked_slim, 1
             )
 
         else:

@@ -65,7 +65,7 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
         pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
         pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
         pixel_weights=mapper.pix_weights_for_sub_slim_index,
-        slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
+        slim_index_for_sub_slim_index=grid_2d_7x7.mask.indexes.slim_for_sub_slim,
         hyper_data=image_7x7,
     )
 

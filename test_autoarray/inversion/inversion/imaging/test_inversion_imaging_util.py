@@ -222,7 +222,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             image_native=image.native,
             noise_map_native=noise_map.native,
             kernel_native=kernel.native,
-            native_index_for_slim_index=mask.native_index_for_slim_index,
+            native_index_for_slim_index=mask.indexes.native_for_slim,
         )
 
         (
@@ -281,7 +281,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     w_tilde = aa.util.inversion_imaging.w_tilde_curvature_imaging_from(
         noise_map_native=noise_map.native,
         kernel_native=kernel.native,
-        native_index_for_slim_index=mask.native_index_for_slim_index,
+        native_index_for_slim_index=mask.indexes.native_for_slim,
     )
 
     curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_from(
@@ -334,7 +334,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
         ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
             noise_map_native=noise_map.native,
             kernel_native=kernel.native,
-            native_index_for_slim_index=mask.native_index_for_slim_index,
+            native_index_for_slim_index=mask.indexes.native_for_slim,
         )
 
         (
