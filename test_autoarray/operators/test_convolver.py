@@ -1065,7 +1065,7 @@ def test__convolution__cross_mask_with_blurring_entries__returns_array():
 
     image_array = aa.Array2D.manual_mask(array=[1, 0, 0, 0, 0], mask=cross_mask)
 
-    blurring_mask = cross_mask.blurring_mask_from(
+    blurring_mask = cross_mask.derived_masks.blurring_from(
         kernel_shape_native=kernel.shape_native
     )
 
@@ -1107,7 +1107,9 @@ def test__compare_to_full_2d_convolution():
 
     masked_image = aa.Array2D.manual_mask(array=image.native, mask=mask)
 
-    blurring_mask = mask.blurring_mask_from(kernel_shape_native=kernel.shape_native)
+    blurring_mask = mask.derived_masks.blurring_from(
+        kernel_shape_native=kernel.shape_native
+    )
 
     convolver = aa.Convolver(mask=mask, kernel=kernel)
 
@@ -1135,7 +1137,9 @@ def test__compare_to_full_2d_convolution__no_blurring_image():
         array=np.arange(900).reshape(30, 30), pixel_scales=1.0
     )
 
-    blurring_mask = mask.blurring_mask_from(kernel_shape_native=kernel.shape_native)
+    blurring_mask = mask.derived_masks.blurring_from(
+        kernel_shape_native=kernel.shape_native
+    )
     blurred_image_via_scipy = scipy.signal.convolve2d(
         image.native * blurring_mask, kernel.native, mode="same"
     )

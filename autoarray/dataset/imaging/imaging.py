@@ -54,7 +54,9 @@ class Imaging(AbstractDataset):
         if pad_for_convolver and psf is not None:
 
             try:
-                image.mask.blurring_mask_from(kernel_shape_native=psf.shape_native)
+                image.mask.derived_masks.blurring_from(
+                    kernel_shape_native=psf.shape_native
+                )
             except exc.MaskException:
                 image = image.padded_before_convolution_from(
                     kernel_shape=psf.shape_native, mask_pad_value=1
@@ -264,11 +266,11 @@ class Imaging(AbstractDataset):
             unmasked_imaging = self.unmasked
 
         image = Array2D.manual_mask(
-            array=unmasked_imaging.image.native, mask=mask.mask_sub_1
+            array=unmasked_imaging.image.native, mask=mask.derived_masks.sub_1
         )
 
         noise_map = Array2D.manual_mask(
-            array=unmasked_imaging.noise_map.native, mask=mask.mask_sub_1
+            array=unmasked_imaging.noise_map.native, mask=mask.derived_masks.sub_1
         )
 
         if unmasked_imaging.noise_covariance_matrix is not None:

@@ -13,6 +13,7 @@ from autoarray.mask.abstract_mask import Mask
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.geometry.geometry_2d import Geometry2D
+from autoarray.mask.derived_masks_2d import DerivedMasks2D
 from autoarray.mask.indexes_2d import Indexes2D
 
 from autoarray.structures.arrays import array_2d_util
@@ -94,6 +95,10 @@ class Mask2D(Mask):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
+
+    @property
+    def derived_masks(self) -> DerivedMasks2D:
+        return DerivedMasks2D(mask=self)
 
     @classmethod
     def manual(
@@ -578,7 +583,7 @@ class Mask2D(Mask):
         )
 
         if resized_mask_shape is not None:
-            mask = mask.resized_mask_from(new_shape=resized_mask_shape)
+            mask = mask.derived_masks.resized_from(new_shape=resized_mask_shape)
 
         return mask
 
@@ -592,61 +597,6 @@ class Mask2D(Mask):
             return (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
         except AttributeError:
             print("bleh")
-
-    @property
-    def sub_mask(self) -> np.ndarray:
-
-        sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
-
-        return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
-            shape_native=sub_shape,
-            native_for_slim=self.indexes.sub_mask_native_for_sub_mask_slim,
-        ).astype("bool")
-
-    def rescaled_mask_from(self, rescale_factor) -> "Mask2D":
-
-        rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
-            mask_2d=self, rescale_factor=rescale_factor
-        )
-
-        return Mask2D(
-            mask=rescaled_mask,
-            pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
-            origin=self.origin,
-        )
-
-    @property
-    def mask_sub_1(self) -> "Mask2D":
-        """
-        Returns the mask on the same scaled coordinate system but with a sub-grid of `sub_size`.
-        """
-        return Mask2D(
-            mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
-        )
-
-    def resized_mask_from(self, new_shape, pad_value: int = 0.0) -> "Mask2D":
-        """
-        Resized the array to a new shape and at a new origin.
-
-        Parameters
-        ----------
-        new_shape
-            The new two-dimensional shape of the array.
-        """
-
-        mask = copy.deepcopy(self)
-
-        resized_mask = array_2d_util.resized_array_2d_from(
-            array_2d=mask, resized_shape=new_shape, pad_value=pad_value
-        ).astype("bool")
-
-        return Mask2D(
-            mask=resized_mask,
-            pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
-            origin=self.origin,
-        )
 
     def trimmed_array_from(self, padded_array, image_shape) -> Array2D:
         """
@@ -728,16 +678,6 @@ class Mask2D(Mask):
         return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
 
     @property
-    def edge_buffed_mask(self) -> "Mask2D":
-        edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(mask_2d=self).astype("bool")
-        return Mask2D(
-            mask=edge_buffed_mask,
-            pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
-            origin=self.origin,
-        )
-
-    @property
     def unmasked_grid_sub_1(self) -> Grid2D:
         """
         The scaled-grid of (y,x) coordinates of every pixel.
@@ -754,7 +694,10 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-        return Grid2D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
+        return Grid2D(
+            grid=grid_slim,
+            mask=self.derived_masks.unmasked.derived_masks.sub_1,
+        )
 
     @property
     def masked_grid(self) -> Grid2D:
@@ -767,7 +710,9 @@ class Mask2D(Mask):
             sub_size=self.sub_size,
             origin=self.origin,
         )
-        return Grid2D(grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1)
+        return Grid2D(
+            grid=sub_grid_1d, mask=self.derived_masks.edge.derived_masks.sub_1
+        )
 
     @property
     def masked_grid_sub_1(self) -> Grid2D:
@@ -777,7 +722,7 @@ class Mask2D(Mask):
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
-        return Grid2D(grid=grid_slim, mask=self.mask_sub_1)
+        return Grid2D(grid=grid_slim, mask=self.derived_masks.sub_1)
 
     @property
     def edge_grid_sub_1(self) -> Grid2D:
@@ -790,7 +735,10 @@ class Mask2D(Mask):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         edge_grid_1d = self.masked_grid_sub_1[self.indexes.edge_slim]
-        return Grid2D(grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1)
+        return Grid2D(
+            grid=edge_grid_1d,
+            mask=self.derived_masks.edge.derived_masks.sub_1,
+        )
 
     @property
     def border_grid_1d(self) -> Grid2D:
@@ -811,77 +759,9 @@ class Mask2D(Mask):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         border_grid_1d = self.masked_grid_sub_1[self.indexes.border_slim]
-        return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
-
-    def blurring_mask_from(self, kernel_shape_native) -> "Mask2D":
-        """
-        Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked
-        pixels via PSF convolution (see grid.Grid2D.blurring_grid_from).
-
-        Parameters
-        ----------
-        kernel_shape_native
-           The shape of the psf which defines the blurring region (e.g. the shape of the PSF)
-        """
-
-        if kernel_shape_native[0] % 2 == 0 or kernel_shape_native[1] % 2 == 0:
-            raise exc.MaskException("psf_size of exterior region must be odd")
-
-        blurring_mask = mask_2d_util.blurring_mask_2d_from(
-            mask_2d=self, kernel_shape_native=kernel_shape_native
-        )
-
-        return Mask2D(
-            mask=blurring_mask,
-            sub_size=1,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-
-    @property
-    def unmasked_mask(self) -> "Mask2D":
-        """
-        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
-        an annulus mask.
-        """
-        return Mask2D.unmasked(
-            shape_native=self.shape_native,
-            sub_size=self.sub_size,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-
-    @property
-    def edge_mask(self) -> "Mask2D":
-        """
-        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
-        an annulus mask.
-        """
-        mask = np.full(fill_value=True, shape=self.shape)
-        mask[self.indexes.edge_native[:, 0], self.indexes.edge_native[:, 1]] = False
-        return Mask2D(
-            mask=mask,
-            sub_size=self.sub_size,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-
-    @property
-    def border_mask(self) -> "Mask2D":
-        """
-        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
-        an annulus mask.
-        """
-        mask = np.full(fill_value=True, shape=self.shape)
-        mask[self.indexes.border_native[:, 0], self.indexes.border_native[:, 1]] = False
-        return Mask2D(
-            mask=mask,
-            sub_size=self.sub_size,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
+        return Grid2D(
+            grid=border_grid_1d,
+            mask=self.derived_masks.border.derived_masks.sub_1,
         )
 
     @property

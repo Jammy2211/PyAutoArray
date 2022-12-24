@@ -635,4 +635,4 @@ class Kernel2D(AbstractArray2D):
             mask_2d=mask, array_2d_native=convolved_array_2d, sub_size=1
         )
 
-        return Array2D(array=convolved_array_1d, mask=mask.mask_sub_1)
+        return Array2D(array=convolved_array_1d, mask=mask.derived_masks.sub_1)
