@@ -71,9 +71,7 @@ def test__slim_index_for_sub_slim_index():
         )
     )
 
-    assert (
-            indexes_2d.slim_for_sub_slim == slim_index_for_sub_slim_index_util
-    ).all()
+    assert (indexes_2d.slim_for_sub_slim == slim_index_for_sub_slim_index_util).all()
 
 
 def test__unmasked_1d_indexes(indexes_2d_9x9):
@@ -82,9 +80,7 @@ def test__unmasked_1d_indexes(indexes_2d_9x9):
         mask_2d=indexes_2d_9x9.mask, return_masked_indexes=False
     )
 
-    assert indexes_2d_9x9.unmasked_slim == pytest.approx(
-        unmasked_pixels_util, 1e-4
-    )
+    assert indexes_2d_9x9.unmasked_slim == pytest.approx(unmasked_pixels_util, 1e-4)
 
 
 def test__masked_1d_indexes(indexes_2d_9x9):
@@ -103,10 +99,7 @@ def test__edge_1d_indexes(indexes_2d_9x9):
     )
 
     assert indexes_2d_9x9.edge_slim == pytest.approx(edge_1d_indexes_util, 1e-4)
-    assert (
-        indexes_2d_9x9.edge_slim.shape[0]
-        == indexes_2d_9x9.edge_native.shape[0]
-    )
+    assert indexes_2d_9x9.edge_slim.shape[0] == indexes_2d_9x9.edge_native.shape[0]
 
 
 def test__edge_2d_indexes(indexes_2d_9x9):
@@ -122,10 +115,7 @@ def test__border_1d_indexes(indexes_2d_9x9):
     )
 
     assert indexes_2d_9x9.border_slim == pytest.approx(border_pixels_util, 1e-4)
-    assert (
-        indexes_2d_9x9.border_slim.shape[0]
-        == indexes_2d_9x9.border_native.shape[0]
-    )
+    assert indexes_2d_9x9.border_slim.shape[0] == indexes_2d_9x9.border_native.shape[0]
 
 
 def test__border_2d_indexes(indexes_2d_9x9):
@@ -156,9 +146,7 @@ def test__sub_border_flat_indexes():
         mask_2d=mask, sub_size=2
     )
 
-    assert indexes_2d.sub_border_slim == pytest.approx(
-        sub_border_pixels_util, 1e-4
-    )
+    assert indexes_2d.sub_border_slim == pytest.approx(sub_border_pixels_util, 1e-4)
 
     mask = aa.Mask2D.manual(
         mask=[
@@ -176,6 +164,4 @@ def test__sub_border_flat_indexes():
 
     indexes_2d = aa.Indexes2D(mask=mask)
 
-    assert (
-        indexes_2d.sub_border_slim == np.array([0, 5, 9, 14, 23, 26, 31, 35])
-    ).all()
+    assert (indexes_2d.sub_border_slim == np.array([0, 5, 9, 14, 23, 26, 31, 35])).all()

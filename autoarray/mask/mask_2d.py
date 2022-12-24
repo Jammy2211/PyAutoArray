@@ -814,22 +814,6 @@ class Mask2D(Mask):
         return Grid2D(grid=border_grid_1d, mask=self.border_mask.mask_sub_1)
 
     @property
-    def edge_mask(self) -> "Mask2D":
-        """
-        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
-        an annulus mask.
-        """
-        mask = np.full(fill_value=True, shape=self.shape)
-        mask[self.indexes.edge_native[:, 0], self.indexes.edge_native[:, 1]] = False
-        return Mask2D(
-            mask=mask,
-            sub_size=self.sub_size,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
-
-    @property
     def border_mask(self) -> "Mask2D":
         """
         The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an

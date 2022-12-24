@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 class DerivedMasks2D:
-
     def __init__(self, mask: Mask2D):
         """
         Computes the ``slim`` and ``native`` indexes of specific ``Mask2D`` quantities.
@@ -48,7 +47,8 @@ class DerivedMasks2D:
         """
         self.mask = mask
 
-    def indexes(self):
+    @property
+    def indexes(self) -> Indexes2D:
         return self.mask.indexes
 
     @property
@@ -91,6 +91,25 @@ class DerivedMasks2D:
         return Mask2D(
             mask=blurring_mask,
             sub_size=1,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
+    @property
+    def edge_mask(self) -> Mask2D:
+        """
+        The indexes of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
+        an annulus mask.
+        """
+
+        from autoarray.mask.mask_2d import Mask2D
+
+        mask = np.full(fill_value=True, shape=self.mask.shape)
+        mask[self.indexes.edge_native[:, 0], self.indexes.edge_native[:, 1]] = False
+        return Mask2D(
+            mask=mask,
+            sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )

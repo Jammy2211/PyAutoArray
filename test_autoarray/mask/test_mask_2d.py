@@ -564,46 +564,6 @@ def test__edge_buffed_mask():
     assert (mask.edge_buffed_mask == edge_buffed_mask_manual).all()
 
 
-
-
-
-
-
-
-def test__edge_mask():
-    mask = aa.Mask2D.manual(
-        mask=[
-            [True, True, True, True, True, True, True, True, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, False, True, False, True, False, True],
-            [True, False, True, False, False, False, True, False, True],
-            [True, False, True, True, True, True, True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, True, True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-    )
-
-    assert (
-        mask.edge_mask
-        == np.array(
-            [
-                [True, True, True, True, True, True, True, True, True],
-                [True, False, False, False, False, False, False, False, True],
-                [True, False, True, True, True, True, True, False, True],
-                [True, False, True, False, False, False, True, False, True],
-                [True, False, True, False, True, False, True, False, True],
-                [True, False, True, False, False, False, True, False, True],
-                [True, False, True, True, True, True, True, False, True],
-                [True, False, False, False, False, False, False, False, True],
-                [True, True, True, True, True, True, True, True, True],
-            ]
-        )
-    ).all()
-
-
 def test__border_mask():
     mask = aa.Mask2D.manual(
         mask=[
