@@ -854,6 +854,3 @@ def test__mask_centre():
     mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
     assert mask.mask_centre == (-0.5, -0.5)
-
-
-

@@ -271,7 +271,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     mapper_grids = pixelization.mapper_grids_from(
-        source_plane_data_grid=mask.derived_grids.masked_grid_sub_1
+        source_plane_data_grid=mask.derived_grids.masked_sub_1
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)

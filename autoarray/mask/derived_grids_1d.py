@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class DerivedGrids1D:
-    
     def __init__(self, mask: Mask1D):
         """
         Missing
@@ -25,9 +24,9 @@ class DerivedGrids1D:
             The 2D mask from which indexes are computed.
         """
         self.mask = mask
-        
+
     @property
-    def unmasked_grid_sub_1(self) -> Grid1D:
+    def unmasked_sub_1(self) -> Grid1D:
         """
         The scaled-grid of (y,x) coordinates of every pixel.
 
@@ -37,7 +36,10 @@ class DerivedGrids1D:
         from autoarray.structures.grids.uniform_1d import Grid1D
 
         grid_slim = grid_1d_util.grid_1d_slim_via_mask_from(
-            mask_1d=self.mask, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin
+            mask_1d=self.mask,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=1,
+            origin=self.mask.origin,
         )
 
         return Grid1D(

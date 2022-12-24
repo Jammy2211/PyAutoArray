@@ -5,11 +5,11 @@ import pytest
 
 
 class MockDerivedMasks1D:
-    def __init__(self, mask, grid, masked_grid_sub_1):
+    def __init__(self, mask, grid, masked_sub_1):
 
         self.mask = mask
         self.grid = grid
-        self.masked_grid_sub_1 = masked_grid_sub_1
+        self.masked_sub_1 = masked_sub_1
 
     @property
     def sub_1(self):
@@ -17,7 +17,7 @@ class MockDerivedMasks1D:
 
     @property
     def pixels_in_mask(self):
-        return self.masked_grid_sub_1.binned.slim.in_radians.shape[0]
+        return self.masked_sub_1.binned.slim.in_radians.shape[0]
 
     @property
     def pixel_scales(self):
@@ -37,16 +37,17 @@ class MockDerivedMasks1D:
             mask=self.mask,
         )
 
+
 class MockRealSpaceMask:
     def __init__(self, grid):
 
         self.grid = grid
-        self.masked_grid_sub_1 = MockMaskedGrid(grid=grid)
+        self.masked_sub_1 = MockMaskedGrid(grid=grid)
 
     @property
     def derived_masks(self):
         return MockDerivedMasks1D(
-            mask=self, grid=self.grid, masked_grid_sub_1=self.masked_grid_sub_1
+            mask=self, grid=self.grid, masked_sub_1=self.masked_sub_1
         )
 
     @property
@@ -66,6 +67,7 @@ class MockRealSpaceMask:
     @property
     def origin(self):
         return self.grid.origin
+
 
 class MockMaskedGrid:
     def __init__(self, grid):

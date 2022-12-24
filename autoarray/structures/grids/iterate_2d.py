@@ -854,9 +854,7 @@ class Grid2DIterate(Grid2D):
                     mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
                 )
 
-                return Grid2D(
-                    grid=iterated_grid_1d, mask=self.mask.derived_masks.sub_1
-                )
+                return Grid2D(grid=iterated_grid_1d, mask=self.mask.derived_masks.sub_1)
 
             grid_lower_sub_2d = grid_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
