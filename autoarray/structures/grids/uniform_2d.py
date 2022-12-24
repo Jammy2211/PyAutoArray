@@ -1292,7 +1292,7 @@ class Grid2D(Structure):
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border.
         """
-        return self[self.mask.sub_border_slim]
+        return self[self.mask.indexes.sub_border_slim]
 
     def padded_grid_from(self, kernel_shape_native: Tuple[int, int]) -> "Grid2D":
         """

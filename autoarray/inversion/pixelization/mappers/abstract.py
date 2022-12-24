@@ -171,7 +171,7 @@ class AbstractMapper(LinearObj):
         The mappings between every sub-pixel data point on the sub-gridded data and each data point for a grid which
         does not use sub gridding (e.g. `sub_size=1`).
         """
-        return self.source_plane_data_grid.mask.slim_index_for_sub_slim_index
+        return self.source_plane_data_grid.mask.indexes.slim_index_for_sub_slim_index
 
     @property
     def sub_slim_indexes_for_pix_index(self) -> List[List]:
@@ -294,7 +294,7 @@ class AbstractMapper(LinearObj):
             pixel_weights=self.pix_weights_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
-            slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.indexes.slim_index_for_sub_slim_index,
             hyper_data=self.hyper_data,
         )
 

@@ -30,7 +30,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
             aa.util.mapper.pix_indexes_for_sub_slim_index_voronoi_from(
                 grid=grid_2d_7x7,
                 nearest_pixelization_index_for_slim_index=source_plane_mesh_grid.nearest_pixelization_index_for_slim_index,
-                slim_index_for_sub_slim_index=grid_2d_7x7.mask.slim_index_for_sub_slim_index,
+                slim_index_for_sub_slim_index=grid_2d_7x7.mask.indexes.slim_index_for_sub_slim_index,
                 mesh_grid=source_plane_mesh_grid,
                 neighbors=source_plane_mesh_grid.neighbors,
                 neighbors_sizes=source_plane_mesh_grid.neighbors.sizes,
