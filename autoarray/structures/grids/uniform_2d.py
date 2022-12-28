@@ -871,7 +871,7 @@ class Grid2D(Structure):
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
-        blurring_mask = mask.derived_masks.blurring_from(
+        blurring_mask = mask.derive_mask.blurring_from(
             kernel_shape_native=kernel_shape_native
         )
 
@@ -946,7 +946,7 @@ class Grid2D(Structure):
             (grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1
         )
 
-        return Grid2D(grid=grid_2d_binned, mask=self.mask.derived_masks.sub_1)
+        return Grid2D(grid=grid_2d_binned, mask=self.mask.derive_mask.sub_1)
 
     @property
     def flipped(self) -> "Grid2D":
@@ -1294,7 +1294,7 @@ class Grid2D(Structure):
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border.
         """
-        return self[self.mask.indexes.sub_border_slim]
+        return self[self.mask.derive_indexes.sub_border_slim]
 
     def padded_grid_from(self, kernel_shape_native: Tuple[int, int]) -> "Grid2D":
         """

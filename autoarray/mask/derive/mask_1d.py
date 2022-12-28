@@ -10,7 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class DerivedMasks1D:
+class DeriveMask1D:
     def __init__(self, mask: Mask1D):
         """
         Missing

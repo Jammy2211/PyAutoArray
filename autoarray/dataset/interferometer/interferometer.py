@@ -129,12 +129,12 @@ class Interferometer(AbstractDataset):
             noise_map_real=self.noise_map.real,
             uv_wavelengths=self.uv_wavelengths,
             shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
-            grid_radians_2d=self.transformer.grid.mask.derived_grids.unmasked_sub_1.in_radians.native,
+            grid_radians_2d=self.transformer.grid.mask.derive_grid.unmasked_sub_1.in_radians.native,
         )
 
         w_matrix = inversion_util_secret.w_tilde_via_preload_from(
             w_tilde_preload=curvature_preload,
-            native_index_for_slim_index=self.real_space_mask.indexes.native_for_slim,
+            native_index_for_slim_index=self.real_space_mask.derive_indexes.native_for_slim,
         )
 
         dirty_image = self.transformer.image_from(

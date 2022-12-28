@@ -337,7 +337,7 @@ class Convolver:
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return Array2D(array=convolved_image, mask=self.mask.derived_masks.sub_1)
+        return Array2D(array=convolved_image, mask=self.mask.derive_mask.sub_1)
 
     @staticmethod
     @numba_util.jit()
@@ -399,7 +399,7 @@ class Convolver:
             image_frame_1d_lengths=self.image_frame_1d_lengths,
         )
 
-        return Array2D(array=convolved_image, mask=self.mask.derived_masks.sub_1)
+        return Array2D(array=convolved_image, mask=self.mask.derive_mask.sub_1)
 
     def convolve_image_no_blurring_interpolation(self, image):
         """For a given 1D array and blurring array, convolve the two using this convolver.
@@ -419,7 +419,7 @@ class Convolver:
             image_frame_1d_lengths=self.image_frame_1d_lengths,
         )
 
-        return Array2D(array=convolved_image, mask=self.mask.derived_masks.sub_1)
+        return Array2D(array=convolved_image, mask=self.mask.derive_mask.sub_1)
 
     @staticmethod
     @numba_util.jit()

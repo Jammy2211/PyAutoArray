@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
-from autoarray.mask.derived.masks_1d import DerivedMasks1D
+from autoarray.mask.derive.mask_1d import DeriveMask1D
 from autoarray.geometry.geometry_1d import Geometry1D
 from autoarray.structures.arrays import array_1d_util
 from autoarray.structures.grids import grid_1d_util
@@ -82,8 +82,8 @@ class Mask1D(Mask):
         )
 
     @property
-    def derived_masks(self) -> DerivedMasks1D:
-        return DerivedMasks1D(mask=self)
+    def derive_mask(self) -> DeriveMask1D:
+        return DeriveMask1D(mask=self)
 
     @classmethod
     def manual(

@@ -23,7 +23,7 @@ def test__via_mask_from(mask_2d_7x7):
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert (visuals_2d_via.mask == mask_2d_7x7).all()
     assert (
-        visuals_2d_via.border == mask_2d_7x7.derived_grids.border_sub_1.binned
+        visuals_2d_via.border == mask_2d_7x7.derive_grid.border_sub_1.binned
     ).all()
     assert visuals_2d_via.vectors == 2
 
@@ -76,7 +76,7 @@ def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
     ).all()
     assert (
         visuals_2d_via.border
-        == voronoi_mapper_9_3x3.source_plane_data_grid.mask.derived_grids.border_sub_1.binned
+        == voronoi_mapper_9_3x3.source_plane_data_grid.mask.derive_grid.border_sub_1.binned
     ).all()
 
     print(visuals_2d.mesh_grid)
@@ -158,7 +158,7 @@ def test__via_fit_imaging_from(fit_imaging_7x7):
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert (visuals_2d_via.mask == fit_imaging_7x7.mask).all()
     assert (
-        visuals_2d_via.border == fit_imaging_7x7.mask.derived_grids.border_sub_1.binned
+        visuals_2d_via.border == fit_imaging_7x7.mask.derive_grid.border_sub_1.binned
     ).all()
     assert visuals_2d_via.vectors == 2
 

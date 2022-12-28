@@ -1,4 +1,4 @@
-class MockDerivedIndexes2D:
+class MockDeriveIndexes2D:
     def __init__(self, native_for_slim=None):
 
         self.native_for_slim = native_for_slim
@@ -7,4 +7,4 @@ class MockDerivedIndexes2D:
 class MockMask:
     def __init__(self, native_for_slim=None):
 
-        self.indexes = MockDerivedIndexes2D(native_for_slim=native_for_slim)
+        self.indexes = MockDeriveIndexes2D(native_for_slim=native_for_slim)

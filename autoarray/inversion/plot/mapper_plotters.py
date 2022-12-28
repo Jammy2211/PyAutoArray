@@ -115,7 +115,7 @@ class MapperPlotter(Plotter):
             )
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.source_plane_data_grid.mask.derived_grids.masked,
+                grid=self.mapper.source_plane_data_grid.mask.derive_grid.masked,
                 indexes=indexes,
             )
 

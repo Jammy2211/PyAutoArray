@@ -80,7 +80,7 @@ class GetVisuals2D(AbstractGetVisuals):
         """
         origin = self.origin_via_mask_from(mask=mask)
         mask_visuals = self.get("mask", mask)
-        border = self.get("border", mask.derived_grids.border_sub_1.binned)
+        border = self.get("border", mask.derive_grid.border_sub_1.binned)
 
         return self.visuals + self.visuals.__class__(
             origin=origin, mask=mask_visuals, border=border

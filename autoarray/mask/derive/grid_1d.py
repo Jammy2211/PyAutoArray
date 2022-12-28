@@ -13,7 +13,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class DerivedGrids1D:
+class DeriveGrid1D:
     def __init__(self, mask: Mask1D):
         """
         Missing
@@ -44,5 +44,5 @@ class DerivedGrids1D:
 
         return Grid1D(
             grid=grid_slim,
-            mask=self.mask.derived_masks.unmasked.derived_masks.sub_1,
+            mask=self.mask.derive_mask.unmasked.derive_mask.sub_1,
         )

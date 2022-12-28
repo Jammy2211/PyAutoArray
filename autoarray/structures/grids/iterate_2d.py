@@ -252,7 +252,7 @@ class Grid2DIterate(Grid2D):
 
         return Grid2DIterate(
             grid=grid_slim,
-            mask=mask.derived_masks.sub_1,
+            mask=mask.derive_mask.sub_1,
             fractional_accuracy=fractional_accuracy,
             relative_accuracy=relative_accuracy,
             sub_steps=sub_steps,
@@ -295,7 +295,7 @@ class Grid2DIterate(Grid2D):
             they are setup as the default values [2, 4, 8, 16].
         """
 
-        blurring_mask = mask.derived_masks.blurring_from(
+        blurring_mask = mask.derive_mask.blurring_from(
             kernel_shape_native=kernel_shape_native
         )
 
@@ -354,7 +354,7 @@ class Grid2DIterate(Grid2D):
         """
         return Grid2DIterate(
             grid=super().binned,
-            mask=self.mask.derived_masks.sub_1,
+            mask=self.mask.derive_mask.sub_1,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
         )
@@ -647,7 +647,7 @@ class Grid2DIterate(Grid2D):
             mask_2d=self.mask, array_2d_native=iterated_array, sub_size=1
         )
 
-        return Array2D(array=iterated_array_1d, mask=self.mask.derived_masks.sub_1)
+        return Array2D(array=iterated_array_1d, mask=self.mask.derive_mask.sub_1)
 
     @staticmethod
     @numba_util.jit()
@@ -854,7 +854,7 @@ class Grid2DIterate(Grid2D):
                     mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
                 )
 
-                return Grid2D(grid=iterated_grid_1d, mask=self.mask.derived_masks.sub_1)
+                return Grid2D(grid=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
 
             grid_lower_sub_2d = grid_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
@@ -872,7 +872,7 @@ class Grid2DIterate(Grid2D):
             mask=self.mask, grid_2d_native=iterated_grid_2d, sub_size=1
         )
 
-        return Grid2D(grid=iterated_grid_1d, mask=self.mask.derived_masks.sub_1)
+        return Grid2D(grid=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
 
     @staticmethod
     @numba_util.jit()

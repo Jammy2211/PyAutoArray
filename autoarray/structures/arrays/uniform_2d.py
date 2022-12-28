@@ -49,10 +49,7 @@ class AbstractArray2D(Structure):
 
         A detailed description of the data structure API is provided below.
 
-
         **SLIM DATA REPRESENTATION (sub-size=1)**
-
-        The ``Array2D`` in its ``slim`` representation is an ``ndarray`` of shape [total_unmasked_pixels].
 
         Below is a visual illustration of an ``Array2D``'s 2D mask, where a total of 10 pixels are unmasked and are
         included in the array.
@@ -88,7 +85,10 @@ class AbstractArray2D(Structure):
              x x x x x x x x x x \/   array_2d[8] = 90
              x x x x x x x x x x      array_2d[9] = 100
 
-        Each element of the ``slim`` representation therefore corresponds to each masked pixel index:
+        The ``Array2D`` in its ``slim`` data representation is an ``ndarray`` of shape [total_unmasked_pixels].
+
+        For the ``Mask2D`` above the ``slim`` representation therefore contains 10 entries and two examples of these
+        entries are:
 
         ::
 
@@ -96,7 +96,7 @@ class AbstractArray2D(Structure):
             array[6] = the 7th unmasked pixel's value, given by value 80 above.
 
         A Cartesian grid of (y,x) coordinates, corresponding to all ``slim`` values (e.g. unmasked pixels) is given
-        by ``array_2d.mask.derived_grids.masked_grid``.
+        by ``array_2d.derive_grid.masked.slim``.
 
 
         **NATIVE DATA REPRESENTATION (sub_size=1)**
@@ -138,6 +138,8 @@ class AbstractArray2D(Structure):
 
         In the above array:
 
+        ::
+
             - array[0,0] = 0.0 (it is masked, thus zero)
             - array[0,0] = 0.0 (it is masked, thus zero)
             - array[3,3] = 0.0 (it is masked, thus zero)
@@ -146,6 +148,24 @@ class AbstractArray2D(Structure):
             - array[3,5] = 20
             - array[4,5] = 50
 
+        **SLIM TO NATIVE MAPPING**
+
+        The ``Array2D`` has functionality which maps data between the ``slim`` and ``native`` data representations.
+
+        For the example mask above, the 1D ``ndarray`` given by ``mask.derived_indexes.slim_to_native`` is:
+
+        ::
+
+            slim_to_native[0] = [3,4]
+            slim_to_native[1] = [3,5]
+            slim_to_native[2] = [4,3]
+            slim_to_native[3] = [4,4]
+            slim_to_native[4] = [4,5]
+            slim_to_native[5] = [4,6]
+            slim_to_native[6] = [5,3]
+            slim_to_native[7] = [5,4]
+            slim_to_native[8] = [5,5]
+            slim_to_native[9] = [5,6]
 
         **SUB GRIDDING**
 
@@ -386,7 +406,7 @@ class AbstractArray2D(Structure):
 
         return Array2D(
             array=binned_array_1d,
-            mask=self.mask.derived_masks.sub_1,
+            mask=self.mask.derive_mask.sub_1,
             header=self.header,
         )
 
@@ -509,7 +529,7 @@ class AbstractArray2D(Structure):
             array_2d=self.native, resized_shape=new_shape
         )
 
-        resized_mask = self.mask.derived_masks.resized_from(
+        resized_mask = self.mask.derive_mask.resized_from(
             new_shape=new_shape, pad_value=mask_pad_value
         )
 
@@ -565,7 +585,7 @@ class AbstractArray2D(Structure):
             psf_cut_y : array_y - psf_cut_y, psf_cut_x : array_x - psf_cut_x
         ]
 
-        resized_mask = self.mask.derived_masks.resized_from(
+        resized_mask = self.mask.derive_mask.resized_from(
             new_shape=trimmed_array_2d.shape
         )
 
@@ -606,7 +626,7 @@ class Array2D(AbstractArray2D):
         Returns an ``Array2D`` from an array via inputs in its slim data representation (a 1D array with masked
         entries not included).
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -691,7 +711,7 @@ class Array2D(AbstractArray2D):
         Returns an ``Array2D`` from an array via inputs in its native data representation (a 2D array with masked
         entries included).
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -767,7 +787,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` from an array via inputs in its slim or native data representation.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -846,7 +866,7 @@ class Array2D(AbstractArray2D):
         Returns an ``Array2D`` from an array via inputs in its slim or native data representation and its corresponding
         2D mask.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -918,7 +938,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` where all values are filled with an input fill value, analogous to ``np.full()``.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -993,7 +1013,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` where all values are filled with ones, analogous to ``np.ones()``.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -1061,7 +1081,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` where all values are filled with zeros, analogous to ``np.zeros()``.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -1129,7 +1149,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` by loading the array values from a .fits file.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -1209,7 +1229,7 @@ class Array2D(AbstractArray2D):
         Returns an ``Array2D`` by by inputting the y and x pixel values where the array is filled and the values that
         fill it.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 

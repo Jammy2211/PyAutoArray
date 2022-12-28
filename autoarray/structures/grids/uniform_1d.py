@@ -475,7 +475,7 @@ class Grid1D(Structure):
             grid_1d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        return Grid1D(grid=binned_grid_1d_slim, mask=self.mask.derived_masks.sub_1)
+        return Grid1D(grid=binned_grid_1d_slim, mask=self.mask.derive_mask.sub_1)
 
     def grid_2d_radial_projected_from(self, angle: float = 0.0) -> Grid2DIrregular:
         """
@@ -537,7 +537,7 @@ class Grid1D(Structure):
 
         if isinstance(result, Grid2DTransformedNumpy):
             return Grid2DTransformed(grid=result, mask=self.mask)
-        return Grid2D(grid=result, mask=self.mask.derived_masks.to_mask_2d)
+        return Grid2D(grid=result, mask=self.mask.derive_mask.to_mask_2d)
 
     def structure_2d_list_from(
         self, result_list: List

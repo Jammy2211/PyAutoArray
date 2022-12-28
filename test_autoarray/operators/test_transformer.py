@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 
-class MockDerivedMasks1D:
+class MockDeriveMask1D:
     def __init__(self, mask, grid, masked_sub_1):
 
         self.mask = mask
@@ -32,8 +32,8 @@ class MockDerivedMasks1D:
         return self.grid.origin
 
     @property
-    def derived_grids(self):
-        return aa.DerivedGrids2D(
+    def derive_grid(self):
+        return aa.DeriveGrid2D(
             mask=self.mask,
         )
 
@@ -45,14 +45,14 @@ class MockRealSpaceMask:
         self.masked_sub_1 = MockMaskedGrid(grid=grid)
 
     @property
-    def derived_masks(self):
-        return MockDerivedMasks1D(
+    def derive_mask(self):
+        return MockDeriveMask1D(
             mask=self, grid=self.grid, masked_sub_1=self.masked_sub_1
         )
 
     @property
-    def derived_grids(self):
-        return aa.DerivedGrids2D(
+    def derive_grid(self):
+        return aa.DeriveGrid2D(
             mask=self,
         )
 

@@ -13,9 +13,9 @@ from autoarray.mask.abstract_mask import Mask
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.geometry.geometry_2d import Geometry2D
-from autoarray.mask.derived.masks_2d import DerivedMasks2D
-from autoarray.mask.derived.grids_2d import DerivedGrids2D
-from autoarray.mask.derived.indexes_2d import DerivedIndexes2D
+from autoarray.mask.derive.mask_2d import DeriveMask2D
+from autoarray.mask.derive.grid_2d import DeriveGrid2D
+from autoarray.mask.derive.indexes_2d import DeriveIndexes2D
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
@@ -39,20 +39,228 @@ class Mask2D(Mask):
         **kwargs,
     ):
         """
-        A 2D mask, representing a uniform rectangular grid of neighboring rectangular pixels.
+        A 2D mask, used for masking values which are associated with a a uniform rectangular grid of pixels.
 
-        When applied to 2D data it extracts or masks the unmasked image pixels corresponding to mask entries that are
-        `False` or 0).
+        When applied to 2D data with the same shape, values in the mask corresponding to ``False`` entries are  
+        unmasked and therefore used in subsequent calculations. .
 
-        The mask has a 2D geometry, corresponding to the 2D uniform grid of pixels of the 2D data structure it is
-        paired with, including its ``pixel scales`` and (y,x) ``origin``.
+        The ``Mask2D`, has in-built functionality which:
 
-        The 2D uniform grid may also be sub-gridded, whereby every pixel is sub-divided into a uniform grid of
-        sub-pixels which are all used to perform calculations more accurate.
+        - Maps data structures between two data representations: `slim`` (all unmasked ``False`` values in
+          a 1D ``ndarray``) and ``native`` (all unmasked values in a 2D or 3D ``ndarray``).
 
-        The mask includes functionality which maps the 2D data structure between 2D ``native`` representations (that
-        include all data-points irrespective of if they are masked or not) and 1D ``slim`` representations (that
-        only contain the unmasked data).
+        - Has a ``Geometry2D`` object (defined by its (y,x) ``pixel scales``, (y,x) ``origin`` and ``sub_size``) 
+          which defines how coordinates are converted from pixel units to scaled units.
+
+        - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
+          a (y,x) grid of all unmasked pixels) via the ``DeriveGrid2D`` object.
+
+        - This includes sub-grids, which perform calculations higher resolutions which are then binned up.
+
+        A detailed description of the 2D mask API is provided below.
+
+        **SLIM DATA REPRESENTATION (sub-size=1)**
+
+        Below is a visual illustration of a ``Mask2D``, where a total of 10 pixels are unmasked (values are ``False``):
+
+        ::
+
+             x x x x x x x x x x
+             x x x x x x x x x x     This is an example ``Mask2D``, where:
+             x x x x x x x x x x
+             x x x x O O x x x x     x = `True` (Pixel is masked and excluded from the array)
+             x x x O O O O x x x     O = `False` (Pixel is not masked and included in the array)
+             x x x O O O O x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+
+        The mask pixel index's are as follows (the positive / negative direction of the ``Grid2D`` objects associated
+        with the mask are also shown on the y and x axes).
+
+        ::
+
+            <--- -ve  x  +ve -->
+
+             x x x x x x x x x x  ^   
+             x x x x x x x x x x  I   
+             x x x x x x x x x x  I   
+             x x x x 0 1 x x x x +ve  
+             x x x 2 3 4 5 x x x  y   
+             x x x 6 7 8 9 x x x -ve  
+             x x x x x x x x x x  I   
+             x x x x x x x x x x  I  
+             x x x x x x x x x x \/  
+             x x x x x x x x x x     
+
+        The ``Mask2D``'s ``slim`` data representation is an ``ndarray`` of shape [total_unmasked_pixels]. 
+        
+        For the ``Mask2D`` above the ``slim`` representation therefore contains 10 entries and two examples of these
+        entries are:
+
+        ::
+
+            mask[3] = the 4th unmasked pixel's value.
+            mask[6] = the 7th unmasked pixel's value.
+
+        A Cartesian grid of (y,x) coordinates, corresponding to all ``slim`` values (e.g. unmasked pixels) is given
+        by ``mask.derive_grid.masked.slim``.
+
+
+        **NATIVE DATA REPRESENTATION (sub_size=1)**
+
+        Masked data represented as an an ``ndarray`` of shape [total_y_values, total_x_values], where all masked 
+        entries have values of 0.0.
+
+        For the following mask:
+
+        ::
+
+             x x x x x x x x x x
+             x x x x x x x x x x     This is an example ``Mask2D``, where:
+             x x x x x x x x x x
+             x x x x O O x x x x     x = `True` (Pixel is masked and excluded from the array)
+             x x x O O O O x x x     O = `False` (Pixel is not masked and included in the array)
+             x x x O O O O x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+
+        The mask has the following indexes:
+
+        ::
+
+            <--- -ve  x  +ve -->
+
+             x x x x x x x x x x  ^ 
+             x x x x x x x x x x  I  
+             x x x x x x x x x x  I  
+             x x x x 0 1 x x x x +ve 
+             x x x 2 3 4 5 x x x  y  
+             x x x 6 7 8 9 x x x -ve 
+             x x x x x x x x x x  I  
+             x x x x x x x x x x  I  
+             x x x x x x x x x x  \/  
+             x x x x x x x x x x  
+
+        In the above array:
+
+        ::
+
+            - mask[0,0] = True (it is masked)
+            - mask[0,0] = True (it is masked)
+            - mask[3,3] = True (it is masked)
+            - mask[3,3] = True (it is masked)
+            - mask[3,4] = False (not masked)
+            - mask[3,5] = False (not masked)
+            - mask[4,5] = False (not masked)
+
+        **SLIM TO NATIVE MAPPING**
+
+        The ``Mask2D`` has functionality which maps data between the ``slim`` and ``native`` data representations.
+        
+        For the example mask above, the 1D ``ndarray`` given by ``mask.derived_indexes.slim_to_native`` is:
+        
+        ::
+        
+            slim_to_native[0] = [3,4]
+            slim_to_native[1] = [3,5]
+            slim_to_native[2] = [4,3]
+            slim_to_native[3] = [4,4]
+            slim_to_native[4] = [4,5]
+            slim_to_native[5] = [4,6]
+            slim_to_native[6] = [5,3]
+            slim_to_native[7] = [5,4]
+            slim_to_native[8] = [5,5]
+            slim_to_native[9] = [5,6]
+
+        **SUB GRIDDING**
+
+        If the ``Mask2D`` ``sub_size`` is > 1, its ``slim`` and ``native`` data representations have entries 
+        corresponding to the values at the centre of every sub-pixel of each unmasked pixel.
+
+        The sub-array indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first
+        unmasked pixel. Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel.
+
+        Therefore, the shapes of the sub-array are as follows:
+
+        - ``slim`` representation: an ``ndarray`` of shape [total_unmasked_pixels*sub_size**2].
+        - ``native`` representation: an ``ndarray`` of shape [total_y_values*sub_size, total_x_values*sub_size].
+
+        Below is a visual illustration of a sub array. Indexing of each sub-pixel goes from the top-left corner. In
+        contrast to the array above, our illustration below restricts the mask to just 2 pixels, to keep the
+        illustration brief.
+
+        ::
+
+             x x x x x x x x x x
+             x x x x x x x x x x     This is an example ``Mask2D``, where:
+             x x x x x x x x x x
+             x x x x x x x x x x     x = `True` (Pixel is masked and excluded from lens)
+             x 0 0 x x x x x x x     O = `False` (Pixel is not masked and included in lens)
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+             x x x x x x x x x x
+
+        If ``sub_size=2``, each unmasked pixel has 4 (2x2) sub-pixel values. For the example above, pixels 0 and 1
+        each have 4 values which map to ``slim`` representation as follows:
+
+        ::
+
+            Pixel 0 - (2x2):
+
+                   slim[0] = value of first sub-pixel in pixel 0.
+             0 1   slim[1] = value of first sub-pixel in pixel 1.
+             2 3   slim[2] = value of first sub-pixel in pixel 2.
+                   slim[3] = value of first sub-pixel in pixel 3.
+
+            Pixel 1 - (2x2):
+
+                   slim[4] = value of first sub-pixel in pixel 0.
+             4 5   slim[5] = value of first sub-pixel in pixel 1.
+             6 7   slim[6] = value of first sub-pixel in pixel 2.
+                   slim[7] = value of first sub-pixel in pixel 3.
+
+        For the ``native`` data representation we get the following mappings:
+
+        ::
+
+            Pixel 0 - (2x2):
+
+                   native[8, 2] = value of first sub-pixel in pixel 0.
+             0 1   native[8, 3] = value of first sub-pixel in pixel 1.
+             2 3   native[9, 2] = value of first sub-pixel in pixel 2.
+                   native[9, 3] = value of first sub-pixel in pixel 3.
+
+            Pixel 1 - (2x2):
+
+                   native[10, 4] = value of first sub-pixel in pixel 0.
+             4 5   native[10, 5] = value of first sub-pixel in pixel 1.
+             6 7   native[11, 4] = value of first sub-pixel in pixel 2.
+                   native[11, 5] = value of first sub-pixel in pixel 3.
+
+            Other entries (all masked sub-pixels are zero):
+
+                   native[0, 0] = 0.0 (it is masked, thus zero)
+                   native[15, 12] = 0.0 (it is masked, thus zero)
+
+        If we used a sub_size of 3, for pixel 0 we we would create a 3x3 sub-array:
+
+        ::
+
+                     slim[0] = value of first sub-pixel in pixel 0.
+                     slim[1] = value of first sub-pixel in pixel 1.
+                     slim[2] = value of first sub-pixel in pixel 2.
+             0 1 2   slim[3] = value of first sub-pixel in pixel 3.
+             3 4 5   slim[4] = value of first sub-pixel in pixel 4.
+             6 7 8   slim[5] = value of first sub-pixel in pixel 5.
+                     slim[6] = value of first sub-pixel in pixel 6.
+                     slim[7] = value of first sub-pixel in pixel 7.
+                     slim[8] = value of first sub-pixel in pixel 8.
 
         Parameters
         ----------
@@ -73,7 +281,7 @@ class Mask2D(Mask):
             sub_size=sub_size,
             origin=origin,
         )
-        obj.indexes = DerivedIndexes2D(mask=obj)
+        obj.derive_indexes = DeriveIndexes2D(mask=obj)
         return obj
 
     def __array_finalize__(self, obj):
@@ -81,7 +289,7 @@ class Mask2D(Mask):
         super().__array_finalize__(obj=obj)
 
         if isinstance(obj, Mask2D):
-            self.indexes = obj.indexes
+            self.derive_indexes = obj.derive_indexes
         else:
             self.origin = (0.0, 0.0)
 
@@ -98,12 +306,12 @@ class Mask2D(Mask):
         )
 
     @property
-    def derived_masks(self) -> DerivedMasks2D:
-        return DerivedMasks2D(mask=self)
+    def derive_mask(self) -> DeriveMask2D:
+        return DeriveMask2D(mask=self)
 
     @property
-    def derived_grids(self) -> DerivedGrids2D:
-        return DerivedGrids2D(mask=self)
+    def derive_grid(self) -> DeriveGrid2D:
+        return DeriveGrid2D(mask=self)
 
     @classmethod
     def manual(
@@ -588,7 +796,7 @@ class Mask2D(Mask):
         )
 
         if resized_mask_shape is not None:
-            mask = mask.derived_masks.resized_from(new_shape=resized_mask_shape)
+            mask = mask.derive_mask.resized_from(new_shape=resized_mask_shape)
 
         return mask
 
@@ -681,7 +889,7 @@ class Mask2D(Mask):
     @property
     def mask_centre(self) -> Tuple[float, float]:
         return grid_2d_util.grid_2d_centre_from(
-            grid_2d_slim=self.derived_grids.masked_sub_1
+            grid_2d_slim=self.derive_grid.masked_sub_1
         )
 
     @property
@@ -704,7 +912,7 @@ class Mask2D(Mask):
     def zoom_centre(self) -> Tuple[float, float]:
 
         extraction_grid_1d = self.geometry.grid_pixels_2d_from(
-            grid_scaled_2d=self.derived_grids.masked_sub_1.slim
+            grid_scaled_2d=self.derive_grid.masked_sub_1.slim
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])

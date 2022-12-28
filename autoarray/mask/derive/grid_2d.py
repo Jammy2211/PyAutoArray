@@ -13,7 +13,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class DerivedGrids2D:
+class DeriveGrid2D:
     def __init__(self, mask: Mask2D):
         """
         Missing
@@ -44,7 +44,7 @@ class DerivedGrids2D:
 
         return Grid2D(
             grid=grid_slim,
-            mask=self.mask.derived_masks.unmasked.derived_masks.sub_1,
+            mask=self.mask.derive_mask.unmasked.derive_mask.sub_1,
         )
 
     @property
@@ -59,7 +59,7 @@ class DerivedGrids2D:
             origin=self.mask.origin,
         )
         return Grid2D(
-            grid=sub_grid_1d, mask=self.mask.derived_masks.edge.derived_masks.sub_1
+            grid=sub_grid_1d, mask=self.mask.derive_mask.edge.derive_mask.sub_1
         )
 
     @property
@@ -73,7 +73,7 @@ class DerivedGrids2D:
             sub_size=1,
             origin=self.mask.origin,
         )
-        return Grid2D(grid=grid_slim, mask=self.mask.derived_masks.sub_1)
+        return Grid2D(grid=grid_slim, mask=self.mask.derive_mask.sub_1)
 
     @property
     def edge_sub_1(self) -> Grid2D:
@@ -85,10 +85,10 @@ class DerivedGrids2D:
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        edge_grid_1d = self.masked_sub_1[self.mask.indexes.edge_slim]
+        edge_grid_1d = self.masked_sub_1[self.mask.derive_indexes.edge_slim]
         return Grid2D(
             grid=edge_grid_1d,
-            mask=self.mask.derived_masks.edge.derived_masks.sub_1,
+            mask=self.mask.derive_mask.edge.derive_mask.sub_1,
         )
 
     @property
@@ -98,7 +98,7 @@ class DerivedGrids2D:
         exterior edge e.g. next to at least one pixel with a `True` value but not central pixels like those within
         an annulus mask.
         """
-        return self.masked[self.mask.indexes.sub_border_slim]
+        return self.masked[self.mask.derive_indexes.sub_border_slim]
 
     @property
     def border_sub_1(self) -> Grid2D:
@@ -109,8 +109,8 @@ class DerivedGrids2D:
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        border = self.masked_sub_1[self.mask.indexes.border_slim]
+        border = self.masked_sub_1[self.mask.derive_indexes.border_slim]
         return Grid2D(
             grid=border,
-            mask=self.mask.derived_masks.border.derived_masks.sub_1,
+            mask=self.mask.derive_mask.border.derive_mask.sub_1,
         )

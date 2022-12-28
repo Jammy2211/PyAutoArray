@@ -54,7 +54,7 @@ class Imaging(AbstractDataset):
         if pad_for_convolver and psf is not None:
 
             try:
-                image.mask.derived_masks.blurring_from(
+                image.mask.derive_mask.blurring_from(
                     kernel_shape_native=psf.shape_native
                 )
             except exc.MaskException:
@@ -170,7 +170,7 @@ class Imaging(AbstractDataset):
         ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
             noise_map_native=self.noise_map.native,
             kernel_native=self.psf.native,
-            native_index_for_slim_index=self.mask.indexes.native_for_slim,
+            native_index_for_slim_index=self.mask.derive_indexes.native_for_slim,
         )
 
         return WTildeImaging(
@@ -266,11 +266,11 @@ class Imaging(AbstractDataset):
             unmasked_imaging = self.unmasked
 
         image = Array2D.manual_mask(
-            array=unmasked_imaging.image.native, mask=mask.derived_masks.sub_1
+            array=unmasked_imaging.image.native, mask=mask.derive_mask.sub_1
         )
 
         noise_map = Array2D.manual_mask(
-            array=unmasked_imaging.noise_map.native, mask=mask.derived_masks.sub_1
+            array=unmasked_imaging.noise_map.native, mask=mask.derive_mask.sub_1
         )
 
         if unmasked_imaging.noise_covariance_matrix is not None:
@@ -278,10 +278,10 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix = unmasked_imaging.noise_covariance_matrix
 
             noise_covariance_matrix = np.delete(
-                noise_covariance_matrix, mask.indexes.masked_slim, 0
+                noise_covariance_matrix, mask.derive_indexes.masked_slim, 0
             )
             noise_covariance_matrix = np.delete(
-                noise_covariance_matrix, mask.indexes.masked_slim, 1
+                noise_covariance_matrix, mask.derive_indexes.masked_slim, 1
             )
 
         else:
