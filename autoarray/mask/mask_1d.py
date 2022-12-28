@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray import exc
-from autoarray.mask.derived_masks_1d import DerivedMasks1D
+from autoarray.mask.derived.masks_1d import DerivedMasks1D
 from autoarray.geometry.geometry_1d import Geometry1D
 from autoarray.structures.arrays import array_1d_util
 from autoarray.structures.grids import grid_1d_util

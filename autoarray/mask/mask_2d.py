@@ -13,9 +13,9 @@ from autoarray.mask.abstract_mask import Mask
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.geometry.geometry_2d import Geometry2D
-from autoarray.mask.derived_masks_2d import DerivedMasks2D
-from autoarray.mask.derived_grids_2d import DerivedGrids2D
-from autoarray.mask.indexes_2d import Indexes2D
+from autoarray.mask.derived.masks_2d import DerivedMasks2D
+from autoarray.mask.derived.grids_2d import DerivedGrids2D
+from autoarray.mask.derived.indexes_2d import DerivedIndexes2D
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
@@ -73,7 +73,7 @@ class Mask2D(Mask):
             sub_size=sub_size,
             origin=origin,
         )
-        obj.indexes = Indexes2D(mask=obj)
+        obj.indexes = DerivedIndexes2D(mask=obj)
         return obj
 
     def __array_finalize__(self, obj):

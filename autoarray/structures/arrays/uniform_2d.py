@@ -12,7 +12,6 @@ from autoarray import type as ty
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
-from autoarray.structures.grids import grid_2d_util
 from autoarray.layout import layout_util
 
 logging.basicConfig()
@@ -31,32 +30,31 @@ class AbstractArray2D(Structure):
         """
         A uniform 2D array of values, which are paired with a 2D mask of pixels which may be split into sub-pixels.
 
-        The ``Array2D`, like all data structures (e.g. ``Grid2D``, ``VectorYX2D``) offers in-built functionality which:
+        The ``Array2D`, like all data structures (e.g. ``Grid2D``, ``VectorYX2D``) has in-built functionality which:
 
-        - Applies a mask to the values of the data structure.
+        - Applies a 2D mask (a ``Mask2D`` object) to the data structure's values.
 
         - Maps the data structure between two data representations: `slim`` (all unmasked values in
           a 1D ``ndarray``) and ``native`` (all unmasked values in a 2D ``ndarray``).
 
         - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
-        a (y,x) grid of all unmasked pixels, of all pixels, etc.).
+          a (y,x) grid of all unmasked pixels).
 
-        - Associates sub-grids with the data structure, which permit calculations to be performed at higher resolution
-          and binned up.
+        - Associates sub-grids with the data structure, which perform calculations higher resolutions which are then
+          binned up.
 
-        Each entry of a ``Array2D`` corresponds to a value at the centre of a sub-pixel in an unmasked pixel. It is
-        ordered such that pixels begin from the top-row of the corresponding mask and go right and down. The positive
-        y-axis is upwards and positive x-axis to the right.
+        Each entry of an ``Array2D`` corresponds to a value at the centre of a sub-pixel in its
+        corresponding ``Mask2D``.  It is ordered such that pixels begin from the top-row of the corresponding mask
+        and go right and down. The positive y-axis is upwards and positive x-axis to the right.
 
-        A detailed description of this functionality is provided below, correspond to four cases of increasing
-        complexity.
+        A detailed description of the data structure API is provided below.
 
 
         **SLIM DATA REPRESENTATION (sub-size=1)**
 
         The ``Array2D`` in its ``slim`` representation is an ``ndarray`` of shape [total_unmasked_pixels].
 
-        Below is a visual illustration of an ``Array2D``'s mask, where a total of 10 pixels are unmasked and are
+        Below is a visual illustration of an ``Array2D``'s 2D mask, where a total of 10 pixels are unmasked and are
         included in the array.
 
         ::
@@ -73,29 +71,29 @@ class AbstractArray2D(Structure):
              x x x x x x x x x x
 
         The mask pixel index's are as follows (the positive / negative direction of the ``Grid2D`` objects associated
-        with the array are highlight on the y and x axes).
+        with the array are also shown on the y and x axes).
 
         ::
 
             <--- -ve  x  +ve -->
 
-             x x x x x x x x x x  ^   array_2d[0] = 0
-             x x x x x x x x x x  I   array_2d[1] = 1
-             x x x x x x x x x x  I   array_2d[2] = 2
-             x x x x 0 1 x x x x +ve  array_2d[3] = 3
-             x x x 2 3 4 5 x x x  y   array_2d[4] = 4
-             x x x 6 7 8 9 x x x -ve  array_2d[5] = 5
-             x x x x x x x x x x  I   array_2d[6] = 6
-             x x x x x x x x x x  I   array_2d[7] = 7
-             x x x x x x x x x x \/   array_2d[8] = 8
-             x x x x x x x x x x      array_2d[9] = 9
+             x x x x x x x x x x  ^   array_2d[0] = 10
+             x x x x x x x x x x  I   array_2d[1] = 20
+             x x x x x x x x x x  I   array_2d[2] = 30
+             x x x x 0 1 x x x x +ve  array_2d[3] = 40
+             x x x 2 3 4 5 x x x  y   array_2d[4] = 50
+             x x x 6 7 8 9 x x x -ve  array_2d[5] = 60
+             x x x x x x x x x x  I   array_2d[6] = 70
+             x x x x x x x x x x  I   array_2d[7] = 80
+             x x x x x x x x x x \/   array_2d[8] = 90
+             x x x x x x x x x x      array_2d[9] = 100
 
-        Each element of the ``slim`` representation therefore corresponds to each masked the pixel index:
+        Each element of the ``slim`` representation therefore corresponds to each masked pixel index:
 
         ::
 
-            array[3] = the 4th unmasked pixel's value, given by value 3 above.
-            array[6] = the 7th unmasked pixel's value, given by value 7 above.
+            array[3] = the 4th unmasked pixel's value, given by value 40 above.
+            array[6] = the 7th unmasked pixel's value, given by value 80 above.
 
         A Cartesian grid of (y,x) coordinates, corresponding to all ``slim`` values (e.g. unmasked pixels) is given
         by ``array_2d.mask.derived_grids.masked_grid``.
@@ -103,10 +101,8 @@ class AbstractArray2D(Structure):
 
         **NATIVE DATA REPRESENTATION (sub_size=1)**
 
-        The ``Array2D`` has the same values as the ``slim`` representation above, but is instead stored as an
-        an ``ndarray`` of shape [total_y_values, total_x_values].
-
-        All masked entries on the array have values of 0.0.
+        The ``Array2D`` above, but represented as an an ``ndarray`` of shape [total_y_values, total_x_values], where
+        all masked entries have values of 0.0.
 
         For the following mask:
 
@@ -123,22 +119,22 @@ class AbstractArray2D(Structure):
              x x x x x x x x x x
              x x x x x x x x x x
 
-        Where the array has the following valeus:
+        Where the array has the following indexes (left figure) and values (right):
 
         ::
 
             <--- -ve  x  +ve -->
 
-             x x x x x x x x x x  ^   array_2d[0] = 0
-             x x x x x x x x x x  I   array_2d[1] = 1
-             x x x x x x x x x x  I   array_2d[2] = 2
-             x x x x 0 1 x x x x +ve  array_2d[3] = 3
-             x x x 2 3 4 5 x x x  y   array_2d[4] = 4
-             x x x 6 7 8 9 x x x -ve  array_2d[5] = 5
-             x x x x x x x x x x  I   array_2d[6] = 6
-             x x x x x x x x x x  I   array_2d[7] = 7
-             x x x x x x x x x x \/   array_2d[8] = 8
-             x x x x x x x x x x      array_2d[9] = 9
+             x x x x x x x x x x  ^   array_2d[0] = 10
+             x x x x x x x x x x  I   array_2d[1] = 20
+             x x x x x x x x x x  I   array_2d[2] = 30
+             x x x x 0 1 x x x x +ve  array_2d[3] = 40
+             x x x 2 3 4 5 x x x  y   array_2d[4] = 50
+             x x x 6 7 8 9 x x x -ve  array_2d[5] = 60
+             x x x x x x x x x x  I   array_2d[6] = 70
+             x x x x x x x x x x  I   array_2d[7] = 80
+             x x x x x x x x x x \/   array_2d[8] = 90
+             x x x x x x x x x x      array_2d[9] = 100
 
         In the above array:
 
@@ -146,15 +142,15 @@ class AbstractArray2D(Structure):
             - array[0,0] = 0.0 (it is masked, thus zero)
             - array[3,3] = 0.0 (it is masked, thus zero)
             - array[3,3] = 0.0 (it is masked, thus zero)
-            - array[3,4] = 0
-            - array[3,5] = 1
-            - array[4,5] = 4
+            - array[3,4] = 10
+            - array[3,5] = 20
+            - array[4,5] = 50
 
 
         **SUB GRIDDING**
 
-        If the ``Mask2D`` ``sub_size`` is > 1, the array is a sub-array where each entry corresponds to values at the
-        centres of sub-pixels of each unmasked pixel.
+        If the ``Mask2D`` ``sub_size`` is > 1, the array has entries corresponding to the values at the centre of
+        every sub-pixel of each unmasked pixel.
 
         The sub-array indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first
         unmasked pixel. Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel.

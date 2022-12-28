@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
-from autoarray.mask.indexes_2d import Indexes2D
+from autoarray.mask.derived.indexes_2d import DerivedIndexes2D
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.mask import mask_2d_util
@@ -30,7 +30,7 @@ class DerivedMasks2D:
         self.mask = mask
 
     @property
-    def indexes(self) -> Indexes2D:
+    def indexes(self) -> DerivedIndexes2D:
         return self.mask.indexes
 
     @property

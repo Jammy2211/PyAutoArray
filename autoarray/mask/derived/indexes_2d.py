@@ -14,14 +14,14 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Indexes2D:
+class DerivedIndexes2D:
     def __init__(self, mask: Mask2D):
         """
         Computes the ``slim`` and ``native`` indexes of specific ``Mask2D`` quantities.
 
         A 2D mask has two data representations, ``slim`` and ``native``, which are described fully at ?.
 
-        The ``Indexes2D`` class contains methods for computing 1D ``ndarrays`` of specific indexes
+        The ``DerivedIndexes2D`` class contains methods for computing 1D ``ndarrays`` of specific indexes
         of certain predefined quantities associated with the 2D mask.
 
         For example, the property ``native_for_slim`` returns an array of shape [total_unmasked_pixels*sub_size] that

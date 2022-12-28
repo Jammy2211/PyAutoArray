@@ -51,11 +51,11 @@ from .inversion.inversion.interferometer.mapping import InversionInterferometerM
 from .inversion.inversion.interferometer.lop import InversionInterferometerMappingPyLops
 from .inversion.linear_obj.linear_obj import LinearObj
 from .inversion.linear_obj.func_list import AbstractLinearObjFuncList
-from .mask.indexes_2d import Indexes2D
-from .mask.derived_masks_1d import DerivedMasks1D
-from .mask.derived_masks_2d import DerivedMasks2D
-from .mask.derived_grids_1d import DerivedGrids1D
-from .mask.derived_grids_2d import DerivedGrids2D
+from .mask.derived.indexes_2d import DerivedIndexes2D
+from .mask.derived.masks_1d import DerivedMasks1D
+from .mask.derived.masks_2d import DerivedMasks2D
+from .mask.derived.grids_1d import DerivedGrids1D
+from .mask.derived.grids_2d import DerivedGrids2D
 from .mask.mask_1d import Mask1D
 from .mask.mask_2d import Mask2D
 from .operators.convolver import Convolver
