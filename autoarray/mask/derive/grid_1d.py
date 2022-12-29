@@ -16,12 +16,47 @@ logger = logging.getLogger(__name__)
 class DeriveGrid1D:
     def __init__(self, mask: Mask1D):
         """
-        Missing
+        Derives ``Grid1D`` objects from a ``Mask1D``.
+
+        A ``Mask1D`` masks values which are associated with a 1D uniform grid of pixels, where unmasked
+        entries (which are ``False``) are used in subsequent calculations and masked values (which are ``True``) are
+        omitted (for a full description see
+        the :meth:`Mask1D class API documentation <autoarray.mask.mask_1d.Mask1D.__new__>`).
+
+        From a ``Mask1D``,``Grid1D``s can be derived, which represent the (y,x) Cartesian coordinates of a subset of
+        pixels with significance.
+
+        For example:
+
+        - An ``unmasked`` ``Grid1D``: the same shape as the original ``Mask1D`` but has unmasked ``False`` values
+          everywhere.
 
         Parameters
         ----------
         mask
-            The 2D mask from which indexes are computed.
+            The ``Mask2D`` from which new ``Grid2D`` objects are derived.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            mask_2d = aa.Mask2D.manual(
+                mask=[
+                    [True,  True,  True,  True, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True,  True,  True,  True, True],
+                ],
+                pixel_scales=1.0,
+            )
+
+            derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
+
+            print(derive_grid_2d.border)
         """
         self.mask = mask
 
