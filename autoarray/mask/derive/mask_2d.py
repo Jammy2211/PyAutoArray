@@ -22,10 +22,10 @@ class DeriveMask2D:
         """
         Derives ``Mask2D`` objects from a ``Mask2D``.
 
-        A ``Mask2D`` masks values which are associated with a a uniform rectangular grid of pixels, where unmasked
+        A ``Mask2D`` masks values which are associated with a uniform 2D rectangular grid of pixels, where unmasked
         entries (which are ``False``) are used in subsequent calculations and masked values (which are ``True``) are
         omitted (for a full description see
-        the :meth:`Mask2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`).
+        the :meth:`Mask2D class API documentation <autoarray.mask.mask_2d.Mask2D.__new__>`).
 
         From a ``Mask2D`` other ``Mask2D``s can be derived, which represent a subset of pixels with significance.
         For example:
@@ -61,7 +61,6 @@ class DeriveMask2D:
             derive_mask_2d = aa.DeriveMask2D(mask=mask_2d)
 
             print(derive_mask_2d.edge)
-
         """
         self.mask = mask
 
@@ -126,6 +125,7 @@ class DeriveMask2D:
                      [False, False]
                 ],
                 pixel_scales=1.0,
+                sub_size=2,
             )
 
             derive_mask_2d = aa.DeriveMask2D(mask=mask_2d)
