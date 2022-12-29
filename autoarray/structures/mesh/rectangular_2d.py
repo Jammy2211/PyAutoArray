@@ -178,6 +178,6 @@ class Mesh2DRectangular(Abstract2DMesh):
 
         interpolated_array = interpolated_array.reshape(shape_native)
 
-        return Array2D.manual_native(
+        return Array2D.without_mask(
             array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )

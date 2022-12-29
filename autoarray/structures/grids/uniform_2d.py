@@ -1102,7 +1102,7 @@ class Grid2D(Structure):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return Array2D.manual_mask(array=squared_distances, mask=self.mask)
+        return Array2D(array=squared_distances, mask=self.mask)
 
     def distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
@@ -1118,7 +1118,7 @@ class Grid2D(Structure):
         distances = np.sqrt(
             self.squared_distances_to_coordinate_from(coordinate=coordinate)
         )
-        return Array2D.manual_mask(array=distances, mask=self.mask)
+        return Array2D(array=distances, mask=self.mask)
 
     def grid_2d_radial_projected_shape_slim_from(
         self, centre: Tuple[float, float] = (0.0, 0.0)

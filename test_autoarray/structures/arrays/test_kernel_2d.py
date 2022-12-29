@@ -261,7 +261,7 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
 
 def test__convolved_array_from():
 
-    array_2d = aa.Array2D.manual_native(
+    array_2d = aa.Array2D.without_mask(
         array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]], pixel_scales=1.0
     )
 
@@ -273,7 +273,7 @@ def test__convolved_array_from():
 
     assert (blurred_array_2d == kernel_2d).all()
 
-    array_2d = aa.Array2D.manual_native(
+    array_2d = aa.Array2D.without_mask(
         array=[
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 0.0, 0.0],
@@ -301,7 +301,7 @@ def test__convolved_array_from():
         )
     ).all()
 
-    array_2d = aa.Array2D.manual_native(
+    array_2d = aa.Array2D.without_mask(
         array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
         pixel_scales=1.0,
     )
@@ -319,7 +319,7 @@ def test__convolved_array_from():
         )
     ).all()
 
-    array_2d = aa.Array2D.manual_native(
+    array_2d = aa.Array2D.without_mask(
         array=[[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
         pixel_scales=1.0,
     )
@@ -335,7 +335,7 @@ def test__convolved_array_from():
         == np.array([[0.0, 1.0, 0.0, 0.0], [1.0, 2.0, 1.0, 0.0], [0.0, 1.0, 0.0, 0.0]])
     ).all()
 
-    array_2d = aa.Array2D.manual_native(
+    array_2d = aa.Array2D.without_mask(
         array=[
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 0.0, 0.0],
@@ -363,7 +363,7 @@ def test__convolved_array_from():
         )
     ).all()
 
-    array_2d = aa.Array2D.manual_native(
+    array_2d = aa.Array2D.without_mask(
         [
             [0.0, 0.0, 0.0, 0.0],
             [1.0, 0.0, 0.0, 0.0],
@@ -391,7 +391,7 @@ def test__convolved_array_from():
         )
     ).all()
 
-    array_2d = aa.Array2D.manual_native(
+    array_2d = aa.Array2D.without_mask(
         array=[
             [1.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0],

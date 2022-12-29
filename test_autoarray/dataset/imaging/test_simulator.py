@@ -6,7 +6,7 @@ import autoarray as aa
 
 @pytest.fixture(name="image_central_delta_3x3")
 def make_array_2d_7x7():
-    return aa.Array2D.manual_native(
+    return aa.Array2D.without_mask(
         array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         pixel_scales=0.1,
     )

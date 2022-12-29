@@ -183,7 +183,7 @@ def test__mapped_to_source_from(grid_2d_7x7):
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
-    array_slim = aa.Array2D.manual_slim(
+    array_slim = aa.Array2D.without_mask(
         [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
         shape_native=(3, 3),
         pixel_scales=1.0,

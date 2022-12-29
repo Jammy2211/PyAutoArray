@@ -79,9 +79,7 @@ def test__manual_mask():
     assert grid_2d.pixel_scales == (1.0, 1.0)
     assert grid_2d.origin == (0.0, 0.0)
 
-    mask = aa.Mask2D(
-        [[False], [True]], sub_size=2, pixel_scales=1.0, origin=(0.0, 1.0)
-    )
+    mask = aa.Mask2D([[False], [True]], sub_size=2, pixel_scales=1.0, origin=(0.0, 1.0))
     grid_2d = aa.Grid2D.manual_mask(
         grid=[
             [[1.0, 2.0], [3.0, 4.0]],
@@ -957,9 +955,7 @@ def test__padded_grid_from():
     assert padded_grid.shape == (54, 2)
     assert (padded_grid == padded_grid_util).all()
 
-    mask = aa.Mask2D(
-        mask=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
-    )
+    mask = aa.Mask2D(mask=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2)
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
@@ -973,9 +969,7 @@ def test__padded_grid_from():
     assert (padded_grid.mask == np.full(fill_value=False, shape=(7, 6))).all()
     assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
 
-    mask = aa.Mask2D(
-        mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
-    )
+    mask = aa.Mask2D(mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4)
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 

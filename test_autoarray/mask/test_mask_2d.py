@@ -14,9 +14,7 @@ test_data_dir = path.join(
 
 def test__constructor():
 
-    mask = aa.Mask2D(
-        mask=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1
-    )
+    mask = aa.Mask2D(mask=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1)
 
     assert type(mask) == aa.Mask2D
     assert (mask == np.array([[False, False], [True, True]])).all()

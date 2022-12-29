@@ -140,7 +140,7 @@ def test__exception__negative_coordinates_1d():
 
 def test__slice_2d__extraction():
 
-    array = aa.Array2D.manual(
+    array = aa.Array2D.without_mask(
         array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
         pixel_scales=1.0,
     )
@@ -151,7 +151,7 @@ def test__slice_2d__extraction():
 
     assert (new_array == np.array([[1.0, 2.0], [4.0, 5.0]])).all()
 
-    array = aa.Array2D.manual(
+    array = aa.Array2D.without_mask(
         array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
         pixel_scales=1.0,
     )
@@ -165,7 +165,7 @@ def test__slice_2d__extraction():
 
 def test__slice_2d__addition():
 
-    array = aa.Array2D.manual(array=np.zeros((2, 2)), pixel_scales=1.0)
+    array = aa.Array2D.without_mask(array=np.zeros((2, 2)), pixel_scales=1.0)
     array = array.native
     image = np.ones((2, 2))
     region = aa.Region2D(region=(0, 1, 0, 1))
@@ -174,7 +174,7 @@ def test__slice_2d__addition():
 
     assert (array == np.array([[1.0, 0.0], [0.0, 0.0]])).all()
 
-    array = aa.Array2D.manual(array=np.ones((2, 2)), pixel_scales=1.0)
+    array = aa.Array2D.without_mask(array=np.ones((2, 2)), pixel_scales=1.0)
     array = array.native
     image = np.ones((2, 2))
     region = aa.Region2D(region=(0, 1, 0, 1))
@@ -183,7 +183,7 @@ def test__slice_2d__addition():
 
     assert (array == np.array([[2.0, 1.0], [1.0, 1.0]])).all()
 
-    array = aa.Array2D.manual(array=np.ones((3, 3)), pixel_scales=1.0)
+    array = aa.Array2D.without_mask(array=np.ones((3, 3)), pixel_scales=1.0)
     array = array.native
     image = np.ones((3, 3))
     region = aa.Region2D(region=(1, 3, 2, 3))
@@ -197,7 +197,7 @@ def test__slice_2d__addition():
 
 def test__slice_2d__set_to_zerose():
 
-    array = aa.Array2D.manual(array=np.ones((2, 2)), pixel_scales=1.0)
+    array = aa.Array2D.without_mask(array=np.ones((2, 2)), pixel_scales=1.0)
     array = array.native
 
     region = aa.Region2D(region=(0, 1, 0, 1))
@@ -206,7 +206,7 @@ def test__slice_2d__set_to_zerose():
 
     assert (array == np.array([[0.0, 1.0], [1.0, 1.0]])).all()
 
-    array = aa.Array2D.manual(array=np.ones((3, 3)), pixel_scales=1.0)
+    array = aa.Array2D.without_mask(array=np.ones((3, 3)), pixel_scales=1.0)
     array = array.native
 
     region = aa.Region2D(region=(1, 3, 2, 3))

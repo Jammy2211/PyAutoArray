@@ -11,7 +11,7 @@ class AbstractVisuals(ABC):
 
         mask = Mask2D.circular(shape_native=(100, 100), pixel_scales=0.1, radius=3.0)
         array = Array2D.ones(shape_native=(100, 100), pixel_scales=0.1)
-        masked_array = al.Array2D.manual_mask(array=array, mask=mask)
+        masked_array = al.Array2D(array=array, mask=mask)
         include_2d = Include2D(mask=True)
         array_plotter = aplt.Array2DPlotter(array=masked_array, include_2d=include_2d)
         array_plotter.figure()

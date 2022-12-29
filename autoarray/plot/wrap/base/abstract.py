@@ -50,7 +50,7 @@ class AbstractMatWrap:
         import autoarray as aa
         import autoarray.plot as aplt
 
-        arr = aa.Array2D.manual_native(array=[[1.0, 1.0], [2.0, 2.0]], pixel_scales=2.0)
+        arr = aa.Array2D.without_mask(array=[[1.0, 1.0], [2.0, 2.0]], pixel_scales=2.0)
         aplt.Array2D(array=arr)
 
         The wrapped Mat objects make it simple to customize how matplotlib visualizes this data structure, for example

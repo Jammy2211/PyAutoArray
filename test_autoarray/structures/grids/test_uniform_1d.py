@@ -99,9 +99,7 @@ def test__from_mask():
     assert grid.pixel_scales == (1.0,)
     assert grid.origin == (0.0,)
 
-    mask = aa.Mask1D(
-        mask=[True, False, False, False], pixel_scales=1.0, sub_size=1
-    )
+    mask = aa.Mask1D(mask=[True, False, False, False], pixel_scales=1.0, sub_size=1)
     grid = aa.Grid1D.from_mask(mask=mask)
 
     assert type(grid) == aa.Grid1D

@@ -96,7 +96,7 @@ def test__resized_from():
 def test__unmasked_mask(derive_mask_2d_9x9):
 
     assert (
-            derive_mask_2d_9x9.all_false == np.full(fill_value=False, shape=(9, 9))
+        derive_mask_2d_9x9.all_false == np.full(fill_value=False, shape=(9, 9))
     ).all()
 
 

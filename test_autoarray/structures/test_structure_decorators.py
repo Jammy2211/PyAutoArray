@@ -63,9 +63,7 @@ def test__in_grid_1d__out_ndarray_2d():
 
 def test__in_grid_1d__out_ndarray_1d_list():
 
-    mask = aa.Mask1D(
-        mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
-    )
+    mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1)
 
     grid_1d = aa.Grid1D.from_mask(mask=mask)
 
@@ -82,9 +80,7 @@ def test__in_grid_1d__out_ndarray_1d_list():
 
 def test__in_grid_1d__out_ndarray_2d_list():
 
-    mask = aa.Mask1D(
-        mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
-    )
+    mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1)
 
     grid_1d = aa.Grid1D.from_mask(mask=mask)
 

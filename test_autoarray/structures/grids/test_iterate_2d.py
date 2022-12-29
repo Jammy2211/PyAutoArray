@@ -217,9 +217,7 @@ def test__padded_grid_from():
     assert padded_grid.sub_steps == [2, 3]
     assert (padded_grid == padded_grid_util).all()
 
-    mask = aa.Mask2D(
-        mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=1
-    )
+    mask = aa.Mask2D(mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=1)
 
     grid = aa.Grid2DIterate.from_mask(
         mask=mask, fractional_accuracy=0.1, sub_steps=[2, 3]
@@ -252,7 +250,7 @@ def test__threshold_mask_via_arrays_from():
 
     grid = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
-    arr = aa.Array2D.manual_mask(
+    arr = aa.Array2D(
         array=[
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 1.0, 0.0],
@@ -280,7 +278,7 @@ def test__threshold_mask_via_arrays_from():
 
     grid = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.5)
 
-    result_array_lower_sub = aa.Array2D.manual_mask(
+    result_array_lower_sub = aa.Array2D(
         [
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 1.9, 0.001, 0.0],
@@ -290,7 +288,7 @@ def test__threshold_mask_via_arrays_from():
         mask=mask,
     )
 
-    result_array_higher_sub = aa.Array2D.manual_mask(
+    result_array_higher_sub = aa.Array2D(
         [
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 2.0, 2.0, 0.0],
@@ -339,7 +337,7 @@ def test__threshold_mask_via_arrays_from():
 
     grid = aa.Grid2DIterate.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
 
-    array_lower_sub = aa.Array2D.manual_mask(
+    array_lower_sub = aa.Array2D(
         [
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 2.0, 2.0, 0.0],
@@ -349,7 +347,7 @@ def test__threshold_mask_via_arrays_from():
         mask=mask_lower_sub,
     )
 
-    array_higher_sub = aa.Array2D.manual_mask(
+    array_higher_sub = aa.Array2D(
         [
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 5.0, 5.0, 0.0],
@@ -511,7 +509,7 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    arr = aa.Array2D.manual_mask(array=np.zeros(9), mask=mask)
+    arr = aa.Array2D(array=np.zeros(9), mask=mask)
 
     values = grid.iterated_array_from(
         func=ndarray_1d_from, cls=None, array_lower_sub_2d=arr

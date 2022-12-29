@@ -132,7 +132,7 @@ class TransformerDFT(PyLopsOperator):
             sub_size=self.real_space_mask.sub_size,
         )
 
-        return Array2D.manual_mask(array=image_native, mask=self.real_space_mask)
+        return Array2D(array=image_native, mask=self.real_space_mask)
 
     def transform_mapping_matrix(self, mapping_matrix):
 
@@ -258,7 +258,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
 
             image *= self.adjoint_scaling
 
-        return Array2D.manual_mask(array=image, mask=self.real_space_mask)
+        return Array2D(array=image, mask=self.real_space_mask)
 
     def transform_mapping_matrix(self, mapping_matrix):
 

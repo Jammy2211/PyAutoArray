@@ -216,7 +216,7 @@ class Layout2D:
                <---------S----------
         """
 
-        return Array2D.manual(
+        return Array2D.without_mask(
             array=array.native[self.parallel_overscan.slice],
             header=array.header,
             pixel_scales=array.pixel_scales,
@@ -270,7 +270,7 @@ class Layout2D:
                <---------S----------
         """
 
-        return Array2D.manual(
+        return Array2D.without_mask(
             array=array.native[self.serial_overscan.slice],
             header=array.header,
             pixel_scales=array.pixel_scales,

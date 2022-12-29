@@ -90,6 +90,6 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
                 np.fliplr(interpolated_array.reshape(shape_native).T)
             )
 
-        return Array2D.manual_native(
+        return Array2D.without_mask(
             array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )

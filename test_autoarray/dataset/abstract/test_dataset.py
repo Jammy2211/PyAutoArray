@@ -19,8 +19,8 @@ def test__dataset_takes_structures_of_different_formats():
     assert (dataset.data.native == np.array([1.0, 2.0])).all()
     assert (dataset.noise_map.native == np.array([1.0, 3.0])).all()
 
-    array = aa.Array2D.manual_native([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.manual_native([[1.0, 2.0], [3.0, 5.0]], pixel_scales=1.0)
+    array = aa.Array2D.without_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.without_mask([[1.0, 2.0], [3.0, 5.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -30,8 +30,8 @@ def test__dataset_takes_structures_of_different_formats():
 
 def test__inverse_noise_map():
 
-    array = aa.Array2D.manual_native([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.manual_native([[1.0, 2.0], [4.0, 8.0]], pixel_scales=1.0)
+    array = aa.Array2D.without_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.without_mask([[1.0, 2.0], [4.0, 8.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -41,8 +41,8 @@ def test__inverse_noise_map():
 
 
 def test__signal_to_noise_map():
-    array = aa.Array2D.manual_native([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.manual_native([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+    array = aa.Array2D.without_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.without_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -51,9 +51,9 @@ def test__signal_to_noise_map():
     ).all()
     assert dataset.signal_to_noise_max == 1.0
 
-    array = aa.Array2D.manual_native([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
+    array = aa.Array2D.without_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
 
-    noise_map = aa.Array2D.manual_native([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.without_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -65,9 +65,9 @@ def test__signal_to_noise_map():
 
 def test__absolute_signal_to_noise_map():
 
-    array = aa.Array2D.manual_native([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
+    array = aa.Array2D.without_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
 
-    noise_map = aa.Array2D.manual_native([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.without_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -80,8 +80,8 @@ def test__absolute_signal_to_noise_map():
 
 def test__potential_chi_squared_map():
 
-    array = aa.Array2D.manual_native([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.manual_native([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+    array = aa.Array2D.without_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.without_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -109,11 +109,11 @@ def test__grid__uses_mask_and_settings(
 
     assert isinstance(dataset_1d.grid, aa.Grid1D)
 
-    masked_image_7x7 = aa.Array2D.manual_mask(
+    masked_image_7x7 = aa.Array2D(
         array=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
 
-    masked_noise_map_7x7 = aa.Array2D.manual_mask(
+    masked_noise_map_7x7 = aa.Array2D(
         array=noise_map_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
 
@@ -149,11 +149,11 @@ def test__grid_pixelization__uses_mask_and_settings(
 
     assert isinstance(masked_dataset_1d.grid, aa.Grid1D)
 
-    masked_image_7x7 = aa.Array2D.manual_mask(
+    masked_image_7x7 = aa.Array2D(
         array=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
 
-    masked_noise_map_7x7 = aa.Array2D.manual_mask(
+    masked_noise_map_7x7 = aa.Array2D(
         array=noise_map_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
 

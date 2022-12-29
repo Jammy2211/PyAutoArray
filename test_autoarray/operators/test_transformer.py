@@ -148,7 +148,7 @@ def test__dft__visibilities_from():
         preload_transform=False,
     )
 
-    image = aa.Array2D.manual_native([[3.0, 6.0]], pixel_scales=1.0)
+    image = aa.Array2D.without_mask([[3.0, 6.0]], pixel_scales=1.0)
 
     visibilities = transformer.visibilities_from(image=image)
 
@@ -177,7 +177,7 @@ def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
         preload_transform=False,
     )
 
-    image = aa.Array2D.manual_native([[2.0, 6.0]], pixel_scales=1.0)
+    image = aa.Array2D.without_mask([[2.0, 6.0]], pixel_scales=1.0)
 
     visibilities_via_preload = transformer_preload.visibilities_from(image=image)
     visibilities = transformer.visibilities_from(image=image)

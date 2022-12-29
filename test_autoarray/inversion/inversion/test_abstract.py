@@ -116,8 +116,8 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
     mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
 
-    image = aa.Array2D.manual_native(array=np.random.random((7, 7)), pixel_scales=1.0)
-    noise_map = aa.Array2D.manual_native(
+    image = aa.Array2D.without_mask(array=np.random.random((7, 7)), pixel_scales=1.0)
+    noise_map = aa.Array2D.without_mask(
         array=np.random.random((7, 7)), pixel_scales=1.0
     )
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
@@ -189,8 +189,8 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
     mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
 
-    image = aa.Array2D.manual_native(array=np.random.random((7, 7)), pixel_scales=1.0)
-    noise_map = aa.Array2D.manual_native(
+    image = aa.Array2D.without_mask(array=np.random.random((7, 7)), pixel_scales=1.0)
+    noise_map = aa.Array2D.without_mask(
         array=np.random.random((7, 7)), pixel_scales=1.0
     )
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])

@@ -104,7 +104,7 @@ class Kernel2D(AbstractArray2D):
             print(kernel_2d.slim)
             print(kernel_2d.native)
         """
-        array = Array2D.manual_slim(
+        array = Array2D.without_mask(
             array=array,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -166,7 +166,7 @@ class Kernel2D(AbstractArray2D):
             print(kernel_2d.slim)
             print(kernel_2d.native)
         """
-        array = Array2D.manual_native(
+        array = Array2D.without_mask(
             array=array, pixel_scales=pixel_scales, origin=origin
         )
 
