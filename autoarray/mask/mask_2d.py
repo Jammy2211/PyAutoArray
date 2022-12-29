@@ -41,7 +41,7 @@ class Mask2D(Mask):
         """
         A 2D mask, used for masking values which are associated with a a uniform rectangular grid of pixels.
 
-        When applied to 2D data with the same shape, values in the mask corresponding to ``False`` entries are  
+        When applied to 2D data with the same shape, values in the mask corresponding to ``False`` entries are
         unmasked and therefore used in subsequent calculations. .
 
         The ``Mask2D`, has in-built functionality which:
@@ -49,7 +49,7 @@ class Mask2D(Mask):
         - Maps data structures between two data representations: `slim`` (all unmasked ``False`` values in
           a 1D ``ndarray``) and ``native`` (all unmasked values in a 2D or 3D ``ndarray``).
 
-        - Has a ``Geometry2D`` object (defined by its (y,x) ``pixel scales``, (y,x) ``origin`` and ``sub_size``) 
+        - Has a ``Geometry2D`` object (defined by its (y,x) ``pixel scales``, (y,x) ``origin`` and ``sub_size``)
           which defines how coordinates are converted from pixel units to scaled units.
 
         - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
@@ -83,19 +83,19 @@ class Mask2D(Mask):
 
             <--- -ve  x  +ve -->
 
-             x x x x x x x x x x  ^   
-             x x x x x x x x x x  I   
-             x x x x x x x x x x  I   
-             x x x x 0 1 x x x x +ve  
-             x x x 2 3 4 5 x x x  y   
-             x x x 6 7 8 9 x x x -ve  
-             x x x x x x x x x x  I   
-             x x x x x x x x x x  I  
-             x x x x x x x x x x \/  
-             x x x x x x x x x x     
+             x x x x x x x x x x  ^
+             x x x x x x x x x x  I
+             x x x x x x x x x x  I
+             x x x x 0 1 x x x x +ve
+             x x x 2 3 4 5 x x x  y
+             x x x 6 7 8 9 x x x -ve
+             x x x x x x x x x x  I
+             x x x x x x x x x x  I
+             x x x x x x x x x x \/
+             x x x x x x x x x x
 
-        The ``Mask2D``'s ``slim`` data representation is an ``ndarray`` of shape [total_unmasked_pixels]. 
-        
+        The ``Mask2D``'s ``slim`` data representation is an ``ndarray`` of shape [total_unmasked_pixels].
+
         For the ``Mask2D`` above the ``slim`` representation therefore contains 10 entries and two examples of these
         entries are:
 
@@ -110,7 +110,7 @@ class Mask2D(Mask):
 
         **NATIVE DATA REPRESENTATION (sub_size=1)**
 
-        Masked data represented as an an ``ndarray`` of shape [total_y_values, total_x_values], where all masked 
+        Masked data represented as an an ``ndarray`` of shape [total_y_values, total_x_values], where all masked
         entries have values of 0.0.
 
         For the following mask:
@@ -134,16 +134,16 @@ class Mask2D(Mask):
 
             <--- -ve  x  +ve -->
 
-             x x x x x x x x x x  ^ 
-             x x x x x x x x x x  I  
-             x x x x x x x x x x  I  
-             x x x x 0 1 x x x x +ve 
-             x x x 2 3 4 5 x x x  y  
-             x x x 6 7 8 9 x x x -ve 
-             x x x x x x x x x x  I  
-             x x x x x x x x x x  I  
-             x x x x x x x x x x  \/  
-             x x x x x x x x x x  
+             x x x x x x x x x x  ^
+             x x x x x x x x x x  I
+             x x x x x x x x x x  I
+             x x x x 0 1 x x x x +ve
+             x x x 2 3 4 5 x x x  y
+             x x x 6 7 8 9 x x x -ve
+             x x x x x x x x x x  I
+             x x x x x x x x x x  I
+             x x x x x x x x x x  \/
+             x x x x x x x x x x
 
         In the above array:
 
@@ -160,11 +160,11 @@ class Mask2D(Mask):
         **SLIM TO NATIVE MAPPING**
 
         The ``Mask2D`` has functionality which maps data between the ``slim`` and ``native`` data representations.
-        
+
         For the example mask above, the 1D ``ndarray`` given by ``mask.derived_indexes.slim_to_native`` is:
-        
+
         ::
-        
+
             slim_to_native[0] = [3,4]
             slim_to_native[1] = [3,5]
             slim_to_native[2] = [4,3]
@@ -178,7 +178,7 @@ class Mask2D(Mask):
 
         **SUB GRIDDING**
 
-        If the ``Mask2D`` ``sub_size`` is > 1, its ``slim`` and ``native`` data representations have entries 
+        If the ``Mask2D`` ``sub_size`` is > 1, its ``slim`` and ``native`` data representations have entries
         corresponding to the values at the centre of every sub-pixel of each unmasked pixel.
 
         The sub-array indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first

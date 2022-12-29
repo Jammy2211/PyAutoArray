@@ -22,9 +22,7 @@ def test__via_mask_from(mask_2d_7x7):
 
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert (visuals_2d_via.mask == mask_2d_7x7).all()
-    assert (
-        visuals_2d_via.border == mask_2d_7x7.derive_grid.border_sub_1.binned
-    ).all()
+    assert (visuals_2d_via.border == mask_2d_7x7.derive_grid.border_sub_1.binned).all()
     assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(origin=False, mask=False, border=False)
