@@ -133,7 +133,7 @@ class DeriveMask1D:
         """
         from autoarray.mask.mask_1d import Mask1D
 
-        return Mask1D.unmasked(
+        return Mask1D.all_false(
             shape_slim=self.mask.shape_slim,
             sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,

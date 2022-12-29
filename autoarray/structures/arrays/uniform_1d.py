@@ -78,7 +78,7 @@ class Array1D(Structure):
 
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
-        mask = Mask1D.unmasked(
+        mask = Mask1D.all_false(
             shape_slim=array.shape[0] // sub_size,
             pixel_scales=pixel_scales,
             sub_size=sub_size,

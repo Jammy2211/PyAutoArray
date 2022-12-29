@@ -239,7 +239,7 @@ class Grid1D(Structure):
 
         grid = grid_2d_util.convert_grid(grid=grid)
 
-        mask = Mask1D.unmasked(
+        mask = Mask1D.all_false(
             shape_slim=grid.shape[0] // sub_size,
             pixel_scales=pixel_scales,
             sub_size=sub_size,

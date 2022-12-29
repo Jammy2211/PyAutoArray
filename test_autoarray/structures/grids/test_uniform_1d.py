@@ -49,7 +49,7 @@ def test__manual_slim():
 
 def test__manual_mask():
 
-    mask = aa.Mask1D.unmasked(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
+    mask = aa.Mask1D.all_false(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
     grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     assert type(grid) == aa.Grid1D
@@ -77,7 +77,7 @@ def test__manual_mask():
 
 def test__from_mask():
 
-    mask = aa.Mask1D.unmasked(shape_slim=(4,), pixel_scales=1.0, sub_size=1)
+    mask = aa.Mask1D.all_false(shape_slim=(4,), pixel_scales=1.0, sub_size=1)
     grid = aa.Grid1D.from_mask(mask=mask)
 
     assert type(grid) == aa.Grid1D
@@ -265,7 +265,7 @@ def test__structure_2d_list_from():
 
 def test__recursive_shape_storage():
 
-    mask = aa.Mask1D.unmasked(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
+    mask = aa.Mask1D.all_false(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
     grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     assert (grid.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()

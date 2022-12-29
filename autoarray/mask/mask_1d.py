@@ -13,7 +13,6 @@ from autoarray import exc
 from autoarray.mask.derive.mask_1d import DeriveMask1D
 from autoarray.geometry.geometry_1d import Geometry1D
 from autoarray.structures.arrays import array_1d_util
-from autoarray.structures.grids import grid_1d_util
 from autoarray import type as ty
 
 logging.basicConfig()
@@ -112,7 +111,7 @@ class Mask1D(Mask):
         )
 
     @classmethod
-    def unmasked(
+    def all_false(
         cls,
         shape_slim,
         pixel_scales: ty.PixelScales,
