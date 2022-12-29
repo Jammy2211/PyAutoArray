@@ -101,7 +101,7 @@ def test__manual_mask():
     assert array_2d.pixel_scales == (1.0, 1.0)
     assert array_2d.origin == (0.0, 0.0)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0)
     )
     array_2d = aa.Array2D.manual_mask(array=[1.0, 2.0, 4.0], mask=mask)
@@ -112,7 +112,7 @@ def test__manual_mask():
     assert array_2d.pixel_scales == (1.0, 1.0)
     assert array_2d.origin == (0.0, 1.0)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0)
     )
     array_2d = aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
@@ -123,7 +123,7 @@ def test__manual_mask():
     assert array_2d.pixel_scales == (1.0, 1.0)
     assert array_2d.origin == (0.0, 1.0)
 
-    mask = aa.Mask2D.manual(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
+    mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
     array_2d = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     assert type(array_2d) == aa.Array2D
@@ -138,7 +138,7 @@ def test__manual_mask():
     assert array_2d.origin == (0.0, 0.0)
     assert array_2d.mask.sub_size == 2
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [True, False]],
         pixel_scales=1.0,
         origin=(0.0, 1.0),
@@ -152,7 +152,7 @@ def test__manual_mask():
 
 def test__apply_mask():
 
-    mask = aa.Mask2D.manual(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
+    mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
     array_2d = aa.Array2D.manual_slim(
         array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
         shape_native=(2, 1),
@@ -182,25 +182,25 @@ def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape
 
 def test__manual_mask__exception_raised_if_input_array_is_1d_and_not_number_of_masked_sub_pixels():
     with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.manual(
+        mask = aa.Mask2D(
             mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
         )
         aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.manual(
+        mask = aa.Mask2D(
             mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
         )
         aa.Array2D.manual_mask(array=[1.0, 2.0], mask=mask)
 
     with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.manual(
+        mask = aa.Mask2D(
             mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
         )
         aa.Array2D.manual_mask(array=[1.0, 2.0, 4.0], mask=mask)
 
     with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.manual(
+        mask = aa.Mask2D(
             mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
         )
         aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0, 5.0], mask=mask)
@@ -498,7 +498,7 @@ def test__zoomed_around_mask():
         [13.0, 14.0, 15.0, 16.0],
     ]
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -515,7 +515,7 @@ def test__zoomed_around_mask():
 
     assert (arr_zoomed.native == np.array([[6.0, 7.0], [10.0, 11.0]])).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, True],
@@ -533,7 +533,7 @@ def test__zoomed_around_mask():
 
     assert (arr_zoomed.native == np.array([[0.0, 6.0, 7.0], [9.0, 10.0, 11.0]])).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, False, True, True],
@@ -554,7 +554,7 @@ def test__zoomed_around_mask():
 def test__zoomed_around_mask__origin_updated():
     array_2d = np.ones(shape=(4, 4))
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, True],
@@ -575,7 +575,7 @@ def test__zoomed_around_mask__origin_updated():
 
     array_2d = np.ones(shape=(6, 6))
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, True, True, True],
@@ -605,7 +605,7 @@ def test__extent_of_zoomed_array():
         [13.0, 14.0, 15.0, 16.0],
     ]
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, False],
@@ -645,7 +645,7 @@ def test__binned_across_columns():
 
     assert (array.binned_across_columns == np.array([2.0, 6.0, 9.0])).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False, True], [False, False, False], [False, False, False]],
         pixel_scales=1.0,
     )
@@ -675,7 +675,7 @@ def test__binned_across_rows():
 
     assert (array.binned_across_rows == np.array([2.0, 6.0, 9.0])).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False, False], [False, False, False], [True, False, False]],
         pixel_scales=1.0,
     )

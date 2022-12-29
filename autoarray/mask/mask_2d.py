@@ -31,10 +31,11 @@ class Mask2D(Mask):
     # noinspection PyUnusedLocal
     def __new__(
         cls,
-        mask: np.ndarray,
+        mask: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
+        invert: bool = False,
         *args,
         **kwargs,
     ):
@@ -274,6 +275,17 @@ class Mask2D(Mask):
             The (y,x) scaled units origin of the mask's coordinate system.
         """
 
+        if type(mask) is list:
+            mask = np.asarray(mask).astype("bool")
+
+        if invert:
+            mask = np.invert(mask)
+
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+
+        if len(mask.shape) != 2:
+            raise exc.MaskException("The input mask is not a two dimensional array")
+
         obj = Mask.__new__(
             cls=cls,
             mask=mask,
@@ -314,55 +326,6 @@ class Mask2D(Mask):
         return DeriveGrid2D(mask=self)
 
     @classmethod
-    def manual(
-        cls,
-        mask: Union[np.ndarray, list],
-        pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        invert: bool = False,
-    ) -> "Mask2D":
-        """
-        Returns a Mask2D (see `Mask2D.__new__`) by inputting the array values in 2D, for example:
-
-        mask=np.array([[False, False],
-                       [True, False]])
-
-        mask=[[False, False],
-               [True, False]]
-
-        Parameters
-        ----------
-        mask
-            The `bool` values of the mask input as an `np.ndarray` of shape [total_y_pixels, total_x_pixels] or a
-            list of lists.
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
-            it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-        invert
-            If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
-            and visa versa.
-        """
-        if type(mask) is list:
-            mask = np.asarray(mask).astype("bool")
-
-        if invert:
-            mask = np.invert(mask)
-
-        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
-
-        if len(mask.shape) != 2:
-            raise exc.MaskException("The input mask is not a two dimensional array")
-
-        return Mask2D(
-            mask=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
-
-    @classmethod
     def all_false(
         cls,
         shape_native: Tuple[int, int],
@@ -389,7 +352,7 @@ class Mask2D(Mask):
             If `True`, the `bool`'s of the input `mask` are inverted, for example `False`'s become `True`
             and visa versa.
         """
-        return cls.manual(
+        return cls(
             mask=np.full(shape=shape_native, fill_value=False),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -442,7 +405,7 @@ class Mask2D(Mask):
             centre=centre,
         )
 
-        return cls.manual(
+        return cls(
             mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -500,7 +463,7 @@ class Mask2D(Mask):
             centre=centre,
         )
 
-        return cls.manual(
+        return cls(
             mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -563,7 +526,7 @@ class Mask2D(Mask):
             centre=centre,
         )
 
-        return cls.manual(
+        return cls(
             mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -624,7 +587,7 @@ class Mask2D(Mask):
             centre=centre,
         )
 
-        return cls.manual(
+        return cls(
             mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -698,7 +661,7 @@ class Mask2D(Mask):
             centre=centre,
         )
 
-        return cls.manual(
+        return cls(
             mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -750,7 +713,7 @@ class Mask2D(Mask):
             buffer=buffer,
         )
 
-        return cls.manual(
+        return cls(
             mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,

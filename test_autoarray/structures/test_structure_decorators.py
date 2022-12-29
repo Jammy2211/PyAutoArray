@@ -29,7 +29,7 @@ def test__in_grid_1d__out_ndarray_1d():
     assert (ndarray_1d.native == np.array([1.0, 1.0, 1.0])).all()
     assert ndarray_1d.pixel_scales == (1.0,)
 
-    mask_1d = aa.Mask1D.manual(
+    mask_1d = aa.Mask1D(
         mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
     )
 
@@ -45,7 +45,7 @@ def test__in_grid_1d__out_ndarray_1d():
 
 def test__in_grid_1d__out_ndarray_2d():
 
-    mask_1d = aa.Mask1D.manual(
+    mask_1d = aa.Mask1D(
         mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
     )
 
@@ -63,7 +63,7 @@ def test__in_grid_1d__out_ndarray_2d():
 
 def test__in_grid_1d__out_ndarray_1d_list():
 
-    mask = aa.Mask1D.manual(
+    mask = aa.Mask1D(
         mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
     )
 
@@ -82,7 +82,7 @@ def test__in_grid_1d__out_ndarray_1d_list():
 
 def test__in_grid_1d__out_ndarray_2d_list():
 
-    mask = aa.Mask1D.manual(
+    mask = aa.Mask1D(
         mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
     )
 
@@ -123,7 +123,7 @@ def test__in_grid_2d__out_ndarray_1d():
     assert (ndarray_1d.native == np.array([1.0, 1.0, 1.0, 1.0])).all()
     assert ndarray_1d.pixel_scales == (1.0,)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -156,7 +156,7 @@ def test__in_grid_2d__out_ndarray_1d():
 
 def test__in_grid_2d__out_ndarray_2d():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -189,7 +189,7 @@ def test__in_grid_2d__out_ndarray_2d():
 
 def test__in_grid_2d__out_ndarray_1d_list():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -235,7 +235,7 @@ def test__in_grid_2d__out_ndarray_1d_list():
 
 def test__in_grid_2d__out_ndarray_2d_list():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -281,7 +281,7 @@ def test__in_grid_2d__out_ndarray_2d_list():
 
 def test__in_grid_2d__out_ndarray_yx_2d():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -314,7 +314,7 @@ def test__in_grid_2d__out_ndarray_yx_2d():
 
 def test__in_grid_2d__out_ndarray_yx_2d_list():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -434,7 +434,7 @@ def test__in_grid_2d_irregular__out_ndarray_yx_2d_list():
 
 def test__in_grid_2d_iterate__out_ndarray_1d__values_use_iteration():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -503,7 +503,7 @@ def test__in_grid_2d_iterate__out_ndarray_1d__values_use_iteration():
 
 def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -578,7 +578,7 @@ def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
 
 def test__in_grid_2d_iterate__out_ndarray_1d_list__values_use_iteration():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -608,7 +608,7 @@ def test__in_grid_2d_iterate__out_ndarray_1d_list__values_use_iteration():
 
 def test__in_grid_2d_iterate__out_ndarray_2d_list__values_use_iteration():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -639,7 +639,7 @@ def test__in_grid_2d_iterate__out_ndarray_2d_list__values_use_iteration():
 
 def test__in_grid_2d_iterate__out_ndarray_yx_2d__values_use_iteration():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -702,7 +702,7 @@ def test__in_grid_2d_iterate__out_ndarray_yx_2d__values_use_iteration():
 
 def test__in_grid_2d_iterate__out_ndarray_yx_2d_list__values_use_iteration():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],

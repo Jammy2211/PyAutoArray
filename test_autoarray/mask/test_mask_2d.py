@@ -12,9 +12,9 @@ test_data_dir = path.join(
 )
 
 
-def test__manual():
+def test__constructor():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1
     )
 
@@ -25,7 +25,7 @@ def test__manual():
     assert mask.sub_size == 1
     assert (mask.geometry.extent == np.array([-1.0, 1.0, -1.0, 1.0])).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [True, True]],
         pixel_scales=(2.0, 3.0),
         sub_size=2,
@@ -39,9 +39,9 @@ def test__manual():
     assert mask.sub_size == 2
 
 
-def test__manual__invert_is_true():
+def test__constructor__invert_is_true():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False, True], [True, True, False]],
         pixel_scales=1.0,
         invert=True,
@@ -51,7 +51,7 @@ def test__manual__invert_is_true():
     assert (mask == np.array([[True, True, False], [False, False, True]])).all()
 
 
-def test__unmasked():
+def test__all_false():
 
     mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0, invert=False)
 
@@ -407,55 +407,55 @@ def test__mask__input_is_1d_mask__no_shape_native__raises_exception():
 
     with pytest.raises(exc.MaskException):
 
-        aa.Mask2D.manual(mask=[False, False, True], pixel_scales=1.0)
+        aa.Mask2D(mask=[False, False, True], pixel_scales=1.0)
 
     with pytest.raises(exc.MaskException):
 
-        aa.Mask2D.manual(mask=[False, False, True], pixel_scales=False)
+        aa.Mask2D(mask=[False, False, True], pixel_scales=False)
 
     with pytest.raises(exc.MaskException):
 
-        aa.Mask2D.manual(mask=[False, False, True], pixel_scales=1.0, sub_size=1)
+        aa.Mask2D(mask=[False, False, True], pixel_scales=1.0, sub_size=1)
 
     with pytest.raises(exc.MaskException):
 
-        aa.Mask2D.manual(mask=[False, False, True], pixel_scales=False, sub_size=1)
+        aa.Mask2D(mask=[False, False, True], pixel_scales=False, sub_size=1)
 
 
 def test__is_all_true():
 
-    mask = aa.Mask2D.manual(mask=[[False, False], [False, False]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=1.0)
 
     assert mask.is_all_true is False
 
-    mask = aa.Mask2D.manual(mask=[[False, False]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[False, False]], pixel_scales=1.0)
 
     assert mask.is_all_true is False
 
-    mask = aa.Mask2D.manual(mask=[[False, True], [False, False]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[False, True], [False, False]], pixel_scales=1.0)
 
     assert mask.is_all_true is False
 
-    mask = aa.Mask2D.manual(mask=[[True, True], [True, True]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[True, True], [True, True]], pixel_scales=1.0)
 
     assert mask.is_all_true is True
 
 
 def test__is_all_false():
 
-    mask = aa.Mask2D.manual(mask=[[False, False], [False, False]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=1.0)
 
     assert mask.is_all_false is True
 
-    mask = aa.Mask2D.manual(mask=[[False, False]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[False, False]], pixel_scales=1.0)
 
     assert mask.is_all_false is True
 
-    mask = aa.Mask2D.manual(mask=[[False, True], [False, False]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[False, True], [False, False]], pixel_scales=1.0)
 
     assert mask.is_all_false is False
 
-    mask = aa.Mask2D.manual(mask=[[True, True], [False, False]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[True, True], [False, False]], pixel_scales=1.0)
 
     assert mask.is_all_false is False
 
@@ -477,7 +477,7 @@ def test__sub_shape_native():
 
 def test__shape_native_masked_pixels():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True, True, True],
             [True, False, False, False, False, False, False, False, True],
@@ -494,7 +494,7 @@ def test__shape_native_masked_pixels():
 
     assert mask.shape_native_masked_pixels == (7, 7)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True, True, False],
             [True, False, False, False, False, False, False, False, True],
@@ -511,7 +511,7 @@ def test__shape_native_masked_pixels():
 
     assert mask.shape_native_masked_pixels == (8, 8)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True, False, True],
             [True, False, False, False, False, False, False, False, True],
@@ -554,7 +554,7 @@ def test__zoom_quantities():
 
 def test__mask_is_single_false__extraction_centre_is_central_pixel():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[False, True, True], [True, True, True], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -562,7 +562,7 @@ def test__mask_is_single_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (-1, -1)
     assert mask.zoom_shape_native == (1, 1)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[True, True, False], [True, True, True], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -570,7 +570,7 @@ def test__mask_is_single_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (-1, 1)
     assert mask.zoom_shape_native == (1, 1)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[True, True, True], [True, True, True], [False, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -578,7 +578,7 @@ def test__mask_is_single_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (1, -1)
     assert mask.zoom_shape_native == (1, 1)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[True, True, True], [True, True, True], [True, True, False]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -586,7 +586,7 @@ def test__mask_is_single_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (1, 1)
     assert mask.zoom_shape_native == (1, 1)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[True, False, True], [True, True, True], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -594,7 +594,7 @@ def test__mask_is_single_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (-1, 0)
     assert mask.zoom_shape_native == (1, 1)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[True, True, True], [False, True, True], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -602,7 +602,7 @@ def test__mask_is_single_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (0, -1)
     assert mask.zoom_shape_native == (1, 1)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[True, True, True], [True, True, False], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -610,7 +610,7 @@ def test__mask_is_single_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (0, 1)
     assert mask.zoom_shape_native == (1, 1)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[True, True, True], [True, True, True], [True, False, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -620,7 +620,7 @@ def test__mask_is_single_false__extraction_centre_is_central_pixel():
 
 
 def test__mask_is_x2_false__extraction_centre_is_central_pixel():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[False, True, True], [True, True, True], [True, True, False]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -628,7 +628,7 @@ def test__mask_is_x2_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (0, 0)
     assert mask.zoom_shape_native == (3, 3)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[False, True, True], [True, True, True], [False, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -636,7 +636,7 @@ def test__mask_is_x2_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (0, -1)
     assert mask.zoom_shape_native == (3, 3)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[False, True, False], [True, True, True], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -644,7 +644,7 @@ def test__mask_is_x2_false__extraction_centre_is_central_pixel():
     assert mask.zoom_offset_pixels == (-1, 0)
     assert mask.zoom_shape_native == (3, 3)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[False, False, True], [True, True, True], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
     )
@@ -654,7 +654,7 @@ def test__mask_is_x2_false__extraction_centre_is_central_pixel():
 
 
 def test__rectangular_mask():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [False, True, True, True],
@@ -668,7 +668,7 @@ def test__rectangular_mask():
     assert mask.zoom_centre == (0, 0)
     assert mask.zoom_offset_pixels == (-1.0, -1.5)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, True],
@@ -682,7 +682,7 @@ def test__rectangular_mask():
     assert mask.zoom_centre == (2, 3)
     assert mask.zoom_offset_pixels == (1.0, 1.5)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, True, True],
@@ -696,7 +696,7 @@ def test__rectangular_mask():
     assert mask.zoom_centre == (2, 4)
     assert mask.zoom_offset_pixels == (1, 2)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, True, True, True, True],
@@ -710,7 +710,7 @@ def test__rectangular_mask():
     assert mask.zoom_centre == (2, 6)
     assert mask.zoom_offset_pixels == (1, 3)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True],
@@ -726,7 +726,7 @@ def test__rectangular_mask():
     assert mask.zoom_centre == (4, 2)
     assert mask.zoom_offset_pixels == (2, 1)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True],
@@ -747,7 +747,7 @@ def test__rectangular_mask():
 
 def test__zoom_mask_unmasked():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [False, True, True, True],
@@ -763,7 +763,7 @@ def test__zoom_mask_unmasked():
     assert (zoom_mask == np.array([[False, False], [False, False]])).all()
     assert zoom_mask.origin == (0.5, -1.0)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [False, True, True, True],
@@ -791,7 +791,7 @@ def test__mask_centre():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     assert mask.mask_centre == (0.0, 0.0)
 
@@ -803,7 +803,7 @@ def test__mask_centre():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     assert mask.mask_centre == (0.0, 0.5)
 
@@ -815,7 +815,7 @@ def test__mask_centre():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     assert mask.mask_centre == (0.5, 0.0)
 
@@ -827,7 +827,7 @@ def test__mask_centre():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     assert mask.mask_centre == (0.0, -0.5)
 
@@ -839,7 +839,7 @@ def test__mask_centre():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     assert mask.mask_centre == (-0.5, 0.0)
 
@@ -851,6 +851,6 @@ def test__mask_centre():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     assert mask.mask_centre == (-0.5, -0.5)

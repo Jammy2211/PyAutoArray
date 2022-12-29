@@ -43,7 +43,7 @@ class DeriveGrid1D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                     [True,  True,  True,  True, True],
                     [True, False, False, False, True],
@@ -70,7 +70,7 @@ class DeriveGrid1D:
         For example, for the following ``Mask2D``:
 
         ::
-            mask_2d = aa.Mask1D.manual(
+            mask_2d = aa.Mask1D(
                 mask=[False, False, True,  True]
                 pixel_scales=1.0,
             )
@@ -87,7 +87,7 @@ class DeriveGrid1D:
 
             import autoarray as aa
 
-            mask_1d = aa.Mask2D.manual(
+            mask_1d = aa.Mask2D(
                 mask=[False, False, True,  True],
                 pixel_scales=1.0,
                 sub_size=2

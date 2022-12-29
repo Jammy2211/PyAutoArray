@@ -90,7 +90,7 @@ def test__mesh_grid__attributes():
 
 def test__from_unmasked_sparse_shape_and_grid():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
         ),

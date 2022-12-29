@@ -9,10 +9,12 @@ if TYPE_CHECKING:
 
 from autoarray.mask.abstract_mask import Mask
 
-from autoarray import exc
+from autoarray.mask.derive.grid_1d import DeriveGrid1D
 from autoarray.mask.derive.mask_1d import DeriveMask1D
 from autoarray.geometry.geometry_1d import Geometry1D
 from autoarray.structures.arrays import array_1d_util
+
+from autoarray import exc
 from autoarray import type as ty
 
 logging.basicConfig()
@@ -22,12 +24,13 @@ logger = logging.getLogger(__name__)
 class Mask1D(Mask):
     def __new__(
         cls,
-        mask: np.ndarray,
+        mask: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[
             float,
         ] = (0.0,),
+        invert: bool = False,
     ):
         """
         A 1D mask, representing 1D data on a uniform line of pixels with equal spacing.
@@ -49,6 +52,18 @@ class Mask1D(Mask):
         origin
             The x origin of the mask's coordinate system in scaled units.
         """
+
+        if type(mask) is list:
+            mask = np.asarray(mask).astype("bool")
+
+        if invert:
+            mask = np.invert(mask)
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales,)
+
+        if len(mask.shape) != 1:
+            raise exc.MaskException("The input mask is not a one dimensional array")
 
         # noinspection PyArgumentList
         return Mask.__new__(
@@ -84,31 +99,9 @@ class Mask1D(Mask):
     def derive_mask(self) -> DeriveMask1D:
         return DeriveMask1D(mask=self)
 
-    @classmethod
-    def manual(
-        cls,
-        mask: Union[List, np.ndarray],
-        pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
-        origin: Tuple[float] = (0.0,),
-        invert: bool = False,
-    ) -> "Mask1D":
-
-        if type(mask) is list:
-            mask = np.asarray(mask).astype("bool")
-
-        if invert:
-            mask = np.invert(mask)
-
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales,)
-
-        if len(mask.shape) != 1:
-            raise exc.MaskException("The input mask is not a one dimensional array")
-
-        return Mask1D(
-            mask=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
+    @property
+    def derive_grid(self) -> DeriveGrid1D:
+        return DeriveGrid1D(mask=self)
 
     @classmethod
     def all_false(
@@ -129,7 +122,7 @@ class Mask1D(Mask):
         pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
         """
-        return cls.manual(
+        return cls(
             mask=np.full(shape=shape_slim, fill_value=False),
             pixel_scales=pixel_scales,
             origin=origin,
@@ -159,7 +152,7 @@ class Mask1D(Mask):
             The scaled units to pixel units conversion factor of each pixel.
         """
 
-        return cls.manual(
+        return cls(
             array_1d_util.numpy_array_1d_via_fits_from(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
             sub_size=sub_size,

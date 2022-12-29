@@ -43,7 +43,7 @@ class DeriveGrid2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                     [True,  True,  True,  True, True],
                     [True, False, False, False, True],
@@ -70,7 +70,7 @@ class DeriveGrid2D:
         For example, for the following ``Mask2D``:
 
         ::
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [False, False],
                      [ True,  True]
@@ -91,7 +91,7 @@ class DeriveGrid2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [False, False],
                      [ True,  True]
@@ -128,7 +128,7 @@ class DeriveGrid2D:
         For example, for the following ``Mask2D``:
 
         ::
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [False, False],
                      [ True,  True]
@@ -155,7 +155,7 @@ class DeriveGrid2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [False, False],
                      [ True,  True]
@@ -190,7 +190,7 @@ class DeriveGrid2D:
         For example, for the following ``Mask2D``:
 
         ::
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [False, False],
                      [ True,  True]
@@ -211,7 +211,7 @@ class DeriveGrid2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [False, False],
                      [ True,  True]
@@ -243,7 +243,7 @@ class DeriveGrid2D:
         For example, for the following ``Mask2D``:
 
         ::
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True, True],
                       [True, False, False, False, True],
                       [True, False, False, False, True],
@@ -270,7 +270,7 @@ class DeriveGrid2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True, True],
                       [True, False, False, False, True],
                       [True, False, False, False, True],
@@ -302,7 +302,7 @@ class DeriveGrid2D:
         For example, for the following ``Mask2D``:
 
         ::
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
                       [True, False, False, False, False, False, False, False, True],
                       [True, False,  True,  True,  True,  True,  True, False, True],
@@ -340,7 +340,7 @@ class DeriveGrid2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
                       [True, False, False, False, False, False, False, False, True],
                       [True, False,  True,  True,  True,  True,  True, False, True],
@@ -369,7 +369,7 @@ class DeriveGrid2D:
         For example, for the following ``Mask2D``:
 
         ::
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
                       [True, False, False, False, False, False, False, False, True],
                       [True, False,  True,  True,  True,  True,  True, False, True],
@@ -404,7 +404,7 @@ class DeriveGrid2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
                       [True, False, False, False, False, False, False, False, True],
                       [True, False,  True,  True,  True,  True,  True, False, True],

@@ -7,14 +7,14 @@ def make_mask_1d_7():
 
     mask = np.array([True, True, False, False, False, True, True])
 
-    return aa.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=1)
+    return aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=1)
 
 
 def make_sub_mask_1d_7():
 
     mask = np.array([True, True, False, False, False, True, True])
 
-    return aa.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=2)
+    return aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=2)
 
 
 def make_mask_2d_7x7():
@@ -31,7 +31,7 @@ def make_mask_2d_7x7():
         ]
     )
 
-    return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    return aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 def make_sub_mask_2d_7x7():
@@ -47,7 +47,7 @@ def make_sub_mask_2d_7x7():
         ]
     )
 
-    return aa.Mask2D.manual(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
 
 
 def make_mask_2d_7x7_1_pix():
@@ -63,7 +63,7 @@ def make_mask_2d_7x7_1_pix():
         ]
     )
 
-    return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
 
 def make_blurring_mask_2d_7x7():
@@ -79,7 +79,7 @@ def make_blurring_mask_2d_7x7():
         ]
     )
 
-    return aa.Mask2D.manual(mask=blurring_mask, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D(mask=blurring_mask, pixel_scales=(1.0, 1.0))
 
 
 ### arrays ###

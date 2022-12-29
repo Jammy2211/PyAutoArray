@@ -118,7 +118,7 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
 
     matrix_shape = (9, 3)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[True, True, True], [False, False, False], [True, True, True]]),
         pixel_scales=1.0,
         sub_size=1,

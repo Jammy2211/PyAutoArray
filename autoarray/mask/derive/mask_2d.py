@@ -47,7 +47,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                     [True,  True,  True,  True, True],
                     [True, False, False, False, True],
@@ -77,7 +77,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                     [True,  True,  True,  True, True],
                     [True, False, False, False, True],
@@ -119,7 +119,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [ True,  True],
                      [False, False]
@@ -178,7 +178,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [ True,  True],
                      [False, False]
@@ -240,7 +240,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [ True,  True],
                      [False, False]
@@ -295,7 +295,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [ True,  True],
                      [False, False]
@@ -343,7 +343,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[
                      [ True,  True],
                      [False, False]
@@ -406,7 +406,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True, True],
                       [True, False, False, False, True],
                       [True, False, False, False, True],
@@ -472,7 +472,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True, True],
                       [True, False, False, False, True],
                       [True, False, False, False, True],
@@ -534,7 +534,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True, True],
                       [True, False, False, False, True],
                       [True, False, False, False, True],
@@ -604,7 +604,7 @@ class DeriveMask2D:
 
             import autoarray as aa
 
-            mask_2d = aa.Mask2D.manual(
+            mask_2d = aa.Mask2D(
                 mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
                       [True, False, False, False, False, False, False, False, True],
                       [True, False,  True,  True,  True,  True,  True, False, True],

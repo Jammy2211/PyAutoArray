@@ -170,13 +170,13 @@ class Array1D(Structure):
 
             # Make Array1D from input np.ndarray.
 
-            mask = aa.Mask1D.manual(mask=np.array([True, False, False]), pixel_scales=1.0, sub_size=1)
+            mask = aa.Mask1D(mask=np.array([True, False, False]), pixel_scales=1.0, sub_size=1)
 
             array_1d = aa.Array1D.manual_mask(array=np.array([100.0, 1.0, 2.0]), mask=mask)
 
             # Make Array2D from input list.
 
-            mask = aa.Mask1D.manual(mask=[True, False, False], pixel_scales=1.0, sub_size=1)
+            mask = aa.Mask1D(mask=[True, False, False], pixel_scales=1.0, sub_size=1)
 
             array_1d = aa.Array1D.manual_mask(array=[100.0, 1.0, 2.0], mask=mask)
 

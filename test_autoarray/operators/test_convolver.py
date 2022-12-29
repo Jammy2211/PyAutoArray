@@ -18,7 +18,7 @@ def make_simple_mask_2d_7x7():
         [True, True, True, True, True, True, True],
     ]
 
-    return aa.Mask2D.manual(mask=mask, pixel_scales=1.0, sub_size=1)
+    return aa.Mask2D(mask=mask, pixel_scales=1.0, sub_size=1)
 
 
 @pytest.fixture(name="simple_mask_5x5")
@@ -32,7 +32,7 @@ def make_simple_mask_5x5():
         [True, True, True, True, True],
     ]
 
-    return aa.Mask2D.manual(mask=mask, pixel_scales=1.0, sub_size=1)
+    return aa.Mask2D(mask=mask, pixel_scales=1.0, sub_size=1)
 
 
 @pytest.fixture(name="cross_mask")
@@ -45,7 +45,7 @@ def make_cross_mask():
     mask[2, 1] = False
     mask[2, 3] = False
 
-    return aa.Mask2D.manual(mask=mask, pixel_scales=1.0, sub_size=1)
+    return aa.Mask2D(mask=mask, pixel_scales=1.0, sub_size=1)
 
 
 def test__numbering__uses_mask_correctly(simple_mask_5x5, cross_mask):
@@ -1045,7 +1045,7 @@ def test__convolve_mapping_matrix__asymetric_convolver__matrix_blurred_correctly
 
 def test__convolution__cross_mask_with_blurring_entries__returns_array():
 
-    cross_mask = aa.Mask2D.manual(
+    cross_mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, True, False, True, True],

@@ -181,7 +181,7 @@ def test__apply_mask__noise_covariance_matrix():
         ]
     )
 
-    mask_2d = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask_2d = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     imaging = aa.Imaging(image=image, noise_covariance_matrix=noise_covariance_matrix)
 

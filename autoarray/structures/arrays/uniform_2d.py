@@ -306,7 +306,7 @@ class AbstractArray2D(Structure):
             # Apply 2D mask to Array2D with sub_size 2, where the
             # True value masks entries (5.0, 6.0, 7.0, 8.0).
 
-            mask = aa.Mask2D.manual(
+            mask = aa.Mask2D(
                 mask=[[False], [True]],
                 pixel_scales=2.0,
                 sub_size=2
@@ -890,7 +890,7 @@ class Array2D(AbstractArray2D):
 
             # Make Array2D from input list, native format and sub_size 1.
 
-            mask = aa.Mask2D.manual(
+            mask = aa.Mask2D(
                 mask=[[False, False], [True, False]],
                 pixel_scales=1.0,
                 sub_size=1
@@ -909,7 +909,7 @@ class Array2D(AbstractArray2D):
 
             # Make Array2D from input list, slim format and sub_size 1.
 
-            mask = aa.Mask2D.manual(
+            mask = aa.Mask2D(
                 mask=[[False], [True]],
                 pixel_scales=2.0,
                 sub_size=2

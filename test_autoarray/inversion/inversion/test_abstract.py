@@ -80,7 +80,7 @@ def test__mapping_matrix():
 
 
 def test__curvature_matrix__via_w_tilde__identical_to_mapping():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],
@@ -145,7 +145,7 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
 
 def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical_to_mapping():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],

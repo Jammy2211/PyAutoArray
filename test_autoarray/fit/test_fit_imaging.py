@@ -5,7 +5,7 @@ import autoarray as aa
 
 def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
@@ -58,7 +58,7 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
 def test__image_and_model_are_different__include_masking__check_values_are_correct():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [True, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
@@ -106,7 +106,7 @@ def test__image_and_model_are_different__include_masking__check_values_are_corre
 
 def test__image_and_model_are_identical__inversion_included__changes_certain_properties():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
@@ -150,7 +150,7 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
 
 def test__profiling_dict__profiles_appropriate_functions():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 

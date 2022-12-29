@@ -115,7 +115,7 @@ def test__unmasked_sub_1():
         )
     ).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[False, True], [True, False], [True, False]]),
         pixel_scales=(1.0, 1.0),
         origin=(3.0, -2.0),
@@ -144,7 +144,7 @@ def test__edge_sub_1():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
@@ -183,7 +183,7 @@ def test__border_sub_1():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
@@ -230,7 +230,7 @@ def test__masked_grid():
         )
     ).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array([[False, True], [True, False], [True, False]]),
         pixel_scales=(1.0, 1.0),
         sub_size=5,
@@ -260,7 +260,7 @@ def test__border_1d_grid():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=2)
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
@@ -280,7 +280,7 @@ def test__border_1d_grid():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=2)
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 

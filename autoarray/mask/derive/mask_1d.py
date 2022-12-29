@@ -38,7 +38,7 @@ class DeriveMask1D:
 
             import autoarray as aa
 
-            mask_1d = aa.Mask1D.manual(
+            mask_1d = aa.Mask1D(
                 mask=[True, False, False, False, True],
                 pixel_scales=1.0,
             )
@@ -72,7 +72,7 @@ class DeriveMask1D:
 
             import autoarray as aa
 
-            mask_1d = aa.Mask1D.manual(
+            mask_1d = aa.Mask1D(
                 mask[True, False, False, False, True],
                 pixel_scales=1.0,
                 sub_size=2,
@@ -121,7 +121,7 @@ class DeriveMask1D:
 
             import autoarray as aa
 
-            mask_1d = aa.Mask1D.manual(
+            mask_1d = aa.Mask1D(
                 mask[True, False, False, False, True],
                 pixel_scales=1.0,
                 sub_size=2,
@@ -165,7 +165,7 @@ class DeriveMask1D:
 
             import autoarray as aa
 
-            mask_1d = aa.Mask1D.manual(
+            mask_1d = aa.Mask1D(
                 mask[True, False, False, False, True],
                 pixel_scales=1.0,
                 sub_size=2,
@@ -178,7 +178,7 @@ class DeriveMask1D:
 
         from autoarray.mask.mask_2d import Mask2D
 
-        return Mask2D.manual(
+        return Mask2D(
             [self.mask],
             pixel_scales=(self.mask.pixel_scale, self.mask.pixel_scale),
             sub_size=self.mask.sub_size,

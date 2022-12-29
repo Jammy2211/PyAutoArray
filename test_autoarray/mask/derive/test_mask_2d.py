@@ -7,7 +7,7 @@ import autoarray as aa
 @pytest.fixture(name="derive_mask_2d_9x9")
 def make_derive_mask_2d_9x9():
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True, True, True],
             [True, False, False, False, False, False, False, False, True],
@@ -27,7 +27,7 @@ def make_derive_mask_2d_9x9():
 
 def test__sub_mask():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False, True], [False, True, False]],
         pixel_scales=1.0,
         sub_size=2,

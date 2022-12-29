@@ -711,7 +711,7 @@ def test__noise_map_with_signal_to_noise_limit_from():
     noise_map_array[2] = 2.0
     noise_map_array[3] = 2.0
 
-    mask = aa.Mask2D.manual(mask=[[True, False], [False, True]], pixel_scales=1.0)
+    mask = aa.Mask2D(mask=[[True, False], [False, True]], pixel_scales=1.0)
 
     noise_map = aa.preprocess.noise_map_with_signal_to_noise_limit_from(
         data=image,

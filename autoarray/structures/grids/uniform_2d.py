@@ -1026,7 +1026,7 @@ class Grid2D(Structure):
 
             distance_mask += distances.native < distance
 
-        mask = Mask2D.manual(
+        mask = Mask2D(
             mask=distance_mask,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,

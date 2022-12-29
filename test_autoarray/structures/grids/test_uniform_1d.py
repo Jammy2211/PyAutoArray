@@ -60,7 +60,7 @@ def test__manual_mask():
     assert grid.pixel_scales == (1.0,)
     assert grid.origin == (0.0,)
 
-    mask = aa.Mask1D.manual(mask=[True, False, False], pixel_scales=1.0, sub_size=2)
+    mask = aa.Mask1D(mask=[True, False, False], pixel_scales=1.0, sub_size=2)
     grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask)
 
     assert type(grid) == aa.Grid1D
@@ -88,7 +88,7 @@ def test__from_mask():
     assert grid.pixel_scales == (1.0,)
     assert grid.origin == (0.0,)
 
-    mask = aa.Mask1D.manual(mask=[True, False], pixel_scales=1.0, sub_size=2)
+    mask = aa.Mask1D(mask=[True, False], pixel_scales=1.0, sub_size=2)
     grid = aa.Grid1D.from_mask(mask=mask)
 
     assert type(grid) == aa.Grid1D
@@ -99,7 +99,7 @@ def test__from_mask():
     assert grid.pixel_scales == (1.0,)
     assert grid.origin == (0.0,)
 
-    mask = aa.Mask1D.manual(
+    mask = aa.Mask1D(
         mask=[True, False, False, False], pixel_scales=1.0, sub_size=1
     )
     grid = aa.Grid1D.from_mask(mask=mask)
@@ -223,7 +223,7 @@ def test__structure_2d_from():
 
     mask = np.array([True, False, False, True])
 
-    mask = aa.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=1)
+    mask = aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=1)
 
     grid_1d = aa.Grid1D.from_mask(mask=mask)
 
@@ -244,7 +244,7 @@ def test__structure_2d_list_from():
 
     mask = np.array([True, False, False, True])
 
-    mask = aa.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=1)
+    mask = aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=1)
 
     grid_1d = aa.Grid1D.from_mask(mask=mask)
 
@@ -271,7 +271,7 @@ def test__recursive_shape_storage():
     assert (grid.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert (grid.native.slim.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
 
-    mask = aa.Mask1D.manual(mask=[True, False, False], pixel_scales=1.0, sub_size=2)
+    mask = aa.Mask1D(mask=[True, False, False], pixel_scales=1.0, sub_size=2)
     grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask)
 
     assert (grid.slim.native.slim == np.array([3.0, 4.0, 5.0, 6.0])).all()

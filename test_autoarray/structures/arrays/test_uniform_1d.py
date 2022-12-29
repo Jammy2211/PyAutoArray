@@ -69,7 +69,7 @@ def test__manual_native():
 
 def test__manual_mask():
 
-    mask = aa.Mask1D.manual(
+    mask = aa.Mask1D(
         mask=[True, False, False, True, False, False], pixel_scales=1.0, sub_size=1
     )
 
@@ -207,7 +207,7 @@ def test__recursive_shape_storage():
     assert (array_1d.native.slim.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert (array_1d.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
 
-    mask = aa.Mask1D.manual(
+    mask = aa.Mask1D(
         mask=[True, False, False, True, False, False], pixel_scales=1.0, sub_size=1
     )
 

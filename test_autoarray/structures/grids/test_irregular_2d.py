@@ -57,7 +57,7 @@ def test__from_yx_1d():
 
 def test__from_pixels_and_mask():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
     )
 

@@ -6,7 +6,7 @@ import autoarray as aa
 
 def test__from_grid_and_unmasked_2d_grid_shap():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
         ),
@@ -77,7 +77,7 @@ def test__from_grid_and_unmasked_2d_grid_shap():
 
 
 def test__from_grid_and_unmasked_2d_grid_shap__sparse_grid_overlaps_mask_perfectly():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
         ),
@@ -97,7 +97,7 @@ def test__from_grid_and_unmasked_2d_grid_shap__sparse_grid_overlaps_mask_perfect
         == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
     ).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, False, True],
@@ -136,7 +136,7 @@ def test__from_grid_and_unmasked_2d_grid_shap__sparse_grid_overlaps_mask_perfect
 
 
 def test__from_grid_and_unmasked_2d_grid_shap__mask_with_offset_centre():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, False, True],
@@ -165,7 +165,7 @@ def test__from_grid_and_unmasked_2d_grid_shap__mask_with_offset_centre():
     ).all()
     assert (sparse_grid.sparse_index_for_slim_index == np.array([0, 1, 2, 3, 4])).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, True, True, True],
@@ -198,7 +198,7 @@ def test__from_grid_and_unmasked_2d_grid_shape__sets_up_with_correct_shape_and_p
     mask_2d_7x7,
 ):
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, False, True],
@@ -238,7 +238,7 @@ def test__from_grid_and_unmasked_2d_grid_shape__sets_up_with_correct_shape_and_p
 
 def test__from_grid_and_unmasked_2d_grid_shape__offset_mask__origin_shift_corrects():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, False, False, False],
@@ -280,7 +280,7 @@ def test__from_grid_and_unmasked_2d_grid_shape__offset_mask__origin_shift_correc
 
 def test__from_total_pixels_grid_and_weight_map():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [False, False, False, False],
@@ -322,7 +322,7 @@ def test__from_total_pixels_grid_and_weight_map():
         == np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])
     ).all()
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [False, False, False, False],
@@ -354,7 +354,7 @@ def test__from_total_pixels_grid_and_weight_map():
 
 def test__from_total_pixels_grid_and_weight_map__stochastic_true():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=np.array(
             [
                 [False, False, False, False],
