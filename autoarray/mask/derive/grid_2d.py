@@ -64,7 +64,7 @@ class DeriveGrid2D:
     def all_false_sub_1(self) -> Grid2D:
         """
         Returns a non-subgridded ``Grid2D`` which uses the ``Mask2D``
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) and every pixel in the ``Mask2D``
+        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) and every pixel in the ``Mask2D``
         irrespective of whether pixels are masked or unmasked (given by ``True`` or``False``).
 
         For example, for the following ``Mask2D``:
@@ -122,7 +122,7 @@ class DeriveGrid2D:
     def unmasked(self) -> Grid2D:
         """
         Returns a subgridded ``Grid2D`` which uses the ``Mask2D``
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) and every unmasked
+        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) and every unmasked
         pixel (given by ``False``), such that all masked entries (given by ``True``) are removed.
 
         For example, for the following ``Mask2D``:
@@ -184,7 +184,7 @@ class DeriveGrid2D:
     def unmasked_sub_1(self) -> Grid2D:
         """
         Returns a non-subgridded ``Grid2D`` which uses the ``Mask2D``
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) and every unmasked (y,x)
+        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) and every unmasked (y,x)
         coordinate (given by ``False``), where all masked entries (given by ``True``) are removed.
 
         For example, for the following ``Mask2D``:

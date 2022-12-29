@@ -321,7 +321,7 @@ class DeriveMask2D:
     def all_false(self) -> Mask2D:
         """
         Returns a ``Mask2D`` which has the same
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) as this ``Mask2D`` but all
+        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) as this ``Mask2D`` but all
         entries are unmasked (given by``False``).
 
         For example, for the following ``Mask2D``:

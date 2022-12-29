@@ -23,7 +23,7 @@ class DeriveMask1D:
         From a ``Mask1D`` other ``Mask1D``s can be derived, which represent a subset of pixels with significance.
         For example:
 
-        - An ``unmasked`` ``Mask1D``: the same shape as the original ``Mask1D`` but has unmasked ``False`` values
+        - An ``all_false`` ``Mask1D``: the same shape as the original ``Mask1D`` but has unmasked ``False`` values
           everywhere.
 
         Parameters
@@ -101,7 +101,7 @@ class DeriveMask1D:
     def all_false(self) -> Mask1D:
         """
         Returns a ``Mask1D`` which has the same
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) as this ``Mask1D`` but all
+        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) as this ``Mask1D`` but all
         entries are unmasked (given by``False``).
 
         For example, for the following ``Mask1D``:

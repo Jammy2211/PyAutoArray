@@ -28,7 +28,7 @@ class DeriveGrid1D:
 
         For example:
 
-        - An ``unmasked`` ``Grid1D``: the same shape as the original ``Mask1D`` but has unmasked ``False`` values
+        - An ``all_false`` ``Grid1D``: the same shape as the original ``Mask1D`` but has unmasked ``False`` values
           everywhere.
 
         Parameters
@@ -63,10 +63,39 @@ class DeriveGrid1D:
     @property
     def all_false_sub_1(self) -> Grid1D:
         """
-        The scaled-grid of (y,x) coordinates of every pixel.
+        Returns a non-subgridded ``Grid1D`` which uses the ``Mask1D``
+        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) and every pixel in the ``Mask2D``
+        irrespective of whether pixels are masked or unmasked (given by ``True`` or``False``).
 
-        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
-        value y value in scaled units.
+        For example, for the following ``Mask2D``:
+
+        ::
+            mask_2d = aa.Mask1D.manual(
+                mask=[False, False, True,  True]
+                pixel_scales=1.0,
+            )
+
+        The ``all_false_sub_1`` ``Grid1D`` (given via ``mask_1d.derive_grid.all_false_sub_1``) is:
+
+        ::
+            [-2.0, -1.0, 1.0, 2.0]
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            mask_1d = aa.Mask2D.manual(
+                mask=[False, False, True,  True],
+                pixel_scales=1.0,
+                sub_size=2
+            )
+
+            derive_grid_1d = aa.DeriveGrid1D(mask=mask_1d)
+
+            print(derive_grid_1d.all_false_sub_1)
         """
         from autoarray.structures.grids.uniform_1d import Grid1D
 
