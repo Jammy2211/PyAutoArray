@@ -72,7 +72,7 @@ def test__manual_slim():
 
 def test__manual_mask():
 
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0)
+    mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
 
     vectors = aa.VectorYX2D.manual_mask(
         vectors=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask

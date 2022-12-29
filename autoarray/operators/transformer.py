@@ -66,7 +66,7 @@ class TransformerDFT(PyLopsOperator):
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask.derive_mask.sub_1
-        self.grid = self.real_space_mask.derive_grid.masked_sub_1.binned.in_radians
+        self.grid = self.real_space_mask.derive_grid.unmasked_sub_1.binned.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask

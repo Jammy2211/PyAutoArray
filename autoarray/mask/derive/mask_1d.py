@@ -98,7 +98,7 @@ class DeriveMask1D:
         )
 
     @property
-    def unmasked(self) -> Mask1D:
+    def all_false(self) -> Mask1D:
         """
         Returns a ``Mask1D`` which has the same
         geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) as this ``Mask1D`` but all
@@ -109,7 +109,7 @@ class DeriveMask1D:
         ::
            [True, False, False, False, True]
 
-        The unmasked mask (given via ``mask_1d.derive_mask.unmasked``) is:
+        The unmasked mask (given via ``mask_1d.derive_mask.all_false``) is:
 
         ::
            [False, False, False, False, False]
@@ -129,7 +129,7 @@ class DeriveMask1D:
 
             derive_mask_1d = aa.DeriveMask1D(mask=mask_1d)
 
-            print(derive_mask_1d.unmasked)
+            print(derive_mask_1d.all_false)
         """
         from autoarray.mask.mask_1d import Mask1D
 

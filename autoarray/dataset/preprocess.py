@@ -527,7 +527,7 @@ def noise_map_with_signal_to_noise_limit_from(
         noise_map.native,
     )
 
-    mask = Mask2D.unmasked(
+    mask = Mask2D.all_false(
         shape_native=data.shape_native, pixel_scales=data.pixel_scales
     )
 

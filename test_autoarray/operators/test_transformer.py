@@ -5,11 +5,11 @@ import pytest
 
 
 class MockDeriveMask1D:
-    def __init__(self, mask, grid, masked_sub_1):
+    def __init__(self, mask, grid, unmasked_sub_1):
 
         self.mask = mask
         self.grid = grid
-        self.masked_sub_1 = masked_sub_1
+        self.unmasked_sub_1 = unmasked_sub_1
 
     @property
     def sub_1(self):
@@ -17,7 +17,7 @@ class MockDeriveMask1D:
 
     @property
     def pixels_in_mask(self):
-        return self.masked_sub_1.binned.slim.in_radians.shape[0]
+        return self.unmasked_sub_1.binned.slim.in_radians.shape[0]
 
     @property
     def pixel_scales(self):
@@ -42,12 +42,12 @@ class MockRealSpaceMask:
     def __init__(self, grid):
 
         self.grid = grid
-        self.masked_sub_1 = MockMaskedGrid(grid=grid)
+        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
 
     @property
     def derive_mask(self):
         return MockDeriveMask1D(
-            mask=self, grid=self.grid, masked_sub_1=self.masked_sub_1
+            mask=self, grid=self.grid, unmasked_sub_1=self.unmasked_sub_1
         )
 
     @property
@@ -320,7 +320,7 @@ def test__nufft__visibilities_from():
 
     visibilities_dft = transformer_dft.visibilities_from(image=image.native)
 
-    real_space_mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=0.005)
+    real_space_mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=0.005)
 
     transformer_nufft = aa.TransformerNUFFT(
         uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
@@ -351,7 +351,7 @@ def test__nufft__transform_mapping_matrix():
         mapping_matrix=mapping_matrix
     )
 
-    real_space_mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=0.005)
+    real_space_mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=0.005)
 
     transformer_nufft = aa.TransformerNUFFT(
         uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask

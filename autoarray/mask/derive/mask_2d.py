@@ -318,7 +318,7 @@ class DeriveMask2D:
         ).astype("bool")
 
     @property
-    def unmasked(self) -> Mask2D:
+    def all_false(self) -> Mask2D:
         """
         Returns a ``Mask2D`` which has the same
         geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) as this ``Mask2D`` but all
@@ -330,7 +330,7 @@ class DeriveMask2D:
             [[True,  True],
             [False, False]]
 
-        The unmasked mask (given via ``mask_2d.derive_mask.unmasked``) is:
+        The unmasked mask (given via ``mask_2d.derive_mask.all_false``) is:
 
         ::
             [[False, False],
@@ -353,12 +353,12 @@ class DeriveMask2D:
 
             derive_mask_2d = aa.DeriveMask2D(mask=mask_2d)
 
-            print(derive_mask_2d.unmasked)
+            print(derive_mask_2d.all_false)
         """
 
         from autoarray.mask.mask_2d import Mask2D
 
-        return Mask2D.unmasked(
+        return Mask2D.all_false(
             shape_native=self.mask.shape_native,
             sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,

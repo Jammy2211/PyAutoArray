@@ -64,7 +64,7 @@ def test__manual_slim():
 
 def test__manual_mask():
 
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0)
+    mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
     grid_2d = aa.Grid2D.manual_mask(
         grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], mask=mask
     )
@@ -118,17 +118,17 @@ def test__manual_mask():
 def test__manual_mask__exception_raised_if_input_grid_is_2d_and_not_sub_shape_of_mask():
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
         aa.Grid2D.manual_mask(grid=[[[1.0, 1.0], [3.0, 3.0]]], mask=mask)
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
         aa.Grid2D.manual_mask(
             grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
         )
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
         aa.Grid2D.manual_mask(
             grid=[
                 [[1.0, 1.0], [2.0, 2.0]],

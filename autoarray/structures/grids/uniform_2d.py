@@ -296,7 +296,7 @@ class Grid2D(Structure):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -368,7 +368,7 @@ class Grid2D(Structure):
 
         shape = (int(grid.shape[0] / sub_size), int(grid.shape[1] / sub_size))
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -1317,7 +1317,7 @@ class Grid2D(Structure):
             shape[1] + kernel_shape_native[1] - 1,
         )
 
-        padded_mask = Mask2D.unmasked(
+        padded_mask = Mask2D.all_false(
             shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,

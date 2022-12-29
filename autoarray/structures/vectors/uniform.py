@@ -270,7 +270,7 @@ class VectorYX2D(AbstractVectorYX2D):
             origin=origin,
         )
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -327,7 +327,7 @@ class VectorYX2D(AbstractVectorYX2D):
             int(vectors.shape[1] / sub_size),
         )
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,

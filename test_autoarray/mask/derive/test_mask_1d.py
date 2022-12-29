@@ -27,4 +27,4 @@ def test__unmasked_mask():
 
     derive_mask_1d = aa.DeriveMask1D(mask=mask_1d)
 
-    assert (derive_mask_1d.unmasked == np.full(fill_value=False, shape=(9,))).all()
+    assert (derive_mask_1d.all_false == np.full(fill_value=False, shape=(9,))).all()

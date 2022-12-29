@@ -53,7 +53,7 @@ def test__manual__invert_is_true():
 
 def test__unmasked():
 
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0, invert=False)
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0, invert=False)
 
     assert mask.shape == (5, 5)
     assert (
@@ -69,7 +69,7 @@ def test__unmasked():
         )
     ).all()
 
-    mask = aa.Mask2D.unmasked(
+    mask = aa.Mask2D.all_false(
         shape_native=(3, 3),
         pixel_scales=(2.0, 2.5),
         invert=True,
@@ -462,15 +462,15 @@ def test__is_all_false():
 
 def test__sub_shape_native():
 
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0, sub_size=1)
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0, sub_size=1)
 
     assert mask.sub_shape_native == (5, 5)
 
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0, sub_size=2)
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0, sub_size=2)
 
     assert mask.sub_shape_native == (10, 10)
 
-    mask = aa.Mask2D.unmasked(shape_native=(10, 5), pixel_scales=1.0, sub_size=3)
+    mask = aa.Mask2D.all_false(shape_native=(10, 5), pixel_scales=1.0, sub_size=3)
 
     assert mask.sub_shape_native == (30, 15)
 
@@ -531,22 +531,22 @@ def test__shape_native_masked_pixels():
 
 def test__zoom_quantities():
 
-    mask = aa.Mask2D.unmasked(shape_native=(3, 5), pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D.all_false(shape_native=(3, 5), pixel_scales=(1.0, 1.0))
     assert mask.zoom_centre == (1.0, 2.0)
     assert mask.zoom_offset_pixels == (0, 0)
     assert mask.zoom_shape_native == (5, 5)
 
-    mask = aa.Mask2D.unmasked(shape_native=(5, 3), pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D.all_false(shape_native=(5, 3), pixel_scales=(1.0, 1.0))
     assert mask.zoom_centre == (2.0, 1.0)
     assert mask.zoom_offset_pixels == (0, 0)
     assert mask.zoom_shape_native == (5, 5)
 
-    mask = aa.Mask2D.unmasked(shape_native=(4, 6), pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D.all_false(shape_native=(4, 6), pixel_scales=(1.0, 1.0))
     assert mask.zoom_centre == (1.5, 2.5)
     assert mask.zoom_offset_pixels == (0, 0)
     assert mask.zoom_shape_native == (6, 6)
 
-    mask = aa.Mask2D.unmasked(shape_native=(6, 4), pixel_scales=(1.0, 1.0))
+    mask = aa.Mask2D.all_false(shape_native=(6, 4), pixel_scales=(1.0, 1.0))
     assert mask.zoom_centre == (2.5, 1.5)
     assert mask.zoom_offset_pixels == (0, 0)
     assert mask.zoom_shape_native == (6, 6)

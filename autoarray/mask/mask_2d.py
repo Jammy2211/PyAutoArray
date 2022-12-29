@@ -161,7 +161,7 @@ class Mask2D(Mask):
 
         The ``Mask2D`` has functionality which maps data between the ``slim`` and ``native`` data representations.
 
-        For the example mask above, the 1D ``ndarray`` given by ``mask.derived_indexes.slim_to_native`` is:
+        For the example mask above, the 1D ``ndarray`` given by ``mask.derive_indexes.slim_to_native`` is:
 
         ::
 
@@ -306,6 +306,10 @@ class Mask2D(Mask):
         )
 
     @property
+    def derive_indexes(self) -> DeriveIndexes2D:
+        return DeriveIndexes2D(mask=self)
+
+    @property
     def derive_mask(self) -> DeriveMask2D:
         return DeriveMask2D(mask=self)
 
@@ -363,7 +367,7 @@ class Mask2D(Mask):
         )
 
     @classmethod
-    def unmasked(
+    def all_false(
         cls,
         shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
@@ -889,7 +893,7 @@ class Mask2D(Mask):
     @property
     def mask_centre(self) -> Tuple[float, float]:
         return grid_2d_util.grid_2d_centre_from(
-            grid_2d_slim=self.derive_grid.masked_sub_1
+            grid_2d_slim=self.derive_grid.unmasked_sub_1
         )
 
     @property
@@ -912,7 +916,7 @@ class Mask2D(Mask):
     def zoom_centre(self) -> Tuple[float, float]:
 
         extraction_grid_1d = self.geometry.grid_pixels_2d_from(
-            grid_scaled_2d=self.derive_grid.masked_sub_1.slim
+            grid_scaled_2d=self.derive_grid.unmasked_sub_1.slim
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])
@@ -986,7 +990,7 @@ class Mask2D(Mask):
         value y value in scaled units.
         """
 
-        return Mask2D.unmasked(
+        return Mask2D.all_false(
             shape_native=self.zoom_shape_native,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,

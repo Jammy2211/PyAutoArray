@@ -24,7 +24,7 @@ def test__from_image__setup_with_all_features_off(
 
     transformer = simulator.transformer_class(
         uv_wavelengths=uv_wavelengths_7x2,
-        real_space_mask=aa.Mask2D.unmasked(
+        real_space_mask=aa.Mask2D.all_false(
             shape_native=(3, 3), pixel_scales=image.pixel_scales
         ),
     )

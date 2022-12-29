@@ -61,7 +61,7 @@ class DeriveGrid2D:
         self.mask = mask
 
     @property
-    def unmasked_sub_1(self) -> Grid2D:
+    def all_false_sub_1(self) -> Grid2D:
         """
         Returns a non-subgridded ``Grid2D`` which uses the ``Mask2D``
         geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) and every pixel in the ``Mask2D``
@@ -78,7 +78,7 @@ class DeriveGrid2D:
                 pixel_scales=1.0,
             )
 
-        The ``unmasked_sub_1`` ``Grid2D`` (given via ``mask_2d.derive_grid.unmasked_sub_1``) is:
+        The ``all_false_sub_1`` ``Grid2D`` (given via ``mask_2d.derive_grid.all_false_sub_1``) is:
 
         ::
             [[ 0.5, -0.5], [ 0.5,  0.5],
@@ -102,7 +102,7 @@ class DeriveGrid2D:
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
 
-            print(derive_grid_2d.unmasked_sub_1)
+            print(derive_grid_2d.all_false_sub_1)
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -115,11 +115,11 @@ class DeriveGrid2D:
 
         return Grid2D(
             grid=grid_slim,
-            mask=self.mask.derive_mask.unmasked.derive_mask.sub_1,
+            mask=self.mask.derive_mask.all_false.derive_mask.sub_1,
         )
 
     @property
-    def masked(self) -> Grid2D:
+    def unmasked(self) -> Grid2D:
         """
         Returns a subgridded ``Grid2D`` which uses the ``Mask2D``
         geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) and every unmasked
@@ -137,12 +137,12 @@ class DeriveGrid2D:
                 sub_size=1
             )
 
-        The ``masked`` ``Grid2D`` (given via ``mask_2d.derive_grid.masked``) is:
+        The ``masked`` ``Grid2D`` (given via ``mask_2d.derive_grid.unmasked``) is:
 
         ::
             [[0.5, -0.5], [0.5, 0.5]]
 
-        If the ``Mask2D`` has a ``sub_size=2`` then the ``masked`` ``Grid2D``  is:
+        If the ``Mask2D`` has a ``sub_size=2`` then the ``unmasked`` ``Grid2D``  is:
 
         ::
             [[ 0.75, -0.75], [ 0.75, -0.25], [ 0.25, -0.75], [ 0.25, -0.25],
@@ -166,7 +166,7 @@ class DeriveGrid2D:
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
 
-            print(derive_grid_2d.masked)
+            print(derive_grid_2d.unmasked)
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -181,7 +181,7 @@ class DeriveGrid2D:
         )
 
     @property
-    def masked_sub_1(self) -> Grid2D:
+    def unmasked_sub_1(self) -> Grid2D:
         """
         Returns a non-subgridded ``Grid2D`` which uses the ``Mask2D``
         geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``sub_size``) and every unmasked (y,x)
@@ -199,7 +199,7 @@ class DeriveGrid2D:
                 sub_size=2
             )
 
-        The ``masked_sub_1`` ``Grid2D`` (given via ``mask_2d.derive_grid.masked_sub_1``) is:
+        The ``unmasked_sub_1`` ``Grid2D`` (given via ``mask_2d.derive_grid.unmasked_sub_1``) is:
 
         ::
             [[0.5, -0.5], [0.5, 0.5]]
@@ -222,7 +222,7 @@ class DeriveGrid2D:
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
 
-            print(derive_grid_2d.masked_sub_1)
+            print(derive_grid_2d.unmasked_sub_1)
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -287,7 +287,7 @@ class DeriveGrid2D:
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        edge_grid_1d = self.masked_sub_1[self.mask.derive_indexes.edge_slim]
+        edge_grid_1d = self.unmasked_sub_1[self.mask.derive_indexes.edge_slim]
         return Grid2D(
             grid=edge_grid_1d,
             mask=self.mask.derive_mask.edge.derive_mask.sub_1,
@@ -358,7 +358,7 @@ class DeriveGrid2D:
 
             print(derive_grid_2d.border)
         """
-        return self.masked[self.mask.derive_indexes.sub_border_slim]
+        return self.unmasked[self.mask.derive_indexes.sub_border_slim]
 
     @property
     def border_sub_1(self) -> Grid2D:
@@ -424,7 +424,7 @@ class DeriveGrid2D:
         """
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        border = self.masked_sub_1[self.mask.derive_indexes.border_slim]
+        border = self.unmasked_sub_1[self.mask.derive_indexes.border_slim]
         return Grid2D(
             grid=border,
             mask=self.mask.derive_mask.border.derive_mask.sub_1,

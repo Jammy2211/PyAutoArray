@@ -92,7 +92,7 @@ def test__manual_slim():
 
 def test__manual_mask():
 
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0)
+    mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
     array_2d = aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
     assert type(array_2d) == aa.Array2D
@@ -168,15 +168,15 @@ def test__apply_mask():
 
 def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask():
     with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
         aa.Array2D.manual_mask(array=[[1.0], [3.0]], mask=mask)
 
     with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
         aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
     with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
         aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], mask=mask)
 
 
@@ -332,8 +332,8 @@ def test__manual_yx_and_values():
         array=[[1.0, 2.0, 3.0], [3.0, 4.0, 6.0]], pixel_scales=1.0
     )
 
-    y = array_2d.mask.derive_grid.unmasked_sub_1[:, 0]
-    x = array_2d.mask.derive_grid.unmasked_sub_1[:, 1]
+    y = array_2d.mask.derive_grid.all_false_sub_1[:, 0]
+    x = array_2d.mask.derive_grid.all_false_sub_1[:, 1]
 
     arr_via_yx = aa.Array2D.manual_yx_and_values(
         y=y,

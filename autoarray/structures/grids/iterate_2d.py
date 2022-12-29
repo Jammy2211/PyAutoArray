@@ -145,7 +145,7 @@ class Grid2DIterate(Grid2D):
         grid = grid_2d_util.convert_grid(grid=grid)
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=1,
@@ -421,7 +421,7 @@ class Grid2DIterate(Grid2D):
             shape[1] + kernel_shape_native[1] - 1,
         )
 
-        padded_mask = Mask2D.unmasked(
+        padded_mask = Mask2D.all_false(
             shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
@@ -472,7 +472,7 @@ class Grid2DIterate(Grid2D):
             The results computed by a function using a higher sub-grid size.
         """
 
-        threshold_mask = Mask2D.unmasked(
+        threshold_mask = Mask2D.all_false(
             shape_native=array_lower_sub_2d.shape_native,
             pixel_scales=array_lower_sub_2d.pixel_scales,
             invert=True,
@@ -694,7 +694,7 @@ class Grid2DIterate(Grid2D):
             The results computed by a function using a higher sub-grid size.
         """
 
-        threshold_mask = Mask2D.unmasked(
+        threshold_mask = Mask2D.all_false(
             shape_native=grid_lower_sub_2d.shape_native,
             pixel_scales=grid_lower_sub_2d.pixel_scales,
             invert=True,

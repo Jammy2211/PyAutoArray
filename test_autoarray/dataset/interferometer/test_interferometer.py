@@ -162,7 +162,7 @@ def test__different_interferometer_without_mock_objects__customize_constructor_i
         real_space_mask=sub_mask_2d_7x7,
     )
 
-    real_space_mask = aa.Mask2D.unmasked(
+    real_space_mask = aa.Mask2D.all_false(
         shape_native=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
     )
     real_space_mask[9, 9] = False

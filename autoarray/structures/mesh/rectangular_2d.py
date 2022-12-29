@@ -54,7 +54,7 @@ class Mesh2DRectangular(Abstract2DMesh):
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=1,

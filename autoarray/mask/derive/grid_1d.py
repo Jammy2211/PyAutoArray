@@ -61,7 +61,7 @@ class DeriveGrid1D:
         self.mask = mask
 
     @property
-    def unmasked_sub_1(self) -> Grid1D:
+    def all_false_sub_1(self) -> Grid1D:
         """
         The scaled-grid of (y,x) coordinates of every pixel.
 
@@ -79,5 +79,5 @@ class DeriveGrid1D:
 
         return Grid1D(
             grid=grid_slim,
-            mask=self.mask.derive_mask.unmasked.derive_mask.sub_1,
+            mask=self.mask.derive_mask.all_false.derive_mask.sub_1,
         )

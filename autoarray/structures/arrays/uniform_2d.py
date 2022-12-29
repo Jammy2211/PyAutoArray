@@ -152,7 +152,7 @@ class AbstractArray2D(Structure):
 
         The ``Array2D`` has functionality which maps data between the ``slim`` and ``native`` data representations.
 
-        For the example mask above, the 1D ``ndarray`` given by ``mask.derived_indexes.slim_to_native`` is:
+        For the example mask above, the 1D ``ndarray`` given by ``mask.derive_indexes.slim_to_native`` is:
 
         ::
 
@@ -463,7 +463,7 @@ class AbstractArray2D(Structure):
             x1=self.mask.zoom_region[3] + buffer,
         )
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -498,7 +498,7 @@ class AbstractArray2D(Structure):
             x1=self.mask.zoom_region[3] + buffer,
         )
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -687,7 +687,7 @@ class Array2D(AbstractArray2D):
                 "The input shape_native parameter is not a tuple of type (int, int)"
             )
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -763,7 +763,7 @@ class Array2D(AbstractArray2D):
 
         shape_native = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
