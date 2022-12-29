@@ -45,7 +45,7 @@ def test__via_image_from__noise_off__noise_map_is_noise_value(image_central_delt
 
 def test__via_image_from__psf_blurs_image_with_edge_trimming(image_central_delta_3x3):
 
-    psf = aa.Kernel2D.manual_native(
+    psf = aa.Kernel2D.without_mask(
         array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
     )
@@ -105,7 +105,7 @@ def test__via_image_from__psf_and_noise_both_on(image_central_delta_3x3):
 
     image = image_central_delta_3x3 + 1.0
 
-    psf = aa.Kernel2D.manual_native(
+    psf = aa.Kernel2D.without_mask(
         array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
     )

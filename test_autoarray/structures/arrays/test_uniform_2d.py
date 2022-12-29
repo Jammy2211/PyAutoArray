@@ -77,7 +77,7 @@ def test__manual_native():
     )
 
     assert type(array_2d) == aa.Array2D
-    assert (array_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
+    assert (array_2d == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert (array_2d.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
     assert (array_2d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert array_2d.pixel_scales == (1.0, 1.0)
@@ -91,9 +91,7 @@ def test__manual_native():
         origin=(1.0, 1.0),
     )
 
-    assert (
-        array_2d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-    ).all()
+    assert (array_2d == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
     assert array_2d.shape_native == (2, 1)
     assert array_2d.sub_shape_native == (4, 2)
     assert (array_2d.slim == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
@@ -159,9 +157,7 @@ def test__without_mask():
         origin=(1.0, 1.0),
     )
 
-    assert (
-        array_2d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-    ).all()
+    assert (array_2d == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
     assert array_2d.shape_native == (2, 1)
     assert array_2d.sub_shape_native == (4, 2)
     assert (array_2d.slim == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()

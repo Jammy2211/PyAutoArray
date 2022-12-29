@@ -115,7 +115,7 @@ def test__from_gaussian():
 def test__manual__normalize():
 
     kernel_data = np.ones((3, 3)) / 9.0
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=kernel_data, pixel_scales=1.0, normalize=True
     )
 
@@ -123,13 +123,13 @@ def test__manual__normalize():
 
     kernel_data = np.ones((3, 3))
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=kernel_data, pixel_scales=1.0, normalize=True
     )
 
     assert kernel_2d.native == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=kernel_data, pixel_scales=1.0, normalize=False
     )
 
@@ -139,7 +139,7 @@ def test__manual__normalize():
 
     kernel_data = np.ones((3, 3))
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=kernel_data, pixel_scales=1.0, normalize=False
     )
 
@@ -148,7 +148,7 @@ def test__manual__normalize():
 
 def test__rescaled_with_odd_dimensions_from__evens_to_odds():
     array_2d = np.ones((6, 6))
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=array_2d, pixel_scales=1.0, normalize=False
     )
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
@@ -158,7 +158,7 @@ def test__rescaled_with_odd_dimensions_from__evens_to_odds():
     assert (kernel_2d.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
     array_2d = np.ones((9, 9))
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=array_2d, pixel_scales=1.0, normalize=False
     )
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
@@ -168,7 +168,7 @@ def test__rescaled_with_odd_dimensions_from__evens_to_odds():
     assert (kernel_2d.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
     array_2d = np.ones((18, 6))
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=array_2d, pixel_scales=1.0, normalize=False
     )
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
@@ -178,7 +178,7 @@ def test__rescaled_with_odd_dimensions_from__evens_to_odds():
     assert (kernel_2d.native == (1.0 / 27.0) * np.ones((9, 3))).all()
 
     array_2d = np.ones((6, 18))
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=array_2d, pixel_scales=1.0, normalize=False
     )
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
@@ -265,7 +265,7 @@ def test__convolved_array_from():
         array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]], pixel_scales=1.0
     )
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=[[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
     )
 
@@ -283,7 +283,7 @@ def test__convolved_array_from():
         pixel_scales=1.0,
     )
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=[[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
     )
 
@@ -306,7 +306,7 @@ def test__convolved_array_from():
         pixel_scales=1.0,
     )
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=[[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
     )
 
@@ -324,7 +324,7 @@ def test__convolved_array_from():
         pixel_scales=1.0,
     )
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=[[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]], pixel_scales=1.0
     )
 
@@ -345,7 +345,7 @@ def test__convolved_array_from():
         pixel_scales=1.0,
     )
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
     )
 
@@ -373,7 +373,7 @@ def test__convolved_array_from():
         pixel_scales=1.0,
     )
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
     )
 
@@ -401,7 +401,7 @@ def test__convolved_array_from():
         pixel_scales=1.0,
     )
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=[[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]], pixel_scales=1.0
     )
 
@@ -422,7 +422,7 @@ def test__convolved_array_from():
 
 def test__convolved_array_from__not_odd_x_odd_kernel__raises_error():
 
-    kernel_2d = aa.Kernel2D.manual_native(
+    kernel_2d = aa.Kernel2D.without_mask(
         array=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0
     )
 

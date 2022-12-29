@@ -91,6 +91,7 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
 def convert_array_2d(
     array_2d: Union[np.ndarray, List],
     mask_2d: Mask2D,
+    store_native: bool = False,
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -121,7 +122,7 @@ def convert_array_2d(
 
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
-    if len(array_2d.shape) != 1:
+    if store_native:
         array_2d *= np.invert(mask_2d.derive_mask.sub)
         return array_2d
 

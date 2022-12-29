@@ -24,6 +24,7 @@ class AbstractArray2D(Structure):
         array: Union[np.ndarray, List],
         mask: Mask2D,
         header: Header = None,
+        store_native: bool = False,
         *args,
         **kwargs
     ):
@@ -329,6 +330,7 @@ class AbstractArray2D(Structure):
         array = array_2d_util.convert_array_2d(
             array_2d=array,
             mask_2d=mask,
+            store_native=store_native,
         )
 
         obj = array.view(cls)
@@ -336,6 +338,22 @@ class AbstractArray2D(Structure):
         obj.header = header
 
         return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "mask"):
+            self.mask = obj.mask
+
+        if hasattr(obj, "header"):
+            self.header = obj.header
+        else:
+            self.header = None
+
+    @property
+    def store_native(self):
+        if len(self.shape) == 1:
+            return False
+        return True
 
     def apply_mask(self, mask: Mask2D) -> "Array2D":
         return Array2D(array=self.native, mask=mask, header=self.header)
@@ -376,7 +394,9 @@ class AbstractArray2D(Structure):
             array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return Array2D(array=sub_array_2d, mask=self.mask, header=self.header)
+        return Array2D(
+            array=sub_array_2d, mask=self.mask, header=self.header, store_native=True
+        )
 
     @property
     def binned(self) -> "Array2D":
@@ -531,7 +551,12 @@ class AbstractArray2D(Structure):
             array_2d=resized_array_2d, mask_2d=resized_mask
         )
 
-        return Array2D(array=array, mask=resized_mask, header=self.header)
+        return Array2D(
+            array=array,
+            mask=resized_mask,
+            header=self.header,
+            store_native=self.store_native,
+        )
 
     def padded_before_convolution_from(
         self, kernel_shape: Tuple[int, int], mask_pad_value: int = 0.0
@@ -587,7 +612,12 @@ class AbstractArray2D(Structure):
             array_2d=trimmed_array_2d, mask_2d=resized_mask
         )
 
-        return Array2D(array=array, mask=resized_mask, header=self.header)
+        return Array2D(
+            array=array,
+            mask=resized_mask,
+            header=self.header,
+            store_native=self.store_native,
+        )
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """

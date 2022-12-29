@@ -156,7 +156,7 @@ def make_psf_3x3():
 
     psf = np.array([[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]])
 
-    return aa.Kernel2D.manual_native(array=psf, pixel_scales=(1.0, 1.0))
+    return aa.Kernel2D.without_mask(array=psf, pixel_scales=(1.0, 1.0))
 
 
 def make_psf_3x3_no_blur():

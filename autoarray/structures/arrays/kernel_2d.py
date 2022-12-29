@@ -17,7 +17,14 @@ from autoarray.structures.arrays import array_2d_util
 
 class Kernel2D(AbstractArray2D):
     def __new__(
-        cls, array, mask, header=None, normalize: bool = False, *args, **kwargs
+        cls,
+        array,
+        mask,
+        header=None,
+        normalize: bool = False,
+        store_native: bool = False,
+        *args,
+        **kwargs
     ):
         """
         An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -36,7 +43,9 @@ class Kernel2D(AbstractArray2D):
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        obj = super().__new__(cls=cls, array=array, mask=mask, header=header)
+        obj = super().__new__(
+            cls=cls, array=array, mask=mask, header=header, store_native=store_native
+        )
 
         if normalize:
             obj[:] = np.divide(obj, np.sum(obj))
@@ -44,140 +53,11 @@ class Kernel2D(AbstractArray2D):
         return obj
 
     @classmethod
-    def manual_slim(
-        cls,
-        array: Union[np.ndarray, List],
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        normalize: bool = False,
-    ):
-        """
-        Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D.
-
-        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
-
-        Parameters
-        ----------
-        array
-            The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
-            lists.
-        shape_native
-            The 2D shape of the mask the array is paired with.
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-        normalize
-            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Kernel2D from input np.ndarray.
-
-            kernel_2d = aa.Kernel2D.manual_slim(
-                array=np.array([0.0, 0.1, 0.0, 0.1, 0.2, 0.1, 0.0, 0.1, 0.0]),
-                shape_native=(3, 3),
-                pixel_scales=1.0
-            )
-
-            # Make Kernel2D from input list.
-
-            kernel_2d = aa.Kernel2D.manual_slim(
-                array=[0.0, 0.1, 0.0, 0.1, 0.2, 0.1, 0.0, 0.1, 0.0],
-                shape_native=(2, 2),
-                pixel_scales=1.0
-            )
-
-            # Print array's slim (masked 1D data representation) and
-            # native (masked 2D data representation)
-
-            print(kernel_2d.slim)
-            print(kernel_2d.native)
-        """
-        array = Array2D.without_mask(
-            array=array,
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            origin=origin,
-        )
-
-        return Kernel2D(array=array, mask=array.mask, normalize=normalize)
-
-    @classmethod
-    def manual_native(
+    def without_mask(
         cls,
         array: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        normalize: bool = False,
-    ) -> "Kernel2D":
-        """
-        Create an Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 2D.
-
-        The 2D shape of the array and its mask are determined from the input array and the mask is setup as an
-        unmasked `Mask2D` of shape_native.
-
-        Parameters
-        ----------
-        array
-            The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
-             list of lists.
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-        normalize
-            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Kernel2D from input np.ndarray.
-
-            kernel_2d = aa.Kernel2D.manual_native(
-                array=np.array([[0.0, 0.1, 0.0], [0.1, 0.2, 0.1], [0.0, 0.1, 0.0]]),
-                pixel_scales=1.0
-            )
-
-            # Make Kernel2D from input list.
-
-            kernel_2d = aa.Kernel2D.manual_slim(
-                array=[[0.0, 0.1, 0.0], [0.1, 0.2, 0.1], [0.0, 0.1, 0.0]],
-                pixel_scales=1.0
-            )
-
-            # Print array's slim (masked 1D data representation) and
-            # native (masked 2D data representation)
-
-            print(kernel_2d.slim)
-            print(kernel_2d.native)
-        """
-        array = Array2D.without_mask(
-            array=array, pixel_scales=pixel_scales, origin=origin
-        )
-
-        return Kernel2D(array=array, mask=array.mask, normalize=normalize)
-
-    @classmethod
-    def manual(
-        cls,
-        array: Union[np.ndarray, List],
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
+        shape_native: Tuple[int, int] = None,
         origin: Tuple[float, float] = (0.0, 0.0),
         normalize: bool = False,
     ):
@@ -203,17 +83,13 @@ class Kernel2D(AbstractArray2D):
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        if len(array.shape) == 1:
-            return cls.manual_slim(
-                array=array,
-                shape_native=shape_native,
-                pixel_scales=pixel_scales,
-                origin=origin,
-                normalize=normalize,
-            )
-        return cls.manual_native(
-            array=array, pixel_scales=pixel_scales, origin=origin, normalize=normalize
+        array = Array2D.without_mask(
+            array=array,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            origin=origin,
         )
+        return Kernel2D(array=array, mask=array.mask, normalize=normalize)
 
     @classmethod
     def full(
@@ -247,7 +123,7 @@ class Kernel2D(AbstractArray2D):
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        return Kernel2D.manual_native(
+        return Kernel2D.without_mask(
             array=np.full(fill_value=fill_value, shape=shape_native),
             pixel_scales=pixel_scales,
             origin=origin,
@@ -343,7 +219,7 @@ class Kernel2D(AbstractArray2D):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        return cls.manual_native(array=array, pixel_scales=pixel_scales)
+        return cls.without_mask(array=array, pixel_scales=pixel_scales)
 
     @classmethod
     def from_gaussian(
@@ -406,7 +282,7 @@ class Kernel2D(AbstractArray2D):
             np.exp(-0.5 * np.square(np.divide(grid_elliptical_radii, sigma))),
         )
 
-        return cls.manual_slim(
+        return cls.without_mask(
             array=gaussian,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -563,7 +439,7 @@ class Kernel2D(AbstractArray2D):
 
             pixel_scales = None
 
-        return Kernel2D.manual_native(
+        return Kernel2D.without_mask(
             array=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
         )
 
