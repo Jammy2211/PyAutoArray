@@ -649,6 +649,28 @@ def mask_slim_indexes_from(
     """
     Returns a 1D array listing all masked (`value=True`) or unmasked pixel indexes (`value=False`) in the mask.
 
+    For example, for the following ``Mask2D`` for ``sub_size=1``:
+
+    ::
+        [[True,  True,  True, True]
+         [True, False, False, True],
+         [True, False,  True, True],
+         [True,  True,  True, True]]
+
+    This has three unmasked (``False`` values) which have the ``slim`` indexes, there ``unmasked_slim`` is:
+
+    ::
+        [0, 1, 2]
+
+    For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2.
+    Therefore the array ``unmasked_slim`` becomes:
+
+    ::
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+    The ``slim`` indexes are by definition the unmasked pixels, therefore this will always return an array of
+    ascending integers with size the total number of unmasked pixels multiplied by the ``sub_size**2``.
+
     Parameters
     ----------
     mask_2d
@@ -763,6 +785,24 @@ def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
 
     An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
     direct neighbors is masked (is `True`).
+
+    For example, for the following ``Mask2D``:
+
+    ::
+        [[True,  True,  True,  True, True],
+         [True, False, False, False, True],
+         [True, False, False, False, True],
+         [True, False, False, False, True],
+         [True,  True,  True,  True, True]]
+
+    The `edge_slim` indexes (given via ``mask_2d.derive_indexes.edge_slim``) is given by:
+
+    ::
+         [0, 1, 2, 3, 5, 6, 7, 8]
+
+    Note that index 4 is skipped, which corresponds to the ``False`` value in the centre of the mask, because it
+    does not neighbor a ``True`` value in any one of the eight neighboring directions and is therefore not at
+    an edge.
 
     Parameters
     ----------
@@ -902,6 +942,27 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
 
     The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
     pixels in an annular mask are edge pixels but not borders pixels.
+
+    For example, for the following ``Mask2D``:
+
+    ::
+        [[True,  True,  True,  True,  True,  True,  True,  True, True],
+         [True, False, False, False, False, False, False, False, True],
+         [True, False,  True,  True,  True,  True,  True, False, True],
+         [True, False,  True, False, False, False,  True, False, True],
+         [True, False,  True, False,  True, False,  True, False, True],
+         [True, False,  True, False, False, False,  True, False, True],
+         [True, False,  True,  True,  True,  True,  True, False, True],
+         [True, False, False, False, False, False, False, False, True],
+         [True,  True,  True,  True,  True,  True,  True,  True, True]]
+
+    The `border_slim` indexes (given via ``mask_2d.derive_indexes.border_slim``) is given by:
+
+    ::
+         [0, 1, 2, 3, 5, 6, 7, 11, 12, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+
+    The interior 8 ``False`` values are omitted, because although they are edge pixels (neighbor a ``True``) they
+    are not on the extreme exterior edge.
 
     Parameters
     ----------
@@ -1240,11 +1301,34 @@ def native_index_for_slim_index_2d_from(
     Returns an array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its
     corresponding native 2D pixel using its (y,x) pixel indexes.
 
-    For example, for a sub-grid size of 2x2, if pixel [2,5] corresponds to the first pixel in the masked slim array:
+    For example, for the following ``Mask2D`` for ``sub_size=1``:
 
-    - The first sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[4] = [2,5]
-    - The second sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [2,6]
-    - The third sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [3,5]
+    ::
+        [[True,  True,  True, True]
+         [True, False, False, True],
+         [True, False,  True, True],
+         [True,  True,  True, True]]
+
+    This has three unmasked (``False`` values) which have the ``slim`` indexes:
+
+    ::
+        [0, 1, 2]
+
+    The array ``native_index_for_slim_index_2d`` is therefore:
+
+    ::
+        [[1,1], [1,2], [2,1]]
+
+    For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2 and
+    there are therefore 12 ``slim`` indexes:
+
+    ::
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+    The array ``native_index_for_slim_index_2d`` is therefore:
+
+    ::
+        [[2,2], [2,3], [2,4], [2,5], [3,2], [3,3], [3,4], [3,5], [4,2], [4,3], [5,2], [5,3]]
 
     Parameters
     ----------

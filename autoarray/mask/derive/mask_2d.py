@@ -447,7 +447,6 @@ class DeriveMask2D:
         For example, for the following ``Mask2D``:
 
         ::
-
             [[True,  True,  True,  True, True],
              [True, False, False, False, True],
              [True, False, False, False, True],
@@ -457,13 +456,11 @@ class DeriveMask2D:
         The edge-mask (given via ``mask_2d.derive_mask.edge``) is given by:
 
         ::
-
              [[True,  True,  True,  True, True],
               [True, False, False, False, True],
               [True, False,  True, False, True],
               [True, False, False, False, True],
               [True, True,   True, True, True]]
-            )
 
         The central pixel, which does not neighbor a ``True`` value in any one of the eight neighboring directions,
         is switched to masked.
@@ -566,7 +563,7 @@ class DeriveMask2D:
     @property
     def border(self) -> Mask2D:
         """
-        Returns aborder ``Mask2D``, representing all unmasked pixels (given by ``False``) which neighbor any masked
+        Returns border ``Mask2D``, representing all unmasked pixels (given by ``False``) which neighbor any masked
         value (give by ``True``) and which are on the extreme exterior of the mask.
 
         This is therefore close related to the edge mask, but may not include central pixels unlike the edge mask.
@@ -574,30 +571,28 @@ class DeriveMask2D:
         For example, for the following ``Mask2D``:
 
         ::
-
-           [[True,  True,  True,  True,  True,  True,  True,  True, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True, False,  True,  True,  True,  True,  True, False, True],
-            [True, False,  True, False, False, False,  True, False, True],
-            [True, False,  True, False,  True, False,  True, False, True],
-            [True, False,  True, False, False, False,  True, False, True],
-            [True, False,  True,  True,  True,  True,  True, False, True],
-            [True, False, False, False, False, False, False, False, True],
-            [True,  True,  True,  True,  True,  True,  True,  True, True]]
+            [[True,  True,  True,  True,  True,  True,  True,  True, True],
+             [True, False, False, False, False, False, False, False, True],
+             [True, False,  True,  True,  True,  True,  True, False, True],
+             [True, False,  True, False, False, False,  True, False, True],
+             [True, False,  True, False,  True, False,  True, False, True],
+             [True, False,  True, False, False, False,  True, False, True],
+             [True, False,  True,  True,  True,  True,  True, False, True],
+             [True, False, False, False, False, False, False, False, True],
+             [True,  True,  True,  True,  True,  True,  True,  True, True]]
 
         The border-mask (given via ``mask_2d.derive_mask.edge``) is given by:
 
         ::
-
-              [[True,  True,  True,  True,  True,  True,  True,  True, True],
-               [True, False, False, False, False, False, False, False, True],
-               [True, False,  True,  True,  True,  True,  True, False, True],
-               [True, False,  True,  True,  True,  True,  True, False, True],
-               [True, False,  True,  True,  True,  True,  True, False, True],
-               [True, False,  True,  True,  True,  True,  True, False, True],
-               [True, False,  True,  True,  True,  True,  True, False, True],
-               [True, False, False, False, False, False, False, False, True],
-               [True,  True,  True,  True,  True,  True,  True,  True, True]]
+            [[True,  True,  True,  True,  True,  True,  True,  True, True],
+             [True, False, False, False, False, False, False, False, True],
+             [True, False,  True,  True,  True,  True,  True, False, True],
+             [True, False,  True,  True,  True,  True,  True, False, True],
+             [True, False,  True,  True,  True,  True,  True, False, True],
+             [True, False,  True,  True,  True,  True,  True, False, True],
+             [True, False,  True,  True,  True,  True,  True, False, True],
+             [True, False, False, False, False, False, False, False, True],
+             [True,  True,  True,  True,  True,  True,  True,  True, True]]
 
         The central ``False`` pixels would be included in an edge-mask, but are not included in the border mask
         because they are not on the extreme outer edge.
