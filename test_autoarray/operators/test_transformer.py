@@ -4,12 +4,12 @@ import numpy as np
 import pytest
 
 
-class MockDeriveMask1D:
-    def __init__(self, mask, grid, unmasked_sub_1):
+class MockDeriveMask2D:
+    def __init__(self, grid):
 
-        self.mask = mask
+        self.mask = grid.derive_mask.all_false
         self.grid = grid
-        self.unmasked_sub_1 = unmasked_sub_1
+        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
 
     @property
     def sub_1(self):
@@ -18,42 +18,36 @@ class MockDeriveMask1D:
     @property
     def pixels_in_mask(self):
         return self.unmasked_sub_1.binned.slim.in_radians.shape[0]
-
-    @property
-    def pixel_scales(self):
-        return self.grid.pixel_scales
-
-    @property
-    def sub_size(self):
-        return self.grid.sub_size
-
-    @property
-    def origin(self):
-        return self.grid.origin
-
+    
     @property
     def derive_grid(self):
-        return aa.DeriveGrid2D(
-            mask=self.mask,
+        return MockDeriveGrid2D(
+            grid=self.grid,
         )
+
+
+class MockDeriveGrid2D:
+
+    def __init__(self, grid):
+
+        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
 
 
 class MockRealSpaceMask:
     def __init__(self, grid):
 
         self.grid = grid
-        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
 
     @property
     def derive_mask(self):
-        return MockDeriveMask1D(
-            mask=self, grid=self.grid, unmasked_sub_1=self.unmasked_sub_1
+        return MockDeriveMask2D(
+            grid=self.grid,
         )
 
     @property
     def derive_grid(self):
-        return aa.DeriveGrid2D(
-            mask=self,
+        return MockDeriveGrid2D(
+            grid=self.grid,
         )
 
     @property

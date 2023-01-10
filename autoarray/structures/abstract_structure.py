@@ -43,7 +43,7 @@ class Structure(AbstractNDArray, ABC):
 
     @property
     def derive_mask(self) -> DeriveMask2D:
-        return self.mask.derive_grid
+        return self.mask.derive_mask
 
     @property
     def shape_slim(self) -> int:
