@@ -5,8 +5,8 @@ import autoarray as aa
 
 def test__pix_indexes_for_sub_slim_index__matches_util():
 
-    grid = aa.Grid2D.manual_slim(
-        [
+    grid = aa.Grid2D.without_mask(
+        grid=[
             [1.5, -1.0],
             [1.3, 0.0],
             [1.0, 1.9],

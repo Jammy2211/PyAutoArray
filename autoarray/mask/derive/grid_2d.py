@@ -176,9 +176,7 @@ class DeriveGrid2D:
             sub_size=self.mask.sub_size,
             origin=self.mask.origin,
         )
-        return Grid2D(
-            grid=sub_grid_1d, mask=self.mask.derive_mask.edge.derive_mask.sub_1
-        )
+        return Grid2D(grid=sub_grid_1d, mask=self.mask)
 
     @property
     def unmasked_sub_1(self) -> Grid2D:

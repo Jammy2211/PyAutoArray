@@ -138,8 +138,8 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
 
 def test__interpolated_array_from(grid_2d_7x7):
 
-    mesh_grid_ndarray = aa.Grid2D.manual_slim(
-        [[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+    mesh_grid_ndarray = aa.Grid2D.without_mask(
+        grid=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
@@ -169,8 +169,8 @@ def test__interpolated_array_from(grid_2d_7x7):
 
 def test__mapped_to_source_from(grid_2d_7x7):
 
-    mesh_grid = aa.Grid2D.manual_slim(
-        [[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+    mesh_grid = aa.Grid2D.without_mask(
+        grid=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )

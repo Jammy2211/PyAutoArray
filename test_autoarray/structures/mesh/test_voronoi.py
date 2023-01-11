@@ -245,7 +245,7 @@ def test__qhull_error_is_caught():
 
 def _test__interpolated_array_from():
 
-    grid = aa.Grid2D.manual_slim(
+    grid = aa.Grid2D(
         [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,

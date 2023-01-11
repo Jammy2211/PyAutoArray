@@ -16,7 +16,8 @@ def make_five_pixels():
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
     def compute_squared_separation(coordinate1, coordinate2):
         """
-        Returns the squared separation of two grid (no square root for efficiency)"""
+        Returns the squared separation of two grid (no square root for efficiency).
+        """
         return (coordinate1[0] - coordinate2[0]) ** 2 + (
             coordinate1[1] - coordinate2[1]
         ) ** 2
@@ -439,8 +440,8 @@ def test__weights():
 def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
 
     pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-    grid = aa.Grid2D.manual_slim(
-        [[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
+    grid = aa.Grid2D.without_mask(
+        grid=[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
         shape_native=(2, 2),
         pixel_scales=1.0,
     )
@@ -452,37 +453,10 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
     assert sub_to_pix[2] == 2
     assert sub_to_pix[3] == 3
 
-    pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-    grid = aa.Grid2D.manual_slim(
-        [
-            [1.1, 1.1],
-            [-1.1, 1.1],
-            [-1.1, -1.1],
-            [1.1, -1.1],
-            [0.9, -0.9],
-            [-0.9, -0.9],
-            [-0.9, 0.9],
-            [0.9, 0.9],
-        ],
-        shape_native=(3, 3),
-        pixel_scales=0.1,
-    )
-
-    sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
-
-    assert sub_to_pix[0] == 0
-    assert sub_to_pix[1] == 1
-    assert sub_to_pix[2] == 2
-    assert sub_to_pix[3] == 3
-    assert sub_to_pix[4] == 3
-    assert sub_to_pix[5] == 2
-    assert sub_to_pix[6] == 1
-    assert sub_to_pix[7] == 0
-
     pixel_centers = np.array(
         [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]]
     )
-    grid = aa.Grid2D.manual_slim(
+    grid = aa.Grid2D.without_mask(
         [
             [0.1, 0.1],
             [-0.1, -0.1],
@@ -504,7 +478,7 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
     assert sub_to_pix[4] == 0
     assert sub_to_pix[5] == 5
 
-    mesh_grid = aa.Grid2D.manual_slim(
+    mesh_grid = aa.Grid2D.without_mask(
         [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,

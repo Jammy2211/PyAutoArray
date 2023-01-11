@@ -374,7 +374,7 @@ def make_rectangular_mesh_grid_3x3():
 
 def make_delaunay_mesh_grid_9():
 
-    grid_9 = aa.Grid2D.manual_slim(
+    grid_9 = aa.Grid2D.without_mask(
         grid=[
             [0.6, -0.3],
             [0.5, -0.8],
@@ -395,7 +395,7 @@ def make_delaunay_mesh_grid_9():
 
 def make_voronoi_mesh_grid_9():
 
-    grid_9 = aa.Grid2D.manual_slim(
+    grid_9 = aa.Grid2D.without_mask(
         grid=[
             [0.6, -0.3],
             [0.5, -0.8],

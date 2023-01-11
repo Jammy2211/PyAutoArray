@@ -113,9 +113,8 @@ def convert_array_2d(
     mask_2d
         The mask of the output Array2D.
     store_native
-        If True, the array is stored in its native format [total_y_pixels, total_x_pixels]. The only use of
-        this is to avoid mapping large data arrays to and from the slim / native formats, which can be a
-        computational bottleneck.
+        If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
+        mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
     """
 
     array_2d = convert_array(array=array_2d)

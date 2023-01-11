@@ -15,11 +15,19 @@ from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
+from autoarray import exc
 from autoarray import type as ty
 
 
 class Grid2D(Structure):
-    def __new__(cls, grid: np.ndarray, mask: Mask2D, *args, **kwargs):
+    def __new__(
+        cls,
+        grid: Union[np.ndarray, List],
+        mask: Mask2D,
+        store_native: bool = False,
+        *args,
+        **kwargs,
+    ):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the grid corresponds to the (y,x) coordinates at the centre of a sub-pixel of an unmasked pixel.
@@ -222,10 +230,17 @@ class Grid2D(Structure):
         ----------
         grid
             The (y,x) coordinates of the grid.
-        mask :Mask2D
+        mask
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
+        store_native
+            If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
+            mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
+
+        grid = grid_2d_util.convert_grid_2d(
+            grid_2d=grid, mask_2d=mask, store_native=store_native
+        )
 
         obj = grid.view(cls)
         obj.mask = mask
@@ -235,7 +250,7 @@ class Grid2D(Structure):
         return obj
 
     @classmethod
-    def manual_slim(
+    def _manual_slim(
         cls,
         grid: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
@@ -273,7 +288,7 @@ class Grid2D(Structure):
 
             # Make Grid2D from input np.ndarray.
 
-            grid_2d = aa.Grid2D.manual_slim(
+            grid_2d = aa.Grid2D(
                 grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]),
                 shape_native=(2, 2),
                 pixel_scales=1.0
@@ -281,7 +296,7 @@ class Grid2D(Structure):
 
             # Make Grid2D from input list.
 
-            grid_2d = aa.Grid2D.manual_slim(
+            grid_2d = aa.Grid2D(
                 grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]],
                 shape_native=(2, 2),
                 pixel_scales=1.0
@@ -293,6 +308,25 @@ class Grid2D(Structure):
             print(grid_2d.slim)
             print(grid_2d.native)
         """
+
+        if shape_native is None:
+            raise exc.GridException(
+                f"""
+                The input grid is not in its native shape (an ndarray / list of shape [total_y_pixels, total_x_pixels, 2])
+                and the shape_native parameter has not been input the Grid2D function.
+    
+                Either change the input array to be its native shape or input its shape_native input the function.
+    
+                The shape of the input array is {grid.shape}
+                """
+            )
+
+        if shape_native and len(shape_native) != 2:
+            raise exc.GridException(
+                """
+                The input shape_native parameter is not a tuple of type (int, int).
+                """
+            )
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
@@ -308,7 +342,7 @@ class Grid2D(Structure):
         return Grid2D(grid=grid, mask=mask)
 
     @classmethod
-    def manual_native(
+    def _manual_native(
         cls,
         grid: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
@@ -343,14 +377,14 @@ class Grid2D(Structure):
 
             # Make Grid2D from input np.ndarray.
 
-            grid_2d = aa.Grid2D.manual_native(
+            grid_2d = aa.Grid2D(
                 grid=np.array([[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]]),
                 pixel_scales=1.0
             )
 
             # Make Grid2D from input list.
 
-            grid_2d = aa.Grid2D.manual_native(
+            grid_2d = aa.Grid2D(
                 grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]],
                 pixel_scales=1.0
             )
@@ -380,7 +414,7 @@ class Grid2D(Structure):
         return Grid2D(grid=grid, mask=mask)
 
     @classmethod
-    def manual(
+    def without_mask(
         cls,
         grid: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
@@ -409,41 +443,20 @@ class Grid2D(Structure):
         origin
             The origin of the grid's mask.
         """
+
+        grid = grid_2d_util.convert_grid(grid=grid)
+
         if len(grid.shape) == 2:
-            return cls.manual_slim(
+            return cls._manual_slim(
                 grid=grid,
                 shape_native=shape_native,
                 pixel_scales=pixel_scales,
                 sub_size=sub_size,
                 origin=origin,
             )
-        return cls.manual_native(
+        return cls._manual_native(
             grid=grid, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
-
-    @classmethod
-    def manual_mask(cls, grid: Union[np.ndarray, List], mask: Mask2D) -> "Grid2D":
-        """
-        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in their native or slimmed format with
-        their corresponding mask, automatically determining whether to use the 'manual_slim' or 'manual_native' methods.
-
-        See the manual_slim and manual_native methods for examples.
-
-        Parameters
-        ----------
-        grid
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask :Mask2D
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        """
-
-        grid = grid_2d_util.convert_grid(grid=grid)
-        grid_2d_util.check_grid_2d_and_mask_2d(grid_2d=grid, mask_2d=mask)
-
-        grid = grid_2d_util.convert_grid_2d(grid_2d=grid, mask_2d=mask)
-
-        return Grid2D(grid=grid, mask=mask)
 
     @classmethod
     def manual_yx_1d(
@@ -514,7 +527,7 @@ class Grid2D(Structure):
         if type(x) is list:
             x = np.asarray(x)
 
-        return cls.manual_slim(
+        return cls._manual_slim(
             grid=np.stack((y, x), axis=-1),
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -572,7 +585,7 @@ class Grid2D(Structure):
         if type(x) is list:
             x = np.asarray(x)
 
-        return cls.manual_native(
+        return cls._manual_native(
             grid=np.stack((y, x), axis=-1),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -634,7 +647,7 @@ class Grid2D(Structure):
             abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
         )
 
-        return Grid2D.manual_native(grid=grid_2d, pixel_scales=pixel_scales)
+        return Grid2D.without_mask(grid=grid_2d, pixel_scales=pixel_scales)
 
     @classmethod
     def uniform(
@@ -669,7 +682,7 @@ class Grid2D(Structure):
             origin=origin,
         )
 
-        return cls.manual_slim(
+        return cls._manual_slim(
             grid=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -780,7 +793,7 @@ class Grid2D(Structure):
             file_path=file_path, hdu=0
         )
 
-        return Grid2D.manual(
+        return Grid2D.without_mask(
             grid=sub_grid_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -915,7 +928,7 @@ class Grid2D(Structure):
             grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return Grid2D(grid=grid_native, mask=self.mask)
+        return Grid2D(grid=grid_native, mask=self.mask, store_native=True)
 
     @property
     def binned(self) -> "Grid2D":

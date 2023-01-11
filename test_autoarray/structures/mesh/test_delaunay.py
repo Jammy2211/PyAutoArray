@@ -45,8 +45,8 @@ def test__mesh_areas():
 
 def test__interpolated_array_from():
 
-    grid = aa.Grid2D.manual_slim(
-        [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+    grid = aa.Grid2D.without_mask(
+        grid=[[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )

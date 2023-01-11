@@ -32,24 +32,39 @@ def check_grid_2d(grid_2d: np.ndarray):
 
 
 def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
+
     if len(grid_2d.shape) == 2:
 
         if grid_2d.shape[0] != mask_2d.sub_pixels_in_mask:
             raise exc.GridException(
-                "The input 1D grid does not have the same number of entries as sub-pixels in"
-                "the mask."
+                f"""
+                The input 2D grid does not have the same number of values as sub-pixels in
+                the mask.
+                
+                The shape of the input grid_2d is {grid_2d.shape}.
+                The number of sub-pixels in the mask is {mask_2d.sub_pixels_in_mask} (the 
+                mask sub size is {mask_2d.sub_size}).
+                """
             )
 
     elif len(grid_2d.shape) == 3:
 
         if (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.sub_shape_native:
             raise exc.GridException(
-                "The input grid is 2D but not the same dimensions as the sub-mask "
-                "(e.g. the mask 2D shape multipled by its sub size.)"
+                f"""
+                The input 2D grid is not the same dimensions as the sub-mask
+                (e.g. the mask 2D shape multipled by its sub size.)
+
+                The shape of the input grid_2d is {grid_2d.shape}.
+                The sub_shape_native of the mask is {mask_2d.sub_shape_native} (the 
+                mask sub size is {mask_2d.sub_size}).
+                """
             )
 
 
-def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.ndarray:
+def convert_grid_2d(
+    grid_2d: Union[np.ndarray, List], mask_2d: Mask2D, store_native: bool = False
+) -> np.ndarray:
     """
     The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
 
@@ -68,9 +83,19 @@ def convert_grid_2d(grid_2d: Union[np.ndarray, List], mask_2d: Mask2D) -> np.nda
         The input (y,x) grid of coordinates which is converted to an ndarray if it is a list.
     mask_2d
         The mask of the output Array2D.
+    store_native
+        If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
+        mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
     """
 
     grid_2d = convert_grid(grid=grid_2d)
+
+    check_grid_2d_and_mask_2d(grid_2d=grid_2d, mask_2d=mask_2d)
+
+    if store_native:
+        grid_2d[:, :, 0] *= np.invert(mask_2d.derive_mask.sub)
+        grid_2d[:, :, 1] *= np.invert(mask_2d.derive_mask.sub)
+        return grid_2d
 
     return convert_grid_2d_to_slim(grid_2d=grid_2d, mask_2d=mask_2d)
 

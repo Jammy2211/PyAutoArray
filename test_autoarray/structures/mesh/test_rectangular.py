@@ -153,8 +153,8 @@ def test__pixel_centres__3x3_grid__pixel_centres():
 
 def test__interpolated_array_from():
 
-    grid = aa.Grid2D.manual_slim(
-        [[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]],
+    grid = aa.Grid2D.without_mask(
+        grid=[[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]],
         shape_native=(2, 2),
         pixel_scales=1.0,
     )

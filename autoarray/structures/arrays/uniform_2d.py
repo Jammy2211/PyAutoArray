@@ -26,7 +26,7 @@ class AbstractArray2D(Structure):
         header: Header = None,
         store_native: bool = False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         A uniform 2D array of values, which are paired with a 2D mask of pixels which may be split into sub-pixels.
@@ -261,6 +261,9 @@ class AbstractArray2D(Structure):
         mask
             The 2D mask associated with the array, defining the pixels each array value in its ``slim`` representation
             is paired with.
+        store_native
+            If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
+            mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
 
         Examples
         --------
@@ -706,9 +709,23 @@ class Array2D(AbstractArray2D):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
+        if shape_native is None:
+            raise exc.ArrayException(
+                f"""
+                The input array is not in its native shape (an ndarray / list of shape [total_y_pixels, total_x_pixels])
+                and the shape_native parameter has not been input the Array2D function.
+    
+                Either change the input array to be its native shape or input its shape_native input the function.
+    
+                The shape of the input array is {array.shape}
+                """
+            )
+
         if shape_native and len(shape_native) != 2:
             raise exc.ArrayException(
-                "The input shape_native parameter is not a tuple of type (int, int)"
+                """
+                The input shape_native parameter is not a tuple of type (int, int)
+                """
             )
 
         mask = Mask2D.all_false(

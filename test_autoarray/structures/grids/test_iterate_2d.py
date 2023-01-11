@@ -532,7 +532,7 @@ def test__threshold_mask_via_grids_from():
 
     iterate = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
-    grid = aa.Grid2D.manual_mask(
+    grid = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0]],
@@ -560,7 +560,7 @@ def test__threshold_mask_via_grids_from():
 
     iterate = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.5)
 
-    grid_lower_sub = aa.Grid2D.manual_mask(
+    grid_lower_sub = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [1.9, 1.9], [0.001, 0.001], [0.0, 0.0]],
@@ -570,7 +570,7 @@ def test__threshold_mask_via_grids_from():
         mask=mask,
     )
 
-    grid_higher_sub = aa.Grid2D.manual_mask(
+    grid_higher_sub = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0]],
@@ -619,7 +619,7 @@ def test__threshold_mask_via_grids_from():
 
     iterate = aa.Grid2DIterate.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
 
-    grid_lower_sub = aa.Grid2D.manual_mask(
+    grid_lower_sub = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0]],
@@ -629,7 +629,7 @@ def test__threshold_mask_via_grids_from():
         mask=mask_lower_sub,
     )
 
-    grid_higher_sub = aa.Grid2D.manual_mask(
+    grid_higher_sub = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [0.1, 2.0], [0.1, 0.1], [0.0, 0.0]],
@@ -789,7 +789,7 @@ def test__iterated_grid_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    grid_lower = aa.Grid2D.manual_mask(grid=np.zeros((9, 2)), mask=mask)
+    grid_lower = aa.Grid2D(grid=np.zeros((9, 2)), mask=mask)
 
     values = grid.iterated_grid_from(
         func=ndarray_1d_from, cls=None, grid_lower_sub_2d=grid_lower

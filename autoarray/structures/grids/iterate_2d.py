@@ -74,7 +74,7 @@ class Grid2DIterate(Grid2D):
 
         obj = grid.view(cls)
         obj.mask = mask
-        obj.grid = Grid2D.manual_mask(grid=np.asarray(obj), mask=mask)
+        obj.grid = Grid2D(grid=np.asarray(obj), mask=mask)
         obj.fractional_accuracy = fractional_accuracy
         obj.relative_accuracy = relative_accuracy
         obj.sub_steps = sub_steps
