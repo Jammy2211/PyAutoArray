@@ -9,7 +9,7 @@ from autoarray import exc
 
 def test__manual_native():
 
-    vectors = aa.VectorYX2D.manual_native(
+    vectors = aa.VectorYX2D._manual_native(
         vectors=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
@@ -41,7 +41,7 @@ def test__manual_native():
 
 def test__manual_slim():
 
-    vectors = aa.VectorYX2D.manual_slim(
+    vectors = aa.VectorYX2D._manual_slim(
         vectors=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(1, 1),
         pixel_scales=1.0,
@@ -70,11 +70,11 @@ def test__manual_slim():
     assert vectors.sub_size == 2
 
 
-def test__manual_mask():
+def test__from_mask():
 
     mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
 
-    vectors = aa.VectorYX2D.manual_mask(
+    vectors = aa.VectorYX2D.from_mask(
         vectors=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
     )
 
@@ -100,7 +100,7 @@ def test__manual_mask():
         mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0)
     )
 
-    vectors = aa.VectorYX2D.manual_mask(
+    vectors = aa.VectorYX2D.from_mask(
         vectors=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
     )
 
@@ -119,7 +119,7 @@ def test__manual_mask():
 
     mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
 
-    vectors = aa.VectorYX2D.manual_mask(
+    vectors = aa.VectorYX2D.from_mask(
         vectors=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
     )
 
@@ -202,7 +202,7 @@ def test__zeros():
 
 def test__y_x():
 
-    vectors = aa.VectorYX2D.manual_native(
+    vectors = aa.VectorYX2D._manual_native(
         vectors=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
@@ -218,7 +218,7 @@ def test__y_x():
 def test__apply_mask():
 
     mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
-    vectors = aa.VectorYX2D.manual_slim(
+    vectors = aa.VectorYX2D._manual_slim(
         vectors=[
             [1.0, 1.0],
             [2.0, 2.0],
@@ -250,7 +250,7 @@ def test__apply_mask():
 
 def test__magnitudes():
 
-    vectors = aa.VectorYX2D.manual_native(
+    vectors = aa.VectorYX2D._manual_native(
         vectors=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]],
         pixel_scales=1.0,
         sub_size=1,

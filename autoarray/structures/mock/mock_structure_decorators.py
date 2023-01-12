@@ -182,7 +182,7 @@ class MockGridLikeIteratorObj:
             )
         ]
 
-    @structure_decorators.grid_2d_to_vector_yx
+    @structure_decorators.grid_2d_to_vector_yx_list
     @structure_decorators.grid_2d_to_structure_list
     def ndarray_yx_2d_list_from(self, grid):
         """
@@ -276,7 +276,7 @@ class MockGrid2DLikeObj:
         """
         return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
-    @structure_decorators.grid_2d_to_vector_yx
+    @structure_decorators.grid_2d_to_vector_yx_list
     @structure_decorators.grid_2d_to_structure_list
     def ndarray_yx_2d_list_from(self, grid):
         """

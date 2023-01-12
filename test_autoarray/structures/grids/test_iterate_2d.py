@@ -1,4 +1,3 @@
-from os import path
 import numpy as np
 import pytest
 
@@ -12,7 +11,7 @@ import autoarray as aa
 
 def test__manual_slim():
 
-    grid = aa.Grid2DIterate.manual_slim(
+    grid = aa.Grid2DIterate._manual_slim(
         grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(2, 2),
         pixel_scales=1.0,

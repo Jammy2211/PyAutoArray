@@ -13,6 +13,28 @@ from autoarray.mask import mask_2d_util
 from autoarray import type as ty
 
 
+def check_manual_slim(grid, shape_native):
+
+    if shape_native is None:
+        raise exc.GridException(
+            f"""
+            The input grid is not in its native shape (an ndarray / list of shape [total_y_pixels, total_x_pixels, 2])
+            and the shape_native parameter has not been input the Grid2D function.
+
+            Either change the input array to be its native shape or input its shape_native input the function.
+
+            The shape of the input array is {grid.shape}
+            """
+        )
+
+    if shape_native and len(shape_native) != 2:
+        raise exc.GridException(
+            """
+            The input shape_native parameter is not a tuple of type (int, int).
+            """
+        )
+
+
 def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
 
     if type(grid) is list:
@@ -42,8 +64,9 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
                 the mask.
                 
                 The shape of the input grid_2d is {grid_2d.shape}.
-                The number of sub-pixels in the mask is {mask_2d.sub_pixels_in_mask} (the 
-                mask sub size is {mask_2d.sub_size}).
+                The mask shape_native is {mask_2d.shape_native}.
+                The mask number of sub-pixels is {mask_2d.sub_pixels_in_mask}. 
+                The mask sub size is {mask_2d.sub_size}).
                 """
             )
 

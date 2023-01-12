@@ -68,6 +68,7 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
 
                 Input array_2d_slim.shape = {array_2d.shape[0]}
                 Input mask_2d.sub_pixels_in_mask = {mask_2d.sub_pixels_in_mask}
+                Input mask_2d.shape_native = {mask_2d.shape_native}
                 """
             )
 

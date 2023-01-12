@@ -10,6 +10,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
+from autoarray import exc
 from autoarray import type as ty
 
 logging.basicConfig()
@@ -21,7 +22,8 @@ class VectorYX2D(AbstractVectorYX2D):
         cls,
         vectors: Union[np.ndarray, List[Tuple[float, float]]],
         grid: Union[Grid2D, List],
-        mask,
+        mask: Mask2D,
+        store_native: bool = False,
     ):
         """
         A collection of (y,x) vectors which are located on a regular 2D grid of (y,x) coordinates.
@@ -203,6 +205,9 @@ class VectorYX2D(AbstractVectorYX2D):
         mask
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
+        store_native
+            If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
+            mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
 
         if len(vectors) == 0:
@@ -210,6 +215,14 @@ class VectorYX2D(AbstractVectorYX2D):
 
         if type(vectors) is list:
             vectors = np.asarray(vectors)
+
+        vectors = grid_2d_util.convert_grid_2d(
+            grid_2d=vectors, mask_2d=mask, store_native=store_native
+        )
+
+        grid = grid_2d_util.convert_grid_2d(
+            grid_2d=grid, mask_2d=mask, store_native=store_native
+        )
 
         obj = vectors.view(cls)
         obj.grid = Grid2D(grid=grid, mask=mask)
@@ -226,7 +239,7 @@ class VectorYX2D(AbstractVectorYX2D):
             self.grid = obj.grid
 
     @classmethod
-    def manual_slim(
+    def _manual_slim(
         cls,
         vectors: Union[np.ndarray, List[List], List[Tuple]],
         shape_native: Tuple[int, int],
@@ -261,6 +274,26 @@ class VectorYX2D(AbstractVectorYX2D):
             The origin of the grid's mask.
         """
 
+        if shape_native is None:
+            raise exc.VectorYXException(
+                f"""
+                The input vectors are not in their native shape (an ndarray / list of 
+                shape [total_y_pixels, total_x_pixels, 2]) and the shape_native parameter has not been input the 
+                VectorYX2D function.
+
+                Either change the input array to be its native shape or input its shape_native input the function.
+
+                The shape of the input array is {vectors.shape}
+                """
+            )
+
+        if shape_native and len(shape_native) != 2:
+            raise exc.GridException(
+                """
+                The input shape_native parameter is not a tuple of type (int, int).
+                """
+            )
+
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid = Grid2D.uniform(
@@ -282,7 +315,7 @@ class VectorYX2D(AbstractVectorYX2D):
         return cls(vectors=vectors, grid=grid, mask=mask)
 
     @classmethod
-    def manual_native(
+    def _manual_native(
         cls,
         vectors: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
@@ -346,9 +379,7 @@ class VectorYX2D(AbstractVectorYX2D):
         return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
     @classmethod
-    def manual_mask(
-        cls, vectors: Union[np.ndarray, List], mask: Mask2D
-    ) -> "VectorYX2D":
+    def from_mask(cls, vectors: Union[np.ndarray, List], mask: Mask2D) -> "VectorYX2D":
         """
         Create a VectorYX2D (see *VectorYX2D.__new__*) by inputting the vectors in 1D or 2D with its mask,
         for example:
@@ -367,7 +398,6 @@ class VectorYX2D(AbstractVectorYX2D):
 
         grid = Grid2D.from_mask(mask=mask)
 
-        vectors = grid_2d_util.convert_grid_2d(grid_2d=vectors, mask_2d=mask)
         return VectorYX2D(vectors=vectors, grid=grid, mask=mask)
 
     @classmethod
@@ -403,7 +433,7 @@ class VectorYX2D(AbstractVectorYX2D):
         if sub_size is not None:
             shape_native = (shape_native[0] * sub_size, shape_native[1] * sub_size)
 
-        return cls.manual_native(
+        return cls._manual_native(
             vectors=np.full(
                 fill_value=fill_value, shape=(shape_native[0], shape_native[1], 2)
             ),
@@ -518,7 +548,10 @@ class VectorYX2D(AbstractVectorYX2D):
         )
 
         return VectorYX2D(
-            vectors=vectors_2d_native, grid=self.grid.native, mask=self.mask
+            vectors=vectors_2d_native,
+            grid=self.grid.native,
+            mask=self.mask,
+            store_native=True,
         )
 
     @property
@@ -552,7 +585,7 @@ class VectorYX2D(AbstractVectorYX2D):
         )
 
     def apply_mask(self, mask: Mask2D) -> "VectorYX2D":
-        return VectorYX2D.manual_mask(vectors=self.native, mask=mask)
+        return VectorYX2D.from_mask(vectors=self.native, mask=mask)
 
     @property
     def magnitudes(self) -> Array2D:

@@ -29,6 +29,7 @@ class Grid2DIterate(Grid2D):
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
         sub_steps: List[int] = None,
+        store_native: bool = False,
         *args,
         **kwargs
     ):
@@ -68,13 +69,20 @@ class Grid2DIterate(Grid2D):
         sub_steps
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
+        store_native
+            If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
+            mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
 
         sub_steps = sub_steps_from(sub_steps=sub_steps)
 
+        grid = grid_2d_util.convert_grid_2d(
+            grid_2d=grid, mask_2d=mask, store_native=store_native
+        )
+
         obj = grid.view(cls)
         obj.mask = mask
-        obj.grid = Grid2D(grid=np.asarray(obj), mask=mask)
+        obj.grid = Grid2D(grid=np.asarray(obj), mask=mask, store_native=store_native)
         obj.fractional_accuracy = fractional_accuracy
         obj.relative_accuracy = relative_accuracy
         obj.sub_steps = sub_steps
@@ -98,7 +106,7 @@ class Grid2DIterate(Grid2D):
             self.sub_steps = obj.sub_steps
 
     @classmethod
-    def manual_slim(
+    def _manual_slim(
         cls,
         grid: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
@@ -142,7 +150,11 @@ class Grid2DIterate(Grid2D):
         origin
             The origin of the grid's mask.
         """
+
         grid = grid_2d_util.convert_grid(grid=grid)
+
+        grid_2d_util.check_manual_slim(grid=grid, shape_native=shape_native)
+
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = Mask2D.all_false(
@@ -205,7 +217,7 @@ class Grid2DIterate(Grid2D):
             origin=origin,
         )
 
-        return Grid2DIterate.manual_slim(
+        return Grid2DIterate._manual_slim(
             grid=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -338,6 +350,7 @@ class Grid2DIterate(Grid2D):
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
+            store_native=True,
         )
 
     @property

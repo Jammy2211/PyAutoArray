@@ -309,24 +309,7 @@ class Grid2D(Structure):
             print(grid_2d.native)
         """
 
-        if shape_native is None:
-            raise exc.GridException(
-                f"""
-                The input grid is not in its native shape (an ndarray / list of shape [total_y_pixels, total_x_pixels, 2])
-                and the shape_native parameter has not been input the Grid2D function.
-    
-                Either change the input array to be its native shape or input its shape_native input the function.
-    
-                The shape of the input array is {grid.shape}
-                """
-            )
-
-        if shape_native and len(shape_native) != 2:
-            raise exc.GridException(
-                """
-                The input shape_native parameter is not a tuple of type (int, int).
-                """
-            )
+        grid_2d_util.check_manual_slim(grid=grid, shape_native=shape_native)
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
