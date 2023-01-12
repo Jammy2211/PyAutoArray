@@ -8,7 +8,7 @@ from autoarray import exc
 
 def test__slice_1d__extract():
 
-    arr_1d = aa.Array1D.manual_native(
+    arr_1d = aa.Array1D.without_mask(
         array=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), pixel_scales=1.0
     )
 
@@ -27,7 +27,7 @@ def test__slice_1d__extract():
 
 def test__slice_1d__addition():
 
-    arr_1d = aa.Array1D.manual_native(
+    arr_1d = aa.Array1D.without_mask(
         array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0
     )
 
@@ -39,7 +39,7 @@ def test__slice_1d__addition():
 
     assert (arr_1d == np.array([2.0, 2.0, 3.0, 4.0])).all()
 
-    arr_1d = aa.Array1D.manual_native(
+    arr_1d = aa.Array1D.without_mask(
         array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0
     )
 
@@ -52,7 +52,7 @@ def test__slice_1d__addition():
 
 def test__slice_1d__set_to_zeros():
 
-    arr_1d = aa.Array1D.manual_native(
+    arr_1d = aa.Array1D.without_mask(
         array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0
     )
 
@@ -62,7 +62,7 @@ def test__slice_1d__set_to_zeros():
 
     assert (arr_1d == np.array([0.0, 2.0, 3.0, 4.0])).all()
 
-    arr_1d = aa.Array1D.manual_native(
+    arr_1d = aa.Array1D.without_mask(
         array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0
     )
 

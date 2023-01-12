@@ -31,7 +31,7 @@ class Layout1D:
         self.overscan = overscan
 
     def extract_overscan_array_1d_from(self, array):
-        return Array1D.manual_native(
+        return Array1D.without_mask(
             array=array.native[self.overscan.slice],
             header=array.header,
             pixel_scales=array.pixel_scales,

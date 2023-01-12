@@ -23,6 +23,8 @@ class Array1D(Structure):
         **kwargs
     ):
 
+        array = array_2d_util.convert_array(array)
+
         obj = array.view(cls)
         obj.mask = mask
         obj.header = header
@@ -30,7 +32,7 @@ class Array1D(Structure):
         return obj
 
     @classmethod
-    def manual_slim(
+    def without_mask(
         cls,
         array: Union[np.ndarray, Tuple[float], List[float]],
         pixel_scales: ty.PixelScales,
@@ -61,11 +63,11 @@ class Array1D(Structure):
 
             # Make Array1D from input np.ndarray.
 
-            array_1d = aa.Array1D.manual_slim(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+            array_1d = aa.Array1D.without_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
             # Make Array2D from input list.
 
-            array_1d = aa.Array1D.manual_slim(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+            array_1d = aa.Array1D.without_mask(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
             # Print array's slim (masked 1D data representation) and
             # native (masked 1D data representation)
@@ -83,114 +85,6 @@ class Array1D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-        )
-
-        return Array1D(array=array, mask=mask, header=header)
-
-    @classmethod
-    def manual_native(
-        cls,
-        array: Union[np.ndarray, Tuple[float], List[float]],
-        pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
-        origin: Tuple[float] = (0.0,),
-        header: Optional[Header] = None,
-    ) -> "Array1D":
-        """
-        Create a Array1D (see `Array1D.__new__`) by inputting the array values in 1D.
-
-        Parameters
-        ----------
-        array
-            The values of the array input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
-        pixel_scales
-            The scaled units to pixel units conversion factor of the array data coordinates (e.g. the x-axis).
-        sub_size
-            The size of each unmasked pixels sub-grid.
-        origin
-            The origin of the 1D array's mask.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array1D from input np.ndarray.
-
-            array_1d = aa.Array1D.manual_native(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
-
-            # Make Array2D from input list.
-
-            array_1d = aa.Array1D.manual_native(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
-
-            # Print array's slim (masked 1D data representation) and
-            # native (masked 1D data representation)
-
-            print(array_1d.slim)
-            print(array_1d.native)
-        """
-        return cls.manual_slim(
-            array=array,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-            header=header,
-        )
-
-    @classmethod
-    def manual_mask(
-        cls,
-        array: Union[np.ndarray, Tuple[float], List[float]],
-        mask: Mask1D,
-        header: Optional[Header] = None,
-    ) -> "Array1D":
-        """
-        Create a Array1D (see `Array1D.__new__`) by inputting the native array values in 1D and including the mask
-        that is applied to them.
-
-        Parameters
-        ----------
-        array
-            The values of the array input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
-        pixel_scales
-            The scaled units to pixel units conversion factor of the array data coordinates (e.g. the x-axis).
-        sub_size
-            The size of each unmasked pixels sub-grid.
-        origin
-            The origin of the 1D array's mask.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array1D from input np.ndarray.
-
-            mask = aa.Mask1D(mask=np.array([True, False, False]), pixel_scales=1.0, sub_size=1)
-
-            array_1d = aa.Array1D.manual_mask(array=np.array([100.0, 1.0, 2.0]), mask=mask)
-
-            # Make Array2D from input list.
-
-            mask = aa.Mask1D(mask=[True, False, False], pixel_scales=1.0, sub_size=1)
-
-            array_1d = aa.Array1D.manual_mask(array=[100.0, 1.0, 2.0], mask=mask)
-
-            # Print array's slim (masked 1D data representation) and
-            # native (masked 1D data representation)
-
-            print(array_1d.slim)
-            print(array_1d.native)
-        """
-
-        array = array_2d_util.convert_array(array)
-
-        array = array_1d_util.array_1d_slim_from(
-            array_1d_native=array, mask_1d=mask, sub_size=mask.sub_size
         )
 
         return Array1D(array=array, mask=mask, header=header)
@@ -231,7 +125,7 @@ class Array1D(Structure):
         if sub_size is not None:
             shape_native = (shape_native[0] * sub_size,)
 
-        return cls.manual_native(
+        return cls.without_mask(
             array=np.full(fill_value=fill_value, shape=shape_native[0]),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -347,7 +241,7 @@ class Array1D(Structure):
         header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
         header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
-        return cls.manual_native(
+        return cls.without_mask(
             array=array_1d.astype(
                 "float64"
             ),  # Have to do this due to typing issues in 1D with astorpy fits.
@@ -358,7 +252,7 @@ class Array1D(Structure):
         )
 
     @property
-    def slim(self) -> Union["Array1D"]:
+    def slim(self) -> "Array1D":
         """
         Return an `Array1D` where the data is stored its `slim` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size].
@@ -366,6 +260,8 @@ class Array1D(Structure):
         If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
         `native` to `slim` and returned as a new `Array1D`.
         """
+
+        # TODO : This has to be a bug, and should be replaced with a mask.derive_mask.sub.
 
         if self.shape[0] != self.mask.sub_shape_native[0]:
             return self
@@ -377,7 +273,7 @@ class Array1D(Structure):
         return Array1D(array=array, mask=self.mask)
 
     @property
-    def native(self) -> Union["Array1D"]:
+    def native(self) -> "Array1D":
         """
         Return an `Array1D` where the data is stored in its `native` representation, which is an ndarray of shape
         [total_pixels * sub_size].
@@ -386,11 +282,8 @@ class Array1D(Structure):
         `slim` to `native` and returned as a new `Array1D`.
         """
 
-        if self.shape[0] == self.mask.sub_shape_native[0]:
-            return self
-
         array = array_1d_util.array_1d_native_from(
-            array_1d_slim=self, mask_1d=self.mask, sub_size=self.sub_size
+            array_1d_slim=self.slim, mask_1d=self.mask, sub_size=self.sub_size
         )
 
         return Array1D(array=array, mask=self.mask)

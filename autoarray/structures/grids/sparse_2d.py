@@ -64,7 +64,8 @@ class Grid2DSparse(Structure):
     def from_grid_and_unmasked_2d_grid_shape(
         cls, grid: Grid2D, unmasked_sparse_shape: Tuple[int, int]
     ) -> "Grid2DSparse":
-        """Calculate a Grid2DSparse a Grid2D from the unmasked 2D shape of the sparse grid.
+        """
+        Calculate a Grid2DSparse a Grid2D from the unmasked 2D shape of the sparse grid.
 
         This is performed by overlaying the 2D sparse grid (computed from the unmaksed sparse shape) over the edge
         values of the Grid2D.

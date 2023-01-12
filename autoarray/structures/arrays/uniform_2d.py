@@ -453,12 +453,12 @@ class AbstractArray2D(Structure):
     @property
     def binned_across_rows(self) -> Array1D:
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=0)
-        return Array1D.manual_native(array=binned_array, pixel_scales=self.pixel_scale)
+        return Array1D.without_mask(array=binned_array, pixel_scales=self.pixel_scale)
 
     @property
     def binned_across_columns(self) -> Array1D:
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=1)
-        return Array1D.manual_native(array=binned_array, pixel_scales=self.pixel_scale)
+        return Array1D.without_mask(array=binned_array, pixel_scales=self.pixel_scale)
 
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
         """
@@ -735,8 +735,6 @@ class Array2D(AbstractArray2D):
             origin=origin,
         )
 
-        array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
-
         return Array2D(array=array, mask=mask, header=header)
 
     @classmethod
@@ -810,8 +808,6 @@ class Array2D(AbstractArray2D):
             sub_size=sub_size,
             origin=origin,
         )
-
-        array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
 
         return Array2D(array=array, mask=mask, header=header)
 
