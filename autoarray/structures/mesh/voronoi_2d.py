@@ -29,13 +29,6 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @classmethod
-    def manual_slim(cls, grid) -> "Mesh2DVoronoi":
-        """
-        Convenience method which mimicks the API of other `Grid2D` objects in PyAutoArray.
-        """
-        return Mesh2DVoronoi(grid=grid)
-
     def interpolated_array_from(
         self,
         values: np.ndarray,

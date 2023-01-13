@@ -98,49 +98,6 @@ class DeriveMask1D:
         )
 
     @property
-    def sub(self) -> Mask1D:
-        """
-        Returns the sub-mask of the ``Mask1D``, which is the mask on the sub-grid which has ``False``  / ``True``
-        entries where the original mask is ``False`` / ``True``.
-
-        For example, for the following ``Mask1D``:
-
-        ::
-           [ True,  True, False, False]
-
-        The sub-mask (given via ``mask_1d.derive_mask.sub``) for a ``sub_size=2`` is:
-
-        ::
-            [True,   True,  True,  True,
-             True,   True,  True,  True,
-             False, False, False, False,
-             False, False, False, False]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_1d = aa.Mask1D(
-                mask=[True,  True, False, False]
-                ],
-                pixel_scales=1.0,
-            )
-
-            derive_mask_1d = aa.DeriveMask1D(mask=mask_1d)
-
-            print(derive_mask_1d.sub)
-        """
-        sub_shape = (self.mask.shape[0] * self.mask.sub_size,)
-
-        return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
-            shape_native=sub_shape,
-            native_for_slim=self.derive_indexes.sub_mask_native_for_sub_mask_slim,
-        ).astype("bool")
-
-    @property
     def all_false(self) -> Mask1D:
         """
         Returns a ``Mask1D`` which has the same
