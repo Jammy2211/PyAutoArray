@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 from autoarray.structures.vectors.abstract import AbstractVectorYX2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.values import ValuesIrregular
+from autoarray.structures.arrays.irregular import ArrayIrregular
 
 from autoarray import exc
 
@@ -76,11 +76,11 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
         return [tuple(vector) for vector in self.slim]
 
     @property
-    def magnitudes(self) -> ValuesIrregular:
+    def magnitudes(self) -> ArrayIrregular:
         """
         Returns the magnitude of every vector which are computed as sqrt(y**2 + x**2).
         """
-        return ValuesIrregular(values=np.sqrt(self[:, 0] ** 2.0 + self[:, 1] ** 2.0))
+        return ArrayIrregular(values=np.sqrt(self[:, 0] ** 2.0 + self[:, 1] ** 2.0))
 
     @property
     def average_magnitude(self) -> float:

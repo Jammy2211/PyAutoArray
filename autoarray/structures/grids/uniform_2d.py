@@ -7,7 +7,7 @@ from autoconf import cached_property
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.values import ValuesIrregular
+from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.sparse_2d import Grid2DSparse
 
@@ -928,12 +928,12 @@ class Grid2D(Structure):
         """
         return [self.structure_2d_from(result=result) for result in result_list]
 
-    def values_from(self, array_slim: np.ndarray) -> ValuesIrregular:
+    def values_from(self, array_slim: np.ndarray) -> ArrayIrregular:
         """
-        Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
-        *ValuesIrregular* are structured following this `Grid2DIrregular` instance.
+        Create a *ArrayIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
+        *ArrayIrregular* are structured following this `Grid2DIrregular` instance.
         """
-        return ValuesIrregular(values=array_slim)
+        return ArrayIrregular(values=array_slim)
 
     def squared_distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)

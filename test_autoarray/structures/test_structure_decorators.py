@@ -362,7 +362,7 @@ def test__in_grid_2d_irregular__out_ndarray_1d():
 
     ndarray_1d = grid_like_object.ndarray_1d_from(grid=grid_2d_irregular)
 
-    assert isinstance(ndarray_1d, aa.ValuesIrregular)
+    assert isinstance(ndarray_1d, aa.ArrayIrregular)
     assert ndarray_1d.in_list == [1.0, 1.0, 1.0]
 
 

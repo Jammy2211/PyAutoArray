@@ -66,7 +66,7 @@ from .layout.layout import Layout1D
 from .layout.layout import Layout2D
 from .structures.arrays.uniform_1d import Array1D
 from .structures.arrays.uniform_2d import Array2D
-from .structures.values import ValuesIrregular
+from .structures.arrays.irregular import ArrayIrregular
 from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
 from .structures.grids.sparse_2d import Grid2DSparse

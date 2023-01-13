@@ -1,3 +1,4 @@
+from __future__ import annotations
 import json
 import logging
 import numpy as np
@@ -5,13 +6,19 @@ import os
 from os import path
 from typing import List, Union
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+
+    from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+
 from autoarray.structures.abstract_structure import Structure
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class ValuesIrregular(Structure):
+class ArrayIrregular(Structure):
     def __new__(cls, values: Union[List, np.ndarray]):
         """
         A collection of values which are structured as follows:
@@ -30,8 +37,8 @@ class ValuesIrregular(Structure):
 
         Print methods are overridden so a user always "sees" the values as the list structure.
 
-        In contrast to a `Array2D` structure, `ValuesIrregular` do not lie on a uniform grid or correspond to values
-        that originate from a uniform grid. Therefore, when handling irregular data-sets `ValuesIrregular` should be
+        In contrast to a `Array2D` structure, `ArrayIrregular` do not lie on a uniform grid or correspond to values
+        that originate from a uniform grid. Therefore, when handling irregular data-sets `ArrayIrregular` should be
         used.
 
         Parameters
@@ -45,7 +52,7 @@ class ValuesIrregular(Structure):
 
         if type(values) is list:
 
-            if isinstance(values, ValuesIrregular):
+            if isinstance(values, ArrayIrregular):
                 return values
 
             values = np.asarray(values)
@@ -55,9 +62,9 @@ class ValuesIrregular(Structure):
         return obj
 
     @property
-    def slim(self) -> "ValuesIrregular":
+    def slim(self) -> "ArrayIrregular":
         """
-        The ValuesIrregular in their `slim` representation, a 1D ndarray of shape [total_values].
+        The ArrayIrregular in their `slim` representation, a 1D ndarray of shape [total_values].
         """
         return self
 
@@ -68,24 +75,24 @@ class ValuesIrregular(Structure):
         """
         return [value for value in self]
 
-    def values_from(self, array_slim: np.ndarray) -> "ValuesIrregular":
+    def values_from(self, array_slim: np.ndarray) -> "ArrayIrregular":
         """
-        Create a `ValuesIrregular` object from a 1D ndarray of values of shape [total_values].
+        Create a `ArrayIrregular` object from a 1D ndarray of values of shape [total_values].
 
-        The returned values have an identical structure to this `ValuesIrregular` instance.
+        The returned values have an identical structure to this `ArrayIrregular` instance.
 
         Parameters
         ----------
         array_slim
-            The 1D ndarray with (hape [total_values] whose values are mapped to a `ValuesIrregular` object.
+            The 1D ndarray with (hape [total_values] whose values are mapped to a `ArrayIrregular` object.
         """
-        return ValuesIrregular(values=array_slim)
+        return ArrayIrregular(values=array_slim)
 
-    def grid_from(self, grid_slim: np.ndarray) -> "Grid2DIrregular":
+    def grid_from(self, grid_slim: np.ndarray) -> Grid2DIrregular:
         """
         Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
 
-        The returned grid are structured following this `ValuesIrregular` instance.
+        The returned grid are structured following this `ArrayIrregular` instance.
 
         Parameters
         ----------
@@ -98,9 +105,9 @@ class ValuesIrregular(Structure):
         return Grid2DIrregular(values=grid_slim)
 
     @classmethod
-    def from_file(cls, file_path: str) -> "ValuesIrregular":
+    def from_file(cls, file_path: str) -> "ArrayIrregular":
         """
-        Create a `ValuesIrregular` object from a  `.json` file which stores the coordinates as a list of list of tuples.
+        Create a `ArrayIrregular` object from a  `.json` file which stores the coordinates as a list of list of tuples.
 
         Parameters
         ----------
@@ -111,7 +118,7 @@ class ValuesIrregular(Structure):
         with open(file_path) as infile:
             values = json.load(infile)
 
-        return ValuesIrregular(values=values)
+        return ArrayIrregular(values=values)
 
     def output_to_json(self, file_path: str, overwrite: bool = False):
         """

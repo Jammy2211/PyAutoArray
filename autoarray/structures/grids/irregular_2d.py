@@ -7,7 +7,7 @@ import json
 from autoarray.abstract_ndarray import AbstractNDArray
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.values import ValuesIrregular
+from autoarray.structures.arrays.irregular import ArrayIrregular
 
 from autoarray import exc
 from autoarray.structures.grids import grid_2d_util
@@ -121,14 +121,14 @@ class Grid2DIrregular(AbstractNDArray):
         """
         return [tuple(value) for value in self]
 
-    def values_from(self, array_slim: np.ndarray) -> ValuesIrregular:
+    def values_from(self, array_slim: np.ndarray) -> ArrayIrregular:
         """
-        Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates], which
+        Create a *ArrayIrregular* object from a 1D NumPy array of values of shape [total_coordinates], which
         are structured following this `Grid2DIrregular` instance.
         """
-        return ValuesIrregular(values=array_slim)
+        return ArrayIrregular(values=array_slim)
 
-    def values_via_value_from(self, value: float) -> ValuesIrregular:
+    def values_via_value_from(self, value: float) -> ArrayIrregular:
         return self.values_from(
             array_slim=np.full(fill_value=value, shape=self.shape[0])
         )
@@ -166,14 +166,14 @@ class Grid2DIrregular(AbstractNDArray):
 
     def structure_2d_from(
         self, result: Union[np.ndarray, List]
-    ) -> Union[ValuesIrregular, "Grid2DIrregular", "Grid2DIrregularTransformed", List]:
+    ) -> Union[ArrayIrregular, "Grid2DIrregular", "Grid2DIrregularTransformed", List]:
         """
-        Convert a result from a non autoarray structure to an aa.ValuesIrregular or aa.Grid2DIrregular structure, where
+        Convert a result from a non autoarray structure to an aa.ArrayIrregular or aa.Grid2DIrregular structure, where
         the conversion depends on type(result) as follows:
 
-        - 1D np.ndarray   -> aa.ValuesIrregular
+        - 1D np.ndarray   -> aa.ArrayIrregular
         - 2D np.ndarray   -> aa.Grid2DIrregular
-        - [1D np.ndarray] -> [aa.ValuesIrregular]
+        - [1D np.ndarray] -> [aa.ArrayIrregular]
         - [2D np.ndarray] -> [aa.Grid2DIrregular]
 
         This function is used by the grid_2d_to_structure decorator to convert the output result of a function
@@ -198,14 +198,14 @@ class Grid2DIrregular(AbstractNDArray):
 
     def structure_2d_list_from(
         self, result_list: List
-    ) -> List[Union[ValuesIrregular, "Grid2DIrregular", "Grid2DIrregularTransformed"]]:
+    ) -> List[Union[ArrayIrregular, "Grid2DIrregular", "Grid2DIrregularTransformed"]]:
         """
-        Convert a result from a list of non autoarray structures to a list of aa.ValuesIrregular or aa.Grid2DIrregular
+        Convert a result from a list of non autoarray structures to a list of aa.ArrayIrregular or aa.Grid2DIrregular
         structures, where the conversion depends on type(result) as follows:
 
         ::
 
-            - [1D np.ndarray] -> [aa.ValuesIrregular]
+            - [1D np.ndarray] -> [aa.ArrayIrregular]
             - [2D np.ndarray] -> [aa.Grid2DIrregular]
 
         This function is used by the grid_like_list_to_structure_list decorator to convert the output result of a
@@ -223,7 +223,7 @@ class Grid2DIrregular(AbstractNDArray):
 
     def squared_distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
-    ) -> ValuesIrregular:
+    ) -> ArrayIrregular:
         """
         Returns the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
         coordinate.
@@ -240,7 +240,7 @@ class Grid2DIrregular(AbstractNDArray):
 
     def distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
-    ) -> ValuesIrregular:
+    ) -> ArrayIrregular:
         """
         Returns the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
 
@@ -255,7 +255,7 @@ class Grid2DIrregular(AbstractNDArray):
         return self.values_from(array_slim=distances)
 
     @property
-    def furthest_distances_to_other_coordinates(self) -> ValuesIrregular:
+    def furthest_distances_to_other_coordinates(self) -> ArrayIrregular:
         """
         For every (y,x) coordinate on the `Grid2DIrregular` returns the furthest radial distance of each coordinate
         to any other coordinate on the grid.
@@ -274,7 +274,7 @@ class Grid2DIrregular(AbstractNDArray):
 
         Returns
         -------
-        ValuesIrregular
+        ArrayIrregular
             The further distances of every coordinate to every other coordinate on the irregular grid.
         """
 

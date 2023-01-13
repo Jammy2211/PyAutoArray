@@ -73,14 +73,14 @@ def test__values_from():
 
     values_from_1d = grid.values_from(array_slim=np.array([1.0, 2.0]))
 
-    assert isinstance(values_from_1d, aa.ValuesIrregular)
+    assert isinstance(values_from_1d, aa.ArrayIrregular)
     assert values_from_1d.in_list == [1.0, 2.0]
 
     grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
 
     values_from_1d = grid.values_from(array_slim=np.array([1.0, 2.0, 3.0]))
 
-    assert isinstance(values_from_1d, aa.ValuesIrregular)
+    assert isinstance(values_from_1d, aa.ArrayIrregular)
     assert values_from_1d.in_list == [1.0, 2.0, 3.0]
 
 
@@ -171,7 +171,7 @@ def test__structure_2d_from():
 
     result = grid.structure_2d_from(result=np.array([1.0, 2.0]))
 
-    assert isinstance(result, aa.ValuesIrregular)
+    assert isinstance(result, aa.ArrayIrregular)
     assert result.in_list == [1.0, 2.0]
 
     result = grid.structure_2d_from(result=np.array([[1.0, 1.0], [2.0, 2.0]]))
@@ -186,7 +186,7 @@ def test__structure_2d_list_from():
 
     result = grid.structure_2d_list_from(result_list=[np.array([1.0, 2.0])])
 
-    assert isinstance(result[0], aa.ValuesIrregular)
+    assert isinstance(result[0], aa.ArrayIrregular)
     assert result[0].in_list == [1.0, 2.0]
 
     result = grid.structure_2d_list_from(

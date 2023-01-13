@@ -24,12 +24,12 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 Grid1D2DLike = Union[np.ndarray, Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular]
 Grid2DLike = Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular]
 
-from autoarray.structures.values import ValuesIrregular
+from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
-DataLike = Union[Array1D, Array2D, ValuesIrregular, Visibilities]
-NoiseMapLike = Union[Array1D, Array2D, ValuesIrregular, VisibilitiesNoiseMap]
+DataLike = Union[Array1D, Array2D, ArrayIrregular, Visibilities]
+NoiseMapLike = Union[Array1D, Array2D, ArrayIrregular, VisibilitiesNoiseMap]
 
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT
