@@ -623,177 +623,6 @@ class AbstractArray2D(Structure):
 
 
 class Array2D(AbstractArray2D):
-    @classmethod
-    def _manual_slim(
-        cls,
-        array: Union[np.ndarray, List],
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        header: Optional[Header] = None,
-    ) -> "Array2D":
-        """
-        Returns an ``Array2D`` from an array via inputs in its slim data representation (a 1D array with masked
-        entries not included).
-
-        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-
-        From a ``slim`` 1D input the method cannot determine the 2D shape of the array and its mask. The
-        ``shape_native`` must therefore also be input into this method. The mask is setup as a unmasked `Mask2D` of
-        ``shape_native``.
-
-        Parameters
-        ----------
-        array
-            The values of the array input with shape [total_unmasked_pixels*(sub_size**2)].
-        shape_native
-            The 2D shape of the array in its ``native`` format, and its 2D mask.
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a ``(float, float)`` structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-
-        Examples
-        --------
-
-        A full example of ``Array2D`` inputs and attributes is given at the
-        :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D from input list with sub_size 1.
-
-            array_2d = aa.Array2D.without_mask(
-                array=[1.0, 2.0, 3.0, 4.0],
-                shape_native=(2, 2),
-                pixel_scales=1.0
-            )
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D with sub_size 2.
-
-            array_2d = aa.Array2D.without_mask(
-                array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
-                shape_native=(2, 1),
-                pixel_scales=1.0,
-                sub_size=2,
-            )
-        """
-
-        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
-
-        if shape_native is None:
-            raise exc.ArrayException(
-                f"""
-                The input array is not in its native shape (an ndarray / list of shape [total_y_pixels, total_x_pixels])
-                and the shape_native parameter has not been input the Array2D function.
-    
-                Either change the input array to be its native shape or input its shape_native input the function.
-    
-                The shape of the input array is {array.shape}
-                """
-            )
-
-        if shape_native and len(shape_native) != 2:
-            raise exc.ArrayException(
-                """
-                The input shape_native parameter is not a tuple of type (int, int)
-                """
-            )
-
-        mask = Mask2D.all_false(
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return Array2D(array=array, mask=mask, header=header)
-
-    @classmethod
-    def _manual_native(
-        cls,
-        array: Union[np.ndarray, List],
-        pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        header: Optional[Header] = None,
-    ) -> "Array2D":
-        """
-        Returns an ``Array2D`` from an array via inputs in its native data representation (a 2D array with masked
-        entries included).
-
-        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-
-        Parameters
-        ----------
-        array
-            The values of the array input with shape [total_y_pixels*sub_size, total_x_pixel*sub_size].
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
-            it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D from input list with sub_size 1
-            # (This array has shape_native=(2,2)).
-
-            array_2d = aa.Array2D.without_mask(
-                array=np.array([[1.0, 2.0], [3.0, 4.0]]),
-                pixel_scales=1.0.
-                sub_size=1
-            )
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D with sub_size 2.
-            # (This array has shape_native=(2,1).
-
-            array_2d = aa.Array2D.without_mask(
-                array=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]),
-                pixel_scales=1.0.
-                sub_size=2
-            )
-        """
-
-        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
-
-        array = array_2d_util.convert_array(array=array)
-
-        shape_native = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
-
-        mask = Mask2D.all_false(
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return Array2D(array=array, mask=mask, header=header)
 
     @classmethod
     def without_mask(
@@ -807,6 +636,10 @@ class Array2D(AbstractArray2D):
     ) -> "Array2D":
         """
         Returns an ``Array2D`` from an array via inputs in its slim or native data representation.
+
+        From a ``slim`` 1D input the method cannot determine the 2D shape of the array and its mask. The
+        ``shape_native`` must therefore also be input into this method. The mask is setup as a unmasked `Mask2D` of
+        ``shape_native``.
 
         For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
@@ -857,23 +690,44 @@ class Array2D(AbstractArray2D):
                 sub_size=2,
             )
         """
+
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+
         array = array_2d_util.convert_array(array=array)
 
         if len(array.shape) == 1:
-            return cls._manual_slim(
-                array=array,
-                pixel_scales=pixel_scales,
-                shape_native=shape_native,
-                sub_size=sub_size,
-                origin=origin,
-            )
-        return cls._manual_native(
-            array=array,
+
+            if shape_native is None:
+                raise exc.ArrayException(
+                    f"""
+                    The input array is not in its native shape (an ndarray / list of shape [total_y_pixels, total_x_pixels])
+                    and the shape_native parameter has not been input the Array2D function.
+
+                    Either change the input array to be its native shape or input its shape_native input the function.
+
+                    The shape of the input array is {array.shape}
+                    """
+                )
+
+            if shape_native and len(shape_native) != 2:
+                raise exc.ArrayException(
+                    """
+                    The input shape_native parameter is not a tuple of type (int, int)
+                    """
+                )
+
+        else:
+
+            shape_native = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
+
+        mask = Mask2D.all_false(
+            shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            header=header,
         )
+
+        return Array2D(array=array, mask=mask, header=header)
 
     @classmethod
     def full(
