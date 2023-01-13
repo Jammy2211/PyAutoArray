@@ -122,11 +122,21 @@ def convert_array_2d(
 
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
-    if store_native:
-        array_2d *= np.invert(mask_2d.derive_mask.sub)
-        return array_2d
+    is_native = len(array_2d.shape) == 2
 
-    return convert_array_2d_to_slim(array_2d=array_2d, mask_2d=mask_2d)
+    if is_native:
+        array_2d *= np.invert(mask_2d.derive_mask.sub)
+
+    if is_native == store_native:
+        return array_2d
+    elif not store_native:
+        return array_2d_slim_from(
+            array_2d_native=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+        )
+    array_2d = array_2d_native_from(
+            array_2d_slim=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+        )
+    return array_2d
 
 
 def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:

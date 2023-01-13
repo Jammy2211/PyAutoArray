@@ -370,15 +370,7 @@ class AbstractArray2D(Structure):
         If it is already stored in its `slim` representation it is returned as it is. If not, it is mapped from
         `native` to `slim` and returned as a new `Array2D`.
         """
-
-        if len(self.shape) == 1:
-            return self
-
-        sub_array_1d = array_2d_util.array_2d_slim_from(
-            array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-        )
-
-        return Array2D(array=sub_array_1d, mask=self.mask, header=self.header)
+        return Array2D(array=self, mask=self.mask, header=self.header)
 
     @property
     def native(self) -> "Array2D":
@@ -389,16 +381,8 @@ class AbstractArray2D(Structure):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Array2D`.
         """
-
-        if len(self.shape) != 1:
-            return self
-
-        sub_array_2d = array_2d_util.array_2d_native_from(
-            array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-        )
-
         return Array2D(
-            array=sub_array_2d, mask=self.mask, header=self.header, store_native=True
+            array=self, mask=self.mask, header=self.header, store_native=True
         )
 
     @property
