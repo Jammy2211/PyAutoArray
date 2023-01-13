@@ -1,12 +1,12 @@
 from __future__ import annotations
 import logging
-import copy
 import numpy as np
 from typing import TYPE_CHECKING, List, Tuple, Union
 
 if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
-    from autoarray.structures.grids.uniform_2d import Grid2D
+
+from autoconf import cached_property
 
 from autoarray.mask.abstract_mask import Mask
 
@@ -293,16 +293,14 @@ class Mask2D(Mask):
             sub_size=sub_size,
             origin=origin,
         )
-        obj.derive_indexes = DeriveIndexes2D(mask=obj)
+
         return obj
 
     def __array_finalize__(self, obj):
 
         super().__array_finalize__(obj=obj)
 
-        if isinstance(obj, Mask2D):
-            self.derive_indexes = obj.derive_indexes
-        else:
+        if not isinstance(obj, Mask2D):
             self.origin = (0.0, 0.0)
 
     @property
@@ -316,6 +314,10 @@ class Mask2D(Mask):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
+
+    @cached_property
+    def derive_indexes(self) -> DeriveIndexes2D:
+        return DeriveIndexes2D(mask=self)
 
     @property
     def derive_mask(self) -> DeriveMask2D:

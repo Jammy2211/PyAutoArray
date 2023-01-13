@@ -25,6 +25,7 @@ class AbstractArray2D(Structure):
         mask: Mask2D,
         header: Header = None,
         store_native: bool = False,
+        skip_mask: bool = False,
         *args,
         **kwargs,
     ):
@@ -329,11 +330,11 @@ class AbstractArray2D(Structure):
 
             array_2d.output_to_fits(file_path="/path/for/output")
         """
-
         values = array_2d_util.convert_array_2d(
             array_2d=values,
             mask_2d=mask,
             store_native=store_native,
+            skip_mask=skip_mask,
         )
 
         obj = values.view(cls)

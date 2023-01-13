@@ -52,17 +52,15 @@ def convert_array_1d(
         return array_1d_slim_from(
             array_1d_native=array_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
         )
+    print(array_1d.shape[0])
+    print(mask_1d.sub_shape_native[0])
+    print(is_native)
+    print(store_native)
+    print(array_1d)
+
     return array_1d_native_from(
         array_1d_slim=array_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
     )
-
-    check_array_1d_and_mask_1d(array_1d=array_1d, mask_1d=mask_1d)
-
-    if store_native:
-        array_1d *= np.invert(mask_1d.derive_mask.sub)
-        return array_1d
-
-    return convert_array_1d_to_slim(array_1d=array_1d, mask_1d=mask_1d)
 
 
 @numba_util.jit()
