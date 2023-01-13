@@ -9,6 +9,9 @@ if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.abstract_ndarray import AbstractNDArray
+from autoarray.mask.derive.grid_2d import DeriveGrid2D
+from autoarray.mask.derive.indexes_2d import DeriveIndexes2D
+from autoarray.mask.derive.mask_2d import DeriveMask2D
 
 from autoarray import exc
 
@@ -31,8 +34,16 @@ class Structure(AbstractNDArray, ABC):
         return self.mask.geometry
 
     @property
-    def indexes(self):
-        return self.mask.indexes
+    def derive_grid(self) -> DeriveGrid2D:
+        return self.mask.derive_grid
+
+    @property
+    def derive_indexes(self) -> DeriveIndexes2D:
+        return self.mask.derive_indexes
+
+    @property
+    def derive_mask(self) -> DeriveMask2D:
+        return self.mask.derive_mask
 
     @property
     def shape_slim(self) -> int:
@@ -81,7 +92,7 @@ class Structure(AbstractNDArray, ABC):
 
     @property
     def unmasked_grid(self) -> Union[Grid1D, Grid2D]:
-        return self.mask.unmasked_grid_sub_1
+        return self.mask.derive_grid.all_false_sub_1
 
     @property
     def total_pixels(self) -> int:

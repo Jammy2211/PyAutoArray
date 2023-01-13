@@ -181,7 +181,7 @@ def test__apply_mask__noise_covariance_matrix():
         ]
     )
 
-    mask_2d = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    mask_2d = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     imaging = aa.Imaging(image=image, noise_covariance_matrix=noise_covariance_matrix)
 
@@ -234,7 +234,7 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
             fill_value=2.0, shape_native=(19, 19), pixel_scales=3.0
         ),
     )
-    mask = aa.Mask2D.unmasked(
+    mask = aa.Mask2D.all_false(
         shape_native=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
     )
     mask[9, 9] = False
@@ -251,15 +251,15 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
 
 def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
 
-    array = aa.Array2D.manual_native([[1.0, 2.0]], pixel_scales=1.0)
+    array = aa.Array2D.no_mask([[1.0, 2.0]], pixel_scales=1.0)
 
-    noise_map = aa.Array2D.manual_native([[0.0, 3.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[0.0, 3.0]], pixel_scales=1.0)
 
     with pytest.raises(aa.exc.DatasetException):
 
         aa.Imaging(image=array, noise_map=noise_map)
 
-    noise_map = aa.Array2D.manual_native([[-1.0, 3.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[-1.0, 3.0]], pixel_scales=1.0)
 
     with pytest.raises(aa.exc.DatasetException):
 

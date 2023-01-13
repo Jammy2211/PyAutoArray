@@ -29,13 +29,6 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @classmethod
-    def manual_slim(cls, grid) -> "Mesh2DVoronoi":
-        """
-        Convenience method which mimicks the API of other `Grid2D` objects in PyAutoArray.
-        """
-        return Mesh2DVoronoi(grid=grid)
-
     def interpolated_array_from(
         self,
         values: np.ndarray,
@@ -90,6 +83,6 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
                 np.fliplr(interpolated_array.reshape(shape_native).T)
             )
 
-        return Array2D.manual_native(
-            array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
+        return Array2D.no_mask(
+            values=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )

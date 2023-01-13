@@ -9,64 +9,11 @@ from autoarray import exc
 test_grid_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
-def test__manual_native():
+def test__constructor():
 
-    grid_2d = aa.Grid2D.manual_native(
-        grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
-        pixel_scales=1.0,
-        sub_size=1,
-    )
-
-    assert type(grid_2d) == aa.Grid2D
-    assert (grid_2d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
-    assert (
-        grid_2d.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-    ).all()
-    assert (
-        grid_2d.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-    ).all()
-    assert (
-        grid_2d.binned.native
-        == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-    ).all()
-    assert (
-        grid_2d.binned == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-    ).all()
-    assert grid_2d.pixel_scales == (1.0, 1.0)
-    assert grid_2d.origin == (0.0, 0.0)
-    assert grid_2d.sub_size == 1
-
-
-def test__manual_slim():
-
-    grid_2d = aa.Grid2D.manual_slim(
-        grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-        shape_native=(1, 1),
-        pixel_scales=1.0,
-        sub_size=2,
-        origin=(0.0, 1.0),
-    )
-
-    assert type(grid_2d) == aa.Grid2D
-    assert (grid_2d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
-    assert (
-        grid_2d.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-    ).all()
-    assert (
-        grid_2d.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-    ).all()
-    assert (grid_2d.binned.native == np.array([[[4.0, 5.0]]])).all()
-    assert (grid_2d.binned.slim == np.array([[4.0, 5.0]])).all()
-    assert grid_2d.pixel_scales == (1.0, 1.0)
-    assert grid_2d.origin == (0.0, 1.0)
-    assert grid_2d.sub_size == 2
-
-
-def test__manual_mask():
-
-    mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0)
-    grid_2d = aa.Grid2D.manual_mask(
-        grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], mask=mask
+    mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
+    grid_2d = aa.Grid2D(
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], mask=mask
     )
 
     assert type(grid_2d) == aa.Grid2D
@@ -79,11 +26,9 @@ def test__manual_mask():
     assert grid_2d.pixel_scales == (1.0, 1.0)
     assert grid_2d.origin == (0.0, 0.0)
 
-    mask = aa.Mask2D.manual(
-        [[False], [True]], sub_size=2, pixel_scales=1.0, origin=(0.0, 1.0)
-    )
-    grid_2d = aa.Grid2D.manual_mask(
-        grid=[
+    mask = aa.Mask2D([[False], [True]], sub_size=2, pixel_scales=1.0, origin=(0.0, 1.0))
+    grid_2d = aa.Grid2D(
+        values=[
             [[1.0, 2.0], [3.0, 4.0]],
             [[5.0, 6.0], [7.0, 8.0]],
             [[1.0, 2.0], [3.0, 4.0]],
@@ -115,22 +60,22 @@ def test__manual_mask():
     assert grid_2d.sub_size == 2
 
 
-def test__manual_mask__exception_raised_if_input_grid_is_2d_and_not_sub_shape_of_mask():
+def test__constructor__exception_raised_if_input_grid_is_2d_and_not_sub_shape_of_mask():
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
-        aa.Grid2D.manual_mask(grid=[[[1.0, 1.0], [3.0, 3.0]]], mask=mask)
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
+        aa.Grid2D(values=[[[1.0, 1.0], [3.0, 3.0]]], mask=mask)
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
-        aa.Grid2D.manual_mask(
-            grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
+        aa.Grid2D(
+            values=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
         )
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
-        aa.Grid2D.manual_mask(
-            grid=[
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
+        aa.Grid2D(
+            values=[
                 [[1.0, 1.0], [2.0, 2.0]],
                 [[3.0, 3.0], [4.0, 4.0]],
                 [[5.0, 5.0], [6.0, 6.0]],
@@ -139,41 +84,89 @@ def test__manual_mask__exception_raised_if_input_grid_is_2d_and_not_sub_shape_of
         )
 
 
-def test__manual_mask__exception_raised_if_input_grid_is_not_number_of_masked_sub_pixels():
+def test__constructor__exception_raised_if_input_grid_is_not_number_of_masked_sub_pixels():
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.manual(
+        mask = aa.Mask2D(
             mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
         )
-        aa.Grid2D.manual_mask(
-            grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
-        )
+        aa.Grid2D(values=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask)
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.manual(
+        mask = aa.Mask2D(
             mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
         )
-        aa.Grid2D.manual_mask(grid=[[1.0, 1.0], [2.0, 2.0]], mask=mask)
+        aa.Grid2D(values=[[1.0, 1.0], [2.0, 2.0]], mask=mask)
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.manual(
+        mask = aa.Mask2D(
             mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
         )
-        aa.Grid2D.manual_mask(grid=[[[1.0, 1.0], [2.0, 2.0], [4.0, 4.0]]], mask=mask)
+        aa.Grid2D(values=[[[1.0, 1.0], [2.0, 2.0], [4.0, 4.0]]], mask=mask)
 
     with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.manual(
+        mask = aa.Mask2D(
             mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
         )
-        aa.Grid2D.manual_mask(
-            grid=[[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]]],
+        aa.Grid2D(
+            values=[[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]]],
             mask=mask,
         )
 
 
-def test__manual_yx_2d():
+def test__no_mask():
 
-    grid_2d = aa.Grid2D.manual_yx_2d(
+    grid_2d = aa.Grid2D.no_mask(
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+        pixel_scales=1.0,
+        sub_size=1,
+    )
+
+    assert type(grid_2d) == aa.Grid2D
+    assert (grid_2d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
+    assert (
+        grid_2d.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+    ).all()
+    assert (
+        grid_2d.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+    ).all()
+    assert (
+        grid_2d.binned.native
+        == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+    ).all()
+    assert (
+        grid_2d.binned == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+    ).all()
+    assert grid_2d.pixel_scales == (1.0, 1.0)
+    assert grid_2d.origin == (0.0, 0.0)
+    assert grid_2d.sub_size == 1
+
+    grid_2d = aa.Grid2D.no_mask(
+        values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+        shape_native=(1, 1),
+        pixel_scales=1.0,
+        sub_size=2,
+        origin=(0.0, 1.0),
+    )
+
+    assert type(grid_2d) == aa.Grid2D
+    assert (grid_2d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
+    assert (
+        grid_2d.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+    ).all()
+    assert (
+        grid_2d.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+    ).all()
+    assert (grid_2d.binned.native == np.array([[[4.0, 5.0]]])).all()
+    assert (grid_2d.binned.slim == np.array([[4.0, 5.0]])).all()
+    assert grid_2d.pixel_scales == (1.0, 1.0)
+    assert grid_2d.origin == (0.0, 1.0)
+    assert grid_2d.sub_size == 2
+
+
+def test__from_yx_2d():
+
+    grid_2d = aa.Grid2D.from_yx_2d(
         y=[[1.0], [3.0]], x=[[2.0], [4.0]], pixel_scales=(2.0, 3.0)
     )
 
@@ -184,7 +177,7 @@ def test__manual_yx_2d():
     assert grid_2d.pixel_scales == (2.0, 3.0)
     assert grid_2d.origin == (0.0, 0.0)
 
-    grid_2d = aa.Grid2D.manual_yx_1d(
+    grid_2d = aa.Grid2D.from_yx_1d(
         y=[1.0, 3.0, 5.0, 7.0],
         x=[2.0, 4.0, 6.0, 8.0],
         shape_native=(1, 1),
@@ -208,9 +201,9 @@ def test__manual_yx_2d():
     assert grid_2d.sub_size == 2
 
 
-def test__manual_extent():
+def test__from_extent():
 
-    grid_2d = aa.Grid2D.manual_extent(
+    grid_2d = aa.Grid2D.from_extent(
         extent=(-1.0, 1.0, 2.0, 3.0), shape_native=(2, 3), sub_size=1
     )
 
@@ -253,7 +246,7 @@ def test__manual_extent():
     assert grid_2d.pixel_scales == (1.0, 1.0)
     assert grid_2d.origin == (0.0, 0.0)
 
-    grid_2d = aa.Grid2D.manual_extent(
+    grid_2d = aa.Grid2D.from_extent(
         extent=(-1.5, 1.5, -1.5, 1.5), shape_native=(2, 2), sub_size=2
     )
 
@@ -540,7 +533,7 @@ def test__blurring_grid_from():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
         mask_2d=mask, kernel_shape_native=(3, 5)
@@ -550,7 +543,7 @@ def test__blurring_grid_from():
         mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     blurring_grid = aa.Grid2D.blurring_grid_from(mask=mask, kernel_shape_native=(3, 5))
 
@@ -575,7 +568,7 @@ def test__blurring_grid_via_kernel_shape_from():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
         mask_2d=mask, kernel_shape_native=(3, 5)
@@ -608,7 +601,7 @@ def test__structure_2d_from():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
@@ -656,7 +649,7 @@ def test__structure_2d_list_from():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
@@ -704,7 +697,7 @@ def test__from_mask():
             [True, True, False, False],
         ]
     )
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
     grid_via_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
         mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
@@ -752,30 +745,26 @@ def test__shape_native_scaled():
         shape_native=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
     )
 
-    grid_2d = aa.Grid2D(grid=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
-    assert grid_2d.shape_native_scaled_interior == (3.0, 2.0)
+    grid_2d = aa.Grid2D.from_mask(mask=mask)
+    assert grid_2d.shape_native_scaled_interior == (2.0, 2.0)
 
-    grid_2d = aa.Grid2D(
-        grid=np.array([[1.5, 1.0], [-1.5, -1.0], [0.1, 0.1]]), mask=mask
+    mask = aa.Mask2D.elliptical(
+        shape_native=(11, 11),
+        major_axis_radius=3.0,
+        axis_ratio=0.5,
+        angle=30.0,
+        pixel_scales=(1.0, 1.0),
+        sub_size=1,
     )
-    assert grid_2d.shape_native_scaled_interior == (3.0, 2.0)
 
-    grid_2d = aa.Grid2D(
-        grid=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0]]), mask=mask
-    )
-    assert grid_2d.shape_native_scaled_interior == (4.5, 4.0)
-
-    grid_2d = aa.Grid2D(
-        grid=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0], [7.0, -5.0]]),
-        mask=mask,
-    )
-    assert grid_2d.shape_native_scaled_interior == (8.5, 8.0)
+    grid_2d = aa.Grid2D.from_mask(mask=mask)
+    assert grid_2d.shape_native_scaled_interior == (2.0, 4.0)
 
 
 def test__flipped():
 
-    grid_2d = aa.Grid2D.manual_native(
-        grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0
+    grid_2d = aa.Grid2D.no_mask(
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0
     )
 
     assert (
@@ -787,8 +776,8 @@ def test__flipped():
         == np.array([[[2.0, 1.0], [4.0, 3.0]], [[6.0, 5.0], [8.0, 7.0]]])
     ).all()
 
-    grid_2d = aa.Grid2D.manual_native(
-        grid=[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]], pixel_scales=1.0
+    grid_2d = aa.Grid2D.no_mask(
+        values=[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]], pixel_scales=1.0
     )
 
     assert (
@@ -899,7 +888,7 @@ def test__in_radians():
             [True, True, False, False],
         ]
     )
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
@@ -957,9 +946,7 @@ def test__padded_grid_from():
     assert padded_grid.shape == (54, 2)
     assert (padded_grid == padded_grid_util).all()
 
-    mask = aa.Mask2D.manual(
-        mask=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
-    )
+    mask = aa.Mask2D(mask=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2)
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
@@ -973,9 +960,7 @@ def test__padded_grid_from():
     assert (padded_grid.mask == np.full(fill_value=False, shape=(7, 6))).all()
     assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
 
-    mask = aa.Mask2D.manual(
-        mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
-    )
+    mask = aa.Mask2D(mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4)
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
@@ -1003,7 +988,7 @@ def test__sub_border_flat_indexes():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     sub_border_flat_indexes_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
         mask_2d=mask, sub_size=2
@@ -1011,19 +996,17 @@ def test__sub_border_flat_indexes():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    assert grid_2d.mask.indexes.sub_border_slim == pytest.approx(
+    assert grid_2d.mask.derive_indexes.sub_border_slim == pytest.approx(
         sub_border_flat_indexes_util, 1e-4
     )
 
 
 def test__squared_distances_to_coordinate_from():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
     )
-    grid_2d = aa.Grid2D.manual_mask(
-        grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
-    )
+    grid_2d = aa.Grid2D(values=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
 
     square_distances = grid_2d.squared_distances_to_coordinate_from(
         coordinate=(0.0, 0.0)
@@ -1043,12 +1026,10 @@ def test__squared_distances_to_coordinate_from():
 
 
 def test__distance_from_coordinate_array():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
     )
-    grid_2d = aa.Grid2D.manual_mask(
-        grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
-    )
+    grid_2d = aa.Grid2D(values=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
 
     square_distances = grid_2d.distances_to_coordinate_from(coordinate=(0.0, 0.0))
 
@@ -1182,7 +1163,7 @@ def test__sub_border_grid():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
@@ -1213,15 +1194,14 @@ def test__relocated_grid_from__inside_border_no_relocations():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D(
-        grid=np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]), mask=mask
+    grid_to_relocate = aa.Grid2D.no_mask(
+        values=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
+        pixel_scales=mask.pixel_scales,
     )
 
     relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
 
     assert (relocated_grid == np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]])).all()
-    assert (relocated_grid.mask == mask).all()
-    assert relocated_grid.sub_size == 1
 
     mask = aa.Mask2D.circular(
         shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=2
@@ -1229,15 +1209,14 @@ def test__relocated_grid_from__inside_border_no_relocations():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D(
-        grid=np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]), mask=mask
+    grid_to_relocate = aa.Grid2D.no_mask(
+        values=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
+        pixel_scales=mask.pixel_scales,
     )
 
     relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
 
     assert (relocated_grid == np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]])).all()
-    assert (relocated_grid.mask == mask).all()
-    assert relocated_grid.sub_size == 2
 
 
 def test__relocated_grid_from__outside_border_includes_relocations():
@@ -1248,8 +1227,9 @@ def test__relocated_grid_from__outside_border_includes_relocations():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D(
-        grid=np.array([[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]), mask=mask
+    grid_to_relocate = aa.Grid2D.no_mask(
+        values=np.array([[[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]]),
+        pixel_scales=mask.pixel_scales,
     )
 
     relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
@@ -1257,8 +1237,6 @@ def test__relocated_grid_from__outside_border_includes_relocations():
     assert relocated_grid == pytest.approx(
         np.array([[0.95, 0.0], [0.0, 0.95], [-0.7017, -0.7017]]), 0.1
     )
-    assert (relocated_grid.mask == mask).all()
-    assert relocated_grid.sub_size == 1
 
     mask = aa.Mask2D.circular(
         shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=2
@@ -1266,8 +1244,9 @@ def test__relocated_grid_from__outside_border_includes_relocations():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D(
-        grid=np.array([[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]), mask=mask
+    grid_to_relocate = aa.Grid2D.no_mask(
+        values=np.array([[[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]]),
+        pixel_scales=mask.pixel_scales,
     )
 
     relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
@@ -1275,8 +1254,6 @@ def test__relocated_grid_from__outside_border_includes_relocations():
     assert relocated_grid == pytest.approx(
         np.array([[0.9778, 0.0], [0.0, 0.97788], [-0.7267, -0.7267]]), 0.1
     )
-    assert (relocated_grid.mask == mask).all()
-    assert relocated_grid.sub_size == 2
 
 
 def test__relocated_grid_from__positive_origin_included_in_relocate():
@@ -1290,10 +1267,9 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D(
-        grid=np.array([[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]),
-        sub_size=1,
-        mask=mask,
+    grid_to_relocate = aa.Grid2D.no_mask(
+        values=np.array([[[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]]),
+        pixel_scales=mask.pixel_scales,
     )
 
     relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
@@ -1304,8 +1280,6 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
         ),
         0.1,
     )
-    assert (relocated_grid.mask == mask).all()
-    assert relocated_grid.sub_size == 1
 
     mask = aa.Mask2D.circular(
         shape_native=(60, 60),
@@ -1317,8 +1291,9 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D(
-        grid=np.array([[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]), mask=mask
+    grid_to_relocate = aa.Grid2D.no_mask(
+        values=np.array([[[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]]),
+        pixel_scales=mask.pixel_scales,
     )
 
     relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
@@ -1333,14 +1308,12 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
         ),
         0.1,
     )
-    assert (relocated_grid.mask == mask).all()
-    assert relocated_grid.sub_size == 2
 
 
 def test__recursive_shape_storage():
 
-    grid_2d = aa.Grid2D.manual_native(
-        grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+    grid_2d = aa.Grid2D.no_mask(
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
     )

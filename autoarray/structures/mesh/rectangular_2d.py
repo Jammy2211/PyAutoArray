@@ -17,7 +17,7 @@ from autoarray import type as ty
 class Mesh2DRectangular(Abstract2DMesh):
     def __new__(
         cls,
-        grid: np.ndarray,
+        values: np.ndarray,
         shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
@@ -41,7 +41,7 @@ class Mesh2DRectangular(Abstract2DMesh):
 
         Parameters
         ----------
-        grid
+        values
             The grid of (y,x) coordinates corresponding to the centres of each pixel in the rectangular pixelization.
         shape_native
             The 2D dimensions of the rectangular pixelization with shape (y_pixels, x_pixel).
@@ -54,14 +54,14 @@ class Mesh2DRectangular(Abstract2DMesh):
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=1,
             origin=origin,
         )
 
-        obj = grid.view(cls)
+        obj = values.view(cls)
         obj.mask = mask
 
         return obj
@@ -111,7 +111,7 @@ class Mesh2DRectangular(Abstract2DMesh):
         )
 
         return Mesh2DRectangular(
-            grid=grid_slim,
+            values=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
@@ -178,6 +178,6 @@ class Mesh2DRectangular(Abstract2DMesh):
 
         interpolated_array = interpolated_array.reshape(shape_native)
 
-        return Array2D.manual_native(
-            array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
+        return Array2D.no_mask(
+            values=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )

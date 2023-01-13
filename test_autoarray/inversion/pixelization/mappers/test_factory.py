@@ -6,7 +6,7 @@ import autoarray as aa
 
 def test__rectangular_mapper():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],
@@ -25,8 +25,8 @@ def test__rectangular_mapper():
     # happen for a real lens calculation. This is to make a mapping_matrix matrix which explicitly tests the
     # sub-grid.
 
-    grid = aa.Grid2D.manual_mask(
-        grid=[
+    grid = aa.Grid2D(
+        values=[
             [1.0, -1.0],
             [1.0, -1.0],
             [1.0, -1.0],
@@ -85,7 +85,7 @@ def test__rectangular_mapper():
 
 def test__delaunay_mapper():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, True, False, True, True],
@@ -122,7 +122,7 @@ def test__delaunay_mapper():
         ]
     )
 
-    grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
+    grid = aa.Grid2D(values=grid, mask=mask)
 
     pix = aa.mesh.DelaunayMagnification(shape=(3, 3))
     sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
@@ -162,7 +162,7 @@ def test__delaunay_mapper():
 
 def test__voronoi_mapper():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, True, False, True, True],
@@ -199,7 +199,7 @@ def test__voronoi_mapper():
         ]
     )
 
-    grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
+    grid = aa.Grid2D(values=grid, mask=mask)
 
     pix = aa.mesh.VoronoiMagnification(shape=(3, 3))
     sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(

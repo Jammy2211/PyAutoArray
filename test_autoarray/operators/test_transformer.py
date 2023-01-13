@@ -4,12 +4,12 @@ import numpy as np
 import pytest
 
 
-class MockDerivedMasks1D:
-    def __init__(self, mask, grid, masked_grid_sub_1):
+class MockDeriveMask2D:
+    def __init__(self, grid):
 
-        self.mask = mask
+        self.mask = grid.derive_mask.all_false
         self.grid = grid
-        self.masked_grid_sub_1 = masked_grid_sub_1
+        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
 
     @property
     def sub_1(self):
@@ -17,7 +17,37 @@ class MockDerivedMasks1D:
 
     @property
     def pixels_in_mask(self):
-        return self.masked_grid_sub_1.binned.slim.in_radians.shape[0]
+        return self.unmasked_sub_1.binned.slim.in_radians.shape[0]
+
+    @property
+    def derive_grid(self):
+        return MockDeriveGrid2D(
+            grid=self.grid,
+        )
+
+
+class MockDeriveGrid2D:
+    def __init__(self, grid):
+
+        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
+
+
+class MockRealSpaceMask:
+    def __init__(self, grid):
+
+        self.grid = grid
+
+    @property
+    def derive_mask(self):
+        return MockDeriveMask2D(
+            grid=self.grid,
+        )
+
+    @property
+    def derive_grid(self):
+        return MockDeriveGrid2D(
+            grid=self.grid,
+        )
 
     @property
     def pixel_scales(self):
@@ -30,19 +60,6 @@ class MockDerivedMasks1D:
     @property
     def origin(self):
         return self.grid.origin
-
-
-class MockRealSpaceMask:
-    def __init__(self, grid):
-
-        self.grid = grid
-        self.masked_grid_sub_1 = MockMaskedGrid(grid=grid)
-
-    @property
-    def derived_masks(self):
-        return MockDerivedMasks1D(
-            mask=self, grid=self.grid, masked_grid_sub_1=self.masked_grid_sub_1
-        )
 
 
 class MockMaskedGrid:
@@ -68,7 +85,7 @@ def test__dft__visibilities_from():
 
     uv_wavelengths = np.ones(shape=(4, 2))
 
-    grid_radians = aa.Grid2D.manual_native(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
+    grid_radians = aa.Grid2D.no_mask(values=[[[1.0, 1.0]]], pixel_scales=1.0)
 
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -88,8 +105,8 @@ def test__dft__visibilities_from():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-    grid_radians = aa.Grid2D.manual_native(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+    grid_radians = aa.Grid2D.no_mask(
+        values=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
     )
 
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
@@ -113,8 +130,8 @@ def test__dft__visibilities_from():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-    grid_radians = aa.Grid2D.manual_native(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+    grid_radians = aa.Grid2D.no_mask(
+        values=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
     )
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -124,7 +141,7 @@ def test__dft__visibilities_from():
         preload_transform=False,
     )
 
-    image = aa.Array2D.manual_native([[3.0, 6.0]], pixel_scales=1.0)
+    image = aa.Array2D.no_mask([[3.0, 6.0]], pixel_scales=1.0)
 
     visibilities = transformer.visibilities_from(image=image)
 
@@ -137,8 +154,8 @@ def test__dft__visibilities_from():
 def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-    grid_radians = aa.Grid2D.manual_native(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+    grid_radians = aa.Grid2D.no_mask(
+        values=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
     )
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -153,7 +170,7 @@ def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
         preload_transform=False,
     )
 
-    image = aa.Array2D.manual_native([[2.0, 6.0]], pixel_scales=1.0)
+    image = aa.Array2D.no_mask([[2.0, 6.0]], pixel_scales=1.0)
 
     visibilities_via_preload = transformer_preload.visibilities_from(image=image)
     visibilities = transformer.visibilities_from(image=image)
@@ -164,7 +181,7 @@ def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
 def test__dft__transform_mapping_matrix():
 
     uv_wavelengths = np.ones(shape=(4, 2))
-    grid_radians = aa.Grid2D.manual_native(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
+    grid_radians = aa.Grid2D.no_mask(values=[[[1.0, 1.0]]], pixel_scales=1.0)
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
     transformer = aa.TransformerDFT(
@@ -185,8 +202,8 @@ def test__dft__transform_mapping_matrix():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-    grid_radians = aa.Grid2D.manual_native(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+    grid_radians = aa.Grid2D.no_mask(
+        values=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
     )
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -213,7 +230,7 @@ def test__dft__transform_mapping_matrix():
         1.0e-4,
     )
 
-    grid_radians = aa.Grid2D.manual_native(
+    grid_radians = aa.Grid2D.no_mask(
         [[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]], pixel_scales=1.0
     )
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
@@ -246,8 +263,8 @@ def test__dft__transform_mapping_matrix():
 def test__dft__transformed_mapping_matrix__preload_and_non_preload_give_same_answer():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-    grid_radians = aa.Grid2D.manual_native(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+    grid_radians = aa.Grid2D.no_mask(
+        values=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
     )
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -296,7 +313,7 @@ def test__nufft__visibilities_from():
 
     visibilities_dft = transformer_dft.visibilities_from(image=image.native)
 
-    real_space_mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=0.005)
+    real_space_mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=0.005)
 
     transformer_nufft = aa.TransformerNUFFT(
         uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
@@ -327,7 +344,7 @@ def test__nufft__transform_mapping_matrix():
         mapping_matrix=mapping_matrix
     )
 
-    real_space_mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=0.005)
+    real_space_mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=0.005)
 
     transformer_nufft = aa.TransformerNUFFT(
         uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask

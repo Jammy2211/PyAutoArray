@@ -8,8 +8,8 @@ def test__from_image__setup_with_all_features_off(
     uv_wavelengths_7x2, transformer_7x7_7, mask_2d_7x7
 ):
 
-    image = aa.Array2D.manual_native(
-        array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
+    image = aa.Array2D.no_mask(
+        values=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
         pixel_scales=transformer_7x7_7.grid.pixel_scales,
     )
 
@@ -24,7 +24,7 @@ def test__from_image__setup_with_all_features_off(
 
     transformer = simulator.transformer_class(
         uv_wavelengths=uv_wavelengths_7x2,
-        real_space_mask=aa.Mask2D.unmasked(
+        real_space_mask=aa.Mask2D.all_false(
             shape_native=(3, 3), pixel_scales=image.pixel_scales
         ),
     )
@@ -36,8 +36,8 @@ def test__from_image__setup_with_all_features_off(
 
 def test__setup_with_noise(uv_wavelengths_7x2, transformer_7x7_7):
 
-    image = aa.Array2D.manual_native(
-        array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
+    image = aa.Array2D.no_mask(
+        values=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
         pixel_scales=transformer_7x7_7.grid.pixel_scales,
     )
 

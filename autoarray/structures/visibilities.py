@@ -79,7 +79,7 @@ class AbstractVisibilities(Structure):
         """
         Returns the 1D complex NumPy array of values as an irregular grid.
         """
-        return Grid2DIrregular(grid=self.in_array)
+        return Grid2DIrregular(values=self.in_array)
 
     @property
     def shape_slim(self) -> int:
@@ -133,25 +133,6 @@ class AbstractVisibilities(Structure):
 
 class Visibilities(AbstractVisibilities):
     @classmethod
-    def manual_slim(
-        cls, visibilities: Union[np.ndarray, List[complex]]
-    ) -> "Visibilities":
-        """
-        Create `Visibilities` (see `AbstractVisibilities.__new__`) by inputting (real, imag) values as a 1D complex
-        NumPy array or 2D NumPy float array, for example:
-
-        visibilities=np.array([1.0+1.0j, 2.0+2.0j, 3.0+3.0j, 4.0+4.0j])
-        visibilities=np.array([[1.0+1.0], [2.0+2.0], [3.0+3.0], [4.0+4.0]])
-        visibilities=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
-
-        Parameters
-        ----------
-        visibilities
-            The (real, imag) visibilities values.
-        """
-        return cls(visibilities)
-
-    @classmethod
     def full(cls, fill_value: float, shape_slim: Tuple[int]) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) where all (real, imag) values are filled with an
@@ -167,7 +148,7 @@ class Visibilities(AbstractVisibilities):
         shape_slim
             The 1D shape of output visibilities.
         """
-        return cls.manual_slim(
+        return cls(
             visibilities=np.full(
                 fill_value=fill_value + fill_value * 1j, shape=(shape_slim[0],)
             )
@@ -224,7 +205,7 @@ class Visibilities(AbstractVisibilities):
         visibilities_1d = array_2d_util.numpy_array_2d_via_fits_from(
             file_path=file_path, hdu=hdu
         )
-        return cls.manual_slim(visibilities=visibilities_1d)
+        return cls(visibilities=visibilities_1d)
 
 
 class VisibilitiesNoiseMap(Visibilities):

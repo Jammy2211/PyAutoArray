@@ -1,4 +1,3 @@
-from os import path
 import numpy as np
 import pytest
 
@@ -12,8 +11,8 @@ import autoarray as aa
 
 def test__manual_slim():
 
-    grid = aa.Grid2DIterate.manual_slim(
-        grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+    grid = aa.Grid2DIterate.no_mask(
+        values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(2, 2),
         pixel_scales=1.0,
         fractional_accuracy=0.1,
@@ -46,7 +45,7 @@ def test__from_mask():
             [True, True, False, False],
         ]
     )
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     grid_via_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
         mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
@@ -138,7 +137,7 @@ def test__blurring_mask_2d_from():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
         mask_2d=mask, kernel_shape_native=(3, 5)
@@ -173,7 +172,7 @@ def test__blurring_grid_from():
         ]
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
     blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
         mask_2d=mask, kernel_shape_native=(3, 5)
@@ -183,7 +182,7 @@ def test__blurring_grid_from():
         mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
     )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
     blurring_grid = aa.Grid2DIterate.blurring_grid_from(
         mask=mask, kernel_shape_native=(3, 5)
@@ -217,9 +216,7 @@ def test__padded_grid_from():
     assert padded_grid.sub_steps == [2, 3]
     assert (padded_grid == padded_grid_util).all()
 
-    mask = aa.Mask2D.manual(
-        mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=1
-    )
+    mask = aa.Mask2D(mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=1)
 
     grid = aa.Grid2DIterate.from_mask(
         mask=mask, fractional_accuracy=0.1, sub_steps=[2, 3]
@@ -240,7 +237,7 @@ def test__padded_grid_from():
 
 def test__threshold_mask_via_arrays_from():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -252,8 +249,8 @@ def test__threshold_mask_via_arrays_from():
 
     grid = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
-    arr = aa.Array2D.manual_mask(
-        array=[
+    arr = aa.Array2D(
+        values=[
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 1.0, 0.0],
             [0.0, 1.0, 1.0, 0.0],
@@ -280,7 +277,7 @@ def test__threshold_mask_via_arrays_from():
 
     grid = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.5)
 
-    result_array_lower_sub = aa.Array2D.manual_mask(
+    result_array_lower_sub = aa.Array2D(
         [
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 1.9, 0.001, 0.0],
@@ -290,7 +287,7 @@ def test__threshold_mask_via_arrays_from():
         mask=mask,
     )
 
-    result_array_higher_sub = aa.Array2D.manual_mask(
+    result_array_higher_sub = aa.Array2D(
         [
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 2.0, 2.0, 0.0],
@@ -317,7 +314,7 @@ def test__threshold_mask_via_arrays_from():
         )
     ).all()
 
-    mask_lower_sub = aa.Mask2D.manual(
+    mask_lower_sub = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -327,7 +324,7 @@ def test__threshold_mask_via_arrays_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    mask_higher_sub = aa.Mask2D.manual(
+    mask_higher_sub = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, True, True],
@@ -339,7 +336,7 @@ def test__threshold_mask_via_arrays_from():
 
     grid = aa.Grid2DIterate.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
 
-    array_lower_sub = aa.Array2D.manual_mask(
+    array_lower_sub = aa.Array2D(
         [
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 2.0, 2.0, 0.0],
@@ -349,7 +346,7 @@ def test__threshold_mask_via_arrays_from():
         mask=mask_lower_sub,
     )
 
-    array_higher_sub = aa.Array2D.manual_mask(
+    array_higher_sub = aa.Array2D(
         [
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 5.0, 5.0, 0.0],
@@ -379,7 +376,7 @@ def test__threshold_mask_via_arrays_from():
 
 def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_sub():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -449,7 +446,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
 
 def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -495,7 +492,7 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
 
 def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -511,7 +508,7 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    arr = aa.Array2D.manual_mask(array=np.zeros(9), mask=mask)
+    arr = aa.Array2D(values=np.zeros(9), mask=mask)
 
     values = grid.iterated_array_from(
         func=ndarray_1d_from, cls=None, array_lower_sub_2d=arr
@@ -522,7 +519,7 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
 
 def test__threshold_mask_via_grids_from():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -534,7 +531,7 @@ def test__threshold_mask_via_grids_from():
 
     iterate = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
-    grid = aa.Grid2D.manual_mask(
+    grid = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0]],
@@ -562,7 +559,7 @@ def test__threshold_mask_via_grids_from():
 
     iterate = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.5)
 
-    grid_lower_sub = aa.Grid2D.manual_mask(
+    grid_lower_sub = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [1.9, 1.9], [0.001, 0.001], [0.0, 0.0]],
@@ -572,7 +569,7 @@ def test__threshold_mask_via_grids_from():
         mask=mask,
     )
 
-    grid_higher_sub = aa.Grid2D.manual_mask(
+    grid_higher_sub = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0]],
@@ -599,7 +596,7 @@ def test__threshold_mask_via_grids_from():
         )
     ).all()
 
-    mask_lower_sub = aa.Mask2D.manual(
+    mask_lower_sub = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, False, True],
@@ -609,7 +606,7 @@ def test__threshold_mask_via_grids_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    mask_higher_sub = aa.Mask2D.manual(
+    mask_higher_sub = aa.Mask2D(
         mask=[
             [True, True, True, True],
             [True, False, True, True],
@@ -621,7 +618,7 @@ def test__threshold_mask_via_grids_from():
 
     iterate = aa.Grid2DIterate.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
 
-    grid_lower_sub = aa.Grid2D.manual_mask(
+    grid_lower_sub = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0]],
@@ -631,7 +628,7 @@ def test__threshold_mask_via_grids_from():
         mask=mask_lower_sub,
     )
 
-    grid_higher_sub = aa.Grid2D.manual_mask(
+    grid_higher_sub = aa.Grid2D(
         [
             [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
             [[0.0, 0.0], [0.1, 2.0], [0.1, 0.1], [0.0, 0.0]],
@@ -661,7 +658,7 @@ def test__threshold_mask_via_grids_from():
 
 def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_sub():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -725,7 +722,7 @@ def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_s
 
 def test__iterated_grid_from__check_values_computed_to_fractional_accuracy():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -775,7 +772,7 @@ def test__iterated_grid_from__check_values_computed_to_fractional_accuracy():
 
 def test__iterated_grid_from__func_returns_all_zeros__iteration_terminated():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -791,7 +788,7 @@ def test__iterated_grid_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    grid_lower = aa.Grid2D.manual_mask(grid=np.zeros((9, 2)), mask=mask)
+    grid_lower = aa.Grid2D(values=np.zeros((9, 2)), mask=mask)
 
     values = grid.iterated_grid_from(
         func=ndarray_1d_from, cls=None, grid_lower_sub_2d=grid_lower

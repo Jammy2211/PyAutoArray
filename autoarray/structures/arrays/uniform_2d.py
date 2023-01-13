@@ -12,7 +12,6 @@ from autoarray import type as ty
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
-from autoarray.structures.grids import grid_2d_util
 from autoarray.layout import layout_util
 
 logging.basicConfig()
@@ -22,41 +21,39 @@ logger = logging.getLogger(__name__)
 class AbstractArray2D(Structure):
     def __new__(
         cls,
-        array: Union[np.ndarray, List],
+        values: Union[np.ndarray, List],
         mask: Mask2D,
         header: Header = None,
+        store_native: bool = False,
+        skip_mask: bool = False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         A uniform 2D array of values, which are paired with a 2D mask of pixels which may be split into sub-pixels.
 
-        The ``Array2D`, like all data structures (e.g. ``Grid2D``, ``VectorYX2D``) offers in-built functionality which:
+        The ``Array2D`, like all data structures (e.g. ``Grid2D``, ``VectorYX2D``) has in-built functionality which:
 
-        - Applies a mask to the values of the data structure.
+        - Applies a 2D mask (a ``Mask2D`` object) to the da_ta structure's values.
 
         - Maps the data structure between two data representations: `slim`` (all unmasked values in
           a 1D ``ndarray``) and ``native`` (all unmasked values in a 2D ``ndarray``).
 
         - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
-        a (y,x) grid of all unmasked pixels, of all pixels, etc.).
+          a (y,x) grid of all unmasked pixels).
 
-        - Associates sub-grids with the data structure, which permit calculations to be performed at higher resolution
-          and binned up.
+        - Associates sub-grids with the data structure, which perform calculations higher resolutions which are then
+          binned up.
 
-        Each entry of a ``Array2D`` corresponds to a value at the centre of a sub-pixel in an unmasked pixel. It is
-        ordered such that pixels begin from the top-row of the corresponding mask and go right and down. The positive
-        y-axis is upwards and positive x-axis to the right.
+        Each entry of an ``Array2D`` corresponds to a value at the centre of a sub-pixel in its
+        corresponding ``Mask2D``.  It is ordered such that pixels begin from the top-row of the corresponding mask
+        and go right and down. The positive y-axis is upwards and positive x-axis to the right.
 
-        A detailed description of this functionality is provided below, correspond to four cases of increasing
-        complexity.
-
+        A detailed description of the data structure API is provided below.
 
         **SLIM DATA REPRESENTATION (sub-size=1)**
 
-        The ``Array2D`` in its ``slim`` representation is an ``ndarray`` of shape [total_unmasked_pixels].
-
-        Below is a visual illustration of an ``Array2D``'s mask, where a total of 10 pixels are unmasked and are
+        Below is a visual illustration of an ``Array2D``'s 2D mask, where a total of 10 pixels are unmasked and are
         included in the array.
 
         ::
@@ -73,40 +70,41 @@ class AbstractArray2D(Structure):
              x x x x x x x x x x
 
         The mask pixel index's are as follows (the positive / negative direction of the ``Grid2D`` objects associated
-        with the array are highlight on the y and x axes).
+        with the array are also shown on the y and x axes).
 
         ::
 
             <--- -ve  x  +ve -->
 
-             x x x x x x x x x x  ^   array_2d[0] = 0
-             x x x x x x x x x x  I   array_2d[1] = 1
-             x x x x x x x x x x  I   array_2d[2] = 2
-             x x x x 0 1 x x x x +ve  array_2d[3] = 3
-             x x x 2 3 4 5 x x x  y   array_2d[4] = 4
-             x x x 6 7 8 9 x x x -ve  array_2d[5] = 5
-             x x x x x x x x x x  I   array_2d[6] = 6
-             x x x x x x x x x x  I   array_2d[7] = 7
-             x x x x x x x x x x \/   array_2d[8] = 8
-             x x x x x x x x x x      array_2d[9] = 9
+             x x x x x x x x x x  ^   array_2d[0] = 10
+             x x x x x x x x x x  I   array_2d[1] = 20
+             x x x x x x x x x x  I   array_2d[2] = 30
+             x x x x 0 1 x x x x +ve  array_2d[3] = 40
+             x x x 2 3 4 5 x x x  y   array_2d[4] = 50
+             x x x 6 7 8 9 x x x -ve  array_2d[5] = 60
+             x x x x x x x x x x  I   array_2d[6] = 70
+             x x x x x x x x x x  I   array_2d[7] = 80
+             x x x x x x x x x x \/   array_2d[8] = 90
+             x x x x x x x x x x      array_2d[9] = 100
 
-        Each element of the ``slim`` representation therefore corresponds to each masked the pixel index:
+        The ``Array2D`` in its ``slim`` data representation is an ``ndarray`` of shape [total_unmasked_pixels].
+
+        For the ``Mask2D`` above the ``slim`` representation therefore contains 10 entries and two examples of these
+        entries are:
 
         ::
 
-            array[3] = the 4th unmasked pixel's value, given by value 3 above.
-            array[6] = the 7th unmasked pixel's value, given by value 7 above.
+            array[3] = the 4th unmasked pixel's value, given by value 40 above.
+            array[6] = the 7th unmasked pixel's value, given by value 80 above.
 
         A Cartesian grid of (y,x) coordinates, corresponding to all ``slim`` values (e.g. unmasked pixels) is given
-        by ``array_2d.mask.masked_grid``.
+        by ``array_2d.derive_grid.masked.slim``.
 
 
         **NATIVE DATA REPRESENTATION (sub_size=1)**
 
-        The ``Array2D`` has the same values as the ``slim`` representation above, but is instead stored as an
-        an ``ndarray`` of shape [total_y_values, total_x_values].
-
-        All masked entries on the array have values of 0.0.
+        The ``Array2D`` above, but represented as an an ``ndarray`` of shape [total_y_values, total_x_values], where
+        all masked entries have values of 0.0.
 
         For the following mask:
 
@@ -123,38 +121,58 @@ class AbstractArray2D(Structure):
              x x x x x x x x x x
              x x x x x x x x x x
 
-        Where the array has the following valeus:
+        Where the array has the following indexes (left figure) and values (right):
 
         ::
 
             <--- -ve  x  +ve -->
 
-             x x x x x x x x x x  ^   array_2d[0] = 0
-             x x x x x x x x x x  I   array_2d[1] = 1
-             x x x x x x x x x x  I   array_2d[2] = 2
-             x x x x 0 1 x x x x +ve  array_2d[3] = 3
-             x x x 2 3 4 5 x x x  y   array_2d[4] = 4
-             x x x 6 7 8 9 x x x -ve  array_2d[5] = 5
-             x x x x x x x x x x  I   array_2d[6] = 6
-             x x x x x x x x x x  I   array_2d[7] = 7
-             x x x x x x x x x x \/   array_2d[8] = 8
-             x x x x x x x x x x      array_2d[9] = 9
+             x x x x x x x x x x  ^   array_2d[0] = 10
+             x x x x x x x x x x  I   array_2d[1] = 20
+             x x x x x x x x x x  I   array_2d[2] = 30
+             x x x x 0 1 x x x x +ve  array_2d[3] = 40
+             x x x 2 3 4 5 x x x  y   array_2d[4] = 50
+             x x x 6 7 8 9 x x x -ve  array_2d[5] = 60
+             x x x x x x x x x x  I   array_2d[6] = 70
+             x x x x x x x x x x  I   array_2d[7] = 80
+             x x x x x x x x x x \/   array_2d[8] = 90
+             x x x x x x x x x x      array_2d[9] = 100
 
         In the above array:
 
-            - array[0,0] = 0.0 (it is masked, thus zero)
-            - array[0,0] = 0.0 (it is masked, thus zero)
-            - array[3,3] = 0.0 (it is masked, thus zero)
-            - array[3,3] = 0.0 (it is masked, thus zero)
-            - array[3,4] = 0
-            - array[3,5] = 1
-            - array[4,5] = 4
+        ::
 
+            - array[0,0] = 0.0 (it is masked, thus zero)
+            - array[0,0] = 0.0 (it is masked, thus zero)
+            - array[3,3] = 0.0 (it is masked, thus zero)
+            - array[3,3] = 0.0 (it is masked, thus zero)
+            - array[3,4] = 10
+            - array[3,5] = 20
+            - array[4,5] = 50
+
+        **SLIM TO NATIVE MAPPING**
+
+        The ``Array2D`` has functionality which maps data between the ``slim`` and ``native`` data representations.
+
+        For the example mask above, the 1D ``ndarray`` given by ``mask.derive_indexes.slim_to_native`` is:
+
+        ::
+
+            slim_to_native[0] = [3,4]
+            slim_to_native[1] = [3,5]
+            slim_to_native[2] = [4,3]
+            slim_to_native[3] = [4,4]
+            slim_to_native[4] = [4,5]
+            slim_to_native[5] = [4,6]
+            slim_to_native[6] = [5,3]
+            slim_to_native[7] = [5,4]
+            slim_to_native[8] = [5,5]
+            slim_to_native[9] = [5,6]
 
         **SUB GRIDDING**
 
-        If the ``Mask2D`` ``sub_size`` is > 1, the array is a sub-array where each entry corresponds to values at the
-        centres of sub-pixels of each unmasked pixel.
+        If the ``Mask2D`` ``sub_size`` is > 1, the array has entries corresponding to the values at the centre of
+        every sub-pixel of each unmasked pixel.
 
         The sub-array indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first
         unmasked pixel. Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel.
@@ -239,16 +257,19 @@ class AbstractArray2D(Structure):
 
         Parameters
         ----------
-        array
+        values
             The values of the array, which can be input in the ``slim`` or ``native`` format.
         mask
             The 2D mask associated with the array, defining the pixels each array value in its ``slim`` representation
             is paired with.
+        store_native
+            If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
+            mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
 
         Examples
         --------
 
-        This example uses the ``Array2D.manual_slim`` method to create the the ``Array2D``.
+        This example uses the ``Array2D.no_mask`` method to create the the ``Array2D``.
 
         Different methods using different inputs are available and documented throughout this webpage.
 
@@ -258,8 +279,8 @@ class AbstractArray2D(Structure):
 
             # Make Array2D from input np.ndarray with sub_size 1.
 
-            array_2d = aa.Array2D.manual_slim(
-                array=np.array([1.0, 2.0, 3.0, 4.0]),
+            array_2d = aa.Array2D.no_mask(
+                values=np.array([1.0, 2.0, 3.0, 4.0]),
                 shape_native=(2, 2),
                 pixel_scales=1.0,
                 sub_size=1
@@ -267,8 +288,8 @@ class AbstractArray2D(Structure):
 
             # Make Array2D from input list with different shape_native and sub_size 1.
 
-            array_2d = aa.Array2D.manual_slim(
-                array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            array_2d = aa.Array2D.no_mask(
+                values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
                 shape_native=(2, 3),
                 pixel_scales=1.0,
                 sub_size=1
@@ -280,8 +301,8 @@ class AbstractArray2D(Structure):
 
             # Make Array2D with sub_size 2.
 
-            array_2d = aa.Array2D.manual_slim(
-                array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            array_2d = aa.Array2D.no_mask(
+                values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
                 shape_native=(2, 1),
                 pixel_scales=1.0,
                 sub_size=2,
@@ -290,7 +311,7 @@ class AbstractArray2D(Structure):
             # Apply 2D mask to Array2D with sub_size 2, where the
             # True value masks entries (5.0, 6.0, 7.0, 8.0).
 
-            mask = aa.Mask2D.manual(
+            mask = aa.Mask2D(
                 mask=[[False], [True]],
                 pixel_scales=2.0,
                 sub_size=2
@@ -309,10 +330,14 @@ class AbstractArray2D(Structure):
 
             array_2d.output_to_fits(file_path="/path/for/output")
         """
+        values = array_2d_util.convert_array_2d(
+            array_2d=values,
+            mask_2d=mask,
+            store_native=store_native,
+            skip_mask=skip_mask,
+        )
 
-        array = array_2d_util.convert_array(array=array)
-
-        obj = array.view(cls)
+        obj = values.view(cls)
         obj.mask = mask
         obj.header = header
 
@@ -328,8 +353,14 @@ class AbstractArray2D(Structure):
         else:
             self.header = None
 
+    @property
+    def store_native(self):
+        if len(self.shape) == 1:
+            return False
+        return True
+
     def apply_mask(self, mask: Mask2D) -> "Array2D":
-        return Array2D.manual_mask(array=self.native, mask=mask, header=self.header)
+        return Array2D(values=self.native, mask=mask, header=self.header)
 
     @property
     def slim(self) -> "Array2D":
@@ -340,15 +371,7 @@ class AbstractArray2D(Structure):
         If it is already stored in its `slim` representation it is returned as it is. If not, it is mapped from
         `native` to `slim` and returned as a new `Array2D`.
         """
-
-        if len(self.shape) == 1:
-            return self
-
-        sub_array_1d = array_2d_util.array_2d_slim_from(
-            array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-        )
-
-        return Array2D(array=sub_array_1d, mask=self.mask, header=self.header)
+        return Array2D(values=self, mask=self.mask, header=self.header)
 
     @property
     def native(self) -> "Array2D":
@@ -359,14 +382,9 @@ class AbstractArray2D(Structure):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Array2D`.
         """
-
-        if len(self.shape) != 1:
-            return self
-
-        sub_array_2d = array_2d_util.array_2d_native_from(
-            array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+        return Array2D(
+            values=self, mask=self.mask, header=self.header, store_native=True
         )
-        return Array2D(array=sub_array_2d, mask=self.mask, header=self.header)
 
     @property
     def binned(self) -> "Array2D":
@@ -389,8 +407,8 @@ class AbstractArray2D(Structure):
         )
 
         return Array2D(
-            array=binned_array_1d,
-            mask=self.mask.derived_masks.sub_1,
+            values=binned_array_1d,
+            mask=self.mask.derive_mask.sub_1,
             header=self.header,
         )
 
@@ -420,12 +438,12 @@ class AbstractArray2D(Structure):
     @property
     def binned_across_rows(self) -> Array1D:
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=0)
-        return Array1D.manual_native(array=binned_array, pixel_scales=self.pixel_scale)
+        return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     @property
     def binned_across_columns(self) -> Array1D:
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=1)
-        return Array1D.manual_native(array=binned_array, pixel_scales=self.pixel_scale)
+        return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
         """
@@ -447,7 +465,7 @@ class AbstractArray2D(Structure):
             x1=self.mask.zoom_region[3] + buffer,
         )
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -458,7 +476,7 @@ class AbstractArray2D(Structure):
             array_2d=extracted_array_2d, mask_2d=mask
         )
 
-        return Array2D(array=array, mask=mask, header=self.header)
+        return Array2D(values=array, mask=mask, header=self.header)
 
     def extent_of_zoomed_array(self, buffer: int = 1) -> np.ndarray:
         """
@@ -482,7 +500,7 @@ class AbstractArray2D(Structure):
             x1=self.mask.zoom_region[3] + buffer,
         )
 
-        mask = Mask2D.unmasked(
+        mask = Mask2D.all_false(
             shape_native=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -513,7 +531,7 @@ class AbstractArray2D(Structure):
             array_2d=self.native, resized_shape=new_shape
         )
 
-        resized_mask = self.mask.derived_masks.resized_from(
+        resized_mask = self.mask.derive_mask.resized_from(
             new_shape=new_shape, pad_value=mask_pad_value
         )
 
@@ -521,7 +539,12 @@ class AbstractArray2D(Structure):
             array_2d=resized_array_2d, mask_2d=resized_mask
         )
 
-        return Array2D(array=array, mask=resized_mask, header=self.header)
+        return Array2D(
+            values=array,
+            mask=resized_mask,
+            header=self.header,
+            store_native=self.store_native,
+        )
 
     def padded_before_convolution_from(
         self, kernel_shape: Tuple[int, int], mask_pad_value: int = 0.0
@@ -569,7 +592,7 @@ class AbstractArray2D(Structure):
             psf_cut_y : array_y - psf_cut_y, psf_cut_x : array_x - psf_cut_x
         ]
 
-        resized_mask = self.mask.derived_masks.resized_from(
+        resized_mask = self.mask.derive_mask.resized_from(
             new_shape=trimmed_array_2d.shape
         )
 
@@ -577,7 +600,12 @@ class AbstractArray2D(Structure):
             array_2d=trimmed_array_2d, mask_2d=resized_mask
         )
 
-        return Array2D(array=array, mask=resized_mask, header=self.header)
+        return Array2D(
+            values=array,
+            mask=resized_mask,
+            header=self.header,
+            store_native=self.store_native,
+        )
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """
@@ -597,171 +625,9 @@ class AbstractArray2D(Structure):
 
 class Array2D(AbstractArray2D):
     @classmethod
-    def manual_slim(
+    def no_mask(
         cls,
-        array: Union[np.ndarray, List],
-        shape_native: Tuple[int, int],
-        pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        header: Optional[Header] = None,
-    ) -> "Array2D":
-        """
-        Returns an ``Array2D`` from an array via inputs in its slim data representation (a 1D array with masked
-        entries not included).
-
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-
-        From a ``slim`` 1D input the method cannot determine the 2D shape of the array and its mask. The
-        ``shape_native`` must therefore also be input into this method. The mask is setup as a unmasked `Mask2D` of
-        ``shape_native``.
-
-        Parameters
-        ----------
-        array
-            The values of the array input with shape [total_unmasked_pixels*(sub_size**2)].
-        shape_native
-            The 2D shape of the array in its ``native`` format, and its 2D mask.
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a ``(float, float)`` structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-
-        Examples
-        --------
-
-        A full example of ``Array2D`` inputs and attributes is given at the
-        :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D from input list with sub_size 1.
-
-            array_2d = aa.Array2D.manual_slim(
-                array=[1.0, 2.0, 3.0, 4.0],
-                shape_native=(2, 2),
-                pixel_scales=1.0
-            )
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D with sub_size 2.
-
-            array_2d = aa.Array2D.manual_slim(
-                array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
-                shape_native=(2, 1),
-                pixel_scales=1.0,
-                sub_size=2,
-            )
-        """
-
-        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
-
-        if shape_native and len(shape_native) != 2:
-            raise exc.ArrayException(
-                "The input shape_native parameter is not a tuple of type (int, int)"
-            )
-
-        mask = Mask2D.unmasked(
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
-
-        return Array2D(array=array, mask=mask, header=header)
-
-    @classmethod
-    def manual_native(
-        cls,
-        array: Union[np.ndarray, List],
-        pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
-        origin: Tuple[float, float] = (0.0, 0.0),
-        header: Optional[Header] = None,
-    ) -> "Array2D":
-        """
-        Returns an ``Array2D`` from an array via inputs in its native data representation (a 2D array with masked
-        entries included).
-
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-
-        Parameters
-        ----------
-        array
-            The values of the array input with shape [total_y_pixels*sub_size, total_x_pixel*sub_size].
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
-            it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
-        origin
-            The (y,x) scaled units origin of the mask's coordinate system.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D from input list with sub_size 1
-            # (This array has shape_native=(2,2)).
-
-            array_2d = aa.Array2D.manual_native(
-                array=np.array([[1.0, 2.0], [3.0, 4.0]]),
-                pixel_scales=1.0.
-                sub_size=1
-            )
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D with sub_size 2.
-            # (This array has shape_native=(2,1).
-
-            array_2d = aa.Array2D.manual_native(
-                array=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]),
-                pixel_scales=1.0.
-                sub_size=2
-            )
-        """
-
-        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
-
-        array = array_2d_util.convert_array(array=array)
-
-        shape_native = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
-
-        mask = Mask2D.unmasked(
-            shape_native=shape_native,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        array = array_2d_util.convert_array_2d(array_2d=array, mask_2d=mask)
-
-        return Array2D(array=array, mask=mask, header=header)
-
-    @classmethod
-    def manual(
-        cls,
-        array: Union[np.ndarray, List],
+        values: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         shape_native: Tuple[int, int] = None,
         sub_size: int = 1,
@@ -771,13 +637,17 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` from an array via inputs in its slim or native data representation.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        From a ``slim`` 1D input the method cannot determine the 2D shape of the array and its mask. The
+        ``shape_native`` must therefore also be input into this method. The mask is setup as a unmasked `Mask2D` of
+        ``shape_native``.
+
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
         Parameters
         ----------
-        array
+        values
             The values of the array input with shape [total_unmasked_pixels*(sub_size**2)] or
             shape [total_y_pixels*sub_size, total_x_pixel*sub_size].
         pixel_scales
@@ -813,101 +683,54 @@ class Array2D(AbstractArray2D):
 
             # Make Array2D from input list, slim format with sub_size 2.
 
-            array_2d = aa.Array2D.manual(
-                array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
+            array_2d = aa.Array2D.no_mask(
+                values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
                 shape_native=(2, 1),
                 pixel_scales=1.0,
                 sub_size=2,
             )
         """
-        array = array_2d_util.convert_array(array=array)
 
-        if len(array.shape) == 1:
-            return cls.manual_slim(
-                array=array,
-                pixel_scales=pixel_scales,
-                shape_native=shape_native,
-                sub_size=sub_size,
-                origin=origin,
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+
+        values = array_2d_util.convert_array(array=values)
+
+        if len(values.shape) == 1:
+
+            if shape_native is None:
+                raise exc.ArrayException(
+                    f"""
+                    The input array is not in its native shape (an ndarray / list of shape [total_y_pixels, total_x_pixels])
+                    and the shape_native parameter has not been input the Array2D function.
+
+                    Either change the input array to be its native shape or input its shape_native input the function.
+
+                    The shape of the input array is {values.shape}
+                    """
+                )
+
+            if shape_native and len(shape_native) != 2:
+                raise exc.ArrayException(
+                    """
+                    The input shape_native parameter is not a tuple of type (int, int)
+                    """
+                )
+
+        else:
+
+            shape_native = (
+                int(values.shape[0] / sub_size),
+                int(values.shape[1] / sub_size),
             )
-        return cls.manual_native(
-            array=array,
+
+        mask = Mask2D.all_false(
+            shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            header=header,
         )
 
-    @classmethod
-    def manual_mask(
-        cls,
-        array: Union[np.ndarray, List],
-        mask: Mask2D,
-        header: Header = None,
-        store_native: bool = False,
-    ) -> "Array2D":
-        """
-        Returns an ``Array2D`` from an array via inputs in its slim or native data representation and its corresponding
-        2D mask.
-
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
-        used by the API, see
-        the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
-
-        Parameters
-        ----------
-        array
-            The values of the array input with shape [total_unmasked_pixels*(sub_size**2)] or
-            shape [total_y_pixels*sub_size, total_x_pixel*sub_size].
-        mask
-            The mask whose masked pixels are used to setup the sub-pixel grid.
-        store_native
-            If True, the array is stored in its native format [total_y_pixels, total_x_pixels]. The only use of
-            this is to avoid mapping large data arrays to and from the slim / native formats, which can be a
-            computational bottleneck.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D from input list, native format and sub_size 1.
-
-            mask = aa.Mask2D.manual(
-                mask=[[False, False], [True, False]],
-                pixel_scales=1.0,
-                sub_size=1
-            )
-
-            # The value of 3.0 in the array_2d is masked due to the True entry
-
-            array_2d = aa.Array2D.manual_mask(
-                array=np.array([[1.0, 2.0], [3.0, 4.0]]),
-                mask=mask
-            )
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array2D from input list, slim format and sub_size 1.
-
-            mask = aa.Mask2D.manual(
-                mask=[[False], [True]],
-                pixel_scales=2.0,
-                sub_size=2
-            )
-
-            # Only 4 entries are input corresponding to the 4 sub-pixels in the False entry
-            # of the mask.
-
-            array_2d = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
-        """
-        array = array_2d_util.convert_array_2d(
-            array_2d=array, mask_2d=mask, store_native=store_native
-        )
-        return Array2D(array=array, mask=mask, header=header)
+        return Array2D(values=values, mask=mask, header=header)
 
     @classmethod
     def full(
@@ -922,7 +745,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` where all values are filled with an input fill value, analogous to ``np.full()``.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -977,8 +800,8 @@ class Array2D(AbstractArray2D):
         if sub_size is not None:
             shape_native = (shape_native[0] * sub_size, shape_native[1] * sub_size)
 
-        return cls.manual_native(
-            array=np.full(fill_value=fill_value, shape=shape_native),
+        return cls.no_mask(
+            values=np.full(fill_value=fill_value, shape=shape_native),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -997,7 +820,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` where all values are filled with ones, analogous to ``np.ones()``.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -1065,7 +888,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` where all values are filled with zeros, analogous to ``np.zeros()``.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -1133,7 +956,7 @@ class Array2D(AbstractArray2D):
         """
         Returns an ``Array2D`` by loading the array values from a .fits file.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -1190,8 +1013,8 @@ class Array2D(AbstractArray2D):
         header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
         header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
-        return cls.manual_native(
-            array=array_2d,
+        return cls.no_mask(
+            values=array_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -1199,7 +1022,7 @@ class Array2D(AbstractArray2D):
         )
 
     @classmethod
-    def manual_yx_and_values(
+    def from_yx_and_values(
         cls,
         y: Union[np.ndarray, List],
         x: Union[np.ndarray, List],
@@ -1213,7 +1036,7 @@ class Array2D(AbstractArray2D):
         Returns an ``Array2D`` by by inputting the y and x pixel values where the array is filled and the values that
         fill it.
 
-        For a full description of ``Array2D` objects, including a description of the ``slim`` and ``native`` attribute
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
         the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
 
@@ -1243,7 +1066,7 @@ class Array2D(AbstractArray2D):
 
             # Make Array2D with sub_size 1.
 
-            array_2d = aa.Array2D.manual_yx_and_values(
+            array_2d = aa.Array2D.from_yx_and_values(
                 y=np.array([0.5, 0.5, -0.5, -0.5]),
                 x=np.array([-0.5, 0.5, -0.5, 0.5]),
                 values=np.array([1.0, 2.0, 3.0, 4.0]),
@@ -1258,7 +1081,7 @@ class Array2D(AbstractArray2D):
 
             # Make Array2D with sub_size 2.
 
-            array_2d = aa.Array2D.manual_yx_and_values(
+            array_2d = aa.Array2D.from_yx_and_values(
                 y=np.array([1.0, 1.0. 0.5, 0.5, -0.5, -0.5, -1.0, -1.0]),
                 x=np.array([-0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5]),
                 values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]),
@@ -1271,7 +1094,7 @@ class Array2D(AbstractArray2D):
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        grid = Grid2D.manual_yx_1d(
+        grid = Grid2D.from_yx_1d(
             y=y, x=x, shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1
         )
 
@@ -1286,8 +1109,8 @@ class Array2D(AbstractArray2D):
         for i in range(grid_pixels.shape[0]):
             array_1d[i] = values[int(grid_pixels[i])]
 
-        return cls.manual_slim(
-            array=array_1d,
+        return cls.no_mask(
+            values=array_1d,
             pixel_scales=pixel_scales,
             shape_native=shape_native,
             sub_size=sub_size,

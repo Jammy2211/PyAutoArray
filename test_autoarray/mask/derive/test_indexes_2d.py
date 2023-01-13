@@ -7,7 +7,7 @@ import autoarray as aa
 @pytest.fixture(name="indexes_2d_9x9")
 def make_indexes_2d_9x9():
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True, True, True],
             [True, False, False, False, False, False, False, False, True],
@@ -22,7 +22,7 @@ def make_indexes_2d_9x9():
         pixel_scales=1.0,
     )
 
-    return aa.Indexes2D(mask=mask_2d)
+    return aa.DeriveIndexes2D(mask=mask_2d)
 
 
 def test__native_index_for_slim_index(indexes_2d_9x9):
@@ -39,13 +39,13 @@ def test__native_index_for_slim_index(indexes_2d_9x9):
 
 
 def test__sub_mask_index_for_sub_mask_1d_index():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[True, True, True], [True, False, False], [True, True, False]],
         pixel_scales=1.0,
         sub_size=2,
     )
 
-    indexes_2d = aa.Indexes2D(mask=mask)
+    indexes_2d = aa.DeriveIndexes2D(mask=mask)
 
     sub_mask_index_for_sub_mask_1d_index = (
         aa.util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
@@ -57,13 +57,13 @@ def test__sub_mask_index_for_sub_mask_1d_index():
 
 
 def test__slim_index_for_sub_slim_index():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[True, False, True], [False, False, False], [True, False, False]],
         pixel_scales=1.0,
         sub_size=2,
     )
 
-    indexes_2d = aa.Indexes2D(mask=mask)
+    indexes_2d = aa.DeriveIndexes2D(mask=mask)
 
     slim_index_for_sub_slim_index_util = (
         aa.util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
@@ -126,7 +126,7 @@ def test__border_2d_indexes(indexes_2d_9x9):
 
 def test__sub_border_flat_indexes():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [False, False, False, False, False, False, False, True],
             [False, True, True, True, True, True, False, True],
@@ -140,7 +140,7 @@ def test__sub_border_flat_indexes():
         sub_size=2,
     )
 
-    indexes_2d = aa.Indexes2D(mask=mask)
+    indexes_2d = aa.DeriveIndexes2D(mask=mask)
 
     sub_border_pixels_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
         mask_2d=mask, sub_size=2
@@ -148,7 +148,7 @@ def test__sub_border_flat_indexes():
 
     assert indexes_2d.sub_border_slim == pytest.approx(sub_border_pixels_util, 1e-4)
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],
@@ -162,6 +162,6 @@ def test__sub_border_flat_indexes():
         sub_size=2,
     )
 
-    indexes_2d = aa.Indexes2D(mask=mask)
+    indexes_2d = aa.DeriveIndexes2D(mask=mask)
 
     assert (indexes_2d.sub_border_slim == np.array([0, 5, 9, 14, 23, 26, 31, 35])).all()

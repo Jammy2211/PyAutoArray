@@ -14,7 +14,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
 from autoarray.structures.vectors.uniform import VectorYX2D
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
-from autoarray.structures.values import ValuesIrregular
+from autoarray.structures.arrays.irregular import ArrayIrregular
 
 from autoarray import exc
 
@@ -40,7 +40,7 @@ def grid_1d_to_structure(func):
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
         *args,
         **kwargs
-    ) -> Union[Array1D, ValuesIrregular]:
+    ) -> Union[Array1D, ArrayIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
         `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
@@ -52,7 +52,7 @@ def grid_1d_to_structure(func):
         decorator is wrapping an object with a `centre` or `angle`, the projected give aligns the angle at a 90
         degree offset, which for an ellipse is its major-axis.
 
-        The outputs of the function are converted from a 1D ndarray to an `Array1D` or `ValuesIrregular`,
+        The outputs of the function are converted from a 1D ndarray to an `Array1D` or `ArrayIrregular`,
         whichever is applicable as follows:
 
         - If an object where the coordinates are on a uniformly spaced grid is input (e.g. `Grid1D`, the radially
@@ -60,7 +60,7 @@ def grid_1d_to_structure(func):
         uniform spacing.
 
         - If an object where the coordinates are on an irregular grid is input (e.g. `Grid2DIrregular`)`the function
-        returns a `ValuesIrregular` object which is also irregular.
+        returns a `ArrayIrregular` object which is also irregular.
 
         Parameters
         ----------
@@ -91,7 +91,7 @@ def grid_1d_to_structure(func):
                 centre=centre, angle=angle
             )
             result = func(obj, grid_2d_projected, *args, **kwargs)
-            return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
+            return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
@@ -99,7 +99,7 @@ def grid_1d_to_structure(func):
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from(angle=angle)
             result = func(obj, grid_2d_radial, *args, **kwargs)
-            return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
+            return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         raise exc.GridException(
             "You cannot input a NumPy array to a `quantity_1d_from` method."
@@ -129,10 +129,10 @@ def grid_1d_output_structure(func):
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
         *args,
         **kwargs
-    ) -> Union[Array1D, ValuesIrregular]:
+    ) -> Union[Array1D, ArrayIrregular]:
         """
         This decorator homogenizes the output of functions which compute a 1D result, by inspecting the output
-        and converting the result to an `Array1D` object if it is uniformly spaced and a `ValuesIrregular` object if
+        and converting the result to an `Array1D` object if it is uniformly spaced and a `ArrayIrregular` object if
         it is irregular. "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
 
         Parameters
@@ -150,12 +150,12 @@ def grid_1d_output_structure(func):
         result = func(obj, grid, *args, **kwargs)
 
         if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIterate):
-            return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
+            return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         elif isinstance(grid, Grid2DIrregular):
             return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid1D):
-            return Array1D.manual_slim(array=result, pixel_scales=grid.pixel_scale)
+            return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         raise exc.GridException(
             "You cannot input a NumPy array to a `quantity_1d_from` method."
@@ -185,7 +185,7 @@ def grid_2d_to_structure(func):
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
         **kwargs
-    ) -> Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]:
+    ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
         `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
@@ -197,7 +197,7 @@ def grid_2d_to_structure(func):
         input, the function is evaluated using the appropriate `iterated_from` function.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
-        `ValuesIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
+        `ArrayIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
 
         - If the function returns (y,x) coordinates at every input point, the returned results are a `Grid2D`
         or `Grid2DIrregular` structure, the same structure as the input.
@@ -206,7 +206,7 @@ def grid_2d_to_structure(func):
         an `Array2D` structure which uses the same dimensions and mask as the `Grid2D`.
 
         - If the function returns scalar values at every input point and `Grid2DIrregular` are input, the returned
-        results are a `ValuesIrregular` object with structure resembling that of the `Grid2DIrregular`.
+        results are a `ArrayIrregular` object with structure resembling that of the `Grid2DIrregular`.
 
         If the input array is not a `Grid2D` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
@@ -262,7 +262,7 @@ def grid_2d_to_structure_list(func):
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
         **kwargs
-    ) -> List[Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]]:
+    ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
         """
         This decorator serves the same purpose as the `grid_2d_to_structure` decorator, but it deals with functions
         whose output is a list of results as opposed to a single NumPy array. It simply iterates over these lists to
@@ -330,7 +330,7 @@ def grid_2d_to_vector_yx(func):
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
         **kwargs
-    ) -> Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]:
+    ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`, `Grid2DIterate`,
         `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
@@ -342,7 +342,7 @@ def grid_2d_to_vector_yx(func):
         input, the function is evaluated using the appropriate `iterated_from` function.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
-        `ValuesIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
+        `ArrayIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
 
         - If the function returns (y,x) coordinates at every input point, the returned results are a `Grid2D`
         or `Grid2DIrregular` vector_yx, the same vector_yx as the input.
@@ -351,7 +351,7 @@ def grid_2d_to_vector_yx(func):
         an `Array2D` vector_yx which uses the same dimensions and mask as the `Grid2D`.
 
         - If the function returns scalar values at every input point and `Grid2DIrregular` are input, the returned
-        results are a `ValuesIrregular` object with vector_yx resembling that of the `Grid2DIrregular`.
+        results are a `ArrayIrregular` object with vector_yx resembling that of the `Grid2DIrregular`.
 
         If the input array is not a `Grid2D` vector_yx (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
@@ -370,9 +370,9 @@ def grid_2d_to_vector_yx(func):
         vector_yx_2d = func(obj, grid, *args, **kwargs)
 
         if isinstance(grid, Grid2DIrregular):
-            return VectorYX2DIrregular(vectors=vector_yx_2d, grid=grid)
+            return VectorYX2DIrregular(values=vector_yx_2d, grid=grid)
         try:
-            return VectorYX2D(vectors=vector_yx_2d, grid=grid, mask=grid.mask)
+            return VectorYX2D(values=vector_yx_2d, grid=grid, mask=grid.mask)
         except AttributeError:
             return vector_yx_2d
 
@@ -400,7 +400,7 @@ def grid_2d_to_vector_yx_list(func):
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
         **kwargs
-    ) -> List[Union[np.ndarray, Array2D, ValuesIrregular, Grid2D, Grid2DIrregular]]:
+    ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
         """
         This decorator serves the same purpose as the `grid_2d_to_vector_yx` decorator, but it deals with functions
         whose output is a list of results as opposed to a single NumPy array. It simply iterates over these lists to
@@ -423,12 +423,12 @@ def grid_2d_to_vector_yx_list(func):
 
         if isinstance(grid, Grid2DIrregular):
             return [
-                VectorYX2DIrregular(vectors=vectors, grid=grid)
+                VectorYX2DIrregular(values=vectors, grid=grid)
                 for vectors in vector_yx_2d_list
             ]
         else:
             return [
-                VectorYX2D(vectors=vectors, grid=grid, mask=grid.mask)
+                VectorYX2D(values=vectors, grid=grid, mask=grid.mask)
                 for vectors in vector_yx_2d_list
             ]
 

@@ -5,18 +5,18 @@ import autoarray as aa
 
 def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
-    data = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
-    noise_map = aa.Array2D.manual_mask(array=[2.0, 2.0, 2.0, 2.0], mask=mask)
+    data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
 
     imaging = aa.Imaging(image=data, noise_map=noise_map)
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
-    model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    model_image = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     fit = aa.m.MockFitImaging(
         dataset=masked_imaging, use_mask_in_fit=False, model_data=model_image
@@ -58,16 +58,16 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
 def test__image_and_model_are_different__include_masking__check_values_are_correct():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [True, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
-    data = aa.Array2D.manual_mask(array=[1.0, 2.0, 4.0], mask=mask)
-    noise_map = aa.Array2D.manual_mask(array=[2.0, 2.0, 2.0], mask=mask)
+    data = aa.Array2D(values=[1.0, 2.0, 4.0], mask=mask)
+    noise_map = aa.Array2D(values=[2.0, 2.0, 2.0], mask=mask)
 
     imaging = aa.Imaging(image=data, noise_map=noise_map)
 
-    model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0], mask=mask)
+    model_image = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
 
     fit = aa.m.MockFitImaging(
         dataset=imaging, use_mask_in_fit=False, model_data=model_image
@@ -106,18 +106,18 @@ def test__image_and_model_are_different__include_masking__check_values_are_corre
 
 def test__image_and_model_are_identical__inversion_included__changes_certain_properties():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
-    data = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
-    noise_map = aa.Array2D.manual_mask(array=[2.0, 2.0, 2.0, 2.0], mask=mask)
+    data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
 
     imaging = aa.Imaging(image=data, noise_map=noise_map)
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
-    model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    model_image = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper()],
@@ -150,18 +150,18 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
 
 def test__profiling_dict__profiles_appropriate_functions():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
-    data = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
-    noise_map = aa.Array2D.manual_mask(array=[2.0, 2.0, 2.0, 2.0], mask=mask)
+    data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
 
     imaging = aa.Imaging(image=data, noise_map=noise_map)
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
-    model_image = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    model_image = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     profiling_dict = {}
 

@@ -50,8 +50,8 @@ class AbstractDataset:
 
             try:
 
-                noise_map = Array2D.manual_slim(
-                    array=np.diag(noise_covariance_matrix),
+                noise_map = Array2D.no_mask(
+                    values=np.diag(noise_covariance_matrix),
                     shape_native=data.shape_native,
                     pixel_scales=data.shape_native,
                 )

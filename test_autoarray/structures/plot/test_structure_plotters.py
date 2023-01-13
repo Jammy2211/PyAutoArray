@@ -26,8 +26,8 @@ def test__plot_yx_line(plot_path, plot_patch):
     )
 
     yx_1d_plotter = aplt.YX1DPlotter(
-        y=aa.Array1D.manual_native([1.0, 2.0, 3.0], pixel_scales=1.0),
-        x=aa.Array1D.manual_native([0.5, 1.0, 1.5], pixel_scales=0.5),
+        y=aa.Array1D.no_mask([1.0, 2.0, 3.0], pixel_scales=1.0),
+        x=aa.Array1D.no_mask([0.5, 1.0, 1.5], pixel_scales=0.5),
         mat_plot_1d=mat_plot_1d,
         visuals_1d=visuals_1d,
     )
@@ -72,7 +72,7 @@ def test__array(
     visuals_2d = aplt.Visuals2D(
         origin=grid_2d_irregular_7x7_list,
         mask=mask_2d_7x7,
-        border=mask_2d_7x7.border_grid_sub_1.binned,
+        border=mask_2d_7x7.derive_grid.border_sub_1.binned,
         grid=grid_2d_7x7,
         positions=grid_2d_irregular_7x7_list,
         #       lines=grid_2d_irregular_7x7_list,
@@ -154,7 +154,7 @@ def test__grid(
     visuals_2d = aplt.Visuals2D(
         origin=grid_2d_irregular_7x7_list,
         mask=mask_2d_7x7,
-        border=mask_2d_7x7.border_grid_sub_1.binned,
+        border=mask_2d_7x7.derive_grid.border_sub_1.binned,
         grid=grid_2d_7x7,
         positions=grid_2d_irregular_7x7_list,
         lines=grid_2d_irregular_7x7_list,

@@ -129,7 +129,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         signal_scale=signal_scale,
         pix_indexes_for_sub_slim_index=pix_sub_weights.mappings,
         pix_size_for_sub_slim_index=pix_sub_weights.sizes,
-        slim_index_for_sub_slim_index=grid_2d_7x7.mask.indexes.slim_for_sub_slim,
+        slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
         hyper_data=image_7x7,
     )
 
@@ -138,13 +138,13 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
 
 def test__interpolated_array_from(grid_2d_7x7):
 
-    mesh_grid_ndarray = aa.Grid2D.manual_slim(
-        [[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+    mesh_grid_ndarray = aa.Grid2D.no_mask(
+        values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
 
-    mesh_grid = aa.Mesh2DDelaunay(grid=mesh_grid_ndarray)
+    mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid_ndarray)
 
     mapper_grids = aa.MapperGrids(
         source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
@@ -169,13 +169,13 @@ def test__interpolated_array_from(grid_2d_7x7):
 
 def test__mapped_to_source_from(grid_2d_7x7):
 
-    mesh_grid = aa.Grid2D.manual_slim(
-        [[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+    mesh_grid = aa.Grid2D.no_mask(
+        values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
 
-    mesh_grid = aa.Mesh2DDelaunay(grid=mesh_grid)
+    mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid)
 
     mapper_grids = aa.MapperGrids(
         source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
@@ -183,7 +183,7 @@ def test__mapped_to_source_from(grid_2d_7x7):
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
-    array_slim = aa.Array2D.manual_slim(
+    array_slim = aa.Array2D.no_mask(
         [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],
         shape_native=(3, 3),
         pixel_scales=1.0,

@@ -80,7 +80,7 @@ def test__mapping_matrix():
 
 
 def test__curvature_matrix__via_w_tilde__identical_to_mapping():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],
@@ -116,12 +116,10 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
     mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
 
-    image = aa.Array2D.manual_native(array=np.random.random((7, 7)), pixel_scales=1.0)
-    noise_map = aa.Array2D.manual_native(
-        array=np.random.random((7, 7)), pixel_scales=1.0
-    )
+    image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
-    psf = aa.Kernel2D.manual_native(array=kernel, pixel_scales=1.0)
+    psf = aa.Kernel2D.no_mask(values=kernel, pixel_scales=1.0)
 
     imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -145,7 +143,7 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
 
 def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical_to_mapping():
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],
@@ -189,12 +187,10 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
     mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
 
-    image = aa.Array2D.manual_native(array=np.random.random((7, 7)), pixel_scales=1.0)
-    noise_map = aa.Array2D.manual_native(
-        array=np.random.random((7, 7)), pixel_scales=1.0
-    )
+    image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
-    psf = aa.Kernel2D.manual_native(array=kernel, pixel_scales=1.0)
+    psf = aa.Kernel2D.no_mask(values=kernel, pixel_scales=1.0)
 
     imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -544,7 +540,7 @@ def test__errors_and_errors_with_covariance():
 def test__brightest_reconstruction_pixel_and_centre():
 
     mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=aa.Mesh2DVoronoi.manual_slim(
+        source_plane_mesh_grid=aa.Mesh2DVoronoi(
             [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
         )
     )

@@ -95,7 +95,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             image_native=self.data.native,
             noise_map_native=self.noise_map.native,
             kernel_native=self.convolver.kernel.native,
-            native_index_for_slim_index=self.data.mask.indexes.native_for_slim,
+            native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
         )
 
         return np.concatenate(
@@ -288,8 +288,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
             )
 
             mapped_reconstructed_image = Array2D(
-                array=mapped_reconstructed_image,
-                mask=self.mask.derived_masks.sub_1,
+                values=mapped_reconstructed_image,
+                mask=self.mask.derive_mask.sub_1,
             )
 
             mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(

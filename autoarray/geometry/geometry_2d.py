@@ -211,7 +211,7 @@ class Geometry2D(AbstractGeometry2D):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-        return Grid2D(grid=grid_pixels_2d, mask=grid_scaled_2d.mask)
+        return Grid2D(values=grid_pixels_2d, mask=grid_scaled_2d.mask)
 
     def grid_pixel_centres_2d_from(self, grid_scaled_2d: Grid2D) -> Grid2D:
         """
@@ -238,7 +238,7 @@ class Geometry2D(AbstractGeometry2D):
             origin=self.origin,
         ).astype("int")
 
-        return Grid2D(grid=grid_pixel_centres_1d, mask=grid_scaled_2d.mask)
+        return Grid2D(values=grid_pixel_centres_1d, mask=grid_scaled_2d.mask)
 
     def grid_pixel_indexes_2d_from(self, grid_scaled_2d: Grid2D) -> Array2D:
         """
@@ -271,7 +271,7 @@ class Geometry2D(AbstractGeometry2D):
             origin=self.origin,
         ).astype("int")
 
-        return Array2D(array=grid_pixel_indexes_2d, mask=grid_scaled_2d.mask)
+        return Array2D(values=grid_pixel_indexes_2d, mask=grid_scaled_2d.mask)
 
     def grid_scaled_2d_from(self, grid_pixels_2d: Grid2D) -> Grid2D:
         """
@@ -296,4 +296,4 @@ class Geometry2D(AbstractGeometry2D):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-        return Grid2D(grid=grid_scaled_1d, mask=grid_pixels_2d.mask)
+        return Grid2D(values=grid_scaled_1d, mask=grid_pixels_2d.mask)

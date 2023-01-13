@@ -7,14 +7,14 @@ def make_mask_1d_7():
 
     mask = np.array([True, True, False, False, False, True, True])
 
-    return aa.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=1)
+    return aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=1)
 
 
 def make_sub_mask_1d_7():
 
     mask = np.array([True, True, False, False, False, True, True])
 
-    return aa.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=2)
+    return aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=2)
 
 
 def make_mask_2d_7x7():
@@ -31,7 +31,7 @@ def make_mask_2d_7x7():
         ]
     )
 
-    return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    return aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 def make_sub_mask_2d_7x7():
@@ -47,7 +47,7 @@ def make_sub_mask_2d_7x7():
         ]
     )
 
-    return aa.Mask2D.manual(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
 
 
 def make_mask_2d_7x7_1_pix():
@@ -63,7 +63,7 @@ def make_mask_2d_7x7_1_pix():
         ]
     )
 
-    return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
 
 def make_blurring_mask_2d_7x7():
@@ -79,7 +79,7 @@ def make_blurring_mask_2d_7x7():
         ]
     )
 
-    return aa.Mask2D.manual(mask=blurring_mask, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D(mask=blurring_mask, pixel_scales=(1.0, 1.0))
 
 
 ### arrays ###
@@ -156,7 +156,7 @@ def make_psf_3x3():
 
     psf = np.array([[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]])
 
-    return aa.Kernel2D.manual_native(array=psf, pixel_scales=(1.0, 1.0))
+    return aa.Kernel2D.no_mask(values=psf, pixel_scales=(1.0, 1.0))
 
 
 def make_psf_3x3_no_blur():
@@ -178,13 +178,13 @@ def make_noise_covariance_matrix_7x7():
 
 
 def make_grid_2d_irregular_7x7():
-    return aa.Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)])
+    return aa.Grid2DIrregular(values=[(0.1, 0.1), (0.2, 0.2)])
 
 
 def make_grid_2d_irregular_7x7_list():
     return [
-        aa.Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)]),
-        aa.Grid2DIrregular(grid=[(0.3, 0.3)]),
+        aa.Grid2DIrregular(values=[(0.1, 0.1), (0.2, 0.2)]),
+        aa.Grid2DIrregular(values=[(0.3, 0.3)]),
     ]
 
 
@@ -300,21 +300,21 @@ def make_masked_imaging_7x7():
 
     imaging_7x7 = make_imaging_7x7()
 
-    return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
+    return imaging_7x7.apply_mask(mask=make_mask_2d_7x7())
 
 
 def make_masked_imaging_covariance_7x7():
 
     imaging_7x7 = make_imaging_covariance_7x7()
 
-    return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
+    return imaging_7x7.apply_mask(mask=make_mask_2d_7x7())
 
 
 def make_masked_imaging_7x7_no_blur():
 
     imaging_7x7 = make_imaging_7x7_no_blur()
 
-    return imaging_7x7.apply_mask(mask=make_sub_mask_2d_7x7())
+    return imaging_7x7.apply_mask(mask=make_mask_2d_7x7())
 
 
 def make_model_image_7x7():
@@ -374,8 +374,8 @@ def make_rectangular_mesh_grid_3x3():
 
 def make_delaunay_mesh_grid_9():
 
-    grid_9 = aa.Grid2D.manual_slim(
-        grid=[
+    grid_9 = aa.Grid2D.no_mask(
+        values=[
             [0.6, -0.3],
             [0.5, -0.8],
             [0.2, 0.1],
@@ -390,13 +390,13 @@ def make_delaunay_mesh_grid_9():
         pixel_scales=1.0,
     )
 
-    return aa.Mesh2DDelaunay(grid=grid_9)
+    return aa.Mesh2DDelaunay(values=grid_9)
 
 
 def make_voronoi_mesh_grid_9():
 
-    grid_9 = aa.Grid2D.manual_slim(
-        grid=[
+    grid_9 = aa.Grid2D.no_mask(
+        values=[
             [0.6, -0.3],
             [0.5, -0.8],
             [0.2, 0.1],
@@ -412,7 +412,7 @@ def make_voronoi_mesh_grid_9():
     )
 
     return aa.Mesh2DVoronoi(
-        grid=grid_9,
+        values=grid_9,
         nearest_pixelization_index_for_slim_index=np.zeros(
             shape=make_grid_2d_7x7().shape_slim, dtype="int"
         ),

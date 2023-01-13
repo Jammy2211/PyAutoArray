@@ -128,8 +128,8 @@ class AbstractInversionInterferometer(AbstractInversion):
             )
 
             mapped_reconstructed_image = Array2D(
-                array=mapped_reconstructed_image,
-                mask=self.mask.derived_masks.sub_1,
+                values=mapped_reconstructed_image,
+                mask=self.mask.derive_mask.sub_1,
             )
 
             mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image

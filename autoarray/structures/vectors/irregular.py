@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 from autoarray.structures.vectors.abstract import AbstractVectorYX2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.values import ValuesIrregular
+from autoarray.structures.arrays.irregular import ArrayIrregular
 
 from autoarray import exc
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class VectorYX2DIrregular(AbstractVectorYX2D):
     def __new__(
         cls,
-        vectors: Union[
+        values: Union[
             np.ndarray, List[np.ndarray], List[List], List[Tuple[float, float]]
         ],
         grid: Union[Grid2DIrregular, List],
@@ -38,20 +38,20 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
 
         Parameters
         ----------
-        vectors
+        values
             The 2D (y,x) vectors on an irregular grid that represent the vector-field.
         grid
             The irregular grid of (y,x) coordinates where each vector is located.
         """
 
-        if len(vectors) == 0:
+        if len(values) == 0:
             return []
 
-        if type(vectors) is list:
-            vectors = np.asarray(vectors)
+        if type(values) is list:
+            values = np.asarray(values)
 
-        obj = vectors.view(cls)
-        obj.grid = Grid2DIrregular(grid=grid)
+        obj = values.view(cls)
+        obj.grid = Grid2DIrregular(values=grid)
 
         return obj
 
@@ -76,11 +76,11 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
         return [tuple(vector) for vector in self.slim]
 
     @property
-    def magnitudes(self) -> ValuesIrregular:
+    def magnitudes(self) -> ArrayIrregular:
         """
         Returns the magnitude of every vector which are computed as sqrt(y**2 + x**2).
         """
-        return ValuesIrregular(values=np.sqrt(self[:, 0] ** 2.0 + self[:, 1] ** 2.0))
+        return ArrayIrregular(values=np.sqrt(self[:, 0] ** 2.0 + self[:, 1] ** 2.0))
 
     @property
     def average_magnitude(self) -> float:
@@ -127,7 +127,7 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
             )
 
         return VectorYX2DIrregular(
-            vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
+            values=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )
 
     def vectors_within_annulus(
@@ -162,5 +162,5 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
             )
 
         return VectorYX2DIrregular(
-            vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
+            values=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )

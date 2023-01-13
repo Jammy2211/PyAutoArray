@@ -34,10 +34,6 @@ class Mesh2DDelaunay(Abstract2DMeshTriangulation):
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @classmethod
-    def manual_slim(cls, grid) -> "Mesh2DDelaunay":
-        return Mesh2DDelaunay(grid=grid)
-
     def interpolated_array_from(
         self,
         values: np.ndarray,
@@ -80,6 +76,6 @@ class Mesh2DDelaunay(Abstract2DMeshTriangulation):
             pixel_values=values,
         )
 
-        return Array2D.manual_native(
-            array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
+        return Array2D.no_mask(
+            values=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )

@@ -179,10 +179,10 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
     )
 
     image = np.random.uniform(size=mask.shape_native)
-    image = aa.Array2D.manual_mask(array=image, mask=mask)
+    image = aa.Array2D(values=image, mask=mask)
 
     noise_map = np.random.uniform(size=mask.shape_native)
-    noise_map = aa.Array2D.manual_mask(array=noise_map, mask=mask)
+    noise_map = aa.Array2D(values=noise_map, mask=mask)
 
     kernel = aa.Kernel2D.from_gaussian(
         shape_native=(7, 7), pixel_scales=mask.pixel_scales, sigma=1.0, normalize=True
@@ -222,7 +222,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             image_native=image.native,
             noise_map_native=noise_map.native,
             kernel_native=kernel.native,
-            native_index_for_slim_index=mask.indexes.native_for_slim,
+            native_index_for_slim_index=mask.derive_indexes.native_for_slim,
         )
 
         (
@@ -260,7 +260,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     )
 
     noise_map = np.random.uniform(size=mask.shape_native)
-    noise_map = aa.Array2D.manual_mask(array=noise_map, mask=mask)
+    noise_map = aa.Array2D(values=noise_map, mask=mask)
 
     kernel = aa.Kernel2D.from_gaussian(
         shape_native=(7, 7), pixel_scales=mask.pixel_scales, sigma=1.0, normalize=True
@@ -271,7 +271,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     mapper_grids = pixelization.mapper_grids_from(
-        source_plane_data_grid=mask.masked_grid_sub_1
+        source_plane_data_grid=mask.derive_grid.unmasked_sub_1
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -281,7 +281,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     w_tilde = aa.util.inversion_imaging.w_tilde_curvature_imaging_from(
         noise_map_native=noise_map.native,
         kernel_native=kernel.native,
-        native_index_for_slim_index=mask.indexes.native_for_slim,
+        native_index_for_slim_index=mask.derive_indexes.native_for_slim,
     )
 
     curvature_matrix_via_w_tilde = aa.util.inversion.curvature_matrix_via_w_tilde_from(
@@ -305,7 +305,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
     )
 
     noise_map = np.random.uniform(size=mask.shape_native)
-    noise_map = aa.Array2D.manual_mask(array=noise_map, mask=mask)
+    noise_map = aa.Array2D(values=noise_map, mask=mask)
 
     kernel = aa.Kernel2D.from_gaussian(
         shape_native=(7, 7), pixel_scales=mask.pixel_scales, sigma=1.0, normalize=True
@@ -334,7 +334,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
         ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
             noise_map_native=noise_map.native,
             kernel_native=kernel.native,
-            native_index_for_slim_index=mask.indexes.native_for_slim,
+            native_index_for_slim_index=mask.derive_indexes.native_for_slim,
         )
 
         (

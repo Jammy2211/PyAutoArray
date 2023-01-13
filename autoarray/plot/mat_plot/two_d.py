@@ -312,7 +312,7 @@ class MatPlot2D(AbstractMatPlot):
         grid_indexes = None
 
         if visuals_2d.indexes is not None or visuals_2d.pix_indexes is not None:
-            grid_indexes = array.mask.masked_grid
+            grid_indexes = array.mask.derive_grid.unmasked
 
         visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid_indexes)
 
@@ -470,8 +470,8 @@ class MatPlot2D(AbstractMatPlot):
                 sub_size=1,
             )
 
-            source_pixelilzation_values = Array2D.manual(
-                array=solution_array_2d,
+            source_pixelilzation_values = Array2D.no_mask(
+                values=solution_array_2d,
                 sub_size=1,
                 pixel_scales=mapper.source_plane_mesh_grid.pixel_scales,
                 origin=mapper.source_plane_mesh_grid.origin,

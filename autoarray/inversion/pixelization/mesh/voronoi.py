@@ -72,7 +72,7 @@ class Voronoi(Triangulation):
         """
 
         return Mesh2DVoronoi(
-            grid=source_plane_mesh_grid,
+            values=source_plane_mesh_grid,
             nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
             uses_interpolation=self.uses_interpolation,
         )

@@ -37,8 +37,63 @@ def check_array_2d(array_2d: np.ndarray):
         )
 
 
+def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
+    """
+    The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
+    Array2D.
+
+    This function checks the dimensions of the input `array_2d` and maps it to its `slim` representation.
+
+    For an Array2D, `slim` refers to a 1D NumPy array of shape [total_values].
+
+    Parameters
+    ----------
+    array_2d
+        The input structure which is converted to its slim representation.
+    mask_2d
+        The mask of the output Array2D.
+    """
+    if len(array_2d.shape) == 1:
+
+        if array_2d.shape[0] != mask_2d.sub_pixels_in_mask:
+            raise exc.ArrayException(
+                f"""
+                The input array is a slim 1D array, but it does not have the same number of entries as sub-pixels in
+                the mask.
+
+                This indicates that the number of unmaksed pixels in the mask  is different to the input slim array 
+                shape.
+
+                The shapes of the two arrays (which this exception is raised because they are different) are as follows:
+
+                Input array_2d_slim.shape = {array_2d.shape[0]}
+                Input mask_2d.sub_pixels_in_mask = {mask_2d.sub_pixels_in_mask}
+                Input mask_2d.shape_native = {mask_2d.shape_native}
+                """
+            )
+
+    if len(array_2d.shape) == 2:
+
+        if array_2d.shape != mask_2d.sub_shape_native:
+            raise exc.ArrayException(
+                f"""
+                The input array is 2D but not the same dimensions as the mask.
+    
+                This indicates the mask's shape, multiplied by its `sub_size`, is different to the input array shape.
+    
+                The shapes of the two arrays (which this exception is raised because they are different) are as follows:
+    
+                Input array_2d shape = {array_2d.shape}
+                Input mask_2d sub_shape_native = {mask_2d.sub_shape_native}
+                """
+            )
+
+
 def convert_array_2d(
-    array_2d: Union[np.ndarray, List], mask_2d: Mask2D, store_native: bool = False
+    array_2d: Union[np.ndarray, List],
+    mask_2d: Mask2D,
+    store_native: bool = False,
+    skip_mask: bool = False,
 ) -> np.ndarray:
     """
     The `manual` classmethods in the `Array2D` object take as input a list or ndarray which is returned as an
@@ -60,18 +115,29 @@ def convert_array_2d(
     mask_2d
         The mask of the output Array2D.
     store_native
-        If True, the array is stored in its native format [total_y_pixels, total_x_pixels]. The only use of
-        this is to avoid mapping large data arrays to and from the slim / native formats, which can be a
-        computational bottleneck.
+        If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
+        mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
     """
 
     array_2d = convert_array(array=array_2d)
 
-    if store_native:
-        array_2d *= np.invert(mask_2d)
-        return array_2d
+    check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
-    return convert_array_2d_to_slim(array_2d=array_2d, mask_2d=mask_2d)
+    is_native = len(array_2d.shape) == 2
+
+    if is_native and not skip_mask:
+        array_2d *= np.invert(mask_2d.derive_mask.sub)
+
+    if is_native == store_native:
+        return array_2d
+    elif not store_native:
+        return array_2d_slim_from(
+            array_2d_native=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+        )
+    array_2d = array_2d_native_from(
+        array_2d_slim=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+    )
+    return array_2d
 
 
 def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarray:
@@ -95,37 +161,7 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarra
 
         array_2d_slim = array_2d
 
-        if array_2d_slim.shape[0] != mask_2d.sub_pixels_in_mask:
-            raise exc.ArrayException(
-                f"""
-                The input array is a slim 1D array, but it does not have the same number of entries as sub-pixels in
-                the mask.
-                
-                This indicates that the number of unmaksed pixels in the mask  is different to the input slim array 
-                shape.
-                
-                The shapes of the two arrays (which this exception is raised because they are different) are as follows:
-
-                Input array_2d_slim.shape = {array_2d_slim.shape[0]}
-                Input mask_2d.sub_pixels_in_mask = {mask_2d.sub_pixels_in_mask}
-                """
-            )
-
         return array_2d_slim
-
-    if array_2d.shape != mask_2d.sub_shape_native:
-        raise exc.ArrayException(
-            f"""
-            The input array is 2D but not the same dimensions as the mask.
-            
-            This indicates the mask's shape, multiplied by its `sub_size`, is different to the input array shape.
-            
-            The shapes of the two arrays (which this exception is raised because they are different) are as follows:
-
-            Input array_2d shape = {array_2d.shape}
-            Input mask_2d sub_shape_native = {mask_2d.sub_shape_native}
-            """
-        )
 
     return array_2d_slim_from(
         array_2d_native=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size

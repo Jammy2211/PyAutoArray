@@ -65,8 +65,8 @@ class TransformerDFT(PyLopsOperator):
         super().__init__()
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
-        self.real_space_mask = real_space_mask.derived_masks.sub_1
-        self.grid = self.real_space_mask.masked_grid_sub_1.binned.in_radians
+        self.real_space_mask = real_space_mask.derive_mask.sub_1
+        self.grid = self.real_space_mask.derive_grid.unmasked_sub_1.binned.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask
@@ -132,7 +132,7 @@ class TransformerDFT(PyLopsOperator):
             sub_size=self.real_space_mask.sub_size,
         )
 
-        return Array2D.manual_mask(array=image_native, mask=self.real_space_mask)
+        return Array2D(values=image_native, mask=self.real_space_mask)
 
     def transform_mapping_matrix(self, mapping_matrix):
 
@@ -165,11 +165,11 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         super(TransformerNUFFT, self).__init__()
 
         self.uv_wavelengths = uv_wavelengths
-        self.real_space_mask = real_space_mask.derived_masks.sub_1
+        self.real_space_mask = real_space_mask.derive_mask.sub_1
         #        self.grid = self.real_space_mask.unmasked_grid.in_radians
         self.grid = Grid2D.from_mask(mask=self.real_space_mask).in_radians
         self.native_index_for_slim_index = copy.copy(
-            real_space_mask.indexes.native_for_slim.astype("int")
+            real_space_mask.derive_indexes.native_for_slim.astype("int")
         )
 
         # NOTE: The plan need only be initialized once
@@ -258,7 +258,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
 
             image *= self.adjoint_scaling
 
-        return Array2D.manual_mask(array=image, mask=self.real_space_mask)
+        return Array2D(values=image, mask=self.real_space_mask)
 
     def transform_mapping_matrix(self, mapping_matrix):
 
@@ -274,7 +274,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
                 sub_size=1,
             )
 
-            image = Array2D(array=image_2d, mask=self.grid.mask)
+            image = Array2D(values=image_2d, mask=self.grid.mask)
 
             visibilities = self.visibilities_from(image=image)
 

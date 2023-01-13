@@ -715,7 +715,7 @@ class AbstractInversion:
             brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
 
             centre = Grid2DIrregular(
-                grid=[mapper.source_plane_mesh_grid[brightest_reconstruction_pixel]]
+                values=[mapper.source_plane_mesh_grid[brightest_reconstruction_pixel]]
             )
 
             brightest_reconstruction_pixel_centre_list.append(centre)
@@ -755,7 +755,7 @@ class AbstractInversion:
             mapper: inversion_util.inversion_residual_map_from(
                 reconstruction=self.reconstruction_dict[mapper],
                 data=self.data,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.indexes.slim_for_sub_slim,
+                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
                 sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
             for mapper in self.cls_list_from(cls=AbstractMapper)
@@ -769,7 +769,7 @@ class AbstractInversion:
                 reconstruction=self.reconstruction_dict[mapper],
                 data=self.data,
                 noise_map_1d=self.noise_map.slim,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.indexes.slim_for_sub_slim,
+                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
                 sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
             for mapper in self.cls_list_from(cls=AbstractMapper)
@@ -783,7 +783,7 @@ class AbstractInversion:
                 reconstruction=self.reconstruction_dict[mapper],
                 data=self.data,
                 noise_map_1d=self.noise_map.slim,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.indexes.slim_for_sub_slim,
+                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
                 sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
             )
             for mapper in self.cls_list_from(cls=AbstractMapper)

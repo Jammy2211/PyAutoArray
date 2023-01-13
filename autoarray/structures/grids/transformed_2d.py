@@ -9,5 +9,5 @@ class Grid2DTransformed(Grid2D):
 
 
 class Grid2DTransformedNumpy(np.ndarray):
-    def __new__(cls, grid, *args, **kwargs):
-        return grid.view(cls)
+    def __new__(cls, values, *args, **kwargs):
+        return values.view(cls)

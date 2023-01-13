@@ -9,11 +9,12 @@ if TYPE_CHECKING:
 
 from autoarray.mask.abstract_mask import Mask
 
-from autoarray import exc
-from autoarray.mask.derived_masks_1d import DerivedMasks1D
+from autoarray.mask.derive.grid_1d import DeriveGrid1D
+from autoarray.mask.derive.mask_1d import DeriveMask1D
 from autoarray.geometry.geometry_1d import Geometry1D
 from autoarray.structures.arrays import array_1d_util
-from autoarray.structures.grids import grid_1d_util
+
+from autoarray import exc
 from autoarray import type as ty
 
 logging.basicConfig()
@@ -23,12 +24,13 @@ logger = logging.getLogger(__name__)
 class Mask1D(Mask):
     def __new__(
         cls,
-        mask: np.ndarray,
+        mask: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[
             float,
         ] = (0.0,),
+        invert: bool = False,
     ):
         """
         A 1D mask, representing 1D data on a uniform line of pixels with equal spacing.
@@ -50,6 +52,18 @@ class Mask1D(Mask):
         origin
             The x origin of the mask's coordinate system in scaled units.
         """
+
+        if type(mask) is list:
+            mask = np.asarray(mask).astype("bool")
+
+        if invert:
+            mask = np.invert(mask)
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales,)
+
+        if len(mask.shape) != 1:
+            raise exc.MaskException("The input mask is not a one dimensional array")
 
         # noinspection PyArgumentList
         return Mask.__new__(
@@ -82,37 +96,15 @@ class Mask1D(Mask):
         )
 
     @property
-    def derived_masks(self) -> DerivedMasks1D:
-        return DerivedMasks1D(mask=self)
+    def derive_mask(self) -> DeriveMask1D:
+        return DeriveMask1D(mask=self)
+
+    @property
+    def derive_grid(self) -> DeriveGrid1D:
+        return DeriveGrid1D(mask=self)
 
     @classmethod
-    def manual(
-        cls,
-        mask: Union[List, np.ndarray],
-        pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
-        origin: Tuple[float] = (0.0,),
-        invert: bool = False,
-    ) -> "Mask1D":
-
-        if type(mask) is list:
-            mask = np.asarray(mask).astype("bool")
-
-        if invert:
-            mask = np.invert(mask)
-
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales,)
-
-        if len(mask.shape) != 1:
-            raise exc.MaskException("The input mask is not a one dimensional array")
-
-        return Mask1D(
-            mask=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
-
-    @classmethod
-    def unmasked(
+    def all_false(
         cls,
         shape_slim,
         pixel_scales: ty.PixelScales,
@@ -130,7 +122,7 @@ class Mask1D(Mask):
         pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
         """
-        return cls.manual(
+        return cls(
             mask=np.full(shape=shape_slim, fill_value=False),
             pixel_scales=pixel_scales,
             origin=origin,
@@ -160,7 +152,7 @@ class Mask1D(Mask):
             The scaled units to pixel units conversion factor of each pixel.
         """
 
-        return cls.manual(
+        return cls(
             array_1d_util.numpy_array_1d_via_fits_from(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -174,25 +166,6 @@ class Mask1D(Mask):
     @property
     def sub_shape_native(self) -> Tuple[int]:
         return (self.shape[0] * self.sub_size,)
-
-    @property
-    def unmasked_grid_sub_1(self) -> Grid1D:
-        """
-        The scaled-grid of (y,x) coordinates of every pixel.
-
-        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x
-        value y value in scaled units.
-        """
-        from autoarray.structures.grids.uniform_1d import Grid1D
-
-        grid_slim = grid_1d_util.grid_1d_slim_via_mask_from(
-            mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
-        )
-
-        return Grid1D(
-            grid=grid_slim,
-            mask=self.derived_masks.unmasked.derived_masks.sub_1,
-        )
 
     @property
     def shape_slim(self) -> Tuple[int]:

@@ -38,4 +38,4 @@ class Abstract2DMesh(Structure):
 
         extent = self.geometry.extent_square if extent is None else extent
 
-        return Grid2D.manual_extent(extent=extent, shape_native=shape_native)
+        return Grid2D.from_extent(extent=extent, shape_native=shape_native)

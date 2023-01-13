@@ -4,10 +4,10 @@ import pytest
 import autoarray as aa
 
 
-@pytest.fixture(name="derived_masks_2d_9x9")
-def make_derived_masks_2d_9x9():
+@pytest.fixture(name="derive_mask_2d_9x9")
+def make_derive_mask_2d_9x9():
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True, True, True],
             [True, False, False, False, False, False, False, False, True],
@@ -22,21 +22,21 @@ def make_derived_masks_2d_9x9():
         pixel_scales=1.0,
     )
 
-    return aa.DerivedMasks2D(mask=mask_2d)
+    return aa.DeriveMask2D(mask=mask_2d)
 
 
 def test__sub_mask():
 
-    mask = aa.Mask2D.manual(
+    mask = aa.Mask2D(
         mask=[[False, False, True], [False, True, False]],
         pixel_scales=1.0,
         sub_size=2,
     )
 
-    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+    derive_mask_2d = aa.DeriveMask2D(mask=mask)
 
     assert (
-        derived_masks_2d.sub
+        derive_mask_2d.sub
         == np.array(
             [
                 [False, False, False, False, True, True],
@@ -50,12 +50,12 @@ def test__sub_mask():
 
 def test__rescaled_from():
 
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
     mask[2, 2] = True
 
-    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+    derive_mask_2d = aa.DeriveMask2D(mask=mask)
 
-    mask_rescaled = derived_masks_2d.rescaled_from(rescale_factor=2.0)
+    mask_rescaled = derive_mask_2d.rescaled_from(rescale_factor=2.0)
 
     mask_rescaled_manual = np.full(fill_value=False, shape=(3, 3))
     mask_rescaled_manual[1, 1] = True
@@ -69,23 +69,23 @@ def test__rescaled_from():
 
 def test__resized_from():
 
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
     mask[2, 2] = True
 
-    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+    derive_mask_2d = aa.DeriveMask2D(mask=mask)
 
-    mask_resized = derived_masks_2d.resized_from(new_shape=(7, 7))
+    mask_resized = derive_mask_2d.resized_from(new_shape=(7, 7))
 
     mask_resized_manual = np.full(fill_value=False, shape=(7, 7))
     mask_resized_manual[3, 3] = True
 
     assert (mask_resized == mask_resized_manual).all()
 
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
     mask[2, 2] = True
-    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+    derive_mask_2d = aa.DeriveMask2D(mask=mask)
 
-    mask_resized = derived_masks_2d.resized_from(new_shape=(3, 3))
+    mask_resized = derive_mask_2d.resized_from(new_shape=(3, 3))
 
     mask_resized_manual = np.full(fill_value=False, shape=(3, 3))
     mask_resized_manual[1, 1] = True
@@ -93,28 +93,28 @@ def test__resized_from():
     assert (mask_resized == mask_resized_manual).all()
 
 
-def test__unmasked_mask(derived_masks_2d_9x9):
+def test__unmasked_mask(derive_mask_2d_9x9):
 
     assert (
-        derived_masks_2d_9x9.unmasked == np.full(fill_value=False, shape=(9, 9))
+        derive_mask_2d_9x9.all_false == np.full(fill_value=False, shape=(9, 9))
     ).all()
 
 
-def test__blurring_mask_from(derived_masks_2d_9x9):
+def test__blurring_mask_from(derive_mask_2d_9x9):
 
     blurring_mask_via_util = aa.util.mask_2d.blurring_mask_2d_from(
-        mask_2d=derived_masks_2d_9x9.mask, kernel_shape_native=(3, 3)
+        mask_2d=derive_mask_2d_9x9.mask, kernel_shape_native=(3, 3)
     )
 
-    blurring_mask = derived_masks_2d_9x9.blurring_from(kernel_shape_native=(3, 3))
+    blurring_mask = derive_mask_2d_9x9.blurring_from(kernel_shape_native=(3, 3))
 
     assert (blurring_mask == blurring_mask_via_util).all()
 
 
-def test__edge_mask(derived_masks_2d_9x9):
+def test__edge_mask(derive_mask_2d_9x9):
 
     assert (
-        derived_masks_2d_9x9.edge
+        derive_mask_2d_9x9.edge
         == np.array(
             [
                 [True, True, True, True, True, True, True, True, True],
@@ -133,22 +133,22 @@ def test__edge_mask(derived_masks_2d_9x9):
 
 def test__edge_buffed_mask():
 
-    mask = aa.Mask2D.unmasked(shape_native=(5, 5), pixel_scales=1.0)
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
     mask[2, 2] = True
 
-    derived_masks_2d = aa.DerivedMasks2D(mask=mask)
+    derive_mask_2d = aa.DeriveMask2D(mask=mask)
 
     edge_buffed_mask_manual = aa.util.mask_2d.buffed_mask_2d_from(mask_2d=mask).astype(
         "bool"
     )
 
-    assert (derived_masks_2d.edge_buffed == edge_buffed_mask_manual).all()
+    assert (derive_mask_2d.edge_buffed == edge_buffed_mask_manual).all()
 
 
-def test__border_mask(derived_masks_2d_9x9):
+def test__border_mask(derive_mask_2d_9x9):
 
     assert (
-        derived_masks_2d_9x9.border
+        derive_mask_2d_9x9.border
         == np.array(
             [
                 [True, True, True, True, True, True, True, True, True],

@@ -6,7 +6,7 @@ import numpy as np
 
 def test__unmasked_sparse_for_sparse_from():
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=np.array(
             [[False, False, False], [False, False, False], [False, False, False]]
         ),
@@ -48,7 +48,7 @@ def test__unmasked_sparse_for_sparse_from():
 
     assert (unmasked_sparse_for_sparse == np.array([0, 1, 2, 3, 4, 5, 6])).all()
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
         ),
@@ -73,7 +73,7 @@ def test__unmasked_sparse_for_sparse_from():
 
     assert (unmasked_sparse_for_sparse == np.array([1, 3, 4, 5, 7])).all()
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, False, True],
@@ -105,7 +105,7 @@ def test__unmasked_sparse_for_sparse_from():
 
 def test__sparse_for_unmasked_sparse_from():
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=np.array(
             [[False, False, False], [False, False, False], [False, False, False]]
         ),
@@ -137,7 +137,7 @@ def test__sparse_for_unmasked_sparse_from():
 
     assert (sparse_for_unmasked_sparse == np.array([0, 1, 2, 3, 4, 5, 6])).all()
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=np.array(
             [[False, False, True], [False, False, False], [True, False, False]]
         ),
@@ -157,7 +157,7 @@ def test__sparse_for_unmasked_sparse_from():
 
     assert (sparse_for_unmasked_sparse == np.array([0, 1, 2, 2, 2, 2])).all()
 
-    mask_2d = aa.Mask2D.manual(
+    mask_2d = aa.Mask2D(
         mask=np.array(
             [
                 [True, True, False, True],
