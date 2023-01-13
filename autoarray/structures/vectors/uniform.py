@@ -521,14 +521,7 @@ class VectorYX2D(AbstractVectorYX2D):
         If it is already stored in its `slim` representation it is returned as it is. If not, it is  mapped from
         `native` to `slim` and returned as a new `Array2D`.
         """
-        if len(self.shape) == 2:
-            return self
-
-        vectors_2d_slim = grid_2d_util.grid_2d_slim_from(
-            grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
-        )
-
-        return VectorYX2D(vectors=vectors_2d_slim, grid=self.grid.slim, mask=self.mask)
+        return VectorYX2D(vectors=self, grid=self.grid.slim, mask=self.mask)
 
     @property
     def native(self) -> "VectorYX2D":
@@ -539,16 +532,8 @@ class VectorYX2D(AbstractVectorYX2D):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Grid2D`.
         """
-
-        if len(self.shape) != 2:
-            return self
-
-        vectors_2d_native = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-        )
-
         return VectorYX2D(
-            vectors=vectors_2d_native,
+            vectors=self,
             grid=self.grid.native,
             mask=self.mask,
             store_native=True,

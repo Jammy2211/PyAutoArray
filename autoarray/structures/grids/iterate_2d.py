@@ -328,7 +328,7 @@ class Grid2DIterate(Grid2D):
         `native` to `slim` and returned as a new `Grid2D`.
         """
         return Grid2DIterate(
-            grid=super().slim,
+            grid=self,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -346,7 +346,7 @@ class Grid2DIterate(Grid2D):
         This method is used in the child `Grid2D` classes to create their `native` properties.
         """
         return Grid2DIterate(
-            grid=super().native,
+            grid=self,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
