@@ -11,7 +11,7 @@ from autoarray.structures.mock.mock_structure_decorators import (
 
 def test__in_grid_1d__out_ndarray_1d():
 
-    grid_1d = aa.Grid1D.manual_native(grid=[1.0, 2.0, 3.0], pixel_scales=1.0)
+    grid_1d = aa.Grid1D.without_mask(grid=[1.0, 2.0, 3.0], pixel_scales=1.0)
 
     grid_like_object = aa.m.MockGrid1DLikeObj()
 

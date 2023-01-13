@@ -13,7 +13,7 @@ test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "f
 class TestVisibilitiesAPI:
     def test__manual__makes_visibilities_without_other_inputs(self):
 
-        visibilities = aa.Visibilities.manual_slim(
+        visibilities = aa.Visibilities(
             visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
         )
 
@@ -26,7 +26,7 @@ class TestVisibilitiesAPI:
             np.array([1.10714872, 0.92729522]), 1.0e-4
         )
 
-        visibilities = aa.Visibilities.manual_slim(
+        visibilities = aa.Visibilities(
             visibilities=[1.0 + 2.0j, 3.0 + 4.0j, 5.0 + 6.0j]
         )
 
@@ -43,7 +43,7 @@ class TestVisibilitiesAPI:
 
     def test__manual__makes_visibilities_with_converted_input_as_list(self):
 
-        visibilities = aa.Visibilities.manual_slim(
+        visibilities = aa.Visibilities(
             visibilities=[[1.0, 2.0], [3.0, 4.0]]
         )
 
@@ -54,7 +54,7 @@ class TestVisibilitiesAPI:
             np.array([1.10714872, 0.92729522]), 1.0e-4
         )
 
-        visibilities = aa.Visibilities.manual_slim(
+        visibilities = aa.Visibilities(
             visibilities=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
         )
 
@@ -137,7 +137,7 @@ class TestVisibilities:
 class TestVisibilitiesNoiseMap:
     def test__visibilities_noise_has_attributes(self):
 
-        noise_map = aa.VisibilitiesNoiseMap.manual_slim(
+        noise_map = aa.VisibilitiesNoiseMap(
             visibilities=[[1.0, 2.0], [3.0, 4.0]]
         )
 

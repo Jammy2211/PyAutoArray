@@ -10,8 +10,8 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
-    data = aa.Visibilities.manual_slim(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
-    noise_map = aa.VisibilitiesNoiseMap.manual_slim(
+    data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
+    noise_map = aa.VisibilitiesNoiseMap(
         visibilities=[2.0 + 2.0j, 2.0 + 2.0j]
     )
 
@@ -22,7 +22,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities.manual_slim(
+    model_visibilities = aa.Visibilities(
         visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
     )
 
@@ -60,8 +60,8 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
-    data = aa.Visibilities.manual_slim(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
-    noise_map = aa.VisibilitiesNoiseMap.manual_slim(
+    data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
+    noise_map = aa.VisibilitiesNoiseMap(
         visibilities=[2.0 + 2.0j, 2.0 + 2.0j]
     )
 
@@ -72,7 +72,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities.manual_slim(
+    model_visibilities = aa.Visibilities(
         visibilities=[1.0 + 2.0j, 3.0 + 3.0j]
     )
 
@@ -110,8 +110,8 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
 
-    data = aa.Visibilities.manual_slim(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
-    noise_map = aa.VisibilitiesNoiseMap.manual_slim(
+    data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
+    noise_map = aa.VisibilitiesNoiseMap(
         visibilities=[2.0 + 2.0j, 2.0 + 2.0j]
     )
 
@@ -122,7 +122,7 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities.manual_slim(
+    model_visibilities = aa.Visibilities(
         visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
     )
 

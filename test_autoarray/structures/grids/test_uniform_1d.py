@@ -5,52 +5,10 @@ import pytest
 import autoarray as aa
 
 
-def test__manual_native():
-
-    grid_1d = aa.Grid1D.manual_native(
-        grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2
-    )
-
-    assert type(grid_1d) == aa.Grid1D
-    assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (grid_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (grid_1d.binned.native == np.array([1.5, 3.5])).all()
-    assert (grid_1d.binned == np.array([1.5, 3.5])).all()
-    assert grid_1d.pixel_scales == (1.0,)
-    assert grid_1d.origin == (0.0,)
-
-
-def test__manual_slim():
-
-    grid_1d = aa.Grid1D.manual_slim(
-        grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2
-    )
-
-    assert type(grid_1d) == aa.Grid1D
-    assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (grid_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (grid_1d.binned.native == np.array([1.5, 3.5])).all()
-    assert (grid_1d.binned == np.array([1.5, 3.5])).all()
-    assert grid_1d.pixel_scales == (1.0,)
-    assert grid_1d.origin == (0.0,)
-
-    grid_1d = aa.Grid1D.manual_slim(
-        grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2, origin=(1.0,)
-    )
-
-    assert type(grid_1d) == aa.Grid1D
-    assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (grid_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (grid_1d.binned.native == np.array([1.5, 3.5])).all()
-    assert (grid_1d.binned == np.array([1.5, 3.5])).all()
-    assert grid_1d.pixel_scales == (1.0,)
-    assert grid_1d.origin == (1.0,)
-
-
-def test__manual_mask():
+def test__constructor():
 
     mask = aa.Mask1D.all_false(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
-    grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    grid = aa.Grid1D(grid=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     assert type(grid) == aa.Grid1D
     assert (grid.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
@@ -61,7 +19,7 @@ def test__manual_mask():
     assert grid.origin == (0.0,)
 
     mask = aa.Mask1D(mask=[True, False, False], pixel_scales=1.0, sub_size=2)
-    grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask)
+    grid = aa.Grid1D(grid=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask)
 
     assert type(grid) == aa.Grid1D
     assert (grid.native == np.array([0.0, 0.0, 3.0, 4.0, 5.0, 6.0])).all()
@@ -73,6 +31,33 @@ def test__manual_mask():
 
     assert (grid.slim.native == np.array([0.0, 0.0, 3.0, 4.0, 5.0, 6.0])).all()
     assert (grid.native.slim == np.array([3.0, 4.0, 5.0, 6.0])).all()
+
+
+def test__without_mask():
+
+    grid_1d = aa.Grid1D.without_mask(
+        grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2
+    )
+
+    assert type(grid_1d) == aa.Grid1D
+    assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
+    assert (grid_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
+    assert (grid_1d.binned.native == np.array([1.5, 3.5])).all()
+    assert (grid_1d.binned == np.array([1.5, 3.5])).all()
+    assert grid_1d.pixel_scales == (1.0,)
+    assert grid_1d.origin == (0.0,)
+
+    grid_1d = aa.Grid1D.without_mask(
+        grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2, origin=(1.0,)
+    )
+
+    assert type(grid_1d) == aa.Grid1D
+    assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
+    assert (grid_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
+    assert (grid_1d.binned.native == np.array([1.5, 3.5])).all()
+    assert (grid_1d.binned == np.array([1.5, 3.5])).all()
+    assert grid_1d.pixel_scales == (1.0,)
+    assert grid_1d.origin == (1.0,)
 
 
 def test__from_mask():
@@ -185,7 +170,7 @@ def test__uniform_from_zero():
 
 def test__grid_2d_radial_projected_from():
 
-    grid_1d = aa.Grid1D.manual_native(
+    grid_1d = aa.Grid1D.without_mask(
         grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=1
     )
 
@@ -264,13 +249,13 @@ def test__structure_2d_list_from():
 def test__recursive_shape_storage():
 
     mask = aa.Mask1D.all_false(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
-    grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    grid = aa.Grid1D(grid=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     assert (grid.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert (grid.native.slim.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
 
     mask = aa.Mask1D(mask=[True, False, False], pixel_scales=1.0, sub_size=2)
-    grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask)
+    grid = aa.Grid1D(grid=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask)
 
     assert (grid.slim.native.slim == np.array([3.0, 4.0, 5.0, 6.0])).all()
     assert (grid.native.slim.native == np.array([0.0, 0.0, 3.0, 4.0, 5.0, 6.0])).all()

@@ -544,7 +544,7 @@ def test__errors_and_errors_with_covariance():
 def test__brightest_reconstruction_pixel_and_centre():
 
     mapper = aa.m.MockMapper(
-        source_plane_mesh_grid=aa.Mesh2DVoronoi.manual_slim(
+        source_plane_mesh_grid=aa.Mesh2DVoronoi(
             [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
         )
     )
