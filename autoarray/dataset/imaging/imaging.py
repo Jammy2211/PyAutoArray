@@ -95,7 +95,7 @@ class Imaging(AbstractDataset):
         if psf is not None and settings.use_normalized_psf:
 
             psf = Kernel2D.no_mask(
-                array=psf.native, pixel_scales=psf.pixel_scales, normalize=True
+                values=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
 
         self.psf = psf
@@ -266,11 +266,11 @@ class Imaging(AbstractDataset):
             unmasked_imaging = self.unmasked
 
         image = Array2D(
-            array=unmasked_imaging.image.native, mask=mask.derive_mask.sub_1
+            values=unmasked_imaging.image.native, mask=mask.derive_mask.sub_1
         )
 
         noise_map = Array2D(
-            array=unmasked_imaging.noise_map.native, mask=mask.derive_mask.sub_1
+            values=unmasked_imaging.noise_map.native, mask=mask.derive_mask.sub_1
         )
 
         if unmasked_imaging.noise_covariance_matrix is not None:

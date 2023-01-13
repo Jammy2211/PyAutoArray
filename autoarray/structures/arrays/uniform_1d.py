@@ -16,7 +16,7 @@ from autoarray import type as ty
 class Array1D(Structure):
     def __new__(
         cls,
-        array: Union[np.ndarray, List],
+        values: Union[np.ndarray, List],
         mask: Mask1D,
         header: Optional[Header] = None,
         store_native: bool = False,
@@ -24,11 +24,11 @@ class Array1D(Structure):
         **kwargs
     ):
 
-        array = array_1d_util.convert_array_1d(
-            array_1d=array, mask_1d=mask, store_native=store_native
+        values = array_1d_util.convert_array_1d(
+            array_1d=values, mask_1d=mask, store_native=store_native
         )
 
-        obj = array.view(cls)
+        obj = values.view(cls)
         obj.mask = mask
         obj.header = header
 
@@ -37,7 +37,7 @@ class Array1D(Structure):
     @classmethod
     def no_mask(
         cls,
-        array: Union[np.ndarray, Tuple[float], List[float]],
+        values: Union[np.ndarray, Tuple[float], List[float]],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
@@ -48,7 +48,7 @@ class Array1D(Structure):
 
         Parameters
         ----------
-        array
+        values
             The values of the array input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
         pixel_scales
             The scaled units to pixel units conversion factor of the array data coordinates (e.g. the x-axis).
@@ -66,11 +66,11 @@ class Array1D(Structure):
 
             # Make Array1D from input np.ndarray.
 
-            array_1d = aa.Array1D.no_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+            array_1d = aa.Array1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
             # Make Array2D from input list.
 
-            array_1d = aa.Array1D.no_mask(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+            array_1d = aa.Array1D.no_mask(values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
             # Print array's slim (masked 1D data representation) and
             # native (masked 1D data representation)
@@ -79,18 +79,18 @@ class Array1D(Structure):
             print(array_1d.native)
         """
 
-        array = array_2d_util.convert_array(array)
+        values = array_2d_util.convert_array(values)
 
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
         mask = Mask1D.all_false(
-            shape_slim=array.shape[0] // sub_size,
+            shape_slim=values.shape[0] // sub_size,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
 
-        return Array1D(array=array, mask=mask, header=header)
+        return Array1D(values=values, mask=mask, header=header)
 
     @classmethod
     def full(
@@ -129,7 +129,7 @@ class Array1D(Structure):
             shape_native = (shape_native[0] * sub_size,)
 
         return cls.no_mask(
-            array=np.full(fill_value=fill_value, shape=shape_native[0]),
+            values=np.full(fill_value=fill_value, shape=shape_native[0]),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -245,7 +245,7 @@ class Array1D(Structure):
         header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
         return cls.no_mask(
-            array=array_1d.astype(
+            values=array_1d.astype(
                 "float64"
             ),  # Have to do this due to typing issues in 1D with astorpy fits.
             pixel_scales=pixel_scales,
@@ -263,7 +263,7 @@ class Array1D(Structure):
         If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
         `native` to `slim` and returned as a new `Array1D`.
         """
-        return Array1D(array=self, mask=self.mask)
+        return Array1D(values=self, mask=self.mask)
 
     @property
     def native(self) -> "Array1D":
@@ -274,7 +274,7 @@ class Array1D(Structure):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Array1D`.
         """
-        return Array1D(array=self, mask=self.mask, store_native=True)
+        return Array1D(values=self, mask=self.mask, store_native=True)
 
     @property
     def readout_offsets(self) -> Tuple[float]:

@@ -532,7 +532,7 @@ def noise_map_with_signal_to_noise_limit_from(
     )
 
     if len(noise_map.native) == 1:
-        return Array1D(array=noise_map_limit, mask=mask)
+        return Array1D(values=noise_map_limit, mask=mask)
     return Array2D(noise_map_limit, mask=mask)
 
 

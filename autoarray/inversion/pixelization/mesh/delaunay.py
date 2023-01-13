@@ -65,7 +65,7 @@ class Delaunay(Triangulation):
         """
 
         return Mesh2DDelaunay(
-            grid=source_plane_mesh_grid, uses_interpolation=self.uses_interpolation
+            values=source_plane_mesh_grid, uses_interpolation=self.uses_interpolation
         )
 
 

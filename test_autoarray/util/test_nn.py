@@ -6,7 +6,7 @@ from autoarray.util.nn import nn_py
 def test__returning_weights_correct():
 
     mesh_grid = aa.Grid2D.no_mask(
-        grid=[
+        values=[
             [1.0, 1.0],
             [0.0, 1.0],
             [-1.0, 1.0],
@@ -64,7 +64,7 @@ def test__returning_weights_correct():
 def test__nn_interpolation_correct():
 
     mesh_grid = aa.Grid2D.no_mask(
-        grid=[
+        values=[
             [1.0, 1.0],
             [0.0, 1.0],
             [-1.0, 1.0],
@@ -82,7 +82,7 @@ def test__nn_interpolation_correct():
     input_values = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
 
     interpolate_grid = aa.Grid2D.no_mask(
-        grid=[[0.5, 0.5], [-0.5, 0.5], [2.0, 2.0]],
+        values=[[0.5, 0.5], [-0.5, 0.5], [2.0, 2.0]],
         shape_native=(3, 1),
         pixel_scales=1.0,
     )

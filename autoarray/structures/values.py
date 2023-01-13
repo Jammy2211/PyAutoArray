@@ -95,7 +95,7 @@ class ValuesIrregular(Structure):
         """
         from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
-        return Grid2DIrregular(grid=grid_slim)
+        return Grid2DIrregular(values=grid_slim)
 
     @classmethod
     def from_file(cls, file_path: str) -> "ValuesIrregular":

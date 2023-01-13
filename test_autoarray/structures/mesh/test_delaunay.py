@@ -22,7 +22,7 @@ def test__mesh_areas():
         ]
     )
 
-    mesh = aa.Mesh2DDelaunay(grid=grid)
+    mesh = aa.Mesh2DDelaunay(values=grid)
 
     assert mesh.voronoi_pixel_areas == pytest.approx(
         np.array(
@@ -46,12 +46,12 @@ def test__mesh_areas():
 def test__interpolated_array_from():
 
     grid = aa.Grid2D.no_mask(
-        grid=[[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+        values=[[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
 
-    mesh = aa.Mesh2DDelaunay(grid=grid)
+    mesh = aa.Mesh2DDelaunay(values=grid)
 
     interpolated_array = mesh.interpolated_array_from(
         values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), shape_native=(3, 2)

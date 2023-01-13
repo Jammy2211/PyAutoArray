@@ -121,6 +121,6 @@ class SimulatorImaging:
             shape_native=image.shape_native, pixel_scales=image.pixel_scales
         )
 
-        image = Array2D(array=image, mask=mask)
+        image = Array2D(values=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map)

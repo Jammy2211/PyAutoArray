@@ -13,7 +13,7 @@ def test__constructor():
     # Input tuples
 
     vectors = aa.VectorYX2DIrregular(
-        vectors=[(1.0, -1.0), (1.0, 1.0)], grid=[[1.0, -1.0], [1.0, 1.0]]
+        values=[(1.0, -1.0), (1.0, 1.0)], grid=[[1.0, -1.0], [1.0, 1.0]]
     )
 
     assert type(vectors) == aa.VectorYX2DIrregular
@@ -23,7 +23,7 @@ def test__constructor():
     # Input np array
 
     vectors = aa.VectorYX2DIrregular(
-        vectors=[np.array([1.0, -1.0]), np.array([1.0, 1.0])],
+        values=[np.array([1.0, -1.0]), np.array([1.0, 1.0])],
         grid=[[1.0, -1.0], [1.0, 1.0]],
     )
 
@@ -34,7 +34,7 @@ def test__constructor():
     # Input list
 
     vectors = aa.VectorYX2DIrregular(
-        vectors=[[1.0, -1.0], [1.0, 1.0]], grid=[[1.0, -1.0], [1.0, 1.0]]
+        values=[[1.0, -1.0], [1.0, 1.0]], grid=[[1.0, -1.0], [1.0, 1.0]]
     )
 
     assert type(vectors) == aa.VectorYX2DIrregular
@@ -47,7 +47,7 @@ def test__constructor__grid_conversions():
     # Input tuples
 
     vectors = aa.VectorYX2DIrregular(
-        vectors=[(1.0, -1.0), (1.0, 1.0)],
+        values=[(1.0, -1.0), (1.0, 1.0)],
         grid=aa.Grid2DIrregular([[1.0, -1.0], [1.0, 1.0]]),
     )
 
@@ -57,7 +57,7 @@ def test__constructor__grid_conversions():
     # Input np array
 
     vectors = aa.VectorYX2DIrregular(
-        vectors=[(1.0, -1.0), (1.0, 1.0)], grid=[[1.0, -1.0], [1.0, 1.0]]
+        values=[(1.0, -1.0), (1.0, 1.0)], grid=[[1.0, -1.0], [1.0, 1.0]]
     )
 
     assert type(vectors.grid) == aa.Grid2DIrregular
@@ -66,7 +66,7 @@ def test__constructor__grid_conversions():
     # Input list
 
     vectors = aa.VectorYX2DIrregular(
-        vectors=[(1.0, -1.0), (1.0, 1.0)], grid=[(1.0, -1.0), (1.0, 1.0)]
+        values=[(1.0, -1.0), (1.0, 1.0)], grid=[(1.0, -1.0), (1.0, 1.0)]
     )
 
     assert type(vectors.grid) == aa.Grid2DIrregular
@@ -76,7 +76,7 @@ def test__constructor__grid_conversions():
 def test__vectors_within_radius():
 
     vectors = aa.VectorYX2DIrregular(
-        vectors=[(1.0, 1.0), (2.0, 2.0)], grid=[[0.0, 1.0], [0.0, 2.0]]
+        values=[(1.0, 1.0), (2.0, 2.0)], grid=[[0.0, 1.0], [0.0, 2.0]]
     )
 
     vectors_masked = vectors.vectors_within_radius(radius=3.0, centre=(0.0, 0.0))

@@ -91,7 +91,7 @@ def grid_1d_to_structure(func):
                 centre=centre, angle=angle
             )
             result = func(obj, grid_2d_projected, *args, **kwargs)
-            return Array1D.no_mask(array=result, pixel_scales=grid.pixel_scale)
+            return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
@@ -99,7 +99,7 @@ def grid_1d_to_structure(func):
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from(angle=angle)
             result = func(obj, grid_2d_radial, *args, **kwargs)
-            return Array1D.no_mask(array=result, pixel_scales=grid.pixel_scale)
+            return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         raise exc.GridException(
             "You cannot input a NumPy array to a `quantity_1d_from` method."
@@ -150,12 +150,12 @@ def grid_1d_output_structure(func):
         result = func(obj, grid, *args, **kwargs)
 
         if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIterate):
-            return Array1D.no_mask(array=result, pixel_scales=grid.pixel_scale)
+            return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         elif isinstance(grid, Grid2DIrregular):
             return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid1D):
-            return Array1D.no_mask(array=result, pixel_scales=grid.pixel_scale)
+            return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         raise exc.GridException(
             "You cannot input a NumPy array to a `quantity_1d_from` method."
@@ -370,9 +370,9 @@ def grid_2d_to_vector_yx(func):
         vector_yx_2d = func(obj, grid, *args, **kwargs)
 
         if isinstance(grid, Grid2DIrregular):
-            return VectorYX2DIrregular(vectors=vector_yx_2d, grid=grid)
+            return VectorYX2DIrregular(values=vector_yx_2d, grid=grid)
         try:
-            return VectorYX2D(vectors=vector_yx_2d, grid=grid, mask=grid.mask)
+            return VectorYX2D(values=vector_yx_2d, grid=grid, mask=grid.mask)
         except AttributeError:
             return vector_yx_2d
 
@@ -423,12 +423,12 @@ def grid_2d_to_vector_yx_list(func):
 
         if isinstance(grid, Grid2DIrregular):
             return [
-                VectorYX2DIrregular(vectors=vectors, grid=grid)
+                VectorYX2DIrregular(values=vectors, grid=grid)
                 for vectors in vector_yx_2d_list
             ]
         else:
             return [
-                VectorYX2D(vectors=vectors, grid=grid, mask=grid.mask)
+                VectorYX2D(values=vectors, grid=grid, mask=grid.mask)
                 for vectors in vector_yx_2d_list
             ]
 

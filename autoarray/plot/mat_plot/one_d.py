@@ -166,7 +166,7 @@ class MatPlot1D(AbstractMatPlot):
             x = np.arange(len(y))
             use_integers = True
             pixel_scales = (x[1] - x[0],)
-            x = Array1D.no_mask(array=x, pixel_scales=pixel_scales)
+            x = Array1D.no_mask(values=x, pixel_scales=pixel_scales)
 
         if self.yx_plot.plot_axis_type is None:
             plot_axis_type = "linear"

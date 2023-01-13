@@ -15,7 +15,7 @@ from autoarray.structures.grids import grid_2d_util
 class Abstract2DMeshTriangulation(Abstract2DMesh):
     def __new__(
         cls,
-        grid: Union[np.ndarray, List],
+        values: Union[np.ndarray, List],
         nearest_pixelization_index_for_slim_index: Optional[np.ndarray] = None,
         uses_interpolation: bool = False,
         *args,
@@ -44,7 +44,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
         Parameters
         ----------
-        grid
+        values
             The grid of (y,x) coordinates corresponding to the Delaunay triangle corners and Voronoi pixel centres.
         nearest_pixelization_index_for_slim_index
             When a Voronoi grid is used to create a mapper and inversion, there are mappings between the `data` pixels
@@ -52,10 +52,10 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             mapper.
         """
 
-        if type(grid) is list:
-            grid = np.asarray(grid)
+        if type(values) is list:
+            values = np.asarray(values)
 
-        obj = grid.view(cls)
+        obj = values.view(cls)
         obj.nearest_pixelization_index_for_slim_index = (
             nearest_pixelization_index_for_slim_index
         )

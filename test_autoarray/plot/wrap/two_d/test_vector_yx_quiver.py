@@ -36,7 +36,7 @@ def test__quiver_vectors():
     )
 
     vectors = aa.VectorYX2DIrregular(
-        vectors=[(1.0, 2.0), (2.0, 1.0)], grid=[(-1.0, 0.0), (-2.0, 0.0)]
+        values=[(1.0, 2.0), (2.0, 1.0)], grid=[(-1.0, 0.0), (-2.0, 0.0)]
     )
 
     quiver.quiver_vectors(vectors=vectors)

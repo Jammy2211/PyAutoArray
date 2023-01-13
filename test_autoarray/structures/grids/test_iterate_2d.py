@@ -12,7 +12,7 @@ import autoarray as aa
 def test__manual_slim():
 
     grid = aa.Grid2DIterate.no_mask(
-        grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+        values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(2, 2),
         pixel_scales=1.0,
         fractional_accuracy=0.1,
@@ -250,7 +250,7 @@ def test__threshold_mask_via_arrays_from():
     grid = aa.Grid2DIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
     arr = aa.Array2D(
-        array=[
+        values=[
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 1.0, 1.0, 0.0],
             [0.0, 1.0, 1.0, 0.0],
@@ -508,7 +508,7 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    arr = aa.Array2D(array=np.zeros(9), mask=mask)
+    arr = aa.Array2D(values=np.zeros(9), mask=mask)
 
     values = grid.iterated_array_from(
         func=ndarray_1d_from, cls=None, array_lower_sub_2d=arr
@@ -788,7 +788,7 @@ def test__iterated_grid_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    grid_lower = aa.Grid2D(grid=np.zeros((9, 2)), mask=mask)
+    grid_lower = aa.Grid2D(values=np.zeros((9, 2)), mask=mask)
 
     values = grid.iterated_grid_from(
         func=ndarray_1d_from, cls=None, grid_lower_sub_2d=grid_lower

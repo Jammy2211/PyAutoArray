@@ -13,7 +13,7 @@ def test__constructor():
 
     mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
     grid_2d = aa.Grid2D(
-        grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], mask=mask
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], mask=mask
     )
 
     assert type(grid_2d) == aa.Grid2D
@@ -28,7 +28,7 @@ def test__constructor():
 
     mask = aa.Mask2D([[False], [True]], sub_size=2, pixel_scales=1.0, origin=(0.0, 1.0))
     grid_2d = aa.Grid2D(
-        grid=[
+        values=[
             [[1.0, 2.0], [3.0, 4.0]],
             [[5.0, 6.0], [7.0, 8.0]],
             [[1.0, 2.0], [3.0, 4.0]],
@@ -64,16 +64,18 @@ def test__constructor__exception_raised_if_input_grid_is_2d_and_not_sub_shape_of
 
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
-        aa.Grid2D(grid=[[[1.0, 1.0], [3.0, 3.0]]], mask=mask)
-
-    with pytest.raises(exc.GridException):
-        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
-        aa.Grid2D(grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask)
+        aa.Grid2D(values=[[[1.0, 1.0], [3.0, 3.0]]], mask=mask)
 
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
         aa.Grid2D(
-            grid=[
+            values=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
+        )
+
+    with pytest.raises(exc.GridException):
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
+        aa.Grid2D(
+            values=[
                 [[1.0, 1.0], [2.0, 2.0]],
                 [[3.0, 3.0], [4.0, 4.0]],
                 [[5.0, 5.0], [6.0, 6.0]],
@@ -88,26 +90,26 @@ def test__constructor__exception_raised_if_input_grid_is_not_number_of_masked_su
         mask = aa.Mask2D(
             mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
         )
-        aa.Grid2D(grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask)
+        aa.Grid2D(values=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask)
 
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D(
             mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
         )
-        aa.Grid2D(grid=[[1.0, 1.0], [2.0, 2.0]], mask=mask)
+        aa.Grid2D(values=[[1.0, 1.0], [2.0, 2.0]], mask=mask)
 
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D(
             mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
         )
-        aa.Grid2D(grid=[[[1.0, 1.0], [2.0, 2.0], [4.0, 4.0]]], mask=mask)
+        aa.Grid2D(values=[[[1.0, 1.0], [2.0, 2.0], [4.0, 4.0]]], mask=mask)
 
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D(
             mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
         )
         aa.Grid2D(
-            grid=[[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]]],
+            values=[[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]]],
             mask=mask,
         )
 
@@ -115,7 +117,7 @@ def test__constructor__exception_raised_if_input_grid_is_not_number_of_masked_su
 def test__no_mask():
 
     grid_2d = aa.Grid2D.no_mask(
-        grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
     )
@@ -140,7 +142,7 @@ def test__no_mask():
     assert grid_2d.sub_size == 1
 
     grid_2d = aa.Grid2D.no_mask(
-        grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+        values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(1, 1),
         pixel_scales=1.0,
         sub_size=2,
@@ -762,7 +764,7 @@ def test__shape_native_scaled():
 def test__flipped():
 
     grid_2d = aa.Grid2D.no_mask(
-        grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0
     )
 
     assert (
@@ -775,7 +777,7 @@ def test__flipped():
     ).all()
 
     grid_2d = aa.Grid2D.no_mask(
-        grid=[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]], pixel_scales=1.0
+        values=[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]], pixel_scales=1.0
     )
 
     assert (
@@ -1004,7 +1006,7 @@ def test__squared_distances_to_coordinate_from():
     mask = aa.Mask2D(
         [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
     )
-    grid_2d = aa.Grid2D(grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
+    grid_2d = aa.Grid2D(values=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
 
     square_distances = grid_2d.squared_distances_to_coordinate_from(
         coordinate=(0.0, 0.0)
@@ -1027,7 +1029,7 @@ def test__distance_from_coordinate_array():
     mask = aa.Mask2D(
         [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
     )
-    grid_2d = aa.Grid2D(grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
+    grid_2d = aa.Grid2D(values=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
 
     square_distances = grid_2d.distances_to_coordinate_from(coordinate=(0.0, 0.0))
 
@@ -1193,7 +1195,7 @@ def test__relocated_grid_from__inside_border_no_relocations():
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
     grid_to_relocate = aa.Grid2D.no_mask(
-        grid=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
+        values=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
         pixel_scales=mask.pixel_scales,
     )
 
@@ -1208,7 +1210,7 @@ def test__relocated_grid_from__inside_border_no_relocations():
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
     grid_to_relocate = aa.Grid2D.no_mask(
-        grid=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
+        values=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
         pixel_scales=mask.pixel_scales,
     )
 
@@ -1226,7 +1228,7 @@ def test__relocated_grid_from__outside_border_includes_relocations():
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
     grid_to_relocate = aa.Grid2D.no_mask(
-        grid=np.array([[[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]]),
+        values=np.array([[[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]]),
         pixel_scales=mask.pixel_scales,
     )
 
@@ -1243,7 +1245,7 @@ def test__relocated_grid_from__outside_border_includes_relocations():
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
     grid_to_relocate = aa.Grid2D.no_mask(
-        grid=np.array([[[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]]),
+        values=np.array([[[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]]),
         pixel_scales=mask.pixel_scales,
     )
 
@@ -1266,7 +1268,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
     grid_to_relocate = aa.Grid2D.no_mask(
-        grid=np.array([[[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]]),
+        values=np.array([[[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]]),
         pixel_scales=mask.pixel_scales,
     )
 
@@ -1290,7 +1292,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
     grid_to_relocate = aa.Grid2D.no_mask(
-        grid=np.array([[[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]]),
+        values=np.array([[[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]]),
         pixel_scales=mask.pixel_scales,
     )
 
@@ -1311,7 +1313,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 def test__recursive_shape_storage():
 
     grid_2d = aa.Grid2D.no_mask(
-        grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
     )

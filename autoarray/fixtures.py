@@ -156,7 +156,7 @@ def make_psf_3x3():
 
     psf = np.array([[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]])
 
-    return aa.Kernel2D.no_mask(array=psf, pixel_scales=(1.0, 1.0))
+    return aa.Kernel2D.no_mask(values=psf, pixel_scales=(1.0, 1.0))
 
 
 def make_psf_3x3_no_blur():
@@ -178,13 +178,13 @@ def make_noise_covariance_matrix_7x7():
 
 
 def make_grid_2d_irregular_7x7():
-    return aa.Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)])
+    return aa.Grid2DIrregular(values=[(0.1, 0.1), (0.2, 0.2)])
 
 
 def make_grid_2d_irregular_7x7_list():
     return [
-        aa.Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)]),
-        aa.Grid2DIrregular(grid=[(0.3, 0.3)]),
+        aa.Grid2DIrregular(values=[(0.1, 0.1), (0.2, 0.2)]),
+        aa.Grid2DIrregular(values=[(0.3, 0.3)]),
     ]
 
 
@@ -375,7 +375,7 @@ def make_rectangular_mesh_grid_3x3():
 def make_delaunay_mesh_grid_9():
 
     grid_9 = aa.Grid2D.no_mask(
-        grid=[
+        values=[
             [0.6, -0.3],
             [0.5, -0.8],
             [0.2, 0.1],
@@ -390,13 +390,13 @@ def make_delaunay_mesh_grid_9():
         pixel_scales=1.0,
     )
 
-    return aa.Mesh2DDelaunay(grid=grid_9)
+    return aa.Mesh2DDelaunay(values=grid_9)
 
 
 def make_voronoi_mesh_grid_9():
 
     grid_9 = aa.Grid2D.no_mask(
-        grid=[
+        values=[
             [0.6, -0.3],
             [0.5, -0.8],
             [0.2, 0.1],
@@ -412,7 +412,7 @@ def make_voronoi_mesh_grid_9():
     )
 
     return aa.Mesh2DVoronoi(
-        grid=grid_9,
+        values=grid_9,
         nearest_pixelization_index_for_slim_index=np.zeros(
             shape=make_grid_2d_7x7().shape_slim, dtype="int"
         ),

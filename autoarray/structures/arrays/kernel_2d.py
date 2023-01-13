@@ -18,7 +18,7 @@ from autoarray.structures.arrays import array_2d_util
 class Kernel2D(AbstractArray2D):
     def __new__(
         cls,
-        array,
+        values,
         mask,
         header=None,
         normalize: bool = False,
@@ -35,7 +35,7 @@ class Kernel2D(AbstractArray2D):
 
         Parameters
         ----------
-        array
+        values
             The values of the array.
         mask
             The 2D mask associated with the array, defining the pixels each array value is paired with and
@@ -44,7 +44,7 @@ class Kernel2D(AbstractArray2D):
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         obj = super().__new__(
-            cls=cls, array=array, mask=mask, header=header, store_native=store_native
+            cls=cls, values=values, mask=mask, header=header, store_native=store_native
         )
 
         if normalize:
@@ -55,7 +55,7 @@ class Kernel2D(AbstractArray2D):
     @classmethod
     def no_mask(
         cls,
-        array: Union[np.ndarray, List],
+        values: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         shape_native: Tuple[int, int] = None,
         origin: Tuple[float, float] = (0.0, 0.0),
@@ -68,7 +68,7 @@ class Kernel2D(AbstractArray2D):
         See the manual_slim and manual_native methods for examples.
         Parameters
         ----------
-        array
+        values
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
         shape_native
@@ -83,13 +83,13 @@ class Kernel2D(AbstractArray2D):
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        array = Array2D.no_mask(
-            array=array,
+        values = Array2D.no_mask(
+            values=values,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
         )
-        return Kernel2D(array=array, mask=array.mask, normalize=normalize)
+        return Kernel2D(values=values, mask=values.mask, normalize=normalize)
 
     @classmethod
     def full(
@@ -124,7 +124,7 @@ class Kernel2D(AbstractArray2D):
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         return Kernel2D.no_mask(
-            array=np.full(fill_value=fill_value, shape=shape_native),
+            values=np.full(fill_value=fill_value, shape=shape_native),
             pixel_scales=pixel_scales,
             origin=origin,
             normalize=normalize,
@@ -219,7 +219,7 @@ class Kernel2D(AbstractArray2D):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        return cls.no_mask(array=array, pixel_scales=pixel_scales)
+        return cls.no_mask(values=array, pixel_scales=pixel_scales)
 
     @classmethod
     def from_gaussian(
@@ -283,7 +283,7 @@ class Kernel2D(AbstractArray2D):
         )
 
         return cls.no_mask(
-            array=gaussian,
+            values=gaussian,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             normalize=normalize,
@@ -356,7 +356,7 @@ class Kernel2D(AbstractArray2D):
         header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
         return Kernel2D(
-            array=array[:],
+            values=array[:],
             mask=array.mask,
             normalize=normalize,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
@@ -440,7 +440,7 @@ class Kernel2D(AbstractArray2D):
             pixel_scales = None
 
         return Kernel2D.no_mask(
-            array=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
+            values=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
         )
 
     @property
@@ -448,7 +448,7 @@ class Kernel2D(AbstractArray2D):
         """
         Normalize the Kernel2D such that its data_vector values sum to unity.
         """
-        return Kernel2D(array=self, mask=self.mask, normalize=True)
+        return Kernel2D(values=self, mask=self.mask, normalize=True)
 
     def convolved_array_from(self, array: Array2D) -> Array2D:
         """
@@ -481,7 +481,7 @@ class Kernel2D(AbstractArray2D):
             mask_2d=array_binned_2d.mask, array_2d_native=convolved_array_2d, sub_size=1
         )
 
-        return Array2D(array=convolved_array_1d, mask=array_binned_2d.mask)
+        return Array2D(values=convolved_array_1d, mask=array_binned_2d.mask)
 
     def convolved_array_with_mask_from(self, array: Array2D, mask: Mask2D) -> Array2D:
         """
@@ -511,4 +511,4 @@ class Kernel2D(AbstractArray2D):
             mask_2d=mask, array_2d_native=convolved_array_2d, sub_size=1
         )
 
-        return Array2D(array=convolved_array_1d, mask=mask.derive_mask.sub_1)
+        return Array2D(values=convolved_array_1d, mask=mask.derive_mask.sub_1)

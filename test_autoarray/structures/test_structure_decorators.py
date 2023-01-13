@@ -11,7 +11,7 @@ from autoarray.structures.mock.mock_structure_decorators import (
 
 def test__in_grid_1d__out_ndarray_1d():
 
-    grid_1d = aa.Grid1D.no_mask(grid=[1.0, 2.0, 3.0], pixel_scales=1.0)
+    grid_1d = aa.Grid1D.no_mask(values=[1.0, 2.0, 3.0], pixel_scales=1.0)
 
     grid_like_object = aa.m.MockGrid1DLikeObj()
 
@@ -358,7 +358,7 @@ def test__in_grid_2d_irregular__out_ndarray_1d():
 
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
-    grid_2d_irregular = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
+    grid_2d_irregular = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
     ndarray_1d = grid_like_object.ndarray_1d_from(grid=grid_2d_irregular)
 
@@ -370,7 +370,7 @@ def test__in_grid_2d_irregular__out_ndarray_2d():
 
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
-    grid_2d_irregular = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
+    grid_2d_irregular = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
     ndarray_2d = grid_like_object.ndarray_2d_from(grid=grid_2d_irregular)
 
@@ -381,7 +381,7 @@ def test__in_grid_2d_irregular__out_ndarray_1d_list():
 
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
-    grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
+    grid_2d = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
     ndarray_1d_list = grid_like_object.ndarray_1d_list_from(grid=grid_2d)
 
@@ -393,7 +393,7 @@ def test__in_grid_2d_irregular__out_ndarray_2d_list():
 
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
-    grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
+    grid_2d = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
     ndarray_2d_list = grid_like_object.ndarray_2d_list_from(grid=grid_2d)
 
@@ -405,7 +405,7 @@ def test__in_grid_2d_irregular__out_ndarray_yx_2d():
 
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
-    grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
+    grid_2d = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
     ndarray_yx_2d = grid_like_object.ndarray_yx_2d_from(grid=grid_2d)
 
@@ -417,7 +417,7 @@ def test__in_grid_2d_irregular__out_ndarray_yx_2d_list():
 
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
-    grid_2d = aa.Grid2DIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
+    grid_2d = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
     ndarray_yx_2d_list = grid_like_object.ndarray_yx_2d_list_from(grid=grid_2d)
 

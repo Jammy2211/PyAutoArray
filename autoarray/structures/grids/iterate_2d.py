@@ -24,7 +24,7 @@ def sub_steps_from(sub_steps):
 class Grid2DIterate(Grid2D):
     def __new__(
         cls,
-        grid: np.ndarray,
+        values: np.ndarray,
         mask: Mask2D,
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
@@ -53,7 +53,7 @@ class Grid2DIterate(Grid2D):
 
         Parameters
         ----------
-        grid
+        values
             The (y,x) coordinates of the grid.
         mask
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
@@ -76,13 +76,13 @@ class Grid2DIterate(Grid2D):
 
         sub_steps = sub_steps_from(sub_steps=sub_steps)
 
-        grid = grid_2d_util.convert_grid_2d(
-            grid_2d=grid, mask_2d=mask, store_native=store_native
+        values = grid_2d_util.convert_grid_2d(
+            grid_2d=values, mask_2d=mask, store_native=store_native
         )
 
-        obj = grid.view(cls)
+        obj = values.view(cls)
         obj.mask = mask
-        obj.grid = Grid2D(grid=np.asarray(obj), mask=mask, store_native=store_native)
+        obj.grid = Grid2D(values=np.asarray(obj), mask=mask, store_native=store_native)
         obj.fractional_accuracy = fractional_accuracy
         obj.relative_accuracy = relative_accuracy
         obj.sub_steps = sub_steps
@@ -108,7 +108,7 @@ class Grid2DIterate(Grid2D):
     @classmethod
     def no_mask(
         cls,
-        grid: Union[np.ndarray, List],
+        values: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
@@ -128,7 +128,7 @@ class Grid2DIterate(Grid2D):
 
         Parameters
         ----------
-        grid
+        values
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
         shape_native
@@ -153,15 +153,15 @@ class Grid2DIterate(Grid2D):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        grid = grid_2d_util.convert_grid(grid=grid)
+        values = grid_2d_util.convert_grid(grid=values)
 
-        if len(grid.shape) == 2:
+        if len(values.shape) == 2:
 
-            grid_2d_util.check_grid_slim(grid=grid, shape_native=shape_native)
+            grid_2d_util.check_grid_slim(grid=values, shape_native=shape_native)
 
         else:
 
-            shape_native = (int(grid.shape[0]), int(grid.shape[1]))
+            shape_native = (int(values.shape[0]), int(values.shape[1]))
 
         mask = Mask2D.all_false(
             shape_native=shape_native,
@@ -171,7 +171,7 @@ class Grid2DIterate(Grid2D):
         )
 
         return Grid2DIterate(
-            grid=grid,
+            values=values,
             mask=mask,
             fractional_accuracy=fractional_accuracy,
             relative_accuracy=relative_accuracy,
@@ -224,7 +224,7 @@ class Grid2DIterate(Grid2D):
         )
 
         return Grid2DIterate.no_mask(
-            grid=grid_slim,
+            values=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             fractional_accuracy=fractional_accuracy,
@@ -269,7 +269,7 @@ class Grid2DIterate(Grid2D):
         )
 
         return Grid2DIterate(
-            grid=grid_slim,
+            values=grid_slim,
             mask=mask.derive_mask.sub_1,
             fractional_accuracy=fractional_accuracy,
             relative_accuracy=relative_accuracy,
@@ -334,7 +334,7 @@ class Grid2DIterate(Grid2D):
         `native` to `slim` and returned as a new `Grid2D`.
         """
         return Grid2DIterate(
-            grid=self,
+            values=self,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -352,7 +352,7 @@ class Grid2DIterate(Grid2D):
         This method is used in the child `Grid2D` classes to create their `native` properties.
         """
         return Grid2DIterate(
-            grid=self,
+            values=self,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -372,7 +372,7 @@ class Grid2DIterate(Grid2D):
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
         """
         return Grid2DIterate(
-            grid=super().binned,
+            values=super().binned,
             mask=self.mask.derive_mask.sub_1,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -393,7 +393,7 @@ class Grid2DIterate(Grid2D):
             The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid2DIterate(
-            grid=self - deflection_grid,
+            values=self - deflection_grid,
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
@@ -666,7 +666,7 @@ class Grid2DIterate(Grid2D):
             mask_2d=self.mask, array_2d_native=iterated_array, sub_size=1
         )
 
-        return Array2D(array=iterated_array_1d, mask=self.mask.derive_mask.sub_1)
+        return Array2D(values=iterated_array_1d, mask=self.mask.derive_mask.sub_1)
 
     @staticmethod
     @numba_util.jit()
@@ -873,7 +873,7 @@ class Grid2DIterate(Grid2D):
                     mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
                 )
 
-                return Grid2D(grid=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
+                return Grid2D(values=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
 
             grid_lower_sub_2d = grid_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
@@ -891,7 +891,7 @@ class Grid2DIterate(Grid2D):
             mask=self.mask, grid_2d_native=iterated_grid_2d, sub_size=1
         )
 
-        return Grid2D(grid=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
+        return Grid2D(values=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
 
     @staticmethod
     @numba_util.jit()

@@ -24,7 +24,7 @@ def test__neighbors__compare_to_mesh_util():
         ]
     )
 
-    mesh = aa.Mesh2DVoronoi(grid=grid)
+    mesh = aa.Mesh2DVoronoi(values=grid)
 
     voronoi = scipy.spatial.Voronoi(
         np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
@@ -54,7 +54,7 @@ def test__mesh_areas():
         ]
     )
 
-    mesh = aa.Mesh2DVoronoi(grid=grid)
+    mesh = aa.Mesh2DVoronoi(values=grid)
 
     assert mesh.voronoi_pixel_areas == pytest.approx(
         np.array(
@@ -77,7 +77,7 @@ def test__mesh_areas():
 def test__mesh_grid__attributes():
 
     mesh = aa.Mesh2DVoronoi(
-        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]]),
+        values=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]]),
         nearest_pixelization_index_for_slim_index=np.array([0, 1, 2, 3]),
     )
 
@@ -105,7 +105,7 @@ def test__from_unmasked_sparse_shape_and_grid():
     )
 
     mesh = aa.Mesh2DVoronoi(
-        grid=sparse_grid,
+        values=sparse_grid,
         nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
     )
 
@@ -134,7 +134,7 @@ def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():
         ]
     )
 
-    mesh = aa.Mesh2DVoronoi(grid=grid)
+    mesh = aa.Mesh2DVoronoi(values=grid)
 
     assert (
         mesh.voronoi.points
@@ -157,7 +157,7 @@ def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():
 
     grid = np.array([[-1.0, 1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [1.0, -1.0]])
 
-    mesh = aa.Mesh2DVoronoi(grid=grid)
+    mesh = aa.Mesh2DVoronoi(values=grid)
 
     mesh.voronoi.vertices = list(map(lambda x: list(x), mesh.voronoi.vertices))
 
@@ -182,7 +182,7 @@ def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():
         ]
     )
 
-    mesh = aa.Mesh2DVoronoi(grid=grid)
+    mesh = aa.Mesh2DVoronoi(values=grid)
 
     # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
     # to look for each list
@@ -210,7 +210,7 @@ def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():
         ]
     )
 
-    mesh = aa.Mesh2DVoronoi(grid=grid)
+    mesh = aa.Mesh2DVoronoi(values=grid)
 
     # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
     # to look for each list
@@ -237,7 +237,7 @@ def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():
 def test__qhull_error_is_caught():
 
     grid = np.array([[3.0, 0.0]])
-    mesh = aa.Mesh2DVoronoi(grid=grid)
+    mesh = aa.Mesh2DVoronoi(values=grid)
 
     with pytest.raises(exc.MeshException):
         mesh.voronoi
@@ -251,7 +251,7 @@ def _test__interpolated_array_from():
         pixel_scales=1.0,
     )
 
-    mesh = aa.Mesh2DVoronoi(grid=grid)
+    mesh = aa.Mesh2DVoronoi(values=grid)
 
     interpolated_array = mesh.interpolated_array_from(
         values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),

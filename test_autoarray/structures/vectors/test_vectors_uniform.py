@@ -10,7 +10,7 @@ from autoarray import exc
 def test__no_mask():
 
     vectors = aa.VectorYX2D.no_mask(
-        vectors=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
     )
@@ -39,7 +39,7 @@ def test__no_mask():
     assert vectors.sub_size == 1
 
     vectors = aa.VectorYX2D.no_mask(
-        vectors=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+        values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(1, 1),
         pixel_scales=1.0,
         sub_size=2,
@@ -72,7 +72,7 @@ def test__from_mask():
     mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
 
     vectors = aa.VectorYX2D.from_mask(
-        vectors=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
+        values=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
     )
 
     assert type(vectors) == aa.VectorYX2D
@@ -98,7 +98,7 @@ def test__from_mask():
     )
 
     vectors = aa.VectorYX2D.from_mask(
-        vectors=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
+        values=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
     )
 
     assert type(vectors) == aa.VectorYX2D
@@ -117,7 +117,7 @@ def test__from_mask():
     mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
 
     vectors = aa.VectorYX2D.from_mask(
-        vectors=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
+        values=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
     )
 
     assert type(vectors) == aa.VectorYX2D
@@ -200,7 +200,7 @@ def test__zeros():
 def test__y_x():
 
     vectors = aa.VectorYX2D.no_mask(
-        vectors=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
     )
@@ -216,7 +216,7 @@ def test__apply_mask():
 
     mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
     vectors = aa.VectorYX2D.no_mask(
-        vectors=[
+        values=[
             [1.0, 1.0],
             [2.0, 2.0],
             [3.0, 3.0],
@@ -248,7 +248,7 @@ def test__apply_mask():
 def test__magnitudes():
 
     vectors = aa.VectorYX2D.no_mask(
-        vectors=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]],
+        values=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]],
         pixel_scales=1.0,
         sub_size=1,
     )

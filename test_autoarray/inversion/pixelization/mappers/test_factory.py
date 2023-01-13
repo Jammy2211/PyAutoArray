@@ -26,7 +26,7 @@ def test__rectangular_mapper():
     # sub-grid.
 
     grid = aa.Grid2D(
-        grid=[
+        values=[
             [1.0, -1.0],
             [1.0, -1.0],
             [1.0, -1.0],
@@ -122,7 +122,7 @@ def test__delaunay_mapper():
         ]
     )
 
-    grid = aa.Grid2D(grid=grid, mask=mask)
+    grid = aa.Grid2D(values=grid, mask=mask)
 
     pix = aa.mesh.DelaunayMagnification(shape=(3, 3))
     sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
@@ -199,7 +199,7 @@ def test__voronoi_mapper():
         ]
     )
 
-    grid = aa.Grid2D(grid=grid, mask=mask)
+    grid = aa.Grid2D(values=grid, mask=mask)
 
     pix = aa.mesh.VoronoiMagnification(shape=(3, 3))
     sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(

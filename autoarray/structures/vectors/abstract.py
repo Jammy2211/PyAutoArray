@@ -3,8 +3,6 @@ import numpy as np
 
 from autoarray.structures.abstract_structure import Structure
 
-from autoarray.structures.grids import grid_2d_util
-
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 

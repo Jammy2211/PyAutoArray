@@ -9,7 +9,7 @@ from autoarray import exc
 def test__slice_1d__extract():
 
     arr_1d = aa.Array1D.no_mask(
-        array=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), pixel_scales=1.0
+        values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), pixel_scales=1.0
     )
 
     region = aa.Region1D(region=(0, 2))
@@ -27,7 +27,7 @@ def test__slice_1d__extract():
 
 def test__slice_1d__addition():
 
-    arr_1d = aa.Array1D.no_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+    arr_1d = aa.Array1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
     image = aa.Array1D.full(fill_value=1.0, shape_native=6, pixel_scales=1.0)
 
@@ -37,7 +37,7 @@ def test__slice_1d__addition():
 
     assert (arr_1d == np.array([2.0, 2.0, 3.0, 4.0])).all()
 
-    arr_1d = aa.Array1D.no_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+    arr_1d = aa.Array1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
     region = aa.Region1D(region=(2, 4))
 
@@ -48,7 +48,7 @@ def test__slice_1d__addition():
 
 def test__slice_1d__set_to_zeros():
 
-    arr_1d = aa.Array1D.no_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+    arr_1d = aa.Array1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
     region = aa.Region1D(region=(0, 1))
 
@@ -56,7 +56,7 @@ def test__slice_1d__set_to_zeros():
 
     assert (arr_1d == np.array([0.0, 2.0, 3.0, 4.0])).all()
 
-    arr_1d = aa.Array1D.no_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+    arr_1d = aa.Array1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
     region = aa.Region1D(region=(2, 4))
 
@@ -133,7 +133,7 @@ def test__exception__negative_coordinates_1d():
 def test__slice_2d__extraction():
 
     array = aa.Array2D.no_mask(
-        array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
+        values=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
         pixel_scales=1.0,
     )
 
@@ -144,7 +144,7 @@ def test__slice_2d__extraction():
     assert (new_array == np.array([[1.0, 2.0], [4.0, 5.0]])).all()
 
     array = aa.Array2D.no_mask(
-        array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
+        values=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
         pixel_scales=1.0,
     )
 
@@ -157,7 +157,7 @@ def test__slice_2d__extraction():
 
 def test__slice_2d__addition():
 
-    array = aa.Array2D.no_mask(array=np.zeros((2, 2)), pixel_scales=1.0)
+    array = aa.Array2D.no_mask(values=np.zeros((2, 2)), pixel_scales=1.0)
     array = array.native
     image = np.ones((2, 2))
     region = aa.Region2D(region=(0, 1, 0, 1))
@@ -166,7 +166,7 @@ def test__slice_2d__addition():
 
     assert (array == np.array([[1.0, 0.0], [0.0, 0.0]])).all()
 
-    array = aa.Array2D.no_mask(array=np.ones((2, 2)), pixel_scales=1.0)
+    array = aa.Array2D.no_mask(values=np.ones((2, 2)), pixel_scales=1.0)
     array = array.native
     image = np.ones((2, 2))
     region = aa.Region2D(region=(0, 1, 0, 1))
@@ -175,7 +175,7 @@ def test__slice_2d__addition():
 
     assert (array == np.array([[2.0, 1.0], [1.0, 1.0]])).all()
 
-    array = aa.Array2D.no_mask(array=np.ones((3, 3)), pixel_scales=1.0)
+    array = aa.Array2D.no_mask(values=np.ones((3, 3)), pixel_scales=1.0)
     array = array.native
     image = np.ones((3, 3))
     region = aa.Region2D(region=(1, 3, 2, 3))
@@ -189,7 +189,7 @@ def test__slice_2d__addition():
 
 def test__slice_2d__set_to_zerose():
 
-    array = aa.Array2D.no_mask(array=np.ones((2, 2)), pixel_scales=1.0)
+    array = aa.Array2D.no_mask(values=np.ones((2, 2)), pixel_scales=1.0)
     array = array.native
 
     region = aa.Region2D(region=(0, 1, 0, 1))
@@ -198,7 +198,7 @@ def test__slice_2d__set_to_zerose():
 
     assert (array == np.array([[0.0, 1.0], [1.0, 1.0]])).all()
 
-    array = aa.Array2D.no_mask(array=np.ones((3, 3)), pixel_scales=1.0)
+    array = aa.Array2D.no_mask(values=np.ones((3, 3)), pixel_scales=1.0)
     array = array.native
 
     region = aa.Region2D(region=(1, 3, 2, 3))

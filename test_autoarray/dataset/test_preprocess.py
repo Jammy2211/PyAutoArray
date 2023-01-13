@@ -130,7 +130,7 @@ def test__noise_map_from_image_exposure_time_map():
     assert (poisson_noise_map.native == 0.5 * np.ones((1, 5))).all()
 
     image = aa.Array2D.no_mask(
-        array=np.array([[5.0, 3.0], [10.0, 20.0]]), pixel_scales=1.0
+        values=np.array([[5.0, 3.0], [10.0, 20.0]]), pixel_scales=1.0
     )
     exposure_time_map = aa.Array2D.no_mask(
         np.array([[1.0, 2.0], [3.0, 4.0]]), pixel_scales=1.0
@@ -221,7 +221,7 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     )
 
     image = aa.Array2D.no_mask(
-        array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], pixel_scales=1.0
+        values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], pixel_scales=1.0
     )
     exposure_time_map = aa.Array2D.ones(shape_native=(3, 2), pixel_scales=1.0)
     background_noise_map = aa.Array2D.full(
@@ -245,9 +245,9 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
         1e-2,
     )
 
-    image = aa.Array2D.no_mask(array=[[5.0, 3.0], [10.0, 20.0]], pixel_scales=1.0)
+    image = aa.Array2D.no_mask(values=[[5.0, 3.0], [10.0, 20.0]], pixel_scales=1.0)
     exposure_time_map = aa.Array2D.no_mask(
-        array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0
+        values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0
     )
     background_noise_map = aa.Array2D.full(
         fill_value=9.0, shape_native=((2, 2)), pixel_scales=1.0
@@ -269,12 +269,12 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
         1e-2,
     )
 
-    image = aa.Array2D.no_mask(array=[[5.0, 3.0], [10.0, 20.0]], pixel_scales=1.0)
+    image = aa.Array2D.no_mask(values=[[5.0, 3.0], [10.0, 20.0]], pixel_scales=1.0)
     exposure_time_map = aa.Array2D.no_mask(
-        array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0
+        values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0
     )
     background_noise_map = aa.Array2D.no_mask(
-        array=[[5.0, 6.0], [7.0, 8.0]], pixel_scales=1.0
+        values=[[5.0, 6.0], [7.0, 8.0]], pixel_scales=1.0
     )
 
     noise_map = aa.preprocess.noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from(
@@ -371,7 +371,7 @@ def test__noise_map_with_offset_values_added():
 
 def test__background_sky_level_via_edges_of_image_from():
 
-    image = aa.Array2D.no_mask(array=np.ones((3, 3)), pixel_scales=1.0)
+    image = aa.Array2D.no_mask(values=np.ones((3, 3)), pixel_scales=1.0)
 
     background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
         image=image, no_edges=1
@@ -380,7 +380,7 @@ def test__background_sky_level_via_edges_of_image_from():
     assert background_sky_level == 1.0
 
     image = aa.Array2D.no_mask(
-        array=[[1, 1, 1, 1], [1, 100, 100, 1], [1, 100, 100, 1], [1, 1, 1, 1]],
+        values=[[1, 1, 1, 1], [1, 100, 100, 1], [1, 100, 100, 1], [1, 1, 1, 1]],
         pixel_scales=1.0,
     )
 
@@ -410,7 +410,7 @@ def test__background_sky_level_via_edges_of_image_from():
 
 def test__background_noise_map_via_edges_of_image_from():
 
-    image = aa.Array2D.no_mask(array=np.ones((3, 3)), pixel_scales=1.0)
+    image = aa.Array2D.no_mask(values=np.ones((3, 3)), pixel_scales=1.0)
 
     background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
         image=image, no_edges=1
@@ -421,7 +421,7 @@ def test__background_noise_map_via_edges_of_image_from():
     ).all()
 
     image = aa.Array2D.no_mask(
-        array=[[1, 1, 1, 1], [1, 100, 100, 1], [1, 100, 100, 1], [1, 1, 1, 1]],
+        values=[[1, 1, 1, 1], [1, 100, 100, 1], [1, 100, 100, 1], [1, 1, 1, 1]],
         pixel_scales=1.0,
     )
 
@@ -527,7 +527,7 @@ def test__poisson_noise_from_data():
 
     assert (poisson_noise.native == np.zeros((2, 2))).all()
 
-    data = aa.Array2D.no_mask(array=[[10.0, 0.0], [0.0, 10.0]], pixel_scales=1.0)
+    data = aa.Array2D.no_mask(values=[[10.0, 0.0], [0.0, 10.0]], pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
     poisson_noise = aa.preprocess.poisson_noise_via_data_eps_from(
@@ -549,7 +549,7 @@ def test__poisson_noise_from_data():
     assert (poisson_noise.native == np.array([[1, 4], [3, 1]])).all()
 
     data = aa.Array2D.no_mask(
-        array=[[10000000.0, 0.0], [0.0, 10000000.0]], pixel_scales=1.0
+        values=[[10000000.0, 0.0], [0.0, 10000000.0]], pixel_scales=1.0
     )
     exposure_time_map = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
@@ -570,7 +570,7 @@ def test__data_with_poisson_noised_added():
 
     assert (data_with_poisson_noise.native == np.zeros((2, 2))).all()
 
-    data = aa.Array2D.no_mask(array=[[10.0, 0.0], [0.0, 10.0]], pixel_scales=1.0)
+    data = aa.Array2D.no_mask(values=[[10.0, 0.0], [0.0, 10.0]], pixel_scales=1.0)
 
     exposure_time_map = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
     data_with_poisson_noise = aa.preprocess.data_eps_with_poisson_noise_added(
@@ -589,7 +589,7 @@ def test__data_with_poisson_noised_added():
     assert (data_with_poisson_noise.native == np.array([[11, 14], [13, 11]])).all()
 
     data = aa.Array2D.no_mask(
-        array=[[10000000.0, 0.0], [0.0, 10000000.0]], pixel_scales=1.0
+        values=[[10000000.0, 0.0], [0.0, 10000000.0]], pixel_scales=1.0
     )
 
     exposure_time_map = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)

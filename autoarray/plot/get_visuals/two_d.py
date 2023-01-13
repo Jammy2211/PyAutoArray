@@ -53,7 +53,7 @@ class GetVisuals2D(AbstractGetVisuals):
             The collection of attributes that are plotted by a `Plotter` object, which include the origin if it is
             extracted.
         """
-        return self.get("origin", Grid2DIrregular(grid=[mask.origin]))
+        return self.get("origin", Grid2DIrregular(values=[mask.origin]))
 
     def via_mask_from(self, mask: Mask2D) -> Visuals2D:
         """
@@ -184,7 +184,7 @@ class GetVisuals2D(AbstractGetVisuals):
         """
 
         origin = self.get(
-            "origin", Grid2DIrregular(grid=[mapper.source_plane_mesh_grid.origin])
+            "origin", Grid2DIrregular(values=[mapper.source_plane_mesh_grid.origin])
         )
 
         grid = self.get(

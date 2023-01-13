@@ -9,7 +9,7 @@ def test__from_image__setup_with_all_features_off(
 ):
 
     image = aa.Array2D.no_mask(
-        array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
+        values=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
         pixel_scales=transformer_7x7_7.grid.pixel_scales,
     )
 
@@ -37,7 +37,7 @@ def test__from_image__setup_with_all_features_off(
 def test__setup_with_noise(uv_wavelengths_7x2, transformer_7x7_7):
 
     image = aa.Array2D.no_mask(
-        array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
+        values=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
         pixel_scales=transformer_7x7_7.grid.pixel_scales,
     )
 

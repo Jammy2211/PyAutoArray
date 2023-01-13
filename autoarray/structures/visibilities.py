@@ -79,7 +79,7 @@ class AbstractVisibilities(Structure):
         """
         Returns the 1D complex NumPy array of values as an irregular grid.
         """
-        return Grid2DIrregular(grid=self.in_array)
+        return Grid2DIrregular(values=self.in_array)
 
     @property
     def shape_slim(self) -> int:

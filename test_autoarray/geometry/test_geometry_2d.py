@@ -63,7 +63,7 @@ def test__grid_pixels_2d_slim_from():
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
 
     grid_scaled_2d = aa.Grid2D.no_mask(
-        grid=[[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]],
+        values=[[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]],
         pixel_scales=geometry.pixel_scales,
     )
 
@@ -83,7 +83,7 @@ def test__grid_pixel_centres_2d_from():
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(7.0, 2.0))
 
     grid_scaled_2d = aa.Grid2D.no_mask(
-        grid=[[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]],
+        values=[[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]],
         pixel_scales=geometry.pixel_scales,
     )
 
@@ -103,7 +103,7 @@ def test__grid_pixel_indexes_2d_from():
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
 
     grid_scaled_2d = aa.Grid2D.no_mask(
-        grid=[[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]],
+        values=[[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]],
         pixel_scales=geometry.pixel_scales,
     )
 
@@ -123,7 +123,7 @@ def test__grid_scaled_2d_from():
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 2.0))
 
     grid_pixels = aa.Grid2D.no_mask(
-        grid=[[[0, 0], [0, 1]], [[1, 0], [1, 1]]],
+        values=[[[0, 0], [0, 1]], [[1, 0], [1, 1]]],
         pixel_scales=geometry.pixel_scales,
     )
 

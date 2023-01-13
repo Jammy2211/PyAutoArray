@@ -288,7 +288,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             )
 
             mapped_reconstructed_image = Array2D(
-                array=mapped_reconstructed_image,
+                values=mapped_reconstructed_image,
                 mask=self.mask.derive_mask.sub_1,
             )
 

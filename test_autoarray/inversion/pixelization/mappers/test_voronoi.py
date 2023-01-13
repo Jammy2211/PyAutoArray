@@ -5,7 +5,7 @@ import autoarray as aa
 def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
 
     source_plane_mesh_grid = aa.Grid2D.no_mask(
-        grid=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
+        values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
         pixel_scales=1.0,
     )
@@ -13,7 +13,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     nearest_pixelization_index_for_slim_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
     source_plane_mesh_grid = aa.Mesh2DVoronoi(
-        grid=source_plane_mesh_grid,
+        values=source_plane_mesh_grid,
         nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
         uses_interpolation=False,
     )
@@ -43,7 +43,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     ).all()
 
     source_plane_mesh_grid = aa.Mesh2DVoronoi(
-        grid=source_plane_mesh_grid,
+        values=source_plane_mesh_grid,
         nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
         uses_interpolation=True,
     )

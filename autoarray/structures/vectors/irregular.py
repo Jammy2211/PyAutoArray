@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class VectorYX2DIrregular(AbstractVectorYX2D):
     def __new__(
         cls,
-        vectors: Union[
+        values: Union[
             np.ndarray, List[np.ndarray], List[List], List[Tuple[float, float]]
         ],
         grid: Union[Grid2DIrregular, List],
@@ -38,20 +38,20 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
 
         Parameters
         ----------
-        vectors
+        values
             The 2D (y,x) vectors on an irregular grid that represent the vector-field.
         grid
             The irregular grid of (y,x) coordinates where each vector is located.
         """
 
-        if len(vectors) == 0:
+        if len(values) == 0:
             return []
 
-        if type(vectors) is list:
-            vectors = np.asarray(vectors)
+        if type(values) is list:
+            values = np.asarray(values)
 
-        obj = vectors.view(cls)
-        obj.grid = Grid2DIrregular(grid=grid)
+        obj = values.view(cls)
+        obj.grid = Grid2DIrregular(values=grid)
 
         return obj
 
@@ -127,7 +127,7 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
             )
 
         return VectorYX2DIrregular(
-            vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
+            values=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )
 
     def vectors_within_annulus(
@@ -162,5 +162,5 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
             )
 
         return VectorYX2DIrregular(
-            vectors=self[mask], grid=Grid2DIrregular(self.grid[mask])
+            values=self[mask], grid=Grid2DIrregular(self.grid[mask])
         )

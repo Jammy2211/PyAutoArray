@@ -50,8 +50,8 @@ class AbstractMatWrap:
         import autoarray as aa
         import autoarray.plot as aplt
 
-        arr = aa.Array2D.no_mask(array=[[1.0, 1.0], [2.0, 2.0]], pixel_scales=2.0)
-        aplt.Array2D(array=arr)
+        arr = aa.Array2D.no_mask(values=[[1.0, 1.0], [2.0, 2.0]], pixel_scales=2.0)
+        aplt.Array2D(values=arr)
 
         The wrapped Mat objects make it simple to customize how matplotlib visualizes this data structure, for example
         we can customize the figure size and colormap using the `Figure` and `Cmap` objects.
@@ -61,7 +61,7 @@ class AbstractMatWrap:
 
         plotter = aplt.MatPlot2D(figure=figure, cmap=cmap)
 
-        aplt.Array2D(array=arr, plotter=plotter)
+        aplt.Array2D(values=arr, plotter=plotter)
 
         The `Plotter` object is detailed in the `autoarray.plot.plotter` package.
 

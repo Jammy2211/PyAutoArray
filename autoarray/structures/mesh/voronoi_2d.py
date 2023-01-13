@@ -84,5 +84,5 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
             )
 
         return Array2D.no_mask(
-            array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
+            values=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )

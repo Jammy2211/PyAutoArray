@@ -17,7 +17,7 @@ from autoarray.structures.grids import sparse_2d_util
 
 
 class Grid2DSparse(Structure):
-    def __new__(cls, grid: np.ndarray, sparse_index_for_slim_index: np.ndarray):
+    def __new__(cls, values: np.ndarray, sparse_index_for_slim_index: np.ndarray):
         """
         A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such
@@ -47,7 +47,7 @@ class Grid2DSparse(Structure):
             An array whose indexes map pixels from a Grid2D's mask to the closest (y,x) coordinate on the sparse_grid.
         """
 
-        obj = grid.view(cls)
+        obj = values.view(cls)
         obj.sparse_index_for_slim_index = sparse_index_for_slim_index
 
         return obj
@@ -143,7 +143,7 @@ class Grid2DSparse(Structure):
         )
 
         return Grid2DSparse(
-            grid=sparse_grid, sparse_index_for_slim_index=sparse_index_for_slim_index
+            values=sparse_grid, sparse_index_for_slim_index=sparse_index_for_slim_index
         )
 
     @classmethod
@@ -205,7 +205,7 @@ class Grid2DSparse(Structure):
             raise exc.InversionException()
 
         return Grid2DSparse(
-            grid=kmeans.cluster_centers_,
+            values=kmeans.cluster_centers_,
             sparse_index_for_slim_index=kmeans.labels_.astype("int"),
         )
 

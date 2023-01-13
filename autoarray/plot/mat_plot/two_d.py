@@ -471,7 +471,7 @@ class MatPlot2D(AbstractMatPlot):
             )
 
             source_pixelilzation_values = Array2D.no_mask(
-                array=solution_array_2d,
+                values=solution_array_2d,
                 sub_size=1,
                 pixel_scales=mapper.source_plane_mesh_grid.pixel_scales,
                 origin=mapper.source_plane_mesh_grid.origin,

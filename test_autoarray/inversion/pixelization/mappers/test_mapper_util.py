@@ -441,7 +441,7 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
 
     pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
     grid = aa.Grid2D.no_mask(
-        grid=[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
+        values=[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
         shape_native=(2, 2),
         pixel_scales=1.0,
     )
@@ -491,7 +491,7 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
     nearest_pixelization_index_for_slim_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
     mesh_grid = aa.Mesh2DVoronoi(
-        grid=mesh_grid,
+        values=mesh_grid,
         nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
     )
 

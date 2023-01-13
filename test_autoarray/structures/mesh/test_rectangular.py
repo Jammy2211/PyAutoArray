@@ -154,13 +154,13 @@ def test__pixel_centres__3x3_grid__pixel_centres():
 def test__interpolated_array_from():
 
     grid = aa.Grid2D.no_mask(
-        grid=[[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]],
+        values=[[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]],
         shape_native=(2, 2),
         pixel_scales=1.0,
     )
 
     grid_rectangular = aa.Mesh2DRectangular(
-        grid=grid, shape_native=grid.shape_native, pixel_scales=grid.pixel_scales
+        values=grid, shape_native=grid.shape_native, pixel_scales=grid.pixel_scales
     )
 
     interpolated_array = grid_rectangular.interpolated_array_from(

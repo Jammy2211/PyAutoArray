@@ -102,19 +102,19 @@ def test__grid__uses_mask_and_settings(
 ):
 
     dataset_1d = ds.AbstractDataset(
-        data=aa.Array1D.no_mask(array=[1.0], pixel_scales=1.0),
-        noise_map=aa.Array1D.no_mask(array=[1.0], pixel_scales=1.0),
+        data=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
+        noise_map=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
         settings=ds.AbstractSettingsDataset(),
     )
 
     assert isinstance(dataset_1d.grid, aa.Grid1D)
 
     masked_image_7x7 = aa.Array2D(
-        array=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
+        values=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
 
     masked_noise_map_7x7 = aa.Array2D(
-        array=noise_map_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
+        values=noise_map_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
 
     masked_imaging_7x7 = ds.AbstractDataset(
@@ -142,19 +142,19 @@ def test__grid_pixelization__uses_mask_and_settings(
 ):
 
     masked_dataset_1d = ds.AbstractDataset(
-        data=aa.Array1D.no_mask(array=[1.0], pixel_scales=1.0),
-        noise_map=aa.Array1D.no_mask(array=[1.0], pixel_scales=1.0),
+        data=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
+        noise_map=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
         settings=ds.AbstractSettingsDataset(),
     )
 
     assert isinstance(masked_dataset_1d.grid, aa.Grid1D)
 
     masked_image_7x7 = aa.Array2D(
-        array=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
+        values=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
 
     masked_noise_map_7x7 = aa.Array2D(
-        array=noise_map_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
+        values=noise_map_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
 
     masked_imaging_7x7 = ds.AbstractDataset(

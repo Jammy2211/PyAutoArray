@@ -793,7 +793,7 @@ class Mask2D(Mask):
             pad_size_1 // 2 : self.shape[1] - pad_size_1 // 2,
         ]
         return Array2D.no_mask(
-            array=trimmed_array,
+            values=trimmed_array,
             pixel_scales=self.pixel_scales,
             sub_size=1,
             origin=self.origin,

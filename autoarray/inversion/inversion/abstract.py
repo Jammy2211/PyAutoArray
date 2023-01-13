@@ -715,7 +715,7 @@ class AbstractInversion:
             brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
 
             centre = Grid2DIrregular(
-                grid=[mapper.source_plane_mesh_grid[brightest_reconstruction_pixel]]
+                values=[mapper.source_plane_mesh_grid[brightest_reconstruction_pixel]]
             )
 
             brightest_reconstruction_pixel_centre_list.append(centre)
