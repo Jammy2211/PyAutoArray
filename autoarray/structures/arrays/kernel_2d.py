@@ -53,7 +53,7 @@ class Kernel2D(AbstractArray2D):
         return obj
 
     @classmethod
-    def without_mask(
+    def no_mask(
         cls,
         array: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
@@ -83,7 +83,7 @@ class Kernel2D(AbstractArray2D):
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        array = Array2D.without_mask(
+        array = Array2D.no_mask(
             array=array,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -123,7 +123,7 @@ class Kernel2D(AbstractArray2D):
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        return Kernel2D.without_mask(
+        return Kernel2D.no_mask(
             array=np.full(fill_value=fill_value, shape=shape_native),
             pixel_scales=pixel_scales,
             origin=origin,
@@ -219,7 +219,7 @@ class Kernel2D(AbstractArray2D):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        return cls.without_mask(array=array, pixel_scales=pixel_scales)
+        return cls.no_mask(array=array, pixel_scales=pixel_scales)
 
     @classmethod
     def from_gaussian(
@@ -282,7 +282,7 @@ class Kernel2D(AbstractArray2D):
             np.exp(-0.5 * np.square(np.divide(grid_elliptical_radii, sigma))),
         )
 
-        return cls.without_mask(
+        return cls.no_mask(
             array=gaussian,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -439,7 +439,7 @@ class Kernel2D(AbstractArray2D):
 
             pixel_scales = None
 
-        return Kernel2D.without_mask(
+        return Kernel2D.no_mask(
             array=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
         )
 

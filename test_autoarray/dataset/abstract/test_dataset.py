@@ -11,16 +11,16 @@ logger = logging.getLogger(__name__)
 
 def test__dataset_takes_structures_of_different_formats():
 
-    array = aa.Array1D.without_mask([1.0, 2.0], pixel_scales=1.0)
-    noise_map = aa.Array1D.without_mask([1.0, 3.0], pixel_scales=1.0)
+    array = aa.Array1D.no_mask([1.0, 2.0], pixel_scales=1.0)
+    noise_map = aa.Array1D.no_mask([1.0, 3.0], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
     assert (dataset.data.native == np.array([1.0, 2.0])).all()
     assert (dataset.noise_map.native == np.array([1.0, 3.0])).all()
 
-    array = aa.Array2D.without_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.without_mask([[1.0, 2.0], [3.0, 5.0]], pixel_scales=1.0)
+    array = aa.Array2D.no_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[1.0, 2.0], [3.0, 5.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -30,8 +30,8 @@ def test__dataset_takes_structures_of_different_formats():
 
 def test__inverse_noise_map():
 
-    array = aa.Array2D.without_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.without_mask([[1.0, 2.0], [4.0, 8.0]], pixel_scales=1.0)
+    array = aa.Array2D.no_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[1.0, 2.0], [4.0, 8.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -41,8 +41,8 @@ def test__inverse_noise_map():
 
 
 def test__signal_to_noise_map():
-    array = aa.Array2D.without_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.without_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+    array = aa.Array2D.no_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -51,9 +51,9 @@ def test__signal_to_noise_map():
     ).all()
     assert dataset.signal_to_noise_max == 1.0
 
-    array = aa.Array2D.without_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
+    array = aa.Array2D.no_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
 
-    noise_map = aa.Array2D.without_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -65,9 +65,9 @@ def test__signal_to_noise_map():
 
 def test__absolute_signal_to_noise_map():
 
-    array = aa.Array2D.without_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
+    array = aa.Array2D.no_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
 
-    noise_map = aa.Array2D.without_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -80,8 +80,8 @@ def test__absolute_signal_to_noise_map():
 
 def test__potential_chi_squared_map():
 
-    array = aa.Array2D.without_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.without_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+    array = aa.Array2D.no_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
     dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -102,8 +102,8 @@ def test__grid__uses_mask_and_settings(
 ):
 
     dataset_1d = ds.AbstractDataset(
-        data=aa.Array1D.without_mask(array=[1.0], pixel_scales=1.0),
-        noise_map=aa.Array1D.without_mask(array=[1.0], pixel_scales=1.0),
+        data=aa.Array1D.no_mask(array=[1.0], pixel_scales=1.0),
+        noise_map=aa.Array1D.no_mask(array=[1.0], pixel_scales=1.0),
         settings=ds.AbstractSettingsDataset(),
     )
 
@@ -142,8 +142,8 @@ def test__grid_pixelization__uses_mask_and_settings(
 ):
 
     masked_dataset_1d = ds.AbstractDataset(
-        data=aa.Array1D.without_mask(array=[1.0], pixel_scales=1.0),
-        noise_map=aa.Array1D.without_mask(array=[1.0], pixel_scales=1.0),
+        data=aa.Array1D.no_mask(array=[1.0], pixel_scales=1.0),
+        noise_map=aa.Array1D.no_mask(array=[1.0], pixel_scales=1.0),
         settings=ds.AbstractSettingsDataset(),
     )
 

@@ -250,7 +250,7 @@ class Grid2D(Structure):
         return obj
 
     @classmethod
-    def without_mask(
+    def no_mask(
         cls,
         grid: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
@@ -377,7 +377,7 @@ class Grid2D(Structure):
         if type(x) is list:
             x = np.asarray(x)
 
-        return cls.without_mask(
+        return cls.no_mask(
             grid=np.stack((y, x), axis=-1),
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -435,7 +435,7 @@ class Grid2D(Structure):
         if type(x) is list:
             x = np.asarray(x)
 
-        return cls.without_mask(
+        return cls.no_mask(
             grid=np.stack((y, x), axis=-1),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -497,7 +497,7 @@ class Grid2D(Structure):
             abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
         )
 
-        return Grid2D.without_mask(grid=grid_2d, pixel_scales=pixel_scales)
+        return Grid2D.no_mask(grid=grid_2d, pixel_scales=pixel_scales)
 
     @classmethod
     def uniform(
@@ -532,7 +532,7 @@ class Grid2D(Structure):
             origin=origin,
         )
 
-        return cls.without_mask(
+        return cls.no_mask(
             grid=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
@@ -643,7 +643,7 @@ class Grid2D(Structure):
             file_path=file_path, hdu=0
         )
 
-        return Grid2D.without_mask(
+        return Grid2D.no_mask(
             grid=sub_grid_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,

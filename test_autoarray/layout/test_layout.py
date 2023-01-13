@@ -6,7 +6,7 @@ import autoarray as aa
 
 def test__layout_1d__extract_overscan_array_1d_from():
 
-    array = aa.Array1D.without_mask(array=[0.0, 1.0, 2.0], pixel_scales=1.0)
+    array = aa.Array1D.no_mask(array=[0.0, 1.0, 2.0], pixel_scales=1.0)
 
     layout_1d = aa.Layout1D(shape_1d=array.shape, overscan=(0, 1))
 
@@ -29,7 +29,7 @@ def test__layout_1d__extract_overscan_array_1d_from():
 
 def test__layout_2d__extract_parallel_overscan_array_2d_from():
 
-    array = aa.Array2D.without_mask(
+    array = aa.Array2D.no_mask(
         array=[
             [0.0, 1.0, 2.0],
             [3.0, 4.0, 5.0],
@@ -62,7 +62,7 @@ def test__layout_2d__extract_parallel_overscan_array_2d_from():
 
 def test__layout_2d__parallel_overscan_binned_array_1d_from():
 
-    array = aa.Array2D.without_mask(
+    array = aa.Array2D.no_mask(
         array=[
             [0.0, 1.0, 2.0],
             [3.0, 4.0, 5.0],
@@ -93,7 +93,7 @@ def test__layout_2d__parallel_overscan_binned_array_1d_from():
 
 def test__layout_2d__extract_serial_overscan_array_from():
 
-    array = aa.Array2D.without_mask(
+    array = aa.Array2D.no_mask(
         array=[
             [0.0, 1.0, 2.0],
             [3.0, 4.0, 5.0],
@@ -126,7 +126,7 @@ def test__layout_2d__extract_serial_overscan_array_from():
 
 def test__layout_2d__serial_overscan_binned_array_1d_from():
 
-    array = aa.Array2D.without_mask(
+    array = aa.Array2D.no_mask(
         array=[
             [0.0, 1.0, 2.0],
             [3.0, 4.0, 5.0],

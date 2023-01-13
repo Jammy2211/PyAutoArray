@@ -106,7 +106,7 @@ class Grid2DIterate(Grid2D):
             self.sub_steps = obj.sub_steps
 
     @classmethod
-    def without_mask(
+    def no_mask(
         cls,
         grid: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
@@ -223,7 +223,7 @@ class Grid2DIterate(Grid2D):
             origin=origin,
         )
 
-        return Grid2DIterate.without_mask(
+        return Grid2DIterate.no_mask(
             grid=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,

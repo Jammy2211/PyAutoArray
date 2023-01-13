@@ -76,6 +76,6 @@ class Mesh2DDelaunay(Abstract2DMeshTriangulation):
             pixel_values=values,
         )
 
-        return Array2D.without_mask(
+        return Array2D.no_mask(
             array=interpolated_array, pixel_scales=interpolation_grid.pixel_scales
         )

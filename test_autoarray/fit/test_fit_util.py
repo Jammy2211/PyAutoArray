@@ -208,7 +208,7 @@ def test__chi_squared_map_complex_with_mask_from():
 
 def test__chi_squared_with_noise_covariance_from():
 
-    resdiual_map = aa.Array2D.without_mask([[1.0, 1.0], [2.0, 2.0]], pixel_scales=1.0)
+    resdiual_map = aa.Array2D.no_mask([[1.0, 1.0], [2.0, 2.0]], pixel_scales=1.0)
 
     noise_covariance_matrix_inv = np.array(
         [

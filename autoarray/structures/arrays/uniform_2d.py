@@ -268,7 +268,7 @@ class AbstractArray2D(Structure):
         Examples
         --------
 
-        This example uses the ``Array2D.without_mask`` method to create the the ``Array2D``.
+        This example uses the ``Array2D.no_mask`` method to create the the ``Array2D``.
 
         Different methods using different inputs are available and documented throughout this webpage.
 
@@ -278,7 +278,7 @@ class AbstractArray2D(Structure):
 
             # Make Array2D from input np.ndarray with sub_size 1.
 
-            array_2d = aa.Array2D.without_mask(
+            array_2d = aa.Array2D.no_mask(
                 array=np.array([1.0, 2.0, 3.0, 4.0]),
                 shape_native=(2, 2),
                 pixel_scales=1.0,
@@ -287,7 +287,7 @@ class AbstractArray2D(Structure):
 
             # Make Array2D from input list with different shape_native and sub_size 1.
 
-            array_2d = aa.Array2D.without_mask(
+            array_2d = aa.Array2D.no_mask(
                 array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
                 shape_native=(2, 3),
                 pixel_scales=1.0,
@@ -300,7 +300,7 @@ class AbstractArray2D(Structure):
 
             # Make Array2D with sub_size 2.
 
-            array_2d = aa.Array2D.without_mask(
+            array_2d = aa.Array2D.no_mask(
                 array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
                 shape_native=(2, 1),
                 pixel_scales=1.0,
@@ -437,12 +437,12 @@ class AbstractArray2D(Structure):
     @property
     def binned_across_rows(self) -> Array1D:
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=0)
-        return Array1D.without_mask(array=binned_array, pixel_scales=self.pixel_scale)
+        return Array1D.no_mask(array=binned_array, pixel_scales=self.pixel_scale)
 
     @property
     def binned_across_columns(self) -> Array1D:
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=1)
-        return Array1D.without_mask(array=binned_array, pixel_scales=self.pixel_scale)
+        return Array1D.no_mask(array=binned_array, pixel_scales=self.pixel_scale)
 
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
         """
@@ -624,7 +624,7 @@ class AbstractArray2D(Structure):
 
 class Array2D(AbstractArray2D):
     @classmethod
-    def without_mask(
+    def no_mask(
         cls,
         array: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
@@ -682,7 +682,7 @@ class Array2D(AbstractArray2D):
 
             # Make Array2D from input list, slim format with sub_size 2.
 
-            array_2d = aa.Array2D.without_mask(
+            array_2d = aa.Array2D.no_mask(
                 array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
                 shape_native=(2, 1),
                 pixel_scales=1.0,
@@ -799,7 +799,7 @@ class Array2D(AbstractArray2D):
         if sub_size is not None:
             shape_native = (shape_native[0] * sub_size, shape_native[1] * sub_size)
 
-        return cls.without_mask(
+        return cls.no_mask(
             array=np.full(fill_value=fill_value, shape=shape_native),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -1012,7 +1012,7 @@ class Array2D(AbstractArray2D):
         header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
         header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
-        return cls.without_mask(
+        return cls.no_mask(
             array=array_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -1021,7 +1021,7 @@ class Array2D(AbstractArray2D):
         )
 
     @classmethod
-    def manual_yx_and_values(
+    def from_yx_and_values(
         cls,
         y: Union[np.ndarray, List],
         x: Union[np.ndarray, List],
@@ -1065,7 +1065,7 @@ class Array2D(AbstractArray2D):
 
             # Make Array2D with sub_size 1.
 
-            array_2d = aa.Array2D.manual_yx_and_values(
+            array_2d = aa.Array2D.from_yx_and_values(
                 y=np.array([0.5, 0.5, -0.5, -0.5]),
                 x=np.array([-0.5, 0.5, -0.5, 0.5]),
                 values=np.array([1.0, 2.0, 3.0, 4.0]),
@@ -1080,7 +1080,7 @@ class Array2D(AbstractArray2D):
 
             # Make Array2D with sub_size 2.
 
-            array_2d = aa.Array2D.manual_yx_and_values(
+            array_2d = aa.Array2D.from_yx_and_values(
                 y=np.array([1.0, 1.0. 0.5, 0.5, -0.5, -0.5, -1.0, -1.0]),
                 x=np.array([-0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5]),
                 values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]),
@@ -1108,7 +1108,7 @@ class Array2D(AbstractArray2D):
         for i in range(grid_pixels.shape[0]):
             array_1d[i] = values[int(grid_pixels[i])]
 
-        return cls.without_mask(
+        return cls.no_mask(
             array=array_1d,
             pixel_scales=pixel_scales,
             shape_native=shape_native,

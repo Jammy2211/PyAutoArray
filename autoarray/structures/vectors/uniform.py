@@ -239,7 +239,7 @@ class VectorYX2D(AbstractVectorYX2D):
             self.grid = obj.grid
 
     @classmethod
-    def without_mask(
+    def no_mask(
         cls,
         vectors: Union[np.ndarray, List[List], List[Tuple]],
         pixel_scales: ty.PixelScales,
@@ -381,7 +381,7 @@ class VectorYX2D(AbstractVectorYX2D):
         if sub_size is not None:
             shape_native = (shape_native[0] * sub_size, shape_native[1] * sub_size)
 
-        return cls.without_mask(
+        return cls.no_mask(
             vectors=np.full(
                 fill_value=fill_value, shape=(shape_native[0], shape_native[1], 2)
             ),

@@ -33,11 +33,9 @@ def test__constructor():
     assert (grid.native.slim == np.array([3.0, 4.0, 5.0, 6.0])).all()
 
 
-def test__without_mask():
+def test__no_mask():
 
-    grid_1d = aa.Grid1D.without_mask(
-        grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2
-    )
+    grid_1d = aa.Grid1D.no_mask(grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2)
 
     assert type(grid_1d) == aa.Grid1D
     assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
@@ -47,7 +45,7 @@ def test__without_mask():
     assert grid_1d.pixel_scales == (1.0,)
     assert grid_1d.origin == (0.0,)
 
-    grid_1d = aa.Grid1D.without_mask(
+    grid_1d = aa.Grid1D.no_mask(
         grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2, origin=(1.0,)
     )
 
@@ -170,9 +168,7 @@ def test__uniform_from_zero():
 
 def test__grid_2d_radial_projected_from():
 
-    grid_1d = aa.Grid1D.without_mask(
-        grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=1
-    )
+    grid_1d = aa.Grid1D.no_mask(grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=1)
 
     grid_2d = grid_1d.grid_2d_radial_projected_from(angle=0.0)
 

@@ -85,7 +85,7 @@ def test__dft__visibilities_from():
 
     uv_wavelengths = np.ones(shape=(4, 2))
 
-    grid_radians = aa.Grid2D.without_mask(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
+    grid_radians = aa.Grid2D.no_mask(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
 
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -105,9 +105,7 @@ def test__dft__visibilities_from():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-    grid_radians = aa.Grid2D.without_mask(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
-    )
+    grid_radians = aa.Grid2D.no_mask(grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -130,9 +128,7 @@ def test__dft__visibilities_from():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-    grid_radians = aa.Grid2D.without_mask(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
-    )
+    grid_radians = aa.Grid2D.no_mask(grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
     transformer = aa.TransformerDFT(
@@ -141,7 +137,7 @@ def test__dft__visibilities_from():
         preload_transform=False,
     )
 
-    image = aa.Array2D.without_mask([[3.0, 6.0]], pixel_scales=1.0)
+    image = aa.Array2D.no_mask([[3.0, 6.0]], pixel_scales=1.0)
 
     visibilities = transformer.visibilities_from(image=image)
 
@@ -154,9 +150,7 @@ def test__dft__visibilities_from():
 def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-    grid_radians = aa.Grid2D.without_mask(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
-    )
+    grid_radians = aa.Grid2D.no_mask(grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
     transformer_preload = aa.TransformerDFT(
@@ -170,7 +164,7 @@ def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
         preload_transform=False,
     )
 
-    image = aa.Array2D.without_mask([[2.0, 6.0]], pixel_scales=1.0)
+    image = aa.Array2D.no_mask([[2.0, 6.0]], pixel_scales=1.0)
 
     visibilities_via_preload = transformer_preload.visibilities_from(image=image)
     visibilities = transformer.visibilities_from(image=image)
@@ -181,7 +175,7 @@ def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
 def test__dft__transform_mapping_matrix():
 
     uv_wavelengths = np.ones(shape=(4, 2))
-    grid_radians = aa.Grid2D.without_mask(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
+    grid_radians = aa.Grid2D.no_mask(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
     transformer = aa.TransformerDFT(
@@ -202,9 +196,7 @@ def test__dft__transform_mapping_matrix():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-    grid_radians = aa.Grid2D.without_mask(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
-    )
+    grid_radians = aa.Grid2D.no_mask(grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
     transformer = aa.TransformerDFT(
@@ -230,7 +222,7 @@ def test__dft__transform_mapping_matrix():
         1.0e-4,
     )
 
-    grid_radians = aa.Grid2D.without_mask(
+    grid_radians = aa.Grid2D.no_mask(
         [[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]], pixel_scales=1.0
     )
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
@@ -263,9 +255,7 @@ def test__dft__transform_mapping_matrix():
 def test__dft__transformed_mapping_matrix__preload_and_non_preload_give_same_answer():
 
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-    grid_radians = aa.Grid2D.without_mask(
-        grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
-    )
+    grid_radians = aa.Grid2D.no_mask(grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
     transformer_preload = aa.TransformerDFT(

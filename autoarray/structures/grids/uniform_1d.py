@@ -200,7 +200,7 @@ class Grid1D(Structure):
         return obj
 
     @classmethod
-    def without_mask(
+    def no_mask(
         cls,
         grid: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
@@ -232,11 +232,11 @@ class Grid1D(Structure):
 
             # Make Grid1D from input np.ndgrid.
 
-            grid_1d = aa.Grid1D.without_mask(grid=np.grid([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+            grid_1d = aa.Grid1D.no_mask(grid=np.grid([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
             # Make Grid2D from input list.
 
-            grid_1d = aa.Grid1D.without_mask(grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+            grid_1d = aa.Grid1D.no_mask(grid=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
             # Print grid's slim (masked 1D data representation) and
             # native (masked 1D data representation)
@@ -314,7 +314,7 @@ class Grid1D(Structure):
             origin=origin,
         )
 
-        return cls.without_mask(
+        return cls.no_mask(
             grid=grid_slim, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
@@ -345,9 +345,7 @@ class Grid1D(Structure):
 
         grid_slim -= np.min(grid_slim)
 
-        return cls.without_mask(
-            grid=grid_slim, pixel_scales=pixel_scales, sub_size=sub_size
-        )
+        return cls.no_mask(grid=grid_slim, pixel_scales=pixel_scales, sub_size=sub_size)
 
     @property
     def slim(self) -> "Grid1D":

@@ -156,7 +156,7 @@ def make_psf_3x3():
 
     psf = np.array([[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]])
 
-    return aa.Kernel2D.without_mask(array=psf, pixel_scales=(1.0, 1.0))
+    return aa.Kernel2D.no_mask(array=psf, pixel_scales=(1.0, 1.0))
 
 
 def make_psf_3x3_no_blur():
@@ -374,7 +374,7 @@ def make_rectangular_mesh_grid_3x3():
 
 def make_delaunay_mesh_grid_9():
 
-    grid_9 = aa.Grid2D.without_mask(
+    grid_9 = aa.Grid2D.no_mask(
         grid=[
             [0.6, -0.3],
             [0.5, -0.8],
@@ -395,7 +395,7 @@ def make_delaunay_mesh_grid_9():
 
 def make_voronoi_mesh_grid_9():
 
-    grid_9 = aa.Grid2D.without_mask(
+    grid_9 = aa.Grid2D.no_mask(
         grid=[
             [0.6, -0.3],
             [0.5, -0.8],

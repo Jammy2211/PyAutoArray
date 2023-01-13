@@ -11,7 +11,7 @@ import autoarray as aa
 
 def test__manual_slim():
 
-    grid = aa.Grid2DIterate.without_mask(
+    grid = aa.Grid2DIterate.no_mask(
         grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(2, 2),
         pixel_scales=1.0,

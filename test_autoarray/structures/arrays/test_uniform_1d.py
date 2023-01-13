@@ -57,9 +57,9 @@ def test__constructor():
     assert array_1d.origin == (0.0,)
 
 
-def test__without_mask():
+def test__no_mask():
 
-    array_1d = aa.Array1D.without_mask(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+    array_1d = aa.Array1D.no_mask(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
     assert type(array_1d) == aa.Array1D
     assert (array_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
@@ -186,7 +186,7 @@ def test__output_to_fits():
 
 def test__recursive_shape_storage():
 
-    array_1d = aa.Array1D.without_mask(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+    array_1d = aa.Array1D.no_mask(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
     assert (array_1d.native.slim.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert (array_1d.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()

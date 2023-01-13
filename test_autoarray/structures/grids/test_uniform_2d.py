@@ -112,9 +112,9 @@ def test__constructor__exception_raised_if_input_grid_is_not_number_of_masked_su
         )
 
 
-def test__without_mask():
+def test__no_mask():
 
-    grid_2d = aa.Grid2D.without_mask(
+    grid_2d = aa.Grid2D.no_mask(
         grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
@@ -139,7 +139,7 @@ def test__without_mask():
     assert grid_2d.origin == (0.0, 0.0)
     assert grid_2d.sub_size == 1
 
-    grid_2d = aa.Grid2D.without_mask(
+    grid_2d = aa.Grid2D.no_mask(
         grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(1, 1),
         pixel_scales=1.0,
@@ -761,7 +761,7 @@ def test__shape_native_scaled():
 
 def test__flipped():
 
-    grid_2d = aa.Grid2D.without_mask(
+    grid_2d = aa.Grid2D.no_mask(
         grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0
     )
 
@@ -774,7 +774,7 @@ def test__flipped():
         == np.array([[[2.0, 1.0], [4.0, 3.0]], [[6.0, 5.0], [8.0, 7.0]]])
     ).all()
 
-    grid_2d = aa.Grid2D.without_mask(
+    grid_2d = aa.Grid2D.no_mask(
         grid=[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]], pixel_scales=1.0
     )
 
@@ -1192,7 +1192,7 @@ def test__relocated_grid_from__inside_border_no_relocations():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D.without_mask(
+    grid_to_relocate = aa.Grid2D.no_mask(
         grid=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
         pixel_scales=mask.pixel_scales,
     )
@@ -1207,7 +1207,7 @@ def test__relocated_grid_from__inside_border_no_relocations():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D.without_mask(
+    grid_to_relocate = aa.Grid2D.no_mask(
         grid=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
         pixel_scales=mask.pixel_scales,
     )
@@ -1225,7 +1225,7 @@ def test__relocated_grid_from__outside_border_includes_relocations():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D.without_mask(
+    grid_to_relocate = aa.Grid2D.no_mask(
         grid=np.array([[[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]]),
         pixel_scales=mask.pixel_scales,
     )
@@ -1242,7 +1242,7 @@ def test__relocated_grid_from__outside_border_includes_relocations():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D.without_mask(
+    grid_to_relocate = aa.Grid2D.no_mask(
         grid=np.array([[[10.1, 0.0], [0.0, 10.1], [-10.1, -10.1]]]),
         pixel_scales=mask.pixel_scales,
     )
@@ -1265,7 +1265,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D.without_mask(
+    grid_to_relocate = aa.Grid2D.no_mask(
         grid=np.array([[[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]]),
         pixel_scales=mask.pixel_scales,
     )
@@ -1289,7 +1289,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    grid_to_relocate = aa.Grid2D.without_mask(
+    grid_to_relocate = aa.Grid2D.no_mask(
         grid=np.array([[[11.1, 1.0], [1.0, 11.1], [-11.1, -11.1]]]),
         pixel_scales=mask.pixel_scales,
     )
@@ -1310,7 +1310,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
 
 def test__recursive_shape_storage():
 
-    grid_2d = aa.Grid2D.without_mask(
+    grid_2d = aa.Grid2D.no_mask(
         grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,

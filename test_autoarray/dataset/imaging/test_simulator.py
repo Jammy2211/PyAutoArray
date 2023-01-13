@@ -6,7 +6,7 @@ import autoarray as aa
 
 @pytest.fixture(name="image_central_delta_3x3")
 def make_array_2d_7x7():
-    return aa.Array2D.without_mask(
+    return aa.Array2D.no_mask(
         array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
         pixel_scales=0.1,
     )
@@ -45,7 +45,7 @@ def test__via_image_from__noise_off__noise_map_is_noise_value(image_central_delt
 
 def test__via_image_from__psf_blurs_image_with_edge_trimming(image_central_delta_3x3):
 
-    psf = aa.Kernel2D.without_mask(
+    psf = aa.Kernel2D.no_mask(
         array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
     )
@@ -105,7 +105,7 @@ def test__via_image_from__psf_and_noise_both_on(image_central_delta_3x3):
 
     image = image_central_delta_3x3 + 1.0
 
-    psf = aa.Kernel2D.without_mask(
+    psf = aa.Kernel2D.no_mask(
         array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
         pixel_scales=1.0,
     )

@@ -251,15 +251,15 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
 
 def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
 
-    array = aa.Array2D.without_mask([[1.0, 2.0]], pixel_scales=1.0)
+    array = aa.Array2D.no_mask([[1.0, 2.0]], pixel_scales=1.0)
 
-    noise_map = aa.Array2D.without_mask([[0.0, 3.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[0.0, 3.0]], pixel_scales=1.0)
 
     with pytest.raises(aa.exc.DatasetException):
 
         aa.Imaging(image=array, noise_map=noise_map)
 
-    noise_map = aa.Array2D.without_mask([[-1.0, 3.0]], pixel_scales=1.0)
+    noise_map = aa.Array2D.no_mask([[-1.0, 3.0]], pixel_scales=1.0)
 
     with pytest.raises(aa.exc.DatasetException):
 

@@ -35,7 +35,7 @@ class Array1D(Structure):
         return obj
 
     @classmethod
-    def without_mask(
+    def no_mask(
         cls,
         array: Union[np.ndarray, Tuple[float], List[float]],
         pixel_scales: ty.PixelScales,
@@ -66,11 +66,11 @@ class Array1D(Structure):
 
             # Make Array1D from input np.ndarray.
 
-            array_1d = aa.Array1D.without_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
+            array_1d = aa.Array1D.no_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
             # Make Array2D from input list.
 
-            array_1d = aa.Array1D.without_mask(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+            array_1d = aa.Array1D.no_mask(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
 
             # Print array's slim (masked 1D data representation) and
             # native (masked 1D data representation)
@@ -128,7 +128,7 @@ class Array1D(Structure):
         if sub_size is not None:
             shape_native = (shape_native[0] * sub_size,)
 
-        return cls.without_mask(
+        return cls.no_mask(
             array=np.full(fill_value=fill_value, shape=shape_native[0]),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -244,7 +244,7 @@ class Array1D(Structure):
         header_sci_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=0)
         header_hdu_obj = array_2d_util.header_obj_from(file_path=file_path, hdu=hdu)
 
-        return cls.without_mask(
+        return cls.no_mask(
             array=array_1d.astype(
                 "float64"
             ),  # Have to do this due to typing issues in 1D with astorpy fits.
