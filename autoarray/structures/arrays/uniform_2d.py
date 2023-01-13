@@ -1093,7 +1093,7 @@ class Array2D(AbstractArray2D):
 
         from autoarray.structures.grids.uniform_2d import Grid2D
 
-        grid = Grid2D.manual_yx_1d(
+        grid = Grid2D.from_yx_1d(
             y=y, x=x, shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1
         )
 

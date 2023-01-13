@@ -162,9 +162,9 @@ def test__without_mask():
     assert grid_2d.sub_size == 2
 
 
-def test__manual_yx_2d():
+def test__from_yx_2d():
 
-    grid_2d = aa.Grid2D.manual_yx_2d(
+    grid_2d = aa.Grid2D.from_yx_2d(
         y=[[1.0], [3.0]], x=[[2.0], [4.0]], pixel_scales=(2.0, 3.0)
     )
 
@@ -175,7 +175,7 @@ def test__manual_yx_2d():
     assert grid_2d.pixel_scales == (2.0, 3.0)
     assert grid_2d.origin == (0.0, 0.0)
 
-    grid_2d = aa.Grid2D.manual_yx_1d(
+    grid_2d = aa.Grid2D.from_yx_1d(
         y=[1.0, 3.0, 5.0, 7.0],
         x=[2.0, 4.0, 6.0, 8.0],
         shape_native=(1, 1),
@@ -199,9 +199,9 @@ def test__manual_yx_2d():
     assert grid_2d.sub_size == 2
 
 
-def test__manual_extent():
+def test__from_extent():
 
-    grid_2d = aa.Grid2D.manual_extent(
+    grid_2d = aa.Grid2D.from_extent(
         extent=(-1.0, 1.0, 2.0, 3.0), shape_native=(2, 3), sub_size=1
     )
 
@@ -244,7 +244,7 @@ def test__manual_extent():
     assert grid_2d.pixel_scales == (1.0, 1.0)
     assert grid_2d.origin == (0.0, 0.0)
 
-    grid_2d = aa.Grid2D.manual_extent(
+    grid_2d = aa.Grid2D.from_extent(
         extent=(-1.5, 1.5, -1.5, 1.5), shape_native=(2, 2), sub_size=2
     )
 

@@ -309,7 +309,7 @@ class Grid2D(Structure):
         return Grid2D(grid=grid, mask=mask)
 
     @classmethod
-    def manual_yx_1d(
+    def from_yx_1d(
         cls,
         y: Union[np.ndarray, List],
         x: np.ndarray,
@@ -349,7 +349,7 @@ class Grid2D(Structure):
 
             # Make Grid2D from input np.ndarray.
 
-            grid_2d = aa.Grid2D.manual_yx_1d(
+            grid_2d = aa.Grid2D.from_yx_1d(
                 y=np.array([1.0, 3.0, 5.0, 7.0]),
                 x=np.array([2.0, 4.0, 6.0, 8.0]),
                 shape_native=(2, 2),
@@ -358,7 +358,7 @@ class Grid2D(Structure):
 
             # Make Grid2D from input list.
 
-           grid_2d = aa.Grid2D.manual_yx_1d(
+           grid_2d = aa.Grid2D.from_yx_1d(
                 y=[1.0, 3.0, 5.0, 7.0],
                 x=[2.0, 4.0, 6.0, 8.0],
                 shape_native=(2, 2),
@@ -386,7 +386,7 @@ class Grid2D(Structure):
         )
 
     @classmethod
-    def manual_yx_2d(
+    def from_yx_2d(
         cls,
         y: Union[np.ndarray, List],
         x: Union[np.ndarray, List],
@@ -423,7 +423,7 @@ class Grid2D(Structure):
 
             # Make Grid2D from input list(s).
 
-            grid_2d = aa.Grid2D.manual_yx_2d(
+            grid_2d = aa.Grid2D.from_yx_2d(
                 y=[[1.0], [3.0]],
                 x=[[2.0], [4.0]],
                 pixel_scales=1.0
@@ -443,7 +443,7 @@ class Grid2D(Structure):
         )
 
     @classmethod
-    def manual_extent(
+    def from_extent(
         cls,
         extent: Tuple[float, float, float, float],
         shape_native: Tuple[int, int],
