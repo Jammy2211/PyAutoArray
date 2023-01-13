@@ -21,7 +21,14 @@ from autoarray import type as ty
 
 
 class Grid1D(Structure):
-    def __new__(cls, grid: Union[np.ndarray, List], mask: Mask1D, store_native: bool = False, *args, **kwargs):
+    def __new__(
+        cls,
+        grid: Union[np.ndarray, List],
+        mask: Mask1D,
+        store_native: bool = False,
+        *args,
+        **kwargs,
+    ):
         """
         A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
         on the grid corresponds to the (x) coordinates at the centre of a sub-pixel of an unmasked pixel.
@@ -183,7 +190,9 @@ class Grid1D(Structure):
             originates from.
         """
 
-        grid = grid_1d_util.convert_grid_1d(grid_1d=grid, mask_1d=mask, store_native=store_native)
+        grid = grid_1d_util.convert_grid_1d(
+            grid_1d=grid, mask_1d=mask, store_native=store_native
+        )
 
         obj = grid.view(cls)
         obj.mask = mask

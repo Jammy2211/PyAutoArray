@@ -134,8 +134,8 @@ def convert_array_2d(
             array_2d_native=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
         )
     array_2d = array_2d_native_from(
-            array_2d_slim=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
-        )
+        array_2d_slim=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+    )
     return array_2d
 
 

@@ -115,12 +115,21 @@ def convert_grid_2d(
 
     check_grid_2d_and_mask_2d(grid_2d=grid_2d, mask_2d=mask_2d)
 
-    if store_native:
+    is_native = len(grid_2d.shape) == 3
+
+    if is_native:
         grid_2d[:, :, 0] *= np.invert(mask_2d.derive_mask.sub)
         grid_2d[:, :, 1] *= np.invert(mask_2d.derive_mask.sub)
-        return grid_2d
 
-    return convert_grid_2d_to_slim(grid_2d=grid_2d, mask_2d=mask_2d)
+    if is_native == store_native:
+        return grid_2d
+    elif not store_native:
+        return grid_2d_slim_from(
+            grid_2d_native=grid_2d, mask=mask_2d, sub_size=mask_2d.sub_size
+        )
+    return grid_2d_native_from(
+        grid_2d_slim=grid_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+    )
 
 
 def convert_grid_2d_to_slim(

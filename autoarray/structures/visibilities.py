@@ -132,7 +132,6 @@ class AbstractVisibilities(Structure):
 
 
 class Visibilities(AbstractVisibilities):
-
     @classmethod
     def full(cls, fill_value: float, shape_slim: Tuple[int]) -> "Visibilities":
         """

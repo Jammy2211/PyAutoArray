@@ -11,9 +11,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
     )
 
     data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
-    noise_map = aa.VisibilitiesNoiseMap(
-        visibilities=[2.0 + 2.0j, 2.0 + 2.0j]
-    )
+    noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
     interferometer = aa.Interferometer(
         visibilities=data,
@@ -22,9 +20,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities(
-        visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
-    )
+    model_visibilities = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
 
     fit = aa.m.MockFitInterferometer(
         dataset=interferometer, use_mask_in_fit=False, model_data=model_visibilities
@@ -61,9 +57,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
     )
 
     data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
-    noise_map = aa.VisibilitiesNoiseMap(
-        visibilities=[2.0 + 2.0j, 2.0 + 2.0j]
-    )
+    noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
     interferometer = aa.Interferometer(
         visibilities=data,
@@ -72,9 +66,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities(
-        visibilities=[1.0 + 2.0j, 3.0 + 3.0j]
-    )
+    model_visibilities = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 3.0j])
 
     fit = aa.m.MockFitInterferometer(
         dataset=interferometer, use_mask_in_fit=False, model_data=model_visibilities
@@ -111,9 +103,7 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
     )
 
     data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
-    noise_map = aa.VisibilitiesNoiseMap(
-        visibilities=[2.0 + 2.0j, 2.0 + 2.0j]
-    )
+    noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
     interferometer = aa.Interferometer(
         visibilities=data,
@@ -122,9 +112,7 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities(
-        visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
-    )
+    model_visibilities = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper()],

@@ -882,15 +882,7 @@ class Grid2D(Structure):
         If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
         `native` to `slim` and returned as a new `Grid2D`.
         """
-
-        if len(self.shape) == 2:
-            return self
-
-        grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-            grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
-        )
-
-        return Grid2D(grid=grid_2d_slim, mask=self.mask)
+        return Grid2D(grid=self, mask=self.mask)
 
     @property
     def native(self) -> "Grid2D":
@@ -903,15 +895,7 @@ class Grid2D(Structure):
 
         This method is used in the child `Grid2D` classes to create their `native` properties.
         """
-
-        if len(self.shape) != 2:
-            return self
-
-        grid_native = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-        )
-
-        return Grid2D(grid=grid_native, mask=self.mask, store_native=True)
+        return Grid2D(grid=self, mask=self.mask, store_native=True)
 
     @property
     def binned(self) -> "Grid2D":

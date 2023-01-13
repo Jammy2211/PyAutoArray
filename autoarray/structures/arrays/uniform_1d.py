@@ -24,7 +24,9 @@ class Array1D(Structure):
         **kwargs
     ):
 
-        array = array_1d_util.convert_array_1d(array_1d=array, mask_1d=mask, store_native=store_native)
+        array = array_1d_util.convert_array_1d(
+            array_1d=array, mask_1d=mask, store_native=store_native
+        )
 
         obj = array.view(cls)
         obj.mask = mask
