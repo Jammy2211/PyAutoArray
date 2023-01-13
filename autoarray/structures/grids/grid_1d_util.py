@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 from typing import TYPE_CHECKING, List, Union, Tuple
 
@@ -14,7 +15,7 @@ from autoarray import type as ty
 
 
 def convert_grid_1d(
-    grid_1d: Union[np.ndarray, List], mask_1d, store_native: bool = False
+    grid_1d: Union[np.ndarray, List], mask_1d: Mask1D, store_native: bool = False
 ) -> np.ndarray:
     """
     The `manual` classmethods in the Grid2D object take as input a list or ndarray which is returned as a Grid2D.
@@ -49,10 +50,9 @@ def convert_grid_1d(
         return grid_1d_slim_from(
             grid_1d_native=grid_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
         )
-    else:
-        return grid_1d_native_from(
-            grid_1d_slim=grid_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
-        )
+    return grid_1d_native_from(
+        grid_1d_slim=grid_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
+    )
 
 
 def grid_1d_slim_via_shape_slim_from(

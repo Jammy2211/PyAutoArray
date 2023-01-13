@@ -19,11 +19,12 @@ class Array1D(Structure):
         array: Union[np.ndarray, List],
         mask: Mask1D,
         header: Optional[Header] = None,
+        store_native: bool = False,
         *args,
         **kwargs
     ):
 
-        array = array_2d_util.convert_array(array)
+        array = array_1d_util.convert_array_1d(array_1d=array, mask_1d=mask, store_native=store_native)
 
         obj = array.view(cls)
         obj.mask = mask
@@ -260,17 +261,7 @@ class Array1D(Structure):
         If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
         `native` to `slim` and returned as a new `Array1D`.
         """
-
-        # TODO : This has to be a bug, and should be replaced with a mask.derive_mask.sub.
-
-        if self.shape[0] != self.mask.sub_shape_native[0]:
-            return self
-
-        array = array_1d_util.array_1d_slim_from(
-            array_1d_native=self, mask_1d=self.mask, sub_size=self.mask.sub_size
-        )
-
-        return Array1D(array=array, mask=self.mask)
+        return Array1D(array=self, mask=self.mask)
 
     @property
     def native(self) -> "Array1D":
@@ -281,12 +272,7 @@ class Array1D(Structure):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Array1D`.
         """
-
-        array = array_1d_util.array_1d_native_from(
-            array_1d_slim=self.slim, mask_1d=self.mask, sub_size=self.sub_size
-        )
-
-        return Array1D(array=array, mask=self.mask)
+        return Array1D(array=self, mask=self.mask, store_native=True)
 
     @property
     def readout_offsets(self) -> Tuple[float]:
