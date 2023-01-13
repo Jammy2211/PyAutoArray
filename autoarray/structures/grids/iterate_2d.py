@@ -106,7 +106,7 @@ class Grid2DIterate(Grid2D):
             self.sub_steps = obj.sub_steps
 
     @classmethod
-    def _manual_slim(
+    def without_mask(
         cls,
         grid: Union[np.ndarray, List],
         shape_native: Tuple[int, int],
@@ -151,11 +151,17 @@ class Grid2DIterate(Grid2D):
             The origin of the grid's mask.
         """
 
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+
         grid = grid_2d_util.convert_grid(grid=grid)
 
-        grid_2d_util.check_manual_slim(grid=grid, shape_native=shape_native)
+        if len(grid.shape) == 2:
 
-        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+            grid_2d_util.check_grid_slim(grid=grid, shape_native=shape_native)
+
+        else:
+
+            shape_native = (int(grid.shape[0]), int(grid.shape[1]))
 
         mask = Mask2D.all_false(
             shape_native=shape_native,
@@ -217,7 +223,7 @@ class Grid2DIterate(Grid2D):
             origin=origin,
         )
 
-        return Grid2DIterate._manual_slim(
+        return Grid2DIterate.without_mask(
             grid=grid_slim,
             shape_native=shape_native,
             pixel_scales=pixel_scales,

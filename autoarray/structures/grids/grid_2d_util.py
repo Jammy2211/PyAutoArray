@@ -13,7 +13,7 @@ from autoarray.mask import mask_2d_util
 from autoarray import type as ty
 
 
-def check_manual_slim(grid, shape_native):
+def check_grid_slim(grid, shape_native):
 
     if shape_native is None:
         raise exc.GridException(

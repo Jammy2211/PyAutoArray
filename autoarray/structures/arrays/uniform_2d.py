@@ -623,7 +623,6 @@ class AbstractArray2D(Structure):
 
 
 class Array2D(AbstractArray2D):
-
     @classmethod
     def without_mask(
         cls,
@@ -718,7 +717,10 @@ class Array2D(AbstractArray2D):
 
         else:
 
-            shape_native = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
+            shape_native = (
+                int(array.shape[0] / sub_size),
+                int(array.shape[1] / sub_size),
+            )
 
         mask = Mask2D.all_false(
             shape_native=shape_native,

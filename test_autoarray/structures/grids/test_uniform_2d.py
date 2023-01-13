@@ -112,9 +112,9 @@ def test__constructor__exception_raised_if_input_grid_is_not_number_of_masked_su
         )
 
 
-def test__manual_native():
+def test__without_mask():
 
-    grid_2d = aa.Grid2D._manual_native(
+    grid_2d = aa.Grid2D.without_mask(
         grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
         sub_size=1,
@@ -139,10 +139,7 @@ def test__manual_native():
     assert grid_2d.origin == (0.0, 0.0)
     assert grid_2d.sub_size == 1
 
-
-def test__manual_slim():
-
-    grid_2d = aa.Grid2D._manual_slim(
+    grid_2d = aa.Grid2D.without_mask(
         grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(1, 1),
         pixel_scales=1.0,
