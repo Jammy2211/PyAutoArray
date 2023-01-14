@@ -294,20 +294,20 @@ def test__x0x1_after_extraction():
 
     x0, x1 = aa.util.layout.x0x1_after_extraction(x0o=2, x1o=6, x0e=7, x1e=8)
 
-    assert x0 == None
-    assert x1 == None
+    assert x0 is None
+    assert x1 is None
 
     x0, x1 = aa.util.layout.x0x1_after_extraction(x0o=2, x1o=6, x0e=6, x1e=8)
 
-    assert x0 == None
-    assert x1 == None
+    assert x0 is None
+    assert x1 is None
 
     x0, x1 = aa.util.layout.x0x1_after_extraction(x0o=2, x1o=6, x0e=0, x1e=1)
 
-    assert x0 == None
-    assert x1 == None
+    assert x0 is None
+    assert x1 is None
 
     x0, x1 = aa.util.layout.x0x1_after_extraction(x0o=2, x1o=6, x0e=0, x1e=2)
 
-    assert x0 == None
-    assert x1 == None
+    assert x0 is None
+    assert x1 is None
