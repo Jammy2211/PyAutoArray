@@ -50,7 +50,7 @@ GridPlot:            # wrapper for `plt.plot()`: customize how grids plotted via
     c: k
   subplot:
     c: k
-GridScatter:
+GridScatter:        # wrapper for `plt.scatter()`: customize appearances of Grid2D.
   figure:
     c: k
     marker: .

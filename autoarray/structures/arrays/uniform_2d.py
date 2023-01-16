@@ -330,6 +330,7 @@ class AbstractArray2D(Structure):
 
             array_2d.output_to_fits(file_path="/path/for/output")
         """
+
         values = array_2d_util.convert_array_2d(
             array_2d=values,
             mask_2d=mask,
@@ -384,6 +385,19 @@ class AbstractArray2D(Structure):
         """
         return Array2D(
             values=self, mask=self.mask, header=self.header, store_native=True
+        )
+
+    @property
+    def native_skip_mask(self) -> "Array2D":
+        """
+        Return a `Array2D` where the data is stored in its `native` representation, which is an ``ndarray`` of shape
+        [sub_size*total_y_pixels, sub_size*total_x_pixels].
+
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Array2D`.
+        """
+        return Array2D(
+            values=self, mask=self.mask, header=self.header, store_native=True, skip_mask=True
         )
 
     @property
