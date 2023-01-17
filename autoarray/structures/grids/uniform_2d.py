@@ -1209,11 +1209,11 @@ class Grid2D(Structure):
 
     def relocated_mesh_grid_from(self, mesh_grid: Grid2DSparse) -> Grid2DSparse:
         """
-        Relocate the coordinates of a pixelization grid to the border of this grid. See the method
-        `relocated_grid_from()`for a full description of how this grid relocation works.
+        Relocate the coordinates of a pixelization grid to the border of this grid. See the
+        method ``relocated_grid_from()`` for a full description of how this grid relocation works.
 
-        This function operates the same as other grid relocation functions but instead returns the grid as a
-        `Grid2DSparse` instance, which contains information pairing the grid to a pixelization.
+        This function operates the same as other grid relocation functions but instead returns the grid as
+        a ``Grid2DSparse``  instance, which contains information pairing the grid to a pixelization.
 
         Parameters
         ----------

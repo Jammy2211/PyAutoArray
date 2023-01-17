@@ -63,14 +63,12 @@ class Interferometer(AbstractDataset):
         uv_wavelengths_hdu=0,
         settings: SettingsInterferometer = SettingsInterferometer(),
     ):
-        """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the interferometer-data_type.
+        """
+        Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
+        noise-map, exposure-time map, etc. from the interferometer-data_type.
 
-        This factory also includes a number of routines for converting the interferometer-data_type from unit_label not supported by PyAutoLens \
-        (e.g. adus, electrons) to electrons per second.
-
-        Parameters
-        ----------
+        This factory also includes a number of routines for converting the interferometer-data_type from unit_label
+        not supported by PyAutoLens (e.g. adus, electrons) to electrons per second.
         """
 
         visibilities = Visibilities.from_fits(

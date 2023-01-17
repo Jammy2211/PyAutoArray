@@ -52,8 +52,7 @@ class Grid1D(Structure):
         - grid[3] = the 4th unmasked pixel's x-coordinate.
         - grid[6] = the 7th unmasked pixel's x-coordinate.
 
-        Below is a visual illustration of a grid, where a total of 3 pixels are unmasked and are included in
-        the grid.
+        Below is a visual illustration of a grid, where a total of 3 pixels are unmasked and are included in the grid.
 
         .. code-block:: bash
 

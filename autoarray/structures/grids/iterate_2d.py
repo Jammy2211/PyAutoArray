@@ -34,11 +34,11 @@ class Grid2DIterate(Grid2D):
         **kwargs
     ):
         """
-        Represents a grid of coordinates as described for the `Grid2D` class, but using an iterative sub-grid that
+        Represents a grid of coordinates as described for the ``Grid2D`` class, but using an iterative sub-grid that
         adapts its resolution when it is input into a function that performs an analytic calculation.
 
-        A `Grid2D` represents (y,x) coordinates using a sub-grid, where functions are evaluated once at every coordinate
-        on the sub-grid and averaged to give a more precise evaluation an analytic function. A `Grid2DIterate` does not
+        A ``Grid2D`` represents (y,x) coordinates using a sub-grid, where functions are evaluated once at every coordinate
+        on the sub-grid and averaged to give a more precise evaluation an analytic function. A ``Grid2DIterate`` does not
         have a specified sub-grid size, but instead iteratively recomputes the analytic function at increasing sub-grid
         sizes until an input fractional accuracy is reached.
 
@@ -47,7 +47,7 @@ class Grid2DIterate(Grid2D):
         fractional accuracy. For functions where a wide range of sub-grid sizes allow fractional accuracy to be met
         this ensures the function can be evaluated accurate in a computaionally efficient manner.
 
-        This overcomes a limitation of the `Grid2D` class whereby if a small subset of pixels require high levels of
+        This overcomes a limitation of the ``Grid2D`` class whereby if a small subset of pixels require high levels of
         sub-gridding to be evaluated accuracy, the entire grid would require this sub-grid size thus leading to
         unecessary expensive function evaluations.
 
@@ -124,7 +124,7 @@ class Grid2DIterate(Grid2D):
         grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_native must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
+        input into this method. The mask is setup as a unmasked ``Mask2D`` of shape_native.
 
         Parameters
         ----------
@@ -327,11 +327,11 @@ class Grid2DIterate(Grid2D):
     @property
     def slim(self) -> "Grid2DIterate":
         """
-        Return a `Grid2D` where the data is stored its `slim` representation, which is an ndarray of shape
+        Return a ``Grid2D`` where the data is stored its ``slim`` representation, which is an ndarray of shape
         [total_unmasked_pixels * sub_size**2, 2].
 
-        If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
-        `native` to `slim` and returned as a new `Grid2D`.
+        If it is already stored in its ``slim`` representation  it is returned as it is. If not, it is  mapped from
+        ``native`` to ``slim`` and returned as a new ``Grid2D``.
         """
         return Grid2DIterate(
             values=self,
@@ -343,13 +343,13 @@ class Grid2DIterate(Grid2D):
     @property
     def native(self) -> "Grid2DIterate":
         """
-        Return a `Grid2D` where the data is stored in its `native` representation, which has shape
+        Return a ``Grid2D`` where the data is stored in its ``native`` representation, which has shape
         [sub_size*total_y_pixels, sub_size*total_x_pixels, 2].
 
-        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
-        `slim` to `native` and returned as a new `Grid2D`.
+        If it is already stored in its ``native`` representation it is return as it is. If not, it is mapped from
+        ``slim`` to ``native`` and returned as a new ``Grid2D``.
 
-        This method is used in the child `Grid2D` classes to create their `native` properties.
+        This method is used in the child ``Grid2D`` classes to create their ``native`` properties.
         """
         return Grid2DIterate(
             values=self,
@@ -362,7 +362,7 @@ class Grid2DIterate(Grid2D):
     @property
     def binned(self) -> "Grid2DIterate":
         """
-        Return a `Grid2D` of the binned-up grid in its 1D representation, which is stored with
+        Return a ``Grid2D`` of the binned-up grid in its 1D representation, which is stored with
         shape [total_unmasked_pixels, 2].
 
         The binning up process converts a grid from (y,x) values where each value is a coordinate on the sub-grid to
@@ -475,9 +475,9 @@ class Grid2DIterate(Grid2D):
     ) -> Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
-        value in the result array is within the `Grid2DIterate`'s specified fractional accuracy. The fractional mask thus
+        value in the result array is within the ``Grid2DIterate``'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
 
         The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
         at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
@@ -525,10 +525,10 @@ class Grid2DIterate(Grid2D):
         """
         Jitted function to determine the fractional mask, which is a mask where:
 
-        - `True` entries signify the function has been evaluated in that pixel to desired accuracy and
+        - ``True`` entries signify the function has been evaluated in that pixel to desired accuracy and
           therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
-        - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+        - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
         """
 
@@ -586,7 +586,7 @@ class Grid2DIterate(Grid2D):
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
         An example use case of this function is when a "image_2d_from" methods in **PyAutoGalaxy**'s
-        `LightProfile` module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
+        ``LightProfile`` module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
         the analytic light profile at more points and thus more precisely.
 
         Parameters
@@ -650,7 +650,7 @@ class Grid2DIterate(Grid2D):
 
     def return_iterated_array_result(self, iterated_array: Array2D) -> Array2D:
         """
-        Returns the resulting iterated array, by mapping it to 1D and then passing it back as an `Array2D` structure.
+        Returns the resulting iterated array, by mapping it to 1D and then passing it back as an ``Array2D`` structure.
 
         Parameters
         ----------
@@ -697,9 +697,9 @@ class Grid2DIterate(Grid2D):
     ) -> Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
-        value in the result array is within the `Grid2DIterate`'s specified fractional accuracy. The fractional mask thus
+        value in the result array is within the ``Grid2DIterate``'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
 
         The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
         at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
@@ -747,10 +747,10 @@ class Grid2DIterate(Grid2D):
         """
         Jitted function to determine the fractional mask, which is a mask where:
 
-        - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
+        - ``True`` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
           therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
-        - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+        - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
         """
 
@@ -829,7 +829,7 @@ class Grid2DIterate(Grid2D):
         If the function return all zeros, the iteration is terminated early given that all levels of sub-gridding will
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
-        An example use case of this function is when a "deflections_yx_2d_from" methods in **PyAutoLens**'s `MassProfile`
+        An example use case of this function is when a "deflections_yx_2d_from" methods in **PyAutoLens**'s ``MassProfile``
         module is computed, which by evaluating the function on a higher resolution sub-grid samples the analytic
         mass profile at more points and thus more precisely.
 
