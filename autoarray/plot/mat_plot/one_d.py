@@ -143,6 +143,7 @@ class MatPlot1D(AbstractMatPlot):
         plot_axis_type_override: Optional[str] = None,
         y_errors=None,
         x_errors=None,
+        y_extra=None,
         bypass: bool = False,
     ):
 
@@ -151,12 +152,11 @@ class MatPlot1D(AbstractMatPlot):
 
         ax = None
 
-        if (not self.is_for_subplot) and (not self.is_for_multi_plot):
+        if not self.is_for_subplot:
             fig, ax = self.figure.open()
         else:
             if not bypass:
-                if self.is_for_subplot:
-                    ax = self.setup_subplot()
+                ax = self.setup_subplot()
 
         self.title.set(auto_title=auto_labels.title)
 
@@ -183,6 +183,7 @@ class MatPlot1D(AbstractMatPlot):
             plot_axis_type=plot_axis_type,
             y_errors=y_errors,
             x_errors=x_errors,
+            y_extra=y_extra,
         )
 
         if visuals_1d.shaded_region is not None:

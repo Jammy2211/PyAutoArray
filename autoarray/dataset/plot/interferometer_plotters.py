@@ -88,25 +88,25 @@ class InterferometerPlotter(Plotter):
         Parameters
         ----------
         visibilities
-            Whether or not to make a 2D plot (via `scatter`) of the visibility data.
+            Whether to make a 2D plot (via `scatter`) of the visibility data.
         noise_map
-            Whether or not to make a 2D plot (via `scatter`) of the noise-map.
+            Whether to make a 2D plot (via `scatter`) of the noise-map.
         u_wavelengths
-            Whether or not to make a 1D plot (via `plot`) of the u-wavelengths.
+            Whether to make a 1D plot (via `plot`) of the u-wavelengths.
         v_wavelengths
-            Whether or not to make a 1D plot (via `plot`) of the v-wavelengths.
+            Whether to make a 1D plot (via `plot`) of the v-wavelengths.
         amplitudes_vs_uv_distances
-            Whether or not to make a 1D plot (via `plot`) of the amplitudes versis the uv distances.
+            Whether to make a 1D plot (via `plot`) of the amplitudes versis the uv distances.
         phases_vs_uv_distances
-            Whether or not to make a 1D plot (via `plot`) of the phases versis the uv distances.
+            Whether to make a 1D plot (via `plot`) of the phases versis the uv distances.
         dirty_image
-            Whether or not to make a 2D plot (via `imshow`) of the dirty image.
+            Whether to make a 2D plot (via `imshow`) of the dirty image.
         dirty_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty noise map.
+            Whether to make a 2D plot (via `imshow`) of the dirty noise map.
         dirty_signal_to_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty signal-to-noise map.
+            Whether to make a 2D plot (via `imshow`) of the dirty signal-to-noise map.
         dirty_inverse_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty inverse noise map.
+            Whether to make a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
 
         if visibilities:

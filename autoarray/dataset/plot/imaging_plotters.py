@@ -69,19 +69,19 @@ class ImagingPlotterMeta(Plotter):
         Parameters
         ----------
         image
-            Whether or not to make a 2D plot (via `imshow`) of the image data.
+            Whether to make a 2D plot (via `imshow`) of the image data.
         noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the noise map.
+            Whether to make a 2D plot (via `imshow`) of the noise map.
         psf
-            Whether or not to make a 2D plot (via `imshow`) of the psf.
+            Whether to make a 2D plot (via `imshow`) of the psf.
         inverse_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the inverse noise map.
+            Whether to make a 2D plot (via `imshow`) of the inverse noise map.
         signal_to_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the signal-to-noise map.
+            Whether to make a 2D plot (via `imshow`) of the signal-to-noise map.
         absolute_signal_to_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the absolute signal to noise map.
+            Whether to make a 2D plot (via `imshow`) of the absolute signal to noise map.
         potential_chi_squared_map
-            Whether or not to make a 2D plot (via `imshow`) of the potential chi squared map.
+            Whether to make a 2D plot (via `imshow`) of the potential chi squared map.
         """
 
         if image:

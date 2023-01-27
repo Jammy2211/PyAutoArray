@@ -69,19 +69,19 @@ class FitVectorYXPlotterMeta(Plotter):
         Parameters
         ----------
         image
-            Whether or not to make a 2D plot (via `imshow`) of the image data.
+            Whether to make a 2D plot (via `imshow`) of the image data.
         noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the noise map.
+            Whether to make a 2D plot (via `imshow`) of the noise map.
         psf
-            Whether or not to make a 2D plot (via `imshow`) of the psf.
+            Whether to make a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the signal-to-noise map.
+            Whether to make a 2D plot (via `imshow`) of the signal-to-noise map.
         residual_map
-            Whether or not to make a 2D plot (via `imshow`) of the residual map.
+            Whether to make a 2D plot (via `imshow`) of the residual map.
         normalized_residual_map
-            Whether or not to make a 2D plot (via `imshow`) of the normalized residual map.
+            Whether to make a 2D plot (via `imshow`) of the normalized residual map.
         chi_squared_map
-            Whether or not to make a 2D plot (via `imshow`) of the chi-squared map.
+            Whether to make a 2D plot (via `imshow`) of the chi-squared map.
         """
 
         fit_plotter_y = FitImaging(self.fit.data.y_array)

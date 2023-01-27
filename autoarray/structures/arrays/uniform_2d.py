@@ -397,7 +397,11 @@ class AbstractArray2D(Structure):
         `slim` to `native` and returned as a new `Array2D`.
         """
         return Array2D(
-            values=self, mask=self.mask, header=self.header, store_native=True, skip_mask=True
+            values=self,
+            mask=self.mask,
+            header=self.header,
+            store_native=True,
+            skip_mask=True,
         )
 
     @property

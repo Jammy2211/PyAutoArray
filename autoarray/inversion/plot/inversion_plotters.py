@@ -91,7 +91,7 @@ class InversionPlotter(Plotter):
         Parameters
         ----------
         reconstructed_image
-            Whether or not to make a 2D plot (via `imshow`) of the reconstructed image data.
+            Whether to make a 2D plot (via `imshow`) of the reconstructed image data.
         """
         if reconstructed_image:
 
@@ -125,20 +125,20 @@ class InversionPlotter(Plotter):
         pixelization_index
             The index of the `Mapper` in the `Inversion`'s `linear_obj_list` that is plotted.
         reconstructed_image
-            Whether or not to make a 2D plot (via `imshow`) of the mapper's reconstructed image data.
+            Whether to make a 2D plot (via `imshow`) of the mapper's reconstructed image data.
         reconstruction
-            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
+            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
         errors
-            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
+            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
         residual_map
-            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane residual map.
+            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane residual map.
         normalized_residual_map
-            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane normalized residual
+            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane normalized residual
             map.
         chi_squared_map
-            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane chi-squared map.
+            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane chi-squared map.
         residual_map
-            Whether or not to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane regularization
+            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane regularization
             weights.
         """
 

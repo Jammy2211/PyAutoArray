@@ -102,37 +102,37 @@ class FitInterferometerPlotterMeta(Plotter):
         Parameters
         ----------
         visibilities
-            Whether or not to make a 2D plot (via `scatter`) of the visibility data.
+            Whether to make a 2D plot (via `scatter`) of the visibility data.
         noise_map
-            Whether or not to make a 2D plot (via `scatter`) of the noise-map.
+            Whether to make a 2D plot (via `scatter`) of the noise-map.
         signal_to_noise_map
-            Whether or not to make a 2D plot (via `scatter`) of the signal-to-noise-map.
+            Whether to make a 2D plot (via `scatter`) of the signal-to-noise-map.
         model_visibilities
-            Whether or not to make a 2D plot (via `scatter`) of the model visibility data.
+            Whether to make a 2D plot (via `scatter`) of the model visibility data.
         residual_map_real
-            Whether or not to make a 1D plot (via `plot`) of the real component of the residual map.
+            Whether to make a 1D plot (via `plot`) of the real component of the residual map.
         residual_map_imag
-            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the residual map.
+            Whether to make a 1D plot (via `plot`) of the imaginary component of the residual map.
         normalized_residual_map_real
-            Whether or not to make a 1D plot (via `plot`) of the real component of the normalized residual map.
+            Whether to make a 1D plot (via `plot`) of the real component of the normalized residual map.
         normalized_residual_map_imag
-            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the normalized residual map.
+            Whether to make a 1D plot (via `plot`) of the imaginary component of the normalized residual map.
         chi_squared_map_real
-            Whether or not to make a 1D plot (via `plot`) of the real component of the chi-squared map.
+            Whether to make a 1D plot (via `plot`) of the real component of the chi-squared map.
         chi_squared_map_imag
-            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the chi-squared map.
+            Whether to make a 1D plot (via `plot`) of the imaginary component of the chi-squared map.
         dirty_image
-            Whether or not to make a 2D plot (via `imshow`) of the dirty image.
+            Whether to make a 2D plot (via `imshow`) of the dirty image.
         dirty_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty noise map.
+            Whether to make a 2D plot (via `imshow`) of the dirty noise map.
         dirty_model_image
-            Whether or not to make a 2D plot (via `imshow`) of the dirty model image.
+            Whether to make a 2D plot (via `imshow`) of the dirty model image.
         dirty_residual_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty residual map.
+            Whether to make a 2D plot (via `imshow`) of the dirty residual map.
         dirty_normalized_residual_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty normalized residual map.
+            Whether to make a 2D plot (via `imshow`) of the dirty normalized residual map.
         dirty_chi_squared_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty chi-squared map.
+            Whether to make a 2D plot (via `imshow`) of the dirty chi-squared map.
         """
 
         if visibilities:
@@ -364,37 +364,37 @@ class FitInterferometerPlotterMeta(Plotter):
         Parameters
         ----------
         visibilities
-            Whether or not to make a 2D plot (via `scatter`) of the visibility data.
+            Whether to make a 2D plot (via `scatter`) of the visibility data.
         noise_map
-            Whether or not to make a 2D plot (via `scatter`) of the noise-map.
+            Whether to make a 2D plot (via `scatter`) of the noise-map.
         signal_to_noise_map
-            Whether or not to make a 2D plot (via `scatter`) of the signal-to-noise-map.
+            Whether to make a 2D plot (via `scatter`) of the signal-to-noise-map.
         model_visibilities
-            Whether or not to make a 2D plot (via `scatter`) of the model visibility data.
+            Whether to make a 2D plot (via `scatter`) of the model visibility data.
         residual_map_real
-            Whether or not to make a 1D plot (via `plot`) of the real component of the residual map.
+            Whether to make a 1D plot (via `plot`) of the real component of the residual map.
         residual_map_imag
-            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the residual map.
+            Whether to make a 1D plot (via `plot`) of the imaginary component of the residual map.
         normalized_residual_map_real
-            Whether or not to make a 1D plot (via `plot`) of the real component of the normalized residual map.
+            Whether to make a 1D plot (via `plot`) of the real component of the normalized residual map.
         normalized_residual_map_imag
-            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the normalized residual map.
+            Whether to make a 1D plot (via `plot`) of the imaginary component of the normalized residual map.
         chi_squared_map_real
-            Whether or not to make a 1D plot (via `plot`) of the real component of the chi-squared map.
+            Whether to make a 1D plot (via `plot`) of the real component of the chi-squared map.
         chi_squared_map_imag
-            Whether or not to make a 1D plot (via `plot`) of the imaginary component of the chi-squared map.
+            Whether to make a 1D plot (via `plot`) of the imaginary component of the chi-squared map.
         dirty_image
-            Whether or not to make a 2D plot (via `imshow`) of the dirty image.
+            Whether to make a 2D plot (via `imshow`) of the dirty image.
         dirty_noise_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty noise map.
+            Whether to make a 2D plot (via `imshow`) of the dirty noise map.
         dirty_model_image
-            Whether or not to make a 2D plot (via `imshow`) of the dirty model image.
+            Whether to make a 2D plot (via `imshow`) of the dirty model image.
         dirty_residual_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty residual map.
+            Whether to make a 2D plot (via `imshow`) of the dirty residual map.
         dirty_normalized_residual_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty normalized residual map.
+            Whether to make a 2D plot (via `imshow`) of the dirty normalized residual map.
         dirty_chi_squared_map
-            Whether or not to make a 2D plot (via `imshow`) of the dirty chi-squared map.
+            Whether to make a 2D plot (via `imshow`) of the dirty chi-squared map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
