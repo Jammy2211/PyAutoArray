@@ -9,13 +9,14 @@ from autoarray.numba_util import profile_func
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
-from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 
+from autoarray import exc
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
@@ -134,6 +135,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
         array of memory.
         """
 
+        if self.has(cls=AbstractLinearObjFuncList):
+            return self.curvature_matrix_func_list_and_mapper
+
         if len(self.linear_obj_list) == 1:
             return self.curvature_matrix_diag
 
@@ -241,6 +245,39 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
         return curvature_matrix_off_diag_0 + curvature_matrix_off_diag_1.T
+
+    @property
+    @profile_func
+    def curvature_matrix_func_list_and_mapper(self) -> np.ndarray:
+        """
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
+
+        This function computes the diagonal terms of F using the w_tilde formalism.
+        """
+
+        if self.total(cls=AbstractMapper) == 1:
+
+            print()
+
+            hgsegdf
+
+            return inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+                curvature_preload=self.w_tilde.curvature_preload,
+                curvature_indexes=self.w_tilde.indexes,
+                curvature_lengths=self.w_tilde.lengths,
+                data_to_pix_unique=self.linear_obj_list[
+                    0
+                ].unique_mappings.data_to_pix_unique,
+                data_weights=self.linear_obj_list[0].unique_mappings.data_weights,
+                pix_lengths=self.linear_obj_list[0].unique_mappings.pix_lengths,
+                pix_pixels=self.linear_obj_list[0].pixels,
+            )
+
+        raise exc.InversionException("LOOOL")
 
     @property
     @profile_func

@@ -401,6 +401,47 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     )
 
 
+def test__inversion_imaging__linear_obj_func_with_w_tilde(
+    masked_imaging_7x7_no_blur,
+    rectangular_mapper_7x7_3x3,
+):
+
+    masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
+    masked_imaging_7x7_no_blur.data[4] = 2.0
+
+    mask = masked_imaging_7x7_no_blur.mask
+
+    grid = aa.Grid2D.from_mask(mask=mask)
+
+    linear_obj = aa.m.MockLinearObjFuncList(
+        parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
+    )
+
+    inversion_mapping = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
+        settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
+    )
+
+    print(inversion_mapping.curvature_matrix)
+
+    masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
+
+    masked_imaging_7x7_no_blur.data -= inversion_mapping.mapped_reconstructed_data_dict[
+        linear_obj
+    ]
+
+    inversion_w_tilde = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
+        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
+    )
+
+    print(inversion_w_tilde.curvature_matrix)
+
+
+
+
 def test__inversion_interferometer__via_mapper(
     interferometer_7_no_fft,
     rectangular_mapper_7x7_3x3,

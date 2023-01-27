@@ -44,6 +44,18 @@ def test__total_regularizations():
     assert inversion.total_regularizations == 0
 
 
+def test__index_range_list_from():
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[
+            aa.m.MockLinearObj(parameters=2, regularization=None),
+            aa.m.MockMapper(parameters=1, regularization=None),
+        ]
+    )
+
+    assert inversion.index_range_list_from(cls=aa.LinearObj) == [[0, 2], [2, 3]]
+    assert inversion.index_range_list_from(cls=aa.AbstractMapper) == [[2, 3]]
+
 def test__no_regularization_index_list():
 
     inversion = aa.m.MockInversion(

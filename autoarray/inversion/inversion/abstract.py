@@ -130,6 +130,24 @@ class AbstractInversion:
             values=self.linear_obj_list + self.regularization_list, cls=cls
         )
 
+    def index_range_list_from(self, cls: Type) -> List[List[int]]:
+
+        # TODO : Needs to be range based on pixels.
+
+        index_list = []
+
+        pixel_count = 0
+
+        for linear_obj in self.linear_obj_list:
+
+            if isinstance(linear_obj, cls):
+
+                index_list.append([pixel_count, pixel_count + linear_obj.parameters])
+
+            pixel_count += linear_obj.parameters
+
+        return index_list
+
     def cls_list_from(self, cls: Type, cls_filtered: Optional[Type] = None) -> List:
         """
         Returns a list of objects in the `Inversion` which are an instance of the input `cls`.
