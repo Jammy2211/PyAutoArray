@@ -133,6 +133,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
         array of memory.
         """
+
         if len(self.linear_obj_list) == 1:
             return self.curvature_matrix_diag
 
