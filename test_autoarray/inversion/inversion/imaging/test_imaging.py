@@ -113,6 +113,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     assert inversion.curvature_matrix[0, 0] - 10.0 > 0.0
     assert inversion.curvature_matrix[3, 3] - 2.0 < 1.0e-12
 
+
 def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_noise_map():
 
     matrix_shape = (9, 3)

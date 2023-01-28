@@ -413,8 +413,12 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
+    mapping_matrix = np.full(fill_value=0.5, shape=(9, 2))
+    mapping_matrix[0, 0] = 0.8
+    mapping_matrix[1, 1] = 0.4
+
     linear_obj = aa.m.MockLinearObjFuncList(
-        parameters=2, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 2))
+        parameters=2, grid=grid, mapping_matrix=mapping_matrix
     )
 
     inversion_mapping = aa.Inversion(
@@ -422,8 +426,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
-
-    print(inversion_mapping.curvature_matrix)
 
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
 
@@ -437,9 +439,9 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
-    print(inversion_w_tilde.curvature_matrix)
-
-
+    assert inversion_mapping.curvature_matrix == pytest.approx(
+        inversion_w_tilde.curvature_matrix, 1.0e-4
+    )
 
 
 def test__inversion_interferometer__via_mapper(

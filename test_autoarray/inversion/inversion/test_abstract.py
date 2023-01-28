@@ -56,6 +56,7 @@ def test__index_range_list_from():
     assert inversion.index_range_list_from(cls=aa.LinearObj) == [[0, 2], [2, 3]]
     assert inversion.index_range_list_from(cls=aa.AbstractMapper) == [[2, 3]]
 
+
 def test__no_regularization_index_list():
 
     inversion = aa.m.MockInversion(
