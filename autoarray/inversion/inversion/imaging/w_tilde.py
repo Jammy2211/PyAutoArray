@@ -92,6 +92,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
         The calculation is described in more detail in `inversion_util.w_tilde_data_imaging_from`.
         """
 
+        if self.has(cls=AbstractLinearObjFuncList):
+            return self.data_vector_func_list_and_mapper
+
         w_tilde_data = inversion_imaging_util.w_tilde_data_imaging_from(
             image_native=self.data.native,
             noise_map_native=self.noise_map.native,
@@ -111,6 +114,83 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 for linear_obj in self.linear_obj_list
             ]
         )
+
+    @property
+    @profile_func
+    def data_vector_func_list_and_mapper(self) -> np.ndarray:
+        """
+        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
+        by this object.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
+        data vector is given by equation (4) and the letter D.
+
+        If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
+        for simultaneously.
+
+        The calculation is described in more detail in `inversion_util.w_tilde_data_imaging_from`.
+        """
+
+        w_tilde_data = inversion_imaging_util.w_tilde_data_imaging_from(
+            image_native=self.data.native,
+            noise_map_native=self.noise_map.native,
+            kernel_native=self.convolver.kernel.native,
+            native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
+        )
+
+        total_parameters = sum(
+            [linear_obj.parameters for linear_obj in self.linear_obj_list]
+        )
+
+        data_vector = np.zeros(total_parameters)
+
+        if self.total(cls=AbstractMapper) == 1:
+
+            mapper_list = self.cls_list_from(cls=AbstractMapper)
+            mapper_index_range = self.index_range_list_from(cls=AbstractMapper)[0]
+
+            data_vector_mapper = inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
+                    w_tilde_data=w_tilde_data,
+                    data_to_pix_unique=mapper_list[0].unique_mappings.data_to_pix_unique,
+                    data_weights=mapper_list[0].unique_mappings.data_weights,
+                    pix_lengths=mapper_list[0].unique_mappings.pix_lengths,
+                    pix_pixels=mapper_list[0].parameters,
+                )
+
+            data_vector[
+                mapper_index_range[0] : mapper_index_range[1],
+            ] = data_vector_mapper
+
+            linear_func_index_range = self.index_range_list_from(
+                cls=AbstractLinearObjFuncList
+            )
+
+            for index, linear_func in enumerate(
+                self.cls_list_from(cls=AbstractLinearObjFuncList)
+            ):
+
+                index_range = linear_func_index_range[index]
+
+                if linear_func.operated_mapping_matrix_override is not None:
+                    operated_mapping_matrix = (
+                        linear_func.operated_mapping_matrix_override
+                    )
+                else:
+                    operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                        mapping_matrix=linear_func.mapping_matrix
+                    )
+
+                diag = inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
+                    blurred_mapping_matrix=operated_mapping_matrix,
+                    image=self.data,
+                    noise_map=self.noise_map,
+                )
+
+                data_vector[
+                    index_range[0] : index_range[1],
+                ] = diag
+
+        return data_vector
 
     @cached_property
     @profile_func
@@ -265,6 +345,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         curvature_matrix = np.zeros((total_parameters, total_parameters))
 
+        import time
+
         if self.total(cls=AbstractMapper) == 1:
 
             mapper_list = self.cls_list_from(cls=AbstractMapper)
@@ -289,6 +371,10 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 cls=AbstractLinearObjFuncList
             )
 
+            operated_mapping_matrix_mapper = self.convolver.convolve_mapping_matrix(
+                mapping_matrix=mapper_list[0].mapping_matrix
+            )
+
             for index, linear_func in enumerate(
                 self.cls_list_from(cls=AbstractLinearObjFuncList)
             ):
@@ -304,30 +390,15 @@ class InversionImagingWTilde(AbstractInversionImaging):
                         mapping_matrix=linear_func.mapping_matrix
                     )
 
-                off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_linear_func_from(
-                    curvature_preload=self.w_tilde.curvature_preload,
-                    curvature_indexes=self.w_tilde.indexes,
-                    curvature_lengths=self.w_tilde.lengths,
-                    data_to_pix_unique_0=mapper_list[
-                        0
-                    ].unique_mappings.data_to_pix_unique,
-                    data_weights_0=mapper_list[0].unique_mappings.data_weights,
-                    pix_lengths_0=mapper_list[0].unique_mappings.pix_lengths,
-                    pix_pixels_0=mapper_list[0].parameters,
-                    linear_func_values=operated_mapping_matrix,
-                )
+                array_0 = operated_mapping_matrix / self.noise_map[:, None]
+                array_1 = operated_mapping_matrix_mapper / self.noise_map[:, None]
+
+                off_diag = np.dot(array_1.T, array_0)
 
                 curvature_matrix[
                     mapper_index_range[0] : mapper_index_range[1],
                     index_range[0] : index_range[1],
                 ] = off_diag
-
-                # diag = inversion_imaging_util.curvature_matrix_diags_via_w_tilde_curvature_preload_imaging_linear_func_x2_from(
-                #     curvature_preload=self.w_tilde.curvature_preload,
-                #     curvature_indexes=self.w_tilde.indexes,
-                #     curvature_lengths=self.w_tilde.lengths,
-                #     linear_func_values=operated_mapping_matrix,
-                # )
 
                 diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
                     noise_map=self.noise_map,

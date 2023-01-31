@@ -402,14 +402,14 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
 
 
 def test__inversion_imaging__linear_obj_func_with_w_tilde(
-    masked_imaging_7x7_no_blur,
+    masked_imaging_7x7,
     rectangular_mapper_7x7_3x3,
 ):
 
-    masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
-    masked_imaging_7x7_no_blur.data[4] = 2.0
+    masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
+    masked_imaging_7x7.data[4] = 2.0
 
-    mask = masked_imaging_7x7_no_blur.mask
+    mask = masked_imaging_7x7.mask
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
@@ -421,24 +421,25 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
         parameters=2, grid=grid, mapping_matrix=mapping_matrix
     )
 
+    masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
+
     inversion_mapping = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
+        dataset=masked_imaging_7x7,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
     )
 
-    masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
-
-    masked_imaging_7x7_no_blur.data -= inversion_mapping.mapped_reconstructed_data_dict[
-        linear_obj
-    ]
+    masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
 
     inversion_w_tilde = aa.Inversion(
-        dataset=masked_imaging_7x7_no_blur,
+        dataset=masked_imaging_7x7,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
+    assert inversion_mapping.data_vector == pytest.approx(
+        inversion_w_tilde.data_vector, 1.0e-4
+    )
     assert inversion_mapping.curvature_matrix == pytest.approx(
         inversion_w_tilde.curvature_matrix, 1.0e-4
     )
