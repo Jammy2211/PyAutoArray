@@ -1151,3 +1151,30 @@ def test__compare_to_full_2d_convolution__no_blurring_image():
     blurred_masked_im_1 = convolver.convolve_image_no_blurring(image=masked_image)
 
     assert blurred_masked_image_via_scipy == pytest.approx(blurred_masked_im_1, 1e-4)
+
+
+def test__summed_convolved_array_from():
+
+    mask = aa.Mask2D(
+        mask=[
+            [True, True, True, True, True],
+            [True, True, True, True, True],
+            [True, False, False, False, True],
+            [True, True, True, True, True],
+            [True, True, True, True, True],
+        ],
+        pixel_scales=0.1,
+        sub_size=1,
+    )
+
+    kernel = aa.Kernel2D.no_mask(
+        values=[[0, 0.0, 0], [0.5, 1.0, 0.5], [0, 0.0, 0]], pixel_scales=0.1
+    )
+
+    convolver = aa.Convolver(mask=mask, kernel=kernel)
+
+    image_array = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
+
+    summed_convolved_array = convolver.convolve_image_no_blurring(image=image_array)
+
+    assert summed_convolved_array == pytest.approx(np.array([2.0, 4.0, 4.0]), 1.0e-4)

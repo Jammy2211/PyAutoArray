@@ -1,6 +1,11 @@
 import numpy as np
 from typing import Dict, List, Optional
 
+from autoconf import cached_property
+
+from autoarray.numba_util import profile_func
+
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -104,3 +109,24 @@ class AbstractInversionImaging(AbstractInversion):
             else linear_obj.operated_mapping_matrix_override
             for linear_obj in self.linear_obj_list
         ]
+
+    @cached_property
+    @profile_func
+    def linear_func_operated_mapping_matrix_dict(self) -> Dict:
+
+        linear_func_operated_mapping_matrix_dict = {}
+
+        for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
+
+            if linear_func.operated_mapping_matrix_override is not None:
+                operated_mapping_matrix = linear_func.operated_mapping_matrix_override
+            else:
+                operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                    mapping_matrix=linear_func.mapping_matrix
+                )
+
+            linear_func_operated_mapping_matrix_dict[
+                linear_func
+            ] = operated_mapping_matrix
+
+        return linear_func_operated_mapping_matrix_dict

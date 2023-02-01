@@ -408,6 +408,7 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
 
     masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
     masked_imaging_7x7.data[4] = 2.0
+    masked_imaging_7x7.noise_map[3] = 4.0
 
     mask = masked_imaging_7x7.mask
 
@@ -442,6 +443,9 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     )
     assert inversion_mapping.curvature_matrix == pytest.approx(
         inversion_w_tilde.curvature_matrix, 1.0e-4
+    )
+    assert inversion_mapping.mapped_reconstructed_image == pytest.approx(
+        inversion_w_tilde.mapped_reconstructed_image, 1.0e-4
     )
 
 

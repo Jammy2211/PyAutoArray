@@ -149,13 +149,17 @@ class InversionImagingWTilde(AbstractInversionImaging):
             mapper_list = self.cls_list_from(cls=AbstractMapper)
             mapper_index_range = self.index_range_list_from(cls=AbstractMapper)[0]
 
-            data_vector_mapper = inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
+            data_vector_mapper = (
+                inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
                     w_tilde_data=w_tilde_data,
-                    data_to_pix_unique=mapper_list[0].unique_mappings.data_to_pix_unique,
+                    data_to_pix_unique=mapper_list[
+                        0
+                    ].unique_mappings.data_to_pix_unique,
                     data_weights=mapper_list[0].unique_mappings.data_weights,
                     pix_lengths=mapper_list[0].unique_mappings.pix_lengths,
                     pix_pixels=mapper_list[0].parameters,
                 )
+            )
 
             data_vector[
                 mapper_index_range[0] : mapper_index_range[1],
@@ -171,19 +175,16 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
                 index_range = linear_func_index_range[index]
 
-                if linear_func.operated_mapping_matrix_override is not None:
-                    operated_mapping_matrix = (
-                        linear_func.operated_mapping_matrix_override
-                    )
-                else:
-                    operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
-                        mapping_matrix=linear_func.mapping_matrix
-                    )
+                operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
+                    linear_func
+                ]
 
-                diag = inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
-                    blurred_mapping_matrix=operated_mapping_matrix,
-                    image=self.data,
-                    noise_map=self.noise_map,
+                diag = (
+                    inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
+                        blurred_mapping_matrix=operated_mapping_matrix,
+                        image=self.data,
+                        noise_map=self.noise_map,
+                    )
                 )
 
                 data_vector[
@@ -231,9 +232,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         curvature_matrix[0:pixels_diag, pixels_diag:] = curvature_matrix_off_diag
 
-        for i in range(curvature_matrix.shape[0]):
-            for j in range(curvature_matrix.shape[1]):
-                curvature_matrix[j, i] = curvature_matrix[i, j]
+        curvature_matrix = inversion_util.curvature_matrix_mirrored_2_from(
+            curvature_matrix=curvature_matrix
+        )
 
         return curvature_matrix
 
@@ -345,8 +346,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         curvature_matrix = np.zeros((total_parameters, total_parameters))
 
-        import time
-
         if self.total(cls=AbstractMapper) == 1:
 
             mapper_list = self.cls_list_from(cls=AbstractMapper)
@@ -371,30 +370,30 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 cls=AbstractLinearObjFuncList
             )
 
-            operated_mapping_matrix_mapper = self.convolver.convolve_mapping_matrix(
-                mapping_matrix=mapper_list[0].mapping_matrix
-            )
-
             for index, linear_func in enumerate(
                 self.cls_list_from(cls=AbstractLinearObjFuncList)
             ):
 
                 index_range = linear_func_index_range[index]
 
-                if linear_func.operated_mapping_matrix_override is not None:
-                    operated_mapping_matrix = (
-                        linear_func.operated_mapping_matrix_override
-                    )
-                else:
-                    operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
-                        mapping_matrix=linear_func.mapping_matrix
-                    )
+                operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
+                    linear_func
+                ]
 
-                array_0 = operated_mapping_matrix / self.noise_map[:, None]
-                array_1 = operated_mapping_matrix_mapper / self.noise_map[:, None]
+                operated_mapping_matrix_2 = self.convolver.convolve_mapping_matrix(
+                    mapping_matrix=operated_mapping_matrix
+                    / self.noise_map[:, None] ** 2
+                )
 
-                off_diag = np.dot(array_1.T, array_0)
-
+                off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_linear_func_from(
+                    data_to_pix_unique_0=mapper_list[
+                        0
+                    ].unique_mappings.data_to_pix_unique,
+                    data_weights_0=mapper_list[0].unique_mappings.data_weights,
+                    pix_lengths_0=mapper_list[0].unique_mappings.pix_lengths,
+                    pix_pixels_0=mapper_list[0].parameters,
+                    linear_func_values=operated_mapping_matrix_2,
+                )
                 curvature_matrix[
                     mapper_index_range[0] : mapper_index_range[1],
                     index_range[0] : index_range[1],
@@ -410,9 +409,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     index_range[0] : index_range[1],
                 ] = diag
 
-            for i in range(curvature_matrix.shape[0]):
-                for j in range(curvature_matrix.shape[1]):
-                    curvature_matrix[i, j] = curvature_matrix[j, i]
+            curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
+                curvature_matrix=curvature_matrix
+            )
 
         return curvature_matrix
 
@@ -453,23 +452,38 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             reconstruction = reconstruction_dict[linear_obj]
 
-            mapped_reconstructed_image = (
-                inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
+            if isinstance(linear_obj, AbstractMapper):
+
+                mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
                     pix_lengths=linear_obj.unique_mappings.pix_lengths,
                     reconstruction=reconstruction,
                 )
-            )
 
-            mapped_reconstructed_image = Array2D(
-                values=mapped_reconstructed_image,
-                mask=self.mask.derive_mask.sub_1,
-            )
+                mapped_reconstructed_image = Array2D(
+                    values=mapped_reconstructed_image,
+                    mask=self.mask.derive_mask.sub_1,
+                )
 
-            mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
-                image=mapped_reconstructed_image
-            )
+                mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
+                    image=mapped_reconstructed_image
+                )
+
+            else:
+
+                operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
+                    linear_obj
+                ]
+
+                mapped_reconstructed_image = np.sum(
+                    reconstruction * operated_mapping_matrix, axis=1
+                )
+
+                mapped_reconstructed_image = Array2D(
+                    values=mapped_reconstructed_image,
+                    mask=self.mask.derive_mask.sub_1,
+                )
 
             mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image
 
