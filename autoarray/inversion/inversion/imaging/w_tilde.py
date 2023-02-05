@@ -370,9 +370,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 cls=AbstractLinearObjFuncList
             )
 
-            for index, linear_func in enumerate(
-                self.cls_list_from(cls=AbstractLinearObjFuncList)
-            ):
+            linear_func_list = self.cls_list_from(cls=AbstractLinearObjFuncList)
+
+            for index, linear_func in enumerate(linear_func_list):
 
                 index_range = linear_func_index_range[index]
 
@@ -399,15 +399,30 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     index_range[0] : index_range[1],
                 ] = off_diag
 
-                diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
-                    noise_map=self.noise_map,
-                    mapping_matrix=operated_mapping_matrix,
+            for index_0, linear_func_0 in enumerate(linear_func_list):
+
+                index_range_0 = linear_func_index_range[index_0]
+
+                operated_mapping_matrix_0 = (
+                    self.linear_func_operated_mapping_matrix_dict[linear_func_0]
                 )
 
-                curvature_matrix[
-                    index_range[0] : index_range[1],
-                    index_range[0] : index_range[1],
-                ] = diag
+                for index_1, linear_func_1 in enumerate(linear_func_list):
+
+                    index_range_1 = linear_func_index_range[index_1]
+
+                    operated_mapping_matrix_1 = (
+                        self.linear_func_operated_mapping_matrix_dict[linear_func_1]
+                    )
+
+                    array_0 = operated_mapping_matrix_0 / self.noise_map[:, None]
+                    array_1 = operated_mapping_matrix_1 / self.noise_map[:, None]
+                    diag = np.dot(array_0.T, array_1)
+
+                    curvature_matrix[
+                        index_range_0[0] : index_range_0[1],
+                        index_range_1[0] : index_range_1[1],
+                    ] = diag
 
             curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
                 curvature_matrix=curvature_matrix
