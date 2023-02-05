@@ -80,32 +80,67 @@ class InversionImagingWTilde(AbstractInversionImaging):
     @profile_func
     def data_vector(self) -> np.ndarray:
         """
-        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
-        by this object.
+        Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
+        constructed by this object.
 
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
         data vector is given by equation (4) and the letter D.
 
-        If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
-        for simultaneously.
+        If there are multiple linear objects a `data_vector` is computed for ech one, which are concatenated
+        ensuring their values are solved for simultaneously.
 
         The calculation is described in more detail in `inversion_util.w_tilde_data_imaging_from`.
         """
-
         if self.has(cls=AbstractLinearObjFuncList):
-            return self.data_vector_func_list_and_mapper
+            return self._data_vector_func_list_and_mapper
+        elif self.total(cls=AbstractMapper) == 1:
+            return self._data_vector_x1_mapper
+        return self._data_vector_multi_mapper
 
-        w_tilde_data = inversion_imaging_util.w_tilde_data_imaging_from(
+    @cached_property
+    @profile_func
+    def w_tilde_data(self):
+        return inversion_imaging_util.w_tilde_data_imaging_from(
             image_native=self.data.native,
             noise_map_native=self.noise_map.native,
             kernel_native=self.convolver.kernel.native,
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
         )
 
+    @cached_property
+    @profile_func
+    def _data_vector_x1_mapper(self) -> np.ndarray:
+        """
+        Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
+        constructed by this object. The object is described in full in the method `data_vector`.
+
+        This method computes the `data_vector` whenthere is a single mapper object in the `Inversion`,
+        which circumvents `np.concenate` for speed up.
+        """
+        linear_obj = self.linear_obj_list[0]
+
+        return inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
+            w_tilde_data=self.w_tilde_data,
+            data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
+            data_weights=linear_obj.unique_mappings.data_weights,
+            pix_lengths=linear_obj.unique_mappings.pix_lengths,
+            pix_pixels=linear_obj.parameters,
+        )
+
+    @cached_property
+    @profile_func
+    def _data_vector_multi_mapper(self) -> np.ndarray:
+        """
+        Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
+        constructed by this object. The object is described in full in the method `data_vector`.
+
+        This method computes the `data_vector` when there are multiple mapper objects in the `Inversion`,
+        which computes the `data_vector` of each object and concatenates them.
+        """
         return np.concatenate(
             [
                 inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
-                    w_tilde_data=w_tilde_data,
+                    w_tilde_data=self.w_tilde_data,
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
                     pix_lengths=linear_obj.unique_mappings.pix_lengths,
@@ -117,26 +152,14 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
     @property
     @profile_func
-    def data_vector_func_list_and_mapper(self) -> np.ndarray:
+    def _data_vector_func_list_and_mapper(self) -> np.ndarray:
         """
-        The `data_vector` is a 1D vector whose values are solved for by the simultaneous linear equations constructed
-        by this object.
+        Returns the `data_vector`, a 1D vector whose values are solved for by the simultaneous linear equations
+        constructed by this object. The object is described in full in the method `data_vector`.
 
-        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf), where the
-        data vector is given by equation (4) and the letter D.
-
-        If there are multiple linear objects the `data_vectors` are concatenated ensuring their values are solved
-        for simultaneously.
-
-        The calculation is described in more detail in `inversion_util.w_tilde_data_imaging_from`.
+        This method computes the `data_vector` when there are one or more mapper objects in the `Inversion`,
+        which are combined with linear function list objects.
         """
-
-        w_tilde_data = inversion_imaging_util.w_tilde_data_imaging_from(
-            image_native=self.data.native,
-            noise_map_native=self.noise_map.native,
-            kernel_native=self.convolver.kernel.native,
-            native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
-        )
 
         total_parameters = sum(
             [linear_obj.parameters for linear_obj in self.linear_obj_list]
@@ -144,36 +167,33 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         data_vector = np.zeros(total_parameters)
 
-        if self.total(cls=AbstractMapper) == 1:
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+        mapper_index_range = self.index_range_list_from(cls=AbstractMapper)
 
-            mapper_list = self.cls_list_from(cls=AbstractMapper)
-            mapper_index_range = self.index_range_list_from(cls=AbstractMapper)[0]
+        linear_func_index_range = self.index_range_list_from(
+            cls=AbstractLinearObjFuncList
+        )
+
+        for mapper_index, mapper in enumerate(mapper_list):
 
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
-                    w_tilde_data=w_tilde_data,
-                    data_to_pix_unique=mapper_list[
-                        0
-                    ].unique_mappings.data_to_pix_unique,
-                    data_weights=mapper_list[0].unique_mappings.data_weights,
-                    pix_lengths=mapper_list[0].unique_mappings.pix_lengths,
-                    pix_pixels=mapper_list[0].parameters,
+                    w_tilde_data=self.w_tilde_data,
+                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
+                    data_weights=mapper.unique_mappings.data_weights,
+                    pix_lengths=mapper.unique_mappings.pix_lengths,
+                    pix_pixels=mapper.parameters,
                 )
             )
+            index_range = mapper_index_range[mapper_index]
 
             data_vector[
-                mapper_index_range[0] : mapper_index_range[1],
+                index_range[0] : index_range[1],
             ] = data_vector_mapper
 
-            linear_func_index_range = self.index_range_list_from(
-                cls=AbstractLinearObjFuncList
-            )
-
-            for index, linear_func in enumerate(
+            for linear_func_index, linear_func in enumerate(
                 self.cls_list_from(cls=AbstractLinearObjFuncList)
             ):
-
-                index_range = linear_func_index_range[index]
 
                 operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
                     linear_func
@@ -186,6 +206,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
                         noise_map=self.noise_map,
                     )
                 )
+
+                index_range = linear_func_index_range[linear_func_index]
 
                 data_vector[
                     index_range[0] : index_range[1],
