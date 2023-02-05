@@ -14,7 +14,7 @@ class MockLinearObjFuncList(AbstractLinearObjFuncList):
         self._mapping_matrix = mapping_matrix
 
     @property
-    def parameters(self) -> int:
+    def params(self) -> int:
         return self._parameters
 
     @property

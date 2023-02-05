@@ -130,7 +130,7 @@ class AbstractInversion:
             values=self.linear_obj_list + self.regularization_list, cls=cls
         )
 
-    def index_range_list_from(self, cls: Type) -> List[List[int]]:
+    def param_range_list_from(self, cls: Type) -> List[List[int]]:
 
         # TODO : Needs to be range based on pixels.
 
@@ -142,9 +142,9 @@ class AbstractInversion:
 
             if isinstance(linear_obj, cls):
 
-                index_list.append([pixel_count, pixel_count + linear_obj.parameters])
+                index_list.append([pixel_count, pixel_count + linear_obj.params])
 
-            pixel_count += linear_obj.parameters
+            pixel_count += linear_obj.params
 
         return index_list
 
@@ -205,11 +205,11 @@ class AbstractInversion:
 
             if regularization is None:
 
-                for pixel in range(pixel_count, pixel_count + linear_obj.parameters):
+                for pixel in range(pixel_count, pixel_count + linear_obj.params):
 
                     no_regularization_index_list.append(pixel)
 
-            pixel_count += linear_obj.parameters
+            pixel_count += linear_obj.params
 
         return no_regularization_index_list
 
@@ -469,10 +469,10 @@ class AbstractInversion:
         for linear_obj in self.linear_obj_list:
 
             source_quantity_dict[linear_obj] = source_quantity[
-                index : index + linear_obj.parameters
+                index : index + linear_obj.params
             ]
 
-            index += linear_obj.parameters
+            index += linear_obj.params
 
         return source_quantity_dict
 
@@ -747,7 +747,7 @@ class AbstractInversion:
 
         if regularization is None:
 
-            pixels = linear_obj.parameters
+            pixels = linear_obj.params
 
             return np.zero((pixels,))
 
