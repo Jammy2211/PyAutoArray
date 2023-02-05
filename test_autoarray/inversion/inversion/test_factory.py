@@ -577,6 +577,8 @@ def test__inversion_matrices__x2_mappers(
         mapping_matrix=operated_mapping_matrix, noise_map=inversion.noise_map
     )
 
+    print(inversion.curvature_matrix[0:9, 9:18] - curvature_matrix[0:9, 9:18])
+
     assert inversion.curvature_matrix == pytest.approx(curvature_matrix, 1.0e-4)
 
     regularization_matrix_of_reg_0 = regularization_constant.regularization_matrix_from(

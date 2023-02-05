@@ -174,6 +174,20 @@ class AbstractInversion:
             cls_filtered=cls_filtered,
         )
 
+    @cached_property
+    def total_params(self) -> int:
+        """
+        Returns the total number of parameters used by this `Inversion`, where:
+
+        - Each function in a linear function object list is a parameter.
+        - Each pixel of a `Mapper` object is a parameter.
+
+        Returns
+        -------
+        The total number of parameters used by this inversion.
+        """
+        return sum([linear_obj.params for linear_obj in self.linear_obj_list])
+
     @property
     def regularization_list(self) -> List[AbstractRegularization]:
         return [linear_obj.regularization for linear_obj in self.linear_obj_list]

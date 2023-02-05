@@ -107,7 +107,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             native_index_for_slim_index=self.data.mask.derive_indexes.native_for_slim,
         )
 
-    @cached_property
+    @property
     @profile_func
     def _data_vector_x1_mapper(self) -> np.ndarray:
         """
@@ -115,7 +115,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         constructed by this object. The object is described in full in the method `data_vector`.
 
         This method computes the `data_vector` whenthere is a single mapper object in the `Inversion`,
-        which circumvents `np.concenate` for speed up.
+        which circumvents `np.concatenate` for speed up.
         """
         linear_obj = self.linear_obj_list[0]
 
@@ -127,7 +127,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             pix_pixels=linear_obj.params,
         )
 
-    @cached_property
+    @property
     @profile_func
     def _data_vector_multi_mapper(self) -> np.ndarray:
         """
@@ -217,7 +217,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
     @profile_func
     def curvature_matrix(self) -> np.ndarray:
         """
-        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
         construct the simultaneous linear equations.
 
         The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
@@ -237,20 +237,82 @@ class InversionImagingWTilde(AbstractInversionImaging):
         """
 
         if self.has(cls=AbstractLinearObjFuncList):
-            return self.curvature_matrix_func_list_and_mapper
+            return self._curvature_matrix_func_list_and_mapper
+        elif self.total(cls=AbstractMapper) == 1:
+            return self._curvature_matrix_x1_mapper
+        return self._curvature_matrix_multi_mapper
 
-        if len(self.linear_obj_list) == 1:
-            return self.curvature_matrix_diag
+    @property
+    @profile_func
+    def _curvature_matrix_x1_mapper(self) -> np.ndarray:
+        """
+        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations. The object is described in full in the method `curvature_matrix`.
 
-        curvature_matrix = self.curvature_matrix_diag
-
-        curvature_matrix_off_diag = self.curvature_matrix_off_diag_from(
-            mapper_index_0=0, mapper_index_1=1
+        This method computes the `curvature_matrix` when there is a single mapper object in the `Inversion`,
+        which circumvents `block_diag` for speed up.
+        """
+        return inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+            curvature_preload=self.w_tilde.curvature_preload,
+            curvature_indexes=self.w_tilde.indexes,
+            curvature_lengths=self.w_tilde.lengths,
+            data_to_pix_unique=self.linear_obj_list[
+                0
+            ].unique_mappings.data_to_pix_unique,
+            data_weights=self.linear_obj_list[0].unique_mappings.data_weights,
+            pix_lengths=self.linear_obj_list[0].unique_mappings.pix_lengths,
+            pix_pixels=self.linear_obj_list[0].params,
         )
 
-        pixels_diag = self.linear_obj_list[0].pixels
+    @property
+    @profile_func
+    def _curvature_matrix_multi_mapper(self) -> np.ndarray:
+        """
+        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations. The object is described in full in the method `curvature_matrix`.
 
-        curvature_matrix[0:pixels_diag, pixels_diag:] = curvature_matrix_off_diag
+        This method computes the `curvature_matrix` when there are multiple mapper objects in the `Inversion`,
+        by computing each one (and their off-diagonal matrices) and combining them via the `block_diag` method.
+        """
+
+        curvature_matrix = np.zeros((self.total_params, self.total_params))
+
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+
+        for i in range(len(mapper_list)):
+
+            mapper_i = mapper_list[i]
+            mapper_param_range_i = mapper_param_range_list[i]
+
+            diag = inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
+                curvature_preload=self.w_tilde.curvature_preload,
+                curvature_indexes=self.w_tilde.indexes,
+                curvature_lengths=self.w_tilde.lengths,
+                data_to_pix_unique=mapper_i.unique_mappings.data_to_pix_unique,
+                data_weights=mapper_i.unique_mappings.data_weights,
+                pix_lengths=mapper_i.unique_mappings.pix_lengths,
+                pix_pixels=mapper_i.params,
+            )
+
+            curvature_matrix[
+                mapper_param_range_i[0] : mapper_param_range_i[1],
+                mapper_param_range_i[0] : mapper_param_range_i[1],
+            ] = diag
+
+            for j in range(i + 1, len(mapper_list)):
+
+                mapper_j = mapper_list[j]
+                mapper_param_range_j = mapper_param_range_list[j]
+
+                off_diag = self._curvature_matrix_off_diag_from(
+                    mapper_0=mapper_i, mapper_1=mapper_j
+                )
+
+                curvature_matrix[
+                    mapper_param_range_i[0] : mapper_param_range_i[1],
+                    mapper_param_range_j[0] : mapper_param_range_j[1],
+                ] = off_diag
 
         curvature_matrix = inversion_util.curvature_matrix_mirrored_2_from(
             curvature_matrix=curvature_matrix
@@ -258,51 +320,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         return curvature_matrix
 
-    @property
     @profile_func
-    def curvature_matrix_diag(self) -> np.ndarray:
-        """
-        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
-        construct the simultaneous linear equations.
-
-        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
-        curvature matrix given by equation (4) and the letter F.
-
-        This function computes the diagonal terms of F using the w_tilde formalism.
-        """
-
-        if len(self.linear_obj_list) == 1:
-
-            return inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-                curvature_preload=self.w_tilde.curvature_preload,
-                curvature_indexes=self.w_tilde.indexes,
-                curvature_lengths=self.w_tilde.lengths,
-                data_to_pix_unique=self.linear_obj_list[
-                    0
-                ].unique_mappings.data_to_pix_unique,
-                data_weights=self.linear_obj_list[0].unique_mappings.data_weights,
-                pix_lengths=self.linear_obj_list[0].unique_mappings.pix_lengths,
-                pix_pixels=self.linear_obj_list[0].pixels,
-            )
-
-        return block_diag(
-            *[
-                inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-                    curvature_preload=self.w_tilde.curvature_preload,
-                    curvature_indexes=self.w_tilde.indexes,
-                    curvature_lengths=self.w_tilde.lengths,
-                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
-                    data_weights=mapper.unique_mappings.data_weights,
-                    pix_lengths=mapper.unique_mappings.pix_lengths,
-                    pix_pixels=mapper.pixels,
-                )
-                for mapper in self.cls_list_from(cls=AbstractMapper)
-            ]
-        )
-
-    @profile_func
-    def curvature_matrix_off_diag_from(
-        self, mapper_index_0: int, mapper_index_1: int
+    def _curvature_matrix_off_diag_from(
+        self, mapper_0: AbstractMapper, mapper_1: AbstractMapper
     ) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
@@ -314,9 +334,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         This function computes the off-diagonal terms of F using the w_tilde formalism.
         """
 
-        mapper_0 = self.linear_obj_list[mapper_index_0]
-        mapper_1 = self.linear_obj_list[mapper_index_1]
-
         curvature_matrix_off_diag_0 = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
             curvature_indexes=self.w_tilde.indexes,
@@ -324,11 +341,11 @@ class InversionImagingWTilde(AbstractInversionImaging):
             data_to_pix_unique_0=mapper_0.unique_mappings.data_to_pix_unique,
             data_weights_0=mapper_0.unique_mappings.data_weights,
             pix_lengths_0=mapper_0.unique_mappings.pix_lengths,
-            pix_pixels_0=mapper_0.pixels,
+            pix_pixels_0=mapper_0.params,
             data_to_pix_unique_1=mapper_1.unique_mappings.data_to_pix_unique,
             data_weights_1=mapper_1.unique_mappings.data_weights,
             pix_lengths_1=mapper_1.unique_mappings.pix_lengths,
-            pix_pixels_1=mapper_1.pixels,
+            pix_pixels_1=mapper_1.params,
         )
 
         curvature_matrix_off_diag_1 = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
@@ -338,18 +355,18 @@ class InversionImagingWTilde(AbstractInversionImaging):
             data_to_pix_unique_0=mapper_1.unique_mappings.data_to_pix_unique,
             data_weights_0=mapper_1.unique_mappings.data_weights,
             pix_lengths_0=mapper_1.unique_mappings.pix_lengths,
-            pix_pixels_0=mapper_1.pixels,
+            pix_pixels_0=mapper_1.params,
             data_to_pix_unique_1=mapper_0.unique_mappings.data_to_pix_unique,
             data_weights_1=mapper_0.unique_mappings.data_weights,
             pix_lengths_1=mapper_0.unique_mappings.pix_lengths,
-            pix_pixels_1=mapper_0.pixels,
+            pix_pixels_1=mapper_0.params,
         )
 
         return curvature_matrix_off_diag_0 + curvature_matrix_off_diag_1.T
 
     @property
     @profile_func
-    def curvature_matrix_func_list_and_mapper(self) -> np.ndarray:
+    def _curvature_matrix_func_list_and_mapper(self) -> np.ndarray:
         """
         The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
         construct the simultaneous linear equations.
@@ -360,16 +377,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
         This function computes the diagonal terms of F using the w_tilde formalism.
         """
 
-        total_parameters = sum(
-            [linear_obj.params for linear_obj in self.linear_obj_list]
-        )
-
-        curvature_matrix = np.zeros((total_parameters, total_parameters))
+        curvature_matrix = np.zeros((self.total_params, self.total_params))
 
         if self.total(cls=AbstractMapper) == 1:
 
             mapper_list = self.cls_list_from(cls=AbstractMapper)
-            mapper_index_range = self.param_range_list_from(cls=AbstractMapper)[0]
+            mapper_param_range = self.param_range_list_from(cls=AbstractMapper)[0]
 
             curvature_matrix_mapper = inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                 curvature_preload=self.w_tilde.curvature_preload,
@@ -382,8 +395,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
             )
 
             curvature_matrix[
-                mapper_index_range[0] : mapper_index_range[1],
-                mapper_index_range[0] : mapper_index_range[1],
+                mapper_param_range[0] : mapper_param_range[1],
+                mapper_param_range[0] : mapper_param_range[1],
             ] = curvature_matrix_mapper
 
             linear_func_index_range = self.param_range_list_from(
@@ -415,7 +428,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     linear_func_values=operated_mapping_matrix_2,
                 )
                 curvature_matrix[
-                    mapper_index_range[0] : mapper_index_range[1],
+                    mapper_param_range[0] : mapper_param_range[1],
                     index_range[0] : index_range[1],
                 ] = off_diag
 
