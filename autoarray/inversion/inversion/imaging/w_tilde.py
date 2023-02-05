@@ -298,6 +298,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 mapper_param_range_i[0] : mapper_param_range_i[1],
             ] = diag
 
+            if self.total(cls=AbstractMapper) == 1:
+                return curvature_matrix
+
             for j in range(i + 1, len(mapper_list)):
 
                 mapper_j = mapper_list[j]
@@ -375,22 +378,10 @@ class InversionImagingWTilde(AbstractInversionImaging):
         This function computes the diagonal terms of F using the w_tilde formalism.
         """
 
+        curvature_matrix = self._curvature_matrix_multi_mapper
+
         mapper_list = self.cls_list_from(cls=AbstractMapper)
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
-
-        if len(mapper_list) == 1:
-
-            mapper_param_range = mapper_param_range_list[0]
-
-            curvature_matrix = np.zeros((self.total_params, self.total_params))
-            curvature_matrix[
-                mapper_param_range[0] : mapper_param_range[1],
-                mapper_param_range[0] : mapper_param_range[1],
-            ] = self._curvature_matrix_x1_mapper
-
-        else:
-
-            curvature_matrix = self._curvature_matrix_multi_mapper
 
         linear_func_list = self.cls_list_from(cls=AbstractLinearObjFuncList)
         linear_func_param_range_list = self.param_range_list_from(
