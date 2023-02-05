@@ -629,43 +629,22 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
 
 
 @numba_util.jit()
-def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_linear_func_from(
-    data_to_pix_unique_0: np.ndarray,
-    data_weights_0: np.ndarray,
-    pix_lengths_0: np.ndarray,
-    pix_pixels_0: int,
-    linear_func_values: np.ndarray,
+def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
+    data_to_pix_unique: np.ndarray,
+    data_weights: np.ndarray,
+    pix_lengths: np.ndarray,
+    pix_pixels: int,
+    curvature_vector: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) by computing them
-    using `w_tilde_preload` (see `w_tilde_preload_interferometer_from`) for an imaging inversion.
+    Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) between a mapper object
+    and a linear func object.
 
-    When there is more than one mapper in the inversion, its `mapping_matrix` is extended to have dimensions
-    [data_pixels, sum(source_pixels_in_each_mapper)]. The curvature matrix therefore will have dimensions
-    [sum(source_pixels_in_each_mapper), sum(source_pixels_in_each_mapper)].
-
-    To compute the curvature matrix via w_tilde the following matrix multiplication is normally performed:
-
-    curvature_matrix = mapping_matrix.T * w_tilde * mapping matrix
-
-    When the `mapping_matrix` consists of multiple mappers from different planes, this means that shared data mappings
-    between source-pixels in different mappers must be accounted for when computing the `curvature_matrix`. These
-    appear as off-diagonal terms in the overall curvature matrix.
-
-    This function evaluates these off-diagonal terms, by using the w-tilde curvature preloads and the unique
-    data-to-pixelization mappings of each mapper. It behaves analogous to the
-    function `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`.
+    This uses the unique mappings of the mapper and the curvature vector (its operated mapping matrix
+    divided by the noise squared convolved with the kernel).
 
     Parameters
     ----------
-    curvature_preload
-        A matrix that precomputes the values for fast computation of the curvature matrix in a memory efficient way.
-    curvature_indexes
-        The image-pixel indexes of the values stored in the w tilde preload matrix, which are used to compute
-        the weights of the data values when computing the curvature matrix.
-    curvature_lengths
-        The number of image pixels in every row of `w_tilde_curvature`, which is iterated over when computing the
-        curvature matrix.
     data_to_pix_unique
         An array that maps every data pixel index (e.g. the masked image pixel indexes in 1D) to its unique set of
         pixelization pixel indexes (see `data_slim_to_pixelization_unique_from`).
@@ -677,6 +656,9 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_linear_func
         `data_to_pix_unique` and `data_weights`.
     pix_pixels
         The total number of pixels in the pixelization that reconstructs the data.
+    curvature_vector
+        The operated values of the linear func divided by the noise-map squared and convolved with the kernel, which is
+        representative of a linear func's row of the curvature matrix.
 
     Returns
     -------
@@ -684,22 +666,22 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_linear_func
         The curvature matrix `F` (see Warren & Dye 2003).
     """
 
-    data_pixels = data_weights_0.shape[0]
-    linear_func_pixels = linear_func_values.shape[1]
+    data_pixels = data_weights.shape[0]
+    linear_func_pixels = curvature_vector.shape[1]
 
-    curvature_matrix = np.zeros((pix_pixels_0, linear_func_pixels))
+    curvature_matrix = np.zeros((pix_pixels, linear_func_pixels))
 
     for data_0 in range(data_pixels):
 
-        for pix_0_index in range(pix_lengths_0[data_0]):
+        for pix_0_index in range(pix_lengths[data_0]):
 
-            data_0_weight = data_weights_0[data_0, pix_0_index]
-            pix_0 = data_to_pix_unique_0[data_0, pix_0_index]
+            data_0_weight = data_weights[data_0, pix_0_index]
+            pix_0 = data_to_pix_unique[data_0, pix_0_index]
 
             for linear_index in range(linear_func_pixels):
 
                 curvature_matrix[pix_0, linear_index] += (
-                    data_0_weight * linear_func_values[data_0, linear_index]
+                    data_0_weight * curvature_vector[data_0, linear_index]
                 )
 
     return curvature_matrix

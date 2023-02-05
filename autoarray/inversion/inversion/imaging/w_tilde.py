@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.linalg import block_diag
 from typing import Dict, List, Optional
 
 from autoconf import cached_property
@@ -407,21 +406,14 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
                 linear_func_param_range = linear_func_param_range_list[func_index]
 
-                operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
-                    linear_func
-                ]
-
-                operated_x2_mapping_matrix = self.convolver.convolve_mapping_matrix(
-                    mapping_matrix=operated_mapping_matrix
-                    / self.noise_map[:, None] ** 2
-                )
-
-                off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_linear_func_from(
-                    data_to_pix_unique_0=mapper.unique_mappings.data_to_pix_unique,
-                    data_weights_0=mapper.unique_mappings.data_weights,
-                    pix_lengths_0=mapper.unique_mappings.pix_lengths,
-                    pix_pixels_0=mapper.params,
-                    linear_func_values=operated_x2_mapping_matrix,
+                off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
+                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
+                    data_weights=mapper.unique_mappings.data_weights,
+                    pix_lengths=mapper.unique_mappings.pix_lengths,
+                    pix_pixels=mapper.params,
+                    curvature_vector=self.linear_func_curvature_vectors_dict[
+                        linear_func
+                    ],
                 )
                 curvature_matrix[
                     mapper_param_range[0] : mapper_param_range[1],
@@ -432,21 +424,14 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             linear_func_param_range_0 = linear_func_param_range_list[index_0]
 
-            operated_mapping_matrix_0 = self.linear_func_operated_mapping_matrix_dict[
-                linear_func_0
-            ]
-
             for index_1, linear_func_1 in enumerate(linear_func_list):
 
                 linear_func_param_range_1 = linear_func_param_range_list[index_1]
 
-                operated_mapping_matrix_1 = (
-                    self.linear_func_operated_mapping_matrix_dict[linear_func_1]
+                diag = np.dot(
+                    self.linear_func_weighted_mapping_vectors_dict[linear_func_0].T,
+                    self.linear_func_weighted_mapping_vectors_dict[linear_func_1],
                 )
-
-                array_0 = operated_mapping_matrix_0 / self.noise_map[:, None]
-                array_1 = operated_mapping_matrix_1 / self.noise_map[:, None]
-                diag = np.dot(array_0.T, array_1)
 
                 curvature_matrix[
                     linear_func_param_range_0[0] : linear_func_param_range_0[1],
