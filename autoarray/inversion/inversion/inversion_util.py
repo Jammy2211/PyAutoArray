@@ -66,22 +66,20 @@ def curvature_matrix_mirrored_from(
     curvature_matrix: np.ndarray,
 ) -> np.ndarray:
 
+    curvature_matrix_mirrored = np.zeros(
+        (curvature_matrix.shape[0], curvature_matrix.shape[1])
+    )
+
     for i in range(curvature_matrix.shape[0]):
         for j in range(curvature_matrix.shape[1]):
-            curvature_matrix[i, j] = curvature_matrix[j, i]
+            if curvature_matrix[i, j] != 0:
+                curvature_matrix_mirrored[i, j] = curvature_matrix[i, j]
+                curvature_matrix_mirrored[j, i] = curvature_matrix[i, j]
+            if curvature_matrix[j, i] != 0:
+                curvature_matrix_mirrored[i, j] = curvature_matrix[j, i]
+                curvature_matrix_mirrored[j, i] = curvature_matrix[j, i]
 
-    return curvature_matrix
-
-
-@numba_util.jit()
-def curvature_matrix_mirrored_2_from(
-    curvature_matrix: np.ndarray,
-) -> np.ndarray:
-    for i in range(curvature_matrix.shape[0]):
-        for j in range(curvature_matrix.shape[1]):
-            curvature_matrix[j, i] = curvature_matrix[i, j]
-
-    return curvature_matrix
+    return curvature_matrix_mirrored
 
 
 def curvature_matrix_via_mapping_matrix_from(

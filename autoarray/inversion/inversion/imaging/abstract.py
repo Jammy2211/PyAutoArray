@@ -113,7 +113,19 @@ class AbstractInversionImaging(AbstractInversion):
     @cached_property
     @profile_func
     def linear_func_operated_mapping_matrix_dict(self) -> Dict:
+        """
+        The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
+        the linear objects model, including a 2D convolution operation. It is described fully in the method
+        `operated_mapping_matrix`.
 
+        This property returns a dictionary mapping every linear func object to its corresponded operated mapping
+        matrix, which is used for constructing the matrices that perform the linear inversion in an efficent way
+        for the w_tilde calculation.
+
+        Returns
+        -------
+        A dictionary mapping every linear function object to its operated mapping matrix.
+        """
         linear_func_operated_mapping_matrix_dict = {}
 
         for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
