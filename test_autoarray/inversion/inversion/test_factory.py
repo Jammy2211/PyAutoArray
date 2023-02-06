@@ -4,8 +4,6 @@ import pytest
 
 import autoarray as aa
 
-# TODO : NEed to figure out how we blur linear light profile with blurring gird.
-
 
 def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur):
 
@@ -436,15 +434,15 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
         settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
     )
 
-    # assert inversion_mapping.data_vector == pytest.approx(
-    #     inversion_w_tilde.data_vector, 1.0e-4
-    # )
-    # assert inversion_mapping.curvature_matrix == pytest.approx(
-    #     inversion_w_tilde.curvature_matrix, 1.0e-4
-    # )
-    # assert inversion_mapping.mapped_reconstructed_image == pytest.approx(
-    #     inversion_w_tilde.mapped_reconstructed_image, 1.0e-4
-    # )
+    assert inversion_mapping.data_vector == pytest.approx(
+        inversion_w_tilde.data_vector, 1.0e-4
+    )
+    assert inversion_mapping.curvature_matrix == pytest.approx(
+        inversion_w_tilde.curvature_matrix, 1.0e-4
+    )
+    assert inversion_mapping.mapped_reconstructed_image == pytest.approx(
+        inversion_w_tilde.mapped_reconstructed_image, 1.0e-4
+    )
 
     linear_obj_1 = aa.m.MockLinearObjFuncList(
         parameters=2, grid=grid, mapping_matrix=mapping_matrix
