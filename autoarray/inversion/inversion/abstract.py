@@ -120,9 +120,6 @@ class AbstractInversion:
 
         Parameters
         ----------
-        dict_values
-            A class dictionary of values which instances of the input `cls` are checked to see how many instances
-            of that class it contains.
         cls
             The type of class that is checked if the object has an instance of.
         """
@@ -131,9 +128,37 @@ class AbstractInversion:
         )
 
     def param_range_list_from(self, cls: Type) -> List[List[int]]:
+        """
+        Each linear object in the `Inversion` has N parameters, and these parameters correspond to a certain range
+        of indexing values in the matrices used to perform the inversion.
 
-        # TODO : Needs to be range based on pixels.
+        This function returns the `param_range_list` of an input type of linear object, which gives the indexing range
+        of each linear object of the input type.
 
+        For example, if an `Inversion` has:
+
+        - A `LinearFuncList` linear object with 3 `params`.
+        - A `Mapper` with 100 `params`.
+        - A `Mapper` with 200 `params`.
+
+        The corresponding matrices of this inversion (e.g. the `curvature_matrix`) have `shape=(303, 303)` where:
+
+        - The `LinearFuncList` values are in the entries `[0:3]`.
+        - The first `Mapper` values are in the entries `[3:103]`.
+        - The second `Mapper` values are in the entries `[103:303]
+
+        For this example, `param_range_list_from(cls=AbstractMapper)` therefore returns the
+        list `[[3, 103], [103, 303]]`.
+
+        Parameters
+        ----------
+        cls
+            The type of class that the list of their parameter range index values are returned for.
+
+        Returns
+        -------
+        A list of the index range of the parameters of each linear object in the inversion of the input cls type.
+        """
         index_list = []
 
         pixel_count = 0
