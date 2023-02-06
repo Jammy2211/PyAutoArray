@@ -36,6 +36,7 @@ def curvature_matrix_via_w_tilde_from(
     return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
 
 
+@numba_util.jit()
 def curvature_matrix_with_added_to_diag_from(
     curvature_matrix: np.ndarray, no_regularization_index_list: Optional[List] = None
 ) -> np.ndarray:
@@ -60,6 +61,27 @@ def curvature_matrix_with_added_to_diag_from(
     return curvature_matrix
 
 
+@numba_util.jit()
+def curvature_matrix_mirrored_from(
+    curvature_matrix: np.ndarray,
+) -> np.ndarray:
+
+    curvature_matrix_mirrored = np.zeros(
+        (curvature_matrix.shape[0], curvature_matrix.shape[1])
+    )
+
+    for i in range(curvature_matrix.shape[0]):
+        for j in range(curvature_matrix.shape[1]):
+            if curvature_matrix[i, j] != 0:
+                curvature_matrix_mirrored[i, j] = curvature_matrix[i, j]
+                curvature_matrix_mirrored[j, i] = curvature_matrix[i, j]
+            if curvature_matrix[j, i] != 0:
+                curvature_matrix_mirrored[i, j] = curvature_matrix[j, i]
+                curvature_matrix_mirrored[j, i] = curvature_matrix[j, i]
+
+    return curvature_matrix_mirrored
+
+
 def curvature_matrix_via_mapping_matrix_from(
     mapping_matrix: np.ndarray,
     noise_map: np.ndarray,
@@ -81,7 +103,7 @@ def curvature_matrix_via_mapping_matrix_from(
     array = mapping_matrix / noise_map[:, None]
     curvature_matrix = np.dot(array.T, array)
 
-    if add_to_curvature_diag:
+    if add_to_curvature_diag and len(no_regularization_index_list) > 0:
         curvature_matrix = curvature_matrix_with_added_to_diag_from(
             curvature_matrix=curvature_matrix,
             no_regularization_index_list=no_regularization_index_list,

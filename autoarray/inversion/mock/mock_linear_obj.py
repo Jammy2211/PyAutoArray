@@ -21,7 +21,7 @@ class MockLinearObj(LinearObj):
         self._operated_mapping_matrix_override = operated_mapping_matrix_override
 
     @property
-    def parameters(self) -> int:
+    def params(self) -> int:
         return self._parameters
 
     @property

@@ -43,9 +43,9 @@ class MockMapper(AbstractMapper):
         return self._pixel_signals
 
     @property
-    def parameters(self):
+    def params(self):
         if self._parameters is None:
-            return super().parameters
+            return super().params
         return self._parameters
 
     @property

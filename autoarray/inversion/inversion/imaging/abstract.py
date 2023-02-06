@@ -1,6 +1,11 @@
 import numpy as np
 from typing import Dict, List, Optional
 
+from autoconf import cached_property
+
+from autoarray.numba_util import profile_func
+
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -104,3 +109,95 @@ class AbstractInversionImaging(AbstractInversion):
             else linear_obj.operated_mapping_matrix_override
             for linear_obj in self.linear_obj_list
         ]
+
+    @cached_property
+    @profile_func
+    def linear_func_operated_mapping_matrix_dict(self) -> Dict:
+        """
+        The `operated_mapping_matrix` of a linear object describes the mappings between the observed data's values and
+        the linear objects model, including a 2D convolution operation. It is described fully in the method
+        `operated_mapping_matrix`.
+
+        This property returns a dictionary mapping every linear func object to its corresponded operated mapping
+        matrix, which is used for constructing the matrices that perform the linear inversion in an efficent way
+        for the w_tilde calculation.
+
+        Returns
+        -------
+        A dictionary mapping every linear function object to its operated mapping matrix.
+        """
+        linear_func_operated_mapping_matrix_dict = {}
+
+        for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
+
+            if linear_func.operated_mapping_matrix_override is not None:
+                operated_mapping_matrix = linear_func.operated_mapping_matrix_override
+            else:
+                operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                    mapping_matrix=linear_func.mapping_matrix
+                )
+
+            linear_func_operated_mapping_matrix_dict[
+                linear_func
+            ] = operated_mapping_matrix
+
+        return linear_func_operated_mapping_matrix_dict
+
+    @cached_property
+    @profile_func
+    def linear_func_weighted_mapping_vectors_dict(self) -> Dict:
+        """
+        The diagonals of the `curvature_matrix` of linear func objects are computed by multiplying the operated
+        values of each linear func by the noise-map.
+
+        This property therefore returns a dictionary mapping every linear func object to this quantity.
+
+        Returns
+        -------
+        A dictionary mapping every linear function object to its operated mapping matrix divided by the noise and
+        convolved with the kernel.
+        """
+
+        linear_func_weighted_mapping_vectors_dict = {}
+
+        for (
+            linear_func,
+            operated_mapping_matrix,
+        ) in self.linear_func_operated_mapping_matrix_dict.items():
+
+            linear_func_weighted_mapping_vectors_dict[linear_func] = (
+                operated_mapping_matrix / self.noise_map[:, None]
+            )
+
+        return linear_func_weighted_mapping_vectors_dict
+
+    @cached_property
+    @profile_func
+    def linear_func_curvature_vectors_dict(self) -> Dict:
+        """
+        The rows (and columns) of the `curvature_matrix` of a linear object are computed by dividing the operated
+        values of each linear func by the noise-map squared and convolving with the kernel.
+
+        This property therefore returns a dictionary mapping every linear func object to this quantity, which is
+        termed the curvature vector and is representative of a linear func's row of the curvature matrix.
+
+        Returns
+        -------
+        A dictionary mapping every linear function object to its curvature vector (its operated mapping matrix
+        divided by the noise squared convolved with the kernel).
+        """
+
+        linear_func_operated_noise_vectors_dict = {}
+
+        for (
+            linear_func,
+            operated_mapping_matrix,
+        ) in self.linear_func_operated_mapping_matrix_dict.items():
+
+            linear_func_operated_noise_vectors_dict[
+                linear_func
+            ] = self.convolver.convolve_mapping_matrix(
+                mapping_matrix=operated_mapping_matrix / self.noise_map[:, None] ** 2
+            )
+
+        return linear_func_operated_noise_vectors_dict

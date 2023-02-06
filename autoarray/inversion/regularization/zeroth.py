@@ -58,7 +58,7 @@ class Zeroth(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * np.ones(linear_obj.parameters)
+        return self.coefficient * np.ones(linear_obj.params)
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
@@ -74,5 +74,5 @@ class Zeroth(AbstractRegularization):
         The regularization matrix.
         """
         return regularization_util.zeroth_regularization_matrix_from(
-            coefficient=self.coefficient, pixels=linear_obj.parameters
+            coefficient=self.coefficient, pixels=linear_obj.params
         )

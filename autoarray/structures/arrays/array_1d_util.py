@@ -52,11 +52,6 @@ def convert_array_1d(
         return array_1d_slim_from(
             array_1d_native=array_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
         )
-    print(array_1d.shape[0])
-    print(mask_1d.sub_shape_native[0])
-    print(is_native)
-    print(store_native)
-    print(array_1d)
 
     return array_1d_native_from(
         array_1d_slim=array_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size

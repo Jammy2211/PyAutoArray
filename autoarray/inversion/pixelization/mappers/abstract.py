@@ -85,12 +85,12 @@ class AbstractMapper(LinearObj):
         self.mapper_grids = mapper_grids
 
     @property
-    def parameters(self) -> int:
+    def params(self) -> int:
         return self.source_plane_mesh_grid.pixels
 
     @property
     def pixels(self) -> int:
-        return self.parameters
+        return self.params
 
     @property
     def source_plane_data_grid(self) -> Grid2D:

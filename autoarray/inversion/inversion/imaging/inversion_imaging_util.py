@@ -151,7 +151,7 @@ def w_tilde_curvature_preload_imaging_from(
     The limitation of this matrix is that the dimensions of [image_pixels, image_pixels] can exceed many 10s of GB's,
     making it impossible to store in memory and its use in linear algebra calculations slow. This methods creates
     a sparse matrix that can compute the matrix `w_tilde_curvature` efficiently, albeit the linear algebra calculations
-    in PyAutoArray bypass this matrix entire to go straight to the curvature matrix.
+    in PyAutoArray bypass this matrix entirely to go straight to the curvature matrix.
 
     For imaging data, w_tilde is a sparse matrix, whereby non-zero entries are only contained for pairs of image pixels
     where the two pixels overlap due to the kernel size. For example, if the kernel size is (11, 11) and two image
@@ -624,5 +624,64 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
                     )
 
             curvature_index += 1
+
+    return curvature_matrix
+
+
+@numba_util.jit()
+def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
+    data_to_pix_unique: np.ndarray,
+    data_weights: np.ndarray,
+    pix_lengths: np.ndarray,
+    pix_pixels: int,
+    curvature_vector: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) between a mapper object
+    and a linear func object.
+
+    This uses the unique mappings of the mapper and the curvature vector (its operated mapping matrix
+    divided by the noise squared convolved with the kernel).
+
+    Parameters
+    ----------
+    data_to_pix_unique
+        An array that maps every data pixel index (e.g. the masked image pixel indexes in 1D) to its unique set of
+        pixelization pixel indexes (see `data_slim_to_pixelization_unique_from`).
+    data_weights
+        For every unique mapping between a set of data sub-pixels and a pixelization pixel, the weight of these mapping
+        based on the number of sub-pixels that map to pixelization pixel.
+    pix_lengths
+        A 1D array describing how many unique pixels each data pixel maps too, which is used to iterate over
+        `data_to_pix_unique` and `data_weights`.
+    pix_pixels
+        The total number of pixels in the pixelization that reconstructs the data.
+    curvature_vector
+        The operated values of the linear func divided by the noise-map squared and convolved with the kernel, which is
+        representative of a linear func's row of the curvature matrix.
+
+    Returns
+    -------
+    ndarray
+        The curvature matrix `F` (see Warren & Dye 2003).
+    """
+
+    data_pixels = data_weights.shape[0]
+    linear_func_pixels = curvature_vector.shape[1]
+
+    curvature_matrix = np.zeros((pix_pixels, linear_func_pixels))
+
+    for data_0 in range(data_pixels):
+
+        for pix_0_index in range(pix_lengths[data_0]):
+
+            data_0_weight = data_weights[data_0, pix_0_index]
+            pix_0 = data_to_pix_unique[data_0, pix_0_index]
+
+            for linear_index in range(linear_func_pixels):
+
+                curvature_matrix[pix_0, linear_index] += (
+                    data_0_weight * curvature_vector[data_0, linear_index]
+                )
 
     return curvature_matrix

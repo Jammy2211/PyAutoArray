@@ -40,7 +40,7 @@ class LinearObj:
         self.profiling_dict = profiling_dict
 
     @property
-    def parameters(self) -> int:
+    def params(self) -> int:
         """
         The total number of parameters used to reconstruct the data.
 
@@ -157,6 +157,6 @@ class LinearObj:
         """
         if self.regularization is None:
 
-            return np.zeros((self.parameters, self.parameters))
+            return np.zeros((self.params, self.params))
 
         return self.regularization.regularization_matrix_from(linear_obj=self)

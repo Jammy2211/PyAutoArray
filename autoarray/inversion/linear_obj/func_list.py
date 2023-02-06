@@ -63,14 +63,14 @@ class AbstractLinearObjFuncList(LinearObj):
         -------
         An object describing how the parameters of the linear object neighbor one another.
         """
-        neighbors_sizes = 2.0 * np.ones(shape=(self.parameters))
+        neighbors_sizes = 2.0 * np.ones(shape=(self.params))
 
         neighbors_sizes[0] -= 1
         neighbors_sizes[-1] -= 1
 
-        neighbors = -1 * np.ones(shape=(self.parameters, 2))
+        neighbors = -1 * np.ones(shape=(self.params, 2))
 
-        for pixel_index in range(self.parameters):
+        for pixel_index in range(self.params):
 
             neighbors[pixel_index, 0] = pixel_index - 1
             neighbors[pixel_index, 1] = pixel_index + 1

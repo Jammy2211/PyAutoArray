@@ -55,7 +55,7 @@ class Constant(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient * np.ones(linear_obj.parameters)
+        return self.coefficient * np.ones(linear_obj.params)
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """

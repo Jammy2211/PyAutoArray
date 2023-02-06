@@ -37,7 +37,7 @@ class ConstantZeroth(AbstractRegularization):
         -------
         The regularization weights.
         """
-        return self.coefficient_neighbor * np.ones(linear_obj.parameters)
+        return self.coefficient_neighbor * np.ones(linear_obj.params)
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
