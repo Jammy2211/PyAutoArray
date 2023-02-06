@@ -159,9 +159,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         which are combined with linear function list objects.
         """
 
-        total_params = sum([linear_obj.params for linear_obj in self.linear_obj_list])
-
-        data_vector = np.zeros(total_params)
+        data_vector = np.zeros(self.total_params)
 
         mapper_list = self.cls_list_from(cls=AbstractMapper)
         mapper_param_range = self.param_range_list_from(cls=AbstractMapper)

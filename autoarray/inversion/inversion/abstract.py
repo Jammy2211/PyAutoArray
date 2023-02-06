@@ -211,7 +211,7 @@ class AbstractInversion:
         -------
         The total number of parameters used by this inversion.
         """
-        return sum([linear_obj.params for linear_obj in self.linear_obj_list])
+        return sum(linear_obj.params for linear_obj in self.linear_obj_list)
 
     @property
     def regularization_list(self) -> List[AbstractRegularization]:
