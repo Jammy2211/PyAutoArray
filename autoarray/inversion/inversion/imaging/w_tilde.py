@@ -242,11 +242,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
     @profile_func
     def _curvature_matrix_mapper_diag(self) -> np.ndarray:
         """
-        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
-        construct the simultaneous linear equations. The object is described in full in the method `curvature_matrix`.
+        Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
+        and the linear objects to construct the simultaneous linear equations. The object is described in full in
+        the method `curvature_matrix`.
 
-        This method computes the `curvature_matrix` when there are multiple mapper objects in the `Inversion`,
-        by computing each one (and their off-diagonal matrices) and combining them via the `block_diag` method.
+        This method computes the diagonal entries of all mapper objects in the `curvature_matrix`. It is separate from
+        other calculations to enable preloading of this calculation.
         """
 
         if self.preloads.curvature_matrix_mapper_diag is not None:

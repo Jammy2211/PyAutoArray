@@ -277,8 +277,12 @@ class Preloads:
     def set_curvature_matrix(self, fit_0, fit_1):
         """
         If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
-        source-pixels does not change during the model-fit and therefore its associated cruvature matrix is also
+        source-pixels does not change during the model-fit and therefore its associated curvature matrix is also
         fixed, meaning the curvature matrix preloaded.
+
+        If linear ``LightProfiles``'s are included, the regions of the curvature matrix associatd with these
+        objects vary but the diagonals of the mapper do not change. In this case, the `curvature_matrix_mapper_diag`
+        is preloaded.
 
         This function compares the curvature matrix of two fit's corresponding to two model instances, and preloads
         this value if it is the same for both fits.
@@ -292,6 +296,7 @@ class Preloads:
         fit_1
             The second fit corresponding to a model with a different set of unit-values.
         """
+
         self.curvature_matrix = None
         self.curvature_matrix_mapper_diag = None
 
@@ -316,27 +321,23 @@ class Preloads:
 
                 return
 
-            if hasattr(inversion_0, "_curvature_matrix_mapper_diag"):
-
-                if (
-                    np.max(
-                        abs(
-                            inversion_0._curvature_matrix_mapper_diag
-                            - inversion_1._curvature_matrix_mapper_diag
-                        )
-                    )
-                    < 1e-8
-                ):
-
-                    self.curvature_matrix_mapper_diag = (
+            if (
+                np.max(
+                    abs(
                         inversion_0._curvature_matrix_mapper_diag
+                        - inversion_1._curvature_matrix_mapper_diag
                     )
+                )
+                < 1e-8
+            ):
 
-                    logger.info(
-                        "PRELOADS - Inversion Curvature Matrix Mapper Diag preloaded for this model-fit."
-                    )
+                self.curvature_matrix_mapper_diag = (
+                    inversion_0._curvature_matrix_mapper_diag
+                )
 
-                    return
+                logger.info(
+                    "PRELOADS - Inversion Curvature Matrix Mapper Diag preloaded for this model-fit."
+                )
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
         """
@@ -448,6 +449,9 @@ class Preloads:
             f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"
         ]
         line += [f"Curvature Matrix = {self.curvature_matrix is not None}\n"]
+        line += [
+            f"Curvature Matrix Mapper Diag = {self.curvature_matrix_mapper_diag is not None}\n"
+        ]
         line += [f"Regularization Matrix = {self.regularization_matrix is not None}\n"]
         line += [
             f"Log Det Regularization Matrix Term = {self.log_det_regularization_matrix_term is not None}\n"

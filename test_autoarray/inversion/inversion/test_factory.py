@@ -340,6 +340,9 @@ def test__inversion_imaging__compare_mapping_and_w_tilde_values(
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
+    assert inversion_w_tilde._curvature_matrix_mapper_diag == pytest.approx(
+        inversion_mapping._curvature_matrix_mapper_diag, 1.0e-4
+    )
     assert inversion_w_tilde.reconstruction == pytest.approx(
         inversion_mapping.reconstruction, 1.0e-4
     )
