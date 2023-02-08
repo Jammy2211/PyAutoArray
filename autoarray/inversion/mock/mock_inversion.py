@@ -15,6 +15,7 @@ class MockInversion(AbstractInversion):
         operated_mapping_matrix=None,
         data_vector=None,
         curvature_matrix=None,
+        curvature_matrix_mapper_diag=None,
         regularization_matrix=None,
         curvature_reg_matrix=None,
         reconstruction: np.ndarray = None,
@@ -44,6 +45,7 @@ class MockInversion(AbstractInversion):
         self._data_vector = data_vector
         self._regularization_matrix = regularization_matrix
         self._curvature_matrix = curvature_matrix
+        self._curvature_matrix_mapper_diag = curvature_matrix_mapper_diag
         self._curvature_reg_matrix = curvature_reg_matrix
         self._reconstruction = reconstruction
         self._reconstruction_dict = reconstruction_dict
@@ -89,6 +91,14 @@ class MockInversion(AbstractInversion):
             return super().curvature_matrix
 
         return self._curvature_matrix
+
+    @property
+    def curvature_matrix_mapper_diag(self):
+
+        if self._curvature_matrix_mapper_diag is None:
+            return super()._curvature_matrix_mapper_diag
+
+        return self._curvature_matrix_mapper_diag
 
     @property
     def curvature_reg_matrix(self):

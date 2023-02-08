@@ -25,6 +25,7 @@ class Preloads:
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         curvature_matrix=None,
+        curvature_matrix_mapper_diag=None,
         regularization_matrix=None,
         log_det_regularization_matrix_term=None,
         traced_sparse_grids_list_of_planes=None,
@@ -41,6 +42,7 @@ class Preloads:
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
         self.curvature_matrix = curvature_matrix
+        self.curvature_matrix_mapper_diag = curvature_matrix_mapper_diag
         self.regularization_matrix = regularization_matrix
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
@@ -291,6 +293,7 @@ class Preloads:
             The second fit corresponding to a model with a different set of unit-values.
         """
         self.curvature_matrix = None
+        self.curvature_matrix_mapper_diag = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
@@ -310,6 +313,30 @@ class Preloads:
                 logger.info(
                     "PRELOADS - Inversion Curvature Matrix preloaded for this model-fit."
                 )
+
+                return
+
+            if hasattr(inversion_0, "_curvature_matrix_mapper_diag"):
+
+                if (
+                    np.max(
+                        abs(
+                            inversion_0._curvature_matrix_mapper_diag
+                            - inversion_1._curvature_matrix_mapper_diag
+                        )
+                    )
+                    < 1e-8
+                ):
+
+                    self.curvature_matrix_mapper_diag = (
+                        inversion_0._curvature_matrix_mapper_diag
+                    )
+
+                    logger.info(
+                        "PRELOADS - Inversion Curvature Matrix Mapper Diag preloaded for this model-fit."
+                    )
+
+                    return
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
         """
