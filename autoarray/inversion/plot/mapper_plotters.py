@@ -75,7 +75,7 @@ class MapperPlotter(Plotter):
             mapper=self.mapper,
             visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
             interpolate_to_uniform=interpolate_to_uniform,
-            source_pixelilzation_values=solution_vector,
+            source_pixelization_values=solution_vector,
             auto_labels=AutoLabels(
                 title="Pixelization Mesh (Image-Plane)", filename="mapper"
             ),
@@ -145,5 +145,5 @@ class MapperPlotter(Plotter):
             mapper=self.mapper,
             visuals_2d=self.get_visuals_2d_for_source(),
             auto_labels=auto_labels,
-            source_pixelilzation_values=source_pixelization_values,
+            source_pixelization_values=source_pixelization_values,
         )

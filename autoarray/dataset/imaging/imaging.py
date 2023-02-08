@@ -85,10 +85,10 @@ class Imaging(AbstractDataset):
 
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
                 raise exc.DatasetException(
-                    """
-                    A value in the noise-map of the dataset is less than or equal to zero.
+                    f"""
+                    A value in the noise-map of the dataset is {np.min(self.noise_map)}. 
 
-                    This is an ill-defined value and must be corrected.
+                    This is less than or equal to zero, and therefore an ill-defined value which must be corrected.
                     """
                 )
 

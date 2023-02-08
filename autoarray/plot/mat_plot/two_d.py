@@ -420,7 +420,7 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = True,
-        source_pixelilzation_values=None,
+        source_pixelization_values=None,
     ):
 
         if isinstance(mapper, MapperRectangularNoInterp):
@@ -430,7 +430,7 @@ class MatPlot2D(AbstractMatPlot):
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 interpolate_to_uniform=interpolate_to_uniform,
-                source_pixelilzation_values=source_pixelilzation_values,
+                source_pixelization_values=source_pixelization_values,
             )
 
         elif isinstance(mapper, MapperDelaunay):
@@ -439,7 +439,7 @@ class MatPlot2D(AbstractMatPlot):
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 interpolate_to_uniform=interpolate_to_uniform,
-                source_pixelilzation_values=source_pixelilzation_values,
+                source_pixelization_values=source_pixelization_values,
             )
         else:
 
@@ -448,7 +448,7 @@ class MatPlot2D(AbstractMatPlot):
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 interpolate_to_uniform=interpolate_to_uniform,
-                source_pixelilzation_values=source_pixelilzation_values,
+                source_pixelization_values=source_pixelization_values,
             )
 
     def _plot_rectangular_mapper(
@@ -457,20 +457,20 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = True,
-        source_pixelilzation_values=None,
+        source_pixelization_values=None,
     ):
 
-        if source_pixelilzation_values is not None:
+        if source_pixelization_values is not None:
 
             solution_array_2d = array_2d_util.array_2d_native_from(
-                array_2d_slim=source_pixelilzation_values,
+                array_2d_slim=source_pixelization_values,
                 mask_2d=np.full(
                     fill_value=False, shape=mapper.source_plane_mesh_grid.shape_native
                 ),
                 sub_size=1,
             )
 
-            source_pixelilzation_values = Array2D.no_mask(
+            source_pixelization_values = Array2D.no_mask(
                 values=solution_array_2d,
                 sub_size=1,
                 pixel_scales=mapper.source_plane_mesh_grid.pixel_scales,
@@ -491,9 +491,9 @@ class MatPlot2D(AbstractMatPlot):
         else:
             ax = self.setup_subplot(aspect=aspect_inv)
 
-        if source_pixelilzation_values is not None:
+        if source_pixelization_values is not None:
             self.plot_array(
-                array=source_pixelilzation_values,
+                array=source_pixelization_values,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 bypass=True,
@@ -537,7 +537,7 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = True,
-        source_pixelilzation_values=None,
+        source_pixelization_values=None,
     ):
 
         extent = self.axis.config_dict.get("extent")
@@ -571,7 +571,7 @@ class MatPlot2D(AbstractMatPlot):
 
         self.interpolated_reconstruction.imshow_reconstruction(
             mapper=mapper,
-            pixel_values=source_pixelilzation_values,
+            pixel_values=source_pixelization_values,
             cmap=self.cmap,
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,
@@ -597,7 +597,7 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = True,
-        source_pixelilzation_values=None,
+        source_pixelization_values=None,
     ):
 
         extent = self.axis.config_dict.get("extent")
@@ -635,7 +635,7 @@ class MatPlot2D(AbstractMatPlot):
 
             self.voronoi_drawer.draw_voronoi_pixels(
                 mapper=mapper,
-                pixel_values=source_pixelilzation_values,
+                pixel_values=source_pixelization_values,
                 cmap=self.cmap,
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
@@ -646,7 +646,7 @@ class MatPlot2D(AbstractMatPlot):
 
             self.interpolated_reconstruction.imshow_reconstruction(
                 mapper=mapper,
-                pixel_values=source_pixelilzation_values,
+                pixel_values=source_pixelization_values,
                 cmap=self.cmap,
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
