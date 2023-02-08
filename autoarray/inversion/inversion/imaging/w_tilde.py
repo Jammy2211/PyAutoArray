@@ -249,6 +249,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
         by computing each one (and their off-diagonal matrices) and combining them via the `block_diag` method.
         """
 
+        if self.preloads.curvature_matrix_mapper_diag is not None:
+            return self.preloads.curvature_matrix_mapper_diag
+
         curvature_matrix = np.zeros((self.total_params, self.total_params))
 
         mapper_list = self.cls_list_from(cls=AbstractMapper)

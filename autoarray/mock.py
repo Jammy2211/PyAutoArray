@@ -7,6 +7,7 @@ from autoarray.inversion.mock.mock_linear_obj import MockLinearObj
 from autoarray.inversion.mock.mock_linear_obj_func_list import MockLinearObjFuncList
 from autoarray.inversion.mock.mock_inversion import MockInversion
 from autoarray.inversion.mock.mock_inversion_imaging import MockInversionImaging
+from autoarray.inversion.mock.mock_inversion_imaging import MockInversionImagingWTilde
 from autoarray.inversion.mock.mock_inversion_interferometer import (
     MockInversionInterferometer,
 )

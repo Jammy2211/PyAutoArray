@@ -283,7 +283,7 @@ def test__set_curvature_matrix():
     fit_0 = aa.m.MockFitImaging(inversion=None)
     fit_1 = aa.m.MockFitImaging(inversion=None)
 
-    preloads = aa.Preloads(curvature_matrix=1)
+    preloads = aa.Preloads(curvature_matrix=1, curvature_matrix_mapper_diag=1)
     preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.curvature_matrix is None
@@ -295,10 +295,14 @@ def test__set_curvature_matrix():
     curvature_matrix_1 = np.array([[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
 
     fit_0 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_0, curvature_matrix_mapper_diag=1
+        )
     )
     fit_1 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_1)
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_1, curvature_matrix_mapper_diag=1
+        )
     )
 
     preloads = aa.Preloads(curvature_matrix=1)
@@ -311,10 +315,14 @@ def test__set_curvature_matrix():
     preloads = aa.Preloads(curvature_matrix=2)
 
     fit_0 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_0, curvature_matrix_mapper_diag=1
+        )
     )
     fit_1 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_0, curvature_matrix_mapper_diag=1
+        )
     )
 
     preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
