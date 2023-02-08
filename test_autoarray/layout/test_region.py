@@ -227,6 +227,23 @@ def test__parallel_front_region_from():
     assert front_edge == (1, 3, 0, 3)
 
 
+def test__parallel_front_region_from__pixels_from_end():
+
+    region = aa.Region2D(region=(0, 3, 0, 3))
+
+    front_edge = region.parallel_front_region_from(pixels_from_end=1)
+
+    assert front_edge == (2, 3, 0, 3)
+
+    front_edge = region.parallel_front_region_from(pixels_from_end=2)
+
+    assert front_edge == (1, 3, 0, 3)
+
+    front_edge = region.parallel_front_region_from(pixels_from_end=3)
+
+    assert front_edge == (0, 3, 0, 3)
+
+
 def test__parallel_trailing_region_from():
 
     region = aa.Region2D(region=(0, 3, 0, 3))

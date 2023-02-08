@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.typing import ArrayLike
-from typing import Tuple
+from typing import Optional, Tuple
 
 from autoarray import exc
 
@@ -218,7 +218,11 @@ class Region2D(AbstractRegion):
 
         return x_min, x_max
 
-    def parallel_front_region_from(self, pixels: Tuple[int, int]) -> "Region2D":
+    def parallel_front_region_from(
+        self,
+        pixels: Optional[Tuple[int, int]] = None,
+        pixels_from_end: Optional[int] = None,
+    ) -> "Region2D":
         """
         Returns a `Region2D` corresponding to the front pixels in this region in the parallel clocking direction
         (e.g. the rows of pixels in the region that are closest to the CCD read-out electronics defined at 2D
@@ -234,6 +238,10 @@ class Region2D(AbstractRegion):
         pixels
             A tuple defining the pixel rows used to compute the parallel front region.
         """
+
+        if pixels_from_end is not None:
+
+            pixels = (self.y1 - pixels_from_end, self.y1)
 
         y_coord = self.y0
         y_min = y_coord + pixels[0]
