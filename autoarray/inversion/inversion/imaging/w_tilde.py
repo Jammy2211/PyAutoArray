@@ -240,29 +240,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
     @property
     @profile_func
-    def _curvature_matrix_x1_mapper(self) -> np.ndarray:
-        """
-        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
-        construct the simultaneous linear equations. The object is described in full in the method `curvature_matrix`.
-
-        This method computes the `curvature_matrix` when there is a single mapper object in the `Inversion`,
-        which circumvents `block_diag` for speed up.
-        """
-        return inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
-            curvature_preload=self.w_tilde.curvature_preload,
-            curvature_indexes=self.w_tilde.indexes,
-            curvature_lengths=self.w_tilde.lengths,
-            data_to_pix_unique=self.linear_obj_list[
-                0
-            ].unique_mappings.data_to_pix_unique,
-            data_weights=self.linear_obj_list[0].unique_mappings.data_weights,
-            pix_lengths=self.linear_obj_list[0].unique_mappings.pix_lengths,
-            pix_pixels=self.linear_obj_list[0].params,
-        )
-
-    @property
-    @profile_func
-    def _curvature_matrix_multi_mapper(self) -> np.ndarray:
+    def _curvature_matrix_mapper_diag(self) -> np.ndarray:
         """
         Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
         construct the simultaneous linear equations. The object is described in full in the method `curvature_matrix`.
@@ -298,20 +276,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             if self.total(cls=AbstractMapper) == 1:
                 return curvature_matrix
-
-            for j in range(i + 1, len(mapper_list)):
-
-                mapper_j = mapper_list[j]
-                mapper_param_range_j = mapper_param_range_list[j]
-
-                off_diag = self._curvature_matrix_off_diag_from(
-                    mapper_0=mapper_i, mapper_1=mapper_j
-                )
-
-                curvature_matrix[
-                    mapper_param_range_i[0] : mapper_param_range_i[1],
-                    mapper_param_range_j[0] : mapper_param_range_j[1],
-                ] = off_diag
 
         curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
             curvature_matrix=curvature_matrix
@@ -362,6 +326,62 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
         return curvature_matrix_off_diag_0 + curvature_matrix_off_diag_1.T
+
+    @property
+    @profile_func
+    def _curvature_matrix_x1_mapper(self) -> np.ndarray:
+        """
+        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations. The object is described in full in the method `curvature_matrix`.
+
+        This method computes the `curvature_matrix` when there is a single mapper object in the `Inversion`,
+        which circumvents `block_diag` for speed up.
+        """
+        return self._curvature_matrix_mapper_diag
+
+    @property
+    @profile_func
+    def _curvature_matrix_multi_mapper(self) -> np.ndarray:
+        """
+        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations. The object is described in full in the method `curvature_matrix`.
+
+        This method computes the `curvature_matrix` when there are multiple mapper objects in the `Inversion`,
+        by computing each one (and their off-diagonal matrices) and combining them via the `block_diag` method.
+        """
+
+        curvature_matrix = self._curvature_matrix_mapper_diag
+
+        if self.total(cls=AbstractMapper) == 1:
+            return curvature_matrix
+
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+
+        for i in range(len(mapper_list)):
+
+            mapper_i = mapper_list[i]
+            mapper_param_range_i = mapper_param_range_list[i]
+
+            for j in range(i + 1, len(mapper_list)):
+
+                mapper_j = mapper_list[j]
+                mapper_param_range_j = mapper_param_range_list[j]
+
+                off_diag = self._curvature_matrix_off_diag_from(
+                    mapper_0=mapper_i, mapper_1=mapper_j
+                )
+
+                curvature_matrix[
+                    mapper_param_range_i[0] : mapper_param_range_i[1],
+                    mapper_param_range_j[0] : mapper_param_range_j[1],
+                ] = off_diag
+
+        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
+            curvature_matrix=curvature_matrix
+        )
+
+        return curvature_matrix
 
     @property
     @profile_func
