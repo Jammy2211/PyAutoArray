@@ -241,7 +241,7 @@ class Region2D(AbstractRegion):
 
         if pixels_from_end is not None:
 
-            pixels = (self.y1 - pixels_from_end, self.y1)
+            pixels = (self.total_rows - pixels_from_end, self.total_rows)
 
         y_coord = self.y0
         y_min = y_coord + pixels[0]
