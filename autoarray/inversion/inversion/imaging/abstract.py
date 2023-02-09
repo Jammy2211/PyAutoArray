@@ -158,6 +158,9 @@ class AbstractInversionImaging(AbstractInversion):
         convolved with the kernel.
         """
 
+        if self.preloads.linear_func_weighted_mapping_vectors_dict is not None:
+            return self.preloads.linear_func_weighted_mapping_vectors_dict
+
         linear_func_weighted_mapping_vectors_dict = {}
 
         for (
