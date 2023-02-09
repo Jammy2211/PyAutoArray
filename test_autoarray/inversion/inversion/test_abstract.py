@@ -303,10 +303,10 @@ def test__linear_func_operated_mapping_matrix_dict():
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversionImagingWTilde(
-        noise_map=np.ones(9), linear_obj_list=aa.m.MockMapper(), preloads=preloads
+        noise_map=np.ones(9), linear_obj_list=[aa.m.MockLinearObjFuncList()], preloads=preloads
     )
 
-    assert inversion.linear_func_operated_mapping_matrix_dict["key0"] == pytest.approx(
+    assert list(inversion.linear_func_operated_mapping_matrix_dict.values())[0] == pytest.approx(
         dict_0["key0"], 1.0e-4
     )
 
@@ -319,10 +319,10 @@ def test__linear_func_weighted_mapping_vectors_dict():
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversionImagingWTilde(
-        noise_map=np.ones(9), linear_obj_list=aa.m.MockMapper(), preloads=preloads
+        noise_map=np.ones(9), linear_obj_list=[aa.m.MockLinearObjFuncList()], preloads=preloads
     )
 
-    assert inversion.linear_func_weighted_mapping_vectors_dict["key0"] == pytest.approx(
+    assert list(inversion.linear_func_weighted_mapping_vectors_dict.values())[0] == pytest.approx(
         dict_0["key0"], 1.0e-4
     )
 
@@ -335,10 +335,10 @@ def test__linear_func_curvature_vectors_dict():
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversionImagingWTilde(
-        noise_map=np.ones(9), linear_obj_list=aa.m.MockMapper(), preloads=preloads
+        noise_map=np.ones(9), linear_obj_list=[aa.m.MockLinearObjFuncList()], preloads=preloads
     )
 
-    assert inversion.linear_func_curvature_vectors_dict["key0"] == pytest.approx(
+    assert list(inversion.linear_func_curvature_vectors_dict.values())[0] == pytest.approx(
         dict_0["key0"], 1.0e-4
     )
 

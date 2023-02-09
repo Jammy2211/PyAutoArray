@@ -110,6 +110,18 @@ class AbstractInversionImaging(AbstractInversion):
             for linear_obj in self.linear_obj_list
         ]
 
+    def _linear_func_preload_dict_map(self, linear_func_preload_dict: Dict) -> Dict:
+
+        linear_func_dict = {}
+
+        for linear_func, values in zip(
+            self.cls_list_from(cls=AbstractLinearObjFuncList),
+            linear_func_preload_dict.values(),
+        ):
+            linear_func_dict[linear_func] = values
+
+        return linear_func_dict
+
     @cached_property
     @profile_func
     def linear_func_operated_mapping_matrix_dict(self) -> Dict:
@@ -128,7 +140,9 @@ class AbstractInversionImaging(AbstractInversion):
         """
 
         if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
-            return self.preloads.linear_func_operated_mapping_matrix_dict
+            return self._linear_func_preload_dict_map(
+                linear_func_preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict
+            )
 
         linear_func_operated_mapping_matrix_dict = {}
 
@@ -163,7 +177,9 @@ class AbstractInversionImaging(AbstractInversion):
         """
 
         if self.preloads.linear_func_weighted_mapping_vectors_dict is not None:
-            return self.preloads.linear_func_weighted_mapping_vectors_dict
+            return self._linear_func_preload_dict_map(
+                linear_func_preload_dict=self.preloads.linear_func_weighted_mapping_vectors_dict
+            )
 
         linear_func_weighted_mapping_vectors_dict = {}
 
@@ -195,7 +211,9 @@ class AbstractInversionImaging(AbstractInversion):
         """
 
         if self.preloads.linear_func_curvature_vectors_dict is not None:
-            return self.preloads.linear_func_curvature_vectors_dict
+            return self._linear_func_preload_dict_map(
+                linear_func_preload_dict=self.preloads.linear_func_curvature_vectors_dict
+            )
 
         linear_func_curvature_vectors_dict = {}
 
