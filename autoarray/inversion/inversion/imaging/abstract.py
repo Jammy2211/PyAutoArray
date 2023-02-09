@@ -187,17 +187,17 @@ class AbstractInversionImaging(AbstractInversion):
         divided by the noise squared convolved with the kernel).
         """
 
-        linear_func_operated_noise_vectors_dict = {}
+        linear_func_curvature_vectors_dict = {}
 
         for (
             linear_func,
             operated_mapping_matrix,
         ) in self.linear_func_operated_mapping_matrix_dict.items():
 
-            linear_func_operated_noise_vectors_dict[
+            linear_func_curvature_vectors_dict[
                 linear_func
             ] = self.convolver.convolve_mapping_matrix(
                 mapping_matrix=operated_mapping_matrix / self.noise_map[:, None] ** 2
             )
 
-        return linear_func_operated_noise_vectors_dict
+        return linear_func_curvature_vectors_dict

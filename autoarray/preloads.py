@@ -2,7 +2,9 @@ import logging
 import numpy as np
 from typing import List
 
+
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 
 from autoarray import exc
@@ -22,6 +24,8 @@ class Preloads:
         relocated_grid=None,
         mapper_list=None,
         operated_mapping_matrix=None,
+        linear_func_weighted_mapping_vectors_dict=None,
+        linear_func_curvature_vectors_dict=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         curvature_matrix=None,
@@ -39,6 +43,10 @@ class Preloads:
         self.relocated_grid = relocated_grid
         self.mapper_list = mapper_list
         self.operated_mapping_matrix = operated_mapping_matrix
+        self.linear_func_weighted_mapping_vectors_dict = (
+            linear_func_weighted_mapping_vectors_dict
+        )
+        self.linear_func_curvature_vectors_dict = linear_func_curvature_vectors_dict
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
         self.curvature_matrix = curvature_matrix
@@ -273,6 +281,64 @@ class Preloads:
                 logger.info(
                     "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
                 )
+
+    def set_linear_func_inversion_dicts(self, fit_0, fit_1):
+        """
+        If the `MassProfile`'s and `Mesh`'s in a model are fixed, the mapping of image-pixels to the
+        source-pixels does not change during the model-fit and matrices used to perform the linear algebra in an
+        inversion can be preloaded, which help efficiently construct the curvature matrix.
+
+        This function compares the operated mapping matrix of two fit's corresponding to two model instances, and
+        preloads the mapper if the mapping matrix of both fits are the same.
+
+        The preload is typically used in searches where only light profiles vary (e.g. when only the lens's light is
+        being fitted for).
+
+        Parameters
+        ----------
+        fit_0
+            The first fit corresponding to a model with a specific set of unit-values.
+        fit_1
+            The second fit corresponding to a model with a different set of unit-values.
+        """
+
+        self.linear_func_weighted_mapping_vectors_dict = None
+
+        inversion_0 = fit_0.inversion
+        inversion_1 = fit_1.inversion
+
+        if inversion_0 is None:
+            return
+
+        if inversion_0.total(cls=AbstractLinearObjFuncList) == 0:
+            return
+
+        should_preload = False
+
+        for weighted_mapping_vectors_0, weighted_mapping_vectors_1 in zip(
+            inversion_0.linear_func_weighted_mapping_vectors_dict.values(),
+            inversion_1.linear_func_weighted_mapping_vectors_dict.values(),
+        ):
+
+            if (
+                np.max(abs(weighted_mapping_vectors_0 - weighted_mapping_vectors_1))
+                < 1e-8
+            ):
+
+                should_preload = True
+
+        if should_preload:
+
+            self.linear_func_weighted_mapping_vectors_dict = (
+                inversion_0.linear_func_weighted_mapping_vectors_dict
+            )
+            self.linear_func_curvature_vectors_dict = (
+                inversion_0.linear_func_curvature_vectors_dict
+            )
+
+            logger.info(
+                "PRELOADS - Inversion linear light profile quantities preloaded for this model-fit."
+            )
 
     def set_curvature_matrix(self, fit_0, fit_1):
         """
