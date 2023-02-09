@@ -303,6 +303,7 @@ class Preloads:
         """
 
         self.linear_func_weighted_mapping_vectors_dict = None
+        self.linear_func_curvature_vectors_dict = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
@@ -310,7 +311,7 @@ class Preloads:
         if inversion_0 is None:
             return
 
-        if inversion_0.total(cls=AbstractLinearObjFuncList) == 0:
+        if not inversion_0.has(cls=AbstractLinearObjFuncList):
             return
 
         should_preload = False
