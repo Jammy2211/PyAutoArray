@@ -67,6 +67,16 @@ Text:                # wrapper for `plt.text()`: customize the appearance of tex
     fontsize: 16
   subplot:
     fontsize: 10
+Annotate:            # wrapper for `plt.annotate()`: customize the appearance of annotations placed on the figure.
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
+Annotate:            # wrapper for `plt.annotate()`: customize the appearance of annotations placed on the figure.
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
 TickParams:          # wrapper for `plt.tick_params()`: customize the figure tick parameters.
   figure:
     labelsize: 16

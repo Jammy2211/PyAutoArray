@@ -11,6 +11,7 @@ from autoarray.plot.wrap.base.title import Title
 from autoarray.plot.wrap.base.label import YLabel
 from autoarray.plot.wrap.base.label import XLabel
 from autoarray.plot.wrap.base.text import Text
+from autoarray.plot.wrap.base.annotate import Annotate
 from autoarray.plot.wrap.base.legend import Legend
 from autoarray.plot.wrap.base.output import Output
 
