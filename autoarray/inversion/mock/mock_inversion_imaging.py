@@ -15,6 +15,7 @@ class MockInversionImaging(InversionImagingMapping):
         convolver=None,
         linear_obj_list=None,
         operated_mapping_matrix=None,
+        linear_func_operated_mapping_matrix_dict=None,
         linear_func_weighted_mapping_vectors_dict=None,
         linear_func_curvature_vectors_dict=None,
         curvature_matrix_preload=None,
@@ -34,6 +35,9 @@ class MockInversionImaging(InversionImagingMapping):
 
         self._operated_mapping_matrix = operated_mapping_matrix
 
+        self._linear_func_operated_mapping_matrix_dict = (
+            linear_func_operated_mapping_matrix_dict
+        )
         self._linear_func_weighted_mapping_vectors_dict = (
             linear_func_weighted_mapping_vectors_dict
         )
@@ -47,6 +51,13 @@ class MockInversionImaging(InversionImagingMapping):
             return super().operated_mapping_matrix
 
         return self._operated_mapping_matrix
+
+    @property
+    def linear_func_operated_mapping_matrix_dict(self) -> Dict:
+        if self._linear_func_operated_mapping_matrix_dict is None:
+            return super().linear_func_operated_mapping_matrix_dict
+
+        return self._linear_func_operated_mapping_matrix_dict
 
     @property
     def linear_func_weighted_mapping_vectors_dict(self) -> Dict:

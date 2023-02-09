@@ -24,6 +24,7 @@ class Preloads:
         relocated_grid=None,
         mapper_list=None,
         operated_mapping_matrix=None,
+        linear_func_operated_mapping_matrix_dict=None,
         linear_func_weighted_mapping_vectors_dict=None,
         linear_func_curvature_vectors_dict=None,
         curvature_matrix_preload=None,
@@ -43,6 +44,9 @@ class Preloads:
         self.relocated_grid = relocated_grid
         self.mapper_list = mapper_list
         self.operated_mapping_matrix = operated_mapping_matrix
+        self.linear_func_operated_mapping_matrix_dict = (
+            linear_func_operated_mapping_matrix_dict
+        )
         self.linear_func_weighted_mapping_vectors_dict = (
             linear_func_weighted_mapping_vectors_dict
         )
@@ -302,6 +306,7 @@ class Preloads:
             The second fit corresponding to a model with a different set of unit-values.
         """
 
+        self.linear_func_operated_mapping_matrix_dict = None
         self.linear_func_weighted_mapping_vectors_dict = None
         self.linear_func_curvature_vectors_dict = None
 
@@ -313,6 +318,30 @@ class Preloads:
 
         if not inversion_0.has(cls=AbstractLinearObjFuncList):
             return
+
+        should_preload = False
+
+        for operated_mapping_matrix_0, operated_mapping_matrix_1 in zip(
+            inversion_0.linear_func_operated_mapping_matrix_dict.values(),
+            inversion_1.linear_func_operated_mapping_matrix_dict.values(),
+        ):
+
+            if (
+                np.max(abs(operated_mapping_matrix_0 - operated_mapping_matrix_1))
+                < 1e-8
+            ):
+
+                should_preload = True
+
+        if should_preload:
+
+            self.linear_func_operated_mapping_matrix_dict = (
+                inversion_0.linear_func_operated_mapping_matrix_dict
+            )
+
+            logger.info(
+                "PRELOADS - Inversion linear light profile operated mapping matrix preloaded for this model-fit."
+            )
 
         should_preload = False
 
