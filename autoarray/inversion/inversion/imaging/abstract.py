@@ -126,6 +126,10 @@ class AbstractInversionImaging(AbstractInversion):
         -------
         A dictionary mapping every linear function object to its operated mapping matrix.
         """
+
+        if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
+            return self.preloads.linear_func_operated_mapping_matrix_dict
+
         linear_func_operated_mapping_matrix_dict = {}
 
         for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
