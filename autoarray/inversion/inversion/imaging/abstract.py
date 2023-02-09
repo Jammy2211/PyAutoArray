@@ -190,6 +190,9 @@ class AbstractInversionImaging(AbstractInversion):
         divided by the noise squared convolved with the kernel).
         """
 
+        if self.preloads.linear_func_curvature_vectors_dict is not None:
+            return self.preloads.linear_func_curvature_vectors_dict
+
         linear_func_curvature_vectors_dict = {}
 
         for (
