@@ -321,7 +321,7 @@ class Preloads:
 
                 return
 
-            if (
+            elif (
                 np.max(
                     abs(
                         inversion_0._curvature_matrix_mapper_diag
