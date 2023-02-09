@@ -311,7 +311,10 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
-        self.annotate.set()
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         if self.colorbar is not False:
             cb = self.colorbar.set(ax=ax)
@@ -397,7 +400,10 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
-        self.annotate.set()
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         extent = self.axis.config_dict.get("extent")
 
@@ -523,7 +529,10 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
-        self.annotate.set()
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         self.grid_plot.plot_rectangular_grid_lines(
             extent=mapper.source_plane_mesh_grid.geometry.extent,
@@ -581,7 +590,10 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
-        self.annotate.set()
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         self.interpolated_reconstruction.imshow_reconstruction(
             mapper=mapper,
@@ -645,7 +657,10 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
-        self.annotate.set()
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         if not interpolate_to_uniform:
 

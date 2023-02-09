@@ -235,7 +235,10 @@ class MatPlot1D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
-        self.annotate.set()
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         visuals_1d.plot_via_plotter(plotter=self)
 
