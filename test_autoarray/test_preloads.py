@@ -276,6 +276,88 @@ def test__set_operated_mapping_matrix_with_preloads():
     ).all()
 
 
+def test__set_linear_func_inversion_dicts():
+
+    # Inversion is None thus preload it to None.
+
+    fit_0 = aa.m.MockFitImaging(inversion=None)
+    fit_1 = aa.m.MockFitImaging(inversion=None)
+
+    preloads = aa.Preloads(
+        linear_func_operated_mapping_matrix_dict=0,
+        linear_func_weighted_mapping_vectors_dict=1,
+        linear_func_curvature_vectors_dict=2,
+    )
+    preloads.set_linear_func_inversion_dicts(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.linear_func_operated_mapping_matrix_dict is None
+    assert preloads.linear_func_weighted_mapping_vectors_dict is None
+    assert preloads.linear_func_curvature_vectors_dict is None
+
+    # Inversion's blurred mapping matrices are different thus no preloading.
+
+    dict_0 = {"key0": np.array([1.0, 2.0])}
+    dict_1 = {"key1": np.array([1.0, 3.0])}
+
+    inversion_0 = aa.m.MockInversionImaging(
+        linear_obj_list=[aa.m.MockLinearObjFuncList()],
+        linear_func_operated_mapping_matrix_dict=dict_0,
+        linear_func_weighted_mapping_vectors_dict=dict_0,
+        linear_func_curvature_vectors_dict=dict_0,
+    )
+    inversion_1 = aa.m.MockInversionImaging(
+        linear_obj_list=[aa.m.MockLinearObjFuncList()],
+        linear_func_operated_mapping_matrix_dict=dict_1,
+        linear_func_weighted_mapping_vectors_dict=dict_1,
+        linear_func_curvature_vectors_dict=dict_0,
+    )
+
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
+
+    preloads = aa.Preloads(
+        linear_func_weighted_mapping_vectors_dict=dict_0,
+        linear_func_curvature_vectors_dict=dict_0,
+    )
+    preloads.set_linear_func_inversion_dicts(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.linear_func_operated_mapping_matrix_dict is None
+    assert preloads.linear_func_weighted_mapping_vectors_dict is None
+    assert preloads.linear_func_curvature_vectors_dict is None
+
+    # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
+
+    inversion_0 = aa.m.MockInversionImaging(
+        linear_obj_list=[aa.m.MockLinearObjFuncList()],
+        linear_func_operated_mapping_matrix_dict=dict_0,
+        linear_func_weighted_mapping_vectors_dict=dict_0,
+        linear_func_curvature_vectors_dict=dict_0,
+    )
+    inversion_1 = aa.m.MockInversionImaging(
+        linear_obj_list=[aa.m.MockLinearObjFuncList()],
+        linear_func_operated_mapping_matrix_dict=dict_0,
+        linear_func_weighted_mapping_vectors_dict=dict_0,
+        linear_func_curvature_vectors_dict=dict_0,
+    )
+
+    fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
+    fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
+
+    preloads = aa.Preloads(
+        linear_func_weighted_mapping_vectors_dict=dict_0,
+        linear_func_curvature_vectors_dict=dict_0,
+    )
+    preloads.set_linear_func_inversion_dicts(fit_0=fit_0, fit_1=fit_1)
+
+    assert (
+        preloads.linear_func_operated_mapping_matrix_dict["key0"] == dict_0["key0"]
+    ).all()
+    assert (
+        preloads.linear_func_weighted_mapping_vectors_dict["key0"] == dict_0["key0"]
+    ).all()
+    assert (preloads.linear_func_curvature_vectors_dict["key0"] == dict_0["key0"]).all()
+
+
 def test__set_curvature_matrix():
 
     # Inversion is None thus preload curvature_matrix to None.
@@ -283,7 +365,7 @@ def test__set_curvature_matrix():
     fit_0 = aa.m.MockFitImaging(inversion=None)
     fit_1 = aa.m.MockFitImaging(inversion=None)
 
-    preloads = aa.Preloads(curvature_matrix=1)
+    preloads = aa.Preloads(curvature_matrix=1, curvature_matrix_mapper_diag=1)
     preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.curvature_matrix is None
@@ -295,10 +377,14 @@ def test__set_curvature_matrix():
     curvature_matrix_1 = np.array([[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
 
     fit_0 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_0, curvature_matrix_mapper_diag=1
+        )
     )
     fit_1 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_1)
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_1, curvature_matrix_mapper_diag=1
+        )
     )
 
     preloads = aa.Preloads(curvature_matrix=1)
@@ -311,15 +397,77 @@ def test__set_curvature_matrix():
     preloads = aa.Preloads(curvature_matrix=2)
 
     fit_0 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_0, curvature_matrix_mapper_diag=1
+        )
     )
     fit_1 = aa.m.MockFitImaging(
-        inversion=aa.m.MockInversion(curvature_matrix=curvature_matrix_0)
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_0, curvature_matrix_mapper_diag=1
+        )
     )
 
     preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.curvature_matrix == curvature_matrix_0).all()
+
+
+def test__set_curvature_matrix__curvature_matrix_mapper_diag():
+
+    # Inversion is None thus preload curvature_matrix to None.
+
+    fit_0 = aa.m.MockFitImaging(inversion=None)
+    fit_1 = aa.m.MockFitImaging(inversion=None)
+
+    preloads = aa.Preloads(curvature_matrix_mapper_diag=1)
+    preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.curvature_matrix_mapper_diag is None
+
+    # Inversion's curvature matrices are different thus no preloading.
+
+    curvature_matrix_0 = np.array([[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+
+    curvature_matrix_1 = np.array([[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+
+    fit_0 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_0,
+            curvature_matrix_mapper_diag=curvature_matrix_0,
+        )
+    )
+    fit_1 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_1,
+            curvature_matrix_mapper_diag=curvature_matrix_1,
+        )
+    )
+
+    preloads = aa.Preloads(curvature_matrix_mapper_diag=1)
+    preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
+
+    assert preloads.curvature_matrix_mapper_diag is None
+
+    # Inversion's curvature matrices are the same therefore preload it and the curvature sparse terms.
+
+    preloads = aa.Preloads(curvature_matrix_mapper_diag=2)
+
+    fit_0 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_0,
+            curvature_matrix_mapper_diag=curvature_matrix_0,
+        )
+    )
+    fit_1 = aa.m.MockFitImaging(
+        inversion=aa.m.MockInversion(
+            curvature_matrix=curvature_matrix_1,
+            curvature_matrix_mapper_diag=curvature_matrix_0,
+        )
+    )
+
+    preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
+
+    assert (preloads.curvature_matrix_mapper_diag == curvature_matrix_0).all()
 
 
 def test__set_regularization_matrix_and_term():
