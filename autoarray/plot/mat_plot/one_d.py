@@ -26,6 +26,7 @@ class MatPlot1D(AbstractMatPlot):
         ylabel: Optional[wb.YLabel] = None,
         xlabel: Optional[wb.XLabel] = None,
         text: Optional[Union[wb.Text, List[wb.Text]]] = None,
+        annotate: Optional[Union[wb.Annotate, List[wb.Annotate]]] = None,
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         yx_plot: Optional[w1d.YXPlot] = None,
@@ -75,6 +76,10 @@ class MatPlot1D(AbstractMatPlot):
             Sets the figure ylabel and customizes its appearance using `plt.ylabel`.
         xlabel
             Sets the figure xlabel and customizes its appearance using `plt.xlabel`.
+        text
+            Sets any text on the figure and customizes its appearance using `plt.text`.
+        annotate
+            Sets any annotations on the figure and customizes its appearance using `plt.annotate`.
         legend
             Sets whether the plot inclues a legend and customizes its appearance and labels using `plt.legend`.
         output
@@ -99,6 +104,7 @@ class MatPlot1D(AbstractMatPlot):
             ylabel=ylabel,
             xlabel=xlabel,
             text=text,
+            annotate=annotate,
             legend=legend,
             output=output,
         )
@@ -228,6 +234,8 @@ class MatPlot1D(AbstractMatPlot):
             self.text.set()
         else:
             [text.set() for text in self.text]
+
+        self.annotate.set()
 
         visuals_1d.plot_via_plotter(plotter=self)
 

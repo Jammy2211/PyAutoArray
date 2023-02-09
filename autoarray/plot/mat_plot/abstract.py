@@ -25,6 +25,7 @@ class AbstractMatPlot:
         ylabel: Optional[wb.YLabel] = None,
         xlabel: Optional[wb.XLabel] = None,
         text: Optional[Union[wb.Text, List[wb.Text]]] = None,
+        annotate: Optional[Union[wb.Annotate, List[wb.Annotate]]] = None,
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
     ):
@@ -75,6 +76,10 @@ class AbstractMatPlot:
             Sets the figure ylabel and customizes its appearance using `plt.ylabel`.
         xlabel
             Sets the figure xlabel and customizes its appearance using `plt.xlabel`.
+        text
+            Sets any text on the figure and customizes its appearance using `plt.text`.
+        annotate
+            Sets any annotations on the figure and customizes its appearance using `plt.annotate`.
         legend
             Sets whether the plot inclues a legend and customizes its appearance and labels using `plt.legend`.
         output
@@ -101,6 +106,7 @@ class AbstractMatPlot:
         self.xlabel = xlabel or wb.XLabel(is_default=True)
 
         self.text = text or wb.Text(is_default=True)
+        self.annotate = annotate or wb.Annotate(is_default=True)
         self.legend = legend or wb.Legend(is_default=True)
         self.output = output or wb.Output(is_default=True)
 

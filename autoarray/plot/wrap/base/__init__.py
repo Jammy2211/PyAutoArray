@@ -11,5 +11,6 @@ from .title import Title
 from .label import YLabel
 from .label import XLabel
 from .text import Text
+from .annotate import Annotate
 from .legend import Legend
 from .output import Output
