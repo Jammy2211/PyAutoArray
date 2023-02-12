@@ -37,6 +37,7 @@ class MatPlot2D(AbstractMatPlot):
         ylabel: Optional[wb.YLabel] = None,
         xlabel: Optional[wb.XLabel] = None,
         text: Optional[Union[wb.Text, List[wb.Text]]] = None,
+        annotate: Optional[Union[wb.Annotate, List[wb.Annotate]]] = None,
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         array_overlay: Optional[w2d.ArrayOverlay] = None,
@@ -104,6 +105,10 @@ class MatPlot2D(AbstractMatPlot):
             Sets the figure ylabel and customizes its appearance using `plt.ylabel`.
         xlabel
             Sets the figure xlabel and customizes its appearance using `plt.xlabel`.
+        text
+            Sets any text on the figure and customizes its appearance using `plt.text`.
+        annotate
+            Sets any annotations on the figure and customizes its appearance using `plt.annotate`.
         legend
             Sets whether the plot inclues a legend and customizes its appearance and labels using `plt.legend`.
         output
@@ -156,6 +161,7 @@ class MatPlot2D(AbstractMatPlot):
             ylabel=ylabel,
             xlabel=xlabel,
             text=text,
+            annotate=annotate,
             legend=legend,
             output=output,
         )
@@ -305,6 +311,11 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
+
         if self.colorbar is not False:
             cb = self.colorbar.set(ax=ax)
             self.colorbar_tickparams.set(cb=cb)
@@ -388,6 +399,11 @@ class MatPlot2D(AbstractMatPlot):
             self.text.set()
         else:
             [text.set() for text in self.text]
+
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         extent = self.axis.config_dict.get("extent")
 
@@ -513,6 +529,11 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [text.set() for text in self.text]
 
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
+
         self.grid_plot.plot_rectangular_grid_lines(
             extent=mapper.source_plane_mesh_grid.geometry.extent,
             shape_native=mapper.shape_native,
@@ -568,6 +589,11 @@ class MatPlot2D(AbstractMatPlot):
             self.text.set()
         else:
             [text.set() for text in self.text]
+
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         self.interpolated_reconstruction.imshow_reconstruction(
             mapper=mapper,
@@ -630,6 +656,11 @@ class MatPlot2D(AbstractMatPlot):
             self.text.set()
         else:
             [text.set() for text in self.text]
+
+        if not isinstance(self.annotate, list):
+            self.annotate.set()
+        else:
+            [annotate.set() for annotate in self.annotate]
 
         if not interpolate_to_uniform:
 
