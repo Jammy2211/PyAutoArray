@@ -110,6 +110,18 @@ class AbstractInversionImaging(AbstractInversion):
             for linear_obj in self.linear_obj_list
         ]
 
+    def _linear_func_preload_dict_map(self, linear_func_preload_dict: Dict) -> Dict:
+
+        linear_func_dict = {}
+
+        for linear_func, values in zip(
+            self.cls_list_from(cls=AbstractLinearObjFuncList),
+            linear_func_preload_dict.values(),
+        ):
+            linear_func_dict[linear_func] = values
+
+        return linear_func_dict
+
     @cached_property
     @profile_func
     def linear_func_operated_mapping_matrix_dict(self) -> Dict:
@@ -126,6 +138,12 @@ class AbstractInversionImaging(AbstractInversion):
         -------
         A dictionary mapping every linear function object to its operated mapping matrix.
         """
+
+        if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
+            return self._linear_func_preload_dict_map(
+                linear_func_preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict
+            )
+
         linear_func_operated_mapping_matrix_dict = {}
 
         for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
@@ -158,6 +176,11 @@ class AbstractInversionImaging(AbstractInversion):
         convolved with the kernel.
         """
 
+        if self.preloads.linear_func_weighted_mapping_vectors_dict is not None:
+            return self._linear_func_preload_dict_map(
+                linear_func_preload_dict=self.preloads.linear_func_weighted_mapping_vectors_dict
+            )
+
         linear_func_weighted_mapping_vectors_dict = {}
 
         for (
@@ -187,17 +210,22 @@ class AbstractInversionImaging(AbstractInversion):
         divided by the noise squared convolved with the kernel).
         """
 
-        linear_func_operated_noise_vectors_dict = {}
+        if self.preloads.linear_func_curvature_vectors_dict is not None:
+            return self._linear_func_preload_dict_map(
+                linear_func_preload_dict=self.preloads.linear_func_curvature_vectors_dict
+            )
+
+        linear_func_curvature_vectors_dict = {}
 
         for (
             linear_func,
             operated_mapping_matrix,
         ) in self.linear_func_operated_mapping_matrix_dict.items():
 
-            linear_func_operated_noise_vectors_dict[
+            linear_func_curvature_vectors_dict[
                 linear_func
             ] = self.convolver.convolve_mapping_matrix(
                 mapping_matrix=operated_mapping_matrix / self.noise_map[:, None] ** 2
             )
 
-        return linear_func_operated_noise_vectors_dict
+        return linear_func_curvature_vectors_dict

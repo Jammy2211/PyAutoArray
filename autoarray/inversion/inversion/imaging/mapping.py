@@ -8,6 +8,7 @@ from autoarray.numba_util import profile_func
 
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
@@ -132,6 +133,53 @@ class InversionImagingMapping(AbstractInversionImaging):
             curvature_matrix_preload=self.preloads.curvature_matrix_preload,
             curvature_matrix_counts=self.preloads.curvature_matrix_counts,
         )
+
+    @property
+    @profile_func
+    def _curvature_matrix_mapper_diag(self) -> np.ndarray:
+        """
+        Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
+        and the linear objects to construct the simultaneous linear equations. The object is described in full in
+        the method `curvature_matrix`.
+
+        This method computes the diagonal entries of all mapper objects in the `curvature_matrix`. It is separate from
+        other calculations to enable preloading of this calculation.
+        """
+
+        if self.preloads.curvature_matrix_mapper_diag is not None:
+            return self.preloads.curvature_matrix_mapper_diag
+
+        curvature_matrix = np.zeros((self.total_params, self.total_params))
+
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+
+        for i in range(len(mapper_list)):
+
+            mapper_i = mapper_list[i]
+            mapper_param_range_i = mapper_param_range_list[i]
+
+            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                mapping_matrix=mapper_i.mapping_matrix
+            )
+
+            diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=operated_mapping_matrix,
+                noise_map=self.noise_map,
+                add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
+                no_regularization_index_list=self.no_regularization_index_list,
+            )
+
+            curvature_matrix[
+                mapper_param_range_i[0] : mapper_param_range_i[1],
+                mapper_param_range_i[0] : mapper_param_range_i[1],
+            ] = diag
+
+        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
+            curvature_matrix=curvature_matrix
+        )
+
+        return curvature_matrix
 
     @property
     @profile_func
