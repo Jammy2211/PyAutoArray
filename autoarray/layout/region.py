@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.typing import ArrayLike
-from typing import Tuple
+from typing import Optional, Tuple
 
 from autoarray import exc
 
@@ -75,7 +75,11 @@ class Region1D(AbstractRegion):
     def x_slice(self) -> ArrayLike:
         return np.s_[self.x0 : self.x1]
 
-    def front_region_from(self, pixels: Tuple[int, int]) -> "Region1D":
+    def front_region_from(
+        self,
+        pixels: Optional[Tuple[int, int]] = None,
+        pixels_from_end: Optional[int] = None,
+    ) -> "Region1D":
         """
         Returns a `Region1D` corresponding to the front pixels in this region in the clocking direction (e.g. the
         pixels in the region that are closest to the read-out electronics which is defined at the 1D index (0,)).
@@ -90,6 +94,10 @@ class Region1D(AbstractRegion):
         pixels
             A tuple defining the pixel coordinates used to compute the front region.
         """
+
+        if pixels_from_end is not None:
+
+            pixels = (self.total_pixels - pixels_from_end, self.total_pixels)
 
         x_min = self.x0 + pixels[0]
         x_max = self.x0 + pixels[1]
@@ -218,7 +226,11 @@ class Region2D(AbstractRegion):
 
         return x_min, x_max
 
-    def parallel_front_region_from(self, pixels: Tuple[int, int]) -> "Region2D":
+    def parallel_front_region_from(
+        self,
+        pixels: Optional[Tuple[int, int]] = None,
+        pixels_from_end: Optional[int] = None,
+    ) -> "Region2D":
         """
         Returns a `Region2D` corresponding to the front pixels in this region in the parallel clocking direction
         (e.g. the rows of pixels in the region that are closest to the CCD read-out electronics defined at 2D
@@ -233,7 +245,15 @@ class Region2D(AbstractRegion):
         ----------
         pixels
             A tuple defining the pixel rows used to compute the parallel front region.
+        pixels_from_end
+            Alternative row pixel index specification, which extracts this number of pixels from the end of
+            the region. For example, if the region is 100 pixels and `pixels_from_end=10`, the last 10 pixels of
+            the region are extracted.
         """
+
+        if pixels_from_end is not None:
+
+            pixels = (self.total_rows - pixels_from_end, self.total_rows)
 
         y_coord = self.y0
         y_min = y_coord + pixels[0]
@@ -284,7 +304,11 @@ class Region2D(AbstractRegion):
         """
         return Region2D(region=(self.y0, self.y1, 0, shape_2d[1]))
 
-    def serial_front_region_from(self, pixels: Tuple[int, int] = (0, 1)) -> "Region2D":
+    def serial_front_region_from(
+        self,
+        pixels: Optional[Tuple[int, int]] = None,
+        pixels_from_end: Optional[int] = None,
+    ) -> "Region2D":
         """
         Returns a `Region2D` corresponding to the front pixels in this region in the serial clocking direction
         (e.g. the columns of pixels in the region that are closest to the CCD read-out electronics defined at 2D
@@ -300,6 +324,11 @@ class Region2D(AbstractRegion):
         pixels
             A tuple defining the pixel columns used to compute the serial front region.
         """
+
+        if pixels_from_end is not None:
+
+            pixels = (self.total_columns - pixels_from_end, self.total_columns)
+
         x_min, x_max = self.serial_x_front_range_from(pixels)
         return Region2D(region=(self.y0, self.y1, x_min, x_max))
 
