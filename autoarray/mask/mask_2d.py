@@ -283,6 +283,9 @@ class Mask2D(Mask):
         if type(mask) is list:
             mask = np.asarray(mask).astype("bool")
 
+        if not isinstance(mask, np.ndarray):
+            mask = mask._array
+
         if invert:
             mask = np.invert(mask)
 
