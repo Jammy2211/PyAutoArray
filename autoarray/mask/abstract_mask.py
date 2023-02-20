@@ -16,8 +16,8 @@ class Mask(AbstractNDArray, ABC):
     pixel_scales = None
 
     # noinspection PyUnusedLocal
-    def __new__(
-        cls,
+    def __init__(
+        self,
         mask: np.ndarray,
         origin: tuple,
         pixel_scales: ty.PixelScales,
@@ -49,11 +49,11 @@ class Mask(AbstractNDArray, ABC):
 
         # noinspection PyArgumentList
         mask = mask.astype("bool")
-        obj = mask.view(cls)
-        obj.sub_size = sub_size
-        obj.pixel_scales = pixel_scales
-        obj.origin = origin
-        return obj
+        super().__init__(mask)
+
+        self.sub_size = sub_size
+        self.pixel_scales = pixel_scales
+        self.origin = origin
 
     def __array_finalize__(self, obj):
 
@@ -91,7 +91,7 @@ class Mask(AbstractNDArray, ABC):
 
         For example, a sub-size of 3x3 means every pixel has 9 sub-pixels.
         """
-        return int(self.sub_size**self.dimensions)
+        return int(self.sub_size ** self.dimensions)
 
     @property
     def sub_fraction(self) -> float:
@@ -133,7 +133,7 @@ class Mask(AbstractNDArray, ABC):
         """
         The total number of unmasked sub-pixels (values are `False`) in the mask.
         """
-        return self.sub_size**self.dimensions * self.pixels_in_mask
+        return self.sub_size ** self.dimensions * self.pixels_in_mask
 
     @property
     def shape_slim(self) -> int:
@@ -147,7 +147,7 @@ class Mask(AbstractNDArray, ABC):
         """
         The 1D shape of the mask's sub-grid, which is equivalent to the total number of unmasked pixels in the mask.
         """
-        return int(self.pixels_in_mask * self.sub_size**self.dimensions)
+        return int(self.pixels_in_mask * self.sub_size ** self.dimensions)
 
     def mask_new_sub_size_from(self, mask, sub_size=1) -> "Mask":
         """
