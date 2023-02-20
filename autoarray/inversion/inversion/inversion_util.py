@@ -290,9 +290,16 @@ def reconstruction_from(
         raise exc.InversionException()
 
     if settings.check_solution and len(reconstruction) > 1:
-        if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-4).all():
-            if np.isclose(a=reconstruction[0], b=reconstruction, atol=1e-4).all():
-                raise exc.InversionException()
+        if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-6).all():
+            raise exc.InversionException()
+
+    index = int(data_vector.shape[0] / 2)
+
+    if settings.check_solution and len(reconstruction) > 1:
+        if np.isclose(
+            a=reconstruction[index], b=reconstruction[index + 1], atol=1e-6
+        ).all():
+            raise exc.InversionException()
 
     return reconstruction
 
