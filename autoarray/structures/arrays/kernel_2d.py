@@ -16,8 +16,8 @@ from autoarray.structures.arrays import array_2d_util
 
 
 class Kernel2D(AbstractArray2D):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values,
         mask,
         header=None,
@@ -43,14 +43,12 @@ class Kernel2D(AbstractArray2D):
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        obj = super().__new__(
-            cls=cls, values=values, mask=mask, header=header, store_native=store_native
+        super().__init__(
+            values=values, mask=mask, header=header, store_native=store_native,
         )
 
         if normalize:
-            obj[:] = np.divide(obj, np.sum(obj))
-
-        return obj
+            self._array[:] = np.divide(self._array, np.sum(self._array))
 
     @classmethod
     def no_mask(
@@ -259,7 +257,7 @@ class Kernel2D(AbstractArray2D):
 
         grid = Grid2D.uniform(shape_native=shape_native, pixel_scales=pixel_scales)
         grid_shifted = np.subtract(grid, centre)
-        grid_radius = np.sqrt(np.sum(grid_shifted**2.0, 1))
+        grid_radius = np.sqrt(np.sum(grid_shifted ** 2.0, 1))
         theta_coordinate_to_profile = np.arctan2(
             grid_shifted[:, 0], grid_shifted[:, 1]
         ) - np.radians(angle)

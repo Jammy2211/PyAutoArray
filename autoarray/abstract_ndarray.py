@@ -74,3 +74,6 @@ class AbstractNDArray(ABC):
     @to_new_array
     def reshape(self, *args, **kwargs):
         return self._array.reshape(*args, **kwargs)
+
+    def __getitem__(self, item):
+        return self._array[item]

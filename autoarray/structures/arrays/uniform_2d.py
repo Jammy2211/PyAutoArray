@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class AbstractArray2D(Structure):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values: Union[np.ndarray, List, "AbstractArray2D"],
         mask: Mask2D,
         header: Header = None,
@@ -343,12 +343,9 @@ class AbstractArray2D(Structure):
             skip_mask=skip_mask,
         )
 
-        obj = object.__init__(cls)
-        obj.mask = mask
-        obj.header = header
-        obj._array = values
-
-        return obj
+        super().__init__(values)
+        self.mask = mask
+        self.header = header
 
     def __array_finalize__(self, obj):
 
