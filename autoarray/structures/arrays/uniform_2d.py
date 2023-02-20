@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class AbstractArray2D(Structure):
     def __new__(
         cls,
-        values: Union[np.ndarray, List],
+        values: Union[np.ndarray, List, "AbstractArray2D"],
         mask: Mask2D,
         header: Header = None,
         store_native: bool = False,
@@ -331,6 +331,11 @@ class AbstractArray2D(Structure):
             array_2d.output_to_fits(file_path="/path/for/output")
         """
 
+        try:
+            values = values._array
+        except AttributeError:
+            pass
+
         values = array_2d_util.convert_array_2d(
             array_2d=values,
             mask_2d=mask,
@@ -338,9 +343,10 @@ class AbstractArray2D(Structure):
             skip_mask=skip_mask,
         )
 
-        obj = values.view(cls)
+        obj = object.__init__(cls)
         obj.mask = mask
         obj.header = header
+        obj._array = values
 
         return obj
 
@@ -645,7 +651,7 @@ class Array2D(AbstractArray2D):
     @classmethod
     def no_mask(
         cls,
-        values: Union[np.ndarray, List],
+        values: Union[np.ndarray, List, AbstractArray2D],
         pixel_scales: ty.PixelScales,
         shape_native: Tuple[int, int] = None,
         sub_size: int = 1,

@@ -1,4 +1,7 @@
 from __future__ import annotations
+
+from copy import copy
+
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
@@ -11,7 +14,19 @@ if TYPE_CHECKING:
 from autoarray.structures.arrays import array_2d_util
 
 
-class AbstractNDArray(np.ndarray, ABC):
+def to_new_array(func):
+    def wrapper(self, *args, **kwargs):
+        new_array = copy(self)
+        new_array._array = func(self, *args, **kwargs)
+        return new_array
+
+    return wrapper
+
+
+class AbstractNDArray(ABC):
+    def __init__(self, array):
+        self._array = array
+
     def __reduce__(self):
 
         pickled_state = super().__reduce__()
@@ -28,7 +43,7 @@ class AbstractNDArray(np.ndarray, ABC):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super().__setstate__(state[0:-1])
+        self._array.__setstate__(state[0:-1])
 
     @property
     @abstractmethod
@@ -51,3 +66,11 @@ class AbstractNDArray(np.ndarray, ABC):
         array_2d_util.numpy_array_2d_to_fits(
             array_2d=self.native, file_path=file_path, overwrite=overwrite
         )
+
+    @property
+    def shape(self):
+        return self._array.shape
+
+    @to_new_array
+    def reshape(self, *args, **kwargs):
+        return self._array.reshape(*args, **kwargs)
