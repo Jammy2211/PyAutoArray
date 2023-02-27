@@ -93,6 +93,10 @@ class AbstractNDArray(ABC):
     def __rtruediv__(self, other):
         return other / self._array
 
+    @to_new_array
+    def __abs__(self):
+        return abs(self._array)
+
     def sum(self, *args, **kwargs):
         return self._array.sum(*args, **kwargs)
 
