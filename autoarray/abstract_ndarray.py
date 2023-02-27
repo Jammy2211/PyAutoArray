@@ -83,10 +83,12 @@ class AbstractNDArray(ABC):
     def __rdivmod__(self, other):
         return divmod(other, self._array)
 
+    @to_new_array
     @unwrap_array
     def __truediv__(self, other):
         return self._array / other
 
+    @to_new_array
     @unwrap_array
     def __rtruediv__(self, other):
         return other / self._array
