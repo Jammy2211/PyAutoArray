@@ -27,6 +27,10 @@ class AbstractNDArray(ABC):
     def __init__(self, array):
         self._array = array
 
+    @property
+    def array(self):
+        return self._array
+
     def __lt__(self, other):
         return self._array < other
 
