@@ -133,6 +133,10 @@ class AbstractNDArray(ABC):
     def shape(self):
         return self._array.shape
 
+    @property
+    def size(self):
+        return self._array.size
+
     @to_new_array
     def reshape(self, *args, **kwargs):
         return self._array.reshape(*args, **kwargs)
