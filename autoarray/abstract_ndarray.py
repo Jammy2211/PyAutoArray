@@ -62,6 +62,18 @@ class AbstractNDArray(ABC):
     def __invert__(self):
         return ~self._array
 
+    def __divmod__(self, other):
+        return divmod(self._array, other)
+
+    def __rdivmod__(self, other):
+        return divmod(other, self._array)
+
+    def __truediv__(self, other):
+        return self._array / other
+
+    def __rtruediv__(self, other):
+        return other / self._array
+
     def sum(self, *args, **kwargs):
         return self._array.sum(*args, **kwargs)
 
