@@ -23,6 +23,16 @@ def to_new_array(func):
     return wrapper
 
 
+def unwrap_array(func):
+    def wrapper(self, other):
+        try:
+            return func(self, other.array)
+        except AttributeError:
+            return func(self, other)
+
+    return wrapper
+
+
 class AbstractNDArray(ABC):
     def __init__(self, array):
         self._array = array
@@ -68,9 +78,11 @@ class AbstractNDArray(ABC):
     def __rdivmod__(self, other):
         return divmod(other, self._array)
 
+    @unwrap_array
     def __truediv__(self, other):
         return self._array / other
 
+    @unwrap_array
     def __rtruediv__(self, other):
         return other / self._array
 
