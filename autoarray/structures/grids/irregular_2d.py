@@ -48,11 +48,10 @@ class Grid2DIrregular(AbstractNDArray):
             if isinstance(values[0], Grid2DIrregular):
                 return values
 
-            values = np.asarray(values)
+        return object.__new__(cls)
 
-        obj = values.view(cls)
-
-        return obj
+    def __init__(self, values: Union[np.ndarray, List]):
+        super().__init__(np.asarray(values))
 
     @property
     def geometry(self):
