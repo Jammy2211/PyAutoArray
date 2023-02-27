@@ -135,3 +135,6 @@ class AbstractNDArray(ABC):
 
     def __getitem__(self, item):
         return self._array[item]
+
+    def __setitem__(self, key, value):
+        self._array[key] = value
