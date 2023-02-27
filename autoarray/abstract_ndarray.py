@@ -27,6 +27,32 @@ class AbstractNDArray(ABC):
     def __init__(self, array):
         self._array = array
 
+    def __lt__(self, other):
+        return self._array < other
+
+    def __le__(self, other):
+        return self._array <= other
+
+    def __gt__(self, other):
+        return self._array > other
+
+    def __ge__(self, other):
+        return self._array >= other
+
+    def __eq__(self, other):
+        return self._array == other
+
+    def __ne__(self, other):
+        return self._array != other
+
+    @to_new_array
+    def __neg__(self):
+        return -self._array
+
+    @to_new_array
+    def __invert__(self):
+        return ~self._array
+
     def __reduce__(self):
 
         pickled_state = super().__reduce__()
