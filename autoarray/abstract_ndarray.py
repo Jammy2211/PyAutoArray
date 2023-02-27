@@ -60,6 +60,26 @@ class AbstractNDArray(ABC):
     def __eq__(self, other):
         return self._array == other
 
+    @to_new_array
+    @unwrap_array
+    def __add__(self, other):
+        return self._array + other
+
+    @to_new_array
+    @unwrap_array
+    def __radd__(self, other):
+        return other + self._array
+
+    @to_new_array
+    @unwrap_array
+    def __sub__(self, other):
+        return self._array - other
+
+    @to_new_array
+    @unwrap_array
+    def __rsub__(self, other):
+        return other - self._array
+
     @unwrap_array
     def __ne__(self, other):
         return self._array != other
