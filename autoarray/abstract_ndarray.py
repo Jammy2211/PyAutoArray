@@ -37,6 +37,9 @@ class AbstractNDArray(ABC):
     def __init__(self, array):
         self._array = array
 
+    def __iter__(self):
+        return iter(self._array)
+
     @property
     def array(self):
         return self._array

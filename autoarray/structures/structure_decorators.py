@@ -1,22 +1,21 @@
 import numpy as np
 from functools import wraps
-from typing import List, Optional, Union
-
-from autoconf import conf
-from autoarray.structures.arrays.uniform_1d import Array1D
-from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.uniform_1d import Grid1D
-from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.transformed_2d import Grid2DTransformed
-from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
-from autoarray.structures.grids.iterate_2d import Grid2DIterate
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
-from autoarray.structures.vectors.uniform import VectorYX2D
-from autoarray.structures.vectors.irregular import VectorYX2DIrregular
-from autoarray.structures.arrays.irregular import ArrayIrregular
+from typing import List, Union
 
 from autoarray import exc
+from autoarray.structures.arrays.irregular import ArrayIrregular
+from autoarray.structures.arrays.uniform_1d import Array1D
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
+from autoarray.structures.grids.iterate_2d import Grid2DIterate
+from autoarray.structures.grids.transformed_2d import Grid2DTransformed
+from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
+from autoarray.structures.grids.uniform_1d import Grid1D
+from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.vectors.irregular import VectorYX2DIrregular
+from autoarray.structures.vectors.uniform import VectorYX2D
+from autoconf import conf
 
 
 def grid_1d_to_structure(func):
@@ -553,9 +552,10 @@ def relocate_to_radial_minimum(func):
             grid_radial_scale = np.where(
                 grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
             )
-            grid = np.multiply(grid, grid_radial_scale[:, None])
-        grid[np.isnan(grid)] = grid_radial_minimum
+            moved_grid = np.multiply(grid, grid_radial_scale[:, None])
 
-        return func(cls, grid, *args, **kwargs)
+        moved_grid[np.isnan(np.array(moved_grid))] = grid_radial_minimum
+
+        return func(cls, moved_grid, *args, **kwargs)
 
     return wrapper
