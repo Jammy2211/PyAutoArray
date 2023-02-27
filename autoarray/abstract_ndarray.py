@@ -62,6 +62,11 @@ class AbstractNDArray(ABC):
 
     @to_new_array
     @unwrap_array
+    def __pow__(self, other):
+        return self._array ** other
+
+    @to_new_array
+    @unwrap_array
     def __add__(self, other):
         return self._array + other
 
