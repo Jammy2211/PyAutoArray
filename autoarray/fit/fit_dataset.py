@@ -304,6 +304,7 @@ class FitDataset(AbstractFitInversion):
             The normalization noise_map-term for the data's noise-map.
         """
         if self.inversion is not None:
+
             return fit_util.log_evidence_from(
                 chi_squared=self.chi_squared,
                 regularization_term=self.inversion.regularization_term,
