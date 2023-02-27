@@ -40,6 +40,10 @@ class AbstractNDArray(ABC):
     def __iter__(self):
         return iter(self._array)
 
+    @to_new_array
+    def sqrt(self):
+        return np.sqrt(self._array)
+
     @property
     def array(self):
         return self._array
