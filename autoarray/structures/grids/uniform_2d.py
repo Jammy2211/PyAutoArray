@@ -20,13 +20,13 @@ from autoarray import type as ty
 
 
 class Grid2D(Structure):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values: Union[np.ndarray, List],
         mask: Mask2D,
         store_native: bool = False,
         *args,
-        **kwargs,
+        **kwargs
     ):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -237,17 +237,14 @@ class Grid2D(Structure):
             If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
-
         values = grid_2d_util.convert_grid_2d(
-            grid_2d=values, mask_2d=mask, store_native=store_native
+            grid_2d=values, mask_2d=mask, store_native=store_native,
         )
 
-        obj = values.view(cls)
-        obj.mask = mask
+        super().__init__(values)
 
-        grid_2d_util.check_grid_2d(grid_2d=obj)
-
-        return obj
+        self.mask = mask
+        grid_2d_util.check_grid_2d(grid_2d=values)
 
     @classmethod
     def no_mask(
@@ -1079,14 +1076,12 @@ class Grid2D(Structure):
             positive x-axis.
         """
 
-        grid_radial_projected_2d = (
-            grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
-                extent=self.geometry.extent,
-                centre=centre,
-                pixel_scales=self.mask.pixel_scales,
-                sub_size=self.mask.sub_size,
-                shape_slim=shape_slim,
-            )
+        grid_radial_projected_2d = grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
+            extent=self.geometry.extent,
+            centre=centre,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            shape_slim=shape_slim,
         )
 
         grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(
