@@ -192,3 +192,6 @@ class AbstractNDArray(ABC):
 
     def __setitem__(self, key, value):
         self._array[key] = value
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.shape}"
