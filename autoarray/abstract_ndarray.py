@@ -41,21 +41,26 @@ class AbstractNDArray(ABC):
     def array(self):
         return self._array
 
+    @unwrap_array
     def __lt__(self, other):
         return self._array < other
 
+    @unwrap_array
     def __le__(self, other):
         return self._array <= other
 
+    @unwrap_array
     def __gt__(self, other):
         return self._array > other
 
+    @unwrap_array
     def __ge__(self, other):
         return self._array >= other
 
     def __eq__(self, other):
         return self._array == other
 
+    @unwrap_array
     def __ne__(self, other):
         return self._array != other
 
