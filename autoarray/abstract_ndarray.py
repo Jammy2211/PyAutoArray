@@ -122,7 +122,7 @@ class AbstractNDArray(ABC):
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.native, file_path=file_path, overwrite=overwrite
+            array_2d=self.native.array, file_path=file_path, overwrite=overwrite
         )
 
     @property
