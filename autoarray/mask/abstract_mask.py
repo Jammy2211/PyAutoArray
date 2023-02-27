@@ -126,7 +126,7 @@ class Mask(AbstractNDArray, ABC):
         """
         Returns `False` if all pixels in a mask are `False`, else returns `True`.
         """
-        return self.pixels_in_mask == np.size(self)
+        return self.pixels_in_mask == np.size(self._array)
 
     @property
     def sub_pixels_in_mask(self) -> int:
