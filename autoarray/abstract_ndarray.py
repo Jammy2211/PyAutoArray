@@ -169,6 +169,20 @@ class AbstractNDArray(ABC):
     def size(self):
         return self._array.size
 
+    @property
+    def dtype(self):
+        return self._array.dtype
+
+    @property
+    def ndim(self):
+        return self._array.ndim
+
+    def max(self, *args, **kwargs):
+        return self._array.max(*args, **kwargs)
+
+    def min(self, *args, **kwargs):
+        return self._array.min(*args, **kwargs)
+
     @to_new_array
     def reshape(self, *args, **kwargs):
         return self._array.reshape(*args, **kwargs)
