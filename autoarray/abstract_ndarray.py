@@ -64,9 +64,11 @@ class AbstractNDArray(ABC):
     def __ne__(self, other):
         return self._array != other
 
+    @to_new_array
     def __mul__(self, other):
         return self._array * other
 
+    @to_new_array
     def __rmul__(self, other):
         return other * self._array
 
