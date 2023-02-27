@@ -260,12 +260,12 @@ class MatPlot2D(AbstractMatPlot):
                 ax = self.setup_subplot()
 
         aspect = self.figure.aspect_from(shape_native=array.shape_native)
-        norm_scale = self.cmap.norm_from(array=array)
+        norm_scale = self.cmap.norm_from(array=array.array)
 
         origin = conf.instance["visualize"]["general"]["general"]["imshow_origin"]
 
         plt.imshow(
-            X=array.native,
+            X=array.native.array,
             aspect=aspect,
             cmap=self.cmap.cmap,
             norm=norm_scale,
