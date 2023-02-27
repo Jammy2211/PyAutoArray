@@ -59,9 +59,14 @@ class AbstractNDArray(ABC):
     def __neg__(self):
         return -self._array
 
-    @to_new_array
     def __invert__(self):
         return ~self._array
+
+    def sum(self, *args, **kwargs):
+        return self._array.sum(*args, **kwargs)
+
+    def __float__(self):
+        return float(self._array)
 
     @property
     @abstractmethod
