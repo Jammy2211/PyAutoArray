@@ -10,7 +10,7 @@ class SettingsInversion:
     def __init__(
         self,
         use_w_tilde: bool = True,
-        use_positive_only_solver : bool = False,
+        use_positive_only_solver: bool = False,
         no_regularization_add_to_curvature_diag: bool = True,
         check_solution: Optional[bool] = None,
         use_w_tilde_numpy: bool = False,

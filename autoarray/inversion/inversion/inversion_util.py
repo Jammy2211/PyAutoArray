@@ -254,7 +254,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
     return mapped_reconstructed_data
 
 
-def reconstruction_from(
+def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
     curvature_reg_matrix_cholesky: np.ndarray,
     settings: SettingsInversion = SettingsInversion(),
@@ -289,6 +289,35 @@ def reconstruction_from(
     except np.linalg.LinAlgError:
         raise exc.InversionException()
 
+    reconstruction_check_solution(
+        data_vector=data_vector, reconstruction=reconstruction, settings=settings
+    )
+
+    return reconstruction
+
+
+def reconstruction_check_solution(
+    data_vector: np.ndarray,
+    reconstruction: np.ndarray,
+    settings: SettingsInversion = SettingsInversion(),
+):
+    """
+    Check that the solution after reconstructing an inversion is not one where all reconstructed values go to the same
+    value.
+
+    These solutions occur when the linear system is numerically unstable, and can lead to high `log_evidence` values
+    due to numerically issues not currently fully understood.
+
+    Parameters
+    ----------
+    data_vector
+        The `data_vector` D which is solved for.
+    curvature_reg_matrix
+        The the sum of the curvature and regularization matrices.
+    settings
+        Controls the settings of the inversion, for this function where the solution is checked to not be all
+        the same values.
+    """
     if settings.check_solution and len(reconstruction) > 1:
         if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-6).all():
             raise exc.InversionException()
@@ -300,8 +329,6 @@ def reconstruction_from(
             a=reconstruction[index], b=reconstruction[index + 1], atol=1e-6
         ).all():
             raise exc.InversionException()
-
-    return reconstruction
 
 
 def preconditioner_matrix_via_mapping_matrix_from(
