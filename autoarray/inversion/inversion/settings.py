@@ -10,6 +10,7 @@ class SettingsInversion:
     def __init__(
         self,
         use_w_tilde: bool = True,
+        use_positive_only_solver : bool = False,
         no_regularization_add_to_curvature_diag: bool = True,
         check_solution: Optional[bool] = None,
         use_w_tilde_numpy: bool = False,
@@ -29,6 +30,10 @@ class SettingsInversion:
             Whether to use the w-tilde formalism to perform the inversion, which speeds up the construction of the
             simultaneous linear equations (by bypassing the construction of a `mapping_matrix`) for many dataset
             use cases.
+        use_positive_only_solver
+            Whether to use a positive-only linear system solver, which requires that every reconstucted value is
+            positive but is computationally much slower than the default solver (which allows for positive and
+            negative values).
         no_regularization_add_to_curvature_diag
             When True, if a linear object in the inversion has no regularization, values of 1.0e-8 are added to the
             diagonal of its `curvature_matrix` to stablelize the linear algebra solver.
@@ -53,6 +58,7 @@ class SettingsInversion:
         """
 
         self.use_w_tilde = use_w_tilde
+        self.use_positive_only_solver = use_positive_only_solver
         self.use_linear_operators = use_linear_operators
         self.no_regularization_add_to_curvature_diag = (
             no_regularization_add_to_curvature_diag
