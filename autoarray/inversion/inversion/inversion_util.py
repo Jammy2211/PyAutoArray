@@ -302,9 +302,9 @@ def reconstruction_positive_negative_from(
 
 
 def reconstruction_positive_only_from(
-        data_vector: np.ndarray,
-        curvature_reg_matrix: np.ndarray,
-        settings: SettingsInversion = SettingsInversion(),
+    data_vector: np.ndarray,
+    curvature_reg_matrix: np.ndarray,
+    settings: SettingsInversion = SettingsInversion(),
 ):
     """
     Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -336,7 +336,11 @@ def reconstruction_positive_only_from(
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
     try:
-        reconstruction = nnls(curvature_reg_matrix, (data_vector).T, maxiter=settings.positive_only_maxiter)[0]
+        reconstruction = nnls(
+            curvature_reg_matrix,
+            (data_vector).T,
+            maxiter=settings.positive_only_maxiter,
+        )[0]
     except np.linalg.LinAlgError:
         raise exc.InversionException()
 

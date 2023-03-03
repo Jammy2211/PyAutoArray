@@ -11,7 +11,7 @@ class SettingsInversion:
         self,
         use_w_tilde: bool = True,
         use_positive_only_solver: bool = False,
-        positive_only_maxiter : int = 5000,
+        positive_only_maxiter: int = 5000,
         no_regularization_add_to_curvature_diag: bool = True,
         check_solution: Optional[bool] = None,
         use_w_tilde_numpy: bool = False,
