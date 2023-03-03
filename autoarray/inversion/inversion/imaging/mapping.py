@@ -117,7 +117,6 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         if (
             self.preloads.curvature_matrix_preload is None
-            or not self.settings.use_curvature_matrix_preload
         ):
 
             return inversion_util.curvature_matrix_via_mapping_matrix_from(
