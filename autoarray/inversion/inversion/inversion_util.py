@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.linalg import cho_solve
-from scipy.optimize import nnls
+from scipy.optimize import lsq_linear, nnls
 from typing import List, Optional
 
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -335,13 +335,16 @@ def reconstruction_positive_only_from(
     curvature_reg_matrix
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
+
     try:
+
         reconstruction = nnls(
             curvature_reg_matrix,
             (data_vector).T,
             maxiter=settings.positive_only_maxiter,
         )[0]
-    except np.linalg.LinAlgError:
+
+    except (RuntimeError, np.linalg.LinAlgError):
         raise exc.InversionException()
 
     reconstruction_check_solution(
