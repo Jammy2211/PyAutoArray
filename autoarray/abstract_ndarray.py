@@ -206,3 +206,11 @@ class AbstractNDArray(ABC):
     @to_new_array
     def astype(self, dtype):
         return self._array.astype(dtype)
+
+    @property
+    def real(self):
+        return self._array.real
+
+    @property
+    def imag(self):
+        return self._array.imag
