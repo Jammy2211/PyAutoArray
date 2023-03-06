@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.interpolate import griddata
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
+from autoarray.structures.abstract_structure import Structure
 from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.neighbors import Neighbors
@@ -15,14 +16,29 @@ from autoarray import type as ty
 
 
 class Mesh2DRectangular(Abstract2DMesh):
-    def __new__(
-        cls,
+    @property
+    def slim(self) -> "Structure":
+        raise NotImplementedError()
+
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplementedError()
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplementedError()
+
+    def __init__(
+        self,
         values: np.ndarray,
         shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
-        *args,
-        **kwargs
     ):
         """
         A grid of (y,x) coordinates which represent a uniform rectangular pixelization.
@@ -61,10 +77,9 @@ class Mesh2DRectangular(Abstract2DMesh):
             origin=origin,
         )
 
-        obj = values.view(cls)
-        obj.mask = mask
+        self.mask = mask
 
-        return obj
+        super().__init__(array=values)
 
     @classmethod
     def overlay_grid(
