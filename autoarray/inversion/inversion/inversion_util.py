@@ -291,8 +291,8 @@ def reconstruction_positive_negative_from(
     """
     try:
         reconstruction = cho_solve((curvature_reg_matrix_cholesky, True), data_vector)
-    except np.linalg.LinAlgError:
-        raise exc.InversionException()
+    except np.linalg.LinAlgError as e:
+        raise exc.InversionException() from e
 
     reconstruction_check_solution(
         data_vector=data_vector, reconstruction=reconstruction, settings=settings
@@ -344,8 +344,8 @@ def reconstruction_positive_only_from(
             maxiter=settings.positive_only_maxiter,
         )[0]
 
-    except (RuntimeError, np.linalg.LinAlgError):
-        raise exc.InversionException()
+    except (RuntimeError, np.linalg.LinAlgError) as e:
+        raise exc.InversionException() from e
 
     reconstruction_check_solution(
         data_vector=data_vector, reconstruction=reconstruction, settings=settings
@@ -370,8 +370,8 @@ def reconstruction_check_solution(
     ----------
     data_vector
         The `data_vector` D which is solved for.
-    curvature_reg_matrix
-        The the sum of the curvature and regularization matrices.
+    reconstruction
+        The solution of the linear system whose solution is checked.
     settings
         Controls the settings of the inversion, for this function where the solution is checked to not be all
         the same values.
