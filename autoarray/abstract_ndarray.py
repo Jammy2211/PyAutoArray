@@ -208,10 +208,12 @@ class AbstractNDArray(ABC):
         return self._array.astype(dtype)
 
     @property
+    @to_new_array
     def real(self):
         return self._array.real
 
     @property
+    @to_new_array
     def imag(self):
         return self._array.imag
 

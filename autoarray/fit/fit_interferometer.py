@@ -100,13 +100,11 @@ class FitInterferometer(FitDataset):
     @property
     def signal_to_noise_map(self) -> np.ndarray:
         """The signal-to-noise_map of the dataset and noise-map which are fitted."""
-        signal_to_noise_map_real = np.divide(
-            np.real(self.data), np.real(self.noise_map)
-        )
+        signal_to_noise_map_real = self.data.real / self.noise_map.real
+
         signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0
-        signal_to_noise_map_imag = np.divide(
-            np.imag(self.data), np.imag(self.noise_map)
-        )
+        signal_to_noise_map_imag = self.data.imag / self.noise_map.imag
+
         signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
 
         return signal_to_noise_map_real + 1.0j * signal_to_noise_map_imag

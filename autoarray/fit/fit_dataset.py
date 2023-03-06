@@ -39,7 +39,7 @@ class AbstractFitInversion(ABC):
         """
         warnings.filterwarnings("ignore")
 
-        signal_to_noise_map = np.divide(self.data, self.noise_map)
+        signal_to_noise_map = self.data / self.noise_map
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
@@ -49,8 +49,8 @@ class AbstractFitInversion(ABC):
         The signal-to-noise_map of the dataset and noise-map which are fitted.
         """
         warnings.filterwarnings("ignore")
-        absolute_signal_to_noise_map = np.divide(np.abs(self.data), self.noise_map)
-        return np.square(absolute_signal_to_noise_map)
+        absolute_signal_to_noise_map = abs(self.data / self.noise_map)
+        return absolute_signal_to_noise_map ** 2
 
     @property
     def residual_map(self) -> Structure:

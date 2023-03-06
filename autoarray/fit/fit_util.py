@@ -19,7 +19,7 @@ def residual_map_from(*, data: Structure, model_data: Structure) -> Structure:
     model_data
         The model data used to fit the data.
     """
-    return np.subtract(data, model_data, out=np.zeros_like(data))
+    return data - model_data
 
 
 def normalized_residual_map_from(
@@ -39,7 +39,7 @@ def normalized_residual_map_from(
     mask
         The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
-    return np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
+    return residual_map / noise_map
 
 
 def chi_squared_map_from(*, residual_map: Structure, noise_map: Structure) -> Structure:
@@ -55,9 +55,7 @@ def chi_squared_map_from(*, residual_map: Structure, noise_map: Structure) -> St
     noise_map
         The noise-map of the dataset.
     """
-    return np.square(
-        np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
-    )
+    return (residual_map / noise_map) ** 2.0
 
 
 def chi_squared_from(*, chi_squared_map: Structure) -> float:
@@ -83,7 +81,7 @@ def noise_normalization_from(*, noise_map: Structure) -> float:
     noise_map
         The masked noise-map of the dataset.
     """
-    return float(np.sum(np.log(2 * np.pi * noise_map**2.0)))
+    return float(np.sum(np.log(2 * np.pi * noise_map ** 2.0)))
 
 
 def normalized_residual_map_complex_from(
@@ -101,16 +99,11 @@ def normalized_residual_map_complex_from(
     noise_map
         The noise-map of the dataset.
     """
-    normalized_residual_map_real = np.divide(
-        residual_map.real,
-        noise_map.real,
-        out=np.zeros_like(residual_map, dtype="complex128"),
+    normalized_residual_map_real = (residual_map.real / noise_map.real).astype(
+        "complex128"
     )
-
-    normalized_residual_map_imag = np.divide(
-        residual_map.imag,
-        noise_map.imag,
-        out=np.zeros_like(residual_map, dtype="complex128"),
+    normalized_residual_map_imag = (residual_map.imag / noise_map.imag).astype(
+        "complex128"
     )
 
     return normalized_residual_map_real + 1j * normalized_residual_map_imag
@@ -131,12 +124,8 @@ def chi_squared_map_complex_from(
     noise_map
         The noise-map of the dataset.
     """
-    chi_squared_map_real = np.square(
-        np.divide(residual_map.real, noise_map.real, out=np.zeros_like(residual_map))
-    )
-    chi_squared_map_imag = np.square(
-        np.divide(residual_map.imag, noise_map.imag, out=np.zeros_like(residual_map))
-    )
+    chi_squared_map_real = (residual_map.real / noise_map.real) ** 2
+    chi_squared_map_imag = (residual_map.imag / noise_map.imag) ** 2
     return chi_squared_map_real + 1j * chi_squared_map_imag
 
 
@@ -168,8 +157,8 @@ def noise_normalization_complex_from(*, noise_map: Structure) -> float:
     noise_map
         The masked noise-map of the dataset.
     """
-    noise_normalization_real = float(np.sum(np.log(2 * np.pi * noise_map.real**2.0)))
-    noise_normalization_imag = float(np.sum(np.log(2 * np.pi * noise_map.imag**2.0)))
+    noise_normalization_real = float(np.sum(np.log(2 * np.pi * noise_map.real ** 2.0)))
+    noise_normalization_imag = float(np.sum(np.log(2 * np.pi * noise_map.imag ** 2.0)))
     return noise_normalization_real + noise_normalization_imag
 
 
@@ -296,15 +285,9 @@ def chi_squared_with_mask_fast_from(
 
     return float(
         np.sum(
-            np.square(
-                np.divide(
-                    np.subtract(
-                        data,
-                        model_data,
-                    ),
-                    noise_map,
-                )
-            )[np.asarray(mask) == 0]
+            np.square(np.divide(np.subtract(data, model_data,), noise_map,))[
+                np.asarray(mask) == 0
+            ]
         )
     )
 
