@@ -202,3 +202,7 @@ class AbstractNDArray(ABC):
 
     def __len__(self):
         return len(self._array)
+
+    @to_new_array
+    def astype(self, dtype):
+        return self._array.astype(dtype)
