@@ -616,3 +616,27 @@ def test__inversion_matrices__x2_mappers(
         voronoi_mapper_9_3x3
     ] == pytest.approx(0.5 * np.ones(9), 1.0e-4)
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+
+
+def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):
+
+    mask = masked_imaging_7x7_no_blur.mask
+
+    grid = aa.Grid2D.from_mask(mask=mask)
+
+    linear_obj = aa.m.MockLinearObjFuncList(
+        parameters=1, grid=grid, mapping_matrix=np.full(fill_value=0.5, shape=(9, 1))
+    )
+
+    inversion = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[linear_obj],
+        settings=aa.SettingsInversion(
+            use_w_tilde=False, check_solution=False, use_positive_only_solver=True
+        ),
+    )
+
+    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObjFuncList)
+    assert isinstance(inversion, aa.InversionImagingMapping)
+    assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+    assert inversion.reconstruction == pytest.approx(np.array([2.0]), 1.0e-4)
