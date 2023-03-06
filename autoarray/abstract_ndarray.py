@@ -64,6 +64,7 @@ class AbstractNDArray(ABC):
     def __ge__(self, other):
         return self._array >= other
 
+    @unwrap_array
     def __eq__(self, other):
         return self._array == other
 
