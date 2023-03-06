@@ -1,17 +1,14 @@
 import numpy as np
 from typing import Callable, Union, List, Tuple, Optional
 
-from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.grids.uniform_2d import Grid2D
-
-from autoarray.structures.arrays.uniform_2d import Array2D
-
-from autoarray.structures.arrays import array_2d_util
 from autoarray import numba_util
-from autoarray.geometry import geometry_util
-from autoarray.structures.grids import grid_2d_util
-
 from autoarray import type as ty
+from autoarray.geometry import geometry_util
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.arrays import array_2d_util
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids import grid_2d_util
+from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 def sub_steps_from(sub_steps):
@@ -22,16 +19,14 @@ def sub_steps_from(sub_steps):
 
 
 class Grid2DIterate(Grid2D):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values: np.ndarray,
         mask: Mask2D,
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
         sub_steps: List[int] = None,
         store_native: bool = False,
-        *args,
-        **kwargs
     ):
         """
         Represents a grid of coordinates as described for the ``Grid2D`` class, but using an iterative sub-grid that
@@ -80,14 +75,16 @@ class Grid2DIterate(Grid2D):
             grid_2d=values, mask_2d=mask, store_native=store_native
         )
 
-        obj = values.view(cls)
-        obj.mask = mask
-        obj.grid = Grid2D(values=np.asarray(obj), mask=mask, store_native=store_native)
-        obj.fractional_accuracy = fractional_accuracy
-        obj.relative_accuracy = relative_accuracy
-        obj.sub_steps = sub_steps
+        self.grid = Grid2D(
+            values=np.asarray(values), mask=mask, store_native=store_native
+        )
+        self.fractional_accuracy = fractional_accuracy
+        self.relative_accuracy = relative_accuracy
+        self.sub_steps = sub_steps
 
-        return obj
+        super().__init__(
+            values=values, mask=mask, store_native=store_native,
+        )
 
     def __array_finalize__(self, obj):
 
