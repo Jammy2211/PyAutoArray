@@ -199,3 +199,6 @@ class AbstractNDArray(ABC):
 
     def __array__(self):
         return self._array
+
+    def __len__(self):
+        return len(self._array)

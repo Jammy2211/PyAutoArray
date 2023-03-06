@@ -364,7 +364,7 @@ def exposure_time_map_via_exposure_time_and_background_noise_map_from(
     relative_background_noise_map = inverse_background_noise_map / np.max(
         inverse_background_noise_map
     )
-    return np.abs(exposure_time * (relative_background_noise_map))
+    return abs(exposure_time * relative_background_noise_map)
 
 
 def setup_random_seed(seed):
@@ -507,7 +507,7 @@ def noise_map_with_signal_to_noise_limit_from(
 
     # TODO : Refacotr into a util
 
-    signal_to_noise_map = np.divide(data, noise_map)
+    signal_to_noise_map = data / noise_map
     signal_to_noise_map[signal_to_noise_map < 0] = 0
 
     if noise_limit_mask is None:
