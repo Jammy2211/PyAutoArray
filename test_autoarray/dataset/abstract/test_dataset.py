@@ -1,9 +1,7 @@
 import logging
 import numpy as np
-import pytest
 
 import autoarray as aa
-
 from autoarray.dataset.abstract import dataset as ds
 
 logger = logging.getLogger(__name__)
@@ -87,7 +85,7 @@ def test__potential_chi_squared_map():
 
     assert (
         dataset.potential_chi_squared_map.native
-        == np.array([[0.1**2.0, 0.2**2.0], [0.1**2.0, 1.0**2.0]])
+        == np.array([[0.1 ** 2.0, 0.2 ** 2.0], [0.1 ** 2.0, 1.0 ** 2.0]])
     ).all()
     assert dataset.potential_chi_squared_max == 1.0
 
