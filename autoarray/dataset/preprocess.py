@@ -40,7 +40,7 @@ def array_eps_to_counts(array_eps, exposure_time_map):
     exposure_time_map
         The exposure time at every data-point of the array.
     """
-    return np.multiply(array_eps, exposure_time_map)
+    return array_eps * exposure_time_map
 
 
 def array_counts_to_eps(array_counts, exposure_time_map):
@@ -59,7 +59,7 @@ def array_counts_to_eps(array_counts, exposure_time_map):
     exposure_time_map
         The exposure time at every data-point of the array.
     """
-    return np.divide(array_counts, exposure_time_map)
+    return array_counts / exposure_time_map
 
 
 def array_eps_to_adus(array_eps, exposure_time_map, gain):
@@ -80,7 +80,7 @@ def array_eps_to_adus(array_eps, exposure_time_map, gain):
     gain
         The gain of the instrument used in the conversion to / from counts and ADUs.
     """
-    return np.multiply(array_eps, exposure_time_map) / gain
+    return (array_eps * exposure_time_map) / gain
 
 
 def array_adus_to_eps(array_adus, exposure_time_map, gain):
@@ -101,7 +101,7 @@ def array_adus_to_eps(array_adus, exposure_time_map, gain):
     gain
         The gain of the instrument used in the conversion to / from counts and ADUs.
     """
-    return np.divide(gain * array_adus, exposure_time_map)
+    return (gain * array_adus) / exposure_time_map
 
 
 def array_counts_to_counts_per_second(array_counts, exposure_time):
