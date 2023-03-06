@@ -214,3 +214,6 @@ class AbstractNDArray(ABC):
     @property
     def imag(self):
         return self._array.imag
+
+    def all(self):
+        return self._array.all()
