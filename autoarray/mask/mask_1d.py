@@ -1,17 +1,16 @@
 from __future__ import annotations
+
 import logging
 import numpy as np
-from typing import TYPE_CHECKING, List, Tuple, Union
+from typing import List, Tuple, Union
 
-if TYPE_CHECKING:
-    from autoarray.structures.grids.uniform_1d import Grid1D
-    from autoarray.mask.mask_2d import Mask2D
 
 from autoarray.mask.abstract_mask import Mask
 
 from autoarray.mask.derive.grid_1d import DeriveGrid1D
 from autoarray.mask.derive.mask_1d import DeriveMask1D
 from autoarray.geometry.geometry_1d import Geometry1D
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays import array_1d_util
 
 from autoarray import exc
@@ -22,14 +21,16 @@ logger = logging.getLogger(__name__)
 
 
 class Mask1D(Mask):
-    def __new__(
-        cls,
+    @property
+    def native(self) -> Structure:
+        raise NotImplemented()
+
+    def __init__(
+        self,
         mask: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
-        origin: Tuple[
-            float,
-        ] = (0.0,),
+        origin: Tuple[float,] = (0.0,),
         invert: bool = False,
     ):
         """
@@ -66,12 +67,8 @@ class Mask1D(Mask):
             raise exc.MaskException("The input mask is not a one dimensional array")
 
         # noinspection PyArgumentList
-        return Mask.__new__(
-            cls=cls,
-            mask=mask,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
+        super().__init__(
+            mask=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin,
         )
 
     def __array_finalize__(self, obj):
