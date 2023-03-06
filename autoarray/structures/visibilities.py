@@ -55,7 +55,7 @@ class AbstractVisibilities(Structure, ABC):
             (np.real(visibilities), np.imag(visibilities)), axis=0
         )
 
-        super().__init__(array=self.ordered_1d)
+        super().__init__(array=visibilities)
 
     def __array_finalize__(self, obj):
 
