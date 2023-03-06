@@ -14,25 +14,31 @@ from autoarray import type as ty
 
 
 class Array1D(Structure):
-    def __new__(
-        cls,
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplementedError()
+
+    def __init__(
+        self,
         values: Union[np.ndarray, List],
         mask: Mask1D,
         header: Optional[Header] = None,
         store_native: bool = False,
-        *args,
-        **kwargs
     ):
 
         values = array_1d_util.convert_array_1d(
-            array_1d=values, mask_1d=mask, store_native=store_native
+            array_1d=values, mask_1d=mask, store_native=store_native,
         )
 
-        obj = values.view(cls)
-        obj.mask = mask
-        obj.header = header
+        self.mask = mask
+        self.header = header
 
-        return obj
+        super().__init__(values)
 
     @classmethod
     def no_mask(
