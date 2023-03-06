@@ -195,3 +195,6 @@ class AbstractNDArray(ABC):
 
     def __repr__(self):
         return f"{self.__class__.__name__} {self.shape}"
+
+    def __array__(self):
+        return self._array
