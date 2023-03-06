@@ -149,7 +149,7 @@ def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_ma
     exposure_time_map
         The exposure time at every data-point of the data.
     """
-    return np.sqrt(np.abs(data_eps * exposure_time_map)) / exposure_time_map
+    return (data_eps * exposure_time_map) ** 0.5 / exposure_time_map
 
 
 def noise_map_via_weight_map_from(weight_map):
@@ -172,7 +172,7 @@ def noise_map_via_weight_map_from(weight_map):
         The weight-value of each pixel which is converted to a variance.
     """
     np.seterr(divide="ignore")
-    noise_map = 1.0 / np.sqrt(weight_map)
+    noise_map = 1.0 / weight_map ** 0.5
     noise_map[noise_map > 1.0e8] = 1.0e8
     return noise_map
 
@@ -213,14 +213,12 @@ def noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from(
         of electrons per second.
     """
     return (
-        np.sqrt(
-            (
-                np.abs(data_eps * exposure_time_map)
-                + np.square(background_noise_map * exposure_time_map)
-            )
+        (
+            abs(data_eps * exposure_time_map)
+            + (background_noise_map * exposure_time_map) ** 2
         )
-        / exposure_time_map
-    )
+        ** 0.5
+    ) / exposure_time_map
 
 
 def noise_map_via_data_eps_exposure_time_map_and_background_variances_from(
@@ -241,14 +239,9 @@ def noise_map_via_data_eps_exposure_time_map_and_background_variances_from(
         of electrons per second.
     """
     return (
-        np.sqrt(
-            (
-                np.abs(data_eps * exposure_time_map)
-                + (background_variances * exposure_time_map)
-            )
-        )
-        / exposure_time_map
-    )
+        (abs(data_eps * exposure_time_map) + (background_variances * exposure_time_map))
+        ** 0.5
+    ) / exposure_time_map
 
 
 def edges_from(image, no_edges):
