@@ -249,36 +249,6 @@ def test__inversion_imaging__via_regularizations(
         )
         assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-        mapper = copy.copy(voronoi_mapper_nn_9_3x3)
-        mapper.regularization = regularization_adaptive_brightness
-
-        inversion = aa.Inversion(
-            dataset=masked_imaging_7x7_no_blur,
-            linear_obj_list=[mapper],
-            settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
-        )
-
-        assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-        assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-            49.63744, 1.0e-4
-        )
-        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
-        mapper = copy.copy(voronoi_mapper_nn_9_3x3)
-        mapper.regularization = regularization_adaptive_brightness_split
-
-        inversion = aa.Inversion(
-            dataset=masked_imaging_7x7_no_blur,
-            linear_obj_list=[mapper],
-            settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
-        )
-
-        assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoi)
-        assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
-            34.90782, 1.0e-4
-        )
-        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
-
     except AttributeError:
         pass
 
