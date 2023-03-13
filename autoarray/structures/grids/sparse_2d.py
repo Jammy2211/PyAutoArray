@@ -1,7 +1,7 @@
 from __future__ import annotations
 import numpy as np
 from sklearn.cluster import KMeans
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple, List
 import warnings
 
 if TYPE_CHECKING:
@@ -17,7 +17,24 @@ from autoarray.structures.grids import sparse_2d_util
 
 
 class Grid2DSparse(Structure):
-    def __new__(cls, values: np.ndarray, sparse_index_for_slim_index: np.ndarray):
+    @property
+    def slim(self) -> "Structure":
+        raise NotImplemented()
+
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplemented()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplemented()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplemented()
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplemented()
+
+    def __init__(self, values: np.ndarray, sparse_index_for_slim_index: np.ndarray):
         """
         A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such
@@ -47,10 +64,9 @@ class Grid2DSparse(Structure):
             An array whose indexes map pixels from a Grid2D's mask to the closest (y,x) coordinate on the sparse_grid.
         """
 
-        obj = values.view(cls)
-        obj.sparse_index_for_slim_index = sparse_index_for_slim_index
+        self.sparse_index_for_slim_index = sparse_index_for_slim_index
 
-        return obj
+        super().__init__(values)
 
     def __array_finalize__(self, obj):
 
@@ -98,12 +114,12 @@ class Grid2DSparse(Structure):
             origin=origin,
         )
 
-        unmasked_sparse_grid_pixel_centres = (
-            geometry_util.grid_pixel_centres_2d_slim_from(
-                grid_scaled_2d_slim=unmasked_sparse_grid_1d,
-                shape_native=grid.mask.shape_native,
-                pixel_scales=grid.mask.pixel_scales,
-            ).astype("int")
+        unmasked_sparse_grid_pixel_centres = geometry_util.grid_pixel_centres_2d_slim_from(
+            grid_scaled_2d_slim=unmasked_sparse_grid_1d,
+            shape_native=grid.mask.shape_native,
+            pixel_scales=grid.mask.pixel_scales,
+        ).astype(
+            "int"
         )
 
         total_sparse_pixels = mask_2d_util.total_sparse_pixels_2d_from(
@@ -130,11 +146,11 @@ class Grid2DSparse(Structure):
             origin=origin,
         ).astype("int")
 
-        sparse_index_for_slim_index = (
-            sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-            ).astype("int")
+        sparse_index_for_slim_index = sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
+            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+        ).astype(
+            "int"
         )
 
         sparse_grid = sparse_2d_util.sparse_grid_via_unmasked_from(
@@ -187,7 +203,7 @@ class Grid2DSparse(Structure):
         warnings.filterwarnings("ignore")
 
         if stochastic:
-            seed = np.random.randint(low=1, high=2**31)
+            seed = np.random.randint(low=1, high=2 ** 31)
 
         if total_pixels > grid.shape[0]:
             raise exc.GridException
