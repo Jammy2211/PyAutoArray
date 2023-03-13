@@ -1123,10 +1123,9 @@ class Array2D(AbstractArray2D):
             pixel_scales=pixel_scales,
         )
 
-        array_1d = np.zeros(shape=shape_native[0] * shape_native[1])
-
-        for i in range(grid_pixels.shape[0]):
-            array_1d[i] = values[int(grid_pixels[i])]
+        array_1d = np.array(
+            [values[int(grid_pixels[i])] for i in range(grid_pixels.shape[0])]
+        )
 
         return cls.no_mask(
             values=array_1d,
