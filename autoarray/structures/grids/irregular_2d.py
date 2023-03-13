@@ -368,8 +368,8 @@ class Grid2DIrregularTransformed(Grid2DIrregular):
 
 
 class Grid2DIrregularUniform(Grid2DIrregular):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values: np.ndarray,
         shape_native: Optional[Tuple[float, float]] = None,
         pixel_scales: Optional[Tuple[float, float]] = None,
@@ -407,8 +407,8 @@ class Grid2DIrregularUniform(Grid2DIrregular):
             A collection of (y,x) coordinates that.
         """
 
-        if len(values) == 0:
-            return []
+        # if len(values) == 0:
+        #     return []
 
         if isinstance(values[0], float):
             values = [values]
@@ -423,15 +423,14 @@ class Grid2DIrregularUniform(Grid2DIrregular):
 
         coordinates_arr = np.concatenate([np.array(i) for i in values])
 
-        obj = coordinates_arr.view(cls)
-        obj._internal_list = values
+        self._internal_list = values
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        obj.shape_native = shape_native
-        obj.pixel_scales = pixel_scales
+        self.shape_native = shape_native
+        self.pixel_scales = pixel_scales
 
-        return obj
+        super().__init__(coordinates_arr)
 
     def __array_finalize__(self, obj):
 
