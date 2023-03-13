@@ -1,8 +1,9 @@
 import numpy as np
-from typing import Tuple
+from typing import Tuple, List
 
 from autoarray.geometry.abstract_2d import AbstractGeometry2D
 from autoarray.inversion.linear_obj.neighbors import Neighbors
+from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 
@@ -17,7 +18,30 @@ class MockGeometry(AbstractGeometry2D):
 
 
 class MockGrid2DMesh(Abstract2DMesh):
-    def __new__(cls, grid: np.ndarray = None, extent: Tuple[int, int, int, int] = None):
+    @property
+    def pixels(self) -> int:
+        raise NotImplementedError()
+
+    @property
+    def slim(self) -> "Structure":
+        raise NotImplementedError()
+
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplementedError()
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplementedError()
+
+    def __init__(
+        self, grid: np.ndarray = None, extent: Tuple[int, int, int, int] = None
+    ):
         """
         A grid of (y,x) coordinates which represent a uniform rectangular pixelization.
 
@@ -51,10 +75,9 @@ class MockGrid2DMesh(Abstract2DMesh):
         if grid is None:
             grid = np.ones(shape=(1, 2))
 
-        obj = grid.view(cls)
-        obj._extent = extent
+        self._extent = extent
 
-        return obj
+        super().__init__(grid)
 
     @property
     def geometry(self):
