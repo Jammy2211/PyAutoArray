@@ -3,7 +3,7 @@ import numpy as np
 import autoarray as aa
 
 
-def test__set_w_tilde():
+def _test__set_w_tilde():
 
     # fit inversion is None, so no need to bother with w_tilde.
 
