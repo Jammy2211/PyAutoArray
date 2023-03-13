@@ -195,4 +195,4 @@ def test__mapped_to_source_from(grid_2d_7x7):
 
     mapped_to_source_mapper = mapper.mapped_to_source_from(array=array_slim)
 
-    assert (mapped_to_source_util == mapped_to_source_mapper).all()
+    assert np.allclose(mapped_to_source_util, mapped_to_source_mapper)
