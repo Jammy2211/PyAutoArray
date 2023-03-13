@@ -1,5 +1,5 @@
 import logging
-import numpy as np
+import jax.numpy as np
 from typing import List, Optional, Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
@@ -458,12 +458,12 @@ class AbstractArray2D(Structure):
 
     @property
     def binned_across_rows(self) -> Array1D:
-        binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=0)
+        binned_array = np.mean(self.native.array, axis=0, where=~self.mask)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     @property
     def binned_across_columns(self) -> Array1D:
-        binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=1)
+        binned_array = np.mean(self.native.array, axis=1, where=~self.mask)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
