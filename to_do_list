@@ -30,60 +30,10 @@ Multi analysis API can easily be used for model parameterization, with CombineAn
 the log likelihood fuinction (which maybe uses a special type of Fit object).
 
 
-__Linear obj Func + Mapper fast leq__
-
-- Create MapperLeq object, which creates curvature / regularization / curvature reg matrix for each mapper (could
-be Mapping or WTilde object).
-
-- Extend LinearObjFuncList object to have curvature / regularization / curvature reg matrix, where it always uses
-Mapping calc and regularization matrix is all zeros.
-
-- Create LeqOffDiag objects, which take two of the above and compute curvature / regularization / curvature reg matrix
-for the off diagonal terms.
-
-- Each of these objects has the coordinates where it adds to the overall curvature / regularization / curvature reg
-matrix. For example, the first would be [0,0], the off diag would be something like [10, 0] if the mapper had 10
-pixels.
-
-- The above objects all also handle construction of the data_vector.
-
-- One can put preloads in these objects quite straight forwardly, enabling preloading of individual components
-of the linear algebra.
-
-- The role of LEqImaging / LEqInterferometer is now to take lists of the above objects and use them to
-construct the overall curvature / regularization / curvature reg matrix. This includes separate
-matrices with and withouth the linear obj func rows and columns, for calculation of the regularization and evidence terms.
-
-- Basically, the calculation of the data_vector / curvature / regularization matrix is now done section by section using the
-above objects, instead of constructing a large `blurred_mapping_matrix` (albeit we can retain this as an option).
-
-- Could aim for LEqImaging / LEqInterferometer to be reduced to just LEq,
-
-- For efficiency, you prob need to preallocate curvature_reg / curvature_reg_mapper (or perhaps even all
-matrices of every individual MapperLEq / LinearObjFuncList / LeqOffDiag object?) and copy in memory.
-
 
 __Probably Terrible Idea Notes__
 
 w_tilde_tlc:
-
-- Output snr_cut to hard disk for loading + reproducbility due to potential randomness of model.
-
-- Setup rerpesentative tests on sLACS data reproducing errors on cosma. Include models but also use multiple
-models, investigating change in model effects.
-
-- w_tilde_via_snr_cut_iteration should compare to likelihood of fit without a snr_cut (in potential chi squared,
-or disabled enitrely) as opposed to fit with nearby snr_cut. MAke sure this is the same comparison performed in check_preloads.
-
-- The image we are using to set the curvature preload is not the lens subbed image, and therefore is not representative
-of the data the inversion fits. Probably why the thing is so effing slow. Make chi squaed map or potrntial chi squared
-map in Inversion module.
-
-- USe potetial chi squared map due to negative image values (data is irellevent, due to lens light sub).
-
-- Do not use w_tilde with an snr_cut when the lens light is being modeled, as this changes the
-Inversion S/N image. Check by making sure the image of the inversion does not change between models. Maybe see if
-there is a way this can be "ok".
 
  - Faster calculation of w_tilde_imaging (or quick way to get from old one?).
 
@@ -92,8 +42,3 @@ there is a way this can be "ok".
  - Proper unit test on Preloads for w_tilde.
 
  - Add options for implciit preload of w_tilde / rest on and off, and manual input of snr_cut? Most likely make it so
-
- we assume snr_cut=0.0 but default with an optional flag for snr_cut_iterate
-
-- For multiple mappers / fitting lens light with inversion we need to always fit the Inversion's profile subtracted
-image or whatever is represnetative of what the data fits.

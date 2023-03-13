@@ -489,24 +489,73 @@ class Preloads:
         import copy
 
         settings_inversion = copy.deepcopy(fit.settings_inversion)
-        settings_inversion.use_curvature_matrix_preload = False
 
-        fom_with_preloads = fit.refit_with_new_preloads(
+        fit_with_preloads = fit.refit_with_new_preloads(
             preloads=self, settings_inversion=settings_inversion
-        ).figure_of_merit
+        )
 
-        fom_without_preloads = fit.refit_with_new_preloads(
+        fit_without_preloads = fit.refit_with_new_preloads(
             preloads=self.__class__(use_w_tilde=False)
-        ).figure_of_merit
+        )
 
-        if abs(fom_with_preloads - fom_without_preloads) > 1.0e-4:
+        try:
 
-            raise exc.PreloadsException(
-                f"The log likelihood of fits using and not using preloads are not"
-                f"consistent, indicating preloading has gone wrong."
-                f"The likelihood values are {fom_with_preloads} (with preloads) and "
-                f"{fom_without_preloads} (without preloads)"
+            if (
+                abs(
+                    fit_with_preloads.figure_of_merit
+                    - fit_without_preloads.figure_of_merit
+                )
+                > 1.0e-4
+            ):
+
+                raise exc.PreloadsException(
+                    f"""
+                    The log likelihood of fits using and not using preloads are not consistent, indicating 
+                    preloading has gone wrong.
+
+
+                    The likelihood values are: 
+
+                    With Preloads: {fit_with_preloads.figure_of_merit}
+                    Without Preloads: {fit_without_preloads.figure_of_merit}
+                    """
+                )
+
+        except exc.InversionException:
+
+            data_vector_difference = np.max(
+                np.abs(
+                    fit_with_preloads.inversion.data_vector
+                    - fit_without_preloads.inversion.data_vector
+                )
             )
+
+            if data_vector_difference > 1.0e-4:
+                raise exc.PreloadsException(
+                    f"""
+                    The data vectors of fits using and not using preloads are not consistent, indicating 
+                    preloading has gone wrong.
+
+                    The maximum value a data vector absolute value difference is: {data_vector_difference} 
+                    """
+                )
+
+            curvature_reg_matrix_difference = np.max(
+                np.abs(
+                    fit_with_preloads.inversion.curvature_reg_matrix
+                    - fit_without_preloads.inversion.curvature_reg_matrix
+                )
+            )
+
+            if curvature_reg_matrix_difference > 1.0e-4:
+                raise exc.PreloadsException(
+                    f"""
+                    The data vectors of fits using and not using preloads are not consistent, indicating 
+                    preloading has gone wrong.
+
+                    The maximum value a data vector absolute value difference is: {curvature_reg_matrix_difference} 
+                    """
+                )
 
     def reset_all(self):
         """
