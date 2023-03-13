@@ -359,9 +359,7 @@ class AbstractArray2D(Structure):
 
     @property
     def store_native(self):
-        if len(self.shape) == 1:
-            return False
-        return True
+        return len(self.shape) != 1
 
     def apply_mask(self, mask: Mask2D) -> "Array2D":
         return Array2D(values=self.native, mask=mask, header=self.header)
