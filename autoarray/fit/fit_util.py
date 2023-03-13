@@ -1,7 +1,21 @@
+from functools import wraps
+
 import numpy as np
 
 from autoarray.mask.abstract_mask import Mask
 from autoarray.structures.abstract_structure import Structure
+
+
+def to_new_array(func):
+    @wraps(func)
+    def wrapper(**kwargs):
+        result = func(**kwargs)
+        try:
+            return list(kwargs.values())[0].with_new_array(result)
+        except AttributeError:
+            return result
+
+    return wrapper
 
 
 def residual_map_from(*, data: Structure, model_data: Structure) -> Structure:
@@ -162,6 +176,7 @@ def noise_normalization_complex_from(*, noise_map: Structure) -> float:
     return noise_normalization_real + noise_normalization_imag
 
 
+@to_new_array
 def residual_map_with_mask_from(
     *, data: Structure, mask: Mask, model_data: Structure
 ) -> Structure:
@@ -186,6 +201,7 @@ def residual_map_with_mask_from(
     )
 
 
+@to_new_array
 def normalized_residual_map_with_mask_from(
     *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
@@ -213,6 +229,7 @@ def normalized_residual_map_with_mask_from(
     )
 
 
+@to_new_array
 def chi_squared_map_with_mask_from(
     *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
@@ -310,6 +327,7 @@ def noise_normalization_with_mask_from(*, noise_map: Structure, mask: Mask) -> f
     return float(np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0] ** 2.0)))
 
 
+@to_new_array
 def normalized_residual_map_complex_with_mask_from(
     *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
@@ -343,11 +361,10 @@ def normalized_residual_map_complex_with_mask_from(
         where=np.asarray(mask) == 0,
     )
 
-    return residual_map.with_new_array(
-        normalized_residual_map_real + 1j * normalized_residual_map_imag
-    )
+    return normalized_residual_map_real + 1j * normalized_residual_map_imag
 
 
+@to_new_array
 def chi_squared_map_complex_with_mask_from(
     *, residual_map: Structure, noise_map: Structure, mask: Mask
 ) -> Structure:
@@ -384,7 +401,7 @@ def chi_squared_map_complex_with_mask_from(
             where=np.asarray(mask) == 0,
         )
     )
-    return residual_map.with_new_array(chi_squared_map_real + 1j * chi_squared_map_imag)
+    return chi_squared_map_real + 1j * chi_squared_map_imag
 
 
 def chi_squared_complex_with_mask_from(

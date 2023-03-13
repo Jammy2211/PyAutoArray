@@ -136,8 +136,8 @@ class Interferometer(AbstractDataset):
         )
 
         dirty_image = self.transformer.image_from(
-            visibilities=self.visibilities.real * self.noise_map.real**-2.0
-            + 1j * self.visibilities.imag * self.noise_map.imag**-2.0,
+            visibilities=self.visibilities.real * self.noise_map.real ** -2.0
+            + 1j * self.visibilities.imag * self.noise_map.imag ** -2.0,
             use_adjoint_scaling=True,
         )
 
@@ -199,7 +199,9 @@ class Interferometer(AbstractDataset):
         )
         signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
 
-        return signal_to_noise_map_real + 1j * signal_to_noise_map_imag
+        return self.data.with_new_array(
+            signal_to_noise_map_real + 1j * signal_to_noise_map_imag
+        )
 
     @property
     def blurring_grid(self):
