@@ -15,7 +15,7 @@ from autoarray.geometry import geometry_util
 
 
 class Grid2DIrregular(AbstractNDArray):
-    def __new__(cls, values: Union[np.ndarray, List]):
+    def __init__(self, values: Union[np.ndarray, List]):
         """
         An irregular grid of (y,x) coordinates.
 
@@ -40,18 +40,17 @@ class Grid2DIrregular(AbstractNDArray):
             The irregular grid of (y,x) coordinates.
         """
 
-        if len(values) == 0:
-            return []
+        # if len(values) == 0:
+        #     return []
 
         if type(values) is list:
 
             if isinstance(values[0], Grid2DIrregular):
-                return values
+                values = values
+            else:
+                values = np.asarray(values)
 
-        return object.__new__(cls)
-
-    def __init__(self, values: Union[np.ndarray, List]):
-        super().__init__(np.asarray(values))
+        super().__init__(values)
 
     @property
     def geometry(self):
@@ -184,7 +183,7 @@ class Grid2DIrregular(AbstractNDArray):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
 
-        if isinstance(result, np.ndarray):
+        if isinstance(result, (np.ndarray, AbstractNDArray)):
             if len(result.shape) == 1:
                 return self.values_from(array_slim=result)
             elif len(result.shape) == 2:
