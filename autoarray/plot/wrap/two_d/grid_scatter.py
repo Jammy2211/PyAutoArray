@@ -124,7 +124,7 @@ class GridScatter(AbstractMatWrap2D):
         indexes
             The 1D indexes of the grid that are colored in when plotted.
         """
-        if not isinstance(grid, np.ndarray):
+        if not isinstance(grid, (np.ndarray, Grid2D)):
             raise exc.PlottingException(
                 "The grid passed into scatter_grid_indexes is not a ndarray and thus its"
                 "1D indexes cannot be marked and plotted."
