@@ -39,7 +39,18 @@ def test__set_w_tilde():
 
     noise_map = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=0.1, sub_size=1)
 
-    mask = aa.m.MockMask(native_for_slim=noise_map.mask.derive_indexes.native_for_slim)
+    mask = aa.Mask2D(
+        mask=np.array(
+            [
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ]
+        ),
+        pixel_scales=noise_map.pixel_scales,
+    )
 
     dataset = aa.m.MockDataset(psf=aa.Kernel2D.no_blur(pixel_scales=1.0), mask=mask)
 
