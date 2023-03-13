@@ -6,3 +6,4 @@ scipy>=1.5.4,<=1.8.1
 scikit-image>=0.14.2
 scikit-learn>=0.21.3
 jax==0.4.3
+jaxlib==0.4.3
