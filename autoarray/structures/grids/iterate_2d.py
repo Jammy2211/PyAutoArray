@@ -513,7 +513,7 @@ class Grid2DIterate(Grid2D):
         )
 
     @staticmethod
-    @numba_util.jit()
+    #  @numba_util.jit()
     def threshold_mask_via_arrays_jit_from(
         fractional_accuracy_threshold: float,
         relative_accuracy_threshold: Optional[float],
@@ -669,7 +669,7 @@ class Grid2DIterate(Grid2D):
         return Array2D(values=iterated_array_1d, mask=self.mask.derive_mask.sub_1)
 
     @staticmethod
-    @numba_util.jit()
+    #  @numba_util.jit()
     def iterated_array_jit_from(
         iterated_array: Array2D,
         threshold_mask_higher_sub: Mask2D,
@@ -735,7 +735,7 @@ class Grid2DIterate(Grid2D):
         )
 
     @staticmethod
-    @numba_util.jit()
+    #  @numba_util.jit()
     def threshold_mask_via_grids_jit_from(
         fractional_accuracy_threshold: float,
         relative_accuracy_threshold: float,
@@ -894,7 +894,7 @@ class Grid2DIterate(Grid2D):
         return Grid2D(values=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
 
     @staticmethod
-    @numba_util.jit()
+    #  @numba_util.jit()
     def iterated_grid_jit_from(
         iterated_grid: Grid2D,
         threshold_mask_higher_sub: Mask2D,

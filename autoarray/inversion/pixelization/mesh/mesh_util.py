@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 from autoarray import numba_util
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def rectangular_neighbors_from(
     shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -68,7 +68,7 @@ def rectangular_neighbors_from(
     return neighbors, neighbors_sizes
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def rectangular_corner_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -113,7 +113,7 @@ def rectangular_corner_neighbors(
     return neighbors, neighbors_sizes
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def rectangular_top_edge_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -146,7 +146,7 @@ def rectangular_top_edge_neighbors(
     return neighbors, neighbors_sizes
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def rectangular_left_edge_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -183,7 +183,7 @@ def rectangular_left_edge_neighbors(
     return neighbors, neighbors_sizes
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def rectangular_right_edge_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -220,7 +220,7 @@ def rectangular_right_edge_neighbors(
     return neighbors, neighbors_sizes
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def rectangular_bottom_edge_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -255,7 +255,7 @@ def rectangular_bottom_edge_neighbors(
     return neighbors, neighbors_sizes
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def rectangular_central_neighbors(
     neighbors: np.ndarray, neighbors_sizes: np.ndarray, shape_native: Tuple[int, int]
 ) -> Tuple[np.ndarray, np.ndarray]:
@@ -295,7 +295,7 @@ def rectangular_central_neighbors(
     return neighbors, neighbors_sizes
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def delaunay_triangle_area_from(
     corner_0: Tuple[float, float],
     corner_1: Tuple[float, float],
@@ -415,7 +415,7 @@ def delaunay_interpolated_array_from(
     return interpolated_array.reshape(shape_native)
 
 
-@numba_util.jit()
+#  @numba_util.jit()
 def voronoi_neighbors_from(
     pixels: int, ridge_points: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray]:
