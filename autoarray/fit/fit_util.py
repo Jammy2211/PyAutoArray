@@ -343,7 +343,9 @@ def normalized_residual_map_complex_with_mask_from(
         where=np.asarray(mask) == 0,
     )
 
-    return normalized_residual_map_real + 1j * normalized_residual_map_imag
+    return residual_map.with_new_array(
+        normalized_residual_map_real + 1j * normalized_residual_map_imag
+    )
 
 
 def chi_squared_map_complex_with_mask_from(
@@ -382,7 +384,7 @@ def chi_squared_map_complex_with_mask_from(
             where=np.asarray(mask) == 0,
         )
     )
-    return chi_squared_map_real + 1j * chi_squared_map_imag
+    return residual_map.with_new_array(chi_squared_map_real + 1j * chi_squared_map_imag)
 
 
 def chi_squared_complex_with_mask_from(

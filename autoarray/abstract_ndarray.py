@@ -16,9 +16,7 @@ from autoarray.structures.arrays import array_2d_util
 
 def to_new_array(func):
     def wrapper(self, *args, **kwargs):
-        new_array = copy(self)
-        new_array._array = func(self, *args, **kwargs)
-        return new_array
+        return self.with_new_array(func(self, *args, **kwargs))
 
     return wrapper
 
@@ -36,6 +34,11 @@ def unwrap_array(func):
 class AbstractNDArray(ABC):
     def __init__(self, array):
         self._array = array
+
+    def with_new_array(self, array):
+        new_array = copy(self)
+        new_array._array = array
+        return new_array
 
     def __iter__(self):
         return iter(self._array)
