@@ -33,6 +33,8 @@ def unwrap_array(func):
 
 class AbstractNDArray(ABC):
     def __init__(self, array):
+        if isinstance(array, AbstractNDArray):
+            array = array.array
         self._array = array
 
     def with_new_array(self, array):
