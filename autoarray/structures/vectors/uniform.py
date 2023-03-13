@@ -18,8 +18,17 @@ logger = logging.getLogger(__name__)
 
 
 class VectorYX2D(AbstractVectorYX2D):
-    def __new__(
-        cls,
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplementedError()
+
+    def __init__(
+        self,
         values: Union[np.ndarray, List[Tuple[float, float]]],
         grid: Union[Grid2D, List],
         mask: Mask2D,
@@ -210,8 +219,8 @@ class VectorYX2D(AbstractVectorYX2D):
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
 
-        if len(values) == 0:
-            return []
+        # if len(values) == 0:
+        #     return []
 
         if type(values) is list:
             values = np.asarray(values)
@@ -224,11 +233,10 @@ class VectorYX2D(AbstractVectorYX2D):
             grid_2d=grid, mask_2d=mask, store_native=store_native
         )
 
-        obj = values.view(cls)
-        obj.grid = Grid2D(values=grid, mask=mask)
-        obj.mask = mask
+        self.grid = Grid2D(values=grid, mask=mask)
+        self.mask = mask
 
-        return obj
+        super().__init__(values)
 
     def __array_finalize__(self, obj):
 
@@ -481,10 +489,7 @@ class VectorYX2D(AbstractVectorYX2D):
         `slim` to `native` and returned as a new `Grid2D`.
         """
         return VectorYX2D(
-            values=self,
-            grid=self.grid.native,
-            mask=self.mask,
-            store_native=True,
+            values=self, grid=self.grid.native, mask=self.mask, store_native=True,
         )
 
     @property
