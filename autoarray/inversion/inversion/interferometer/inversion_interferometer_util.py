@@ -8,7 +8,7 @@ from autoarray import numba_util
 logger = logging.getLogger(__name__)
 
 
-#  @numba_util.jit()
+@numba_util.jit()
 def w_tilde_data_interferometer_from(
     visibilities_real: np.ndarray,
     noise_map_real: np.ndarray,
@@ -19,7 +19,7 @@ def w_tilde_data_interferometer_from(
     pass
 
 
-#  @numba_util.jit()
+@numba_util.jit()
 def w_tilde_curvature_interferometer_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
@@ -56,7 +56,7 @@ def w_tilde_curvature_interferometer_from(
     pass
 
 
-#  @numba_util.jit()
+@numba_util.jit()
 def w_tilde_curvature_preload_interferometer_from(
     noise_map_real: np.ndarray,
     uv_wavelengths: np.ndarray,
@@ -66,12 +66,12 @@ def w_tilde_curvature_preload_interferometer_from(
     pass
 
 
-#  @numba_util.jit()
+@numba_util.jit()
 def w_tilde_via_preload_from(w_tilde_preload, native_index_for_slim_index):
     pass
 
 
-#  @numba_util.jit()
+@numba_util.jit()
 def data_vector_via_transformed_mapping_matrix_from(
     transformed_mapping_matrix: np.ndarray,
     visibilities: np.ndarray,
@@ -117,7 +117,7 @@ def data_vector_via_transformed_mapping_matrix_from(
     return data_vector
 
 
-#  @numba_util.jit()
+@numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
     curvature_preload: np.ndarray,
     pix_indexes_for_sub_slim_index: np.ndarray,
@@ -127,7 +127,7 @@ def curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
     pass
 
 
-#  @numba_util.jit()
+@numba_util.jit()
 def mapped_reconstructed_visibilities_from(
     transformed_mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
