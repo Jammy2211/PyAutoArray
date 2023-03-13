@@ -800,7 +800,7 @@ class Grid2D(Structure):
 
         This is used to interface with Python libraries that require the grid in (x,y) format.
         """
-        return np.fliplr(self)
+        return self.with_new_array(np.fliplr(self.array))
 
     @property
     def in_radians(self) -> "Grid2D":
