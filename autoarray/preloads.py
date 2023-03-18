@@ -495,7 +495,7 @@ class Preloads:
         )
 
         fit_without_preloads = fit.refit_with_new_preloads(
-            preloads=self.__class__(use_w_tilde=False)
+            preloads=self.__class__(use_w_tilde=False), settings_inversion=settings_inversion
         )
 
         try:
@@ -550,10 +550,10 @@ class Preloads:
             if curvature_reg_matrix_difference > 1.0e-4:
                 raise exc.PreloadsException(
                     f"""
-                    The data vectors of fits using and not using preloads are not consistent, indicating 
+                    The curvature matrices of fits using and not using preloads are not consistent, indicating 
                     preloading has gone wrong.
 
-                    The maximum value a data vector absolute value difference is: {curvature_reg_matrix_difference} 
+                    The maximum value of a curvature matrix absolute value difference is: {curvature_reg_matrix_difference} 
                     """
                 )
 

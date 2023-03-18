@@ -53,11 +53,11 @@ class GridPlot(AbstractMatWrap2D):
 
     def plot_grid(self, grid: Union[np.ndarray, Grid2D]):
         """
-        Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
+        Plot an input grid of (y,x) coordinates using the matplotlib method `plt.plot`.
 
         Parameters
         ----------
-        grid : Grid2D
+        grid
             The grid of (y,x) coordinates that is plotted.
         """
 
@@ -77,17 +77,17 @@ class GridPlot(AbstractMatWrap2D):
 
     def plot_grid_list(self, grid_list: Union[List[Grid2D], List[Grid2DIrregular]]):
         """
-         Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.line`.
+        Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.line`.
 
         This method colors each grid in the list the same, so that the different grids are visible in the plot.
 
-         This provides an alternative to `GridScatter.scatter_grid_list` where the plotted grids appear as lines
-         instead of scattered points.
+        This provides an alternative to `GridScatter.scatter_grid_list` where the plotted grids appear as lines
+        instead of scattered points.
 
-         Parameters
-         ----------
-         grid_list : Grid2DIrregular
-             The list of grids of (y,x) coordinates that are plotted.
+        Parameters
+        ----------
+        grid_list
+            The list of grids of (y,x) coordinates that are plotted.
         """
 
         if len(grid_list) == 0:

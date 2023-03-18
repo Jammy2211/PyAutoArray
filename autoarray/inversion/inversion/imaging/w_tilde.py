@@ -428,6 +428,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                         linear_func
                     ],
                 )
+
                 curvature_matrix[
                     mapper_param_range[0] : mapper_param_range[1],
                     linear_func_param_range[0] : linear_func_param_range[1],
@@ -454,6 +455,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
             curvature_matrix=curvature_matrix
         )
+
 
         return curvature_matrix
 
