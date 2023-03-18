@@ -456,7 +456,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
             curvature_matrix=curvature_matrix
         )
 
-
         return curvature_matrix
 
     @property

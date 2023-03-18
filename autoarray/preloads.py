@@ -495,7 +495,8 @@ class Preloads:
         )
 
         fit_without_preloads = fit.refit_with_new_preloads(
-            preloads=self.__class__(use_w_tilde=False), settings_inversion=settings_inversion
+            preloads=self.__class__(use_w_tilde=False),
+            settings_inversion=settings_inversion,
         )
 
         try:
