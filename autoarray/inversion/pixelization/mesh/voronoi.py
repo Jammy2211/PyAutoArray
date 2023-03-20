@@ -52,7 +52,7 @@ class Voronoi(Triangulation):
     ) -> Mesh2DVoronoi:
         """
         Return the Voronoi `source_plane_mesh_grid` as a `Mesh2DVoronoi` object, which provides additional
-        functionality for performing operations that exploit the geometry of a Voronoi pixelization.
+        functionality for performing operations that exploit the geometry of a Voronoi mesh.
 
         The array `sparse_index_for_slim_index` encodes the closest source pixel of every pixel on the
         (full resolution) sub image-plane grid. This is used for efficiently pairing every image-plane pixel to its
@@ -232,7 +232,7 @@ class VoronoiBrightnessImage(Voronoi):
         masked 2D data (see `Grid2DSparse.from_grid_and_unmasked_2d_grid_shape()`).
 
         The `data_pixelization_grid` is transformed to the `source_plane_mesh_grid`, and it is these (y,x) values
-        which then act the centres of the Voronoi pixelization's pixels.
+        which then act the centres of the Voronoi mesh's pixels.
 
         For a `VoronoiBrightnessImage` this grid is computed by applying a KMeans clustering algorithm to the masked
         data's values, where these values are reweighted by the `hyper_data` so that the algorithm can adapt to
