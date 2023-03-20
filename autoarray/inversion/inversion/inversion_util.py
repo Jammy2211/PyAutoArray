@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.linalg import cho_solve
-from typing import List, Optional, Tuple
+from scipy.optimize import lsq_linear, nnls
+from typing import List, Optional
 
 from autoarray.inversion.inversion.settings import SettingsInversion
 
@@ -254,7 +255,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
     return mapped_reconstructed_data
 
 
-def reconstruction_from(
+def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
     curvature_reg_matrix_cholesky: np.ndarray,
     settings: SettingsInversion = SettingsInversion(),
@@ -264,6 +265,10 @@ def reconstruction_from(
     of https://arxiv.org/pdf/astro-ph/0302587.pdf
 
     S is the vector of reconstructed inversion values.
+
+    This reconstruction uses a linear algebra solver that allows for negative and positives values in the solution.
+    By allowing negative values, the solver is efficient, but there are many inference problems where negative values
+    are nonphysical or undesirable.
 
     This function checks that the solution does not give a linear algebra error (e.g. because the input matrix is
     not positive-definitive) and that it avoids solutions where all reconstructed values go to the same value. If these
@@ -286,9 +291,91 @@ def reconstruction_from(
     """
     try:
         reconstruction = cho_solve((curvature_reg_matrix_cholesky, True), data_vector)
-    except np.linalg.LinAlgError:
-        raise exc.InversionException()
+    except np.linalg.LinAlgError as e:
+        raise exc.InversionException() from e
 
+    reconstruction_check_solution(
+        data_vector=data_vector, reconstruction=reconstruction, settings=settings
+    )
+
+    return reconstruction
+
+
+def reconstruction_positive_only_from(
+    data_vector: np.ndarray,
+    curvature_reg_matrix: np.ndarray,
+    settings: SettingsInversion = SettingsInversion(),
+):
+    """
+    Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
+    of https://arxiv.org/pdf/astro-ph/0302587.pdf
+
+    S is the vector of reconstructed inversion values.
+
+    This reconstruction uses a linear algebra solver that allows only positives values in the solution.
+    By not allowing negative values, the solver is slower than methods which allow negative values, but there are
+    many inference problems where negative values are nonphysical or undesirable and removing them improves the solution.
+
+    This function checks that the solution does not give a linear algebra error (e.g. because the input matrix is
+    not positive-definitive) and that it avoids solutions where all reconstructed values go to the same value. If these
+    occur it raises an exception.
+
+    Parameters
+    ----------
+    data_vector
+        The `data_vector` D which is solved for.
+    curvature_reg_matrix_cholesky
+        The sum of the curvature and regularization matrices.
+    settings
+        Controls the settings of the inversion, for this function where the solution is checked to not be all
+        the same values.
+
+    Returns
+    -------
+    curvature_reg_matrix
+        The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
+    """
+
+    try:
+
+        reconstruction = nnls(
+            curvature_reg_matrix,
+            (data_vector).T,
+            maxiter=settings.positive_only_maxiter,
+        )[0]
+
+    except (RuntimeError, np.linalg.LinAlgError) as e:
+        raise exc.InversionException() from e
+
+    reconstruction_check_solution(
+        data_vector=data_vector, reconstruction=reconstruction, settings=settings
+    )
+
+    return reconstruction
+
+
+def reconstruction_check_solution(
+    data_vector: np.ndarray,
+    reconstruction: np.ndarray,
+    settings: SettingsInversion = SettingsInversion(),
+):
+    """
+    Check that the solution after reconstructing an inversion is not one where all reconstructed values go to the same
+    value.
+
+    These solutions occur when the linear system is numerically unstable, and can lead to high `log_evidence` values
+    due to numerically issues not currently fully understood.
+
+    Parameters
+    ----------
+    data_vector
+        The `data_vector` D which is solved for.
+    reconstruction
+        The solution of the linear system whose solution is checked.
+    settings
+        Controls the settings of the inversion, for this function where the solution is checked to not be all
+        the same values.
+    """
     if settings.check_solution and len(reconstruction) > 1:
         if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-6).all():
             raise exc.InversionException()
@@ -300,8 +387,6 @@ def reconstruction_from(
             a=reconstruction[index], b=reconstruction[index + 1], atol=1e-6
         ).all():
             raise exc.InversionException()
-
-    return reconstruction
 
 
 def preconditioner_matrix_via_mapping_matrix_from(

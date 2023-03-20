@@ -450,10 +450,15 @@ class AbstractInversion:
 
         S is the vector of reconstructed inversion values.
         """
-
-        return inversion_util.reconstruction_from(
+        if not self.settings.use_positive_only_solver:
+            return inversion_util.reconstruction_positive_negative_from(
+                data_vector=self.data_vector,
+                curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
+                settings=self.settings,
+            )
+        return inversion_util.reconstruction_positive_only_from(
             data_vector=self.data_vector,
-            curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
+            curvature_reg_matrix=self.curvature_reg_matrix,
             settings=self.settings,
         )
 
