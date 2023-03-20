@@ -11,6 +11,7 @@ class MockMapper(AbstractMapper):
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
         hyper_data=None,
+        edge_pixel_list=None,
         regularization=None,
         pix_sub_weights=None,
         mapping_matrix=None,
@@ -26,6 +27,8 @@ class MockMapper(AbstractMapper):
         )
 
         super().__init__(mapper_grids=mapper_grids, regularization=regularization)
+
+        self._edge_pixel_list = edge_pixel_list
 
         self._pix_sub_weights = pix_sub_weights
 
@@ -47,6 +50,10 @@ class MockMapper(AbstractMapper):
         if self._parameters is None:
             return super().params
         return self._parameters
+
+    @property
+    def edge_pixel_list(self):
+        return self._edge_pixel_list
 
     @property
     def pix_sub_weights(self):

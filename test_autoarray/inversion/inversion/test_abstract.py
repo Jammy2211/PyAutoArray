@@ -57,6 +57,20 @@ def test__index_range_list_from():
     assert inversion.param_range_list_from(cls=aa.AbstractMapper) == [[2, 3]]
 
 
+def test__mapper_edge_pixel_list():
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[
+            aa.m.MockLinearObj(parameters=3, regularization=None),
+            aa.m.MockMapper(parameters=4, edge_pixel_list=[0, 2], regularization=None),
+            aa.m.MockLinearObj(parameters=7, regularization=None),
+            aa.m.MockMapper(parameters=4, edge_pixel_list=[0, 2], regularization=None),
+        ]
+    )
+
+    assert inversion.mapper_edge_pixel_list == [3, 5, 14, 16]
+
+
 def test__no_regularization_index_list():
 
     inversion = aa.m.MockInversion(

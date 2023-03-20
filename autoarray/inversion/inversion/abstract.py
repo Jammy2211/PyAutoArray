@@ -224,6 +224,33 @@ class AbstractInversion:
         )
 
     @property
+    def mapper_edge_pixel_list(self) -> List[int]:
+        """
+        Returns the edge pixels of all mappers in the inversion.
+
+        This uses the `edge_pixel_list` property of the `Mesh` of the `Mapper` class, and updates their values to
+        correspond to the indexing of the overall inversion's `curvature_matrix`.
+
+        This is used to regulareze the edge pixels of the inversion's `reconstruction` or remove them from the
+        inversion procedure entirely (e.g. make these values of these edge pixels zero).
+
+        Returns
+        -------
+        A list of the edge pixels of all mappers in the inversion, where the values are updated to correspond to the
+        indexing of the overall inversion's `curvature_matrix`.
+        """
+        mapper_edge_pixel_list = []
+
+        param_range_list = self.param_range_list_from(cls=LinearObj)
+
+        for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
+            if isinstance(linear_obj, AbstractMapper):
+                for edge_pixel in linear_obj.edge_pixel_list:
+                    mapper_edge_pixel_list.append(edge_pixel + param_range[0])
+
+        return mapper_edge_pixel_list
+
+    @property
     def total_regularizations(self) -> int:
         return sum(
             regularization is not None for regularization in self.regularization_list

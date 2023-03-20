@@ -108,6 +108,7 @@ def test__edge_pixel_list():
 
     assert mesh.edge_pixel_list == [0, 1, 3, 6, 8]
 
+
 def test__from_unmasked_sparse_shape_and_grid():
 
     mask = aa.Mask2D(
