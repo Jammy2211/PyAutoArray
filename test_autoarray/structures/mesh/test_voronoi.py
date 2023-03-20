@@ -88,8 +88,7 @@ def test__mesh_grid__attributes():
     ).all()
 
 
-def test__edge_pixels():
-
+def test__edge_pixel_list():
 
     grid = np.array(
         [
@@ -107,7 +106,7 @@ def test__edge_pixels():
 
     mesh = aa.Mesh2DVoronoi(values=grid)
 
-    assert (mesh.edge_pixels == np.array([0, 1, 3, 6, 8])).all()
+    assert mesh.edge_pixel_list == [0, 1, 3, 6, 8]
 
 def test__from_unmasked_sparse_shape_and_grid():
 

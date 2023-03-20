@@ -141,9 +141,9 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             raise exc.MeshException() from e
 
     @cached_property
-    def edge_pixels(self) -> np.ndarray:
+    def edge_pixel_list(self) -> List:
         """
-        Returns a 1D ndarray of the Voronoi pixel indexes which are on the edge of the mesh.
+        Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
         """
         return mesh_util.voronoi_edge_pixels_from(
             voronoi_regions=np.asarray(self.voronoi.regions),
