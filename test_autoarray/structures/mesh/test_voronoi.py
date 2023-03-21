@@ -92,21 +92,21 @@ def test__edge_pixel_list():
 
     grid = np.array(
         [
-            [3.0, 0.0],
-            [2.0, 1.0],
-            [2.0, 2.0],
-            [8.0, 3.0],
-            [1.0, 3.0],
-            [1.0, 9.0],
-            [6.0, 31.0],
-            [0.0, 2.0],
-            [3.0, 5.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, -1.0],
+            [0.0, 0.0],
+            [0.0, 1.0],
+            [-1.0, -1.0],
+            [-1.0, 0.0],
+            [-1.0, 1.0],
         ]
     )
 
     mesh = aa.Mesh2DVoronoi(values=grid)
 
-    assert mesh.edge_pixel_list == [0, 1, 3, 6, 8]
+    assert mesh.edge_pixel_list == [0, 1, 2, 3, 5, 6, 7, 8]
 
 
 def test__from_unmasked_sparse_shape_and_grid():

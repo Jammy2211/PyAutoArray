@@ -105,6 +105,10 @@ class AbstractMapper(LinearObj):
         return self.mapper_grids.image_plane_mesh_grid
 
     @property
+    def edge_pixel_list(self) -> List[int]:
+        return self.source_plane_mesh_grid.edge_pixel_list
+
+    @property
     def hyper_data(self) -> np.ndarray:
         return self.mapper_grids.hyper_data
 

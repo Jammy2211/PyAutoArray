@@ -350,13 +350,23 @@ class AbstractInversion:
         For multiple mappers, the regularization matrix is computed as the block diagonal of each individual mapper.
         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
         regularization it is bypassed.
+
+        If the `settings.regularize_edge_pixels_to_zero` is `True`, the edge pixels of each mapper in the inversion
+        are regularized so high their value is forced to zero.
         """
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
 
-        return block_diag(
+        regularization_matrix = block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
+
+        if self.settings.regularize_edge_pixels_to_zero:
+            regularization_matrix[
+                self.mapper_edge_pixel_list, self.mapper_edge_pixel_list
+            ] = 1e8
+
+        return regularization_matrix
 
     @cached_property
     @profile_func

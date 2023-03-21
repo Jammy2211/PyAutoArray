@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.interpolate import griddata
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from autoconf import cached_property
 
@@ -23,11 +23,22 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
         The neighbors of a Voronoi mesh are computed using the `ridge_points` attribute of the scipy `Voronoi`
         object, as described in the method `mesh_util.voronoi_neighbors_from`.
         """
+
         neighbors, sizes = mesh_util.voronoi_neighbors_from(
             pixels=self.pixels, ridge_points=np.asarray(self.voronoi.ridge_points)
         )
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+
+    @cached_property
+    def edge_pixel_list(self) -> List:
+        """
+        Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
+        """
+
+        return mesh_util.voronoi_edge_pixels_from(
+            regions=self.voronoi.regions, point_region=self.voronoi.point_region
+        )
 
     def interpolated_array_from(
         self,
