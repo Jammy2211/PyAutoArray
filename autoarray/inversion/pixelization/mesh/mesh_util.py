@@ -295,9 +295,7 @@ def rectangular_central_neighbors(
     return neighbors, neighbors_sizes
 
 
-def rectangular_edge_pixel_list_from(
-    neighbors: np.ndarray
-) -> List:
+def rectangular_edge_pixel_list_from(neighbors: np.ndarray) -> List:
     """
     Returns a list of the 1D indices of all pixels on the edge of a rectangular pixelization.
 

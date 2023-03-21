@@ -258,6 +258,33 @@ def test__curvature_reg_matrix_reduced():
     ).all()
 
 
+def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
+
+    curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+
+    linear_obj_list = [
+        aa.m.MockMapper(parameters=3, regularization=None, edge_pixel_list=[0])
+    ]
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=linear_obj_list,
+        curvature_reg_matrix=curvature_reg_matrix,
+        settings=aa.SettingsInversion(regularize_edge_pixels_to_zero=True),
+    )
+
+    curvature_reg_matrix = np.array(
+        [
+            [0.0, 2.0, 3.0],
+            [0.0, 5.0, 6.0],
+            [0.0, 8.0, 9.0],
+        ]
+    )
+
+    assert inversion.curvature_reg_matrix_solver == pytest.approx(
+        curvature_reg_matrix, 1.0e-4
+    )
+
+
 def test__regularization_matrix():
 
     reg_0 = aa.m.MockRegularization(regularization_matrix=np.ones((2, 2)))
@@ -277,36 +304,6 @@ def test__regularization_matrix():
             [0.0, 0.0, 2.0, 2.0, 2.0],
             [0.0, 0.0, 2.0, 2.0, 2.0],
             [0.0, 0.0, 2.0, 2.0, 2.0],
-        ]
-    )
-
-    assert inversion.regularization_matrix == pytest.approx(regularization_matrix)
-
-
-def test__regularization_matrix__regularize_edge_pixels_to_zero():
-
-    reg_0 = aa.m.MockRegularization(regularization_matrix=np.ones((2, 2)))
-    reg_1 = aa.m.MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
-
-    inversion = aa.m.MockInversion(
-        linear_obj_list=[
-            aa.m.MockMapper(
-                parameters=2,
-                regularization=reg_0,
-                edge_pixel_list=[0],
-            ),
-            aa.m.MockMapper(parameters=3, regularization=reg_1, edge_pixel_list=[1, 2]),
-        ],
-        settings=aa.SettingsInversion(regularize_edge_pixels_to_zero=True),
-    )
-
-    regularization_matrix = np.array(
-        [
-            [1e8, 1.0, 0.0, 0.0, 0.0],
-            [1.0, 1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 2.0, 2.0, 2.0],
-            [0.0, 0.0, 2.0, 1e8, 2.0],
-            [0.0, 0.0, 2.0, 2.0, 1e8],
         ]
     )
 

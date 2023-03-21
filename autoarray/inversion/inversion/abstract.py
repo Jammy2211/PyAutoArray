@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
@@ -357,16 +359,9 @@ class AbstractInversion:
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
 
-        regularization_matrix = block_diag(
+        return block_diag(
             *[linear_obj.regularization_matrix for linear_obj in self.linear_obj_list]
         )
-
-        if self.settings.regularize_edge_pixels_to_zero:
-            regularization_matrix[
-                self.mapper_edge_pixel_list, self.mapper_edge_pixel_list
-            ] = 1e8
-
-        return regularization_matrix
 
     @cached_property
     @profile_func
@@ -412,8 +407,6 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
-        # TODO : Done for speed, instead check if there is one regularization
-
         if len(self.regularization_list) == 1:
 
             curvature_matrix = self.curvature_matrix
@@ -424,6 +417,19 @@ class AbstractInversion:
             return curvature_matrix
 
         return np.add(self.curvature_matrix, self.regularization_matrix)
+
+    @cached_property
+    def curvature_reg_matrix_solver(self):
+
+        if self.settings.regularize_edge_pixels_to_zero:
+
+            curvature_reg_matrix_solver = copy.copy(self.curvature_reg_matrix)
+
+            curvature_reg_matrix_solver[:, self.mapper_edge_pixel_list] = 0.0
+
+            return curvature_reg_matrix_solver
+
+        return self.curvature_reg_matrix
 
     @cached_property
     @profile_func
@@ -450,36 +456,6 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix_cholesky(self) -> np.ndarray:
-        """
-        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
-        linear system of equations of the `Inversion`.
-
-        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
-        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
-        """
-        try:
-            return np.linalg.cholesky(self.curvature_reg_matrix)
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
-
-    @cached_property
-    @profile_func
-    def curvature_reg_matrix_reduced_cholesky(self) -> np.ndarray:
-        """
-        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
-        linear system of equations of the `Inversion`.
-
-        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
-        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
-        """
-        try:
-            return np.linalg.cholesky(self.curvature_reg_matrix_reduced)
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
-
-    @cached_property
-    @profile_func
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -490,12 +466,13 @@ class AbstractInversion:
         if not self.settings.use_positive_only_solver:
             return inversion_util.reconstruction_positive_negative_from(
                 data_vector=self.data_vector,
-                curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
+                curvature_reg_matrix=self.curvature_reg_matrix_solver,
                 settings=self.settings,
             )
+
         return inversion_util.reconstruction_positive_only_from(
             data_vector=self.data_vector,
-            curvature_reg_matrix=self.curvature_reg_matrix,
+            curvature_reg_matrix=self.curvature_reg_matrix_solver,
             settings=self.settings,
         )
 
@@ -647,7 +624,12 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_reduced_cholesky)))
+        try:
+            return 2.0 * np.sum(
+                np.log(np.diag(np.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+            )
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
 
     @cached_property
     @profile_func

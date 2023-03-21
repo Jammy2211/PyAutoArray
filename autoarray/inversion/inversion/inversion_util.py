@@ -257,7 +257,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
 
 def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
-    curvature_reg_matrix_cholesky: np.ndarray,
+    curvature_reg_matrix: np.ndarray,
     settings: SettingsInversion = SettingsInversion(),
 ):
     """
@@ -278,8 +278,8 @@ def reconstruction_positive_negative_from(
     ----------
     data_vector
         The `data_vector` D which is solved for.
-    curvature_reg_matrix_cholesky
-        The cholesky decomposition of the sum of the curvature and regularization matrices.
+    curvature_reg_matrix
+        The sum of the curvature and regularization matrices.
     settings
         Controls the settings of the inversion, for this function where the solution is checked to not be all
         the same values.
@@ -290,13 +290,9 @@ def reconstruction_positive_negative_from(
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
     try:
-        reconstruction = cho_solve((curvature_reg_matrix_cholesky, True), data_vector)
+        reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
     except np.linalg.LinAlgError as e:
         raise exc.InversionException() from e
-
-    reconstruction_check_solution(
-        data_vector=data_vector, reconstruction=reconstruction, settings=settings
-    )
 
     return reconstruction
 
@@ -324,7 +320,7 @@ def reconstruction_positive_only_from(
     ----------
     data_vector
         The `data_vector` D which is solved for.
-    curvature_reg_matrix_cholesky
+    curvature_reg_matrix
         The sum of the curvature and regularization matrices.
     settings
         Controls the settings of the inversion, for this function where the solution is checked to not be all
@@ -346,10 +342,6 @@ def reconstruction_positive_only_from(
 
     except (RuntimeError, np.linalg.LinAlgError) as e:
         raise exc.InversionException() from e
-
-    reconstruction_check_solution(
-        data_vector=data_vector, reconstruction=reconstruction, settings=settings
-    )
 
     return reconstruction
 
