@@ -294,6 +294,38 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
 
+def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_to_zero(
+    masked_imaging_7x7_no_blur,
+    voronoi_mapper_9_3x3,
+):
+
+    mask = masked_imaging_7x7_no_blur.mask
+
+    grid = aa.Grid2D.from_mask(mask=mask)
+
+    linear_obj = aa.m.MockLinearObj(
+        parameters=1,
+        grid=grid,
+        mapping_matrix=np.full(fill_value=0.5, shape=(9, 1)),
+        regularization=None,
+    )
+
+    inversion = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[linear_obj, voronoi_mapper_9_3x3],
+        settings=aa.SettingsInversion(
+            use_w_tilde=False,
+            no_regularization_add_to_curvature_diag=False,
+            regularize_edge_pixels_to_zero=True,
+        ),
+    )
+
+    assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
+    assert isinstance(inversion.linear_obj_list[1], aa.MapperVoronoiNoInterp)
+    assert isinstance(inversion, aa.InversionImagingMapping)
+    assert (inversion.curvature_reg_matrix_solver[:, 1] == np.zeros(shape=(10,))).all()
+
+
 def test__inversion_imaging__compare_mapping_and_w_tilde_values(
     masked_imaging_7x7, voronoi_mapper_9_3x3
 ):
