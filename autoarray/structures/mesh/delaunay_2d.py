@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from autoconf import cached_property
 
@@ -18,7 +18,7 @@ class Mesh2DDelaunay(Abstract2DMeshTriangulation):
 
         see `Neighbors` for a complete description of the neighboring scheme.
 
-        The neighbors of a Voronoi pixelization are computed using the `ridge_points` attribute of the scipy `Voronoi`
+        The neighbors of a Voronoi mesh are computed using the `ridge_points` attribute of the scipy `Voronoi`
         object, as described in the method `mesh_util.voronoi_neighbors_from`.
         """
         indptr, indices = self.delaunay.vertex_neighbor_vertices

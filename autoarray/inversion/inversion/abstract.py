@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 from scipy.linalg import block_diag
 from scipy.sparse import csc_matrix
@@ -224,6 +226,33 @@ class AbstractInversion:
         )
 
     @property
+    def mapper_edge_pixel_list(self) -> List[int]:
+        """
+        Returns the edge pixels of all mappers in the inversion.
+
+        This uses the `edge_pixel_list` property of the `Mesh` of the `Mapper` class, and updates their values to
+        correspond to the indexing of the overall inversion's `curvature_matrix`.
+
+        This is used to regulareze the edge pixels of the inversion's `reconstruction` or remove them from the
+        inversion procedure entirely (e.g. make these values of these edge pixels zero).
+
+        Returns
+        -------
+        A list of the edge pixels of all mappers in the inversion, where the values are updated to correspond to the
+        indexing of the overall inversion's `curvature_matrix`.
+        """
+        mapper_edge_pixel_list = []
+
+        param_range_list = self.param_range_list_from(cls=LinearObj)
+
+        for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
+            if isinstance(linear_obj, AbstractMapper):
+                for edge_pixel in linear_obj.edge_pixel_list:
+                    mapper_edge_pixel_list.append(edge_pixel + param_range[0])
+
+        return mapper_edge_pixel_list
+
+    @property
     def total_regularizations(self) -> int:
         return sum(
             regularization is not None for regularization in self.regularization_list
@@ -323,6 +352,9 @@ class AbstractInversion:
         For multiple mappers, the regularization matrix is computed as the block diagonal of each individual mapper.
         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
         regularization it is bypassed.
+
+        If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
+        are regularized so high their value is forced to zero.
         """
         if self.preloads.regularization_matrix is not None:
             return self.preloads.regularization_matrix
@@ -375,8 +407,6 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return self.curvature_matrix
 
-        # TODO : Done for speed, instead check if there is one regularization
-
         if len(self.regularization_list) == 1:
 
             curvature_matrix = self.curvature_matrix
@@ -387,6 +417,19 @@ class AbstractInversion:
             return curvature_matrix
 
         return np.add(self.curvature_matrix, self.regularization_matrix)
+
+    @cached_property
+    def curvature_reg_matrix_solver(self):
+
+        if self.settings.force_edge_pixels_to_zeros:
+
+            curvature_reg_matrix_solver = copy.copy(self.curvature_reg_matrix)
+
+            curvature_reg_matrix_solver[:, self.mapper_edge_pixel_list] = 0.0
+
+            return curvature_reg_matrix_solver
+
+        return self.curvature_reg_matrix
 
     @cached_property
     @profile_func
@@ -413,36 +456,6 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix_cholesky(self) -> np.ndarray:
-        """
-        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
-        linear system of equations of the `Inversion`.
-
-        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
-        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
-        """
-        try:
-            return np.linalg.cholesky(self.curvature_reg_matrix)
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
-
-    @cached_property
-    @profile_func
-    def curvature_reg_matrix_reduced_cholesky(self) -> np.ndarray:
-        """
-        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
-        linear system of equations of the `Inversion`.
-
-        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
-        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
-        """
-        try:
-            return np.linalg.cholesky(self.curvature_reg_matrix_reduced)
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
-
-    @cached_property
-    @profile_func
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -453,12 +466,13 @@ class AbstractInversion:
         if not self.settings.use_positive_only_solver:
             return inversion_util.reconstruction_positive_negative_from(
                 data_vector=self.data_vector,
-                curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
+                curvature_reg_matrix=self.curvature_reg_matrix_solver,
                 settings=self.settings,
             )
+
         return inversion_util.reconstruction_positive_only_from(
             data_vector=self.data_vector,
-            curvature_reg_matrix=self.curvature_reg_matrix,
+            curvature_reg_matrix=self.curvature_reg_matrix_solver,
             settings=self.settings,
         )
 
@@ -610,7 +624,12 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_reduced_cholesky)))
+        try:
+            return 2.0 * np.sum(
+                np.log(np.diag(np.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+            )
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
 
     @cached_property
     @profile_func

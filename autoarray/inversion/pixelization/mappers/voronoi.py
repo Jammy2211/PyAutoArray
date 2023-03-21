@@ -136,10 +136,10 @@ class MapperVoronoi(AbstractMapperVoronoi):
         neighbor of the Voronoi mesh's third (index 2) pixel.
 
         - `pix_indexes_for_sub_slim_index[0, 1] = 5`: The data's first (index 0) sub-pixel also maps to the natural
-        neighbor of the Voronoi pixelization's sixth (index 5) pixel.
+        neighbor of the Voronoi mesh's sixth (index 5) pixel.
 
         - `pix_indexes_for_sub_slim_index[0, 2] = 8`: The data's first (index 0) sub-pixel also maps to the natural
-        neighbor of the Voronoi pixelization's ninth (index 8) pixel.
+        neighbor of the Voronoi mesh's ninth (index 8) pixel.
 
         The interpolation weights of these multiple mappings are stored in the array `pix_weights_for_sub_slim_index`.
         """
@@ -222,7 +222,7 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
         where each data pixel maps to 3 Delaunay triangles with interpolation weights). The weights of multiple mappings
         are stored in the array `pix_weights_for_sub_slim_index`.
 
-        For this Voronoi pixelization each data sub-pixel maps to a single pixelization pixel, thus the second
+        For this Voronoi mesh each data sub-pixel maps to a single pixelization pixel, thus the second
         dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
         are equal to 1.0.
 

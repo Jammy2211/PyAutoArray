@@ -1,6 +1,5 @@
 inversion:
   reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
-  check_solution_default: true      # When an Inversion checks solutions in case they are numerically unstable by default or not (e.g. InversionSettings.check_solution).
 numba:
   use_numba: true
   cache: false
