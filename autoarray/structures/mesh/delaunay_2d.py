@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from autoconf import cached_property
 

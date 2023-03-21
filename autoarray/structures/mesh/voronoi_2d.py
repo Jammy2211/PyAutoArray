@@ -30,16 +30,6 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
 
-    @cached_property
-    def edge_pixel_list(self) -> List:
-        """
-        Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
-        """
-
-        return mesh_util.voronoi_edge_pixels_from(
-            regions=self.voronoi.regions, point_region=self.voronoi.point_region
-        )
-
     def interpolated_array_from(
         self,
         values: np.ndarray,

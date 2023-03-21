@@ -141,6 +141,16 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             raise exc.MeshException() from e
 
     @cached_property
+    def edge_pixel_list(self) -> List:
+        """
+        Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
+        """
+
+        return mesh_util.voronoi_edge_pixels_from(
+            regions=self.voronoi.regions, point_region=self.voronoi.point_region
+        )
+
+    @cached_property
     def split_cross(self) -> np.ndarray:
         """
         For every 2d (y,x) coordinate corresponding to a Voronoi pixel centre, this property splits them into a cross

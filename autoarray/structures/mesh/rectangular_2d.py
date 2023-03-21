@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.interpolate import griddata
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from autoconf import cached_property
 
@@ -131,6 +131,10 @@ class Mesh2DRectangular(Abstract2DMesh):
         )
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+
+    @cached_property
+    def edge_pixel_list(self) -> List:
+        return mesh_util.rectangular_edge_pixel_list_from(neighbors=self.neighbors)
 
     @property
     def pixels(self) -> int:

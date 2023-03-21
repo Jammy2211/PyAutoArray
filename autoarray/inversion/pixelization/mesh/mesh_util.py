@@ -295,6 +295,34 @@ def rectangular_central_neighbors(
     return neighbors, neighbors_sizes
 
 
+def rectangular_edge_pixel_list_from(
+    neighbors: np.ndarray
+) -> List:
+    """
+    Returns a list of the 1D indices of all pixels on the edge of a rectangular pixelization.
+
+    This is computed by searching the `neighbors` array for pixels that have a neighbor with index -1, meaning there
+    is at least one neighbor from the 4 expected missing.
+
+    Parameters
+    ----------
+    neighbors
+        An array of dimensions [total_pixels, 4] which provides the index of all neighbors of every pixel in the
+        rectangular pixelization (entries of -1 correspond to no neighbor).
+
+    Returns
+    -------
+    A list of the 1D indices of all pixels on the edge of a rectangular pixelization.
+    """
+    edge_pixel_list = []
+
+    for i, neighbors in enumerate(neighbors):
+        if -1 in neighbors:
+            edge_pixel_list.append(i)
+
+    return edge_pixel_list
+
+
 @numba_util.jit()
 def delaunay_triangle_area_from(
     corner_0: Tuple[float, float],
