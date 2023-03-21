@@ -12,7 +12,7 @@ with open(join(this_dir, "README.rst"), encoding="utf-8") as file:
 with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
-version = environ.get("VERSION", "2023.3.21.3")
+version = environ.get("VERSION", "2023.3.21.4")
 requirements.extend([f"autoconf=={version}"])
 
 
