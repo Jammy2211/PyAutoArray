@@ -146,9 +146,12 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
         """
 
-        return mesh_util.voronoi_edge_pixels_from(
+        edge_pixel_list = mesh_util.voronoi_edge_pixels_from(
             regions=self.voronoi.regions, point_region=self.voronoi.point_region
         )
+
+        return edge_pixel_list
+
 
     @cached_property
     def split_cross(self) -> np.ndarray:
