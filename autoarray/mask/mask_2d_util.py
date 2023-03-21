@@ -1,5 +1,4 @@
 import numpy as np
-from skimage.transform import rescale
 from typing import Tuple, Union
 import warnings
 
@@ -1126,6 +1125,8 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
     np.ndarray
         The rescaled mask.
     """
+
+    from skimage.transform import rescale
 
     warnings.filterwarnings("ignore")
 

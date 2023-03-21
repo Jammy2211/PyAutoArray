@@ -405,7 +405,7 @@ class Preloads:
         if inversion_0 is None:
             return
 
-        if not hasattr(inversion_0, "linear_func_operated_mapping_matrix_dict"):
+        if not hasattr(inversion_0, "_curvature_matrix_mapper_diag"):
             return
 
         if inversion_0.curvature_matrix.shape == inversion_1.curvature_matrix.shape:
