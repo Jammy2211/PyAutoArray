@@ -346,41 +346,6 @@ def reconstruction_positive_only_from(
     return reconstruction
 
 
-def reconstruction_check_solution(
-    data_vector: np.ndarray,
-    reconstruction: np.ndarray,
-    settings: SettingsInversion = SettingsInversion(),
-):
-    """
-    Check that the solution after reconstructing an inversion is not one where all reconstructed values go to the same
-    value.
-
-    These solutions occur when the linear system is numerically unstable, and can lead to high `log_evidence` values
-    due to numerically issues not currently fully understood.
-
-    Parameters
-    ----------
-    data_vector
-        The `data_vector` D which is solved for.
-    reconstruction
-        The solution of the linear system whose solution is checked.
-    settings
-        Controls the settings of the inversion, for this function where the solution is checked to not be all
-        the same values.
-    """
-    if settings.check_solution and len(reconstruction) > 1:
-        if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-6).all():
-            raise exc.InversionException()
-
-    index = int(data_vector.shape[0] / 2)
-
-    if settings.check_solution and len(reconstruction) > 1:
-        if np.isclose(
-            a=reconstruction[index], b=reconstruction[index + 1], atol=1e-6
-        ).all():
-            raise exc.InversionException()
-
-
 def preconditioner_matrix_via_mapping_matrix_from(
     mapping_matrix: np.ndarray,
     regularization_matrix: np.ndarray,

@@ -227,7 +227,7 @@ def inversion_imaging_unpacked_from(
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
 
-    if all(
+    if any(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
