@@ -319,6 +319,9 @@ class Preloads:
         if not inversion_0.has(cls=AbstractLinearObjFuncList):
             return
 
+        if not hasattr(inversion_0, "linear_func_operated_mapping_matrix_dict"):
+            return
+
         should_preload = False
 
         for operated_mapping_matrix_0, operated_mapping_matrix_1 in zip(
@@ -400,6 +403,9 @@ class Preloads:
         inversion_1 = fit_1.inversion
 
         if inversion_0 is None:
+            return
+
+        if not hasattr(inversion_0, "linear_func_operated_mapping_matrix_dict"):
             return
 
         if inversion_0.curvature_matrix.shape == inversion_1.curvature_matrix.shape:
