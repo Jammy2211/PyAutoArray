@@ -269,7 +269,7 @@ def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
     inversion = aa.m.MockInversion(
         linear_obj_list=linear_obj_list,
         curvature_reg_matrix=curvature_reg_matrix,
-        settings=aa.SettingsInversion(regularize_edge_pixels_to_zero=True),
+        settings=aa.SettingsInversion(force_edge_pixels_to_zeros=True),
     )
 
     curvature_reg_matrix = np.array(

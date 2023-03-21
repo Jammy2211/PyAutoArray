@@ -353,7 +353,7 @@ class AbstractInversion:
         The scipy function `block_diag` has an overhead associated with it and if there is only one mapper and
         regularization it is bypassed.
 
-        If the `settings.regularize_edge_pixels_to_zero` is `True`, the edge pixels of each mapper in the inversion
+        If the `settings.force_edge_pixels_to_zeros` is `True`, the edge pixels of each mapper in the inversion
         are regularized so high their value is forced to zero.
         """
         if self.preloads.regularization_matrix is not None:
@@ -421,7 +421,7 @@ class AbstractInversion:
     @cached_property
     def curvature_reg_matrix_solver(self):
 
-        if self.settings.regularize_edge_pixels_to_zero:
+        if self.settings.force_edge_pixels_to_zeros:
 
             curvature_reg_matrix_solver = copy.copy(self.curvature_reg_matrix)
 

@@ -12,7 +12,7 @@ class SettingsInversion:
         use_w_tilde: bool = True,
         use_positive_only_solver: bool = False,
         positive_only_maxiter: int = 5000,
-        regularize_edge_pixels_to_zero: bool = False,
+        force_edge_pixels_to_zeros: bool = False,
         no_regularization_add_to_curvature_diag: bool = True,
         check_solution: Optional[bool] = None,
         use_w_tilde_numpy: bool = False,
@@ -65,7 +65,7 @@ class SettingsInversion:
         self.use_positive_only_solver = use_positive_only_solver
         self.positive_only_maxiter = positive_only_maxiter
         self.use_linear_operators = use_linear_operators
-        self.regularize_edge_pixels_to_zero = regularize_edge_pixels_to_zero
+        self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self.no_regularization_add_to_curvature_diag = (
             no_regularization_add_to_curvature_diag
         )
