@@ -628,8 +628,8 @@ class AbstractInversion:
             return 2.0 * np.sum(
                 np.log(np.diag(np.linalg.cholesky(self.curvature_reg_matrix_reduced)))
             )
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
+        except np.linalg.LinAlgError as e:
+            raise exc.InversionException() from e
 
     @cached_property
     @profile_func
@@ -671,8 +671,8 @@ class AbstractInversion:
                         np.diag(np.linalg.cholesky(self.regularization_matrix_reduced))
                     )
                 )
-            except np.linalg.LinAlgError:
-                raise exc.InversionException()
+            except np.linalg.LinAlgError as e:
+                raise exc.InversionException() from e
 
     @property
     def errors_with_covariance(self) -> np.ndarray:
