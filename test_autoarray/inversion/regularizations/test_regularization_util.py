@@ -514,6 +514,33 @@ def test__weighted_regularization_matrix_from():
     assert regularization_matrix == pytest.approx(test_regularization_matrix, 1.0e-4)
 
 
+def test__brightness_zeroth_regularization_matrix_from():
+
+    regularization_weights = np.ones(shape=(3,))
+
+    regularization_matrix = (
+        aa.util.regularization.brightness_zeroth_regularization_matrix_from(
+            regularization_weights=regularization_weights,
+        )
+    )
+
+    assert regularization_matrix == pytest.approx(
+        np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]), 1.0e-4
+    )
+
+    regularization_weights = np.array([1.0, 2.0, 3.0])
+
+    regularization_matrix = (
+        aa.util.regularization.brightness_zeroth_regularization_matrix_from(
+            regularization_weights=regularization_weights,
+        )
+    )
+
+    assert regularization_matrix == pytest.approx(
+        np.array([[1.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 9.0]]), 1.0e-4
+    )
+
+
 def test__constant_pixel_splitted_regularization_matrix():
     splitted_mappings = np.array(
         [

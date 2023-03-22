@@ -210,15 +210,23 @@ def weighted_regularization_matrix_from(
     neighbors_sizes: np.ndarray,
 ) -> np.ndarray:
     """
-    From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
+    Returns the regularization matrix of the adaptive regularization scheme (e.g. ``AdaptiveBrightness``).
+
+    This matrix is computed using the regularization weights of every mesh pixel, which are computed using the
+    function ``adaptive_regularization_weights_from``. These act as the effective regularization coefficients of
+    every mesh pixel.
+
+    The regularization matrix is computed using the pixel-neighbors array, which is setup using the appropriate
+    neighbor calculation of the corresponding ``Mapper`` class.
 
     Parameters
     ----------
     regularization_weights
-        The regularization_ weight of each pixel, which governs how much smoothing is applied to that individual pixel.
+        The regularization weight of each pixel, adaptively governing the degree of gradient regularization
+        applied to each inversion parameter (e.g. mesh pixels of a ``Mapper``).
     neighbors
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in
-        the Voronoi grid (entries of -1 correspond to no neighbor).
+        the mesh grid (entries of -1 correspond to no neighbor).
     neighbors_sizes
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
@@ -250,6 +258,38 @@ def weighted_regularization_matrix_from(
             regularization_matrix[neighbor_index, i] -= regularization_weight[
                 neighbor_index
             ]
+
+    return regularization_matrix
+
+
+@numba_util.jit()
+def brightness_zeroth_regularization_matrix_from(
+    regularization_weights: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the regularization matrix of the brightness zeroth regularization scheme (e.g. ``BrightnessZeroth``).
+
+    Parameters
+    ----------
+    regularization_weights
+        The regularization weight of each pixel, adaptively governing the degree of zeroth order regularization
+        applied to each inversion parameter (e.g. mesh pixels of a ``Mapper``).
+
+    Returns
+    -------
+    np.ndarray
+        The regularization matrix computed using an adaptive regularization scheme where the effective regularization
+        coefficient of every source pixel is different.
+    """
+
+    parameters = len(regularization_weights)
+
+    regularization_matrix = np.zeros(shape=(parameters, parameters))
+
+    regularization_weight = regularization_weights**2.0
+
+    for i in range(parameters):
+        regularization_matrix[i, i] += regularization_weight[i]
 
     return regularization_matrix
 
