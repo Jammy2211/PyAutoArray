@@ -10,52 +10,29 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.regularization import regularization_util
 
 
-class AdaptiveBrightness(AbstractRegularization):
+class BrightnessZeroth(AbstractRegularization):
     def __init__(
         self,
-        inner_coefficient: float = 1.0,
-        outer_coefficient: float = 1.0,
+        coefficient: float = 1.0,
         signal_scale: float = 1.0,
     ):
         """
-        An adaptive regularization scheme (regularization is described in the `Regularization` class above).
+        An adaptive regularization scheme which applies zeroth order regularization to pixels with low expected
+        signal values.
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is
-        applied when each set of pixel neighbors are regularized with one another. The motivation of this is that
-        different regions of a pixelization's mesh require different levels of regularization (e.g., high smoothing where the
-        no signal is present and less smoothing where it is, see (Nightingale, Dye and Massey 2018)).
+        controls the degree of zeroth order regularization applied to each pixel. The motivation of this is that
+        the exterior regions different regions of a pixelization's mesh ought to have a signal consistent with zero,
+        but may have a low level of non-zero signal when fitting the data.
 
-        Unlike ``Constant`` regularization, neighboring pixels must now be regularized with one another
-        in both directions (e.g. if pixel 0 regularizes pixel 1, pixel 1 must also regularize pixel 0). For example:
-
-        B = [-1, 1]  [0->1]
-            [-1, -1]  1 now also regularizes 0
-
-        For ``Constant`` regularization this would NOT produce a positive-definite matrix. However, for
-        the weighted scheme, it does!
-
-        The regularize weight_list change the B matrix as shown below - we simply multiply each pixel's effective
-        regularization weight by each row of B it has a -1 in, so:
-
-        regularization_weights = [1, 2, 3, 4]
-
-        B = [-1, 1, 0 ,0] # [0->1]
-            [0, -2, 2 ,0] # [1->2]
-            [0, 0, -3 ,3] # [2->3]
-            [4, 0, 0 ,-4] # [3->0]
-
-        If our -1's werent down the diagonal this would look like:
-
-        B = [4, 0, 0 ,-4] # [3->0]
-            [0, -2, 2 ,0] # [1->2]
-            [-1, 1, 0 ,0] # [0->1]
-            [0, 0, -3 ,3] # [2->3] This is valid!
+        To implement this regularization, values on the diagonal of the regularization matrix are increased
+        according to the regularization weight_list of each pixel.
 
         Parameters
         ----------
-        coefficients
-            The regularization coefficients which controls the degree of smoothing of the inversion reconstruction in
-            high and low signal regions of the reconstruction.
+        coefficient
+            The regularization coefficient which controls the degree of zeroth order regularizaiton applied to
+            the inversion reconstruction, in regions of low signal.
         signal_scale
             A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
             low signal regions.
@@ -63,19 +40,15 @@ class AdaptiveBrightness(AbstractRegularization):
 
         super().__init__()
 
-        self.inner_coefficient = inner_coefficient
-        self.outer_coefficient = outer_coefficient
+        self.coefficient = coefficient
         self.signal_scale = signal_scale
 
     def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        Returns the regularization weights of this regularization scheme.
+        Returns the regularization weights of the ``BrightnessZeroth`` regularization scheme.
 
         The regularization weights define the level of regularization applied to each parameter in the linear object
         (e.g. the ``pixels`` in a ``Mapper``).
-
-        For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
-        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
 
         Parameters
         ----------
