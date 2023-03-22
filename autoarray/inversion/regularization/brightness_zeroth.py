@@ -63,7 +63,7 @@ class BrightnessZeroth(AbstractRegularization):
         """
         pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
 
-        return regularization_util.zeroth_regularization_matrix_from(
+        return regularization_util.brightness_zeroth_regularization_weights_from(
             coefficient=self.coefficient, pixel_signals=pixel_signals
         )
 
@@ -82,8 +82,6 @@ class BrightnessZeroth(AbstractRegularization):
         """
         regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
-        return regularization_util.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
-            neighbors=linear_obj.source_plane_mesh_grid.neighbors,
-            neighbors_sizes=linear_obj.source_plane_mesh_grid.neighbors.sizes,
+        return regularization_util.brightness_zeroth_regularization_matrix_from(
+            regularization_weights=regularization_weights
         )

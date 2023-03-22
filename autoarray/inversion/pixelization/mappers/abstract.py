@@ -401,15 +401,8 @@ class AbstractMapper(LinearObj):
 class PixSubWeights:
     def __init__(self, mappings: np.ndarray, sizes: np.ndarray, weights: np.ndarray):
         """
-        Packages the following three quantities of a mapper:
-
-        - `mappings` (`pix_indexes_for_sub_slim_index`): the mapping of every data pixel (given its `sub_slim_index`)
-        to pixelization pixels (given their `pix_indexes`).
-
-        - `sizes`(`pix_sizes_for_sub_slim_index`): the number of mappings of every data pixel to pixelization pixels.
-
-        - `weights` (`pix_weights_for_sub_slim_index`): the interpolation weights of every data pixel's pixelization
-        pixel mapping
+        Packages the mappings, sizes and weights of every data pixel to pixelization pixels, which are computed
+        from associated ``Mapper`` properties..
 
         The need to store separately the mappings and sizes is so that the `sizes` can be easy iterated over when
         perform calculations for efficiency.
@@ -417,9 +410,14 @@ class PixSubWeights:
         Parameters
         ----------
         mappings
-            The mappings of the masked data's sub-pixels to the pixelization's pixels.
+            The mapping of every data pixel, given its `sub_slim_index`, to its corresponding pixelization mesh
+            pixels, given their `pix_indexes` (corresponds to the ``Mapper``
+            property ``pix_indexes_for_sub_slim_index``)
         sizes
-            The number of pixelization pixels each masked data sub-pixel maps too.
+            The number of mappings of every data pixel to pixelization mesh pixels (corresponds to the ``Mapper``
+            property ``pix_sizes_for_sub_slim_index``).
+        weights
+            The interpolation weights of every data pixel's pixelization pixel mapping.
         """
         self.mappings = mappings
         self.sizes = sizes
