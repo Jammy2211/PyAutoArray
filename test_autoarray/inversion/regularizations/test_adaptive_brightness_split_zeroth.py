@@ -36,6 +36,4 @@ def test__regularization_matrix_from(delaunay_mapper_9_3x3):
         linear_obj=delaunay_mapper_9_3x3
     )
 
-    print(regularization_matrix_both - regularization_matrix)
-
     assert (regularization_matrix_both == regularization_matrix).all()

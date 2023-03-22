@@ -56,7 +56,6 @@ def test__no_mask():
     ).all()
 
     assert (vectors.binned.native == np.array([[[4.0, 5.0]]])).all()
-    print(vectors.grid)
     assert (vectors.binned.slim == np.array([[4.0, 5.0]])).all()
     assert (
         vectors.grid.native

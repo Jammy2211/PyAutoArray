@@ -61,11 +61,6 @@ def test__edge_pixel_list():
 
     mesh = aa.Mesh2DDelaunay(values=grid)
 
-    print(mesh.delaunay.neighbors)
-    print(mesh.delaunay.vertex_neighbor_vertices)
-    print(mesh.neighbors)
-    print(mesh.edge_pixel_list)
-
     assert mesh.edge_pixel_list == [0, 1, 2, 3, 5, 6, 7, 8]
 
 

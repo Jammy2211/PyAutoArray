@@ -77,8 +77,6 @@ def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
         == voronoi_mapper_9_3x3.source_plane_data_grid.mask.derive_grid.border_sub_1.binned
     ).all()
 
-    print(visuals_2d.mesh_grid)
-    print(voronoi_mapper_9_3x3.source_plane_mesh_grid)
     assert (
         visuals_2d_via.mesh_grid == voronoi_mapper_9_3x3.image_plane_mesh_grid
     ).all()
