@@ -174,7 +174,7 @@ def brightness_zeroth_regularization_weights_from(
     coefficient: float, pixel_signals: np.ndarray
 ) -> np.ndarray:
     """
-    Returns the regularization weights for the brighness zeroth regularization scheme (e.g. ``BrightnessZeroth``).
+    Returns the regularization weights for the brightness zeroth regularization scheme (e.g. ``BrightnessZeroth``).
 
     The weights define the level of zeroth order regularization applied to every mesh parameter (typically pixels
     of a ``Mapper``).

@@ -47,8 +47,10 @@ class BrightnessZeroth(AbstractRegularization):
         """
         Returns the regularization weights of the ``BrightnessZeroth`` regularization scheme.
 
-        The regularization weights define the level of regularization applied to each parameter in the linear object
-        (e.g. the ``pixels`` in a ``Mapper``).
+        The weights define the level of zeroth order regularization applied to every mesh parameter (typically pixels
+        of a ``Mapper``).
+
+        They are computed using an estimate of the expected signal in each pixel.
 
         Parameters
         ----------
@@ -61,10 +63,8 @@ class BrightnessZeroth(AbstractRegularization):
         """
         pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
 
-        return regularization_util.adaptive_regularization_weights_from(
-            inner_coefficient=self.inner_coefficient,
-            outer_coefficient=self.outer_coefficient,
-            pixel_signals=pixel_signals,
+        return regularization_util.zeroth_regularization_matrix_from(
+            coefficient=self.coefficient, pixel_signals=pixel_signals
         )
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:

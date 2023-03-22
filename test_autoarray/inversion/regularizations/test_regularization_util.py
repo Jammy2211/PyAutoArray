@@ -201,6 +201,33 @@ def test__adaptive_regularization_weights_from():
     assert (weight_list == np.array([0.75**2.0, 0.5**2.0, 0.25**2.0])).all()
 
 
+def test__brightness_zeroth_regularization_weights_from():
+
+    pixel_signals = np.array([1.0, 1.0, 1.0])
+
+    weight_list = aa.util.regularization.brightness_zeroth_regularization_weights_from(
+        coefficient=1.0, pixel_signals=pixel_signals
+    )
+
+    assert (weight_list == np.array([0.0, 0.0, 0.0])).all()
+
+    pixel_signals = np.array([0.25, 0.5, 0.75])
+
+    weight_list = aa.util.regularization.brightness_zeroth_regularization_weights_from(
+        coefficient=1.0, pixel_signals=pixel_signals
+    )
+
+    assert (weight_list == np.array([0.75, 0.5, 0.25])).all()
+
+    pixel_signals = np.array([0.25, 0.5, 0.75])
+
+    weight_list = aa.util.regularization.brightness_zeroth_regularization_weights_from(
+        coefficient=2.0, pixel_signals=pixel_signals
+    )
+
+    assert (weight_list == np.array([1.5, 1.0, 0.5])).all()
+
+
 def test__weighted_regularization_matrix_from():
 
     neighbors = np.array([[2], [3], [0], [1]])
