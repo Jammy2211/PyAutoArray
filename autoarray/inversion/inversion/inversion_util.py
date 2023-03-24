@@ -258,6 +258,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
 def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
+    mapper_param_range_list,
     settings: SettingsInversion = SettingsInversion(),
 ):
     """
@@ -293,6 +294,13 @@ def reconstruction_positive_negative_from(
         reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
     except np.linalg.LinAlgError as e:
         raise exc.InversionException() from e
+
+    for mapper_param_range in mapper_param_range_list:
+        if np.allclose(
+            reconstruction[mapper_param_range[0] : mapper_param_range[1]]
+            == reconstruction[mapper_param_range[0]]
+        ):
+            raise exc.InversionException()
 
     return reconstruction
 

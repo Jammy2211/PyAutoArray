@@ -473,6 +473,7 @@ class AbstractInversion:
         return inversion_util.reconstruction_positive_only_from(
             data_vector=self.data_vector,
             curvature_reg_matrix=self.curvature_reg_matrix_solver,
+            mapper_param_range_list=self.mapper_param_range_list,
             settings=self.settings,
         )
 
