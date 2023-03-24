@@ -320,7 +320,7 @@ class FitDataset(AbstractFitInversion):
         if self.inversion is not None:
             return self.log_evidence
 
-        return self.log_likelihood
+        return self.log_likelihood.array
 
     @property
     def inversion(self) -> Optional[AbstractInversion]:

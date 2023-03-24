@@ -204,7 +204,10 @@ class AbstractNDArray(ABC):
 
     @property
     def shape(self):
-        return self._array.shape
+        try:
+            return self._array.shape
+        except AttributeError:
+            return ()
 
     @property
     def size(self):
