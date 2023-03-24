@@ -5,20 +5,28 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
-from autoarray.inversion.regularization.abstract import AbstractRegularization
-
+from autoarray.inversion.regularization.adaptive_brightness import AdaptiveBrightness
+from autoarray.inversion.regularization.brightness_zeroth import BrightnessZeroth
 from autoarray.inversion.regularization import regularization_util
 
 
-class AdaptiveBrightness(AbstractRegularization):
+class AdaptiveBrightnessSplitZeroth(AdaptiveBrightness):
     def __init__(
         self,
+        zeroth_coefficient: float = 1.0,
+        zeroth_signal_scale: float = 1.0,
         inner_coefficient: float = 1.0,
         outer_coefficient: float = 1.0,
         signal_scale: float = 1.0,
     ):
         """
-        An adaptive regularization scheme (regularization is described in the `Regularization` class above).
+        An adaptive regularization scheme which splits every source pixel into a cross of four regularization points
+        (regularization is described in the `Regularization` class above) and interpolates to these points in order
+        to apply smoothing on the solution of an `Inversion`.
+
+        The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
+        Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
+        the area times 0.5.
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is
         applied when each set of pixel neighbors are regularized with one another. The motivation of this is that
@@ -61,37 +69,13 @@ class AdaptiveBrightness(AbstractRegularization):
             low signal regions.
         """
 
-        super().__init__()
+        self.zeroth_coefficient = zeroth_coefficient
+        self.zeroth_signal_scale = zeroth_signal_scale
 
-        self.inner_coefficient = inner_coefficient
-        self.outer_coefficient = outer_coefficient
-        self.signal_scale = signal_scale
-
-    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
-        """
-        Returns the regularization weights of this regularization scheme.
-
-        The regularization weights define the level of regularization applied to each parameter in the linear object
-        (e.g. the ``pixels`` in a ``Mapper``).
-
-        For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
-        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
-
-        Parameters
-        ----------
-        linear_obj
-            The linear object (e.g. a ``Mapper``) which uses these weights when performing regularization.
-
-        Returns
-        -------
-        The regularization weights.
-        """
-        pixel_signals = linear_obj.pixel_signals_from(signal_scale=self.signal_scale)
-
-        return regularization_util.adaptive_regularization_weights_from(
-            inner_coefficient=self.inner_coefficient,
-            outer_coefficient=self.outer_coefficient,
-            pixel_signals=pixel_signals,
+        super().__init__(
+            inner_coefficient=inner_coefficient,
+            outer_coefficient=outer_coefficient,
+            signal_scale=signal_scale,
         )
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
@@ -109,8 +93,33 @@ class AdaptiveBrightness(AbstractRegularization):
         """
         regularization_weights = self.regularization_weights_from(linear_obj=linear_obj)
 
-        return regularization_util.weighted_regularization_matrix_from(
-            regularization_weights=regularization_weights,
-            neighbors=linear_obj.source_plane_mesh_grid.neighbors,
-            neighbors_sizes=linear_obj.source_plane_mesh_grid.neighbors.sizes,
+        pix_sub_weights_split_cross = linear_obj.pix_sub_weights_split_cross
+
+        (
+            splitted_mappings,
+            splitted_sizes,
+            splitted_weights,
+        ) = regularization_util.reg_split_from(
+            splitted_mappings=pix_sub_weights_split_cross.mappings,
+            splitted_sizes=pix_sub_weights_split_cross.sizes,
+            splitted_weights=pix_sub_weights_split_cross.weights,
         )
+
+        regularization_matrix = (
+            regularization_util.pixel_splitted_regularization_matrix_from(
+                regularization_weights=regularization_weights,
+                splitted_mappings=splitted_mappings,
+                splitted_sizes=splitted_sizes,
+                splitted_weights=splitted_weights,
+            )
+        )
+
+        brightness_zeroth = BrightnessZeroth(
+            coefficient=self.zeroth_coefficient, signal_scale=self.zeroth_signal_scale
+        )
+
+        regularization_matrix_zeroth = brightness_zeroth.regularization_matrix_from(
+            linear_obj=linear_obj
+        )
+
+        return regularization_matrix + regularization_matrix_zeroth

@@ -12,8 +12,8 @@ class SettingsInversion:
         use_w_tilde: bool = True,
         use_positive_only_solver: bool = False,
         positive_only_maxiter: int = 5000,
+        force_edge_pixels_to_zeros: bool = False,
         no_regularization_add_to_curvature_diag: bool = True,
-        check_solution: Optional[bool] = None,
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
         use_linear_operators: bool = False,
@@ -40,10 +40,6 @@ class SettingsInversion:
         no_regularization_add_to_curvature_diag
             When True, if a linear object in the inversion has no regularization, values of 1.0e-8 are added to the
             diagonal of its `curvature_matrix` to stablelize the linear algebra solver.
-        check_solution
-            If True, the `reconstruction` of the inversion is checked to ensure that no two source pixels have
-            numerically identical values, which indicates a spurious solution where the linear algebra solver
-            reconstructs every value as an identical value (for reasons that are currently not understood).
         use_w_tilde_numpy
             If True, the curvature_matrix is computed via numpy matrix multiplication (as opposed to numba functions
             which exploit sparsity to do the calculation normally in a more efficient way).
@@ -64,6 +60,7 @@ class SettingsInversion:
         self.use_positive_only_solver = use_positive_only_solver
         self.positive_only_maxiter = positive_only_maxiter
         self.use_linear_operators = use_linear_operators
+        self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self.no_regularization_add_to_curvature_diag = (
             no_regularization_add_to_curvature_diag
         )
@@ -71,14 +68,3 @@ class SettingsInversion:
         self.maxiter = maxiter
         self.use_w_tilde_numpy = use_w_tilde_numpy
         self.use_source_loop = use_source_loop
-
-        self._check_solution = check_solution
-
-    @property
-    def check_solution(self):
-
-        if self._check_solution is None:
-
-            return conf.instance["general"]["inversion"]["check_solution_default"]
-
-        return self._check_solution

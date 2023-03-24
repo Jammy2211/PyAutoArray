@@ -295,6 +295,32 @@ def rectangular_central_neighbors(
     return neighbors, neighbors_sizes
 
 
+def rectangular_edge_pixel_list_from(neighbors: np.ndarray) -> List:
+    """
+    Returns a list of the 1D indices of all pixels on the edge of a rectangular pixelization.
+
+    This is computed by searching the `neighbors` array for pixels that have a neighbor with index -1, meaning there
+    is at least one neighbor from the 4 expected missing.
+
+    Parameters
+    ----------
+    neighbors
+        An array of dimensions [total_pixels, 4] which provides the index of all neighbors of every pixel in the
+        rectangular pixelization (entries of -1 correspond to no neighbor).
+
+    Returns
+    -------
+    A list of the 1D indices of all pixels on the edge of a rectangular pixelization.
+    """
+    edge_pixel_list = []
+
+    for i, neighbors in enumerate(neighbors):
+        if -1 in neighbors:
+            edge_pixel_list.append(i)
+
+    return edge_pixel_list
+
+
 @numba_util.jit()
 def delaunay_triangle_area_from(
     corner_0: Tuple[float, float],
@@ -420,7 +446,7 @@ def voronoi_neighbors_from(
     pixels: int, ridge_points: np.ndarray
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Returns the adjacent neighbors of every pixel on a Voronoi pixelization as an ndarray of shape
+    Returns the adjacent neighbors of every pixel on a Voronoi mesh as an ndarray of shape
     [total_pixels, voronoi_pixel_with_max_neighbors], using the `ridge_points` output from the `scipy.spatial.Voronoi()`
     object.
 
@@ -428,7 +454,7 @@ def voronoi_neighbors_from(
     an ndarray with the number of neighbors of every pixel, `neighbors_sizes`, which is iterated over when using
     the `neighbors` ndarray.
 
-    Indexing is defined in an arbritrary manner due to the irregular nature of a Voronoi pixelization.
+    Indexing is defined in an arbritrary manner due to the irregular nature of a Voronoi mesh.
 
     For example, if `neighbors[0,:] = [1, 5, 36, 2, -1, -1]`, this informs us that the first Voronoi pixel has
     4 neighbors which have indexes 1, 5, 36, 2. Correspondingly `neighbors_sizes[0] = 4`.
@@ -436,7 +462,7 @@ def voronoi_neighbors_from(
     Parameters
     ----------
     pixels
-        The number of pixels on the Voronoi pixelization.
+        The number of pixels on the Voronoi mesh.
     ridge_points
         Contains the information on every Voronoi source pixel and its neighbors.
 
@@ -444,7 +470,22 @@ def voronoi_neighbors_from(
     -------
     The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
     """
-
+    """
+    Returns the neighbors and total number of neighbors of every cell on a Voronoi mesh. 
+    
+    Neighbors are returned as an ndarray of shape [total_pixels, max_neighbors_in_a_given_voronoi pixel], where 
+    entries have values of -1 if the pixel has no neighbor.
+    
+    The number of neighbors of every pixel is also returned as an ndarray of shape [total_pixels], where the values
+    are integers between 0 and the total neighbors in a given Voronoi pixel.
+    
+    Parameters
+    ----------
+    pixels
+        The number of pixels on the Voronoi mesh
+    ridge_points
+        Contains the information on every Voronoi pixel and its neighbors.
+    """
     neighbors_sizes = np.zeros(shape=(pixels))
 
     for ridge_index in range(ridge_points.shape[0]):
@@ -467,11 +508,33 @@ def voronoi_neighbors_from(
     return neighbors, neighbors_sizes
 
 
+# @numba_util.jit()
+def voronoi_edge_pixels_from(regions: np.ndarray, point_region: np.ndarray) -> List:
+    """
+    Returns the edge pixels of a Voronoi mesh, where the edge pixels are defined as those pixels which are on the
+    edge of the Voronoi diagram.
+
+    Parameters
+    ----------
+    regions
+        Indices of the Voronoi vertices forming each Voronoi region, where -1 indicates vertex outside the Voronoi
+        diagram.
+    """
+
+    voronoi_edge_pixel_list = []
+
+    for index, i in enumerate(point_region):
+        if -1 in regions[i]:
+            voronoi_edge_pixel_list.append(index)
+
+    return voronoi_edge_pixel_list
+
+
 def voronoi_revised_from(
     voronoi: scipy.spatial.Voronoi,
 ) -> Union[List[Tuple], np.ndarray]:
     """
-    To plot a Voronoi pixelization using the `matplotlib.fill()` function a revised Voronoi pixelization must be
+    To plot a Voronoi mesh using the `matplotlib.fill()` function a revised Voronoi mesh must be
      computed, where 2D infinite voronoi regions are converted to finite 2D regions.
 
     This function returns a list of tuples containing the indices of the vertices of each revised Voronoi cell and

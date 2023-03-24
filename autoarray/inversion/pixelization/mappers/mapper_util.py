@@ -152,7 +152,7 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
     delaunay_points,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    The indexes mappings between the sub pixels and Voronoi pixelization pixels.
+    The indexes mappings between the sub pixels and Voronoi mesh pixels.
     For Delaunay tessellation, most sub pixels should have contribution of 3 pixelization pixels. However,
     for those ones not belonging to any triangle, we link its value to its closest point.
 

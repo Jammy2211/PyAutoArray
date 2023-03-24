@@ -1,6 +1,6 @@
 inversion:
+  check_reconstruction: true        # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
   reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
-  check_solution_default: true      # When an Inversion checks solutions in case they are numerically unstable by default or not (e.g. InversionSettings.check_solution).
 numba:
   use_numba: true
   cache: false

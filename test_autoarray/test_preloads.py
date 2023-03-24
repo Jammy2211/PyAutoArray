@@ -276,9 +276,6 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     assert (preloads.operated_mapping_matrix == operated_mapping_matrix_0).all()
 
-    print(preloads.curvature_matrix_preload)
-    print(curvature_matrix_preload)
-
     assert (
         preloads.curvature_matrix_preload == curvature_matrix_preload.astype("int")
     ).all()

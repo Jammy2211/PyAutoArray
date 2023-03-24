@@ -1,7 +1,6 @@
 from astropy import units
 import numpy as np
 import scipy.signal
-from skimage.transform import resize, rescale
 from typing import List, Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
@@ -382,6 +381,8 @@ class Kernel2D(AbstractArray2D):
         normalize
             Whether the PSF should be normalized after being rescaled.
         """
+
+        from skimage.transform import resize, rescale
 
         kernel_rescaled = rescale(
             self.native,

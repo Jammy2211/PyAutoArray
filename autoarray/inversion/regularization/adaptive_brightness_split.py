@@ -31,13 +31,13 @@ class AdaptiveBrightnessSplit(AdaptiveBrightness):
         different regions of a pixelization's mesh require different levels of regularization (e.g., high smoothing where the
         no signal is present and less smoothing where it is, see (Nightingale, Dye and Massey 2018)).
 
-        Unlike the instance regularization_matrix scheme, neighboring pixels must now be regularized with one another
+        Unlike ``Constant`` regularization, neighboring pixels must now be regularized with one another
         in both directions (e.g. if pixel 0 regularizes pixel 1, pixel 1 must also regularize pixel 0). For example:
 
         B = [-1, 1]  [0->1]
             [-1, -1]  1 now also regularizes 0
 
-        For a instance regularization coefficient this would NOT produce a positive-definite matrix. However, for
+        For ``Constant`` regularization this would NOT produce a positive-definite matrix. However, for
         the weighted scheme, it does!
 
         The regularize weight_list change the B matrix as shown below - we simply multiply each pixel's effective

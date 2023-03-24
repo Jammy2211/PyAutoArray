@@ -57,6 +57,20 @@ def test__index_range_list_from():
     assert inversion.param_range_list_from(cls=aa.AbstractMapper) == [[2, 3]]
 
 
+def test__mapper_edge_pixel_list():
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[
+            aa.m.MockLinearObj(parameters=3, regularization=None),
+            aa.m.MockMapper(parameters=4, edge_pixel_list=[0, 2], regularization=None),
+            aa.m.MockLinearObj(parameters=7, regularization=None),
+            aa.m.MockMapper(parameters=4, edge_pixel_list=[0, 2], regularization=None),
+        ]
+    )
+
+    assert inversion.mapper_edge_pixel_list == [3, 5, 14, 16]
+
+
 def test__no_regularization_index_list():
 
     inversion = aa.m.MockInversion(
@@ -141,13 +155,13 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging,
         linear_obj_list=[mapper_0, mapper_1],
-        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
+        settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging,
         linear_obj_list=[mapper_0, mapper_1],
-        settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
+        settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert inversion_w_tilde.curvature_matrix == pytest.approx(
@@ -212,13 +226,13 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging,
         linear_obj_list=[mapper_0, mapper_1],
-        settings=aa.SettingsInversion(use_w_tilde=True, check_solution=False),
+        settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
         dataset=masked_imaging,
         linear_obj_list=[mapper_0, mapper_1],
-        settings=aa.SettingsInversion(use_w_tilde=False, check_solution=False),
+        settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
     assert inversion_w_tilde.curvature_matrix == pytest.approx(
@@ -242,6 +256,33 @@ def test__curvature_reg_matrix_reduced():
     assert (
         inversion.curvature_reg_matrix_reduced == np.array([[1.0, 2.0], [4.0, 5.0]])
     ).all()
+
+
+def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
+
+    curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+
+    linear_obj_list = [
+        aa.m.MockMapper(parameters=3, regularization=None, edge_pixel_list=[0])
+    ]
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=linear_obj_list,
+        curvature_reg_matrix=curvature_reg_matrix,
+        settings=aa.SettingsInversion(force_edge_pixels_to_zeros=True),
+    )
+
+    curvature_reg_matrix = np.array(
+        [
+            [0.0, 2.0, 3.0],
+            [0.0, 5.0, 6.0],
+            [0.0, 8.0, 9.0],
+        ]
+    )
+
+    assert inversion.curvature_reg_matrix_solver == pytest.approx(
+        curvature_reg_matrix, 1.0e-4
+    )
 
 
 def test__regularization_matrix():

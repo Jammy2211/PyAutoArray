@@ -43,6 +43,27 @@ def test__mesh_areas():
     )
 
 
+def test__edge_pixel_list():
+
+    grid = np.array(
+        [
+            [1.0, -1.0],
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, -1.0],
+            [0.0, 0.0],
+            [0.0, 1.0],
+            [-1.0, -1.0],
+            [-1.0, 0.0],
+            [-1.0, 1.0],
+        ]
+    )
+
+    mesh = aa.Mesh2DDelaunay(values=grid)
+
+    assert mesh.edge_pixel_list == [0, 1, 2, 3, 5, 6, 7, 8]
+
+
 def test__interpolated_array_from():
 
     grid = aa.Grid2D.no_mask(

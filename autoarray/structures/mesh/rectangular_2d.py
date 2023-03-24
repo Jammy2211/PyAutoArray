@@ -1,18 +1,16 @@
 import numpy as np
 from scipy.interpolate import griddata
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
-from autoarray.structures.abstract_structure import Structure
-from autoconf import cached_property
-
-from autoarray.inversion.linear_obj.neighbors import Neighbors
-from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
-
-from autoarray.structures.grids import grid_2d_util
-from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray import type as ty
+from autoarray.inversion.linear_obj.neighbors import Neighbors
+from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.abstract_structure import Structure
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids import grid_2d_util
+from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+from autoconf import cached_property
 
 
 class Mesh2DRectangular(Abstract2DMesh):
@@ -146,6 +144,10 @@ class Mesh2DRectangular(Abstract2DMesh):
         )
 
         return Neighbors(arr=neighbors.astype("int"), sizes=sizes.astype("int"))
+
+    @cached_property
+    def edge_pixel_list(self) -> List:
+        return mesh_util.rectangular_edge_pixel_list_from(neighbors=self.neighbors)
 
     @property
     def pixels(self) -> int:

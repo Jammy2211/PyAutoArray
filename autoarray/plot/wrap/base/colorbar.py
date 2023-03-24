@@ -93,6 +93,8 @@ class Colorbar(AbstractMatWrap):
                 ticks=self.manual_tick_values,
                 **self.config_dict,
             )
-            cb.ax.set_yticklabels(labels=self.manual_tick_labels, va=self.manual_alignment or "center")
+            cb.ax.set_yticklabels(
+                labels=self.manual_tick_labels, va=self.manual_alignment or "center"
+            )
 
         return cb

@@ -10,6 +10,7 @@ from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 from autoarray import exc
+from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray.structures.grids import grid_2d_util
 
 
@@ -55,7 +56,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         The input `grid` of source pixel centres is ordered arbitrarily, given that there is no regular pattern
         for a Delaunay triangulation and Voronoi mesh's indexing to follow.
 
-        This class is used in conjuction with the `inversion/pixelizations` package to create Voronoi pixelizations
+        This class is used in conjuction with the `inversion/pixelizations` package to create Voronoi meshs
         and mappers that perform an `Inversion`.
 
         Parameters
@@ -64,7 +65,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             The grid of (y,x) coordinates corresponding to the Delaunay triangle corners and Voronoi pixel centres.
         nearest_pixelization_index_for_slim_index
             When a Voronoi grid is used to create a mapper and inversion, there are mappings between the `data` pixels
-            and Voronoi pixelization. This array contains these mappings and it is used to speed up the creation of the
+            and Voronoi mesh. This array contains these mappings and it is used to speed up the creation of the
             mapper.
         """
 
@@ -155,6 +156,16 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
             raise exc.MeshException() from e
 
     @cached_property
+    def edge_pixel_list(self) -> List:
+        """
+        Returns a list of the Voronoi pixel indexes that are on the edge of the mesh.
+        """
+
+        return mesh_util.voronoi_edge_pixels_from(
+            regions=self.voronoi.regions, point_region=self.voronoi.point_region
+        )
+
+    @cached_property
     def split_cross(self) -> np.ndarray:
         """
         For every 2d (y,x) coordinate corresponding to a Voronoi pixel centre, this property splits them into a cross
@@ -242,6 +253,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
     @property
     def pixels(self) -> int:
         """
-        The total number of pixels in the Voronoi pixelization.
+        The total number of pixels in the Voronoi mesh.
         """
         return self.shape[0]
