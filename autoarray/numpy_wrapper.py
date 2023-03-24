@@ -3,10 +3,10 @@ import logging
 import jax.numpy as jnp
 import numpy as np
 
-from autoarray.abstract_ndarray import AbstractNDArray
-
 
 def unwrap_arrays(args):
+    from autoarray.abstract_ndarray import AbstractNDArray
+
     for arg in args:
         if isinstance(arg, AbstractNDArray):
             yield arg.array
@@ -21,6 +21,8 @@ class Callable:
         self.func = func
 
     def __call__(self, *args, **kwargs):
+        from autoarray.abstract_ndarray import AbstractNDArray
+
         try:
             first_argument = args[0]
         except IndexError:

@@ -5,6 +5,8 @@ from copy import copy
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
+from autoarray.numpy_wrapper import numpy as npw
+from jax import Array
 
 from typing import TYPE_CHECKING
 
@@ -200,7 +202,10 @@ class AbstractNDArray(ABC):
         return self._array[item]
 
     def __setitem__(self, key, value):
-        self._array[key] = value
+        if isinstance(key, (np.ndarray, AbstractNDArray, Array)):
+            self._array = npw.where(key, value, self._array)
+        else:
+            self._array[key] = value
 
     def __repr__(self):
         return f"{self.__class__.__name__} {self.shape}"
