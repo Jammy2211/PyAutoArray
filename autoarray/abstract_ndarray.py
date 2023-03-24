@@ -47,15 +47,24 @@ class AbstractNDArray(ABC):
         except ValueError:
             pass
 
+    __no_flatten__ = ()
+
     @classmethod
     def instance_flatten(cls, instance):
-        keys, values = zip(*sorted(instance.__dict__.items()))
-        return (instance._array, *values), keys
+        keys, values = zip(
+            *sorted(
+                {
+                    key: value
+                    for key, value in instance.__dict__.items()
+                    if key not in cls.__no_flatten__
+                }.items()
+            )
+        )
+        return values, keys
 
     @classmethod
     def instance_unflatten(cls, aux_data, children):
         instance = cls.__new__(cls)
-        instance._array = children[0]
         for key, value in zip(aux_data, children[1:]):
             setattr(instance, key, value)
         return instance

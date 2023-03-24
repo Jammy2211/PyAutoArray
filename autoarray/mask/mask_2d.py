@@ -298,6 +298,8 @@ class Mask2D(Mask):
             mask=mask, origin=origin, pixel_scales=pixel_scales, sub_size=sub_size,
         )
 
+    __no_flatten__ = ("derive_indexes",)
+
     def __array_finalize__(self, obj):
 
         super().__array_finalize__(obj=obj)
