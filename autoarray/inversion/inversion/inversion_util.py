@@ -272,8 +272,11 @@ def reconstruction_positive_negative_from(
     are nonphysical or undesirable.
 
     This function checks that the solution does not give a linear algebra error (e.g. because the input matrix is
-    not positive-definitive) and that it avoids solutions where all reconstructed values go to the same value. If these
-    occur it raises an exception.
+    not positive-definitive).
+
+    It also explicitly checks solutions where all reconstructed values go to the same value, and raises an exception if
+    this occurs. This solution occurs in many scenarios when it is clear not a valid solution, and therefore is checked
+    for and removed.
 
     Parameters
     ----------
@@ -281,6 +284,9 @@ def reconstruction_positive_negative_from(
         The `data_vector` D which is solved for.
     curvature_reg_matrix
         The sum of the curvature and regularization matrices.
+    mapper_param_range_list
+        A list of lists, where each list contains the range of values in the solution vector (reconstruction) that
+        correspond to values that are part of a mapper's mesh.
     settings
         Controls the settings of the inversion, for this function where the solution is checked to not be all
         the same values.
@@ -297,8 +303,8 @@ def reconstruction_positive_negative_from(
 
     for mapper_param_range in mapper_param_range_list:
         if np.allclose(
-            reconstruction[mapper_param_range[0] : mapper_param_range[1]]
-            == reconstruction[mapper_param_range[0]]
+            a=reconstruction[mapper_param_range[0] : mapper_param_range[1]],
+            b=reconstruction[mapper_param_range[0]]
         ):
             raise exc.InversionException()
 
