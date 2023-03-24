@@ -5,6 +5,8 @@ from copy import copy
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
+from jax._src.tree_util import register_pytree_node
+
 from autoarray.numpy_wrapper import numpy as npw
 from jax import Array
 
@@ -35,9 +37,15 @@ def unwrap_array(func):
 
 class AbstractNDArray(ABC):
     def __init__(self, array):
-        if isinstance(array, AbstractNDArray):
+        while isinstance(array, AbstractNDArray):
             array = array.array
         self._array = array
+        try:
+            register_pytree_node(
+                type(self), self.instance_flatten, self.instance_unflatten,
+            )
+        except ValueError:
+            pass
 
     @classmethod
     def instance_flatten(cls, instance):
