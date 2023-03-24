@@ -723,8 +723,6 @@ def test__in_grid_2d_iterate__out_ndarray_yx_2d_list__values_use_iteration():
     values_sub_3 = ndarray_2d_from(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
 
-    print(type(ndarray_yx_2d_list[0]))
-
     assert isinstance(ndarray_yx_2d_list[0], aa.VectorYX2D)
     assert (ndarray_yx_2d_list[0][0] == values_sub_3.binned[0]).all()
     assert (ndarray_yx_2d_list[0][1] == values_sub_3.binned[1]).all()

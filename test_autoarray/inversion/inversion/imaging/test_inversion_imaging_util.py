@@ -247,9 +247,6 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             )
         )
 
-        # print(data_vector_via_w_tilde)
-        # print(data_vector)
-
         assert data_vector_via_w_tilde == pytest.approx(data_vector, 1.0e-4)
 
 
