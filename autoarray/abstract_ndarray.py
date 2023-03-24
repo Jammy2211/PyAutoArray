@@ -39,6 +39,19 @@ class AbstractNDArray(ABC):
             array = array.array
         self._array = array
 
+    @classmethod
+    def instance_flatten(cls, instance):
+        keys, values = zip(*sorted(instance.__dict__.items()))
+        return (instance._array, *values), keys
+
+    @classmethod
+    def instance_unflatten(cls, aux_data, children):
+        instance = cls.__new__(cls)
+        instance._array = children[0]
+        for key, value in zip(aux_data, children[1:]):
+            setattr(instance, key, value)
+        return instance
+
     def with_new_array(self, array):
         new_array = self.copy()
         new_array._array = array
