@@ -13,6 +13,8 @@ from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.layout import layout_util
+from autoarray.numpy_wrapper import numpy as npw
+
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -420,7 +422,7 @@ class AbstractArray2D(Structure):
 
         array_2d_slim = self.slim
 
-        binned_array_1d = np.multiply(
+        binned_array_1d = npw.multiply(
             self.mask.sub_fraction,
             array_2d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
