@@ -1,5 +1,5 @@
 import logging
-import jax.numpy as np
+import numpy as np
 from typing import List, Optional, Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
