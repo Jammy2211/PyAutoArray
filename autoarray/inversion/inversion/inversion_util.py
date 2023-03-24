@@ -1,7 +1,8 @@
 import numpy as np
-from scipy.linalg import cho_solve
-from scipy.optimize import lsq_linear, nnls
+from scipy.optimize import nnls
 from typing import List, Optional
+
+from autoconf import conf
 
 from autoarray.inversion.inversion.settings import SettingsInversion
 
@@ -259,7 +260,7 @@ def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
     mapper_param_range_list,
-    settings: SettingsInversion = SettingsInversion(),
+    force_check_reconstruction: bool = False,
 ):
     """
     Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -287,9 +288,9 @@ def reconstruction_positive_negative_from(
     mapper_param_range_list
         A list of lists, where each list contains the range of values in the solution vector (reconstruction) that
         correspond to values that are part of a mapper's mesh.
-    settings
-        Controls the settings of the inversion, for this function where the solution is checked to not be all
-        the same values.
+    force_check_reconstruction
+        If `True`, the reconstruction is forced to check for solutions where all reconstructed values go to the same
+        value irrespective of the configuration file value.
 
     Returns
     -------
@@ -301,12 +302,17 @@ def reconstruction_positive_negative_from(
     except np.linalg.LinAlgError as e:
         raise exc.InversionException() from e
 
-    for mapper_param_range in mapper_param_range_list:
-        if np.allclose(
-            a=reconstruction[mapper_param_range[0] : mapper_param_range[1]],
-            b=reconstruction[mapper_param_range[0]]
-        ):
-            raise exc.InversionException()
+    if (
+        conf.instance["general"]["inversion"]["check_reconstruction"]
+        or force_check_reconstruction
+    ):
+
+        for mapper_param_range in mapper_param_range_list:
+            if np.allclose(
+                a=reconstruction[mapper_param_range[0] : mapper_param_range[1]],
+                b=reconstruction[mapper_param_range[0]],
+            ):
+                raise exc.InversionException()
 
     return reconstruction
 

@@ -463,8 +463,9 @@ class AbstractInversion:
 
         S is the vector of reconstructed inversion values.
         """
-        if not self.settings.use_positive_only_solver:
-            return inversion_util.reconstruction_positive_negative_from(
+        if self.settings.use_positive_only_solver:
+
+            return inversion_util.reconstruction_positive_only_from(
                 data_vector=self.data_vector,
                 curvature_reg_matrix=self.curvature_reg_matrix_solver,
                 settings=self.settings,
@@ -472,11 +473,10 @@ class AbstractInversion:
 
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
 
-        return inversion_util.reconstruction_positive_only_from(
+        return inversion_util.reconstruction_positive_negative_from(
             data_vector=self.data_vector,
             curvature_reg_matrix=self.curvature_reg_matrix_solver,
             mapper_param_range_list=mapper_param_range_list,
-            settings=self.settings,
         )
 
     @cached_property

@@ -176,6 +176,7 @@ def test__reconstruction_positive_negative_from__check_solution_raises_error_cau
             data_vector=data_vector,
             curvature_reg_matrix=curvature_reg_matrix,
             mapper_param_range_list=[[0, 3]],
+            force_check_reconstruction=True,
         )
 
 
