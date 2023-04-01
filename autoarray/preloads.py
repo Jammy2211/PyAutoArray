@@ -25,7 +25,6 @@ class Preloads:
         mapper_list=None,
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
-        linear_func_weighted_mapping_vectors_dict=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         curvature_matrix=None,
@@ -45,9 +44,6 @@ class Preloads:
         self.operated_mapping_matrix = operated_mapping_matrix
         self.linear_func_operated_mapping_matrix_dict = (
             linear_func_operated_mapping_matrix_dict
-        )
-        self.linear_func_weighted_mapping_vectors_dict = (
-            linear_func_weighted_mapping_vectors_dict
         )
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
@@ -305,7 +301,6 @@ class Preloads:
         """
 
         self.linear_func_operated_mapping_matrix_dict = None
-        self.linear_func_weighted_mapping_vectors_dict = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
@@ -344,28 +339,6 @@ class Preloads:
             )
 
         should_preload = False
-
-        for weighted_mapping_vectors_0, weighted_mapping_vectors_1 in zip(
-            inversion_0.linear_func_weighted_mapping_vectors_dict.values(),
-            inversion_1.linear_func_weighted_mapping_vectors_dict.values(),
-        ):
-
-            if (
-                np.max(abs(weighted_mapping_vectors_0 - weighted_mapping_vectors_1))
-                < 1e-8
-            ):
-
-                should_preload = True
-
-        if should_preload:
-
-            self.linear_func_weighted_mapping_vectors_dict = (
-                inversion_0.linear_func_weighted_mapping_vectors_dict
-            )
-
-            logger.info(
-                "PRELOADS - Inversion linear light profile quantities preloaded for this model-fit."
-            )
 
     def set_curvature_matrix(self, fit_0, fit_1):
         """

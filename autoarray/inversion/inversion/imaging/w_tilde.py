@@ -444,13 +444,23 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             linear_func_param_range_0 = linear_func_param_range_list[index_0]
 
+            weighted_vector_0 = (
+                self.linear_func_operated_mapping_matrix_dict[linear_func_0]
+                / self.noise_map[:, None]
+            )
+
             for index_1, linear_func_1 in enumerate(linear_func_list):
 
                 linear_func_param_range_1 = linear_func_param_range_list[index_1]
 
+                weighted_vector_1 = (
+                    self.linear_func_operated_mapping_matrix_dict[linear_func_1]
+                    / self.noise_map[:, None]
+                )
+
                 diag = np.dot(
-                    self.linear_func_weighted_mapping_vectors_dict[linear_func_0].T,
-                    self.linear_func_weighted_mapping_vectors_dict[linear_func_1],
+                    weighted_vector_0.T,
+                    weighted_vector_1,
                 )
 
                 curvature_matrix[

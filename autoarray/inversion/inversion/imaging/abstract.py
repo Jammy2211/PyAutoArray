@@ -160,36 +160,3 @@ class AbstractInversionImaging(AbstractInversion):
             ] = operated_mapping_matrix
 
         return linear_func_operated_mapping_matrix_dict
-
-    @cached_property
-    @profile_func
-    def linear_func_weighted_mapping_vectors_dict(self) -> Dict:
-        """
-        The diagonals of the `curvature_matrix` of linear func objects are computed by multiplying the operated
-        values of each linear func by the noise-map.
-
-        This property therefore returns a dictionary mapping every linear func object to this quantity.
-
-        Returns
-        -------
-        A dictionary mapping every linear function object to its operated mapping matrix divided by the noise and
-        convolved with the kernel.
-        """
-
-        if self.preloads.linear_func_weighted_mapping_vectors_dict is not None:
-            return self._linear_func_preload_dict_map(
-                linear_func_preload_dict=self.preloads.linear_func_weighted_mapping_vectors_dict
-            )
-
-        linear_func_weighted_mapping_vectors_dict = {}
-
-        for (
-            linear_func,
-            operated_mapping_matrix,
-        ) in self.linear_func_operated_mapping_matrix_dict.items():
-
-            linear_func_weighted_mapping_vectors_dict[linear_func] = (
-                operated_mapping_matrix / self.noise_map[:, None]
-            )
-
-        return linear_func_weighted_mapping_vectors_dict
