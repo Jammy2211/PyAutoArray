@@ -1,5 +1,6 @@
 import numpy as np
-from scipy.optimize import nnls
+import scipy
+#from scipy.optimize import nnls
 from typing import List, Optional
 
 from autoconf import conf
@@ -8,6 +9,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import numba_util
 from autoarray import exc
+from autoarray.util.fnnls import fnnls_modified
 
 
 def curvature_matrix_via_w_tilde_from(
@@ -323,42 +325,54 @@ def reconstruction_positive_only_from(
     settings: SettingsInversion = SettingsInversion(),
 ):
     """
-    Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
-    of https://arxiv.org/pdf/astro-ph/0302587.pdf
+    Solve the linear system Eq.(2) (in terms of minimizing the quadratic value) of
+    https://arxiv.org/pdf/astro-ph/0302587.pdf. Not finding the exact solution of Eq.(3) or Eq.(4).
 
-    S is the vector of reconstructed inversion values.
-
-    This reconstruction uses a linear algebra solver that allows only positives values in the solution.
+    This reconstruction uses a linear algebra optimizer that allows only positives values in the solution.
     By not allowing negative values, the solver is slower than methods which allow negative values, but there are
     many inference problems where negative values are nonphysical or undesirable and removing them improves the solution.
 
-    This function checks that the solution does not give a linear algebra error (e.g. because the input matrix is
-    not positive-definitive) and that it avoids solutions where all reconstructed values go to the same value. If these
-    occur it raises an exception.
+    The non-negative optimizer we use is a modified version of fnnls (https://github.com/jvendrow/fnnls). The algorithm is published by
+    Bro & Jong (1997) ("A fast non‐negativity‐constrained least squares algorithm."
+                Journal of Chemometrics: A Journal of the Chemometrics Society 11, no. 5 (1997): 393-401.)
+
+    The modification we made here is that we create a function called fnnls_modified which directly takes ZTZ and ZTx as inputs. The reason
+    is that we realize for this specific algorithm (Bro & Jong (1997)), ZTZ and ZTx happen to be the curvature_reg_matrix and
+    data_vector, respectively, already defined in PyAutoArray (verified).
+
+    Another change we suggest is that we use `scipy.linalg.solve` as the lstsq solver used in the nnls. The original version is
+    `np.linalg.inv(A).dot(x)` which is slower as it go computes the inversion of large matrix A. We have set the `assume_a` to be `pos` as any
+    subpricipal matrix of ZTZ should still be positive-definite. 
+
+    Please note that we are trying to find non-negative solution S that minimizes |Z * S - x|^2. We are not trying to find a solution that
+    minimizes |ZTZ * S - ZTx|^2! ZTZ and ZTx are just some variables help to minimize |Z * S - x|^2. It is just a coincidence (or fundamentally not)
+    that ZTZ and ZTx are the curvature_reg_matrix and data_vector, respectively.
+
+    If we no longer uses fnnls (the algorithm of Bro & Jong (1997)), we need to check if the algorithm takes Z or ZTZ (x or ZTx) as an input. If not,
+    we need to build Z and x in PyAutoArray.
 
     Parameters
     ----------
     data_vector
-        The `data_vector` D which is solved for.
+        The `data_vector` D happens to be the ZTx.  
     curvature_reg_matrix
-        The sum of the curvature and regularization matrices.
+        The sum of the curvature and regularization matrices. Taken as ZTZ in our problem. 
     settings
         Controls the settings of the inversion, for this function where the solution is checked to not be all
         the same values.
 
     Returns
     -------
-    curvature_reg_matrix
-        The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
+    Non-negative S that minimizes the Eq.(2) of https://arxiv.org/pdf/astro-ph/0302587.pdf.
     """
 
     try:
 
-        reconstruction = nnls(
+        reconstruction = fnnls_modified(
             curvature_reg_matrix,
             (data_vector).T,
-            maxiter=settings.positive_only_maxiter,
-        )[0]
+            lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a='pos'),
+        )
 
     except (RuntimeError, np.linalg.LinAlgError) as e:
         raise exc.InversionException() from e
