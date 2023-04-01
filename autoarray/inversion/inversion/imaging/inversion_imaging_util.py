@@ -634,11 +634,10 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     data_weights: np.ndarray,
     pix_lengths: np.ndarray,
     pix_pixels: int,
-    operated_mapping_matrix: np.ndarray,
+    curvature_weights: np.ndarray,
     image_frame_1d_lengths: np.ndarray,
     image_frame_1d_indexes: np.ndarray,
     image_frame_1d_kernels: np.ndarray,
-    noise_map: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) between a mapper object
@@ -660,9 +659,14 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
         `data_to_pix_unique` and `data_weights`.
     pix_pixels
         The total number of pixels in the pixelization that reconstructs the data.
-    operated_mapping_matrix
-        The operated values of the linear func divided by the noise-map squared and convolved with the kernel, which is
-        representative of a linear func's row of the curvature matrix.
+    curvature_weights
+        The operated values of the linear func divided by the noise-map squared.
+    image_frame_indexes
+        The indexes of all masked pixels that the PSF blura light into (see the `Convolver` object).
+    image_frame_kernels
+        The kernel values that each masked blurs light into (see the `Convolver` object).
+    image_frame_length
+        The number of masked pixels it will blur light into (unmasked pixels are excluded, see the `Convolver` object).
 
     Returns
     -------
@@ -671,7 +675,7 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     """
 
     data_pixels = data_weights.shape[0]
-    linear_func_pixels = operated_mapping_matrix.shape[1]
+    linear_func_pixels = curvature_weights.shape[1]
 
     off_diag = np.zeros((pix_pixels, linear_func_pixels))
 
@@ -691,8 +695,8 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
 
                     off_diag[pix_0, linear_index] += (
                         data_0_weight
-                        * operated_mapping_matrix[data_index, linear_index]
+                        * curvature_weights[data_index, linear_index]
                         * kernel_value
-                    ) / noise_map[data_index] ** 2
+                    )
 
     return off_diag
