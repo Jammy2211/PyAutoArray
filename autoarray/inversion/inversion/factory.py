@@ -227,7 +227,7 @@ def inversion_imaging_unpacked_from(
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
 
-    if any(
+    if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
@@ -326,7 +326,7 @@ def inversion_interferometer_unpacked_from(
     except ImportError:
         settings.use_w_tilde = False
 
-    if any(
+    if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):

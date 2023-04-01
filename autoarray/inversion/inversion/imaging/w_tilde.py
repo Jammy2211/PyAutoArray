@@ -424,9 +424,13 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     data_weights=mapper.unique_mappings.data_weights,
                     pix_lengths=mapper.unique_mappings.pix_lengths,
                     pix_pixels=mapper.params,
-                    curvature_vector=self.linear_func_curvature_vectors_dict[
+                    operated_mapping_matrix=self.linear_func_operated_mapping_matrix_dict[
                         linear_func
                     ],
+                    image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
+                    image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
+                    image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
+                    noise_map=self.noise_map,
                 )
 
                 curvature_matrix[
