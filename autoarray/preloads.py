@@ -26,7 +26,6 @@ class Preloads:
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
         linear_func_weighted_mapping_vectors_dict=None,
-        linear_func_curvature_vectors_dict=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         curvature_matrix=None,
@@ -50,7 +49,6 @@ class Preloads:
         self.linear_func_weighted_mapping_vectors_dict = (
             linear_func_weighted_mapping_vectors_dict
         )
-        self.linear_func_curvature_vectors_dict = linear_func_curvature_vectors_dict
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
         self.curvature_matrix = curvature_matrix
@@ -308,7 +306,6 @@ class Preloads:
 
         self.linear_func_operated_mapping_matrix_dict = None
         self.linear_func_weighted_mapping_vectors_dict = None
-        self.linear_func_curvature_vectors_dict = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
@@ -364,9 +361,6 @@ class Preloads:
 
             self.linear_func_weighted_mapping_vectors_dict = (
                 inversion_0.linear_func_weighted_mapping_vectors_dict
-            )
-            self.linear_func_curvature_vectors_dict = (
-                inversion_0.linear_func_curvature_vectors_dict
             )
 
             logger.info(

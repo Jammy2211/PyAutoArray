@@ -193,39 +193,3 @@ class AbstractInversionImaging(AbstractInversion):
             )
 
         return linear_func_weighted_mapping_vectors_dict
-
-    @cached_property
-    @profile_func
-    def linear_func_curvature_vectors_dict(self) -> Dict:
-        """
-        The rows (and columns) of the `curvature_matrix` of a linear object are computed by dividing the operated
-        values of each linear func by the noise-map squared and convolving with the kernel.
-
-        This property therefore returns a dictionary mapping every linear func object to this quantity, which is
-        termed the curvature vector and is representative of a linear func's row of the curvature matrix.
-
-        Returns
-        -------
-        A dictionary mapping every linear function object to its curvature vector (its operated mapping matrix
-        divided by the noise squared convolved with the kernel).
-        """
-
-        if self.preloads.linear_func_curvature_vectors_dict is not None:
-            return self._linear_func_preload_dict_map(
-                linear_func_preload_dict=self.preloads.linear_func_curvature_vectors_dict
-            )
-
-        linear_func_curvature_vectors_dict = {}
-
-        for (
-            linear_func,
-            operated_mapping_matrix,
-        ) in self.linear_func_operated_mapping_matrix_dict.items():
-
-            linear_func_curvature_vectors_dict[
-                linear_func
-            ] = self.convolver.convolve_mapping_matrix(
-                mapping_matrix=operated_mapping_matrix / self.noise_map[:, None] ** 2
-            )
-
-        return linear_func_curvature_vectors_dict
