@@ -419,21 +419,35 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
                 linear_func_param_range = linear_func_param_range_list[func_index]
 
-                curvature_weights = (
-                    self.linear_func_operated_mapping_matrix_dict[linear_func]
-                    / self.noise_map[:, None] ** 2
-                )
+                if self.preloads.data_linear_func_matrix_dict is not None:
 
-                off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
-                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
-                    data_weights=mapper.unique_mappings.data_weights,
-                    pix_lengths=mapper.unique_mappings.pix_lengths,
-                    pix_pixels=mapper.params,
-                    curvature_weights=curvature_weights,
-                    image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
-                    image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
-                    image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
-                )
+                    off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_data_linear_func_matrix_from(
+                        data_linear_func_matrix_dict=self.data_linear_func_matrix_dict[
+                            linear_func
+                        ],
+                        data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
+                        data_weights=mapper.unique_mappings.data_weights,
+                        pix_lengths=mapper.unique_mappings.pix_lengths,
+                        pix_pixels=mapper.params,
+                    )
+
+                else:
+
+                    curvature_weights = (
+                        self.linear_func_operated_mapping_matrix_dict[linear_func]
+                        / self.noise_map[:, None] ** 2
+                    )
+
+                    off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
+                        data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
+                        data_weights=mapper.unique_mappings.data_weights,
+                        pix_lengths=mapper.unique_mappings.pix_lengths,
+                        pix_pixels=mapper.params,
+                        curvature_weights=curvature_weights,
+                        image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
+                        image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
+                        image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
+                    )
 
                 curvature_matrix[
                     mapper_param_range[0] : mapper_param_range[1],

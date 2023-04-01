@@ -6,11 +6,14 @@ from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
+
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 
 class AbstractInversionImaging(AbstractInversion):
@@ -110,13 +113,13 @@ class AbstractInversionImaging(AbstractInversion):
             for linear_obj in self.linear_obj_list
         ]
 
-    def _linear_func_preload_dict_map(self, linear_func_preload_dict: Dict) -> Dict:
+    def _updated_linear_func_key_dict_from(self, preload_dict: Dict) -> Dict:
 
         linear_func_dict = {}
 
         for linear_func, values in zip(
             self.cls_list_from(cls=AbstractLinearObjFuncList),
-            linear_func_preload_dict.values(),
+            preload_dict.values(),
         ):
             linear_func_dict[linear_func] = values
 
@@ -140,8 +143,8 @@ class AbstractInversionImaging(AbstractInversion):
         """
 
         if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
-            return self._linear_func_preload_dict_map(
-                linear_func_preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict
+            return self._updated_linear_func_key_dict_from(
+                preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict
             )
 
         linear_func_operated_mapping_matrix_dict = {}
@@ -160,3 +163,35 @@ class AbstractInversionImaging(AbstractInversion):
             ] = operated_mapping_matrix
 
         return linear_func_operated_mapping_matrix_dict
+
+    @property
+    def data_linear_func_matrix_dict(self):
+
+        if self.preloads.data_linear_func_matrix_dict is not None:
+            return self._updated_linear_func_key_dict_from(
+                preload_dict=self.preloads.data_linear_func_matrix_dict
+            )
+
+        linear_func_list = self.cls_list_from(cls=AbstractLinearObjFuncList)
+
+        data_linear_func_matrix_dict = {}
+
+        for func_index, linear_func in enumerate(linear_func_list):
+
+            curvature_weights = (
+                self.linear_func_operated_mapping_matrix_dict[linear_func]
+                / self.noise_map[:, None] ** 2
+            )
+
+            data_linear_func_matrix = (
+                inversion_imaging_util.data_linear_func_matrix_from(
+                    curvature_weights_matrix=curvature_weights,
+                    image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
+                    image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
+                    image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
+                )
+            )
+
+            data_linear_func_matrix_dict[linear_func] = data_linear_func_matrix
+
+        return data_linear_func_matrix_dict

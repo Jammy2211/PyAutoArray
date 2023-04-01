@@ -629,6 +629,66 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
 
 
 @numba_util.jit()
+def data_linear_func_matrix_from(
+    curvature_weights_matrix: np.ndarray,
+    image_frame_1d_lengths: np.ndarray,
+    image_frame_1d_indexes: np.ndarray,
+    image_frame_1d_kernels: np.ndarray,
+):
+
+    data_pixels = curvature_weights_matrix.shape[0]
+    linear_func_pixels = curvature_weights_matrix.shape[1]
+
+    data_linear_func_matrix_dict = np.zeros(shape=(data_pixels, linear_func_pixels))
+
+    for data_0 in range(data_pixels):
+
+        for psf_index in range(image_frame_1d_lengths[data_0]):
+
+            data_index = image_frame_1d_indexes[data_0, psf_index]
+            kernel_value = image_frame_1d_kernels[data_0, psf_index]
+
+            for linear_index in range(linear_func_pixels):
+
+                data_linear_func_matrix_dict[data_0, linear_index] += (
+                    kernel_value * curvature_weights_matrix[data_index, linear_index]
+                )
+
+    return data_linear_func_matrix_dict
+
+
+@numba_util.jit()
+def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
+    data_linear_func_matrix_dict: np.ndarray,
+    data_to_pix_unique: np.ndarray,
+    data_weights: np.ndarray,
+    pix_lengths: np.ndarray,
+    pix_pixels: int,
+):
+
+    linear_func_pixels = data_linear_func_matrix_dict.shape[1]
+
+    off_diag = np.zeros((pix_pixels, linear_func_pixels))
+
+    data_pixels = data_weights.shape[0]
+
+    for data_0 in range(data_pixels):
+
+        for pix_0_index in range(pix_lengths[data_0]):
+
+            data_0_weight = data_weights[data_0, pix_0_index]
+            pix_0 = data_to_pix_unique[data_0, pix_0_index]
+
+            for linear_index in range(linear_func_pixels):
+
+                off_diag[pix_0, linear_index] += (
+                    data_linear_func_matrix_dict[data_0, linear_index] * data_0_weight
+                )
+
+    return off_diag
+
+
+@numba_util.jit()
 def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
@@ -686,17 +746,13 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
             data_0_weight = data_weights[data_0, pix_0_index]
             pix_0 = data_to_pix_unique[data_0, pix_0_index]
 
-            for linear_index in range(linear_func_pixels):
+            for psf_index in range(image_frame_1d_lengths[data_0]):
 
-                for psf_index in range(image_frame_1d_lengths[data_0]):
+                data_index = image_frame_1d_indexes[data_0, psf_index]
+                kernel_value = image_frame_1d_kernels[data_0, psf_index]
 
-                    data_index = image_frame_1d_indexes[data_0, psf_index]
-                    kernel_value = image_frame_1d_kernels[data_0, psf_index]
-
-                    off_diag[pix_0, linear_index] += (
-                        data_0_weight
-                        * curvature_weights[data_index, linear_index]
-                        * kernel_value
-                    )
+                off_diag[pix_0, :] += (
+                    data_0_weight * curvature_weights[data_index, :] * kernel_value
+                )
 
     return off_diag

@@ -25,6 +25,7 @@ class Preloads:
         mapper_list=None,
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
+        data_linear_func_matrix_dict=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         curvature_matrix=None,
@@ -45,6 +46,7 @@ class Preloads:
         self.linear_func_operated_mapping_matrix_dict = (
             linear_func_operated_mapping_matrix_dict
         )
+        self.data_linear_func_matrix_dict = data_linear_func_matrix_dict
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
         self.curvature_matrix = curvature_matrix
@@ -333,12 +335,11 @@ class Preloads:
             self.linear_func_operated_mapping_matrix_dict = (
                 inversion_0.linear_func_operated_mapping_matrix_dict
             )
+            self.data_linear_func_matrix_dict = inversion_0.data_linear_func_matrix_dict
 
             logger.info(
                 "PRELOADS - Inversion linear light profile operated mapping matrix preloaded for this model-fit."
             )
-
-        should_preload = False
 
     def set_curvature_matrix(self, fit_0, fit_1):
         """

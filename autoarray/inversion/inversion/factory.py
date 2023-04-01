@@ -326,7 +326,7 @@ def inversion_interferometer_unpacked_from(
     except ImportError:
         settings.use_w_tilde = False
 
-    if all(
+    if any(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):

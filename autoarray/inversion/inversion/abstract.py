@@ -894,3 +894,7 @@ class AbstractInversion:
         )
 
         return curvature_matrix_counts
+
+    @property
+    def data_linear_func_matrix_dict(self):
+        raise NotImplementedError

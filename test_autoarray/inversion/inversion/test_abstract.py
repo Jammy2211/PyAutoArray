@@ -354,7 +354,6 @@ def test__linear_func_operated_mapping_matrix_dict():
     ] == pytest.approx(dict_0["key0"], 1.0e-4)
 
 
-
 def test__curvature_matrix_mapper_diag_preload():
 
     curvature_matrix_mapper_diag = 2.0 * np.ones((9, 3))
