@@ -142,7 +142,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
                 pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
                 pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
                 native_index_for_slim_index=self.transformer.real_space_mask.derive_indexes.native_for_slim,
-                pix_pixels=self.linear_obj_list[0].pixels,
+                pix_pixels=self.linear_obj_list[0].params,
             )
 
         (
@@ -154,7 +154,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
             curvature_preload=self.w_tilde.curvature_preload,
             native_index_for_slim_index=self.transformer.real_space_mask.derive_indexes.native_for_slim,
-            pix_pixels=self.linear_obj_list[0].pixels,
+            pix_pixels=self.linear_obj_list[0].params,
             sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index.astype("int"),
             sub_slim_sizes_for_pix_index=sub_slim_sizes_for_pix_index.astype("int"),
             sub_slim_weights_for_pix_index=sub_slim_weights_for_pix_index,

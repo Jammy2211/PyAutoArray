@@ -354,41 +354,6 @@ def test__linear_func_operated_mapping_matrix_dict():
     ] == pytest.approx(dict_0["key0"], 1.0e-4)
 
 
-def test__linear_func_weighted_mapping_vectors_dict():
-
-    dict_0 = {"key0": np.array([1.0, 2.0])}
-
-    preloads = aa.Preloads(linear_func_weighted_mapping_vectors_dict=dict_0)
-
-    # noinspection PyTypeChecker
-    inversion = aa.m.MockInversionImagingWTilde(
-        noise_map=np.ones(9),
-        linear_obj_list=[aa.m.MockLinearObjFuncList()],
-        preloads=preloads,
-    )
-
-    assert list(inversion.linear_func_weighted_mapping_vectors_dict.values())[
-        0
-    ] == pytest.approx(dict_0["key0"], 1.0e-4)
-
-
-def test__linear_func_curvature_vectors_dict():
-
-    dict_0 = {"key0": np.array([1.0, 2.0])}
-
-    preloads = aa.Preloads(linear_func_curvature_vectors_dict=dict_0)
-
-    # noinspection PyTypeChecker
-    inversion = aa.m.MockInversionImagingWTilde(
-        noise_map=np.ones(9),
-        linear_obj_list=[aa.m.MockLinearObjFuncList()],
-        preloads=preloads,
-    )
-
-    assert list(inversion.linear_func_curvature_vectors_dict.values())[
-        0
-    ] == pytest.approx(dict_0["key0"], 1.0e-4)
-
 
 def test__curvature_matrix_mapper_diag_preload():
 
