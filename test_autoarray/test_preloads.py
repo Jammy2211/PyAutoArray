@@ -284,7 +284,7 @@ def test__set_operated_mapping_matrix_with_preloads():
     ).all()
 
 
-def test__set_linear_func_inversion_dicts():
+def test__set_linear_func_operated_mapping_matrix_dict():
 
     # Inversion is None thus preload it to None.
 
@@ -293,14 +293,11 @@ def test__set_linear_func_inversion_dicts():
 
     preloads = aa.Preloads(
         linear_func_operated_mapping_matrix_dict=0,
-        linear_func_weighted_mapping_vectors_dict=1,
-        linear_func_curvature_vectors_dict=2,
     )
     preloads.set_linear_func_inversion_dicts(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.linear_func_operated_mapping_matrix_dict is None
-    assert preloads.linear_func_weighted_mapping_vectors_dict is None
-    assert preloads.linear_func_curvature_vectors_dict is None
+    assert preloads.data_linear_func_matrix_dict is None
 
     # Inversion's blurred mapping matrices are different thus no preloading.
 
@@ -310,60 +307,44 @@ def test__set_linear_func_inversion_dicts():
     inversion_0 = aa.m.MockInversionImaging(
         linear_obj_list=[aa.m.MockLinearObjFuncList()],
         linear_func_operated_mapping_matrix_dict=dict_0,
-        linear_func_weighted_mapping_vectors_dict=dict_0,
-        linear_func_curvature_vectors_dict=dict_0,
     )
     inversion_1 = aa.m.MockInversionImaging(
         linear_obj_list=[aa.m.MockLinearObjFuncList()],
         linear_func_operated_mapping_matrix_dict=dict_1,
-        linear_func_weighted_mapping_vectors_dict=dict_1,
-        linear_func_curvature_vectors_dict=dict_0,
     )
 
     fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
     fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
-    preloads = aa.Preloads(
-        linear_func_weighted_mapping_vectors_dict=dict_0,
-        linear_func_curvature_vectors_dict=dict_0,
-    )
+    preloads = aa.Preloads()
     preloads.set_linear_func_inversion_dicts(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.linear_func_operated_mapping_matrix_dict is None
-    assert preloads.linear_func_weighted_mapping_vectors_dict is None
-    assert preloads.linear_func_curvature_vectors_dict is None
+    assert preloads.data_linear_func_matrix_dict is None
 
     # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
     inversion_0 = aa.m.MockInversionImaging(
         linear_obj_list=[aa.m.MockLinearObjFuncList()],
         linear_func_operated_mapping_matrix_dict=dict_0,
-        linear_func_weighted_mapping_vectors_dict=dict_0,
-        linear_func_curvature_vectors_dict=dict_0,
+        data_linear_func_matrix_dict=dict_0,
     )
     inversion_1 = aa.m.MockInversionImaging(
         linear_obj_list=[aa.m.MockLinearObjFuncList()],
         linear_func_operated_mapping_matrix_dict=dict_0,
-        linear_func_weighted_mapping_vectors_dict=dict_0,
-        linear_func_curvature_vectors_dict=dict_0,
+        data_linear_func_matrix_dict=dict_0,
     )
 
     fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
     fit_1 = aa.m.MockFitImaging(inversion=inversion_1)
 
-    preloads = aa.Preloads(
-        linear_func_weighted_mapping_vectors_dict=dict_0,
-        linear_func_curvature_vectors_dict=dict_0,
-    )
+    preloads = aa.Preloads()
     preloads.set_linear_func_inversion_dicts(fit_0=fit_0, fit_1=fit_1)
 
     assert (
         preloads.linear_func_operated_mapping_matrix_dict["key0"] == dict_0["key0"]
     ).all()
-    assert (
-        preloads.linear_func_weighted_mapping_vectors_dict["key0"] == dict_0["key0"]
-    ).all()
-    assert (preloads.linear_func_curvature_vectors_dict["key0"] == dict_0["key0"]).all()
+    assert (preloads.data_linear_func_matrix_dict["key0"] == dict_0["key0"]).all()
 
 
 def test__set_curvature_matrix():
