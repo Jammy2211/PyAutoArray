@@ -338,7 +338,7 @@ class Preloads:
             self.data_linear_func_matrix_dict = inversion_0.data_linear_func_matrix_dict
 
             logger.info(
-                "PRELOADS - Inversion linear light profile operated mapping matrix preloaded for this model-fit."
+                "PRELOADS - Inversion linear light profile operated mapping matrix / data linear func matrix preloaded for this model-fit."
             )
 
     def set_curvature_matrix(self, fit_0, fit_1):
@@ -532,24 +532,6 @@ class Preloads:
                     """
                 )
 
-    def reset_all(self):
-        """
-        Reset all preloads, typically done at the end of a model-fit to save memory.
-        """
-        self.w_tilde = None
-
-        self.blurred_image = None
-        self.traced_grids_of_planes_for_inversion = None
-        self.sparse_image_plane_grid_pg_list = None
-        self.relocated_grid = None
-        self.mapper_list = None
-        self.operated_mapping_matrix = None
-        self.curvature_matrix_preload = None
-        self.curvature_matrix_counts = None
-        self.curvature_matrix = None
-        self.regularization_matrix = None
-        self.log_det_regularization_matrix_term = None
-
     @property
     def info(self) -> List[str]:
         """
@@ -564,6 +546,9 @@ class Preloads:
         line += [f"Mapper = {self.mapper_list is not None}\n"]
         line += [
             f"Blurred Mapping Matrix = {self.operated_mapping_matrix is not None}\n"
+        ]
+        line += [
+            f"Inversion Linear Func (Linear Light Profile) Dicts = {self.linear_func_operated_mapping_matrix_dict is not None}\n"
         ]
         line += [
             f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"
