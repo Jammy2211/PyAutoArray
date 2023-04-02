@@ -133,7 +133,7 @@ class InversionImagingMapping(AbstractInversionImaging):
 
     @property
     @profile_func
-    def _curvature_matrix_mapper_diag(self) -> np.ndarray:
+    def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
         """
         Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
         and the linear objects to construct the simultaneous linear equations. The object is described in full in
@@ -145,6 +145,9 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         if self.preloads.curvature_matrix_mapper_diag is not None:
             return self.preloads.curvature_matrix_mapper_diag
+
+        if not self.has(cls=AbstractMapper):
+            return None
 
         curvature_matrix = np.zeros((self.total_params, self.total_params))
 

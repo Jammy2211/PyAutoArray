@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from typing import Dict, List, Optional
 
@@ -232,6 +233,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
         array of memory.
         """
 
+        if self.preloads.curvature_matrix is not None:
+
+            # Need to copy because of how curvature_reg_matirx overwrites memory.
+
+            return copy.copy(self.preloads.curvature_matrix)
+
         if self.has(cls=AbstractLinearObjFuncList):
             return self._curvature_matrix_func_list_and_mapper
         elif self.total(cls=AbstractMapper) == 1:
@@ -240,7 +247,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
     @property
     @profile_func
-    def _curvature_matrix_mapper_diag(self) -> np.ndarray:
+    def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
         """
         Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
         and the linear objects to construct the simultaneous linear equations. The object is described in full in
@@ -252,6 +259,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         if self.preloads.curvature_matrix_mapper_diag is not None:
             return self.preloads.curvature_matrix_mapper_diag
+
+        if not self.has(cls=AbstractMapper):
+            return None
 
         curvature_matrix = np.zeros((self.total_params, self.total_params))
 

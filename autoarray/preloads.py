@@ -391,23 +391,24 @@ class Preloads:
 
                 return
 
-            elif (
-                np.max(
-                    abs(
-                        inversion_0._curvature_matrix_mapper_diag
-                        - inversion_1._curvature_matrix_mapper_diag
+            if inversion_0._curvature_matrix_mapper_diag is not None:
+                if (
+                    np.max(
+                        abs(
+                            inversion_0._curvature_matrix_mapper_diag
+                            - inversion_1._curvature_matrix_mapper_diag
+                        )
                     )
-                )
-                < 1e-8
-            ):
+                    < 1e-8
+                ):
 
-                self.curvature_matrix_mapper_diag = (
-                    inversion_0._curvature_matrix_mapper_diag
-                )
+                    self.curvature_matrix_mapper_diag = (
+                        inversion_0._curvature_matrix_mapper_diag
+                    )
 
-                logger.info(
-                    "PRELOADS - Inversion Curvature Matrix Mapper Diag preloaded for this model-fit."
-                )
+                    logger.info(
+                        "PRELOADS - Inversion Curvature Matrix Mapper Diag preloaded for this model-fit."
+                    )
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
         """
@@ -539,7 +540,7 @@ class Preloads:
 
         Returns
         -------
-            A list of strings containing True and False values as to whether a quantity has been preloaded.
+            A list of strings containing statements on what has or has not been preloaded.
         """
         line = [f"W Tilde = {self.w_tilde is not None}\n"]
         line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
