@@ -166,7 +166,34 @@ class AbstractInversionImaging(AbstractInversion):
 
     @property
     def data_linear_func_matrix_dict(self):
+        """
+        Returns a matrix that for each data pixel, maps it to the sum of the values of a linear object function
+        convolved with the PSF kernel at the data pixel.
 
+        If a linear function in an inversion is fixed, its values can be evaluated and preloaded beforehand. For every
+        data pixel, the PSF convolution with this preloaded linear function can also be preloaded, in a matrix of
+        shape [data_pixels, 1].
+
+        Given that multiple linear functions can be used and fixed in an inversion, this matrix is extended to have
+        dimensions [data_pixels, total_fixed_linear_functions].
+
+        When mapper objects and linear functions are used simultaneously in an inversion, this preloaded matrix
+        significantly speed up the computation of their off-diagonal terms in the curvature matrix.
+
+        This is similar to the preloading performed via the w-tilde formalism, except that there it is the PSF convolved
+        values of each noise-map value pair that are preloaded.
+
+        In **PyAutoGalaxy** and **PyAutoLens**, this preload is used when linear light profiles are fixed in the model.
+        For example, when using a multi Gaussian expansion, the values defining how those Gaussians are evaluated
+        (e.g. `centre`, `ell_comps` and `sigma`) are often fixed in a model, meaning this matrix can be preloaded and
+        used for speed up.
+
+        Returns
+        -------
+        ndarray
+            A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum
+            of the values of a linear object function convolved with the PSF kernel at the data pixel.
+        """
         if self.preloads.data_linear_func_matrix_dict is not None:
             return self._updated_linear_func_key_dict_from(
                 preload_dict=self.preloads.data_linear_func_matrix_dict

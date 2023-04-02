@@ -422,7 +422,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 if self.preloads.data_linear_func_matrix_dict is not None:
 
                     off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_data_linear_func_matrix_from(
-                        data_linear_func_matrix_dict=self.data_linear_func_matrix_dict[
+                        data_linear_func_matrix=self.data_linear_func_matrix_dict[
                             linear_func
                         ],
                         data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,

@@ -634,8 +634,47 @@ def data_linear_func_matrix_from(
     image_frame_1d_lengths: np.ndarray,
     image_frame_1d_indexes: np.ndarray,
     image_frame_1d_kernels: np.ndarray,
-):
+) -> np.ndarray:
+    """
+    Returns a matrix that for each data pixel, maps it to the sum of the values of a linear object function convolved
+    with the PSF kernel at the data pixel.
 
+    If a linear function in an inversion is fixed, its values can be evaluated and preloaded beforehand. For every
+    data pixel, the PSF convolution with this preloaded linear function can also be preloaded, in a matrix of
+    shape [data_pixels, 1].
+
+    Given that multiple linear functions can be used and fixed in an inversion, this matrix is extended to have
+    dimensions [data_pixels, total_fixed_linear_functions].
+
+    When mapper objects and linear functions are used simultaneously in an inversion, this preloaded matrix
+    significantly speed up the computation of their off-diagonal terms in the curvature matrix.
+
+    This is similar to the preloading performed via the w-tilde formalism, except that there it is the PSF convolved
+    values of each noise-map value pair that are preloaded.
+
+    In **PyAutoGalaxy** and **PyAutoLens**, this preload is used when linear light profiles are fixed in the model.
+    For example, when using a multi Gaussian expansion, the values defining how those Gaussians are evaluated
+    (e.g. `centre`, `ell_comps` and `sigma`) are often fixed in a model, meaning this matrix can be preloaded and
+    used for speed up.
+
+    Parameters
+    ----------
+    curvature_weights_matrix
+        The operated values of each linear function divided by the noise-map squared, in a matrix of shape
+        [data_pixels, total_fixed_linear_functions].
+    image_frame_indexes
+        The indexes of all masked pixels that the PSF blurs light into (see the `Convolver` object).
+    image_frame_kernels
+        The kernel values of all masked pixels that the PSF blurs light into (see the `Convolver` object).
+    image_frame_length
+        The number of masked pixels it will blur light into (unmasked pixels are excluded, see the `Convolver` object).
+
+    Returns
+    -------
+    ndarray
+        A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum of
+        the values of a linear object function convolved with the PSF kernel at the data pixel.
+    """
     data_pixels = curvature_weights_matrix.shape[0]
     linear_func_pixels = curvature_weights_matrix.shape[1]
 
@@ -659,14 +698,42 @@ def data_linear_func_matrix_from(
 
 @numba_util.jit()
 def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
-    data_linear_func_matrix_dict: np.ndarray,
+    data_linear_func_matrix: np.ndarray,
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
     pix_lengths: np.ndarray,
     pix_pixels: int,
 ):
+    """
+    Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) between a mapper object
+    and a linear func object, using the preloaded `data_linear_func_matrix` of the values of the linear functions.
 
-    linear_func_pixels = data_linear_func_matrix_dict.shape[1]
+
+    If a linear function in an inversion is fixed, its values can be evaluated and preloaded beforehand. For every
+    data pixel, the PSF convolution with this preloaded linear function can also be preloaded, in a matrix of
+    shape [data_pixels, 1].
+
+    When mapper objects and linear functions are used simultaneously in an inversion, this preloaded matrix
+    significantly speed up the computation of their off-diagonal terms in the curvature matrix.
+
+    This function performs this efficient calcluation via the preloaded `data_linear_func_matrix`.
+
+    Parameters
+    ----------
+    data_linear_func_matrix
+        A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum of
+        the values of a linear object function convolved with the PSF kernel at the data pixel.
+    data_to_pix_unique
+        The indexes of all pixels that each data pixel maps to (see the `Mapper` object).
+    data_weights
+        The weights of all pixels that each data pixel maps to (see the `Mapper` object).
+    pix_lengths
+        The number of pixelization pixels that each data pixel maps to (see the `Mapper` object).
+    pix_pixels
+        The number of pixelization pixels in the pixelization (see the `Mapper` object).
+    """
+
+    linear_func_pixels = data_linear_func_matrix.shape[1]
 
     off_diag = np.zeros((pix_pixels, linear_func_pixels))
 
@@ -682,7 +749,7 @@ def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
             for linear_index in range(linear_func_pixels):
 
                 off_diag[pix_0, linear_index] += (
-                    data_linear_func_matrix_dict[data_0, linear_index] * data_0_weight
+                    data_linear_func_matrix[data_0, linear_index] * data_0_weight
                 )
 
     return off_diag
@@ -701,10 +768,17 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
 ) -> np.ndarray:
     """
     Returns the off diagonal terms in the curvature matrix `F` (see Warren & Dye 2003) between a mapper object
-    and a linear func object.
+    and a linear func object, using the unique mappings between data pixels and pixelization pixels.
 
-    This uses the unique mappings of the mapper and the curvature vector (its operated mapping matrix
-    divided by the noise squared convolved with the kernel).
+    This takes as input the curvature weights of the linear function object, which are the values of the linear
+    function convolved with the PSF and divided by the noise-map squared.
+
+    For each unique mapping between a data pixel and a pixelization pixel, the pixels which that pixel convolves
+    light into are computed, multiplied by their corresponding curvature weights and summed. This process also
+    accounts the sub-pixel mapping of each data pixel to the pixelization pixel
+
+    This is done for every unique mapping of a data pixel to a pixelization pixel, giving the off-diagonal terms in
+    the curvature matrix.
 
     Parameters
     ----------
@@ -722,9 +796,9 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     curvature_weights
         The operated values of the linear func divided by the noise-map squared.
     image_frame_indexes
-        The indexes of all masked pixels that the PSF blura light into (see the `Convolver` object).
+        The indexes of all masked pixels that the PSF blurs light into (see the `Convolver` object).
     image_frame_kernels
-        The kernel values that each masked blurs light into (see the `Convolver` object).
+        The kernel values of all masked pixels that the PSF blurs light into (see the `Convolver` object).
     image_frame_length
         The number of masked pixels it will blur light into (unmasked pixels are excluded, see the `Convolver` object).
 
