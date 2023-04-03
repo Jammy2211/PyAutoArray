@@ -1,7 +1,13 @@
 import numpy as np
 import scipy
 
-def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: scipy.linalg.solve(A, x, assume_a='pos')):
+
+def fnnls(
+    Z,
+    x,
+    P_initial=np.zeros(0, dtype=int),
+    lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a="pos"),
+):
     """
     Implementation of the Fast Non-megative Least Squares Algorithm described
     in the paper "A fast non-negativity-constrained least squares algorithm"
@@ -10,7 +16,7 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: scipy.l
     This algorithm seeks to find min_d ||x - Zd|| subject to d >= 0
 
     Some of the comments, such as "B2", refer directly to the steps of
-    the fnnls algorithm as presented in the paper by Bro et al. 
+    the fnnls algorithm as presented in the paper by Bro et al.
 
     Parameters
     ----------
@@ -27,9 +33,9 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: scipy.l
         lstsq: function
         By default, numpy.linalg.lstsq with rcond=None.
         Least squares function to use when calculating the
-        least squares solution min_x ||Ax - b||. 
+        least squares solution min_x ||Ax - b||.
         Must be of the form x = f(A,b).
-        
+
     Returns
     -------
     d: Numpy array
@@ -41,79 +47,109 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: scipy.l
     m, n = Z.shape
 
     if len(Z.shape) != 2:
-        raise ValueError("Expected a two-dimensional array, but Z is of shape {}".format(Z.shape))
+        raise ValueError(
+            "Expected a two-dimensional array, but Z is of shape {}".format(Z.shape)
+        )
     if len(x.shape) != 1:
-        raise ValueError("Expected a one-dimensional array, but x is of shape {}".format(x.shape))
+        raise ValueError(
+            "Expected a one-dimensional array, but x is of shape {}".format(x.shape)
+        )
     if len(P_initial.shape) != 1:
-        raise ValueError("Expected a one-dimensional array, but P_initial is of shape {}".format(P_initial.shape))
+        raise ValueError(
+            "Expected a one-dimensional array, but P_initial is of shape {}".format(
+                P_initial.shape
+            )
+        )
 
     if not np.all((P_initial - P_initial.astype(int)) == 0):
-        raise ValueError("Expected only integer values, but P_initial has values {}".format(P_initial[(P_initial - P_initial.astype(int)) != 0]))
+        raise ValueError(
+            "Expected only integer values, but P_initial has values {}".format(
+                P_initial[(P_initial - P_initial.astype(int)) != 0]
+            )
+        )
     if np.any(P_initial >= n):
-        raise ValueError("Expected values between 0 and Z.shape[1], but P_initial has max value {}".format(np.max(P_initial)))
+        raise ValueError(
+            "Expected values between 0 and Z.shape[1], but P_initial has max value {}".format(
+                np.max(P_initial)
+            )
+        )
     if np.any(P_initial < 0):
-        raise ValueError("Expected values between 0 and Z.shape[1], but P_initial has min value {}".format(np.min(P_initial)))
-    if P_initial.dtype != np.dtype('int64') and P_initial.dtype != np.dtype('int32') :
-        raise TypeError("Expected type int64 or int32, but P_initial is type {}".format(P_initial.dtype))
+        raise ValueError(
+            "Expected values between 0 and Z.shape[1], but P_initial has min value {}".format(
+                np.min(P_initial)
+            )
+        )
+    if P_initial.dtype != np.dtype("int64") and P_initial.dtype != np.dtype("int32"):
+        raise TypeError(
+            "Expected type int64 or int32, but P_initial is type {}".format(
+                P_initial.dtype
+            )
+        )
     if x.shape[0] != m:
-        raise ValueError("Incompatable dimensions. The first dimension of Z should match the length of x, but Z is of shape {} and x is of shape {}".format(Z.shape, x.shape))
+        raise ValueError(
+            "Incompatable dimensions. The first dimension of Z should match the length of x, but Z is of shape {} and x is of shape {}".format(
+                Z.shape, x.shape
+            )
+        )
 
-    #Calculating ZTZ and ZTx in advance to improve the efficiency of calculations
+    # Calculating ZTZ and ZTx in advance to improve the efficiency of calculations
     ZTZ = Z.T.dot(Z)
     ZTx = Z.T.dot(x)
 
-    #Declaring constants for tolerance and max repetitions
+    # Declaring constants for tolerance and max repetitions
     epsilon = 2.2204e-16
     tolerance = epsilon * n
 
-    #number of contsecutive times the set P can remain unchanged loop until we terminate
+    # number of contsecutive times the set P can remain unchanged loop until we terminate
     max_repetitions = 5
 
-    #A1 + A2
+    # A1 + A2
     P = np.zeros(n, dtype=np.bool)
     P[P_initial] = True
 
-    #A3
+    # A3
     d = np.zeros(n)
 
-    #A4
+    # A4
     w = ZTx - (ZTZ) @ d
 
-    #Initialize s
+    # Initialize s
     s = np.zeros(n)
 
-    #Count of amount of consecutive times set P has remained unchanged
+    # Count of amount of consecutive times set P has remained unchanged
     no_update = 0
 
-    #Extra loop in case a support is set to update s and d
+    # Extra loop in case a support is set to update s and d
     if P_initial.shape[0] != 0:
 
-        s[P] = lstsq((ZTZ)[P][:,P], (ZTx)[P])
+        s[P] = lstsq((ZTZ)[P][:, P], (ZTx)[P])
         d = s.clip(min=0)
 
-    #B1
-    while (not np.all(P))  and np.max(w[~P]) > tolerance:
-        
-        current_P = P.copy() #make copy of passive set to check for change at end of loop
+    # B1
+    while (not np.all(P)) and np.max(w[~P]) > tolerance:
 
-        #B2 + B3 
+        current_P = (
+            P.copy()
+        )  # make copy of passive set to check for change at end of loop
+
+        # B2 + B3
         P[np.argmax(w * ~P)] = True
 
-        #B4
-        s[P] = lstsq((ZTZ)[P][:,P], (ZTx)[P])
+        # B4
+        s[P] = lstsq((ZTZ)[P][:, P], (ZTx)[P])
 
-        #C1
+        # C1
         while np.any(P) and np.min(s[P]) <= tolerance:
 
             s, d, P = fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq)
 
-        #B5
-        d = s.copy() 
-        #B6
+        # B5
+        d = s.copy()
+        # B6
         w = ZTx - (ZTZ) @ d
 
-        #check if there has been a change to the passive set
-        if(np.all(current_P == P)): 
+        # check if there has been a change to the passive set
+        if np.all(current_P == P):
             no_update += 1
         else:
             no_update = 0
@@ -121,12 +157,17 @@ def fnnls(Z, x, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: scipy.l
         if no_update >= max_repetitions:
             break
 
-    res = np.linalg.norm(x - Z@d) #Calculate residual loss ||x - Zd||
+    res = np.linalg.norm(x - Z @ d)  # Calculate residual loss ||x - Zd||
 
     return [d, res]
 
 
-def fnnls_modified(ZTZ, ZTx, P_initial = np.zeros(0, dtype=int), lstsq = lambda A, x: scipy.linalg.solve(A, x, assume_a='pos')):
+def fnnls_modified(
+    ZTZ,
+    ZTx,
+    P_initial=np.zeros(0, dtype=int),
+    lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a="pos"),
+):
     """
     Implementation of the Fast Non-megative Least Squares Algorithm described
     in the paper "A fast non-negativity-constrained least squares algorithm"
@@ -135,7 +176,7 @@ def fnnls_modified(ZTZ, ZTx, P_initial = np.zeros(0, dtype=int), lstsq = lambda 
     This algorithm seeks to find min_d ||x - Zd|| subject to d >= 0
 
     Some of the comments, such as "B2", refer directly to the steps of
-    the fnnls algorithm as presented in the paper by Bro et al. 
+    the fnnls algorithm as presented in the paper by Bro et al.
 
     Parameters
     ----------
@@ -152,75 +193,77 @@ def fnnls_modified(ZTZ, ZTx, P_initial = np.zeros(0, dtype=int), lstsq = lambda 
         lstsq: function
         By default, numpy.linalg.lstsq with rcond=None.
         Least squares function to use when calculating the
-        least squares solution min_x ||Ax - b||. 
+        least squares solution min_x ||Ax - b||.
         Must be of the form x = f(A,b).
-        
+
     Returns
     -------
     d: Numpy array
         d is a nx1 vector
     """
 
-    #Z, x, P_initial = map(np.asarray_chkfinite, (Z, x, P_initial))
+    # Z, x, P_initial = map(np.asarray_chkfinite, (Z, x, P_initial))
 
     n = np.shape(ZTZ)[0]
 
-    #Calculating ZTZ and ZTx in advance to improve the efficiency of calculations
-    #ZTZ = Z.T.dot(Z)
-    #ZTx = Z.T.dot(x)
+    # Calculating ZTZ and ZTx in advance to improve the efficiency of calculations
+    # ZTZ = Z.T.dot(Z)
+    # ZTx = Z.T.dot(x)
 
-    #Declaring constants for tolerance and max repetitions
+    # Declaring constants for tolerance and max repetitions
     epsilon = 2.2204e-16
     tolerance = epsilon * n
 
-    #number of contsecutive times the set P can remain unchanged loop until we terminate
+    # number of contsecutive times the set P can remain unchanged loop until we terminate
     max_repetitions = 5
 
-    #A1 + A2
+    # A1 + A2
     P = np.zeros(n, dtype=np.bool)
     P[P_initial] = True
 
-    #A3
+    # A3
     d = np.zeros(n)
 
-    #A4
+    # A4
     w = ZTx - (ZTZ) @ d
 
-    #Initialize s
+    # Initialize s
     s = np.zeros(n)
 
-    #Count of amount of consecutive times set P has remained unchanged
+    # Count of amount of consecutive times set P has remained unchanged
     no_update = 0
 
-    #Extra loop in case a support is set to update s and d
+    # Extra loop in case a support is set to update s and d
     if P_initial.shape[0] != 0:
 
-        s[P] = lstsq((ZTZ)[P][:,P], (ZTx)[P])
+        s[P] = lstsq((ZTZ)[P][:, P], (ZTx)[P])
         d = s.clip(min=0)
 
-    #B1
-    while (not np.all(P))  and np.max(w[~P]) > tolerance:
-        
-        current_P = P.copy() #make copy of passive set to check for change at end of loop
+    # B1
+    while (not np.all(P)) and np.max(w[~P]) > tolerance:
 
-        #B2 + B3 
+        current_P = (
+            P.copy()
+        )  # make copy of passive set to check for change at end of loop
+
+        # B2 + B3
         P[np.argmax(w * ~P)] = True
 
-        #B4
-        s[P] = lstsq((ZTZ)[P][:,P], (ZTx)[P])
+        # B4
+        s[P] = lstsq((ZTZ)[P][:, P], (ZTx)[P])
 
-        #C1
+        # C1
         while np.any(P) and np.min(s[P]) <= tolerance:
 
             s, d, P = fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq)
 
-        #B5
-        d = s.copy() 
-        #B6
+        # B5
+        d = s.copy()
+        # B6
         w = ZTx - (ZTZ) @ d
 
-        #check if there has been a change to the passive set
-        if(np.all(current_P == P)): 
+        # check if there has been a change to the passive set
+        if np.all(current_P == P):
             no_update += 1
         else:
             no_update = 0
@@ -228,14 +271,20 @@ def fnnls_modified(ZTZ, ZTx, P_initial = np.zeros(0, dtype=int), lstsq = lambda 
         if no_update >= max_repetitions:
             break
 
-    #res = np.linalg.norm(x - Z@d) #Calculate residual loss ||x - Zd||
+    # res = np.linalg.norm(x - Z@d) #Calculate residual loss ||x - Zd||
 
     return d
 
 
-
-
-def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: scipy.linalg.solve(A, x, assume_a='pos')):
+def fix_constraint(
+    ZTZ,
+    ZTx,
+    s,
+    d,
+    P,
+    tolerance,
+    lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a="pos"),
+):
     """
     The inner loop of the Fast Non-megative Least Squares Algorithm described
     in the paper "A fast non-negativity-constrained least squares algorithm"
@@ -245,7 +294,7 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: scipy.lina
     nonnegativity contraint of the solution.
 
     Some of the comments, such as "B2", refer directly to the steps of
-    the fnnls algorithm as presented in the paper by Bro et al. 
+    the fnnls algorithm as presented in the paper by Bro et al.
 
     Parameters
     ----------
@@ -265,7 +314,7 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: scipy.lina
 
     P: Numpy array, dtype=np.bool
         The current passive set, which comtains the indices
-        that are not fixed at the value zero. 
+        that are not fixed at the value zero.
 
     tolerance: float
         A tolerance, below which values are considered to be
@@ -274,9 +323,9 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: scipy.lina
     lstsq: function
         By default, numpy.linalg.lstsq with rcond=None.
         Least squares function to use when calculating the
-        least squares solution min_x ||Ax - b||. 
+        least squares solution min_x ||Ax - b||.
         Must be of the form x = f(A,b).
-        
+
     Returns
     -------
     s: Numpy array
@@ -286,26 +335,29 @@ def fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq = lambda A, x: scipy.lina
         as possible to s while maintaining nonnegativity.
     P: Numpy array, dtype=np.bool
         The updated passive set
-        """ 
-    #C2
+    """
+    # C2
     q = P * (s <= tolerance)
     alpha = np.min(d[q] / (d[q] - s[q]))
 
-    #C3
-    d = d + alpha * (s-d) #set d as close to s as possible while maintaining non-negativity
+    # C3
+    d = d + alpha * (
+        s - d
+    )  # set d as close to s as possible while maintaining non-negativity
 
-    #C4
+    # C4
     P[d <= tolerance] = False
 
-    #C5
-    s[P] = lstsq((ZTZ)[P][:,P], (ZTx)[P])
+    # C5
+    s[P] = lstsq((ZTZ)[P][:, P], (ZTx)[P])
 
-    #C6
-    s[~P] = 0.
+    # C6
+    s[~P] = 0.0
 
     return s, d, P
 
-def RK(A,b,k=100, random_state=None):
+
+def RK(A, b, k=100, random_state=None):
     """
     Function that runs k iterations of randomized Kaczmarz iterations (with uniform sampling).
 
@@ -318,14 +370,14 @@ def RK(A,b,k=100, random_state=None):
     k : int_, optional
         Number of iterations (default is 100).
     random_state: int, optional
-        Random state for NumPy random sampling 
-        
+        Random state for NumPy random sampling
+
     Returns
     -------
     x : NumPy array
-        The approximate solution 
-    """ 
-    
+        The approximate solution
+    """
+
     if random_state != None:
         np.random.seed(random_state)
 
@@ -335,11 +387,14 @@ def RK(A,b,k=100, random_state=None):
     for i in range(k):
 
         ind = np.random.choice(range(m))
-        x = x + np.transpose(A[ind,:])*(b[ind] - A[ind,:] @ x)/(np.linalg.norm(A[ind,:])**2)
+        x = x + np.transpose(A[ind, :]) * (b[ind] - A[ind, :] @ x) / (
+            np.linalg.norm(A[ind, :]) ** 2
+        )
 
     return x
 
-def RGS(A,b,k=100):
+
+def RGS(A, b, k=100):
     """
     Function that runs k iterations of randomized Gauss-Seidel iterations (with uniform sampling).
 
@@ -353,12 +408,12 @@ def RGS(A,b,k=100):
         Number of iterations (default is 100).
     random_state: int, optional
         Random state for NumPy random sampling
-        
+
     Returns
     -------
     x : NumPy array
-        The approximate solution 
-    """ 
+        The approximate solution
+    """
 
     if random_state != None:
         np.random.seed(random_state)
@@ -368,7 +423,8 @@ def RGS(A,b,k=100):
 
     for i in range(k):
         ind = np.random.choice(range(n))
-        x[ind] = x[ind] + np.transpose(A[:,ind]) @ (b - A @ x)/(np.linalg.norm(A[:,ind])**2)
-
+        x[ind] = x[ind] + np.transpose(A[:, ind]) @ (b - A @ x) / (
+            np.linalg.norm(A[:, ind]) ** 2
+        )
 
     return x
