@@ -420,15 +420,15 @@ class AbstractInversion:
 
     @cached_property
     def curvature_reg_matrix_solver(self):
-    
+
         if self.settings.force_edge_pixels_to_zeros:
-    
+
             curvature_reg_matrix_solver = copy.copy(self.curvature_reg_matrix)
-    
+
             curvature_reg_matrix_solver[:, self.mapper_edge_pixel_list] = 0.0
-    
+
             return curvature_reg_matrix_solver
-    
+
         return self.curvature_reg_matrix
 
     @cached_property
@@ -472,45 +472,50 @@ class AbstractInversion:
             ZTx := np.dot(Z.T, x)
         """
         if self.settings.use_positive_only_solver:
-            '''
-            For the new implementation, we now need to take out the cols and rows of 
+            """
+            For the new implementation, we now need to take out the cols and rows of
             the curvature_reg_matrix that corresponds to the parameters we force to be 0.
             Similar for the data vector.
 
             What we actually doing is that we have set the correspoding cols of the Z to be 0.
             As the curvature_reg_matrix = ZTZ, so the cols and rows are all taken out.
             And the data_vector = ZTx, so the corresponding row is also taken out.
-            '''
-            
-            #print('Positive Start!')
+            """
+
+            # print('Positive Start!')
 
             if self.settings.force_edge_pixels_to_zeros:
 
-                #print('Positive Edge Start!')
+                # print('Positive Edge Start!')
 
-                values_to_solve = np.ones(np.shape(self.curvature_reg_matrix)[0], dtype=bool)
+                values_to_solve = np.ones(
+                    np.shape(self.curvature_reg_matrix)[0], dtype=bool
+                )
                 values_to_solve[self.mapper_edge_pixel_list] = False
                 solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
-                curvature_reg_matrix_input = self.curvature_reg_matrix[values_to_solve, :][:, values_to_solve]
+                curvature_reg_matrix_input = self.curvature_reg_matrix[
+                    values_to_solve, :
+                ][:, values_to_solve]
                 data_vector_input = self.data_vector[values_to_solve]
-                solutions[values_to_solve] = inversion_util.reconstruction_positive_only_from(
-                            data_vector=data_vector_input,
-                            curvature_reg_matrix=curvature_reg_matrix_input,
-                            settings=self.settings,
-                            )
+                solutions[
+                    values_to_solve
+                ] = inversion_util.reconstruction_positive_only_from(
+                    data_vector=data_vector_input,
+                    curvature_reg_matrix=curvature_reg_matrix_input,
+                    settings=self.settings,
+                )
 
-                #print('Positive Success Edge!')
+                # print('Positive Success Edge!')
                 return solutions
             else:
                 solutions = inversion_util.reconstruction_positive_only_from(
-                            data_vector=self.data_vector,
-                            curvature_reg_matrix=self.curvature_reg_matrix_solver,
-                            settings=self.settings,
-                            )
-                #print(self.mapper_edge_pixel_list)
-                #print('Positive Success No Edge!')
+                    data_vector=self.data_vector,
+                    curvature_reg_matrix=self.curvature_reg_matrix_solver,
+                    settings=self.settings,
+                )
+                # print(self.mapper_edge_pixel_list)
+                # print('Positive Success No Edge!')
                 return solutions
-
 
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
 
