@@ -233,8 +233,8 @@ def fnnls_modified(
     # Count of amount of consecutive times set P has remained unchanged
     no_update = 0
 
-    count = 0
-    sub_count = 0
+ #   count = 0
+#    sub_count = 0
 
     # Extra loop in case a support is set to update s and d
     if P_initial.shape[0] != 0:
@@ -245,7 +245,7 @@ def fnnls_modified(
     # B1
     while (not np.all(P)) and np.max(w[~P]) > tolerance:
 
-        count += 1
+      #  count += 1
 
         current_P = (
             P.copy()
@@ -260,7 +260,7 @@ def fnnls_modified(
         # C1
         while np.any(P) and np.min(s[P]) <= tolerance:
 
-            sub_count += 1
+      #      sub_count += 1
 
             s, d, P = fix_constraint(ZTZ, ZTx, s, d, P, tolerance, lstsq)
 
@@ -280,7 +280,7 @@ def fnnls_modified(
 
     # res = np.linalg.norm(x - Z@d) #Calculate residual loss ||x - Zd||
 
-    print(f"Total Iterations = {count} / {sub_count}")
+   # print(f"Total Iterations = {count} / {sub_count}")
 
     return d
 
