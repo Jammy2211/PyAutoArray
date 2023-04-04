@@ -113,7 +113,7 @@ class AbstractInversionImaging(AbstractInversion):
             for linear_obj in self.linear_obj_list
         ]
 
-    def _updated_cls_key_dict_from(self, cls : Type, preload_dict: Dict) -> Dict:
+    def _updated_cls_key_dict_from(self, cls: Type, preload_dict: Dict) -> Dict:
 
         cls_dict = {}
 
@@ -145,7 +145,7 @@ class AbstractInversionImaging(AbstractInversion):
         if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
             return self._updated_cls_key_dict_from(
                 cls=AbstractLinearObjFuncList,
-                preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict
+                preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict,
             )
 
         linear_func_operated_mapping_matrix_dict = {}
@@ -198,7 +198,7 @@ class AbstractInversionImaging(AbstractInversion):
         if self.preloads.data_linear_func_matrix_dict is not None:
             return self._updated_cls_key_dict_from(
                 cls=AbstractLinearObjFuncList,
-                preload_dict=self.preloads.data_linear_func_matrix_dict
+                preload_dict=self.preloads.data_linear_func_matrix_dict,
             )
 
         linear_func_list = self.cls_list_from(cls=AbstractLinearObjFuncList)
@@ -245,7 +245,7 @@ class AbstractInversionImaging(AbstractInversion):
         if self.preloads.mapper_operated_mapping_matrix_dict is not None:
             return self._updated_cls_key_dict_from(
                 cls=AbstractMapper,
-                preload_dict=self.preloads.mapper_operated_mapping_matrix_dict
+                preload_dict=self.preloads.mapper_operated_mapping_matrix_dict,
             )
 
         mapper_operated_mapping_matrix_dict = {}
@@ -256,8 +256,6 @@ class AbstractInversionImaging(AbstractInversion):
                 mapping_matrix=mapper.mapping_matrix
             )
 
-            mapper_operated_mapping_matrix_dict[
-                mapper
-            ] = operated_mapping_matrix
+            mapper_operated_mapping_matrix_dict[mapper] = operated_mapping_matrix
 
         return mapper_operated_mapping_matrix_dict

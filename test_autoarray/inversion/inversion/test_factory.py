@@ -623,10 +623,10 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_mappe
         linear_obj_list=[
             rectangular_mapper_7x7_3x3,
             linear_obj,
-           delaunay_mapper_9_3x3,
-           linear_obj_1,
-           voronoi_mapper_9_3x3,
-           linear_obj_2,
+            delaunay_mapper_9_3x3,
+            linear_obj_1,
+            voronoi_mapper_9_3x3,
+            linear_obj_2,
         ],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
@@ -640,10 +640,10 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_mappe
         linear_obj_list=[
             rectangular_mapper_7x7_3x3,
             linear_obj,
-           delaunay_mapper_9_3x3,
-           linear_obj_1,
-           voronoi_mapper_9_3x3,
-           linear_obj_2,
+            delaunay_mapper_9_3x3,
+            linear_obj_1,
+            voronoi_mapper_9_3x3,
+            linear_obj_2,
         ],
         preloads=preloads,
         settings=aa.SettingsInversion(use_w_tilde=True),
@@ -656,6 +656,7 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_mappe
     assert inversion_mapping.curvature_matrix == pytest.approx(
         inversion_w_tilde.curvature_matrix, 1.0e-4
     )
+
 
 def test__inversion_interferometer__via_mapper(
     interferometer_7_no_fft,

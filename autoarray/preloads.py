@@ -368,6 +368,7 @@ class Preloads:
 
         self.curvature_matrix = None
         self.curvature_matrix_mapper_diag = None
+        self.mapper_operated_mapping_matrix_dict = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
@@ -404,6 +405,9 @@ class Preloads:
                     < 1e-8
                 ):
 
+                    self.mapper_operated_mapping_matrix_dict = (
+                        inversion_0.mapper_operated_mapping_matrix_dict
+                    )
                     self.curvature_matrix_mapper_diag = (
                         inversion_0._curvature_matrix_mapper_diag
                     )

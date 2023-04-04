@@ -375,7 +375,14 @@ def reconstruction_positive_only_from(
         reconstruction = fnnls_modified(
             curvature_reg_matrix,
             (data_vector).T,
-            lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a="pos", overwrite_a=True, overwrite_b=True, check_finite=False),
+            lstsq=lambda A, x: scipy.linalg.solve(
+                A,
+                x,
+                assume_a="pos",
+                overwrite_a=True,
+                overwrite_b=True,
+                check_finite=False,
+            ),
         )
 
     except (RuntimeError, np.linalg.LinAlgError) as e:
