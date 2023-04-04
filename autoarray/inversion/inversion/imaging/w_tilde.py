@@ -441,6 +441,16 @@ class InversionImagingWTilde(AbstractInversionImaging):
                         pix_pixels=mapper.params,
                     )
 
+                elif self.preloads.mapper_operated_mapping_matrix_dict is not None:
+
+                    operated_mapping_matrix = self.mapper_operated_mapping_matrix_dict[mapper]
+
+                    curvature_weights = (
+                        self.linear_func_operated_mapping_matrix_dict[linear_func]
+                    )/ self.noise_map[:, None] ** 2
+
+                    off_diag = np.dot(operated_mapping_matrix.T, curvature_weights)
+
                 else:
 
                     curvature_weights = (

@@ -369,10 +369,13 @@ def reconstruction_positive_only_from(
 
     try:
 
+        np.save(file="ZTZ", arr=curvature_reg_matrix)
+        np.save(file="ZTx", arr=data_vector)
+
         reconstruction = fnnls_modified(
             curvature_reg_matrix,
             (data_vector).T,
-            lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a="pos"),
+            lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a="pos", overwrite_a=True, overwrite_b=True, check_finite=False),
         )
 
     except (RuntimeError, np.linalg.LinAlgError) as e:

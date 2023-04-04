@@ -482,21 +482,21 @@ class AbstractInversion:
             And the data_vector = ZTx, so the corresponding row is also taken out.
             """
 
-            # print('Positive Start!')
-
             if self.settings.force_edge_pixels_to_zeros:
-
-                # print('Positive Edge Start!')
 
                 values_to_solve = np.ones(
                     np.shape(self.curvature_reg_matrix)[0], dtype=bool
                 )
                 values_to_solve[self.mapper_edge_pixel_list] = False
-                solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
+
+                data_vector_input = self.data_vector[values_to_solve]
+
                 curvature_reg_matrix_input = self.curvature_reg_matrix[
                     values_to_solve, :
                 ][:, values_to_solve]
-                data_vector_input = self.data_vector[values_to_solve]
+
+                solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
+
                 solutions[
                     values_to_solve
                 ] = inversion_util.reconstruction_positive_only_from(
@@ -505,16 +505,15 @@ class AbstractInversion:
                     settings=self.settings,
                 )
 
-                # print('Positive Success Edge!')
                 return solutions
             else:
+
                 solutions = inversion_util.reconstruction_positive_only_from(
                     data_vector=self.data_vector,
                     curvature_reg_matrix=self.curvature_reg_matrix_solver,
                     settings=self.settings,
                 )
-                # print(self.mapper_edge_pixel_list)
-                # print('Positive Success No Edge!')
+
                 return solutions
 
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
@@ -947,4 +946,8 @@ class AbstractInversion:
 
     @property
     def data_linear_func_matrix_dict(self):
+        raise NotImplementedError
+
+    @property
+    def mapper_operated_mapping_matrix_dict(self) -> Dict:
         raise NotImplementedError

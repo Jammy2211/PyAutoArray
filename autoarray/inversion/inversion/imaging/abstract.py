@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type
 
 from autoconf import cached_property
 
@@ -113,17 +113,17 @@ class AbstractInversionImaging(AbstractInversion):
             for linear_obj in self.linear_obj_list
         ]
 
-    def _updated_linear_func_key_dict_from(self, preload_dict: Dict) -> Dict:
+    def _updated_cls_key_dict_from(self, cls : Type, preload_dict: Dict) -> Dict:
 
-        linear_func_dict = {}
+        cls_dict = {}
 
         for linear_func, values in zip(
-            self.cls_list_from(cls=AbstractLinearObjFuncList),
+            self.cls_list_from(cls=cls),
             preload_dict.values(),
         ):
-            linear_func_dict[linear_func] = values
+            cls_dict[linear_func] = values
 
-        return linear_func_dict
+        return cls_dict
 
     @cached_property
     @profile_func
@@ -143,7 +143,8 @@ class AbstractInversionImaging(AbstractInversion):
         """
 
         if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
-            return self._updated_linear_func_key_dict_from(
+            return self._updated_cls_key_dict_from(
+                cls=AbstractLinearObjFuncList,
                 preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict
             )
 
@@ -195,7 +196,8 @@ class AbstractInversionImaging(AbstractInversion):
             of the values of a linear object function convolved with the PSF kernel at the data pixel.
         """
         if self.preloads.data_linear_func_matrix_dict is not None:
-            return self._updated_linear_func_key_dict_from(
+            return self._updated_cls_key_dict_from(
+                cls=AbstractLinearObjFuncList,
                 preload_dict=self.preloads.data_linear_func_matrix_dict
             )
 
@@ -222,3 +224,40 @@ class AbstractInversionImaging(AbstractInversion):
             data_linear_func_matrix_dict[linear_func] = data_linear_func_matrix
 
         return data_linear_func_matrix_dict
+
+    @cached_property
+    @profile_func
+    def mapper_operated_mapping_matrix_dict(self) -> Dict:
+        """
+        The `operated_mapping_matrix` of a `Mapper` object describes the mappings between the observed data's values
+        and the mapper's mesh pixels after a 2D convolution operation. It is described fully in the method
+        `operated_mapping_matrix`.
+
+        This property returns a dictionary mapping every mapper object to its corresponded operated mapping
+        matrix, which is used for constructing the matrices that perform the linear inversion in an efficent way
+        for the w_tilde calculation.
+
+        Returns
+        -------
+        A dictionary mapping every mapper object to its operated mapping matrix.
+        """
+
+        if self.preloads.mapper_operated_mapping_matrix_dict is not None:
+            return self._updated_cls_key_dict_from(
+                cls=AbstractMapper,
+                preload_dict=self.preloads.mapper_operated_mapping_matrix_dict
+            )
+
+        mapper_operated_mapping_matrix_dict = {}
+
+        for mapper in self.cls_list_from(cls=AbstractMapper):
+
+            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                mapping_matrix=mapper.mapping_matrix
+            )
+
+            mapper_operated_mapping_matrix_dict[
+                mapper
+            ] = operated_mapping_matrix
+
+        return mapper_operated_mapping_matrix_dict

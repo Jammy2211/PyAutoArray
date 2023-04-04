@@ -26,6 +26,7 @@ class Preloads:
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
         data_linear_func_matrix_dict=None,
+        mapper_operated_mapping_matrix_dict=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         curvature_matrix=None,
@@ -47,6 +48,7 @@ class Preloads:
             linear_func_operated_mapping_matrix_dict
         )
         self.data_linear_func_matrix_dict = data_linear_func_matrix_dict
+        self.mapper_operated_mapping_matrix_dict = mapper_operated_mapping_matrix_dict
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
         self.curvature_matrix = curvature_matrix
