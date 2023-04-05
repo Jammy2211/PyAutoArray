@@ -2,6 +2,7 @@ import logging
 import numpy as np
 from typing import List
 
+from autoconf import conf
 
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
@@ -482,24 +483,30 @@ class Preloads:
 
         try:
 
+            preloads_check_threshold = conf.instance["general"]["test"]["preloads_check_threshold"]
+
             if (
                 abs(
                     fit_with_preloads.figure_of_merit
                     - fit_without_preloads.figure_of_merit
                 )
-                > 1.0e-4
+                > preloads_check_threshold
             ):
 
                 raise exc.PreloadsException(
                     f"""
-                    The log likelihood of fits using and not using preloads are not consistent, indicating 
-                    preloading has gone wrong.
-
+                    The log likelihood of fits using and not using preloads are not consistent by a value larger than
+                    the preloads check threshold of {preloads_check_threshold}, indicating preloading has gone wrong.
 
                     The likelihood values are: 
 
                     With Preloads: {fit_with_preloads.figure_of_merit}
                     Without Preloads: {fit_without_preloads.figure_of_merit}
+                    
+                    Double check that the model-fit is set up correctly and that the preloads are being used correctly.
+                    
+                    This exception can be turned off by setting the general.yaml -> test -> check_preloads to False
+                    in the config files. However, care should be taken when doing this.
                     """
                 )
 
