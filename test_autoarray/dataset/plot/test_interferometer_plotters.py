@@ -25,7 +25,7 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
     )
 
     interferometer_plotter.figures_2d(
-        visibilities=True,
+        data=True,
         noise_map=True,
         u_wavelengths=True,
         v_wavelengths=True,
@@ -53,7 +53,7 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
     plot_patch.paths = []
 
     interferometer_plotter.figures_2d(
-        visibilities=True,
+        data=True,
         u_wavelengths=False,
         v_wavelengths=True,
         amplitudes_vs_uv_distances=True,

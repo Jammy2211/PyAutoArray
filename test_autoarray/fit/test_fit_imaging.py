@@ -12,7 +12,7 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
     noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
 
-    imaging = aa.Imaging(image=data, noise_map=noise_map)
+    imaging = aa.Imaging(data=data, noise_map=noise_map)
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
@@ -65,7 +65,7 @@ def test__image_and_model_are_different__include_masking__check_values_are_corre
     data = aa.Array2D(values=[1.0, 2.0, 4.0], mask=mask)
     noise_map = aa.Array2D(values=[2.0, 2.0, 2.0], mask=mask)
 
-    imaging = aa.Imaging(image=data, noise_map=noise_map)
+    imaging = aa.Imaging(data=data, noise_map=noise_map)
 
     model_image = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
 
@@ -113,7 +113,7 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
     noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
 
-    imaging = aa.Imaging(image=data, noise_map=noise_map)
+    imaging = aa.Imaging(data=data, noise_map=noise_map)
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
@@ -157,7 +157,7 @@ def test__profiling_dict__profiles_appropriate_functions():
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
     noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
 
-    imaging = aa.Imaging(image=data, noise_map=noise_map)
+    imaging = aa.Imaging(data=data, noise_map=noise_map)
 
     masked_imaging = imaging.apply_mask(mask=mask)
 

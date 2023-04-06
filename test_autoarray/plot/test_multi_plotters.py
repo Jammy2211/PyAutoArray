@@ -27,18 +27,18 @@ def test__multi_plotter__subplot_of_plotter_list_figure(
     plotter_list = [plotter_0, plotter_1]
 
     multi_plotter = aplt.MultiFigurePlotter(plotter_list=plotter_list)
-    multi_plotter.subplot_of_figure(func_name="figures_2d", figure_name="image")
+    multi_plotter.subplot_of_figure(func_name="figures_2d", figure_name="data")
 
-    assert path.join(plot_path, "subplot_image_list.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_data_list.png") in plot_patch.paths
 
     plot_patch.paths = []
 
     multi_plotter = aplt.MultiFigurePlotter(plotter_list=plotter_list)
     multi_plotter.subplot_of_figure(
-        func_name="figures_2d", figure_name="image", noise_map=True
+        func_name="figures_2d", figure_name="data", noise_map=True
     )
 
-    assert path.join(plot_path, "subplot_image_list.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_data_list.png") in plot_patch.paths
 
 
 class MockYX1DPlotter(aplt.YX1DPlotter):

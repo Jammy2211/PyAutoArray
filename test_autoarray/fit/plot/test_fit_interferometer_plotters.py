@@ -25,7 +25,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     )
 
     fit_interferometer_plotter.figures_2d(
-        visibilities=True,
+        data=True,
         noise_map=True,
         signal_to_noise_map=True,
         model_visibilities=True,
@@ -85,7 +85,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     plot_patch.paths = []
 
     fit_interferometer_plotter.figures_2d(
-        visibilities=True,
+        data=True,
         noise_map=False,
         signal_to_noise_map=False,
         model_visibilities=True,

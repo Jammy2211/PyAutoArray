@@ -148,7 +148,7 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
     psf = aa.Kernel2D.no_mask(values=kernel, pixel_scales=1.0)
 
-    imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
+    imaging = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
 
     masked_imaging = imaging.apply_mask(mask=mask)
 
@@ -219,7 +219,7 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
     psf = aa.Kernel2D.no_mask(values=kernel, pixel_scales=1.0)
 
-    imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
+    imaging = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
 
     masked_imaging = imaging.apply_mask(mask=mask)
 

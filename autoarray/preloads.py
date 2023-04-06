@@ -483,7 +483,9 @@ class Preloads:
 
         try:
 
-            preloads_check_threshold = conf.instance["general"]["test"]["preloads_check_threshold"]
+            preloads_check_threshold = conf.instance["general"]["test"][
+                "preloads_check_threshold"
+            ]
 
             if (
                 abs(
