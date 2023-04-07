@@ -372,6 +372,7 @@ def reconstruction_positive_only_from(
             curvature_reg_matrix,
             (data_vector).T,
             lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a='pos'),
+            #lstsq=sparse_solver,
         )
 
     except (RuntimeError, np.linalg.LinAlgError) as e:
