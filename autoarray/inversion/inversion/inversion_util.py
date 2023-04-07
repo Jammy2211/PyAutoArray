@@ -1,6 +1,7 @@
 import numpy as np
 import scipy
-#from scipy.optimize import nnls
+
+# from scipy.optimize import nnls
 from typing import List, Optional
 
 from autoconf import conf
@@ -342,7 +343,7 @@ def reconstruction_positive_only_from(
 
     Another change we suggest is that we use `scipy.linalg.solve` as the lstsq solver used in the nnls. The original version is
     `np.linalg.inv(A).dot(x)` which is slower as it go computes the inversion of large matrix A. We have set the `assume_a` to be `pos` as any
-    subpricipal matrix of ZTZ should still be positive-definite. 
+    subpricipal matrix of ZTZ should still be positive-definite.
 
     Please note that we are trying to find non-negative solution S that minimizes |Z * S - x|^2. We are not trying to find a solution that
     minimizes |ZTZ * S - ZTx|^2! ZTZ and ZTx are just some variables help to minimize |Z * S - x|^2. It is just a coincidence (or fundamentally not)
@@ -354,9 +355,9 @@ def reconstruction_positive_only_from(
     Parameters
     ----------
     data_vector
-        The `data_vector` D happens to be the ZTx.  
+        The `data_vector` D happens to be the ZTx.
     curvature_reg_matrix
-        The sum of the curvature and regularization matrices. Taken as ZTZ in our problem. 
+        The sum of the curvature and regularization matrices. Taken as ZTZ in our problem.
     settings
         Controls the settings of the inversion, for this function where the solution is checked to not be all
         the same values.
@@ -368,11 +369,20 @@ def reconstruction_positive_only_from(
 
     try:
 
+        np.save(file="ZTZ", arr=curvature_reg_matrix)
+        np.save(file="ZTx", arr=data_vector)
+
         reconstruction = fnnls_modified(
             curvature_reg_matrix,
             (data_vector).T,
-            lstsq=lambda A, x: scipy.linalg.solve(A, x, assume_a='pos'),
-            #lstsq=sparse_solver,
+            lstsq=lambda A, x: scipy.linalg.solve(
+                A,
+                x,
+                assume_a="pos",
+                overwrite_a=True,
+                overwrite_b=True,
+                check_finite=False,
+            ),
         )
 
     except (RuntimeError, np.linalg.LinAlgError) as e:

@@ -2,6 +2,7 @@ import logging
 import numpy as np
 from typing import List
 
+from autoconf import conf
 
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
@@ -25,8 +26,8 @@ class Preloads:
         mapper_list=None,
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
-        linear_func_weighted_mapping_vectors_dict=None,
-        linear_func_curvature_vectors_dict=None,
+        data_linear_func_matrix_dict=None,
+        mapper_operated_mapping_matrix_dict=None,
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         curvature_matrix=None,
@@ -47,10 +48,8 @@ class Preloads:
         self.linear_func_operated_mapping_matrix_dict = (
             linear_func_operated_mapping_matrix_dict
         )
-        self.linear_func_weighted_mapping_vectors_dict = (
-            linear_func_weighted_mapping_vectors_dict
-        )
-        self.linear_func_curvature_vectors_dict = linear_func_curvature_vectors_dict
+        self.data_linear_func_matrix_dict = data_linear_func_matrix_dict
+        self.mapper_operated_mapping_matrix_dict = mapper_operated_mapping_matrix_dict
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
         self.curvature_matrix = curvature_matrix
@@ -307,8 +306,6 @@ class Preloads:
         """
 
         self.linear_func_operated_mapping_matrix_dict = None
-        self.linear_func_weighted_mapping_vectors_dict = None
-        self.linear_func_curvature_vectors_dict = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
@@ -341,36 +338,10 @@ class Preloads:
             self.linear_func_operated_mapping_matrix_dict = (
                 inversion_0.linear_func_operated_mapping_matrix_dict
             )
+            self.data_linear_func_matrix_dict = inversion_0.data_linear_func_matrix_dict
 
             logger.info(
-                "PRELOADS - Inversion linear light profile operated mapping matrix preloaded for this model-fit."
-            )
-
-        should_preload = False
-
-        for weighted_mapping_vectors_0, weighted_mapping_vectors_1 in zip(
-            inversion_0.linear_func_weighted_mapping_vectors_dict.values(),
-            inversion_1.linear_func_weighted_mapping_vectors_dict.values(),
-        ):
-
-            if (
-                np.max(abs(weighted_mapping_vectors_0 - weighted_mapping_vectors_1))
-                < 1e-8
-            ):
-
-                should_preload = True
-
-        if should_preload:
-
-            self.linear_func_weighted_mapping_vectors_dict = (
-                inversion_0.linear_func_weighted_mapping_vectors_dict
-            )
-            self.linear_func_curvature_vectors_dict = (
-                inversion_0.linear_func_curvature_vectors_dict
-            )
-
-            logger.info(
-                "PRELOADS - Inversion linear light profile quantities preloaded for this model-fit."
+                "PRELOADS - Inversion linear light profile operated mapping matrix / data linear func matrix preloaded for this model-fit."
             )
 
     def set_curvature_matrix(self, fit_0, fit_1):
@@ -398,6 +369,7 @@ class Preloads:
 
         self.curvature_matrix = None
         self.curvature_matrix_mapper_diag = None
+        self.mapper_operated_mapping_matrix_dict = None
 
         inversion_0 = fit_0.inversion
         inversion_1 = fit_1.inversion
@@ -423,23 +395,27 @@ class Preloads:
 
                 return
 
-            elif (
-                np.max(
-                    abs(
-                        inversion_0._curvature_matrix_mapper_diag
-                        - inversion_1._curvature_matrix_mapper_diag
+            if inversion_0._curvature_matrix_mapper_diag is not None:
+                if (
+                    np.max(
+                        abs(
+                            inversion_0._curvature_matrix_mapper_diag
+                            - inversion_1._curvature_matrix_mapper_diag
+                        )
                     )
-                )
-                < 1e-8
-            ):
+                    < 1e-8
+                ):
 
-                self.curvature_matrix_mapper_diag = (
-                    inversion_0._curvature_matrix_mapper_diag
-                )
+                    self.mapper_operated_mapping_matrix_dict = (
+                        inversion_0.mapper_operated_mapping_matrix_dict
+                    )
+                    self.curvature_matrix_mapper_diag = (
+                        inversion_0._curvature_matrix_mapper_diag
+                    )
 
-                logger.info(
-                    "PRELOADS - Inversion Curvature Matrix Mapper Diag preloaded for this model-fit."
-                )
+                    logger.info(
+                        "PRELOADS - Inversion Curvature Matrix Mapper Diag preloaded for this model-fit."
+                    )
 
     def set_regularization_matrix_and_term(self, fit_0, fit_1):
         """
@@ -507,24 +483,30 @@ class Preloads:
 
         try:
 
+            preloads_check_threshold = conf.instance["general"]["test"]["preloads_check_threshold"]
+
             if (
                 abs(
                     fit_with_preloads.figure_of_merit
                     - fit_without_preloads.figure_of_merit
                 )
-                > 1.0e-4
+                > preloads_check_threshold
             ):
 
                 raise exc.PreloadsException(
                     f"""
-                    The log likelihood of fits using and not using preloads are not consistent, indicating 
-                    preloading has gone wrong.
-
+                    The log likelihood of fits using and not using preloads are not consistent by a value larger than
+                    the preloads check threshold of {preloads_check_threshold}, indicating preloading has gone wrong.
 
                     The likelihood values are: 
 
                     With Preloads: {fit_with_preloads.figure_of_merit}
                     Without Preloads: {fit_without_preloads.figure_of_merit}
+                    
+                    Double check that the model-fit is set up correctly and that the preloads are being used correctly.
+                    
+                    This exception can be turned off by setting the general.yaml -> test -> check_preloads to False
+                    in the config files. However, care should be taken when doing this.
                     """
                 )
 
@@ -564,24 +546,6 @@ class Preloads:
                     """
                 )
 
-    def reset_all(self):
-        """
-        Reset all preloads, typically done at the end of a model-fit to save memory.
-        """
-        self.w_tilde = None
-
-        self.blurred_image = None
-        self.traced_grids_of_planes_for_inversion = None
-        self.sparse_image_plane_grid_pg_list = None
-        self.relocated_grid = None
-        self.mapper_list = None
-        self.operated_mapping_matrix = None
-        self.curvature_matrix_preload = None
-        self.curvature_matrix_counts = None
-        self.curvature_matrix = None
-        self.regularization_matrix = None
-        self.log_det_regularization_matrix_term = None
-
     @property
     def info(self) -> List[str]:
         """
@@ -589,13 +553,16 @@ class Preloads:
 
         Returns
         -------
-            A list of strings containing True and False values as to whether a quantity has been preloaded.
+            A list of strings containing statements on what has or has not been preloaded.
         """
         line = [f"W Tilde = {self.w_tilde is not None}\n"]
         line += [f"Relocated Grid = {self.relocated_grid is not None}\n"]
         line += [f"Mapper = {self.mapper_list is not None}\n"]
         line += [
             f"Blurred Mapping Matrix = {self.operated_mapping_matrix is not None}\n"
+        ]
+        line += [
+            f"Inversion Linear Func (Linear Light Profile) Dicts = {self.linear_func_operated_mapping_matrix_dict is not None}\n"
         ]
         line += [
             f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"

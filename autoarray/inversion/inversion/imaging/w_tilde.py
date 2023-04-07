@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from typing import Dict, List, Optional
 
@@ -232,6 +233,12 @@ class InversionImagingWTilde(AbstractInversionImaging):
         array of memory.
         """
 
+        if self.preloads.curvature_matrix is not None:
+
+            # Need to copy because of how curvature_reg_matirx overwrites memory.
+
+            return copy.copy(self.preloads.curvature_matrix)
+
         if self.has(cls=AbstractLinearObjFuncList):
             return self._curvature_matrix_func_list_and_mapper
         elif self.total(cls=AbstractMapper) == 1:
@@ -240,7 +247,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
     @property
     @profile_func
-    def _curvature_matrix_mapper_diag(self) -> np.ndarray:
+    def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
         """
         Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
         and the linear objects to construct the simultaneous linear equations. The object is described in full in
@@ -252,6 +259,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         if self.preloads.curvature_matrix_mapper_diag is not None:
             return self.preloads.curvature_matrix_mapper_diag
+
+        if not self.has(cls=AbstractMapper):
+            return None
 
         curvature_matrix = np.zeros((self.total_params, self.total_params))
 
@@ -419,15 +429,47 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
                 linear_func_param_range = linear_func_param_range_list[func_index]
 
-                off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
-                    data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
-                    data_weights=mapper.unique_mappings.data_weights,
-                    pix_lengths=mapper.unique_mappings.pix_lengths,
-                    pix_pixels=mapper.params,
-                    curvature_vector=self.linear_func_curvature_vectors_dict[
-                        linear_func
-                    ],
-                )
+                if self.preloads.data_linear_func_matrix_dict is not None:
+
+                    off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_data_linear_func_matrix_from(
+                        data_linear_func_matrix=self.data_linear_func_matrix_dict[
+                            linear_func
+                        ],
+                        data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
+                        data_weights=mapper.unique_mappings.data_weights,
+                        pix_lengths=mapper.unique_mappings.pix_lengths,
+                        pix_pixels=mapper.params,
+                    )
+
+                elif self.preloads.mapper_operated_mapping_matrix_dict is not None:
+
+                    operated_mapping_matrix = self.mapper_operated_mapping_matrix_dict[
+                        mapper
+                    ]
+
+                    curvature_weights = (
+                        self.linear_func_operated_mapping_matrix_dict[linear_func]
+                    ) / self.noise_map[:, None] ** 2
+
+                    off_diag = np.dot(operated_mapping_matrix.T, curvature_weights)
+
+                else:
+
+                    curvature_weights = (
+                        self.linear_func_operated_mapping_matrix_dict[linear_func]
+                        / self.noise_map[:, None] ** 2
+                    )
+
+                    off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
+                        data_to_pix_unique=mapper.unique_mappings.data_to_pix_unique,
+                        data_weights=mapper.unique_mappings.data_weights,
+                        pix_lengths=mapper.unique_mappings.pix_lengths,
+                        pix_pixels=mapper.params,
+                        curvature_weights=curvature_weights,
+                        image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
+                        image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
+                        image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
+                    )
 
                 curvature_matrix[
                     mapper_param_range[0] : mapper_param_range[1],
@@ -438,13 +480,23 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             linear_func_param_range_0 = linear_func_param_range_list[index_0]
 
+            weighted_vector_0 = (
+                self.linear_func_operated_mapping_matrix_dict[linear_func_0]
+                / self.noise_map[:, None]
+            )
+
             for index_1, linear_func_1 in enumerate(linear_func_list):
 
                 linear_func_param_range_1 = linear_func_param_range_list[index_1]
 
+                weighted_vector_1 = (
+                    self.linear_func_operated_mapping_matrix_dict[linear_func_1]
+                    / self.noise_map[:, None]
+                )
+
                 diag = np.dot(
-                    self.linear_func_weighted_mapping_vectors_dict[linear_func_0].T,
-                    self.linear_func_weighted_mapping_vectors_dict[linear_func_1],
+                    weighted_vector_0.T,
+                    weighted_vector_1,
                 )
 
                 curvature_matrix[
