@@ -10,7 +10,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import numba_util
 from autoarray import exc
-from autoarray.util.fnnls import fnnls_modified
+from autoarray.util.fnnls import fnnls_Cholesky
 
 
 def curvature_matrix_via_w_tilde_from(
@@ -337,13 +337,10 @@ def reconstruction_positive_only_from(
     Bro & Jong (1997) ("A fast non‐negativity‐constrained least squares algorithm."
                 Journal of Chemometrics: A Journal of the Chemometrics Society 11, no. 5 (1997): 393-401.)
 
-    The modification we made here is that we create a function called fnnls_modified which directly takes ZTZ and ZTx as inputs. The reason
+    The modification we made here is that we create a function called fnnls_Cholesky which directly takes ZTZ and ZTx as inputs. The reason
     is that we realize for this specific algorithm (Bro & Jong (1997)), ZTZ and ZTx happen to be the curvature_reg_matrix and
-    data_vector, respectively, already defined in PyAutoArray (verified).
-
-    Another change we suggest is that we use `scipy.linalg.solve` as the lstsq solver used in the nnls. The original version is
-    `np.linalg.inv(A).dot(x)` which is slower as it go computes the inversion of large matrix A. We have set the `assume_a` to be `pos` as any
-    subpricipal matrix of ZTZ should still be positive-definite.
+    data_vector, respectively, already defined in PyAutoArray (verified). Besides, we build a Cholesky scheme that solves the lstsq problem
+    in each iteration within the fnnls algorithm by updating the Cholesky factorisation.
 
     Please note that we are trying to find non-negative solution S that minimizes |Z * S - x|^2. We are not trying to find a solution that
     minimizes |ZTZ * S - ZTx|^2! ZTZ and ZTx are just some variables help to minimize |Z * S - x|^2. It is just a coincidence (or fundamentally not)
@@ -369,12 +366,15 @@ def reconstruction_positive_only_from(
 
     try:
 
-        np.save(file="ZTZ", arr=curvature_reg_matrix)
-        np.save(file="ZTx", arr=data_vector)
+        #np.save(file="ZTZ", arr=curvature_reg_matrix)
+        #np.save(file="ZTx", arr=data_vector)
 
-        reconstruction = fnnls_modified(
+        #print('Here!')
+
+        reconstruction = fnnls_Cholesky(
             curvature_reg_matrix,
             (data_vector).T,
+            P_initial=scipy.linalg.solve(curvature_reg_matrix, data_vector.T, assume_a='pos') > 0,
             lstsq=lambda A, x: scipy.linalg.solve(
                 A,
                 x,
@@ -384,6 +384,8 @@ def reconstruction_positive_only_from(
                 check_finite=False,
             ),
         )
+
+        #print('Finish Cholesky!')
 
     except (RuntimeError, np.linalg.LinAlgError) as e:
         raise exc.InversionException() from e
