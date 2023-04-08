@@ -56,7 +56,7 @@ class FitImagingPlotterMeta(Plotter):
 
     def figures_2d(
         self,
-        image: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
         model_image: bool = False,
@@ -73,7 +73,7 @@ class FitImagingPlotterMeta(Plotter):
 
         Parameters
         ----------
-        image
+        data
             Whether to make a 2D plot (via `imshow`) of the image data.
         noise_map
             Whether to make a 2D plot (via `imshow`) of the noise map.
@@ -89,7 +89,7 @@ class FitImagingPlotterMeta(Plotter):
             Whether to make a 2D plot (via `imshow`) of the chi-squared map.
         """
 
-        if image:
+        if data:
 
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
@@ -168,7 +168,7 @@ class FitImagingPlotterMeta(Plotter):
 
     def subplot(
         self,
-        image: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
         model_image: bool = False,
@@ -185,7 +185,7 @@ class FitImagingPlotterMeta(Plotter):
 
         Parameters
         ----------
-        image
+        data
             Whether or not to include a 2D plot (via `imshow`) of the image data.
         noise_map
             Whether or not to include a 2D plot (via `imshow`) of the noise map.
@@ -205,7 +205,7 @@ class FitImagingPlotterMeta(Plotter):
             The default filename of the output subplot if written to hard-disk.
         """
         self._subplot_custom_plot(
-            image=image,
+            data=data,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
             model_image=model_image,
@@ -220,7 +220,7 @@ class FitImagingPlotterMeta(Plotter):
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
         return self.subplot(
-            image=True,
+            data=True,
             signal_to_noise_map=True,
             model_image=True,
             residual_map=True,

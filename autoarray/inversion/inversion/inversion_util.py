@@ -1,7 +1,6 @@
 import numpy as np
 import scipy
 
-# from scipy.optimize import nnls
 from typing import List, Optional
 
 from autoconf import conf
@@ -10,7 +9,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import numba_util
 from autoarray import exc
-from autoarray.util.fnnls import fnnls_Cholesky
+from autoarray.util.fnnls import fnnls_cholesky
 
 
 def curvature_matrix_via_w_tilde_from(
@@ -333,21 +332,25 @@ def reconstruction_positive_only_from(
     By not allowing negative values, the solver is slower than methods which allow negative values, but there are
     many inference problems where negative values are nonphysical or undesirable and removing them improves the solution.
 
-    The non-negative optimizer we use is a modified version of fnnls (https://github.com/jvendrow/fnnls). The algorithm is published by
+    The non-negative optimizer we use is a modified version of fnnls (https://github.com/jvendrow/fnnls). The algorithm
+    is published by:
+
     Bro & Jong (1997) ("A fast non‐negativity‐constrained least squares algorithm."
                 Journal of Chemometrics: A Journal of the Chemometrics Society 11, no. 5 (1997): 393-401.)
 
-    The modification we made here is that we create a function called fnnls_Cholesky which directly takes ZTZ and ZTx as inputs. The reason
-    is that we realize for this specific algorithm (Bro & Jong (1997)), ZTZ and ZTx happen to be the curvature_reg_matrix and
-    data_vector, respectively, already defined in PyAutoArray (verified). Besides, we build a Cholesky scheme that solves the lstsq problem
-    in each iteration within the fnnls algorithm by updating the Cholesky factorisation.
+    The modification we made here is that we create a function called fnnls_Cholesky which directly takes ZTZ and ZTx
+    as inputs. The reason is that we realize for this specific algorithm (Bro & Jong (1997)), ZTZ and ZTx happen to
+    be the curvature_reg_matrix and data_vector, respectively, already defined in PyAutoArray (verified). Besides,
+    we build a Cholesky scheme that solves the lstsq problem in each iteration within the fnnls algorithm by updating
+    the Cholesky factorisation.
 
-    Please note that we are trying to find non-negative solution S that minimizes |Z * S - x|^2. We are not trying to find a solution that
-    minimizes |ZTZ * S - ZTx|^2! ZTZ and ZTx are just some variables help to minimize |Z * S - x|^2. It is just a coincidence (or fundamentally not)
-    that ZTZ and ZTx are the curvature_reg_matrix and data_vector, respectively.
+    Please note that we are trying to find non-negative solution S that minimizes |Z * S - x|^2. We are not trying to
+    find a solution that minimizes |ZTZ * S - ZTx|^2! ZTZ and ZTx are just some variables help to
+    minimize |Z * S - x|^2. It is just a coincidence (or fundamentally not) that ZTZ and ZTx are the
+    curvature_reg_matrix and data_vector, respectively.
 
-    If we no longer uses fnnls (the algorithm of Bro & Jong (1997)), we need to check if the algorithm takes Z or ZTZ (x or ZTx) as an input. If not,
-    we need to build Z and x in PyAutoArray.
+    If we no longer uses fnnls (the algorithm of Bro & Jong (1997)), we need to check if the algorithm takes Z or
+    ZTZ (x or ZTx) as an input. If not, we need to build Z and x in PyAutoArray.
 
     Parameters
     ----------
@@ -366,20 +369,24 @@ def reconstruction_positive_only_from(
 
     try:
 
-        #np.save(file="ZTZ", arr=curvature_reg_matrix)
-        #np.save(file="ZTx", arr=data_vector)
+        if settings.positive_only_uses_p_initial:
 
-        reconstruction = fnnls_Cholesky(
+            P_initial = scipy.linalg.solve(curvature_reg_matrix, data_vector.T, assume_a="pos", overwrite_a=True, overwrite_b=True) > 0
+
+        else:
+
+            P_initial = np.zeros(0, dtype=int)
+
+        reconstruction = fnnls_cholesky(
             curvature_reg_matrix,
             (data_vector).T,
-            P_initial=scipy.linalg.solve(curvature_reg_matrix, data_vector.T, assume_a='pos') > 0,
+            P_initial=P_initial,
             lstsq=lambda A, x: scipy.linalg.solve(
                 A,
                 x,
                 assume_a="pos",
                 overwrite_a=True,
                 overwrite_b=True,
-                check_finite=False,
             ),
         )
 

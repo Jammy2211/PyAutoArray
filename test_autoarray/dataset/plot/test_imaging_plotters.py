@@ -27,7 +27,7 @@ def test__individual_attributes_are_output(
     )
 
     imaging_plotter.figures_2d(
-        image=True,
+        data=True,
         noise_map=True,
         psf=True,
         inverse_noise_map=True,
@@ -43,7 +43,7 @@ def test__individual_attributes_are_output(
     plot_patch.paths = []
 
     imaging_plotter.figures_2d(
-        image=True, psf=True, inverse_noise_map=True, absolute_signal_to_noise_map=True
+        data=True, psf=True, inverse_noise_map=True, absolute_signal_to_noise_map=True
     )
 
     assert path.join(plot_path, "image_2d.png") in plot_patch.paths
@@ -78,7 +78,7 @@ def test__output_as_fits__correct_output_format(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    imaging_plotter.figures_2d(image=True, psf=True, absolute_signal_to_noise_map=True)
+    imaging_plotter.figures_2d(data=True, psf=True, absolute_signal_to_noise_map=True)
 
     image_from_plot = aa.util.array_2d.numpy_array_2d_via_fits_from(
         file_path=path.join(plot_path, "image_2d.fits"), hdu=0

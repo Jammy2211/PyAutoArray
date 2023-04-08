@@ -20,14 +20,14 @@ def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
     psf = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
     imaging = aa.Imaging(
-        image=image, noise_map=noise_map, psf=psf, pad_for_convolver=False
+        data=image, noise_map=noise_map, psf=psf, pad_for_convolver=False
     )
 
     assert imaging.image.shape_native == (3, 3)
     assert imaging.noise_map.shape_native == (3, 3)
 
     imaging = aa.Imaging(
-        image=image, noise_map=noise_map, psf=psf, pad_for_convolver=True
+        data=image, noise_map=noise_map, psf=psf, pad_for_convolver=True
     )
 
     assert imaging.image.shape_native == (5, 5)
@@ -41,7 +41,7 @@ def test__noise_covariance_input__noise_map_uses_diag():
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     noise_covariance_matrix = np.ones(shape=(9, 9))
 
-    imaging = aa.Imaging(image=image, noise_covariance_matrix=noise_covariance_matrix)
+    imaging = aa.Imaging(data=image, noise_covariance_matrix=noise_covariance_matrix)
 
     noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
@@ -54,14 +54,14 @@ def test__no_noise_map__raises_exception():
 
     with pytest.raises(aa.exc.DatasetException):
 
-        aa.Imaging(image=image)
+        aa.Imaging(data=image)
 
 
 def test__from_fits():
 
     imaging = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        image_path=path.join(test_data_dir, "3x3_ones.fits"),
+        data_path=path.join(test_data_dir, "3x3_ones.fits"),
         psf_path=path.join(test_data_dir, "3x3_twos.fits"),
         noise_map_path=path.join(test_data_dir, "3x3_threes.fits"),
     )
@@ -76,8 +76,8 @@ def test__from_fits():
 
     imaging = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        image_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
-        image_hdu=0,
+        data_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
+        data_hdu=0,
         psf_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
         psf_hdu=1,
         noise_map_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
@@ -97,7 +97,7 @@ def test__output_to_fits():
 
     imaging = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        image_path=path.join(test_data_dir, "3x3_ones.fits"),
+        data_path=path.join(test_data_dir, "3x3_ones.fits"),
         psf_path=path.join(test_data_dir, "3x3_twos.fits"),
         noise_map_path=path.join(test_data_dir, "3x3_threes.fits"),
     )
@@ -115,14 +115,14 @@ def test__output_to_fits():
     os.makedirs(output_data_dir)
 
     imaging.output_to_fits(
-        image_path=path.join(output_data_dir, "image.fits"),
+        data_path=path.join(output_data_dir, "image.fits"),
         psf_path=path.join(output_data_dir, "psf.fits"),
         noise_map_path=path.join(output_data_dir, "noise_map.fits"),
     )
 
     imaging = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        image_path=path.join(output_data_dir, "image.fits"),
+        data_path=path.join(output_data_dir, "image.fits"),
         psf_path=path.join(output_data_dir, "psf.fits"),
         noise_map_path=path.join(output_data_dir, "noise_map.fits"),
     )
@@ -183,7 +183,7 @@ def test__apply_mask__noise_covariance_matrix():
 
     mask_2d = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
-    imaging = aa.Imaging(image=image, noise_covariance_matrix=noise_covariance_matrix)
+    imaging = aa.Imaging(data=image, noise_covariance_matrix=noise_covariance_matrix)
 
     masked_imaging = imaging.apply_mask(mask=mask_2d)
 
@@ -228,7 +228,7 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
     psf = aa.Kernel2D.ones(shape_native=(7, 7), pixel_scales=3.0)
 
     imaging = aa.Imaging(
-        image=aa.Array2D.ones(shape_native=(19, 19), pixel_scales=3.0),
+        data=aa.Array2D.ones(shape_native=(19, 19), pixel_scales=3.0),
         psf=psf,
         noise_map=aa.Array2D.full(
             fill_value=2.0, shape_native=(19, 19), pixel_scales=3.0
@@ -257,10 +257,10 @@ def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
 
     with pytest.raises(aa.exc.DatasetException):
 
-        aa.Imaging(image=array, noise_map=noise_map)
+        aa.Imaging(data=array, noise_map=noise_map)
 
     noise_map = aa.Array2D.no_mask([[-1.0, 3.0]], pixel_scales=1.0)
 
     with pytest.raises(aa.exc.DatasetException):
 
-        aa.Imaging(image=array, noise_map=noise_map)
+        aa.Imaging(data=array, noise_map=noise_map)

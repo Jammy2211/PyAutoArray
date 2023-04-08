@@ -237,6 +237,7 @@ class AbstractMapper(LinearObj):
         A full description of these mappings is given in the
         function `mapper_util.data_slim_to_pixelization_unique_from()`.
         """
+
         (
             data_to_pix_unique,
             data_weights,
@@ -246,6 +247,7 @@ class AbstractMapper(LinearObj):
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
+            pix_pixels=self.params,
             sub_size=self.source_plane_data_grid.sub_size,
         )
 

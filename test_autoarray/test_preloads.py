@@ -354,7 +354,9 @@ def test__set_curvature_matrix():
     fit_0 = aa.m.MockFitImaging(inversion=None)
     fit_1 = aa.m.MockFitImaging(inversion=None)
 
-    preloads = aa.Preloads(curvature_matrix=1, curvature_matrix_mapper_diag=1)
+    preloads = aa.Preloads(
+        curvature_matrix=1, data_vector_mapper=1, curvature_matrix_mapper_diag=1
+    )
     preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.curvature_matrix is None
@@ -368,6 +370,7 @@ def test__set_curvature_matrix():
     fit_0 = aa.m.MockFitImaging(
         inversion=aa.m.MockInversion(
             curvature_matrix=curvature_matrix_0,
+            data_vector_mapper=1,
             curvature_matrix_mapper_diag=1,
             mapper_operated_mapping_matrix_dict={"key0": 1},
         )
@@ -375,6 +378,7 @@ def test__set_curvature_matrix():
     fit_1 = aa.m.MockFitImaging(
         inversion=aa.m.MockInversion(
             curvature_matrix=curvature_matrix_1,
+            data_vector_mapper=1,
             curvature_matrix_mapper_diag=1,
             mapper_operated_mapping_matrix_dict={"key0": 1},
         )
@@ -392,6 +396,7 @@ def test__set_curvature_matrix():
     fit_0 = aa.m.MockFitImaging(
         inversion=aa.m.MockInversion(
             curvature_matrix=curvature_matrix_0,
+            data_vector_mapper=1,
             curvature_matrix_mapper_diag=1,
             mapper_operated_mapping_matrix_dict={"key0": 1},
         )
@@ -399,6 +404,7 @@ def test__set_curvature_matrix():
     fit_1 = aa.m.MockFitImaging(
         inversion=aa.m.MockInversion(
             curvature_matrix=curvature_matrix_0,
+            data_vector_mapper=1,
             curvature_matrix_mapper_diag=1,
             mapper_operated_mapping_matrix_dict={"key0": 1},
         )
@@ -416,9 +422,10 @@ def test__set_curvature_matrix__curvature_matrix_mapper_diag():
     fit_0 = aa.m.MockFitImaging(inversion=None)
     fit_1 = aa.m.MockFitImaging(inversion=None)
 
-    preloads = aa.Preloads(curvature_matrix_mapper_diag=1)
+    preloads = aa.Preloads(data_vector_mapper=0, curvature_matrix_mapper_diag=1)
     preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
 
+    assert preloads.data_vector_mapper is None
     assert preloads.curvature_matrix_mapper_diag is None
     assert preloads.mapper_operated_mapping_matrix_dict is None
 
@@ -444,20 +451,24 @@ def test__set_curvature_matrix__curvature_matrix_mapper_diag():
     )
 
     preloads = aa.Preloads(
-        curvature_matrix_mapper_diag=1, mapper_operated_mapping_matrix_dict=2
+        data_vector_mapper=0,
+        curvature_matrix_mapper_diag=1,
+        mapper_operated_mapping_matrix_dict=2,
     )
     preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
 
+    assert preloads.data_vector_mapper is None
     assert preloads.curvature_matrix_mapper_diag is None
     assert preloads.mapper_operated_mapping_matrix_dict is None
 
     # Inversion's curvature matrices are the same therefore preload it and the curvature sparse terms.
 
-    preloads = aa.Preloads(curvature_matrix_mapper_diag=2)
+    preloads = aa.Preloads(data_vector_mapper=10, curvature_matrix_mapper_diag=2)
 
     fit_0 = aa.m.MockFitImaging(
         inversion=aa.m.MockInversion(
             curvature_matrix=curvature_matrix_0,
+            data_vector_mapper=0,
             curvature_matrix_mapper_diag=curvature_matrix_0,
             mapper_operated_mapping_matrix_dict={"key0": 1},
         )
@@ -465,6 +476,7 @@ def test__set_curvature_matrix__curvature_matrix_mapper_diag():
     fit_1 = aa.m.MockFitImaging(
         inversion=aa.m.MockInversion(
             curvature_matrix=curvature_matrix_1,
+            data_vector_mapper=0,
             curvature_matrix_mapper_diag=curvature_matrix_0,
             mapper_operated_mapping_matrix_dict={"key0": 1},
         )
@@ -472,6 +484,7 @@ def test__set_curvature_matrix__curvature_matrix_mapper_diag():
 
     preloads.set_curvature_matrix(fit_0=fit_0, fit_1=fit_1)
 
+    assert preloads.data_vector_mapper == 0
     assert (preloads.curvature_matrix_mapper_diag == curvature_matrix_0).all()
     assert preloads.mapper_operated_mapping_matrix_dict == {"key0": 1}
 

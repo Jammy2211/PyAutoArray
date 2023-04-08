@@ -14,7 +14,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
     noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
     interferometer = aa.Interferometer(
-        visibilities=data,
+        data=data,
         noise_map=noise_map,
         uv_wavelengths=np.ones(shape=(2, 2)),
         real_space_mask=real_space_mask,
@@ -60,7 +60,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
     noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
     interferometer = aa.Interferometer(
-        visibilities=data,
+        data=data,
         noise_map=noise_map,
         uv_wavelengths=np.ones(shape=(2, 2)),
         real_space_mask=real_space_mask,
@@ -106,7 +106,7 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
     noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
     interferometer = aa.Interferometer(
-        visibilities=data,
+        data=data,
         noise_map=noise_map,
         uv_wavelengths=np.ones(shape=(2, 2)),
         real_space_mask=real_space_mask,

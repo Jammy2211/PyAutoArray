@@ -25,7 +25,7 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
     )
 
     fit_imaging_plotter.figures_2d(
-        image=True,
+        data=True,
         noise_map=True,
         signal_to_noise_map=True,
         model_image=True,
@@ -45,7 +45,7 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
     plot_patch.paths = []
 
     fit_imaging_plotter.figures_2d(
-        image=True,
+        data=True,
         noise_map=False,
         signal_to_noise_map=False,
         model_image=True,
@@ -84,7 +84,7 @@ def test__output_as_fits__correct_output_format(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    fit_imaging_plotter.figures_2d(image=True)
+    fit_imaging_plotter.figures_2d(data=True)
 
     image_from_plot = aa.util.array_2d.numpy_array_2d_via_fits_from(
         file_path=path.join(plot_path, "image_2d.fits"), hdu=0

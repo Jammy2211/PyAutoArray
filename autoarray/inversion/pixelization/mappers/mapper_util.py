@@ -57,6 +57,7 @@ def data_slim_to_pixelization_unique_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_sizes_for_sub_slim_index: np.ndarray,
     pix_weights_for_sub_slim_index,
+    pix_pixels: int,
     sub_size: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -108,8 +109,11 @@ def data_slim_to_pixelization_unique_from(
     data_to_pix_unique = -1 * np.ones((data_pixels, max_pix_mappings * sub_size**2))
     data_weights = np.zeros((data_pixels, max_pix_mappings * sub_size**2))
     pix_lengths = np.zeros(data_pixels)
+    pix_check = -1 * np.ones(shape=pix_pixels)
 
     for ip in range(data_pixels):
+
+        pix_check[:] = -1
 
         pix_size = 0
 
@@ -118,25 +122,20 @@ def data_slim_to_pixelization_unique_from(
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
 
-            for pix_to_slim_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
+            for pix_interp_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
 
-                pix = pix_indexes_for_sub_slim_index[ip_sub, pix_to_slim_index]
-                pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_to_slim_index]
+                pix = pix_indexes_for_sub_slim_index[ip_sub, pix_interp_index]
+                pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_interp_index]
 
-                stored_already = False
+                if pix_check[pix] > -0.5:
 
-                for i in range(pix_size):
+                    data_weights[ip, int(pix_check[pix])] += sub_fraction * pixel_weight
 
-                    if data_to_pix_unique[ip, i] == pix:
-
-                        data_weights[ip, i] += sub_fraction * pixel_weight
-                        stored_already = True
-
-                if not stored_already:
+                else:
 
                     data_to_pix_unique[ip, pix_size] = pix
                     data_weights[ip, pix_size] += sub_fraction * pixel_weight
-
+                    pix_check[pix] = pix_size
                     pix_size += 1
 
         pix_lengths[ip] = pix_size
@@ -444,6 +443,7 @@ def pix_size_weights_voronoi_nn_from(
     )
 
 
+@numba_util.jit()
 def remove_bad_entries_voronoi_nn(
     bad_indexes,
     pix_weights_for_sub_slim_index,

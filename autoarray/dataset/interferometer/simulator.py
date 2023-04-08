@@ -88,7 +88,7 @@ class SimulatorInterferometer:
             )
 
         return Interferometer(
-            visibilities=visibilities,
+            data=visibilities,
             noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
             real_space_mask=image.mask,

@@ -52,7 +52,7 @@ class ImagingPlotterMeta(Plotter):
 
     def figures_2d(
         self,
-        image: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         psf: bool = False,
         inverse_noise_map: bool = False,
@@ -68,7 +68,7 @@ class ImagingPlotterMeta(Plotter):
 
         Parameters
         ----------
-        image
+        data
             Whether to make a 2D plot (via `imshow`) of the image data.
         noise_map
             Whether to make a 2D plot (via `imshow`) of the noise map.
@@ -84,7 +84,7 @@ class ImagingPlotterMeta(Plotter):
             Whether to make a 2D plot (via `imshow`) of the potential chi squared map.
         """
 
-        if image:
+        if data:
             self.mat_plot_2d.plot_array(
                 array=self.imaging.image,
                 visuals_2d=self.get_visuals_2d(),
@@ -145,7 +145,7 @@ class ImagingPlotterMeta(Plotter):
 
     def subplot(
         self,
-        image: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         psf: bool = False,
         signal_to_noise_map: bool = False,
@@ -162,7 +162,7 @@ class ImagingPlotterMeta(Plotter):
 
         Parameters
         ----------
-        image
+        data
             Whether or not to include a 2D plot (via `imshow`) of the image data.
         noise_map
             Whether or not to include a 2D plot (via `imshow`) of the noise map.
@@ -180,7 +180,7 @@ class ImagingPlotterMeta(Plotter):
             The default filename of the output subplot if written to hard-disk.
         """
         self._subplot_custom_plot(
-            image=image,
+            data=data,
             noise_map=noise_map,
             psf=psf,
             signal_to_noise_map=signal_to_noise_map,
@@ -195,7 +195,7 @@ class ImagingPlotterMeta(Plotter):
         Standard subplot of the attributes of the plotter's `Imaging` object.
         """
         self.subplot(
-            image=True,
+            data=True,
             noise_map=True,
             psf=True,
             signal_to_noise_map=True,

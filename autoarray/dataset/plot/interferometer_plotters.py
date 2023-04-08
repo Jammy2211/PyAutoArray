@@ -67,7 +67,7 @@ class InterferometerPlotter(Plotter):
 
     def figures_2d(
         self,
-        visibilities: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         u_wavelengths: bool = False,
         v_wavelengths: bool = False,
@@ -87,7 +87,7 @@ class InterferometerPlotter(Plotter):
 
         Parameters
         ----------
-        visibilities
+        data
             Whether to make a 2D plot (via `scatter`) of the visibility data.
         noise_map
             Whether to make a 2D plot (via `scatter`) of the noise-map.
@@ -109,7 +109,7 @@ class InterferometerPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
 
-        if visibilities:
+        if data:
 
             self.mat_plot_2d.plot_grid(
                 grid=self.interferometer.visibilities.in_grid,
@@ -239,7 +239,7 @@ class InterferometerPlotter(Plotter):
 
     def subplot(
         self,
-        visibilities: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         u_wavelengths: bool = False,
         v_wavelengths: bool = False,
@@ -260,7 +260,7 @@ class InterferometerPlotter(Plotter):
 
         Parameters
         ----------
-        visibilities
+        data
             Whether or not to include a 2D plot (via `scatter`) of the visibility data.
         noise_map
             Whether or not to include a 2D plot (via `scatter`) of the noise-map.
@@ -282,7 +282,7 @@ class InterferometerPlotter(Plotter):
             Whether or not to include a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
         self._subplot_custom_plot(
-            visibilities=visibilities,
+            data=data,
             noise_map=noise_map,
             u_wavelengths=u_wavelengths,
             v_wavelengths=v_wavelengths,
@@ -301,7 +301,7 @@ class InterferometerPlotter(Plotter):
         Standard subplot of the attributes of the plotter's `Interferometer` object.
         """
         return self.subplot(
-            visibilities=True,
+            data=True,
             uv_wavelengths=True,
             amplitudes_vs_uv_distances=True,
             phases_vs_uv_distances=True,

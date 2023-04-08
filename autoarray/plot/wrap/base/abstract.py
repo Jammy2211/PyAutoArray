@@ -68,10 +68,10 @@ class AbstractMatWrap:
         The matplotlib wrapper objects in ths module also use configuration files to choose their default settings.
         For example, in `autoarray.config.visualize.mat_base.Figure.ini` you will note the section:
 
-        [figure]
+        figure:
         figsize=(7, 7)
 
-        [subplot]
+        subplot:
         figsize=auto
 
         This specifies that when a data structure (like the `Array2D` above) is plotted, the figsize will always
