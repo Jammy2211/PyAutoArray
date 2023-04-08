@@ -384,12 +384,19 @@ def fnnls_cholesky(
     ZTZ,
     ZTx,
     P_initial=np.zeros(0, dtype=int),
-    lstsq=lambda A, x: slg.solve(A, x, assume_a="pos"),
 ):
     """
     Similar to fnnls, but use solving the lstsq problem by updating Cholesky factorisation.
     """
-    # print('Cholesky start!')
+
+    lstsq = lambda A, x: slg.solve(
+        A,
+        x,
+        assume_a="pos",
+        overwrite_a=True,
+        overwrite_b=True,
+    )
+
     n = np.shape(ZTZ)[0]
     epsilon = 2.2204e-16
     tolerance = epsilon * n

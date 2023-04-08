@@ -323,6 +323,8 @@ def reconstruction_positive_negative_from(
     return reconstruction
 
 
+
+
 def reconstruction_positive_only_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
@@ -380,7 +382,6 @@ def reconstruction_positive_only_from(
                 scipy.linalg.cho_solve(
                     (curvature_reg_matrix_cholesky, True),
                     data_vector,
-                    overwrite_b=True,
                 )
                 > 0
             )
@@ -393,13 +394,6 @@ def reconstruction_positive_only_from(
             curvature_reg_matrix,
             (data_vector).T,
             P_initial=P_initial,
-            lstsq=lambda A, x: scipy.linalg.solve(
-                A,
-                x,
-                assume_a="pos",
-                overwrite_a=True,
-                overwrite_b=True,
-            ),
         )
 
     except (RuntimeError, np.linalg.LinAlgError) as e:
