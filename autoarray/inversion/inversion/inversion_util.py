@@ -369,8 +369,6 @@ def reconstruction_positive_only_from(
         #np.save(file="ZTZ", arr=curvature_reg_matrix)
         #np.save(file="ZTx", arr=data_vector)
 
-        #print('Here!')
-
         reconstruction = fnnls_Cholesky(
             curvature_reg_matrix,
             (data_vector).T,
@@ -384,8 +382,6 @@ def reconstruction_positive_only_from(
                 check_finite=False,
             ),
         )
-
-        #print('Finish Cholesky!')
 
     except (RuntimeError, np.linalg.LinAlgError) as e:
         raise exc.InversionException() from e
