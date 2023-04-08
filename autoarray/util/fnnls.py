@@ -481,8 +481,9 @@ def fix_constraint_cholesky(ZTZ, ZTx, s_chol, d, P, P_inorder, U, tolerance):
     P_inorder = np.delete(P_inorder, id_delete)  # update the P_inorder
     P[d <= tolerance] = False  # update the P
 
-    s_chol[P_inorder] = slg.cho_solve((U, False), ZTx[P_inorder])
     # solve the lstsq problem by cho_solve
+    s_chol[P_inorder] = slg.cho_solve((U, False), ZTx[P_inorder])
+
     s_chol[~P] = 0.0  # set solutions taken out of the passive set to be 0
 
     return s_chol, d, P, P_inorder, U

@@ -260,7 +260,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
 
 def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
-    curvature_reg_matrix: np.ndarray,
+    curvature_reg_matrix_cholesky: np.ndarray,
     mapper_param_range_list,
     force_check_reconstruction: bool = False,
 ):
@@ -300,7 +300,11 @@ def reconstruction_positive_negative_from(
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
     try:
-        reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
+        reconstruction = scipy.linalg.cho_solve(
+            (curvature_reg_matrix_cholesky, True),
+            data_vector,
+            overwrite_b=True,
+        )
     except np.linalg.LinAlgError as e:
         raise exc.InversionException() from e
 
@@ -322,6 +326,7 @@ def reconstruction_positive_negative_from(
 def reconstruction_positive_only_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
+    curvature_reg_matrix_cholesky: np.ndarray,
     settings: SettingsInversion = SettingsInversion(),
 ):
     """
@@ -371,7 +376,14 @@ def reconstruction_positive_only_from(
 
         if settings.positive_only_uses_p_initial:
 
-            P_initial = scipy.linalg.solve(curvature_reg_matrix, data_vector.T, assume_a="pos", overwrite_a=True, overwrite_b=True) > 0
+            P_initial = (
+                scipy.linalg.cho_solve(
+                    (curvature_reg_matrix_cholesky, True),
+                    data_vector,
+                    overwrite_b=True,
+                )
+                > 0
+            )
 
         else:
 

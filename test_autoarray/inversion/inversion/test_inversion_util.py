@@ -155,7 +155,7 @@ def test__reconstruction_positive_negative_from():
 
     reconstruction = aa.util.inversion.reconstruction_positive_negative_from(
         data_vector=data_vector,
-        curvature_reg_matrix=curvature_reg_matrix,
+        curvature_reg_matrix_cholesky=np.linalg.cholesky(curvature_reg_matrix),
         mapper_param_range_list=[[0, 3]],
     )
 
@@ -174,7 +174,7 @@ def test__reconstruction_positive_negative_from__check_solution_raises_error_cau
 
         aa.util.inversion.reconstruction_positive_negative_from(
             data_vector=data_vector,
-            curvature_reg_matrix=curvature_reg_matrix,
+            curvature_reg_matrix_cholesky=np.linalg.cholesky(curvature_reg_matrix),
             mapper_param_range_list=[[0, 3]],
             force_check_reconstruction=True,
         )
