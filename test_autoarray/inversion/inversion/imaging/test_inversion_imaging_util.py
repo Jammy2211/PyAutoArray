@@ -234,6 +234,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+            pix_pixels=mapper.params,
             sub_size=sub_size,
         )
 
@@ -343,6 +344,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+            pix_pixels=mapper.params,
             sub_size=sub_size,
         )
 

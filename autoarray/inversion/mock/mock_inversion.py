@@ -15,6 +15,7 @@ class MockInversion(AbstractInversion):
         operated_mapping_matrix=None,
         data_vector=None,
         curvature_matrix=None,
+        data_vector_mapper=None,
         curvature_matrix_mapper_diag=None,
         mapper_operated_mapping_matrix_dict=None,
         regularization_matrix=None,
@@ -46,7 +47,8 @@ class MockInversion(AbstractInversion):
         self._data_vector = data_vector
         self._regularization_matrix = regularization_matrix
         self._curvature_matrix = curvature_matrix
-        self._curvature_matrix_mapper_diag = curvature_matrix_mapper_diag
+        self.__data_vector_mapper = data_vector_mapper
+        self.__curvature_matrix_mapper_diag = curvature_matrix_mapper_diag
         self._mapper_operated_mapping_matrix_dict = mapper_operated_mapping_matrix_dict
         self._curvature_reg_matrix = curvature_reg_matrix
         self._reconstruction = reconstruction
@@ -95,12 +97,20 @@ class MockInversion(AbstractInversion):
         return self._curvature_matrix
 
     @property
-    def curvature_matrix_mapper_diag(self):
+    def _data_vector_mapper(self):
 
-        if self._curvature_matrix_mapper_diag is None:
+        if self.__data_vector_mapper is None:
+            return super()._data_vector_mapper
+
+        return self.__data_vector_mapper
+
+    @property
+    def _curvature_matrix_mapper_diag(self):
+
+        if self.__curvature_matrix_mapper_diag is None:
             return super()._curvature_matrix_mapper_diag
 
-        return self._curvature_matrix_mapper_diag
+        return self.__curvature_matrix_mapper_diag
 
     @property
     def mapper_operated_mapping_matrix_dict(self):
