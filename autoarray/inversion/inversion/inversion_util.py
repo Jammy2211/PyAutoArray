@@ -366,9 +366,6 @@ def reconstruction_positive_only_from(
 
     try:
 
-        #np.save(file="ZTZ", arr=curvature_reg_matrix)
-        #np.save(file="ZTx", arr=data_vector)
-
         reconstruction = fnnls_Cholesky(
             curvature_reg_matrix,
             (data_vector).T,
@@ -379,7 +376,6 @@ def reconstruction_positive_only_from(
                 assume_a="pos",
                 overwrite_a=True,
                 overwrite_b=True,
-                check_finite=False,
             ),
         )
 

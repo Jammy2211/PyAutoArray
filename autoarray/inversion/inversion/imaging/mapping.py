@@ -62,6 +62,51 @@ class InversionImagingMapping(AbstractInversionImaging):
             profiling_dict=profiling_dict,
         )
 
+    @property
+    @profile_func
+    def _data_vector_mapper(self) -> np.ndarray:
+        """
+        Returns the `data_vector` of all mappers, a 1D vector whose values are solved for by the simultaneous
+        linear equations constructed by this object. The object is described in full in the method `data_vector`.
+
+        This method is used to compute part of the `data_vector` if there are also linear function list objects
+        in the inversion, and is separated into a separate method to enable preloading of the mapper `data_vector`.
+        """
+
+        if self.preloads.data_vector_mapper is not None:
+            return self.preloads.data_vector_mapper
+
+        if not self.has(cls=AbstractMapper):
+            return None
+
+        data_vector = np.zeros(self.total_params)
+
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+
+        for i in range(len(mapper_list)):
+
+            mapper = mapper_list[i]
+            param_range = mapper_param_range_list[i]
+
+            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                mapping_matrix=mapper.mapping_matrix
+            )
+
+            data_vector_mapper = (
+                inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
+                    blurred_mapping_matrix=operated_mapping_matrix,
+                    image=self.data,
+                    noise_map=self.noise_map,
+                )
+            )
+
+            data_vector[
+                param_range[0] : param_range[1],
+            ] = data_vector_mapper
+
+        return data_vector
+
     @cached_property
     @profile_func
     def data_vector(self) -> np.ndarray:
@@ -78,6 +123,9 @@ class InversionImagingMapping(AbstractInversionImaging):
         The calculation is described in more detail in `inversion_util.data_vector_via_blurred_mapping_matrix_from`.
         """
 
+        if self.preloads.data_vector_mapper is not None:
+            return self.preloads.data_vector_mapper
+
         if self.preloads.operated_mapping_matrix is not None:
             operated_mapping_matrix = self.preloads.operated_mapping_matrix
         else:
@@ -87,48 +135,6 @@ class InversionImagingMapping(AbstractInversionImaging):
             blurred_mapping_matrix=operated_mapping_matrix,
             image=self.data,
             noise_map=self.noise_map,
-        )
-
-    @cached_property
-    @profile_func
-    def curvature_matrix(self):
-        """
-        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
-        construct the simultaneous linear equations.
-
-        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
-        curvature matrix given by equation (4) and the letter F.
-
-        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
-        concatenated ensuring their `curvature_matrix` values are solved for simultaneously. This includes all
-        diagonal and off-diagonal terms describing the covariances between linear objects.
-
-        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
-        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
-        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
-        array of memory.
-        """
-
-        if self.preloads.curvature_matrix is not None:
-
-            # Need to copy because of how curvature_reg_matirx overwrites memory.
-
-            return copy.copy(self.preloads.curvature_matrix)
-
-        if self.preloads.curvature_matrix_preload is None:
-
-            return inversion_util.curvature_matrix_via_mapping_matrix_from(
-                mapping_matrix=self.operated_mapping_matrix,
-                noise_map=self.noise_map,
-                add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
-                no_regularization_index_list=self.no_regularization_index_list,
-            )
-
-        return inversion_util.curvature_matrix_via_sparse_preload_from(
-            mapping_matrix=self.operated_mapping_matrix,
-            noise_map=self.noise_map,
-            curvature_matrix_preload=self.preloads.curvature_matrix_preload,
-            curvature_matrix_counts=self.preloads.curvature_matrix_counts,
         )
 
     @property
@@ -180,6 +186,48 @@ class InversionImagingMapping(AbstractInversionImaging):
         )
 
         return curvature_matrix
+
+    @cached_property
+    @profile_func
+    def curvature_matrix(self):
+        """
+        The `curvature_matrix` is a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
+
+        If there are multiple linear objects their `operated_mapping_matrix` properties will have already been
+        concatenated ensuring their `curvature_matrix` values are solved for simultaneously. This includes all
+        diagonal and off-diagonal terms describing the covariances between linear objects.
+
+        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
+        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
+        """
+
+        if self.preloads.curvature_matrix is not None:
+
+            # Need to copy because of how curvature_reg_matirx overwrites memory.
+
+            return copy.copy(self.preloads.curvature_matrix)
+
+        if self.preloads.curvature_matrix_preload is None:
+
+            return inversion_util.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=self.operated_mapping_matrix,
+                noise_map=self.noise_map,
+                add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
+                no_regularization_index_list=self.no_regularization_index_list,
+            )
+
+        return inversion_util.curvature_matrix_via_sparse_preload_from(
+            mapping_matrix=self.operated_mapping_matrix,
+            noise_map=self.noise_map,
+            curvature_matrix_preload=self.preloads.curvature_matrix_preload,
+            curvature_matrix_counts=self.preloads.curvature_matrix_counts,
+        )
 
     @property
     @profile_func

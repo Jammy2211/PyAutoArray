@@ -368,6 +368,7 @@ def test__data_to_pix_unique_from():
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_pixels=3,
         sub_size=sub_size,
     )
 
@@ -403,6 +404,7 @@ def test__data_to_pix_unique_from():
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_pixels=3,
         sub_size=sub_size,
     )
 

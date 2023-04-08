@@ -941,6 +941,16 @@ class AbstractInversion:
         return curvature_matrix_counts
 
     @property
+    @profile_func
+    def _data_vector_mapper(self) -> np.ndarray:
+        raise NotImplementedError
+
+    @property
+    @profile_func
+    def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
+        raise NotImplementedError
+
+    @property
     def linear_func_operated_mapping_matrix_dict(self) -> Dict:
         raise NotImplementedError
 

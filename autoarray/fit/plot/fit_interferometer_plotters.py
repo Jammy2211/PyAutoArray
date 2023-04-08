@@ -75,7 +75,7 @@ class FitInterferometerPlotterMeta(Plotter):
 
     def figures_2d(
         self,
-        visibilities: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
         model_visibilities: bool = False,
@@ -101,7 +101,7 @@ class FitInterferometerPlotterMeta(Plotter):
 
         Parameters
         ----------
-        visibilities
+        data
             Whether to make a 2D plot (via `scatter`) of the visibility data.
         noise_map
             Whether to make a 2D plot (via `scatter`) of the noise-map.
@@ -135,7 +135,7 @@ class FitInterferometerPlotterMeta(Plotter):
             Whether to make a 2D plot (via `imshow`) of the dirty chi-squared map.
         """
 
-        if visibilities:
+        if data:
             self.mat_plot_2d.plot_grid(
                 grid=self.fit.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
@@ -336,7 +336,7 @@ class FitInterferometerPlotterMeta(Plotter):
 
     def subplot(
         self,
-        visibilities: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
         model_visibilities: bool = False,
@@ -363,7 +363,7 @@ class FitInterferometerPlotterMeta(Plotter):
 
         Parameters
         ----------
-        visibilities
+        data
             Whether to make a 2D plot (via `scatter`) of the visibility data.
         noise_map
             Whether to make a 2D plot (via `scatter`) of the noise-map.
@@ -400,7 +400,7 @@ class FitInterferometerPlotterMeta(Plotter):
         """
 
         self._subplot_custom_plot(
-            visibilities=visibilities,
+            visibilities=data,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
             model_visibilities=model_visibilities,

@@ -57,7 +57,7 @@ class FitInterferometer(FitDataset):
 
     @property
     def mask(self) -> np.ndarray:
-        return np.full(shape=self.visibilities.shape, fill_value=False)
+        return np.full(shape=self.data.shape, fill_value=False)
 
     @property
     def interferometer(self) -> Interferometer:
@@ -138,7 +138,7 @@ class FitInterferometer(FitDataset):
 
     @property
     def dirty_image(self) -> Array2D:
-        return self.transformer.image_from(visibilities=self.visibilities)
+        return self.transformer.image_from(visibilities=self.data)
 
     @property
     def dirty_noise_map(self) -> Array2D:

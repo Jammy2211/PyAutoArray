@@ -31,6 +31,7 @@ class Preloads:
         curvature_matrix_preload=None,
         curvature_matrix_counts=None,
         curvature_matrix=None,
+        data_vector_mapper=None,
         curvature_matrix_mapper_diag=None,
         regularization_matrix=None,
         log_det_regularization_matrix_term=None,
@@ -53,6 +54,7 @@ class Preloads:
         self.curvature_matrix_preload = curvature_matrix_preload
         self.curvature_matrix_counts = curvature_matrix_counts
         self.curvature_matrix = curvature_matrix
+        self.data_vector_mapper = data_vector_mapper
         self.curvature_matrix_mapper_diag = curvature_matrix_mapper_diag
         self.regularization_matrix = regularization_matrix
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
@@ -368,6 +370,7 @@ class Preloads:
         """
 
         self.curvature_matrix = None
+        self.data_vector_mapper = None
         self.curvature_matrix_mapper_diag = None
         self.mapper_operated_mapping_matrix_dict = None
 
@@ -377,7 +380,9 @@ class Preloads:
         if inversion_0 is None:
             return
 
-        if not hasattr(inversion_0, "_curvature_matrix_mapper_diag"):
+        try:
+            inversion_0._curvature_matrix_mapper_diag
+        except NotImplementedError:
             return
 
         if inversion_0.curvature_matrix.shape == inversion_1.curvature_matrix.shape:
@@ -409,6 +414,7 @@ class Preloads:
                     self.mapper_operated_mapping_matrix_dict = (
                         inversion_0.mapper_operated_mapping_matrix_dict
                     )
+                    self.data_vector_mapper = inversion_0._data_vector_mapper
                     self.curvature_matrix_mapper_diag = (
                         inversion_0._curvature_matrix_mapper_diag
                     )
@@ -483,7 +489,9 @@ class Preloads:
 
         try:
 
-            preloads_check_threshold = conf.instance["general"]["test"]["preloads_check_threshold"]
+            preloads_check_threshold = conf.instance["general"]["test"][
+                "preloads_check_threshold"
+            ]
 
             if (
                 abs(

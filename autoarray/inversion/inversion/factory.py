@@ -74,7 +74,7 @@ def inversion_from(
     if isinstance(dataset, Imaging):
 
         return inversion_imaging_unpacked_from(
-            image=dataset.image,
+            data=dataset.data,
             noise_map=dataset.noise_map,
             convolver=dataset.convolver,
             w_tilde=w_tilde,
@@ -85,7 +85,7 @@ def inversion_from(
         )
 
     return inversion_interferometer_unpacked_from(
-        visibilities=dataset.visibilities,
+        data=dataset.visibilities,
         noise_map=dataset.noise_map,
         transformer=dataset.transformer,
         w_tilde=w_tilde,
@@ -153,7 +153,7 @@ def inversion_unpacked_from(
     if isinstance(dataset, Imaging):
 
         return inversion_imaging_unpacked_from(
-            image=data,
+            data=data,
             noise_map=noise_map,
             convolver=dataset.convolver,
             w_tilde=w_tilde,
@@ -164,7 +164,7 @@ def inversion_unpacked_from(
         )
 
     return inversion_interferometer_unpacked_from(
-        visibilities=data,
+        data=data,
         noise_map=noise_map,
         transformer=dataset.transformer,
         w_tilde=w_tilde,
@@ -175,7 +175,7 @@ def inversion_unpacked_from(
 
 
 def inversion_imaging_unpacked_from(
-    image: Array2D,
+    data: Array2D,
     noise_map: Array2D,
     convolver: Convolver,
     w_tilde: WTildeImaging,
@@ -204,7 +204,7 @@ def inversion_imaging_unpacked_from(
 
     Parameters
     ----------
-    image
+    data
         The `image` data of the `Imaging` dataset which may have been changed.
     noise_map
         The noise_map of the `Imaging` dataset which may have been changed.
@@ -247,7 +247,7 @@ def inversion_imaging_unpacked_from(
     if use_w_tilde:
 
         return InversionImagingWTilde(
-            data=image,
+            data=data,
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
@@ -258,7 +258,7 @@ def inversion_imaging_unpacked_from(
         )
 
     return InversionImagingMapping(
-        data=image,
+        data=data,
         noise_map=noise_map,
         convolver=convolver,
         linear_obj_list=linear_obj_list,
@@ -269,7 +269,7 @@ def inversion_imaging_unpacked_from(
 
 
 def inversion_interferometer_unpacked_from(
-    visibilities: Visibilities,
+    data: Visibilities,
     noise_map: VisibilitiesNoiseMap,
     transformer: Union[TransformerDFT, TransformerNUFFT],
     w_tilde: WTildeInterferometer,
@@ -299,7 +299,7 @@ def inversion_interferometer_unpacked_from(
 
     Parameters
     ----------
-    image
+    data
         The `image` data of the `Imaging` dataset which may have been changed.
     noise_map
         The noise_map of the `Imaging` dataset which may have been changed.
@@ -339,7 +339,7 @@ def inversion_interferometer_unpacked_from(
         if use_w_tilde:
 
             return InversionInterferometerWTilde(
-                data=visibilities,
+                data=data,
                 noise_map=noise_map,
                 transformer=transformer,
                 w_tilde=w_tilde,
@@ -352,7 +352,7 @@ def inversion_interferometer_unpacked_from(
         else:
 
             return InversionInterferometerMapping(
-                data=visibilities,
+                data=data,
                 noise_map=noise_map,
                 transformer=transformer,
                 linear_obj_list=linear_obj_list,
@@ -364,7 +364,7 @@ def inversion_interferometer_unpacked_from(
     else:
 
         return InversionInterferometerMappingPyLops(
-            data=visibilities,
+            data=data,
             noise_map=noise_map,
             transformer=transformer,
             linear_obj_list=linear_obj_list,

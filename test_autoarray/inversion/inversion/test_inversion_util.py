@@ -222,6 +222,7 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_indexes_for_sub_slim_index_sizes,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_pixels=3,
         sub_size=1,
     )
 
@@ -253,6 +254,7 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_indexes_for_sub_slim_index_sizes,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_pixels=3,
         sub_size=2,
     )
 
