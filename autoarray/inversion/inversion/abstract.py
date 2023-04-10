@@ -455,6 +455,17 @@ class AbstractInversion:
         return curvature_reg_matrix
 
     @cached_property
+    def mapper_zero_pixel_list(self) -> np.ndarray:
+        mapper_zero_pixel_list = []
+        param_range_list = self.param_range_list_from(cls=LinearObj)
+        for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
+            if isinstance(linear_obj, AbstractMapper):
+                mapping_matrix_for_image_pixels_source_zero = linear_obj.mapping_matrix[self.settings.image_pixels_source_zero]
+                source_pixels_zero = (np.sum(mapping_matrix_for_image_pixels_source_zero != 0, axis=0) != 0)
+                mapper_zero_pixel_list.append(np.where(source_pixels_zero == True)[0] + param_range[0])
+        return mapper_zero_pixel_list
+
+    @cached_property
     @profile_func
     def reconstruction(self) -> np.ndarray:
         """
@@ -483,11 +494,15 @@ class AbstractInversion:
             """
 
             if self.settings.force_edge_pixels_to_zeros:
+                if self.settings.force_edge_image_pixels_to_zeros:
+                    ids_zeros = np.unique(np.append(self.mapper_edge_pixel_list, self.mapper_zero_pixel_list))
+                else:
+                    ids_zeros = self.mapper_edge_pixel_list
 
                 values_to_solve = np.ones(
                     np.shape(self.curvature_reg_matrix)[0], dtype=bool
                 )
-                values_to_solve[self.mapper_edge_pixel_list] = False
+                values_to_solve[ids_zeros] = False
 
                 data_vector_input = self.data_vector[values_to_solve]
 
@@ -504,7 +519,6 @@ class AbstractInversion:
                     curvature_reg_matrix=curvature_reg_matrix_input,
                     settings=self.settings,
                 )
-
                 return solutions
             else:
 

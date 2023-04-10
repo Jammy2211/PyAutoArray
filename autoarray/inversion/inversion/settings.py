@@ -13,6 +13,8 @@ class SettingsInversion:
         use_positive_only_solver: bool = False,
         positive_only_maxiter: int = 5000,
         force_edge_pixels_to_zeros: bool = False,
+        force_edge_image_pixels_to_zeros: bool = False,
+        image_pixels_source_zero=None,
         no_regularization_add_to_curvature_diag: bool = True,
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
@@ -61,6 +63,8 @@ class SettingsInversion:
         self.positive_only_maxiter = positive_only_maxiter
         self.use_linear_operators = use_linear_operators
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
+        self.force_edge_image_pixels_to_zeros = force_edge_image_pixels_to_zeros
+        self.image_pixels_source_zero = image_pixels_source_zero
         self.no_regularization_add_to_curvature_diag = (
             no_regularization_add_to_curvature_diag
         )
