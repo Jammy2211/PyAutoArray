@@ -454,7 +454,7 @@ class AbstractInversion:
 
         return curvature_reg_matrix
 
-    @cached_property
+    @property
     def mapper_zero_pixel_list(self) -> np.ndarray:
         mapper_zero_pixel_list = []
         param_range_list = self.param_range_list_from(cls=LinearObj)
