@@ -258,31 +258,31 @@ def test__curvature_reg_matrix_reduced():
     ).all()
 
 
-def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
-
-    curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
-
-    linear_obj_list = [
-        aa.m.MockMapper(parameters=3, regularization=None, edge_pixel_list=[0])
-    ]
-
-    inversion = aa.m.MockInversion(
-        linear_obj_list=linear_obj_list,
-        curvature_reg_matrix=curvature_reg_matrix,
-        settings=aa.SettingsInversion(force_edge_pixels_to_zeros=True),
-    )
-
-    curvature_reg_matrix = np.array(
-        [
-            [0.0, 2.0, 3.0],
-            [0.0, 5.0, 6.0],
-            [0.0, 8.0, 9.0],
-        ]
-    )
-
-    assert inversion.curvature_reg_matrix_solver == pytest.approx(
-        curvature_reg_matrix, 1.0e-4
-    )
+# def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
+#
+#     curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+#
+#     linear_obj_list = [
+#         aa.m.MockMapper(parameters=3, regularization=None, edge_pixel_list=[0])
+#     ]
+#
+#     inversion = aa.m.MockInversion(
+#         linear_obj_list=linear_obj_list,
+#         curvature_reg_matrix=curvature_reg_matrix,
+#         settings=aa.SettingsInversion(force_edge_pixels_to_zeros=True),
+#     )
+#
+#     curvature_reg_matrix = np.array(
+#         [
+#             [0.0, 2.0, 3.0],
+#             [0.0, 5.0, 6.0],
+#             [0.0, 8.0, 9.0],
+#         ]
+#     )
+#
+#     assert inversion.curvature_reg_matrix_solver == pytest.approx(
+#         curvature_reg_matrix, 1.0e-4
+#     )
 
 
 def test__regularization_matrix():

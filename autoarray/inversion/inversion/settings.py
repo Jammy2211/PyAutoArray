@@ -11,7 +11,7 @@ class SettingsInversion:
         self,
         use_w_tilde: bool = True,
         use_positive_only_solver: bool = False,
-        positive_only_maxiter: int = 5000,
+        positive_only_uses_p_initial: Optional[bool] = None,
         force_edge_pixels_to_zeros: bool = False,
         force_edge_image_pixels_to_zeros: bool = False,
         image_pixels_source_zero=None,
@@ -37,8 +37,6 @@ class SettingsInversion:
             Whether to use a positive-only linear system solver, which requires that every reconstucted value is
             positive but is computationally much slower than the default solver (which allows for positive and
             negative values).
-        positive_only_maxiter
-            The maximum number of iterations used by the positive only linear algebra solver.
         no_regularization_add_to_curvature_diag
             When True, if a linear object in the inversion has no regularization, values of 1.0e-8 are added to the
             diagonal of its `curvature_matrix` to stablelize the linear algebra solver.
@@ -60,7 +58,7 @@ class SettingsInversion:
 
         self.use_w_tilde = use_w_tilde
         self.use_positive_only_solver = use_positive_only_solver
-        self.positive_only_maxiter = positive_only_maxiter
+        self._positive_only_uses_p_initial = positive_only_uses_p_initial
         self.use_linear_operators = use_linear_operators
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self.force_edge_image_pixels_to_zeros = force_edge_image_pixels_to_zeros
@@ -74,3 +72,11 @@ class SettingsInversion:
         self.maxiter = maxiter
         self.use_w_tilde_numpy = use_w_tilde_numpy
         self.use_source_loop = use_source_loop
+
+    @property
+    def positive_only_uses_p_initial(self):
+
+        if self._positive_only_uses_p_initial is None:
+            return conf.instance["general"]["inversion"]["positive_only_uses_p_initial"]
+
+        return self._positive_only_uses_p_initial

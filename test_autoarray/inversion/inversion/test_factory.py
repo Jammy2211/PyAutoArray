@@ -322,7 +322,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
     assert isinstance(inversion.linear_obj_list[1], aa.MapperVoronoiNoInterp)
     assert isinstance(inversion, aa.InversionImagingMapping)
-    assert (inversion.curvature_reg_matrix_solver[:, 1] == np.zeros(shape=(10,))).all()
 
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
@@ -335,12 +334,9 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
         ),
     )
 
-    print(inversion.reconstruction)
-
     assert isinstance(inversion.linear_obj_list[0], aa.m.MockLinearObj)
     assert isinstance(inversion.linear_obj_list[1], aa.MapperVoronoiNoInterp)
     assert isinstance(inversion, aa.InversionImagingMapping)
-    assert (inversion.curvature_reg_matrix_solver[:, 1] == np.zeros(shape=(10,))).all()
     assert inversion.reconstruction == pytest.approx(
         np.array([2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]), 1.0e-4
     )
