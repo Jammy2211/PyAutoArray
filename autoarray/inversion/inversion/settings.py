@@ -65,6 +65,8 @@ class SettingsInversion:
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self.force_edge_image_pixels_to_zeros = force_edge_image_pixels_to_zeros
         self.image_pixels_source_zero = image_pixels_source_zero
+        # force_edge_image_pixels_to_zeros is to force source pixels correspoding to the edge of an image to be 0.
+        # image_pixels_source_zero is to a True/False array to identify those image pixels to which source's contribution should be 0.
         self.no_regularization_add_to_curvature_diag = (
             no_regularization_add_to_curvature_diag
         )
