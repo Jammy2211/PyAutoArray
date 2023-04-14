@@ -374,30 +374,33 @@ def reconstruction_positive_only_from(
     Non-negative S that minimizes the Eq.(2) of https://arxiv.org/pdf/astro-ph/0302587.pdf.
     """
 
-    try:
+    if len(data_vector):
 
-        if settings.positive_only_uses_p_initial:
+        try:
+            if settings.positive_only_uses_p_initial:
 
-            P_initial = (
-                scipy.linalg.cho_solve(
-                    (curvature_reg_matrix_cholesky, True),
-                    data_vector,
+                P_initial = (
+                    scipy.linalg.cho_solve(
+                        (curvature_reg_matrix_cholesky, True),
+                        data_vector,
+                    )
+                    > 0
                 )
-                > 0
+
+            else:
+
+                P_initial = np.zeros(0, dtype=int)
+
+            reconstruction = fnnls_cholesky(
+                curvature_reg_matrix,
+                (data_vector).T,
+                P_initial=P_initial,
             )
+        except (RuntimeError, np.linalg.LinAlgError) as e:
+            raise exc.InversionException() from e
 
-        else:
-
-            P_initial = np.zeros(0, dtype=int)
-
-        reconstruction = fnnls_cholesky(
-            curvature_reg_matrix,
-            (data_vector).T,
-            P_initial=P_initial,
-        )
-
-    except (RuntimeError, np.linalg.LinAlgError) as e:
-        raise exc.InversionException() from e
+    else:
+        raise exc.InversionException()
 
     return reconstruction
 

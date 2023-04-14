@@ -139,8 +139,11 @@ def fix_constraint_cholesky(ZTx, s_chol, d, P, P_inorder, U, tolerance):
 
     # solve the lstsq problem by cho_solve
 
-    s_chol[P_inorder] = slg.cho_solve((U, False), ZTx[P_inorder])
+    if len(P_inorder):
+        # there could be a case where P_inorder is empty.
+        s_chol[P_inorder] = slg.cho_solve((U, False), ZTx[P_inorder])
 
-    s_chol[~P] = 0.0  # set solutions taken out of the passive set to be 0
+    s_chol[~P] = 0.0 # set solutions taken out of the passive set to be 0
 
-    return s_chol, d, P, P_inorder, U
+    return s_chol, d, P, P_inorder, U       
+
