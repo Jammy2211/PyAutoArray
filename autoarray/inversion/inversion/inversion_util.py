@@ -367,7 +367,7 @@ def reconstruction_positive_only_from(
         The sum of the curvature and regularization matrices. Taken as ZTZ in our problem.
     settings
         Controls the settings of the inversion, for this function where the solution is checked to not be all
-        the same values.
+        the same values.\
 
     Returns
     -------
