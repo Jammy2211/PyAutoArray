@@ -97,6 +97,11 @@ def fnnls_cholesky(
         d = s_chol.copy()
         w = ZTx - (ZTZ) @ d
         loop_count += 1
+
+        if loop_count > 10000:    
+            print('loop count is: {}'.format(loop_count))
+            raise RuntimeError
+
         if np.all(current_P == P):
             no_update += 1
         else:
