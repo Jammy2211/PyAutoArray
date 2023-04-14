@@ -447,9 +447,16 @@ class AbstractInversion:
         param_range_list = self.param_range_list_from(cls=LinearObj)
         for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
             if isinstance(linear_obj, AbstractMapper):
-                mapping_matrix_for_image_pixels_source_zero = linear_obj.mapping_matrix[self.settings.image_pixels_source_zero]
-                source_pixels_zero = (np.sum(mapping_matrix_for_image_pixels_source_zero != 0, axis=0) != 0)
-                mapper_zero_pixel_list.append(np.where(source_pixels_zero == True)[0] + param_range[0])
+                mapping_matrix_for_image_pixels_source_zero = linear_obj.mapping_matrix[
+                    self.settings.image_pixels_source_zero
+                ]
+                source_pixels_zero = (
+                    np.sum(mapping_matrix_for_image_pixels_source_zero != 0, axis=0)
+                    != 0
+                )
+                mapper_zero_pixel_list.append(
+                    np.where(source_pixels_zero == True)[0] + param_range[0]
+                )
         return mapper_zero_pixel_list
 
     @cached_property
@@ -512,7 +519,11 @@ class AbstractInversion:
 
             if self.settings.force_edge_pixels_to_zeros:
                 if self.settings.force_edge_image_pixels_to_zeros:
-                    ids_zeros = np.unique(np.append(self.mapper_edge_pixel_list, self.mapper_zero_pixel_list))
+                    ids_zeros = np.unique(
+                        np.append(
+                            self.mapper_edge_pixel_list, self.mapper_zero_pixel_list
+                        )
+                    )
                 else:
                     ids_zeros = self.mapper_edge_pixel_list
 
@@ -529,7 +540,9 @@ class AbstractInversion:
 
                 # TODO : Speed up via chol tools.
 
-                curvature_reg_matrix_cholesky_input =  np.linalg.cholesky(curvature_reg_matrix_input)
+                curvature_reg_matrix_cholesky_input = np.linalg.cholesky(
+                    curvature_reg_matrix_input
+                )
 
                 solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
 

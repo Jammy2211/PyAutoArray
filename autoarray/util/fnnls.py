@@ -65,7 +65,6 @@ def fnnls_cholesky(
     #     and can sort them in the order of added to the passive set. This will make updating the
     #     Cholesky factorisation simpler and thus save time.
 
-
     while (not np.all(P)) and np.max(w[~P]) > tolerance:
 
         # make copy of passive set to check for change at end of loop
@@ -101,7 +100,7 @@ def fnnls_cholesky(
         loop_count += 1
 
         if loop_count > 10000:
-            raise exc.InversionException
+            raise RuntimeError
 
         if np.all(current_P == P):
             no_update += 1
@@ -131,9 +130,7 @@ def fix_constraint_cholesky(ZTx, s_chol, d, P, P_inorder, U, tolerance):
     alpha = np.min(d[q] / (d[q] - s_chol[q]))
 
     # set d as close to s as possible while maintaining non-negativity
-    d = d + alpha * (
-        s_chol - d
-    )
+    d = d + alpha * (s_chol - d)
 
     id_delete = np.where(d[P_inorder] <= tolerance)[0]
 
@@ -149,7 +146,6 @@ def fix_constraint_cholesky(ZTx, s_chol, d, P, P_inorder, U, tolerance):
         # there could be a case where P_inorder is empty.
         s_chol[P_inorder] = slg.cho_solve((U, False), ZTx[P_inorder])
 
-    s_chol[~P] = 0.0 # set solutions taken out of the passive set to be 0
+    s_chol[~P] = 0.0  # set solutions taken out of the passive set to be 0
 
-    return s_chol, d, P, P_inorder, U       
-
+    return s_chol, d, P, P_inorder, U

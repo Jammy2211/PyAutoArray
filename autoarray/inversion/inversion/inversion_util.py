@@ -323,8 +323,6 @@ def reconstruction_positive_negative_from(
     return reconstruction
 
 
-
-
 def reconstruction_positive_only_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,

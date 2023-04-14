@@ -22,6 +22,7 @@ def _choldowndate(U, x):
     U[k, k] = math.sqrt(U[k, k] ** 2 - x[k] ** 2)
     return U
 
+
 @njit(fastmath=True)
 def _cholupdate(U, x):
 
@@ -98,7 +99,7 @@ def choldeleteindexes(U, indexes):
         if index == L.shape[0]:
             U = L
         else:
-            _cholupdate(L[index:, index:], U[index, index + 1:])
+            _cholupdate(L[index:, index:], U[index, index + 1 :])
             U = L
 
     return U
