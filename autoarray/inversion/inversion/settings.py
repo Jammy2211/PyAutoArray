@@ -10,7 +10,7 @@ class SettingsInversion:
     def __init__(
         self,
         use_w_tilde: bool = True,
-        use_positive_only_solver: bool = False,
+        use_positive_only_solver: bool = True,
         positive_only_uses_p_initial: Optional[bool] = None,
         force_edge_pixels_to_zeros: bool = False,
         force_edge_image_pixels_to_zeros: bool = False,

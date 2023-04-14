@@ -3,6 +3,8 @@ from scipy import linalg as slg
 
 from autoarray.util.cholesky_funcs import cholinsertlast, choldeleteindexes
 
+from autoarray import exc
+
 """
     This file contains functions use the Bro & Jong (1997) algorithm to solve the non-negative least
         square problem. The `fnnls and fix_constraint` is orginally copied from 
@@ -98,9 +100,8 @@ def fnnls_cholesky(
         w = ZTx - (ZTZ) @ d
         loop_count += 1
 
-        if loop_count > 10000:    
-            print('loop count is: {}'.format(loop_count))
-            raise RuntimeError
+        if loop_count > 10000:
+            raise exc.InversionException
 
         if np.all(current_P == P):
             no_update += 1
