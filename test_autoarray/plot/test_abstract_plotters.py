@@ -9,15 +9,17 @@ directory = path.dirname(path.realpath(__file__))
 
 def test__get_subplot_figsize():
 
-    plotter = abstract_plotters.AbstractPlotter()
+    plotter = abstract_plotters.AbstractPlotter(
+        mat_plot_2d=aplt.MatPlot2D(figure=aplt.Figure(figsize="auto"))
+    )
 
     figsize = plotter.get_subplot_figsize(number_subplots=1)
 
-    assert figsize == (18, 8)
+    assert figsize == (6, 6)
 
     figsize = plotter.get_subplot_figsize(number_subplots=4)
 
-    assert figsize == (13, 10)
+    assert figsize == (12, 12)
 
     figure = aplt.Figure(figsize=(20, 20))
 
@@ -37,7 +39,7 @@ def test__get_subplot_rows_columns():
     rows, columns = plotter.mat_plot_2d.get_subplot_rows_columns(number_subplots=1)
 
     assert rows == 1
-    assert columns == 2
+    assert columns == 1
 
     rows, columns = plotter.mat_plot_2d.get_subplot_rows_columns(number_subplots=4)
 

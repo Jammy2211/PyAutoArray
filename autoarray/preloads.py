@@ -126,7 +126,7 @@ class Preloads:
         This function compares the relocated grids of the mappers of two fit corresponding to two model instances, and
         preloads the grid if the grids of both fits are the same.
 
-        The preload is typically used in hyper searches, where the mass model is fixed and the hyper-parameters are
+        The preload is typically used in adapt searches, where the mass model is fixed and the hyper-parameters are
         varied.
 
         Parameters

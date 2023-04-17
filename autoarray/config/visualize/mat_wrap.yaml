@@ -87,11 +87,13 @@ Title:               # wrapper for `plt.title()`: customize the figure title.
     fontsize: 16
   subplot:
     fontsize: 10
-XLabel:              # wrapper for `plt.xlabel()`: customize the figure xlabel.
+XLabel:              # wrapper for `plt.xlabel()`: customize the figure ylabel.
   figure:
     fontsize: 16
+    xlabel: ""
   subplot:
     fontsize: 10
+    xlabel: ""
 XTicks:              # wrapper for `plt.xticks()`: customize the figure xticks.
   figure:
     fontsize: 16
@@ -100,8 +102,10 @@ XTicks:              # wrapper for `plt.xticks()`: customize the figure xticks.
 YLabel:              # wrapper for `plt.ylabel()`: customize the figure ylabel.
   figure:
     fontsize: 16
+    ylabel: ""
   subplot:
     fontsize: 10
+    ylabel: ""
 YTicks:              # wrapper for `plt.xticks()`: customize the figure yticks.
   figure:
     fontsize: 16

@@ -94,7 +94,7 @@ class FitImagingPlotterMeta(Plotter):
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(title="Image", filename=f"image_2d{suffix}"),
+                auto_labels=AutoLabels(title="Image", filename=f"data{suffix}"),
             )
 
         if noise_map:

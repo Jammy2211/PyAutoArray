@@ -57,7 +57,6 @@ class YLabel(AbstractLabel):
     def set(
         self,
         units: Units,
-        include_brackets: bool = True,
         auto_label: Optional[str] = None,
     ):
         """
@@ -70,31 +69,24 @@ class YLabel(AbstractLabel):
         ----------
         units
             The units of the image that is plotted which informs the appropriate y label text.
-        include_brackets
-            Whether to include brackets around the y label text of the units.
         """
 
         config_dict = self.config_dict
 
-        if "label" in self.config_dict:
-            config_dict.pop("label")
-
         if self.manual_label is not None:
+            config_dict.pop("ylabel")
             plt.ylabel(ylabel=self.manual_label, **config_dict)
         elif auto_label is not None:
+            config_dict.pop("ylabel")
             plt.ylabel(ylabel=auto_label, **config_dict)
         else:
-            if include_brackets:
-                plt.ylabel(ylabel=f"y ({self.label_from(units=units)})", **config_dict)
-            else:
-                plt.ylabel(ylabel=self.label_from(units=units), **config_dict)
+            plt.ylabel(**config_dict)
 
 
 class XLabel(AbstractLabel):
     def set(
         self,
         units: Units,
-        include_brackets: bool = True,
         auto_label: Optional[str] = None,
     ):
         """
@@ -107,21 +99,15 @@ class XLabel(AbstractLabel):
         ----------
         units
             The units of the image that is plotted which informs the appropriate x label text.
-        include_brackets
-            Whether to include brackets around the x label text of the units.
         """
 
         config_dict = self.config_dict
 
-        if "label" in self.config_dict:
-            config_dict.pop("label")
-
         if self.manual_label is not None:
+            config_dict.pop("xlabel")
             plt.xlabel(xlabel=self.manual_label, **config_dict)
         elif auto_label is not None:
+            config_dict.pop("xlabel")
             plt.xlabel(xlabel=auto_label, **config_dict)
         else:
-            if include_brackets:
-                plt.xlabel(xlabel=f"x ({self.label_from(units=units)})", **config_dict)
-            else:
-                plt.xlabel(xlabel=self.label_from(units=units), **config_dict)
+            plt.xlabel(**config_dict)

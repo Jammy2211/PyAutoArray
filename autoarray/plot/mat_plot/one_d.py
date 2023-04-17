@@ -201,8 +201,8 @@ class MatPlot1D(AbstractMatPlot):
         if "extent" in self.axis.config_dict:
             self.axis.set()
 
-        self.ylabel.set(units=self.units, include_brackets=False)
-        self.xlabel.set(units=self.units, include_brackets=False)
+        self.ylabel.set(units=self.units)
+        self.xlabel.set(units=self.units)
 
         self.tickparams.set()
 

@@ -124,8 +124,8 @@ class AbstractMatPlot:
         mat_plot_2d_base = aplt.MatPlot2D(
             yticks=aplt.YTicks(fontsize=18),
             xticks=aplt.XTicks(fontsize=18),
-            ylabel=aplt.YLabel(label=""),
-            xlabel=aplt.XLabel(label=""),
+            ylabel=aplt.YLabel(ylabel=""),
+            xlabel=aplt.XLabel(xlabel=""),
         )
 
         However, one may require many unique `MatPlot` objects for a number of different figures, which all use
@@ -191,6 +191,8 @@ class AbstractMatPlot:
         if self.subplot_shape is not None:
             return self.subplot_shape
 
+        if number_subplots <= 1:
+            return 1, 1
         if number_subplots <= 2:
             return 1, 2
         elif number_subplots <= 4:

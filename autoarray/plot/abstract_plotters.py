@@ -99,7 +99,8 @@ class AbstractPlotter:
         subplot_shape: Optional[Tuple[int, int]] = None,
         subplot_figsize: Optional[Tuple[int, int]] = None,
     ):
-        """Setup a figure for plotting an image.
+        """
+        Setup a figure for plotting an image.
 
         Parameters
         ----------
@@ -131,7 +132,8 @@ class AbstractPlotter:
         self.subplot_figsize = None
 
     def get_subplot_figsize(self, number_subplots):
-        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
+        """
+        Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
 
         Parameters
         ----------
@@ -150,22 +152,16 @@ class AbstractPlotter:
             if self.mat_plot_2d.figure.config_dict["figsize"] is not None:
                 return self.mat_plot_2d.figure.config_dict["figsize"]
 
-        if number_subplots <= 2:
-            return (18, 8)
-        elif number_subplots <= 4:
-            return (13, 10)
-        elif number_subplots <= 6:
-            return (18, 12)
-        elif number_subplots <= 9:
-            return (25, 20)
-        elif number_subplots <= 12:
-            return (25, 20)
-        elif number_subplots <= 16:
-            return (25, 20)
-        elif number_subplots <= 20:
-            return (25, 20)
-        else:
-            return (25, 20)
+        try:
+            rows, columns = self.mat_plot_1d.get_subplot_rows_columns(
+                number_subplots=number_subplots
+            )
+        except AttributeError:
+            rows, columns = self.mat_plot_2d.get_subplot_rows_columns(
+                number_subplots=number_subplots
+            )
+
+        return (columns * 6, rows * 6)
 
     def _subplot_custom_plot(self, **kwargs):
 

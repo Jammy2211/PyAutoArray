@@ -1,7 +1,7 @@
 
 
 - Think very carefully about how Preloads and w_tilde interface with database. Pickle array? Large filesize
-but fast. Need to be careful with hyper galaxies.
+but fast. Need to be careful with galaxies.
 
 
 __Refactor__

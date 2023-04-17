@@ -10,7 +10,7 @@ class SettingsInversion:
     def __init__(
         self,
         use_w_tilde: bool = True,
-        use_positive_only_solver: bool = True,
+        use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
         force_edge_pixels_to_zeros: bool = False,
         force_edge_image_pixels_to_zeros: bool = False,
@@ -34,7 +34,7 @@ class SettingsInversion:
             simultaneous linear equations (by bypassing the construction of a `mapping_matrix`) for many dataset
             use cases.
         use_positive_only_solver
-            Whether to use a positive-only linear system solver, which requires that every reconstucted value is
+            Whether to use a positive-only linear system solver, which requires that every reconstructed value is
             positive but is computationally much slower than the default solver (which allows for positive and
             negative values).
         no_regularization_add_to_curvature_diag
@@ -57,7 +57,7 @@ class SettingsInversion:
         """
 
         self.use_w_tilde = use_w_tilde
-        self.use_positive_only_solver = use_positive_only_solver
+        self._use_positive_only_solver = use_positive_only_solver
         self._positive_only_uses_p_initial = positive_only_uses_p_initial
         self.use_linear_operators = use_linear_operators
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
@@ -72,6 +72,14 @@ class SettingsInversion:
         self.maxiter = maxiter
         self.use_w_tilde_numpy = use_w_tilde_numpy
         self.use_source_loop = use_source_loop
+
+    @property
+    def use_positive_only_solver(self):
+
+        if self._use_positive_only_solver is None:
+            return conf.instance["general"]["inversion"]["use_positive_only_solver"]
+
+        return self._use_positive_only_solver
 
     @property
     def positive_only_uses_p_initial(self):

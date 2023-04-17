@@ -88,7 +88,7 @@ class ImagingPlotterMeta(Plotter):
             self.mat_plot_2d.plot_array(
                 array=self.imaging.image,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(title="Image", filename="image_2d"),
+                auto_labels=AutoLabels(title="Image", filename="data"),
             )
 
         if noise_map:

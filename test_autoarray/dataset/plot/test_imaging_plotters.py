@@ -34,7 +34,7 @@ def test__individual_attributes_are_output(
         signal_to_noise_map=True,
     )
 
-    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "psf.png") in plot_patch.paths
     assert path.join(plot_path, "inverse_noise_map.png") in plot_patch.paths
@@ -46,7 +46,7 @@ def test__individual_attributes_are_output(
         data=True, psf=True, inverse_noise_map=True, absolute_signal_to_noise_map=True
     )
 
-    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "data.png") in plot_patch.paths
     assert not path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "psf.png") in plot_patch.paths
     assert path.join(plot_path, "inverse_noise_map.png") in plot_patch.paths

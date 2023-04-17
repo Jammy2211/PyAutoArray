@@ -16,7 +16,7 @@ class Output:
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
-        bbox_inches: Optional[str] = None,
+        bbox_inches: str = "tight",
         **kwargs,
     ):
         """
@@ -124,6 +124,7 @@ class Output:
 
             if not self.bypass:
                 if format == "show":
+                    #    plt.tight_layout()
                     plt.show()
                 elif format == "png":
                     plt.savefig(
