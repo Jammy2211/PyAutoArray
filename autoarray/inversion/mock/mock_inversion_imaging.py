@@ -17,8 +17,6 @@ class MockInversionImaging(InversionImagingMapping):
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
         data_linear_func_matrix_dict=None,
-        curvature_matrix_preload=None,
-        curvature_matrix_counts=None,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
@@ -38,8 +36,6 @@ class MockInversionImaging(InversionImagingMapping):
             linear_func_operated_mapping_matrix_dict
         )
         self._data_linear_func_matrix_dict = data_linear_func_matrix_dict
-        self._curvature_matrix_preload = curvature_matrix_preload
-        self._curvature_matrix_counts = curvature_matrix_counts
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
@@ -61,20 +57,6 @@ class MockInversionImaging(InversionImagingMapping):
             return super().data_linear_func_matrix_dict
 
         return self._data_linear_func_matrix_dict
-
-    @property
-    def curvature_matrix_preload(self):
-        if self._curvature_matrix_preload is None:
-            return super().curvature_matrix_preload
-
-        return self._curvature_matrix_preload
-
-    @property
-    def curvature_matrix_counts(self):
-        if self._curvature_matrix_counts is None:
-            return super().curvature_matrix_counts
-
-        return self._curvature_matrix_counts
 
 
 class MockWTildeImaging:

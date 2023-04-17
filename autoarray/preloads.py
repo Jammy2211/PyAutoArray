@@ -28,8 +28,6 @@ class Preloads:
         linear_func_operated_mapping_matrix_dict=None,
         data_linear_func_matrix_dict=None,
         mapper_operated_mapping_matrix_dict=None,
-        curvature_matrix_preload=None,
-        curvature_matrix_counts=None,
         curvature_matrix=None,
         data_vector_mapper=None,
         curvature_matrix_mapper_diag=None,
@@ -51,8 +49,6 @@ class Preloads:
         )
         self.data_linear_func_matrix_dict = data_linear_func_matrix_dict
         self.mapper_operated_mapping_matrix_dict = mapper_operated_mapping_matrix_dict
-        self.curvature_matrix_preload = curvature_matrix_preload
-        self.curvature_matrix_counts = curvature_matrix_counts
         self.curvature_matrix = curvature_matrix
         self.data_vector_mapper = data_vector_mapper
         self.curvature_matrix_mapper_diag = curvature_matrix_mapper_diag
@@ -241,8 +237,6 @@ class Preloads:
         """
 
         self.operated_mapping_matrix = None
-        self.curvature_matrix_preload = None
-        self.curvature_matrix_counts = None
 
         from autoarray.inversion.inversion.interferometer.lop import (
             InversionInterferometerMappingPyLops,
@@ -273,15 +267,6 @@ class Preloads:
             ):
 
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
-
-                if isinstance(inversion_0, AbstractInversionImaging):
-
-                    self.curvature_matrix_preload = (
-                        inversion_0.curvature_matrix_preload
-                    ).astype("int")
-                    self.curvature_matrix_counts = (
-                        inversion_0.curvature_matrix_counts
-                    ).astype("int")
 
                 logger.info(
                     "PRELOADS - Inversion linear algebra quantities preloaded for this model-fit."
@@ -571,9 +556,6 @@ class Preloads:
         ]
         line += [
             f"Inversion Linear Func (Linear Light Profile) Dicts = {self.linear_func_operated_mapping_matrix_dict is not None}\n"
-        ]
-        line += [
-            f"Curvature Matrix Sparse = {self.curvature_matrix_preload is not None}\n"
         ]
         line += [f"Curvature Matrix = {self.curvature_matrix is not None}\n"]
         line += [

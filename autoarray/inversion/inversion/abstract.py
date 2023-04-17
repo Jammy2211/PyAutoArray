@@ -964,28 +964,6 @@ class AbstractInversion:
         }
 
     @property
-    def curvature_matrix_preload(self) -> np.ndarray:
-        (
-            curvature_matrix_preload,
-            curvature_matrix_counts,
-        ) = inversion_util.curvature_matrix_preload_from(
-            mapping_matrix=self.operated_mapping_matrix
-        )
-
-        return curvature_matrix_preload
-
-    @property
-    def curvature_matrix_counts(self) -> np.ndarray:
-        (
-            curvature_matrix_preload,
-            curvature_matrix_counts,
-        ) = inversion_util.curvature_matrix_preload_from(
-            mapping_matrix=self.operated_mapping_matrix
-        )
-
-        return curvature_matrix_counts
-
-    @property
     @profile_func
     def _data_vector_mapper(self) -> np.ndarray:
         raise NotImplementedError
