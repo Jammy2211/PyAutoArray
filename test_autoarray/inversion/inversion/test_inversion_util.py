@@ -28,78 +28,6 @@ def test__curvature_matrix_from_w_tilde():
     ).all()
 
 
-def test__curvature_matrix_via_sparse_preload():
-
-    blurred_mapping_matrix = np.array(
-        [
-            [1.0, 1.0, 0.0],
-            [1.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0],
-            [0.0, 1.0, 1.0],
-            [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0],
-        ]
-    )
-
-    noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-
-    (
-        curvature_matrix_preload,
-        curvature_matrix_counts,
-    ) = aa.util.inversion.curvature_matrix_preload_from(
-        mapping_matrix=blurred_mapping_matrix
-    )
-
-    curvature_matrix = aa.util.inversion.curvature_matrix_via_sparse_preload_from(
-        mapping_matrix=blurred_mapping_matrix,
-        noise_map=noise_map,
-        curvature_matrix_preload=curvature_matrix_preload.astype("int"),
-        curvature_matrix_counts=curvature_matrix_counts.astype("int"),
-    )
-
-    assert (
-        curvature_matrix
-        == np.array([[2.0, 1.0, 0.0], [1.0, 3.0, 1.0], [0.0, 1.0, 1.0]])
-    ).all()
-
-    blurred_mapping_matrix = np.array(
-        [
-            [1.0, 1.0, 0.0, 0.5],
-            [1.0, 0.0, 0.0, 0.25],
-            [0.0, 1.0, 0.6, 0.75],
-            [0.0, 1.0, 1.0, 0.1],
-            [0.0, 0.0, 0.3, 1.0],
-            [0.0, 0.0, 0.5, 0.7],
-        ]
-    )
-
-    noise_map = np.array([2.0, 1.0, 10.0, 0.5, 3.0, 7.0])
-
-    curvature_matrix_via_mapping_matrix = (
-        aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
-        )
-    )
-
-    (
-        curvature_matrix_preload,
-        curvature_matrix_counts,
-    ) = aa.util.inversion.curvature_matrix_preload_from(
-        mapping_matrix=blurred_mapping_matrix
-    )
-
-    curvature_matrix = aa.util.inversion.curvature_matrix_via_sparse_preload_from(
-        mapping_matrix=blurred_mapping_matrix,
-        noise_map=noise_map,
-        curvature_matrix_preload=curvature_matrix_preload.astype("int"),
-        curvature_matrix_counts=curvature_matrix_counts.astype("int"),
-    )
-
-    assert curvature_matrix_via_mapping_matrix == pytest.approx(
-        curvature_matrix, 1.0e-4
-    )
-
-
 def test__curvature_matrix_via_mapping_matrix_from():
 
     blurred_mapping_matrix = np.array(
@@ -155,7 +83,7 @@ def test__reconstruction_positive_negative_from():
 
     reconstruction = aa.util.inversion.reconstruction_positive_negative_from(
         data_vector=data_vector,
-        curvature_reg_matrix=curvature_reg_matrix,
+        curvature_reg_matrix_cholesky=np.linalg.cholesky(curvature_reg_matrix),
         mapper_param_range_list=[[0, 3]],
     )
 
@@ -174,7 +102,7 @@ def test__reconstruction_positive_negative_from__check_solution_raises_error_cau
 
         aa.util.inversion.reconstruction_positive_negative_from(
             data_vector=data_vector,
-            curvature_reg_matrix=curvature_reg_matrix,
+            curvature_reg_matrix_cholesky=np.linalg.cholesky(curvature_reg_matrix),
             mapper_param_range_list=[[0, 3]],
             force_check_reconstruction=True,
         )

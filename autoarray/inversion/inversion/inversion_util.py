@@ -1,7 +1,6 @@
 import numpy as np
 import scipy
 
-# from scipy.optimize import nnls
 from typing import List, Optional
 
 from autoconf import conf
@@ -10,7 +9,7 @@ from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import numba_util
 from autoarray import exc
-from autoarray.util.fnnls import fnnls_modified
+from autoarray.util.fnnls import fnnls_cholesky
 
 
 def curvature_matrix_via_w_tilde_from(
@@ -118,94 +117,6 @@ def curvature_matrix_via_mapping_matrix_from(
 
 
 @numba_util.jit()
-def curvature_matrix_preload_from(
-    mapping_matrix: np.ndarray, mapping_matrix_threshold=1.0e-8
-) -> np.ndarray:
-    """
-    Returns a matrix that expresses the non-zero entries of the blurred mapping matrix for an efficient construction of
-    the curvature matrix `F` (see Warren & Dye 2003).
-
-    This is used for models where the blurred mapping matrix does not change, but the noise-map of the values that
-    are used to construct that blurred mapping matrix do change.
-
-    Parameters
-    ----------
-    mapping_matrix
-        The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
-        pixelization pixels.
-    """
-
-    curvature_matrix_counts = np.zeros(mapping_matrix.shape[0])
-
-    for mask_1d_index in range(mapping_matrix.shape[0]):
-        for pix_index in range(mapping_matrix.shape[1]):
-            if mapping_matrix[mask_1d_index, pix_index] > mapping_matrix_threshold:
-                curvature_matrix_counts[mask_1d_index] += 1
-
-    preload_max = np.max(curvature_matrix_counts)
-
-    curvature_matrix_preload = np.zeros((mapping_matrix.shape[0], int(preload_max)))
-
-    for mask_1d_index in range(mapping_matrix.shape[0]):
-        index = 0
-        for pix_index in range(mapping_matrix.shape[1]):
-            if mapping_matrix[mask_1d_index, pix_index] > mapping_matrix_threshold:
-                curvature_matrix_preload[mask_1d_index, index] = pix_index
-                index += 1
-
-    return curvature_matrix_preload, curvature_matrix_counts
-
-
-@numba_util.jit()
-def curvature_matrix_via_sparse_preload_from(
-    mapping_matrix: np.ndarray,
-    noise_map: np.ndarray,
-    curvature_matrix_preload,
-    curvature_matrix_counts,
-) -> np.ndarray:
-    """
-    Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
-     (see Warren & Dye 2003) via a sparse preload matrix, which has already mapped out where all non-zero entries
-     and multiplications take place.
-
-    This is used for models where the blurred mapping matrix does not change, but the noise-map of the values that
-    are used to construct that blurred mapping matrix do change.
-
-    Parameters
-    ----------
-    mapping_matrix
-        The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
-        pixelization pixels.
-    noise_map
-        Flattened 1D array of the noise-map used by the inversion during the fit.
-    """
-    curvature_matrix = np.zeros((mapping_matrix.shape[1], mapping_matrix.shape[1]))
-
-    for mask_1d_index in range(mapping_matrix.shape[0]):
-
-        total_pix = curvature_matrix_counts[mask_1d_index]
-
-        for preload_index_0 in range(total_pix):
-            for preload_index_1 in range(
-                preload_index_0, curvature_matrix_counts[mask_1d_index]
-            ):
-
-                pix_index_0 = curvature_matrix_preload[mask_1d_index, preload_index_0]
-                pix_index_1 = curvature_matrix_preload[mask_1d_index, preload_index_1]
-
-                curvature_matrix[pix_index_0, pix_index_1] += (
-                    mapping_matrix[mask_1d_index, pix_index_0]
-                    * mapping_matrix[mask_1d_index, pix_index_1]
-                ) / noise_map[mask_1d_index] ** 2
-
-    for i in range(mapping_matrix.shape[1]):
-        for j in range(mapping_matrix.shape[1]):
-            curvature_matrix[j, i] = curvature_matrix[i, j]
-
-    return curvature_matrix
-
-
-@numba_util.jit()
 def mapped_reconstructed_data_via_image_to_pix_unique_from(
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
@@ -261,7 +172,7 @@ def mapped_reconstructed_data_via_mapping_matrix_from(
 
 def reconstruction_positive_negative_from(
     data_vector: np.ndarray,
-    curvature_reg_matrix: np.ndarray,
+    curvature_reg_matrix_cholesky: np.ndarray,
     mapper_param_range_list,
     force_check_reconstruction: bool = False,
 ):
@@ -301,7 +212,11 @@ def reconstruction_positive_negative_from(
         The curvature_matrix plus regularization matrix, overwriting the curvature_matrix in memory.
     """
     try:
-        reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
+        reconstruction = scipy.linalg.cho_solve(
+            (curvature_reg_matrix_cholesky, True),
+            data_vector,
+            overwrite_b=True,
+        )
     except np.linalg.LinAlgError as e:
         raise exc.InversionException() from e
 
@@ -323,6 +238,7 @@ def reconstruction_positive_negative_from(
 def reconstruction_positive_only_from(
     data_vector: np.ndarray,
     curvature_reg_matrix: np.ndarray,
+    curvature_reg_matrix_cholesky: np.ndarray,
     settings: SettingsInversion = SettingsInversion(),
 ):
     """
@@ -333,24 +249,25 @@ def reconstruction_positive_only_from(
     By not allowing negative values, the solver is slower than methods which allow negative values, but there are
     many inference problems where negative values are nonphysical or undesirable and removing them improves the solution.
 
-    The non-negative optimizer we use is a modified version of fnnls (https://github.com/jvendrow/fnnls). The algorithm is published by
+    The non-negative optimizer we use is a modified version of fnnls (https://github.com/jvendrow/fnnls). The algorithm
+    is published by:
+
     Bro & Jong (1997) ("A fast non‐negativity‐constrained least squares algorithm."
                 Journal of Chemometrics: A Journal of the Chemometrics Society 11, no. 5 (1997): 393-401.)
 
-    The modification we made here is that we create a function called fnnls_modified which directly takes ZTZ and ZTx as inputs. The reason
-    is that we realize for this specific algorithm (Bro & Jong (1997)), ZTZ and ZTx happen to be the curvature_reg_matrix and
-    data_vector, respectively, already defined in PyAutoArray (verified).
+    The modification we made here is that we create a function called fnnls_Cholesky which directly takes ZTZ and ZTx
+    as inputs. The reason is that we realize for this specific algorithm (Bro & Jong (1997)), ZTZ and ZTx happen to
+    be the curvature_reg_matrix and data_vector, respectively, already defined in PyAutoArray (verified). Besides,
+    we build a Cholesky scheme that solves the lstsq problem in each iteration within the fnnls algorithm by updating
+    the Cholesky factorisation.
 
-    Another change we suggest is that we use `scipy.linalg.solve` as the lstsq solver used in the nnls. The original version is
-    `np.linalg.inv(A).dot(x)` which is slower as it go computes the inversion of large matrix A. We have set the `assume_a` to be `pos` as any
-    subpricipal matrix of ZTZ should still be positive-definite.
+    Please note that we are trying to find non-negative solution S that minimizes |Z * S - x|^2. We are not trying to
+    find a solution that minimizes |ZTZ * S - ZTx|^2! ZTZ and ZTx are just some variables help to
+    minimize |Z * S - x|^2. It is just a coincidence (or fundamentally not) that ZTZ and ZTx are the
+    curvature_reg_matrix and data_vector, respectively.
 
-    Please note that we are trying to find non-negative solution S that minimizes |Z * S - x|^2. We are not trying to find a solution that
-    minimizes |ZTZ * S - ZTx|^2! ZTZ and ZTx are just some variables help to minimize |Z * S - x|^2. It is just a coincidence (or fundamentally not)
-    that ZTZ and ZTx are the curvature_reg_matrix and data_vector, respectively.
-
-    If we no longer uses fnnls (the algorithm of Bro & Jong (1997)), we need to check if the algorithm takes Z or ZTZ (x or ZTx) as an input. If not,
-    we need to build Z and x in PyAutoArray.
+    If we no longer uses fnnls (the algorithm of Bro & Jong (1997)), we need to check if the algorithm takes Z or
+    ZTZ (x or ZTx) as an input. If not, we need to build Z and x in PyAutoArray.
 
     Parameters
     ----------
@@ -360,29 +277,40 @@ def reconstruction_positive_only_from(
         The sum of the curvature and regularization matrices. Taken as ZTZ in our problem.
     settings
         Controls the settings of the inversion, for this function where the solution is checked to not be all
-        the same values.
+        the same values.\
 
     Returns
     -------
     Non-negative S that minimizes the Eq.(2) of https://arxiv.org/pdf/astro-ph/0302587.pdf.
     """
 
-    try:
+    if len(data_vector):
 
-        reconstruction = fnnls_modified(
-            curvature_reg_matrix,
-            (data_vector).T,
-            lstsq=lambda A, x: scipy.linalg.solve(
-                A,
-                x,
-                assume_a="pos",
-                overwrite_a=True,
-                overwrite_b=True,
-            ),
-        )
+        try:
+            if settings.positive_only_uses_p_initial:
 
-    except (RuntimeError, np.linalg.LinAlgError) as e:
-        raise exc.InversionException() from e
+                P_initial = (
+                    scipy.linalg.cho_solve(
+                        (curvature_reg_matrix_cholesky, True),
+                        data_vector,
+                    )
+                    > 0
+                )
+
+            else:
+
+                P_initial = np.zeros(0, dtype=int)
+
+            reconstruction = fnnls_cholesky(
+                curvature_reg_matrix,
+                (data_vector).T,
+                P_initial=P_initial,
+            )
+        except (RuntimeError, np.linalg.LinAlgError) as e:
+            raise exc.InversionException() from e
+
+    else:
+        raise exc.InversionException()
 
     return reconstruction
 

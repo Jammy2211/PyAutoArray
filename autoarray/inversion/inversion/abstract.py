@@ -419,19 +419,6 @@ class AbstractInversion:
         return np.add(self.curvature_matrix, self.regularization_matrix)
 
     @cached_property
-    def curvature_reg_matrix_solver(self):
-
-        if self.settings.force_edge_pixels_to_zeros:
-
-            curvature_reg_matrix_solver = copy.copy(self.curvature_reg_matrix)
-
-            curvature_reg_matrix_solver[:, self.mapper_edge_pixel_list] = 0.0
-
-            return curvature_reg_matrix_solver
-
-        return self.curvature_reg_matrix
-
-    @cached_property
     @profile_func
     def curvature_reg_matrix_reduced(self) -> np.ndarray:
         """
@@ -453,6 +440,54 @@ class AbstractInversion:
         )
 
         return curvature_reg_matrix
+
+    @property
+    def mapper_zero_pixel_list(self) -> np.ndarray:
+        mapper_zero_pixel_list = []
+        param_range_list = self.param_range_list_from(cls=LinearObj)
+        for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
+            if isinstance(linear_obj, AbstractMapper):
+                mapping_matrix_for_image_pixels_source_zero = linear_obj.mapping_matrix[
+                    self.settings.image_pixels_source_zero
+                ]
+                source_pixels_zero = (
+                    np.sum(mapping_matrix_for_image_pixels_source_zero != 0, axis=0)
+                    != 0
+                )
+                mapper_zero_pixel_list.append(
+                    np.where(source_pixels_zero == True)[0] + param_range[0]
+                )
+        return mapper_zero_pixel_list
+
+    @cached_property
+    @profile_func
+    def curvature_reg_matrix_cholesky(self) -> np.ndarray:
+        """
+        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
+        linear system of equations of the `Inversion`.
+
+        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
+        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
+        """
+        try:
+            return np.linalg.cholesky(self.curvature_reg_matrix)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
+
+    @cached_property
+    @profile_func
+    def curvature_reg_matrix_reduced_cholesky(self) -> np.ndarray:
+        """
+        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
+        linear system of equations of the `Inversion`.
+
+        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
+        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
+        """
+        try:
+            return np.linalg.cholesky(self.curvature_reg_matrix_reduced)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
 
     @cached_property
     @profile_func
@@ -483,17 +518,31 @@ class AbstractInversion:
             """
 
             if self.settings.force_edge_pixels_to_zeros:
+                if self.settings.force_edge_image_pixels_to_zeros:
+                    ids_zeros = np.unique(
+                        np.append(
+                            self.mapper_edge_pixel_list, self.mapper_zero_pixel_list
+                        )
+                    )
+                else:
+                    ids_zeros = self.mapper_edge_pixel_list
 
                 values_to_solve = np.ones(
                     np.shape(self.curvature_reg_matrix)[0], dtype=bool
                 )
-                values_to_solve[self.mapper_edge_pixel_list] = False
+                values_to_solve[ids_zeros] = False
 
                 data_vector_input = self.data_vector[values_to_solve]
 
                 curvature_reg_matrix_input = self.curvature_reg_matrix[
                     values_to_solve, :
                 ][:, values_to_solve]
+
+                # TODO : Speed up via chol tools.
+
+                curvature_reg_matrix_cholesky_input = np.linalg.cholesky(
+                    curvature_reg_matrix_input
+                )
 
                 solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
 
@@ -502,15 +551,16 @@ class AbstractInversion:
                 ] = inversion_util.reconstruction_positive_only_from(
                     data_vector=data_vector_input,
                     curvature_reg_matrix=curvature_reg_matrix_input,
+                    curvature_reg_matrix_cholesky=curvature_reg_matrix_cholesky_input,
                     settings=self.settings,
                 )
-
                 return solutions
             else:
 
                 solutions = inversion_util.reconstruction_positive_only_from(
                     data_vector=self.data_vector,
-                    curvature_reg_matrix=self.curvature_reg_matrix_solver,
+                    curvature_reg_matrix=self.curvature_reg_matrix,
+                    curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
                     settings=self.settings,
                 )
 
@@ -520,7 +570,7 @@ class AbstractInversion:
 
         return inversion_util.reconstruction_positive_negative_from(
             data_vector=self.data_vector,
-            curvature_reg_matrix=self.curvature_reg_matrix_solver,
+            curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
             mapper_param_range_list=mapper_param_range_list,
         )
 
@@ -672,12 +722,7 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        try:
-            return 2.0 * np.sum(
-                np.log(np.diag(np.linalg.cholesky(self.curvature_reg_matrix_reduced)))
-            )
-        except np.linalg.LinAlgError as e:
-            raise exc.InversionException() from e
+        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_reduced_cholesky)))
 
     @cached_property
     @profile_func
@@ -917,28 +962,6 @@ class AbstractInversion:
             )
             for mapper in self.cls_list_from(cls=AbstractMapper)
         }
-
-    @property
-    def curvature_matrix_preload(self) -> np.ndarray:
-        (
-            curvature_matrix_preload,
-            curvature_matrix_counts,
-        ) = inversion_util.curvature_matrix_preload_from(
-            mapping_matrix=self.operated_mapping_matrix
-        )
-
-        return curvature_matrix_preload
-
-    @property
-    def curvature_matrix_counts(self) -> np.ndarray:
-        (
-            curvature_matrix_preload,
-            curvature_matrix_counts,
-        ) = inversion_util.curvature_matrix_preload_from(
-            mapping_matrix=self.operated_mapping_matrix
-        )
-
-        return curvature_matrix_counts
 
     @property
     @profile_func

@@ -213,20 +213,11 @@ class InversionImagingMapping(AbstractInversionImaging):
 
             return copy.copy(self.preloads.curvature_matrix)
 
-        if self.preloads.curvature_matrix_preload is None:
-
-            return inversion_util.curvature_matrix_via_mapping_matrix_from(
-                mapping_matrix=self.operated_mapping_matrix,
-                noise_map=self.noise_map,
-                add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
-                no_regularization_index_list=self.no_regularization_index_list,
-            )
-
-        return inversion_util.curvature_matrix_via_sparse_preload_from(
+        return inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix,
             noise_map=self.noise_map,
-            curvature_matrix_preload=self.preloads.curvature_matrix_preload,
-            curvature_matrix_counts=self.preloads.curvature_matrix_counts,
+            add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
+            no_regularization_index_list=self.no_regularization_index_list,
         )
 
     @property

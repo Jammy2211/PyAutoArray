@@ -201,9 +201,6 @@ def test__set_mapper_list():
 
 def test__set_operated_mapping_matrix_with_preloads():
 
-    curvature_matrix_preload = np.array([[1.0]])
-    curvature_matrix_counts = np.array([1.0])
-
     # Inversion is None thus preload it to None.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
@@ -211,14 +208,10 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     preloads = aa.Preloads(
         operated_mapping_matrix=1,
-        curvature_matrix_preload=np.array([[1.0]]),
-        curvature_matrix_counts=np.array([1.0]),
     )
     preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.operated_mapping_matrix is None
-    assert preloads.curvature_matrix_preload is None
-    assert preloads.curvature_matrix_counts is None
 
     # Inversion's blurred mapping matrices are different thus no preloading.
 
@@ -242,26 +235,18 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     preloads = aa.Preloads(
         operated_mapping_matrix=1,
-        curvature_matrix_preload=curvature_matrix_preload,
-        curvature_matrix_counts=curvature_matrix_counts,
     )
     preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
 
     assert preloads.operated_mapping_matrix is None
-    assert preloads.curvature_matrix_preload is None
-    assert preloads.curvature_matrix_counts is None
 
     # Inversion's blurred mapping matrices are the same therefore preload it and the curvature sparse terms.
 
     inversion_0 = aa.m.MockInversionImaging(
         operated_mapping_matrix=operated_mapping_matrix_0,
-        curvature_matrix_preload=curvature_matrix_preload,
-        curvature_matrix_counts=curvature_matrix_counts,
     )
     inversion_1 = aa.m.MockInversionImaging(
         operated_mapping_matrix=operated_mapping_matrix_0,
-        curvature_matrix_preload=curvature_matrix_preload,
-        curvature_matrix_counts=curvature_matrix_counts,
     )
 
     fit_0 = aa.m.MockFitImaging(inversion=inversion_0)
@@ -269,19 +254,10 @@ def test__set_operated_mapping_matrix_with_preloads():
 
     preloads = aa.Preloads(
         operated_mapping_matrix=1,
-        curvature_matrix_preload=curvature_matrix_preload,
-        curvature_matrix_counts=curvature_matrix_counts,
     )
     preloads.set_operated_mapping_matrix_with_preloads(fit_0=fit_0, fit_1=fit_1)
 
     assert (preloads.operated_mapping_matrix == operated_mapping_matrix_0).all()
-
-    assert (
-        preloads.curvature_matrix_preload == curvature_matrix_preload.astype("int")
-    ).all()
-    assert (
-        preloads.curvature_matrix_counts == curvature_matrix_counts.astype("int")
-    ).all()
 
 
 def test__set_linear_func_operated_mapping_matrix_dict():

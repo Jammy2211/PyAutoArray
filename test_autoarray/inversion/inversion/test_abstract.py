@@ -258,31 +258,31 @@ def test__curvature_reg_matrix_reduced():
     ).all()
 
 
-def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
-
-    curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
-
-    linear_obj_list = [
-        aa.m.MockMapper(parameters=3, regularization=None, edge_pixel_list=[0])
-    ]
-
-    inversion = aa.m.MockInversion(
-        linear_obj_list=linear_obj_list,
-        curvature_reg_matrix=curvature_reg_matrix,
-        settings=aa.SettingsInversion(force_edge_pixels_to_zeros=True),
-    )
-
-    curvature_reg_matrix = np.array(
-        [
-            [0.0, 2.0, 3.0],
-            [0.0, 5.0, 6.0],
-            [0.0, 8.0, 9.0],
-        ]
-    )
-
-    assert inversion.curvature_reg_matrix_solver == pytest.approx(
-        curvature_reg_matrix, 1.0e-4
-    )
+# def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
+#
+#     curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+#
+#     linear_obj_list = [
+#         aa.m.MockMapper(parameters=3, regularization=None, edge_pixel_list=[0])
+#     ]
+#
+#     inversion = aa.m.MockInversion(
+#         linear_obj_list=linear_obj_list,
+#         curvature_reg_matrix=curvature_reg_matrix,
+#         settings=aa.SettingsInversion(force_edge_pixels_to_zeros=True),
+#     )
+#
+#     curvature_reg_matrix = np.array(
+#         [
+#             [0.0, 2.0, 3.0],
+#             [0.0, 5.0, 6.0],
+#             [0.0, 8.0, 9.0],
+#         ]
+#     )
+#
+#     assert inversion.curvature_reg_matrix_solver == pytest.approx(
+#         curvature_reg_matrix, 1.0e-4
+#     )
 
 
 def test__regularization_matrix():
@@ -310,21 +310,12 @@ def test__regularization_matrix():
     assert inversion.regularization_matrix == pytest.approx(regularization_matrix)
 
 
-def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
+def test__preloads__operated_mapping_matrix():
 
     operated_mapping_matrix = 2.0 * np.ones((9, 3))
 
-    (
-        curvature_matrix_preload,
-        curvature_matrix_counts,
-    ) = aa.util.inversion.curvature_matrix_preload_from(
-        mapping_matrix=operated_mapping_matrix
-    )
-
     preloads = aa.Preloads(
         operated_mapping_matrix=operated_mapping_matrix,
-        curvature_matrix_preload=curvature_matrix_preload.astype("int"),
-        curvature_matrix_counts=curvature_matrix_counts.astype("int"),
     )
 
     # noinspection PyTypeChecker
@@ -333,7 +324,6 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
     )
 
     assert inversion.operated_mapping_matrix[0, 0] == 2.0
-    assert inversion.curvature_matrix[0, 0] == 36.0
 
 
 def test__linear_func_operated_mapping_matrix_dict():

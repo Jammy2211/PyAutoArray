@@ -29,8 +29,6 @@ class MockInversion(AbstractInversion):
         regularization_term=None,
         log_det_curvature_reg_matrix_term=None,
         log_det_regularization_matrix_term=None,
-        curvature_matrix_preload=None,
-        curvature_matrix_counts=None,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
@@ -63,9 +61,6 @@ class MockInversion(AbstractInversion):
         self._regularization_term = regularization_term
         self._log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
         self._log_det_regularization_matrix_term = log_det_regularization_matrix_term
-
-        self._curvature_matrix_preload = curvature_matrix_preload
-        self._curvature_matrix_counts = curvature_matrix_counts
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
@@ -215,17 +210,3 @@ class MockInversion(AbstractInversion):
             return super().log_det_regularization_matrix_term
 
         return self._log_det_regularization_matrix_term
-
-    @property
-    def curvature_matrix_preload(self):
-        if self._curvature_matrix_preload is None:
-            return super().curvature_matrix_preload
-
-        return self._curvature_matrix_preload
-
-    @property
-    def curvature_matrix_counts(self):
-        if self._curvature_matrix_counts is None:
-            return super().curvature_matrix_counts
-
-        return self._curvature_matrix_counts
