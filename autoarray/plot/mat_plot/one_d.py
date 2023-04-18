@@ -150,6 +150,7 @@ class MatPlot1D(AbstractMatPlot):
         y_errors=None,
         x_errors=None,
         y_extra=None,
+        text_manual_dict = None,
         bypass: bool = False,
     ):
 
@@ -234,6 +235,22 @@ class MatPlot1D(AbstractMatPlot):
             self.text.set()
         else:
             [text.set() for text in self.text]
+
+        # This is a horrific hack to get CTI plots to work, refactor one day.
+
+        from autoarray.plot.wrap.base.text import Text
+
+        if text_manual_dict is not None:
+
+            y = 0.94
+            text_manual_list = []
+
+            for key, value in text_manual_dict.items():
+
+                text_manual_list.append(Text(x=0.85, y=y, s=value, transform = ax.transAxes))
+                y = y - 0.05
+
+            [text.set() for text in text_manual_list]
 
         if not isinstance(self.annotate, list):
             self.annotate.set()

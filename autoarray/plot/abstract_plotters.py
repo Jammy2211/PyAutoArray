@@ -171,8 +171,8 @@ class AbstractPlotter:
         )
 
         return (
-            subplot_shape[0] * subplot_shape_to_figsize_factor[0],
             subplot_shape[1] * subplot_shape_to_figsize_factor[1],
+            subplot_shape[0] * subplot_shape_to_figsize_factor[0],
         )
 
     def _subplot_custom_plot(self, **kwargs):
