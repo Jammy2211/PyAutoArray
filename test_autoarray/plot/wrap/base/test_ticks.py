@@ -6,16 +6,15 @@ def test__labels_with_suffix_from():
 
     yticks = aplt.YTicks()
 
-    labels = yticks.labels_with_suffix_from(labels=["hi", "hello"])
+    labels = yticks.labels_with_suffix_from(labels=["hi", "hello"], suffix="")
 
     assert labels == ["hi", "hello"]
 
-    yticks = aplt.YTicks(suffix="22")
+    yticks = aplt.YTicks()
 
-    labels = yticks.labels_with_suffix_from(labels=["hi", "hello"])
+    labels = yticks.labels_with_suffix_from(labels=["hi", "hello"], suffix="11")
 
-    assert labels == ["hi22", "hello22"]
-
+    assert labels == ["hi11", "hello11"]
 
 def test__yticks_loads_values_from_config_if_not_manually_input():
 

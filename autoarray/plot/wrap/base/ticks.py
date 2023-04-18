@@ -15,7 +15,7 @@ class AbstractTicks(AbstractMatWrap):
         self,
         manual_values: Optional[List[float]] = None,
         manual_units: Optional[str] = None,
-        suffix: [str] = "",
+        manual_suffix: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -32,14 +32,14 @@ class AbstractTicks(AbstractMatWrap):
             Manually override the tick labels to display the labels as the input list of floats.
         manual_units
             Manually override the units in brackets of the tick label.
-        suffix
+        manual_suffix
             A suffix applied to every tick label (e.g. for the suffix `kpc` 0.0 becomes 0.0kpc).
         """
         super().__init__(**kwargs)
 
         self.manual_values = manual_values
         self.manual_units = manual_units
-        self.suffix = suffix
+        self.manual_suffix = manual_suffix
 
     def tick_values_from(self, min_value: float, max_value: float) -> np.ndarray:
         """
@@ -118,7 +118,30 @@ class AbstractTicks(AbstractMatWrap):
                 "The tick labels cannot be computed using the input options."
             )
 
-    def labels_with_suffix_from(self, labels: List[str]):
+    def suffix_from(self, units: Units) -> Optional[str]:
+        """
+        Returns the label of an object, by determining it from the figure units if the label is not manually specified.
+
+        Parameters
+        ----------
+        units
+           The units of the data structure that is plotted which informs the appropriate label text.
+        """
+
+        if self.manual_suffix is not None:
+            return self.manual_suffix
+
+        if units is None:
+            return ""
+
+        if units.in_kpc is not None and units.use_scaled:
+            if units.in_kpc:
+                return "kpc"
+            return '"'
+
+        return ""
+
+    def labels_with_suffix_from(self, labels: List[str], suffix: str) -> List[str]:
         """
         The labels used for the y and x ticks can be append with a suffix.
 
@@ -130,7 +153,7 @@ class AbstractTicks(AbstractMatWrap):
         labels
             The y and x labels which are append with the suffix.
         """
-        return [f"{label}{self.suffix}" for label in labels]
+        return [f"{label}{suffix}" for label in labels]
 
 
 class YTicks(AbstractTicks):
@@ -160,7 +183,8 @@ class YTicks(AbstractTicks):
         labels = self.tick_values_in_units_from(
             array=array, min_value=min_value, max_value=max_value, units=units, axis=0
         )
-        labels = self.labels_with_suffix_from(labels=labels)
+        suffix = self.suffix_from(units=units)
+        labels = self.labels_with_suffix_from(labels=labels, suffix=suffix)
 
         plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
 
@@ -213,7 +237,8 @@ class XTicks(AbstractTicks):
                 axis=1,
             )
 
-        labels = self.labels_with_suffix_from(labels=labels)
+        suffix = self.suffix_from(units=units)
+        labels = self.labels_with_suffix_from(labels=labels, suffix=suffix)
 
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
 

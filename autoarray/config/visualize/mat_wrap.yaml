@@ -108,8 +108,12 @@ YLabel:              # wrapper for `plt.ylabel()`: customize the figure ylabel.
   subplot:
     fontsize: 10
     ylabel: ""
-YTicks:              # wrapper for `plt.xticks()`: customize the figure yticks.
+YTicks:              # wrapper for `plt.yticks()`: customize the figure yticks.
   figure:
     fontsize: 16
+    rotation: vertical
+    va: center
   subplot:
     fontsize: 10
+    rotation: vertical
+    va: center

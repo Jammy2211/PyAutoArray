@@ -150,7 +150,7 @@ class MatPlot1D(AbstractMatPlot):
         y_errors=None,
         x_errors=None,
         y_extra=None,
-        text_manual_dict = None,
+        text_manual_dict=None,
         bypass: bool = False,
     ):
 
@@ -247,7 +247,9 @@ class MatPlot1D(AbstractMatPlot):
 
             for key, value in text_manual_dict.items():
 
-                text_manual_list.append(Text(x=0.85, y=y, s=value, transform = ax.transAxes))
+                text_manual_list.append(
+                    Text(x=0.85, y=y, s=value, transform=ax.transAxes)
+                )
                 y = y - 0.05
 
             [text.set() for text in text_manual_list]
