@@ -1,3 +1,5 @@
+from autoconf import conf
+
 from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
@@ -161,7 +163,17 @@ class AbstractPlotter:
                 number_subplots=number_subplots
             )
 
-    #    return (columns * 6, rows * 6)
+        subplot_shape_to_figsize_factor = conf.instance["visualize"]["general"][
+            "subplot_shape_to_figsize_factor"
+        ]
+        subplot_shape_to_figsize_factor = tuple(
+            map(int, subplot_shape_to_figsize_factor[1:-1].split(","))
+        )
+
+        return (
+            subplot_shape[0] * subplot_shape_to_figsize_factor[0],
+            subplot_shape[1] * subplot_shape_to_figsize_factor[1],
+        )
 
     def _subplot_custom_plot(self, **kwargs):
 

@@ -9,6 +9,22 @@ from autoarray.plot import abstract_plotters
 directory = path.dirname(path.realpath(__file__))
 
 
+def test__get_subplot_shape():
+
+    plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=aplt.MatPlot2D())
+
+    subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=1)
+
+    assert subplot_shape == (1, 1)
+
+    subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=3)
+
+    assert subplot_shape == (2, 2)
+
+    with pytest.raises(aa.exc.PlottingException):
+        plotter.mat_plot_2d.get_subplot_shape(number_subplots=1000)
+
+
 def test__get_subplot_figsize():
 
     plotter = abstract_plotters.AbstractPlotter(
@@ -32,22 +48,6 @@ def test__get_subplot_figsize():
     figsize = plotter.get_subplot_figsize(number_subplots=4)
 
     assert figsize == (20, 20)
-
-
-def test__get_subplot_shape():
-
-    plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=aplt.MatPlot2D())
-
-    subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=1)
-
-    assert subplot_shape == (1, 1)
-
-    subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=3)
-
-    assert subplot_shape == (2, 2)
-
-    with pytest.raises(aa.exc.PlottingException):
-        plotter.mat_plot_2d.get_subplot_shape(number_subplots=1000)
 
 
 def test__open_and_close_subplot_figures():
