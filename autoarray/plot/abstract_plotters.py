@@ -153,15 +153,15 @@ class AbstractPlotter:
                 return self.mat_plot_2d.figure.config_dict["figsize"]
 
         try:
-            rows, columns = self.mat_plot_1d.get_subplot_rows_columns(
+            subplot_shape = self.mat_plot_1d.get_subplot_shape(
                 number_subplots=number_subplots
             )
         except AttributeError:
-            rows, columns = self.mat_plot_2d.get_subplot_rows_columns(
+            subplot_shape = self.mat_plot_2d.get_subplot_shape(
                 number_subplots=number_subplots
             )
 
-        return (columns * 6, rows * 6)
+    #    return (columns * 6, rows * 6)
 
     def _subplot_custom_plot(self, **kwargs):
 

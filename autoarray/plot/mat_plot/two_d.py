@@ -260,7 +260,7 @@ class MatPlot2D(AbstractMatPlot):
                 ax = self.setup_subplot()
 
         aspect = self.figure.aspect_from(shape_native=array.shape_native)
-        norm_scale = self.cmap.norm_from(array=array)
+        norm = self.cmap.norm_from(array=array)
 
         origin = conf.instance["visualize"]["general"]["general"]["imshow_origin"]
 
@@ -268,7 +268,7 @@ class MatPlot2D(AbstractMatPlot):
             X=array.native,
             aspect=aspect,
             cmap=self.cmap.cmap,
-            norm=norm_scale,
+            norm=norm,
             extent=extent,
             origin=origin,
         )
@@ -317,7 +317,7 @@ class MatPlot2D(AbstractMatPlot):
             [annotate.set() for annotate in self.annotate]
 
         if self.colorbar is not False:
-            cb = self.colorbar.set(ax=ax)
+            cb = self.colorbar.set(ax=ax, norm=norm)
             self.colorbar_tickparams.set(cb=cb)
 
         grid_indexes = None

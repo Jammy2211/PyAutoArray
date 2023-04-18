@@ -41,29 +41,46 @@ class Colorbar(AbstractMatWrap):
         self.manual_tick_values = manual_tick_values
         self.manual_alignment = manual_alignment
 
-    def set(self, ax=None):
+    def set(self, ax=None, norm=None):
         """
         Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
         """
 
-        if self.manual_tick_values is None and self.manual_tick_labels is None:
-            cb = plt.colorbar(**self.config_dict, ax=ax)
-        elif (
-            self.manual_tick_values is not None and self.manual_tick_labels is not None
-        ):
-            cb = plt.colorbar(ticks=self.manual_tick_values, ax=ax, **self.config_dict)
-            cb.ax.set_yticklabels(
-                labels=self.manual_tick_labels, va=self.manual_alignment or "center"
-            )
-        else:
+        manual_tick_labels = self.manual_tick_labels
+        manual_tick_values = self.manual_tick_values
+
+        if sum(x is not None for x in [manual_tick_values, manual_tick_labels]) == 1:
             raise exc.PlottingException(
-                "Only 1 entry of tick_values or tick_labels was input. You must either supply"
-                "both the values and labels, or neither."
+                "You can only manually specify the colorbar tick labels and values if both are input."
+            )
+
+        if (
+            manual_tick_values is None
+            and manual_tick_labels is None
+            and norm is not None
+        ):
+
+            min_value = norm.vmin
+            max_value = norm.vmax
+            mid_value = (max_value + min_value) / 2.0
+
+            manual_tick_values = [min_value, mid_value, max_value]
+            manual_tick_labels = [np.round(value, 2) for value in manual_tick_values]
+
+        if manual_tick_values is None and manual_tick_labels is None:
+            cb = plt.colorbar(ax=ax, **self.config_dict)
+        else:
+
+            cb = plt.colorbar(ticks=manual_tick_values, ax=ax, **self.config_dict)
+            cb.ax.set_yticklabels(
+                labels=manual_tick_labels, va=self.manual_alignment or "center"
             )
 
         return cb
 
-    def set_with_color_values(self, cmap: str, color_values: np.ndarray, ax=None):
+    def set_with_color_values(
+        self, cmap: str, color_values: np.ndarray, ax=None, norm=None
+    ):
         """
         Set the figure's colorbar using an array of already known color values.
 
@@ -82,19 +99,42 @@ class Colorbar(AbstractMatWrap):
         mappable = cm.ScalarMappable(cmap=cmap)
         mappable.set_array(color_values)
 
-        if self.manual_tick_values is None and self.manual_tick_labels is None:
-            cb = plt.colorbar(mappable=mappable, ax=ax, **self.config_dict)
-        elif (
-            self.manual_tick_values is not None and self.manual_tick_labels is not None
+        manual_tick_labels = self.manual_tick_labels
+        manual_tick_values = self.manual_tick_values
+
+        if sum(x is not None for x in [manual_tick_values, manual_tick_labels]) == 1:
+            raise exc.PlottingException(
+                "You can only manually specify the colorbar tick labels and values if both are input."
+            )
+
+        if (
+            manual_tick_values is None
+            and manual_tick_labels is None
+            and norm is not None
         ):
+
+            min_value = norm.vmin
+            max_value = norm.vmax
+            mid_value = (max_value + min_value) / 2.0
+
+            manual_tick_values = [min_value, mid_value, max_value]
+            manual_tick_labels = [np.round(value, 2) for value in manual_tick_values]
+
+        if manual_tick_values is None and manual_tick_labels is None:
             cb = plt.colorbar(
                 mappable=mappable,
                 ax=ax,
-                ticks=self.manual_tick_values,
+                **self.config_dict,
+            )
+        else:
+            cb = plt.colorbar(
+                mappable=mappable,
+                ax=ax,
+                ticks=manual_tick_values,
                 **self.config_dict,
             )
             cb.ax.set_yticklabels(
-                labels=self.manual_tick_labels, va=self.manual_alignment or "center"
+                labels=manual_tick_labels, va=self.manual_alignment or "center"
             )
 
         return cb

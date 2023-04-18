@@ -1,6 +1,8 @@
 from os import path
 import pytest
 import matplotlib.pyplot as plt
+
+import autoarray as aa
 import autoarray.plot as aplt
 from autoarray.plot import abstract_plotters
 
@@ -32,19 +34,22 @@ def test__get_subplot_figsize():
     assert figsize == (20, 20)
 
 
-def test__get_subplot_rows_columns():
+def test__get_subplot_shape():
 
     plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=aplt.MatPlot2D())
 
-    rows, columns = plotter.mat_plot_2d.get_subplot_rows_columns(number_subplots=1)
+    subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=1)
 
-    assert rows == 1
-    assert columns == 1
+    assert subplot_shape == (1, 1)
 
-    rows, columns = plotter.mat_plot_2d.get_subplot_rows_columns(number_subplots=4)
+    subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=3)
 
-    assert rows == 2
-    assert columns == 2
+    assert subplot_shape == (2, 2)
+
+    # The config file in test_autoarray does not go above number_subplots=36
+
+    with pytest.raises(aa.exc.PlottingException):
+        plotter.mat_plot_2d.get_subplot_shape(number_subplots=48)
 
 
 def test__open_and_close_subplot_figures():

@@ -4,5 +4,15 @@ general:
   zoom_around_mask: true            # If True, plots of data structures with a mask automatically zoom in the masked region.
 inversion:
   reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
+subplot_shape:
+  1: (1, 1)                         # The shape of subplots for a figure with 1 subplot.
+  2: (1, 2)                         # The shape of subplots for a figure with 2 subplots.
+  4: (2, 2)                         # The shape of subplots for a figure with 4 (or less than the above value) of subplots.
+  6: (2, 3)                         # The shape of subplots for a figure with 6 (or less than the above value) of subplots.
+  9: (3, 3)                         # The shape of subplots for a figure with 9 (or less than the above value) of subplots.
+  12: (3, 4)                        # The shape of subplots for a figure with 12 (or less than the above value) of subplots.
+  16: (4, 4)                        # The shape of subplots for a figure with 16 (or less than the above value) of subplots.
+  20: (4, 5)                        # The shape of subplots for a figure with 20 (or less than the above value) of subplots.
+  36: (6, 6)                        # The shape of subplots for a figure with 36 (or less than the above value) of subplots.
 units:
   in_kpc: false                     # If True, plots that are normally in arc-seconds are instead plotted using kiloparsecs.
