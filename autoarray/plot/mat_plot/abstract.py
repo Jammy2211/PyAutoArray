@@ -244,15 +244,17 @@ class AbstractMatPlot:
             The number of rows and columns in the subplot.
         """
         if subplot_shape is None:
-            rows, columns = self.get_subplot_shape(number_subplots=self.number_subplots)
-        else:
-            rows = subplot_shape[0]
-            columns = subplot_shape[1]
+            subplot_shape = self.get_subplot_shape(number_subplots=self.number_subplots)
 
         if aspect is None:
-            ax = plt.subplot(rows, columns, self.subplot_index)
+            ax = plt.subplot(subplot_shape[0], subplot_shape[1], self.subplot_index)
         else:
-            ax = plt.subplot(rows, columns, self.subplot_index, aspect=float(aspect))
+            ax = plt.subplot(
+                subplot_shape[0],
+                subplot_shape[1],
+                self.subplot_index,
+                aspect=float(aspect),
+            )
 
         self.subplot_index += 1
 

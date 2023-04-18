@@ -46,10 +46,8 @@ def test__get_subplot_shape():
 
     assert subplot_shape == (2, 2)
 
-    # The config file in test_autoarray does not go above number_subplots=36
-
     with pytest.raises(aa.exc.PlottingException):
-        plotter.mat_plot_2d.get_subplot_shape(number_subplots=48)
+        plotter.mat_plot_2d.get_subplot_shape(number_subplots=1000)
 
 
 def test__open_and_close_subplot_figures():
