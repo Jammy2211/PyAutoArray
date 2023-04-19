@@ -211,7 +211,6 @@ class MatPlot1D(AbstractMatPlot):
             plt.yscale("symlog")
 
         self.xticks.set(
-            array=x,
             min_value=np.min(x),
             max_value=np.max(x),
             units=self.units,

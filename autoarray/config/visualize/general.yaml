@@ -15,5 +15,3 @@ subplot_shape:                          # The shape of a subplots for figures wi
   20: (4, 5)                            # The shape of subplots for a figure with 20 (or less than the above value) of subplots.
   36: (6, 6)                            # The shape of subplots for a figure with 36 (or less than the above value) of subplots.
 subplot_shape_to_figsize_factor: (6, 6) # The factors by which the subplot_shape is multiplied to determine the figsize of a subplot (e.g. if the subplot_shape is (2,2), the figsize will be (2*6, 2*6).
-units:
-  in_kpc: false                         # If True, plots that are normally in arc-seconds are instead plotted using kiloparsecs.

@@ -97,6 +97,8 @@ XLabel:              # wrapper for `plt.xlabel()`: customize the figure ylabel.
     fontsize: 10
     xlabel: ""
 XTicks:              # wrapper for `plt.xticks()`: customize the figure xticks.
+  manual:
+    extent_factor: 0.75
   figure:
     fontsize: 16
   subplot:
@@ -109,6 +111,8 @@ YLabel:              # wrapper for `plt.ylabel()`: customize the figure ylabel.
     fontsize: 10
     ylabel: ""
 YTicks:              # wrapper for `plt.yticks()`: customize the figure yticks.
+  manual:
+    extent_factor: 0.75
   figure:
     fontsize: 16
     rotation: vertical

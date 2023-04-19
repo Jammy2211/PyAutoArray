@@ -11,7 +11,6 @@ class Units:
         self,
         use_scaled: Optional[bool] = None,
         conversion_factor: Optional[float] = None,
-        in_kpc: Optional[bool] = None,
         **kwargs
     ):
         """
@@ -35,14 +34,10 @@ class Units:
         conversion_factor
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
-        in_kpc
-            If True, the scaled units are converted to kilo-parsecs via the input Comsology of the
-            plot (this is only relevant for the projects PyAutoGalaxy / PyAutoLens).
         """
 
         self.use_scaled = use_scaled
         self.conversion_factor = conversion_factor
-        self.in_kpc = in_kpc
 
         if use_scaled is not None:
             self.use_scaled = use_scaled
@@ -53,14 +48,5 @@ class Units:
                 ]
             except KeyError:
                 self.use_scaled = True
-
-        try:
-            self.in_kpc = (
-                in_kpc
-                if in_kpc is not None
-                else conf.instance["visualize"]["general"]["units"]["in_kpc"]
-            )
-        except KeyError:
-            self.in_kpc = None
 
         self.kwargs = kwargs

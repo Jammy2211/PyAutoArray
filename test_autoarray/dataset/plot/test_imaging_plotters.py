@@ -81,7 +81,7 @@ def test__output_as_fits__correct_output_format(
     imaging_plotter.figures_2d(data=True, psf=True, absolute_signal_to_noise_map=True)
 
     image_from_plot = aa.util.array_2d.numpy_array_2d_via_fits_from(
-        file_path=path.join(plot_path, "image_2d.fits"), hdu=0
+        file_path=path.join(plot_path, "data.fits"), hdu=0
     )
 
     assert image_from_plot.shape == (7, 7)

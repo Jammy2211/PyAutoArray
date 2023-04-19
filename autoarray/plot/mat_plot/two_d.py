@@ -289,14 +289,12 @@ class MatPlot2D(AbstractMatPlot):
         self.tickparams.set()
 
         self.yticks.set(
-            array=array,
             min_value=extent_axis[2],
             max_value=extent_axis[3],
             units=self.units,
         )
 
         self.xticks.set(
-            array=array,
             min_value=extent_axis[0],
             max_value=extent_axis[1],
             units=self.units,
@@ -417,12 +415,8 @@ class MatPlot2D(AbstractMatPlot):
         self.tickparams.set()
 
         if not self.axis.symmetric_around_centre:
-            self.yticks.set(
-                array=None, min_value=extent[2], max_value=extent[3], units=self.units
-            )
-            self.xticks.set(
-                array=None, min_value=extent[0], max_value=extent[1], units=self.units
-            )
+            self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
+            self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
 
         visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid)
 
@@ -517,12 +511,8 @@ class MatPlot2D(AbstractMatPlot):
 
         self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
 
-        self.yticks.set(
-            array=None, min_value=extent[2], max_value=extent[3], units=self.units
-        )
-        self.xticks.set(
-            array=None, min_value=extent[0], max_value=extent[1], units=self.units
-        )
+        self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
+        self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
 
         if not isinstance(self.text, list):
             self.text.set()
@@ -578,12 +568,8 @@ class MatPlot2D(AbstractMatPlot):
         self.axis.set(extent=extent, grid=mapper.source_plane_mesh_grid)
 
         self.tickparams.set()
-        self.yticks.set(
-            array=None, min_value=extent[2], max_value=extent[3], units=self.units
-        )
-        self.xticks.set(
-            array=None, min_value=extent[0], max_value=extent[1], units=self.units
-        )
+        self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
+        self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
 
         if not isinstance(self.text, list):
             self.text.set()
@@ -645,12 +631,8 @@ class MatPlot2D(AbstractMatPlot):
         plt.gca().set_aspect(aspect_inv)
 
         self.tickparams.set()
-        self.yticks.set(
-            array=None, min_value=extent[2], max_value=extent[3], units=self.units
-        )
-        self.xticks.set(
-            array=None, min_value=extent[0], max_value=extent[1], units=self.units
-        )
+        self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
+        self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
 
         if not isinstance(self.text, list):
             self.text.set()

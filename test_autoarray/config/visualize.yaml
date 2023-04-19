@@ -27,8 +27,6 @@ general:
     64: (8, 8)                        # The shape of subplots for a figure with 64 (or less than the above value) of subplots.
     81: (9, 9)                        # The shape of subplots for a figure with 81 (or less than the above value) of subplots.
     100: (10, 10)                     # The shape of subplots for a figure with 100 (or less than the above value) of subplots.
-  units:
-    in_kpc: false
 include:
   include_1d:
     mask: false

@@ -42,11 +42,8 @@ class AbstractLabel(AbstractMatWrap):
         if units is None:
             return None
 
-        if units.in_kpc is not None and units.use_scaled:
-            if units.in_kpc:
-                return "kpc"
-            else:
-                return "arcsec"
+        if units.use_scaled:
+            return "arcsec"
 
         if units.use_scaled:
             return "scaled"

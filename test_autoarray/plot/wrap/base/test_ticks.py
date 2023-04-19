@@ -16,6 +16,7 @@ def test__labels_with_suffix_from():
 
     assert labels == ["hi11", "hello11"]
 
+
 def test__yticks_loads_values_from_config_if_not_manually_input():
 
     yticks = aplt.YTicks()
@@ -52,25 +53,25 @@ def test__yticks__set():
 
     extent = array.extent_of_zoomed_array(buffer=1)
 
-    yticks.set(array=array, min_value=extent[2], max_value=extent[3], units=units)
+    yticks.set(min_value=extent[2], max_value=extent[3], units=units)
 
     yticks = aplt.YTicks(fontsize=34)
 
     units = aplt.Units(use_scaled=False, conversion_factor=None)
 
-    yticks.set(array=array, min_value=extent[2], max_value=extent[3], units=units)
+    yticks.set(min_value=extent[2], max_value=extent[3], units=units)
 
     yticks = aplt.YTicks(fontsize=34)
 
     units = aplt.Units(use_scaled=True, conversion_factor=2.0)
 
-    yticks.set(array=array, min_value=extent[2], max_value=extent[3], units=units)
+    yticks.set(min_value=extent[2], max_value=extent[3], units=units)
 
     yticks = aplt.YTicks(fontsize=34)
 
     units = aplt.Units(use_scaled=False, conversion_factor=2.0)
 
-    yticks.set(array=array, min_value=extent[2], max_value=extent[3], units=units)
+    yticks.set(min_value=extent[2], max_value=extent[3], units=units)
 
 
 def test__xticks_loads_values_from_config_if_not_manually_input():
@@ -107,22 +108,22 @@ def test__xticks__set():
 
     extent = array.extent_of_zoomed_array(buffer=1)
 
-    xticks.set(array=array, min_value=extent[0], max_value=extent[1], units=units)
+    xticks.set(min_value=extent[0], max_value=extent[1], units=units)
 
     xticks = aplt.XTicks(fontsize=34)
 
     units = aplt.Units(use_scaled=False, conversion_factor=None)
 
-    xticks.set(array=array, min_value=extent[0], max_value=extent[1], units=units)
+    xticks.set(min_value=extent[0], max_value=extent[1], units=units)
 
     xticks = aplt.XTicks(fontsize=34)
 
     units = aplt.Units(use_scaled=True, conversion_factor=2.0)
 
-    xticks.set(array=array, min_value=extent[0], max_value=extent[1], units=units)
+    xticks.set(min_value=extent[0], max_value=extent[1], units=units)
 
     xticks = aplt.XTicks(fontsize=34)
 
     units = aplt.Units(use_scaled=False, conversion_factor=2.0)
 
-    xticks.set(array=array, min_value=extent[0], max_value=extent[1], units=units)
+    xticks.set(min_value=extent[0], max_value=extent[1], units=units)
