@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from typing import Optional
 
+from autoconf import conf
+
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 from autoarray.plot.wrap.base.units import Units
 
@@ -29,31 +31,10 @@ class AbstractLabel(AbstractMatWrap):
 
         self.manual_label = self.kwargs.get("label")
 
-    def label_from(self, units: Units) -> Optional[str]:
-        """
-        Returns the label of an object, by determining it from the figure units if the label is not manually specified.
-
-        Parameters
-        ----------
-        units
-           The units of the data structure that is plotted which informs the appropriate label text.
-        """
-
-        if units is None:
-            return None
-
-        if units.use_scaled:
-            return "arcsec"
-
-        if units.use_scaled:
-            return "scaled"
-        return "pixels"
-
 
 class YLabel(AbstractLabel):
     def set(
         self,
-        units: Units,
         auto_label: Optional[str] = None,
     ):
         """
@@ -83,7 +64,6 @@ class YLabel(AbstractLabel):
 class XLabel(AbstractLabel):
     def set(
         self,
-        units: Units,
         auto_label: Optional[str] = None,
     ):
         """

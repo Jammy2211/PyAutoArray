@@ -3,6 +3,8 @@ import matplotlib.cm as cm
 import numpy as np
 from typing import List, Optional
 
+from autoconf import conf
+
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 from autoarray import exc
@@ -14,6 +16,7 @@ class Colorbar(AbstractMatWrap):
         manual_tick_labels: Optional[List[float]] = None,
         manual_tick_values: Optional[List[float]] = None,
         manual_alignment: Optional[str] = None,
+        manual_unit: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -33,6 +36,12 @@ class Colorbar(AbstractMatWrap):
             Manually override the colorbar tick labels to an input list of float.
         manual_tick_values
             If the colorbar tick labels are manually specified the locations on the colorbar they appear running 0 -> 1.
+        manual_alignment
+            The vertical alignment of the colorbar tick labels, specified via the matplotlib method  `set_yticklabels`
+            and input `va`.
+        manual_unit
+            The unit label that appears next to the colorbar tick labels, which if not input uses a default unit label
+            specified as `cb_unit` in the config file `config/visualize/general.yaml.
         """
 
         super().__init__(**kwargs)
@@ -40,23 +49,30 @@ class Colorbar(AbstractMatWrap):
         self.manual_tick_labels = manual_tick_labels
         self.manual_tick_values = manual_tick_values
         self.manual_alignment = manual_alignment
+        self.manual_unit = manual_unit
 
-    def set(self, ax=None, norm=None):
-        """
-        Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
-        """
+    @property
+    def cb_unit(self):
+        if self.manual_unit is None:
+            return conf.instance["visualize"]["general"]["units"]["cb_unit"]
+        return self.manual_unit
 
-        manual_tick_labels = self.manual_tick_labels
-        manual_tick_values = self.manual_tick_values
+    def manual_tick_values_from(self, norm=None):
 
-        if sum(x is not None for x in [manual_tick_values, manual_tick_labels]) == 1:
+        if (
+            sum(
+                x is not None
+                for x in [self.manual_tick_values, self.manual_tick_labels]
+            )
+            == 1
+        ):
             raise exc.PlottingException(
                 "You can only manually specify the colorbar tick labels and values if both are input."
             )
 
         if (
-            manual_tick_values is None
-            and manual_tick_labels is None
+            self.manual_tick_values is None
+            and self.manual_tick_labels is None
             and norm is not None
         ):
 
@@ -64,13 +80,35 @@ class Colorbar(AbstractMatWrap):
             max_value = norm.vmax
             mid_value = (max_value + min_value) / 2.0
 
-            manual_tick_values = [min_value, mid_value, max_value]
-            manual_tick_labels = [np.round(value, 2) for value in manual_tick_values]
+            return [min_value, mid_value, max_value]
+
+    def manual_tick_labels_from(self, manual_tick_values):
+
+        if manual_tick_values is None:
+            return None
+
+        manual_tick_labels = [np.round(value, 2) for value in manual_tick_values]
+
+        middle_index = (len(manual_tick_labels) - 1) // 2
+        manual_tick_labels[
+            middle_index
+        ] = rf"{manual_tick_labels[middle_index]}{self.cb_unit}"
+
+        return manual_tick_labels
+
+    def set(self, ax=None, norm=None):
+        """
+        Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
+        """
+
+        manual_tick_values = self.manual_tick_values_from(norm=norm)
+        manual_tick_labels = self.manual_tick_labels_from(
+            manual_tick_values=manual_tick_values
+        )
 
         if manual_tick_values is None and manual_tick_labels is None:
             cb = plt.colorbar(ax=ax, **self.config_dict)
         else:
-
             cb = plt.colorbar(ticks=manual_tick_values, ax=ax, **self.config_dict)
             cb.ax.set_yticklabels(
                 labels=manual_tick_labels, va=self.manual_alignment or "center"
@@ -99,26 +137,10 @@ class Colorbar(AbstractMatWrap):
         mappable = cm.ScalarMappable(cmap=cmap)
         mappable.set_array(color_values)
 
-        manual_tick_labels = self.manual_tick_labels
-        manual_tick_values = self.manual_tick_values
-
-        if sum(x is not None for x in [manual_tick_values, manual_tick_labels]) == 1:
-            raise exc.PlottingException(
-                "You can only manually specify the colorbar tick labels and values if both are input."
-            )
-
-        if (
-            manual_tick_values is None
-            and manual_tick_labels is None
-            and norm is not None
-        ):
-
-            min_value = norm.vmin
-            max_value = norm.vmax
-            mid_value = (max_value + min_value) / 2.0
-
-            manual_tick_values = [min_value, mid_value, max_value]
-            manual_tick_labels = [np.round(value, 2) for value in manual_tick_values]
+        manual_tick_values = self.manual_tick_values_from(norm=norm)
+        manual_tick_labels = self.manual_tick_labels_from(
+            manual_tick_values=manual_tick_values
+        )
 
         if manual_tick_values is None and manual_tick_labels is None:
             cb = plt.colorbar(

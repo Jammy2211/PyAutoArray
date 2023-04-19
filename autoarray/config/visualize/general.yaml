@@ -15,3 +15,8 @@ subplot_shape:                          # The shape of a subplots for figures wi
   20: (4, 5)                            # The shape of subplots for a figure with 20 (or less than the above value) of subplots.
   36: (6, 6)                            # The shape of subplots for a figure with 36 (or less than the above value) of subplots.
 subplot_shape_to_figsize_factor: (6, 6) # The factors by which the subplot_shape is multiplied to determine the figsize of a subplot (e.g. if the subplot_shape is (2,2), the figsize will be (2*6, 2*6).
+units:
+  use_scaled: true                      # Whether to plot spatial coordinates in scaled units computed via the pixel_scale (e.g. arc-seconds) or pixel units by default.
+  cb_unit: $\,\,\mathrm{e^{-}}\,\mathrm{s^{-1}}$ # The string or latex unit label used for the colorbar of the image, for example electrons per second.
+  scaled_symbol: '"'                    # The symbol used when plotting spatial coordinates computed via the pixel_scale (e.g. for Astronomy data this is arc-seconds).
+  unscaled_symbol: pix                  # The symbol used when plotting spatial coordinates in unscaled pixel units.

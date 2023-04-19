@@ -301,8 +301,8 @@ class MatPlot2D(AbstractMatPlot):
         )
 
         self.title.set(auto_title=auto_labels.title)
-        self.ylabel.set(units=self.units)
-        self.xlabel.set(units=self.units)
+        self.ylabel.set()
+        self.xlabel.set()
 
         if not isinstance(self.text, list):
             self.text.set()
@@ -390,8 +390,8 @@ class MatPlot2D(AbstractMatPlot):
                     self.colorbar_tickparams.set(cb=colorbar)
 
         self.title.set(auto_title=auto_labels.title)
-        self.ylabel.set(units=self.units)
-        self.xlabel.set(units=self.units)
+        self.ylabel.set()
+        self.xlabel.set()
 
         if not isinstance(self.text, list):
             self.text.set()
@@ -531,8 +531,8 @@ class MatPlot2D(AbstractMatPlot):
 
         self.title.set(auto_title=auto_labels.title)
         self.tickparams.set()
-        self.ylabel.set(units=self.units)
-        self.xlabel.set(units=self.units)
+        self.ylabel.set()
+        self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
             plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
@@ -592,8 +592,8 @@ class MatPlot2D(AbstractMatPlot):
         )
 
         self.title.set(auto_title=auto_labels.title)
-        self.ylabel.set(units=self.units)
-        self.xlabel.set(units=self.units)
+        self.ylabel.set()
+        self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
             plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
@@ -668,8 +668,8 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         self.title.set(auto_title=auto_labels.title)
-        self.ylabel.set(units=self.units)
-        self.xlabel.set(units=self.units)
+        self.ylabel.set()
+        self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
             plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper

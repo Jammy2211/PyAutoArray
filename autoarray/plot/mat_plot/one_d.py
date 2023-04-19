@@ -202,8 +202,8 @@ class MatPlot1D(AbstractMatPlot):
         if "extent" in self.axis.config_dict:
             self.axis.set()
 
-        self.ylabel.set(units=self.units)
-        self.xlabel.set(units=self.units)
+        self.ylabel.set()
+        self.xlabel.set()
 
         self.tickparams.set()
 
@@ -227,8 +227,8 @@ class MatPlot1D(AbstractMatPlot):
         # )
 
         self.title.set(auto_title=auto_labels.title)
-        self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
-        self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
+        self.ylabel.set(auto_label=auto_labels.ylabel)
+        self.xlabel.set(auto_label=auto_labels.xlabel)
 
         if not isinstance(self.text, list):
             self.text.set()

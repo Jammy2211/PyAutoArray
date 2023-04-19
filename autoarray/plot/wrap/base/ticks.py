@@ -118,12 +118,12 @@ class AbstractTicks(AbstractMatWrap):
             return self.manual_suffix
 
         if units is None:
-            return ""
+            return conf.instance["visualize"]["general"]["units"]["unscaled_symbol"]
 
         if units.use_scaled:
-            return '"'
+            return conf.instance["visualize"]["general"]["units"]["scaled_symbol"]
 
-        return ""
+        return conf.instance["visualize"]["general"]["units"]["unscaled_symbol"]
 
     def labels_with_suffix_from(self, labels: List[str], suffix: str) -> List[str]:
         """
