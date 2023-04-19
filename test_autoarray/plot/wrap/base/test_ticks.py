@@ -47,7 +47,7 @@ def test__yticks__set():
 
     array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
-    units = aplt.Units(use_scaled=True, conversion_factor=None)
+    units = aplt.Units(use_scaled=True, ticks_convert_factor=None)
 
     yticks = aplt.YTicks(fontsize=34)
 
@@ -57,19 +57,19 @@ def test__yticks__set():
 
     yticks = aplt.YTicks(fontsize=34)
 
-    units = aplt.Units(use_scaled=False, conversion_factor=None)
+    units = aplt.Units(use_scaled=False, ticks_convert_factor=None)
 
     yticks.set(min_value=extent[2], max_value=extent[3], units=units)
 
     yticks = aplt.YTicks(fontsize=34)
 
-    units = aplt.Units(use_scaled=True, conversion_factor=2.0)
+    units = aplt.Units(use_scaled=True, ticks_convert_factor=2.0)
 
     yticks.set(min_value=extent[2], max_value=extent[3], units=units)
 
     yticks = aplt.YTicks(fontsize=34)
 
-    units = aplt.Units(use_scaled=False, conversion_factor=2.0)
+    units = aplt.Units(use_scaled=False, ticks_convert_factor=2.0)
 
     yticks.set(min_value=extent[2], max_value=extent[3], units=units)
 
@@ -102,7 +102,7 @@ def test__xticks_loads_values_from_config_if_not_manually_input():
 def test__xticks__set():
     array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
-    units = aplt.Units(use_scaled=True, conversion_factor=None)
+    units = aplt.Units(use_scaled=True, ticks_convert_factor=None)
 
     xticks = aplt.XTicks(fontsize=34)
 
@@ -112,18 +112,18 @@ def test__xticks__set():
 
     xticks = aplt.XTicks(fontsize=34)
 
-    units = aplt.Units(use_scaled=False, conversion_factor=None)
+    units = aplt.Units(use_scaled=False, ticks_convert_factor=None)
 
     xticks.set(min_value=extent[0], max_value=extent[1], units=units)
 
     xticks = aplt.XTicks(fontsize=34)
 
-    units = aplt.Units(use_scaled=True, conversion_factor=2.0)
+    units = aplt.Units(use_scaled=True, ticks_convert_factor=2.0)
 
     xticks.set(min_value=extent[0], max_value=extent[1], units=units)
 
     xticks = aplt.XTicks(fontsize=34)
 
-    units = aplt.Units(use_scaled=False, conversion_factor=2.0)
+    units = aplt.Units(use_scaled=False, ticks_convert_factor=2.0)
 
     xticks.set(min_value=extent[0], max_value=extent[1], units=units)

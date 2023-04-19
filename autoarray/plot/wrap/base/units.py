@@ -10,7 +10,10 @@ class Units:
     def __init__(
         self,
         use_scaled: Optional[bool] = None,
-        conversion_factor: Optional[float] = None,
+        ticks_convert_factor: Optional[float] = None,
+        ticks_label: Optional[str] = None,
+        colorbar_convert_factor: Optional[float] = None,
+        colorbar_label: Optional[str] = None,
         **kwargs
     ):
         """
@@ -29,15 +32,15 @@ class Units:
         ----------
         use_scaled
             If True, plot the 2D data with y and x ticks corresponding to its scaled
-            coordinates (its `pixel_scales` attribute is used as the `conversion_factor`). If `False` plot them in
+            coordinates (its `pixel_scales` attribute is used as the `ticks_convert_factor`). If `False` plot them in
             pixel units.
-        conversion_factor
+        ticks_convert_factor
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
         """
 
-        self.use_scaled = use_scaled
-        self.conversion_factor = conversion_factor
+        self.ticks_convert_factor = ticks_convert_factor
+        self.ticks_label = ticks_label
 
         if use_scaled is not None:
             self.use_scaled = use_scaled
@@ -48,5 +51,8 @@ class Units:
                 ]
             except KeyError:
                 self.use_scaled = True
+
+        self.colorbar_convert_factor = colorbar_convert_factor
+        self.colorbar_label = colorbar_label
 
         self.kwargs = kwargs

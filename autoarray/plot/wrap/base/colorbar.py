@@ -6,6 +6,7 @@ from typing import List, Optional
 from autoconf import conf
 
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
+from autoarray.plot.wrap.base.units import Units
 
 from autoarray import exc
 
@@ -82,28 +83,37 @@ class Colorbar(AbstractMatWrap):
 
             return [min_value, mid_value, max_value]
 
-    def manual_tick_labels_from(self, manual_tick_values):
+    def manual_tick_labels_from(self, units: Units, manual_tick_values: List[float]):
 
         if manual_tick_values is None:
             return None
 
-        manual_tick_labels = [np.round(value, 2) for value in manual_tick_values]
+        convert_factor = units.colorbar_convert_factor or 1.0
+
+        manual_tick_labels = [
+            np.round(value * convert_factor, 2) for value in manual_tick_values
+        ]
+
+        if units.colorbar_label is None:
+            cb_unit = self.cb_unit
+        else:
+            cb_unit = units.colorbar_label
 
         middle_index = (len(manual_tick_labels) - 1) // 2
         manual_tick_labels[
             middle_index
-        ] = rf"{manual_tick_labels[middle_index]}{self.cb_unit}"
+        ] = rf"{manual_tick_labels[middle_index]}{cb_unit}"
 
         return manual_tick_labels
 
-    def set(self, ax=None, norm=None):
+    def set(self, units: Units, ax=None, norm=None):
         """
         Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
         """
 
         manual_tick_values = self.manual_tick_values_from(norm=norm)
         manual_tick_labels = self.manual_tick_labels_from(
-            manual_tick_values=manual_tick_values
+            manual_tick_values=manual_tick_values, units=units
         )
 
         if manual_tick_values is None and manual_tick_labels is None:
@@ -117,7 +127,7 @@ class Colorbar(AbstractMatWrap):
         return cb
 
     def set_with_color_values(
-        self, cmap: str, color_values: np.ndarray, ax=None, norm=None
+        self, units: Units, cmap: str, color_values: np.ndarray, ax=None, norm=None
     ):
         """
         Set the figure's colorbar using an array of already known color values.
@@ -139,7 +149,7 @@ class Colorbar(AbstractMatWrap):
 
         manual_tick_values = self.manual_tick_values_from(norm=norm)
         manual_tick_labels = self.manual_tick_labels_from(
-            manual_tick_values=manual_tick_values
+            manual_tick_values=manual_tick_values, units=units
         )
 
         if manual_tick_values is None and manual_tick_labels is None:

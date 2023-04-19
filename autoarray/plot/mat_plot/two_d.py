@@ -315,7 +315,7 @@ class MatPlot2D(AbstractMatPlot):
             [annotate.set() for annotate in self.annotate]
 
         if self.colorbar is not False:
-            cb = self.colorbar.set(ax=ax, norm=norm)
+            cb = self.colorbar.set(units=self.units, ax=ax, norm=norm)
             self.colorbar_tickparams.set(cb=cb)
 
         grid_indexes = None
@@ -384,7 +384,10 @@ class MatPlot2D(AbstractMatPlot):
             if self.colorbar is not None:
 
                 colorbar = self.colorbar.set_with_color_values(
-                    cmap=self.cmap.cmap, color_values=color_array, ax=ax
+                    units=self.units,
+                    cmap=self.cmap.cmap,
+                    color_values=color_array,
+                    ax=ax,
                 )
                 if colorbar is not None and self.colorbar_tickparams is not None:
                     self.colorbar_tickparams.set(cb=colorbar)
@@ -584,6 +587,7 @@ class MatPlot2D(AbstractMatPlot):
         self.interpolated_reconstruction.imshow_reconstruction(
             mapper=mapper,
             pixel_values=source_pixelization_values,
+            units=self.units,
             cmap=self.cmap,
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,
@@ -648,6 +652,7 @@ class MatPlot2D(AbstractMatPlot):
 
             self.voronoi_drawer.draw_voronoi_pixels(
                 mapper=mapper,
+                units=self.units,
                 pixel_values=source_pixelization_values,
                 cmap=self.cmap,
                 colorbar=self.colorbar,
@@ -660,6 +665,7 @@ class MatPlot2D(AbstractMatPlot):
             self.interpolated_reconstruction.imshow_reconstruction(
                 mapper=mapper,
                 pixel_values=source_pixelization_values,
+                units=self.units,
                 cmap=self.cmap,
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,

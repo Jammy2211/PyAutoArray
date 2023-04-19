@@ -100,9 +100,9 @@ class AbstractTicks(AbstractMatWrap):
         if self.manual_values is not None:
             return np.asarray(self.manual_values)
 
-        conversion_factor = units.conversion_factor or 1.0
+        ticks_convert_factor = units.ticks_convert_factor or 1.0
 
-        return [np.round(value * conversion_factor, 2) for value in tick_values]
+        return [np.round(value * ticks_convert_factor, 2) for value in tick_values]
 
     def suffix_from(self, units: Units) -> Optional[str]:
         """
@@ -116,6 +116,9 @@ class AbstractTicks(AbstractMatWrap):
 
         if self.manual_suffix is not None:
             return self.manual_suffix
+
+        if units.ticks_label is not None:
+            return units.ticks_label
 
         if units is None:
             return conf.instance["visualize"]["general"]["units"]["unscaled_symbol"]
