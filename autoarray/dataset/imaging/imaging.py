@@ -84,11 +84,16 @@ class Imaging(AbstractDataset):
         if self.noise_map.native is not None:
 
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
+
+                zero_entries = np.argwhere(self.noise_map.native <= 0.0)
+
                 raise exc.DatasetException(
                     f"""
                     A value in the noise-map of the dataset is {np.min(self.noise_map)}. 
 
                     This is less than or equal to zero, and therefore an ill-defined value which must be corrected.
+                    
+                    The 2D indexes of the arrays in the native noise map array are {zero_entries}.
                     """
                 )
 

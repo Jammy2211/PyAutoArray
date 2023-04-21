@@ -108,10 +108,6 @@ class AbstractDataset:
         return self.data.mask
 
     @property
-    def inverse_noise_map(self) -> Structure:
-        return 1.0 / self.noise_map
-
-    @property
     def signal_to_noise_map(self) -> Structure:
         """
         The estimated signal-to-noise_maps mappers of the image.
@@ -131,35 +127,6 @@ class AbstractDataset:
         The maximum value of signal-to-noise_maps in an image pixel in the image's signal-to-noise_maps mappers.
         """
         return np.max(self.signal_to_noise_map)
-
-    @property
-    def absolute_signal_to_noise_map(self) -> Structure:
-        """
-        The estimated absolute_signal-to-noise_maps mappers of the image.
-        """
-        return np.divide(np.abs(self.data), self.noise_map)
-
-    @property
-    def absolute_signal_to_noise_max(self) -> float:
-        """
-        The maximum value of absolute signal-to-noise_map in an image pixel in the image's signal-to-noise_maps mappers.
-        """
-        return np.max(self.absolute_signal_to_noise_map)
-
-    @property
-    def potential_chi_squared_map(self) -> Structure:
-        """
-        The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to
-        the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0).
-        """
-        return np.square(self.absolute_signal_to_noise_map)
-
-    @property
-    def potential_chi_squared_max(self) -> float:
-        """
-        The maximum value of the potential chi-squared-map.
-        """
-        return np.max(self.potential_chi_squared_map)
 
     @cached_property
     def noise_covariance_matrix_inv(self) -> np.ndarray:

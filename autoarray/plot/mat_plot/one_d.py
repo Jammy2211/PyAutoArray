@@ -150,7 +150,9 @@ class MatPlot1D(AbstractMatPlot):
         y_errors=None,
         x_errors=None,
         y_extra=None,
+        ls_errorbar = "",
         text_manual_dict=None,
+        text_manual_dict_y=None,
         bypass: bool = False,
     ):
 
@@ -191,6 +193,7 @@ class MatPlot1D(AbstractMatPlot):
             y_errors=y_errors,
             x_errors=x_errors,
             y_extra=y_extra,
+            ls_errorbar=ls_errorbar,
         )
 
         if visuals_1d.shaded_region is not None:
@@ -202,29 +205,41 @@ class MatPlot1D(AbstractMatPlot):
         if "extent" in self.axis.config_dict:
             self.axis.set()
 
-        self.ylabel.set()
-        self.xlabel.set()
-
         self.tickparams.set()
 
         if plot_axis_type == "symlog":
             plt.yscale("symlog")
 
+        if x_errors is not None:
+            min_value_x = np.min(x - x_errors)
+            max_value_x = np.max(x + x_errors)
+        else:
+            min_value_x = np.min(x)
+            max_value_x = np.max(x)
+
+        if y_errors is not None:
+            min_value_y = np.min(y - y_errors)
+            max_value_y = np.max(y + y_errors)
+        else:
+            min_value_y = np.min(y)
+            max_value_y = np.max(y)
+
         self.xticks.set(
-            min_value=np.min(x),
-            max_value=np.max(x),
+            min_value=min_value_x,
+            max_value=max_value_x,
             units=self.units,
             use_integers=use_integers,
+            is_for_1d_plot=True
         )
 
-        # TODO : Implement properly
-
-        # self.yticks.set(
-        #     array=y,
-        #     min_value=np.min(y),
-        #     max_value=np.max(y),
-        #     units=self.units,
-        # )
+        self.yticks.set(
+            min_value=min_value_y,
+            max_value=max_value_y,
+            units=self.units,
+            yunit=auto_labels.yunit,
+            is_for_1d_plot=True,
+            is_log10="logy" in plot_axis_type
+        )
 
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(auto_label=auto_labels.ylabel)
@@ -239,15 +254,15 @@ class MatPlot1D(AbstractMatPlot):
 
         from autoarray.plot.wrap.base.text import Text
 
-        if text_manual_dict is not None:
+        if text_manual_dict is not None and ax is not None:
 
-            y = 0.94
+            y = text_manual_dict_y
             text_manual_list = []
 
             for key, value in text_manual_dict.items():
 
                 text_manual_list.append(
-                    Text(x=0.85, y=y, s=value, transform=ax.transAxes)
+                    Text(x=0.65, y=y, s=f"{key} : {value}", c="b", transform=ax.transAxes)
                 )
                 y = y - 0.05
 

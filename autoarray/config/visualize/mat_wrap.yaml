@@ -98,7 +98,10 @@ XLabel:              # wrapper for `plt.xlabel()`: customize the figure ylabel.
     xlabel: ""
 XTicks:              # wrapper for `plt.xticks()`: customize the figure xticks.
   manual:
-    extent_factor: 0.75 # The fraction of the extent that the ticks appears from the edge of the figure and the center.
+    extent_factor_1d: 1.0  # For 1D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.    
+    extent_factor_2d: 0.75 # For 2D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.
+    number_of_ticks_1d: 8  # For 1D plots, the number of ticks that appear on the x-axis.
+    number_of_ticks_2d: 3  # For 1D plots, the number of ticks that appear on the x-axis.
   figure:
     fontsize: 16
   subplot:
@@ -112,7 +115,10 @@ YLabel:              # wrapper for `plt.ylabel()`: customize the figure ylabel.
     ylabel: ""
 YTicks:              # wrapper for `plt.yticks()`: customize the figure yticks.
   manual:
-    extent_factor: 0.75 # The fraction of the extent that the ticks appears from the edge of the figure and the center.
+    extent_factor_1d: 1.0  # For 1D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.    
+    extent_factor_2d: 0.75 # For 2D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.
+    number_of_ticks_1d: 8  # For 1D plots, the number of ticks that appear on the y-axis.
+    number_of_ticks_2d: 3  # For 1D plots, the number of ticks that appear on the y-axis.
   figure:
     fontsize: 16
     rotation: vertical

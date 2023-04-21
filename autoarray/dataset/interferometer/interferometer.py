@@ -182,10 +182,6 @@ class Interferometer(AbstractDataset):
         return self.transformer.image_from(visibilities=self.signal_to_noise_map)
 
     @property
-    def dirty_inverse_noise_map(self):
-        return self.transformer.image_from(visibilities=self.inverse_noise_map)
-
-    @property
     def signal_to_noise_map(self):
 
         signal_to_noise_map_real = np.divide(

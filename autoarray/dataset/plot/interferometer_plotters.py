@@ -77,7 +77,6 @@ class InterferometerPlotter(Plotter):
         dirty_image: bool = False,
         dirty_noise_map: bool = False,
         dirty_signal_to_noise_map: bool = False,
-        dirty_inverse_noise_map: bool = False,
     ):
         """
         Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D.
@@ -105,8 +104,6 @@ class InterferometerPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the dirty noise map.
         dirty_signal_to_noise_map
             Whether to make a 2D plot (via `imshow`) of the dirty signal-to-noise map.
-        dirty_inverse_noise_map
-            Whether to make a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
 
         if data:
@@ -226,17 +223,6 @@ class InterferometerPlotter(Plotter):
                 ),
             )
 
-        if dirty_inverse_noise_map:
-
-            self.mat_plot_2d.plot_array(
-                array=self.interferometer.dirty_inverse_noise_map,
-                visuals_2d=self.get_visuals_2d_real_space(),
-                auto_labels=AutoLabels(
-                    title="Dirty Inverse Noise Map",
-                    filename="dirty_inverse_noise_map_2d",
-                ),
-            )
-
     def subplot(
         self,
         data: bool = False,
@@ -249,7 +235,6 @@ class InterferometerPlotter(Plotter):
         dirty_image: bool = False,
         dirty_noise_map: bool = False,
         dirty_signal_to_noise_map: bool = False,
-        dirty_inverse_noise_map: bool = False,
         auto_filename: str = "subplot_interferometer",
     ):
         """
@@ -278,8 +263,6 @@ class InterferometerPlotter(Plotter):
             Whether or not to include a 2D plot (via `imshow`) of the dirty noise map.
         dirty_signal_to_noise_map
             Whether or not to include a 2D plot (via `imshow`) of the dirty signal-to-noise map.
-        dirty_inverse_noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
         self._subplot_custom_plot(
             data=data,
@@ -292,7 +275,6 @@ class InterferometerPlotter(Plotter):
             dirty_image=dirty_image,
             dirty_noise_map=dirty_noise_map,
             dirty_signal_to_noise_map=dirty_signal_to_noise_map,
-            dirty_inverse_noise_map=dirty_inverse_noise_map,
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
@@ -316,6 +298,5 @@ class InterferometerPlotter(Plotter):
             dirty_image=True,
             dirty_noise_map=True,
             dirty_signal_to_noise_map=True,
-            dirty_inverse_noise_map=True,
             auto_filename="subplot_dirty_images",
         )

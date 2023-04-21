@@ -44,15 +44,6 @@ class AbstractFitInversion(ABC):
         return signal_to_noise_map
 
     @property
-    def potential_chi_squared_map(self) -> ty.DataLike:
-        """
-        The signal-to-noise_map of the dataset and noise-map which are fitted.
-        """
-        warnings.filterwarnings("ignore")
-        absolute_signal_to_noise_map = np.divide(np.abs(self.data), self.noise_map)
-        return np.square(absolute_signal_to_noise_map)
-
-    @property
     def residual_map(self) -> Structure:
         """
         Returns the residual-map between the masked dataset and model data, where:

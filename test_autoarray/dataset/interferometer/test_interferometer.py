@@ -44,13 +44,6 @@ def test__dirty_properties(
         )
     ).all()
 
-    assert interferometer.dirty_inverse_noise_map.shape_native == (7, 7)
-    assert (
-        interferometer.transformer.image_from(
-            visibilities=interferometer.inverse_noise_map
-        )
-    ).all()
-
 
 def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2d_7x7):
 

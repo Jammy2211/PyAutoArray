@@ -30,29 +30,24 @@ def test__individual_attributes_are_output(
         data=True,
         noise_map=True,
         psf=True,
-        inverse_noise_map=True,
         signal_to_noise_map=True,
     )
 
     assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "psf.png") in plot_patch.paths
-    assert path.join(plot_path, "inverse_noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
 
     plot_patch.paths = []
 
     imaging_plotter.figures_2d(
-        data=True, psf=True, inverse_noise_map=True, absolute_signal_to_noise_map=True
+        data=True, psf=True,
     )
 
     assert path.join(plot_path, "data.png") in plot_patch.paths
     assert not path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "psf.png") in plot_patch.paths
-    assert path.join(plot_path, "inverse_noise_map.png") in plot_patch.paths
     assert not path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
-    assert path.join(plot_path, "absolute_signal_to_noise_map.png") in plot_patch.paths
-    assert not path.join(plot_path, "potential_chi_squared_map.png") in plot_patch.paths
 
 
 def test__subplot_is_output(
@@ -78,7 +73,7 @@ def test__output_as_fits__correct_output_format(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    imaging_plotter.figures_2d(data=True, psf=True, absolute_signal_to_noise_map=True)
+    imaging_plotter.figures_2d(data=True, psf=True)
 
     image_from_plot = aa.util.array_2d.numpy_array_2d_via_fits_from(
         file_path=path.join(plot_path, "data.fits"), hdu=0
