@@ -19,7 +19,7 @@ def make_plot_path_setup():
 def test__individual_attributes_are_output(interferometer_7, plot_path, plot_patch):
 
     interferometer_plotter = aplt.InterferometerPlotter(
-        interferometer=interferometer_7,
+        dataset=interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -67,14 +67,14 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
 def test__subplots_are_output(interferometer_7, plot_path, plot_patch):
 
     interferometer_plotter = aplt.InterferometerPlotter(
-        interferometer=interferometer_7,
+        dataset=interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    interferometer_plotter.subplot_interferometer()
+    interferometer_plotter.subplot_dataset()
 
-    assert path.join(plot_path, "subplot_interferometer.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_dataset.png") in plot_patch.paths
 
     interferometer_plotter.subplot_dirty_images()
 

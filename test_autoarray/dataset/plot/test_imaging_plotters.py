@@ -59,9 +59,9 @@ def test__subplot_is_output(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    imaging_plot.subplot_imaging()
+    imaging_plot.subplot_dataset()
 
-    assert path.join(plot_path, "subplot_imaging.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_dataset.png") in plot_patch.paths
 
 
 def test__output_as_fits__correct_output_format(
