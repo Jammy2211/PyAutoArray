@@ -83,7 +83,7 @@ class Colorbar(AbstractMatWrap):
 
             return [min_value, mid_value, max_value]
 
-    def manual_tick_labels_from(self, units: Units, manual_tick_values: List[float]):
+    def manual_tick_labels_from(self, units: Units, manual_tick_values: List[float], cb_unit=None):
 
         if manual_tick_values is None:
             return None
@@ -95,7 +95,8 @@ class Colorbar(AbstractMatWrap):
         ]
 
         if units.colorbar_label is None:
-            cb_unit = self.cb_unit
+            if cb_unit is None:
+                cb_unit = self.cb_unit
         else:
             cb_unit = units.colorbar_label
 
@@ -106,14 +107,14 @@ class Colorbar(AbstractMatWrap):
 
         return manual_tick_labels
 
-    def set(self, units: Units, ax=None, norm=None):
+    def set(self, units: Units, ax=None, norm=None, cb_unit=None):
         """
         Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
         """
 
         manual_tick_values = self.manual_tick_values_from(norm=norm)
         manual_tick_labels = self.manual_tick_labels_from(
-            manual_tick_values=manual_tick_values, units=units
+            manual_tick_values=manual_tick_values, units=units, cb_unit=cb_unit
         )
 
         if manual_tick_values is None and manual_tick_labels is None:
