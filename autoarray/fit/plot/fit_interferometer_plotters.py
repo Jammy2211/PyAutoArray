@@ -353,7 +353,7 @@ class FitInterferometerPlotterMeta(Plotter):
         dirty_residual_map: bool = False,
         dirty_normalized_residual_map: bool = False,
         dirty_chi_squared_map: bool = False,
-        auto_filename: str = "subplot_fit_interferometer",
+        auto_filename: str = "subplot_fit",
     ):
         """
         Plots the individual attributes of the plotter's `FitInterferometer` object in 1D and 2D on a subplot.
@@ -420,7 +420,7 @@ class FitInterferometerPlotterMeta(Plotter):
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
-    def subplot_fit_interferometer(self):
+    def subplot_fit(self):
         """
         Standard subplot of the attributes of the plotter's `FitInterferometer` object.
         """
@@ -431,7 +431,7 @@ class FitInterferometerPlotterMeta(Plotter):
             residual_map_imag=True,
             normalized_residual_map_imag=True,
             chi_squared_map_imag=True,
-            auto_filename="subplot_fit_interferometer",
+            auto_filename="subplot_fit",
         )
 
     def subplot_fit_dirty_images(self):
@@ -507,8 +507,8 @@ class FitInterferometerPlotter(Plotter):
 
         self.figures_2d = self._fit_interferometer_meta_plotter.figures_2d
         self.subplot = self._fit_interferometer_meta_plotter.subplot
-        self.subplot_fit_interferometer = (
-            self._fit_interferometer_meta_plotter.subplot_fit_interferometer
+        self.subplot_fit = (
+            self._fit_interferometer_meta_plotter.subplot_fit
         )
         self.subplot_fit_dirty_images = (
             self._fit_interferometer_meta_plotter.subplot_fit_dirty_images

@@ -131,9 +131,9 @@ def test__fit_sub_plots(fit_interferometer_7, plot_path, plot_patch):
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_interferometer_plotter.subplot_fit_interferometer()
+    fit_interferometer_plotter.subplot_fit()
 
-    assert path.join(plot_path, "subplot_fit_interferometer.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
 
     fit_interferometer_plotter.subplot_fit_dirty_images()
 
