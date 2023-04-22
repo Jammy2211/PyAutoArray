@@ -923,47 +923,6 @@ class AbstractInversion:
         return regularization_weights_dict
 
     @property
-    def residual_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
-
-        return {
-            mapper: inversion_util.inversion_residual_map_from(
-                reconstruction=self.reconstruction_dict[mapper],
-                data=self.data,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
-            )
-            for mapper in self.cls_list_from(cls=AbstractMapper)
-        }
-
-    @property
-    def normalized_residual_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
-
-        return {
-            mapper: inversion_util.inversion_normalized_residual_map_from(
-                reconstruction=self.reconstruction_dict[mapper],
-                data=self.data,
-                noise_map_1d=self.noise_map.slim,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
-            )
-            for mapper in self.cls_list_from(cls=AbstractMapper)
-        }
-
-    @property
-    def chi_squared_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
-
-        return {
-            mapper: inversion_util.inversion_chi_squared_map_from(
-                reconstruction=self.reconstruction_dict[mapper],
-                data=self.data,
-                noise_map_1d=self.noise_map.slim,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
-            )
-            for mapper in self.cls_list_from(cls=AbstractMapper)
-        }
-
-    @property
     @profile_func
     def _data_vector_mapper(self) -> np.ndarray:
         raise NotImplementedError

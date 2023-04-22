@@ -12,7 +12,7 @@ def make_plot_path_setup():
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "plots",
-        "fit_imaging",
+        "fit_dataset",
     )
 
 

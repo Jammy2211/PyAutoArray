@@ -46,10 +46,10 @@ Colorbar:            # wrapper for `plt.colorbar()`: customize the figure colorb
 ColorbarTickParams:  # wrapper for `cb.ax.tick_params()`: customize the ticks of the figure's colorbar.
   figure:
     labelrotation: 90
-    labelsize: 16
+    labelsize: 14
   subplot:
     labelrotation: 90
-    labelsize: 16
+    labelsize: 14
 Figure:              # wrapper for `plt.figure()`: customize the figure size.
   figure:
     aspect: square

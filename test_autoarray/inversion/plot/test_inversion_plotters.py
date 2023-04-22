@@ -39,18 +39,12 @@ def test__individual_attributes_are_output_for_all_mappers(
         reconstructed_image=True,
         reconstruction=True,
         errors=True,
-        residual_map=True,
-        normalized_residual_map=True,
-        chi_squared_map=True,
         regularization_weights=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
     assert path.join(plot_path, "errors.png") in plot_patch.paths
-    assert path.join(plot_path, "residual_map.png") in plot_patch.paths
-    assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
-    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
     plot_patch.paths = []
@@ -66,18 +60,12 @@ def test__individual_attributes_are_output_for_all_mappers(
         reconstructed_image=True,
         reconstruction=True,
         errors=True,
-        residual_map=True,
-        normalized_residual_map=True,
-        chi_squared_map=True,
         regularization_weights=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
     assert path.join(plot_path, "errors.png") in plot_patch.paths
-    assert path.join(plot_path, "residual_map.png") in plot_patch.paths
-    assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
-    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
     plot_patch.paths = []
@@ -86,15 +74,11 @@ def test__individual_attributes_are_output_for_all_mappers(
         pixelization_index=0,
         reconstructed_image=True,
         errors=True,
-        chi_squared_map=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
     assert path.join(plot_path, "reconstruction.png") not in plot_patch.paths
     assert path.join(plot_path, "errors.png") in plot_patch.paths
-    assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
 
 def test__inversion_subplot_of_mapper__is_output_for_all_inversions(
