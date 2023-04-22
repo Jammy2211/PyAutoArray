@@ -2,6 +2,7 @@ import itertools
 import numpy as np
 from typing import Dict, List, Optional, Tuple
 
+from autoconf import conf
 from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
@@ -362,6 +363,28 @@ class AbstractMapper(LinearObj):
         return mapper_util.mapped_to_source_via_mapping_matrix_from(
             mapping_matrix=self.mapping_matrix, array_slim=array.binned.slim
         )
+
+    def extent_from(self, values : np.ndarray = None, zoom_to_brightest: bool = True) -> Tuple[float, float, float, float]:
+
+        if zoom_to_brightest and values is not None:
+
+            zoom_percent = conf.instance["visualize"]["general"]["zoom"]["inversion_percent"]
+
+            fractional_value = np.max(values) * zoom_percent
+            fractional_bool = values > fractional_value
+            true_indices = np.argwhere(fractional_bool)
+            true_grid = self.source_plane_mesh_grid[true_indices]
+
+            from autoarray.geometry import geometry_util
+
+            try:
+                return geometry_util.extent_symmetric_from(extent=(
+                np.min(true_grid[:, 0, 1]), np.max(true_grid[:, 0, 1]), np.min(true_grid[:, 0, 0]),
+                np.max(true_grid[:, 0, 0])))
+            except ValueError:
+                return self.source_plane_mesh_grid.geometry.extent
+
+        return self.source_plane_mesh_grid.geometry.extent
 
     def interpolated_array_from(
         self,

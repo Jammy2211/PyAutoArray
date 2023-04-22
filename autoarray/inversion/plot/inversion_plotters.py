@@ -113,6 +113,8 @@ class InversionPlotter(Plotter):
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
         regularization_weights: bool = False,
+        zoom_to_brightest: bool = True,
+        interpolate_to_uniform: bool = False,
     ):
         """
         Plots the individual attributes of a specific `Mapper` of the plotter's `Inversion` object in 2D.
@@ -140,6 +142,12 @@ class InversionPlotter(Plotter):
         residual_map
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane regularization
             weights.
+        zoom_to_brightest
+            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
+            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
+        interpolate_to_uniform
+            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
+            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         """
 
         if not self.inversion.has(cls=AbstractMapper):
@@ -185,8 +193,10 @@ class InversionPlotter(Plotter):
 
             mapper_plotter.plot_source_from(
                 source_pixelization_values=source_pixelization_values,
+                zoom_to_brightest=zoom_to_brightest,
+                interpolate_to_uniform=interpolate_to_uniform,
                 auto_labels=AutoLabels(
-                    title="Source Inversion", filename="reconstruction"
+                    title="Source Reconstruction", filename="reconstruction"
                 ),
             )
 

@@ -740,3 +740,39 @@ def grid_pixel_centres_2d_from(
             )
 
     return grid_pixels_2d
+
+
+def extent_symmetric_from(extent : Tuple[float, float, float, float]) -> Tuple[float, float, float, float]:
+    """
+    Given an input extent of the form (x_min, x_max, y_min, y_max), this function returns an extent which is
+    symmetric about the origin.
+
+    For example, if the sepration from x_min to x_max is 2.0 and the separation from y_min to y_max is 1.0, the
+    returned extent expands the y-axis to also have a separation of 2.0.
+
+    Parameters
+    ----------
+    extent
+        The extent which is to be made symmetric about the origin.
+
+    Returns
+    -------
+    The new extent which is symmetric about the origin.
+    """
+
+    y_min = extent[2]
+    y_max = extent[3]
+    x_min = extent[0]
+    x_max = extent[1]
+
+    y_sep = y_max - y_min
+    x_sep = x_max - x_min
+
+    if y_sep > x_sep:
+        x_min -= (y_sep - x_sep) / 2
+        x_max += (y_sep - x_sep) / 2
+    elif x_sep > y_sep:
+        y_min -= (x_sep - y_sep) / 2
+        y_max += (x_sep - y_sep) / 2
+
+    return (x_min, x_max, y_min, y_max)

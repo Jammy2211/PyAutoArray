@@ -432,8 +432,9 @@ class MatPlot2D(AbstractMatPlot):
         mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp],
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
-        interpolate_to_uniform: bool = True,
-        source_pixelization_values=None,
+        interpolate_to_uniform: bool = False,
+        source_pixelization_values : np.ndarray = None,
+        zoom_to_brightest : bool = True,
     ):
 
         if isinstance(mapper, MapperRectangularNoInterp):
@@ -442,8 +443,8 @@ class MatPlot2D(AbstractMatPlot):
                 mapper=mapper,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
-                interpolate_to_uniform=interpolate_to_uniform,
                 source_pixelization_values=source_pixelization_values,
+                zoom_to_brightest=zoom_to_brightest,
             )
 
         elif isinstance(mapper, MapperDelaunay):
@@ -453,6 +454,7 @@ class MatPlot2D(AbstractMatPlot):
                 auto_labels=auto_labels,
                 interpolate_to_uniform=interpolate_to_uniform,
                 source_pixelization_values=source_pixelization_values,
+                zoom_to_brightest=zoom_to_brightest,
             )
         else:
 
@@ -462,6 +464,7 @@ class MatPlot2D(AbstractMatPlot):
                 auto_labels=auto_labels,
                 interpolate_to_uniform=interpolate_to_uniform,
                 source_pixelization_values=source_pixelization_values,
+                zoom_to_brightest=zoom_to_brightest,
             )
 
     def _plot_rectangular_mapper(
@@ -469,8 +472,8 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperRectangularNoInterp,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
-        interpolate_to_uniform: bool = True,
-        source_pixelization_values=None,
+        source_pixelization_values : np.ndarray = None,
+        zoom_to_brightest: bool = True,
     ):
 
         if source_pixelization_values is not None:
@@ -491,11 +494,8 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         extent = self.axis.config_dict.get("extent")
-        extent = (
-            extent
-            if extent is not None
-            else mapper.source_plane_mesh_grid.geometry.extent
-        )
+        if extent is None:
+            extent = mapper.extent_from(values=source_pixelization_values, zoom_to_brightest=zoom_to_brightest)
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -550,16 +550,14 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperDelaunay,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
-        interpolate_to_uniform: bool = True,
-        source_pixelization_values=None,
+        interpolate_to_uniform: bool = False,
+        source_pixelization_values : np.ndarray = None,
+        zoom_to_brightest: bool = True,
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = (
-            extent
-            if extent is not None
-            else mapper.source_plane_mesh_grid.geometry.extent
-        )
+        if extent is None:
+            extent = mapper.extent_from(values=source_pixelization_values, zoom_to_brightest=zoom_to_brightest)
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 
@@ -612,16 +610,15 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperVoronoiNoInterp,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
-        interpolate_to_uniform: bool = True,
-        source_pixelization_values=None,
+        interpolate_to_uniform: bool = False,
+        source_pixelization_values : np.ndarray = None,
+        zoom_to_brightest: bool = True,
     ):
 
         extent = self.axis.config_dict.get("extent")
-        extent = (
-            extent
-            if extent is not None
-            else mapper.source_plane_mesh_grid.geometry.extent
-        )
+
+        if extent is None:
+            extent = mapper.extent_from(values=source_pixelization_values, zoom_to_brightest=zoom_to_brightest)
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
 

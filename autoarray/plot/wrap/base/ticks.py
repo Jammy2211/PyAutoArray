@@ -209,8 +209,6 @@ class YTicks(AbstractTicks):
                 units=units,
             )
 
-        print(labels)
-
         suffix = self.suffix_from(units=units, yunit=yunit)
         labels = self.labels_with_suffix_from(labels=labels, suffix=suffix)
 

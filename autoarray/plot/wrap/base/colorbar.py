@@ -124,6 +124,13 @@ class Colorbar(AbstractMatWrap):
                 labels=manual_tick_labels, va=self.manual_alignment or "center"
             )
 
+        # if manual_tick_labels is None:
+        #     manual_tick_labels = ["{:.1f}".format(ytick) for ytick in cb.ax.get_yticks()]
+        #
+        # cb.ax.set_yticklabels(
+        #     labels=manual_tick_labels, va=self.manual_alignment or "center"
+        # )
+
         return cb
 
     def set_with_color_values(
@@ -168,5 +175,12 @@ class Colorbar(AbstractMatWrap):
             cb.ax.set_yticklabels(
                 labels=manual_tick_labels, va=self.manual_alignment or "center"
             )
+
+        # if manual_tick_labels is None:
+        #     manual_tick_labels = ["{:.1f}".format(ytick) for ytick in cb.ax.get_yticks()]
+        #
+        # cb.ax.set_yticklabels(
+        #     labels=manual_tick_labels, va=self.manual_alignment or "center"
+        # )
 
         return cb
