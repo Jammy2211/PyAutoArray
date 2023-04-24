@@ -12,7 +12,6 @@ def make_plot_path_setup():
 
 
 def test__via_mask_from(mask_2d_7x7):
-
     visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vectors=2)
     include_2d = aplt.Include2D(origin=True, mask=True, border=True)
 
@@ -38,7 +37,6 @@ def test__via_mask_from(mask_2d_7x7):
 
 
 def test__via_grid_from(grid_2d_7x7):
-
     visuals_2d = aplt.Visuals2D()
     include_2d = aplt.Include2D(origin=True)
 
@@ -58,7 +56,6 @@ def test__via_grid_from(grid_2d_7x7):
 
 
 def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
-
     visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0))
     include_2d = aplt.Include2D(
         origin=True, mask=True, border=True, mapper_image_plane_mesh_grid=True
@@ -96,7 +93,6 @@ def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
 
 
 def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
-
     visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0))
     include_2d = aplt.Include2D(
         origin=True,
@@ -143,7 +139,6 @@ def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
 
 
 def test__via_fit_imaging_from(fit_imaging_7x7):
-
     visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vectors=2)
     include_2d = aplt.Include2D(origin=True, mask=True, border=True)
 

@@ -4,7 +4,6 @@ from autoarray.util.nn import nn_py
 
 
 def test__returning_weights_correct():
-
     mesh_grid = aa.Grid2D.no_mask(
         values=[
             [1.0, 1.0],
@@ -28,7 +27,6 @@ def test__returning_weights_correct():
     max_nneighbours = int(30)
 
     try:
-
         weights, neighbour_indexes = nn_py.natural_interpolation_weights(
             mesh_grid[:, 1],
             mesh_grid[:, 0],
@@ -57,12 +55,10 @@ def test__returning_weights_correct():
         assert (weights == weights_answer).all()
 
     except AttributeError:
-
         pass
 
 
 def test__nn_interpolation_correct():
-
     mesh_grid = aa.Grid2D.no_mask(
         values=[
             [1.0, 1.0],
@@ -88,7 +84,6 @@ def test__nn_interpolation_correct():
     )
 
     try:
-
         interpolated_values = nn_py.natural_interpolation(
             mesh_grid[:, 1],
             mesh_grid[:, 0],
@@ -102,5 +97,4 @@ def test__nn_interpolation_correct():
         assert (interpolated_values == answer).all()
 
     except AttributeError:
-
         pass

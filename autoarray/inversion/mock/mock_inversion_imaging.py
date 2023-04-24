@@ -20,7 +20,6 @@ class MockInversionImaging(InversionImagingMapping):
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-
         super().__init__(
             data=data,
             noise_map=noise_map,
@@ -61,7 +60,6 @@ class MockInversionImaging(InversionImagingMapping):
 
 class MockWTildeImaging:
     def check_noise_map(self, noise_map):
-
         pass
 
 
@@ -77,7 +75,6 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-
         super().__init__(
             data=data,
             noise_map=noise_map,

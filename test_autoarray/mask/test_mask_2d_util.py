@@ -6,7 +6,6 @@ import pytest
 
 
 def test__total_pixels_2d_from():
-
     mask_2d = np.array(
         [[True, False, True], [False, False, False], [True, False, True]]
     )
@@ -15,7 +14,6 @@ def test__total_pixels_2d_from():
 
 
 def test__total_sub_pixels_2d_from():
-
     mask_2d = np.array(
         [[True, False, True], [False, False, False], [True, False, True]]
     )
@@ -24,7 +22,6 @@ def test__total_sub_pixels_2d_from():
 
 
 def test__total_edge_pixels_from_mask():
-
     mask_2d = np.array(
         [
             [True, True, True, True, True],
@@ -39,7 +36,6 @@ def test__total_edge_pixels_from_mask():
 
 
 def test__total_sparse_pixels_2d_from():
-
     mask_2d = np.array(
         [[False, False, False], [False, False, False], [False, False, False]]
     )
@@ -103,7 +99,6 @@ def test__total_sparse_pixels_2d_from():
 
 
 def test__mask_2d_circular_from():
-
     mask = util.mask_2d.mask_2d_circular_from(
         shape_native=(3, 3), pixel_scales=(1.0, 1.0), radius=0.5
     )
@@ -157,7 +152,6 @@ def test__mask_2d_circular_from():
 
 
 def test__mask_2d_circular_from__input_centre():
-
     mask = util.mask_2d.mask_2d_circular_from(
         shape_native=(3, 3), pixel_scales=(3.0, 3.0), radius=0.5, centre=(-3, 0)
     )
@@ -270,7 +264,6 @@ def test__mask_2d_circular_annular_from():
 
 
 def test__mask_2d_circular_annular_from__input_centre():
-
     mask = util.mask_2d.mask_2d_circular_annular_from(
         shape_native=(3, 3),
         pixel_scales=(3.0, 3.0),
@@ -321,7 +314,6 @@ def test__mask_2d_circular_annular_from__input_centre():
 
 
 def test__mask_2d_circular_anti_annular_from():
-
     mask = util.mask_2d.mask_2d_circular_anti_annular_from(
         shape_native=(5, 5),
         pixel_scales=(1.0, 1.0),
@@ -387,7 +379,6 @@ def test__mask_2d_circular_anti_annular_from():
 
 
 def test__mask_2d_circular_anti_annular_from__include_centre():
-
     mask = util.mask_2d.mask_2d_circular_anti_annular_from(
         shape_native=(7, 7),
         pixel_scales=(3.0, 3.0),
@@ -414,7 +405,6 @@ def test__mask_2d_circular_anti_annular_from__include_centre():
 
 
 def test__mask_2d_elliptical_from():
-
     mask = util.mask_2d.mask_2d_elliptical_from(
         shape_native=(3, 3),
         pixel_scales=(1.0, 1.0),
@@ -515,7 +505,6 @@ def test__mask_2d_elliptical_from():
 
 
 def test__mask_2d_elliptical_from__include_centre():
-
     mask = util.mask_2d.mask_2d_elliptical_from(
         shape_native=(3, 3),
         pixel_scales=(3.0, 3.0),
@@ -557,7 +546,6 @@ def test__mask_2d_elliptical_from__include_centre():
 
 
 def test__mask_2d_elliptical_annular_from():
-
     mask = util.mask_2d.mask_2d_elliptical_annular_from(
         shape_native=(3, 3),
         pixel_scales=(1.0, 1.0),
@@ -735,7 +723,6 @@ def test__mask_2d_elliptical_annular_from():
 
 
 def test__mask_2d_elliptical_annular_from__include_centre():
-
     mask = util.mask_2d.mask_2d_elliptical_annular_from(
         shape_native=(7, 5),
         pixel_scales=(1.0, 1.0),
@@ -819,7 +806,6 @@ def test__mask_2d_elliptical_annular_from__include_centre():
 
 
 def test__mask_2d_via_pixel_coordinates_from():
-
     mask = util.mask_2d.mask_2d_via_pixel_coordinates_from(
         shape_native=(2, 3), pixel_coordinates=[[0, 1], [1, 1], [1, 2]]
     )
@@ -1019,7 +1005,6 @@ def test__blurring_mask_2d_from__mask_extends_beyond_edge_so_raises_mask_excepti
 
 
 def test__mask_2d_via_shape_native_and_native_for_slim():
-
     slim_to_native = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
     shape = (2, 2)
 
@@ -1058,7 +1043,6 @@ def test__mask_2d_via_shape_native_and_native_for_slim():
 
 
 def test__mask_1d_indexes_from():
-
     mask = np.array(
         [
             [True, True, True, True, True, True, True],
@@ -1178,7 +1162,6 @@ def test__edge_1d_indexes_from():
 
 
 def test__border_slim_indexes_from():
-
     mask = np.array(
         [
             [True, True, True, True, True, True, True],
@@ -1310,7 +1293,6 @@ def test__border_slim_indexes_from():
 
 
 def test__sub_border_pixel_slim_indexes_from():
-
     mask = np.array(
         [
             [True, True, True, True, True, True, True],
@@ -1583,7 +1565,6 @@ def test__slim_index_for_sub_slim_index_via_mask_2d_from():
 
 
 def test__sub_slim_indexes_for_slim_index_via_mask_2d_from():
-
     mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
     sub_mask_1d_indexes_for_mask_1d_index = (
@@ -1618,7 +1599,6 @@ def test__sub_slim_indexes_for_slim_index_via_mask_2d_from():
 
 
 def test__sub_slim_index_for_sub_native_index_from():
-
     mask = np.full(fill_value=False, shape=(3, 3))
 
     sub_mask_1d_index_for_sub_mask_index = (
@@ -1698,7 +1678,6 @@ def test__sub_slim_index_for_sub_native_index_from():
 
 
 def test__native_index_for_slim_index_2d_from():
-
     mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
     sub_mask_index_for_sub_mask_1d_index = (
@@ -1790,7 +1769,6 @@ def test__native_index_for_slim_index_2d_from():
 
 
 def test__rescaled_mask_2d_from():
-
     mask = np.array(
         [
             [True, True, True, True, True],
@@ -1818,7 +1796,6 @@ def test__rescaled_mask_2d_from():
 
 
 def test__buffed_mask_2d_from():
-
     mask = np.array(
         [
             [True, True, True, True, True],
@@ -1952,7 +1929,6 @@ def test__buffed_mask_2d_from():
 
 
 def test__mask_2d_neighbors_from():
-
     mask = np.array(
         [
             [True, True, True, True],
@@ -1994,7 +1970,6 @@ def test__mask_2d_neighbors_from():
 
 
 def test__mask_2d_neighbors_from__pixel_with_no_adjacent_neighbor__gives_minus_1():
-
     mask = np.array(
         [
             [True, True, True, True],

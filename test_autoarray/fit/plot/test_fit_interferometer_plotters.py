@@ -12,12 +12,11 @@ def make_plot_path_setup():
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "plots",
-        "fit_interferometer",
+        "fit_dataset",
     )
 
 
 def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch):
-
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
@@ -124,16 +123,15 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
 
 def test__fit_sub_plots(fit_interferometer_7, plot_path, plot_patch):
-
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_interferometer_plotter.subplot_fit_interferometer()
+    fit_interferometer_plotter.subplot_fit()
 
-    assert path.join(plot_path, "subplot_fit_interferometer.png") in plot_patch.paths
+    assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
 
     fit_interferometer_plotter.subplot_fit_dirty_images()
 

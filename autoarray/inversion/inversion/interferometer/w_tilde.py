@@ -125,7 +125,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         """
 
         if self.settings.use_w_tilde_numpy:
-
             return inversion_util.curvature_matrix_via_w_tilde_from(
                 w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix
             )
@@ -135,7 +134,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
         if not self.settings.use_source_loop:
-
             return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
                 curvature_preload=self.w_tilde.curvature_preload,
                 pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
@@ -193,7 +191,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         image_dict = self.mapped_reconstructed_image_dict
 
         for linear_obj in self.linear_obj_list:
-
             visibilities = self.transformer.visibilities_from(
                 image=image_dict[linear_obj]
             )

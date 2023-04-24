@@ -3,7 +3,6 @@ import autoarray.plot as aplt
 
 
 def test__all_class_load_and_inherit_correctly(grid_2d_irregular_7x7_list):
-
     origin_scatter = aplt.OriginScatter()
     origin_scatter.scatter_grid(
         grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)

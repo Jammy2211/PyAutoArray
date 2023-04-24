@@ -103,7 +103,6 @@ class InversionInterferometerMappingPyLops(AbstractInversionInterferometer):
     @cached_property
     @profile_func
     def preconditioner_matrix(self):
-
         curvature_matrix_approx = np.multiply(
             np.sum(self.noise_map.weight_list_ordered_1d),
             self.linear_obj_list[0].mapping_matrix.T

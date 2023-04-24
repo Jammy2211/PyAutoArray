@@ -5,7 +5,6 @@ import autoarray as aa
 
 
 def test__visibilities_and_model_are_identical__no_masking__check_values_are_correct():
-
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -51,7 +50,6 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
 
 
 def test__visibilities_and_model_are_different__no_masking__check_values_are_correct():
-
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -97,7 +95,6 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
 
 
 def test__visibilities_and_model_are_identical__inversion_included__changes_certain_properties():
-
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -146,7 +143,6 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
 
 
 def test__dirty_quantities(transformer_7x7_7, interferometer_7, fit_interferometer_7):
-
     fit_interferometer_7.dataset.transformer = transformer_7x7_7
 
     dirty_image = transformer_7x7_7.image_from(

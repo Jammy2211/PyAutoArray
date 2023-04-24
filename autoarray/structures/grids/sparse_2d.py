@@ -53,7 +53,6 @@ class Grid2DSparse(Structure):
         return obj
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 

@@ -4,7 +4,6 @@ import autoarray as aa
 
 
 def test__set_w_tilde():
-
     # fit inversion is None, so no need to bother with w_tilde.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
@@ -82,7 +81,6 @@ def test__set_w_tilde():
 
 
 def test__set_relocated_grid():
-
     # Inversion is None so there is no mapper, thus preload mapper to None.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
@@ -129,7 +127,6 @@ def test__set_relocated_grid():
 
 
 def test__set_mapper_list():
-
     # Inversion is None so there is no mapper, thus preload mapper to None.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
@@ -200,7 +197,6 @@ def test__set_mapper_list():
 
 
 def test__set_operated_mapping_matrix_with_preloads():
-
     # Inversion is None thus preload it to None.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
@@ -261,7 +257,6 @@ def test__set_operated_mapping_matrix_with_preloads():
 
 
 def test__set_linear_func_operated_mapping_matrix_dict():
-
     # Inversion is None thus preload it to None.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
@@ -324,7 +319,6 @@ def test__set_linear_func_operated_mapping_matrix_dict():
 
 
 def test__set_curvature_matrix():
-
     # Inversion is None thus preload curvature_matrix to None.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
@@ -392,7 +386,6 @@ def test__set_curvature_matrix():
 
 
 def test__set_curvature_matrix__curvature_matrix_mapper_diag():
-
     # Inversion is None thus preload curvature_matrix to None.
 
     fit_0 = aa.m.MockFitImaging(inversion=None)
@@ -466,7 +459,6 @@ def test__set_curvature_matrix__curvature_matrix_mapper_diag():
 
 
 def test__set_regularization_matrix_and_term():
-
     regularization = aa.m.MockRegularization(regularization_matrix=np.eye(2))
 
     # Inversion is None thus preload log_det_regularization_matrix_term to None.

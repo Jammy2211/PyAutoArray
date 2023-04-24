@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 class Mask(AbstractNDArray, ABC):
-
     pixel_scales = None
 
     # noinspection PyUnusedLocal
@@ -56,7 +55,6 @@ class Mask(AbstractNDArray, ABC):
         return obj
 
     def __array_finalize__(self, obj):
-
         if isinstance(obj, Mask):
             self.sub_size = obj.sub_size
             self.pixel_scales = obj.pixel_scales

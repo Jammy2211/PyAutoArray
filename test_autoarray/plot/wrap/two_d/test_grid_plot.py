@@ -6,7 +6,6 @@ import numpy as np
 
 
 def test___from_config_or_via_manual_input():
-
     grid_plot = aplt.GridPlot()
 
     assert grid_plot.config_dict["linewidth"] == 3
@@ -31,7 +30,6 @@ def test___from_config_or_via_manual_input():
 
 
 def test__plot_rectangular_grid_lines__draws_for_valid_extent_and_shape():
-
     line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
     line.plot_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2))
@@ -41,7 +39,6 @@ def test__plot_rectangular_grid_lines__draws_for_valid_extent_and_shape():
 
 
 def test__plot_grid_list():
-
     line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
     line.plot_grid_list(grid_list=[aa.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)])])
@@ -54,7 +51,6 @@ def test__plot_grid_list():
 
 
 def test__errorbar_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array():
-
     errorbar = aplt.GridErrorbar(marker="x", c="k")
 
     cmap = plt.get_cmap("jet")

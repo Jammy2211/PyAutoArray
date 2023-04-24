@@ -4,7 +4,6 @@ import pytest
 
 
 def test__data_vector_via_transformed_mapping_matrix_from():
-
     mapping_matrix = np.array(
         [
             [1.0, 1.0, 0.0],

@@ -5,7 +5,6 @@ import autoarray as aa
 
 
 def test__rectangular_mapper():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True],
@@ -84,7 +83,6 @@ def test__rectangular_mapper():
 
 
 def test__delaunay_mapper():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -159,7 +157,6 @@ def test__delaunay_mapper():
 
 
 def test__voronoi_mapper():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],

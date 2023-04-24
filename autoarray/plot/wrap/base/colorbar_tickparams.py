@@ -11,5 +11,4 @@ class ColorbarTickParams(AbstractMatWrap):
     """
 
     def set(self, cb):
-
         cb.ax.tick_params(**self.config_dict)

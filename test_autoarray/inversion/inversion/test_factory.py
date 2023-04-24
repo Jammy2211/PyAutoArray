@@ -6,7 +6,6 @@ import autoarray as aa
 
 
 def test__inversion_imaging__via_linear_obj_func_list(masked_imaging_7x7_no_blur):
-
     mask = masked_imaging_7x7_no_blur.mask
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -63,7 +62,6 @@ def test__inversion_imaging__via_mapper(
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
 ):
-
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
@@ -141,7 +139,6 @@ def test__inversion_imaging__via_regularizations(
     regularization_adaptive_brightness,
     regularization_adaptive_brightness_split,
 ):
-
     mapper = copy.copy(delaunay_mapper_9_3x3)
     mapper.regularization = regularization_constant
 
@@ -203,7 +200,6 @@ def test__inversion_imaging__via_regularizations(
     # Have to do this because NN library is optional.
 
     try:
-
         mapper = copy.copy(voronoi_mapper_9_3x3)
         mapper.regularization = regularization_constant_split
 
@@ -259,7 +255,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
 ):
-
     mask = masked_imaging_7x7_no_blur.mask
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -297,7 +292,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
     masked_imaging_7x7_no_blur,
     voronoi_mapper_9_3x3,
 ):
-
     mask = masked_imaging_7x7_no_blur.mask
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -345,7 +339,6 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
 def test__inversion_imaging__compare_mapping_and_w_tilde_values(
     masked_imaging_7x7, voronoi_mapper_9_3x3
 ):
-
     inversion_w_tilde = aa.Inversion(
         dataset=masked_imaging_7x7,
         linear_obj_list=[voronoi_mapper_9_3x3],
@@ -379,7 +372,6 @@ def test__inversion_imaging__linear_obj_func_and_non_func_give_same_terms(
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
 ):
-
     masked_imaging_7x7_no_blur = copy.copy(masked_imaging_7x7_no_blur)
     masked_imaging_7x7_no_blur.data[4] = 2.0
 
@@ -426,7 +418,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde(
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
 ):
-
     masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
     masked_imaging_7x7.data[4] = 2.0
     masked_imaging_7x7.noise_map[3] = 4.0
@@ -515,7 +506,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_data_
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
 ):
-
     masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
     masked_imaging_7x7.data[4] = 2.0
     masked_imaging_7x7.noise_map[3] = 4.0
@@ -587,7 +577,6 @@ def test__inversion_imaging__linear_obj_func_with_w_tilde__include_preload_mappe
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
 ):
-
     masked_imaging_7x7 = copy.copy(masked_imaging_7x7)
     masked_imaging_7x7.data[4] = 2.0
     masked_imaging_7x7.noise_map[3] = 4.0
@@ -660,7 +649,6 @@ def test__inversion_interferometer__via_mapper(
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
 ):
-
     inversion = aa.Inversion(
         dataset=interferometer_7_no_fft,
         linear_obj_list=[rectangular_mapper_7x7_3x3],
@@ -715,7 +703,6 @@ def test__inversion_matrices__x2_mappers(
     voronoi_mapper_9_3x3,
     regularization_constant,
 ):
-
     inversion = aa.Inversion(
         dataset=masked_imaging_7x7_no_blur,
         linear_obj_list=[rectangular_mapper_7x7_3x3, voronoi_mapper_9_3x3],
@@ -783,7 +770,6 @@ def test__inversion_matrices__x2_mappers(
 
 
 def test__inversion_imaging__positive_only_solver(masked_imaging_7x7_no_blur):
-
     mask = masked_imaging_7x7_no_blur.mask
 
     grid = aa.Grid2D.from_mask(mask=mask)

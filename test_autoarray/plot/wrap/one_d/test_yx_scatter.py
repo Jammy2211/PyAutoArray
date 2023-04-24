@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test___from_config_or_via_manual_input():
-
     line_plot = aplt.YXScatter()
 
     assert line_plot.config_dict["marker"] == "."
@@ -27,7 +26,6 @@ def test___from_config_or_via_manual_input():
 
 
 def test__scatter_y_vs_x__works_for_reasonable_values():
-
     yx_scatter = aplt.YXScatter(linewidth=2, linestyle="-", c="k")
 
     yx_scatter.scatter_yx(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0])

@@ -231,7 +231,6 @@ class VectorYX2D(AbstractVectorYX2D):
         return obj
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 
@@ -282,7 +281,6 @@ class VectorYX2D(AbstractVectorYX2D):
         values = grid_2d_util.convert_grid(grid=values)
 
         if len(values.shape) == 2:
-
             if shape_native is None:
                 raise exc.VectorYXException(
                     f"""
@@ -304,7 +302,6 @@ class VectorYX2D(AbstractVectorYX2D):
                 )
 
         else:
-
             shape_native = (
                 int(values.shape[0] / sub_size),
                 int(values.shape[1] / sub_size),

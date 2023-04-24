@@ -4,7 +4,6 @@ import autoarray as aa
 
 
 def test__figure_of_merit__with_inversion(masked_imaging_7x7, model_image_7x7):
-
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper(regularization=aa.m.MockRegularization())],
         data_vector=1,
@@ -39,7 +38,6 @@ def test__figure_of_merit__with_inversion(masked_imaging_7x7, model_image_7x7):
 def test__figure_of_merit__with_noise_covariance_matrix_in_dataset(
     masked_imaging_covariance_7x7, model_image_7x7, masked_imaging_7x7
 ):
-
     fit = aa.m.MockFitImaging(
         dataset=masked_imaging_covariance_7x7,
         use_mask_in_fit=False,

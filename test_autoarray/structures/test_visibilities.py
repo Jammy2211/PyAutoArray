@@ -12,7 +12,6 @@ test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "f
 
 class TestVisibilitiesAPI:
     def test__manual__makes_visibilities_without_other_inputs(self):
-
         visibilities = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
 
         assert type(visibilities) == vis.Visibilities
@@ -40,7 +39,6 @@ class TestVisibilitiesAPI:
         ).all()
 
     def test__manual__makes_visibilities_with_converted_input_as_list(self):
-
         visibilities = aa.Visibilities(visibilities=[[1.0, 2.0], [3.0, 4.0]])
 
         assert type(visibilities) == vis.Visibilities
@@ -60,7 +58,6 @@ class TestVisibilitiesAPI:
         ).all()
 
     def test__full__makes_visibilities_without_other_inputs(self):
-
         visibilities = aa.Visibilities.ones(shape_slim=(2,))
 
         assert type(visibilities) == vis.Visibilities
@@ -72,7 +69,6 @@ class TestVisibilitiesAPI:
         assert (visibilities.slim == np.array([2.0 + 2.0j, 2.0 + 2.0j])).all()
 
     def test__ones_zeros__makes_visibilities_without_other_inputs(self):
-
         visibilities = aa.Visibilities.ones(shape_slim=(2,))
 
         assert type(visibilities) == vis.Visibilities
@@ -84,7 +80,6 @@ class TestVisibilitiesAPI:
         assert (visibilities.slim == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
     def test__from_fits__makes_visibilities_without_other_inputs(self):
-
         visibilities = aa.Visibilities.from_fits(
             file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0
         )
@@ -106,7 +101,6 @@ class TestVisibilitiesAPI:
 
 class TestVisibilities:
     def test__output_to_fits(self):
-
         visibilities = aa.Visibilities.from_fits(
             file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0
         )
@@ -132,7 +126,6 @@ class TestVisibilities:
 
 class TestVisibilitiesNoiseMap:
     def test__visibilities_noise_has_attributes(self):
-
         noise_map = aa.VisibilitiesNoiseMap(visibilities=[[1.0, 2.0], [3.0, 4.0]])
 
         assert type(noise_map) == vis.VisibilitiesNoiseMap

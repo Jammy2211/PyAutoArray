@@ -16,7 +16,7 @@ class Output:
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
-        bbox_inches: Optional[str] = None,
+        bbox_inches: str = "tight",
         **kwargs,
     ):
         """
@@ -77,7 +77,6 @@ class Output:
         return self.format
 
     def output_path_from(self, format):
-
         if format in "show":
             return None
 
@@ -91,7 +90,6 @@ class Output:
         return output_path
 
     def filename_from(self, auto_filename):
-
         filename = auto_filename if self.filename is None else self.filename
 
         if self.prefix is not None:
@@ -119,11 +117,11 @@ class Output:
         filename = self.filename_from(auto_filename=auto_filename)
 
         for format in self.format_list:
-
             output_path = self.output_path_from(format=format)
 
             if not self.bypass:
                 if format == "show":
+                    #    plt.tight_layout()
                     plt.show()
                 elif format == "png":
                     plt.savefig(
@@ -155,7 +153,6 @@ class Output:
         filename = self.filename_from(auto_filename=auto_filename)
 
         for format in self.format_list:
-
             output_path = self.output_path_from(format=format)
 
             if format == "show":

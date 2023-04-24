@@ -14,7 +14,6 @@ def grid_via_grid_class_from(
     relative_accuracy: Optional[float],
     sub_steps: List[int],
 ) -> Optional[Union[Grid1D, Grid2D, Grid2DIterate]]:
-
     if mask.pixel_scales is None:
         return None
 
@@ -25,15 +24,12 @@ def grid_via_grid_class_from(
             grid_class = Grid2D
 
     if grid_class is Grid1D:
-
         return Grid1D.from_mask(mask=mask)
 
     if grid_class is Grid2D:
-
         return Grid2D.from_mask(mask=mask)
 
     elif grid_class is Grid2DIterate:
-
         return Grid2DIterate.from_mask(
             mask=mask,
             fractional_accuracy=fractional_accuracy,
@@ -93,7 +89,6 @@ class AbstractSettingsDataset:
         self.sub_steps = sub_steps
 
     def grid_from(self, mask) -> Union[Grid1D, Grid2D]:
-
         return grid_via_grid_class_from(
             mask=mask,
             grid_class=self.grid_class,
@@ -103,7 +98,6 @@ class AbstractSettingsDataset:
         )
 
     def grid_pixelization_from(self, mask) -> Union[Grid1D, Grid2D]:
-
         return grid_via_grid_class_from(
             mask=mask,
             grid_class=self.grid_pixelization_class,

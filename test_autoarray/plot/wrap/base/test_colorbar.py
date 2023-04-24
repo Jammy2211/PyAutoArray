@@ -5,7 +5,6 @@ import numpy as np
 
 
 def test__loads_values_from_config_if_not_manually_input():
-
     colorbar = aplt.Colorbar()
 
     assert colorbar.config_dict["fraction"] == 3.0
@@ -31,13 +30,12 @@ def test__loads_values_from_config_if_not_manually_input():
 
 
 def test__plot__works_for_reasonable_range_of_values():
-
     figure = aplt.Figure()
 
     fig, ax = figure.open()
     plt.imshow(np.ones((2, 2)))
     cb = aplt.Colorbar(fraction=1.0, pad=2.0)
-    cb.set(ax=ax)
+    cb.set(ax=ax, units=None)
     figure.close()
 
     fig, ax = figure.open()
@@ -48,11 +46,13 @@ def test__plot__works_for_reasonable_range_of_values():
         manual_tick_values=[0.25, 0.5, 0.75],
         manual_tick_labels=[1.0, 2.0, 3.0],
     )
-    cb.set(ax=ax)
+    cb.set(ax=ax, units=None)
     figure.close()
 
     fig, ax = figure.open()
     plt.imshow(np.ones((2, 2)))
     cb = aplt.Colorbar(fraction=0.1, pad=0.5)
-    cb.set_with_color_values(cmap=aplt.Cmap().cmap, color_values=[1.0, 2.0, 3.0], ax=ax)
+    cb.set_with_color_values(
+        cmap=aplt.Cmap().cmap, color_values=[1.0, 2.0, 3.0], ax=ax, units=None
+    )
     figure.close()

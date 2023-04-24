@@ -85,7 +85,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
 
         for i in range(len(mapper_list)):
-
             mapper = mapper_list[i]
             param_range = mapper_param_range_list[i]
 
@@ -101,9 +100,7 @@ class InversionImagingMapping(AbstractInversionImaging):
                 )
             )
 
-            data_vector[
-                param_range[0] : param_range[1],
-            ] = data_vector_mapper
+            data_vector[param_range[0] : param_range[1],] = data_vector_mapper
 
         return data_vector
 
@@ -161,7 +158,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
 
         for i in range(len(mapper_list)):
-
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
@@ -208,7 +204,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         """
 
         if self.preloads.curvature_matrix is not None:
-
             # Need to copy because of how curvature_reg_matirx overwrites memory.
 
             return copy.copy(self.preloads.curvature_matrix)
@@ -255,7 +250,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         operated_mapping_matrix_list = self.operated_mapping_matrix_list
 
         for index, linear_obj in enumerate(self.linear_obj_list):
-
             reconstruction = reconstruction_dict[linear_obj]
 
             mapped_reconstructed_image = (

@@ -8,7 +8,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):
-
     operated_mapping_matrix = np.array(
         [[1.0 + 1j, 1.0 + 1j, 1.0 + 1j], [1.0 + 1j, 1.0 + 1j, 1.0 + 1j]]
     )

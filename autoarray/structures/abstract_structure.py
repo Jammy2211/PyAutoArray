@@ -18,7 +18,6 @@ from autoarray import exc
 
 class Structure(AbstractNDArray, ABC):
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 
@@ -71,9 +70,7 @@ class Structure(AbstractNDArray, ABC):
 
     @property
     def pixel_area(self):
-
         if len(self.pixel_scales) != 2:
-
             raise exc.GridException("Cannot compute area of structure which is not 2D.")
 
         return self.pixel_scales[0] * self.pixel_scales[1]

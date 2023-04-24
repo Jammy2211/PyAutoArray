@@ -11,7 +11,7 @@ from autoarray.dataset.imaging.imaging import Imaging
 class ImagingPlotterMeta(Plotter):
     def __init__(
         self,
-        imaging: Imaging,
+        dataset: Imaging,
         get_visuals_2d: Callable,
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
@@ -31,7 +31,7 @@ class ImagingPlotterMeta(Plotter):
 
         Parameters
         ----------
-        imaging
+        dataset
             The imaging dataset the plotter plots.
         get_visuals_2d
             A function which extracts from the `Imaging` the 2D visuals which are plotted on figures.
@@ -47,18 +47,19 @@ class ImagingPlotterMeta(Plotter):
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
-        self.imaging = imaging
+        self.dataset = dataset
         self.get_visuals_2d = get_visuals_2d
+
+    @property
+    def imaging(self):
+        return self.dataset
 
     def figures_2d(
         self,
         data: bool = False,
         noise_map: bool = False,
         psf: bool = False,
-        inverse_noise_map: bool = False,
         signal_to_noise_map: bool = False,
-        absolute_signal_to_noise_map: bool = False,
-        potential_chi_squared_map: bool = False,
     ):
         """
         Plots the individual attributes of the plotter's `Imaging` object in 2D.
@@ -74,72 +75,37 @@ class ImagingPlotterMeta(Plotter):
             Whether to make a 2D plot (via `imshow`) of the noise map.
         psf
             Whether to make a 2D plot (via `imshow`) of the psf.
-        inverse_noise_map
-            Whether to make a 2D plot (via `imshow`) of the inverse noise map.
         signal_to_noise_map
             Whether to make a 2D plot (via `imshow`) of the signal-to-noise map.
-        absolute_signal_to_noise_map
-            Whether to make a 2D plot (via `imshow`) of the absolute signal to noise map.
-        potential_chi_squared_map
-            Whether to make a 2D plot (via `imshow`) of the potential chi squared map.
         """
 
         if data:
             self.mat_plot_2d.plot_array(
-                array=self.imaging.image,
+                array=self.dataset.image,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(title="Image", filename="image_2d"),
+                auto_labels=AutoLabels(title="Image", filename="data"),
             )
 
         if noise_map:
             self.mat_plot_2d.plot_array(
-                array=self.imaging.noise_map,
+                array=self.dataset.noise_map,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels("Noise-Map", filename="noise_map"),
             )
 
         if psf:
             self.mat_plot_2d.plot_array(
-                array=self.imaging.psf,
+                array=self.dataset.psf,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(title="Point Spread Function", filename="psf"),
             )
 
-        if inverse_noise_map:
-            self.mat_plot_2d.plot_array(
-                array=self.imaging.inverse_noise_map,
-                visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(
-                    title="Inverse Noise-Map", filename="inverse_noise_map"
-                ),
-            )
-
         if signal_to_noise_map:
             self.mat_plot_2d.plot_array(
-                array=self.imaging.signal_to_noise_map,
+                array=self.dataset.signal_to_noise_map,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
-                ),
-            )
-
-        if absolute_signal_to_noise_map:
-            self.mat_plot_2d.plot_array(
-                array=self.imaging.absolute_signal_to_noise_map,
-                visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(
-                    title="Absolute Signal-To-Noise Map",
-                    filename="absolute_signal_to_noise_map",
-                ),
-            )
-
-        if potential_chi_squared_map:
-            self.mat_plot_2d.plot_array(
-                array=self.imaging.potential_chi_squared_map,
-                visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(
-                    title="Potential Chi-Squared Map",
-                    filename="potential_chi_squared_map",
                 ),
             )
 
@@ -149,10 +115,7 @@ class ImagingPlotterMeta(Plotter):
         noise_map: bool = False,
         psf: bool = False,
         signal_to_noise_map: bool = False,
-        inverse_noise_map: bool = False,
-        absolute_signal_to_noise_map: bool = False,
-        potential_chi_squared_map: bool = False,
-        auto_filename: str = "subplot_imaging",
+        auto_filename: str = "subplot_dataset",
     ):
         """
         Plots the individual attributes of the plotter's `Imaging` object in 2D on a subplot.
@@ -168,14 +131,8 @@ class ImagingPlotterMeta(Plotter):
             Whether or not to include a 2D plot (via `imshow`) of the noise map.
         psf
             Whether or not to include a 2D plot (via `imshow`) of the psf.
-        inverse_noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the inverse noise map.
         signal_to_noise_map
             Whether or not to include a 2D plot (via `imshow`) of the signal-to-noise map.
-        absolute_signal_to_noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the absolute signal to noise map.
-        potential_chi_squared_map
-            Whether or not to include a 2D plot (via `imshow`) of the potential chi squared map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
@@ -184,13 +141,10 @@ class ImagingPlotterMeta(Plotter):
             noise_map=noise_map,
             psf=psf,
             signal_to_noise_map=signal_to_noise_map,
-            inverse_noise_map=inverse_noise_map,
-            absolute_signal_to_noise_map=absolute_signal_to_noise_map,
-            potential_chi_squared_map=potential_chi_squared_map,
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
-    def subplot_imaging(self):
+    def subplot_dataset(self):
         """
         Standard subplot of the attributes of the plotter's `Imaging` object.
         """
@@ -199,8 +153,6 @@ class ImagingPlotterMeta(Plotter):
             noise_map=True,
             psf=True,
             signal_to_noise_map=True,
-            inverse_noise_map=True,
-            potential_chi_squared_map=True,
         )
 
 
@@ -243,7 +195,7 @@ class ImagingPlotter(Plotter):
         self.imaging = imaging
 
         self._imaging_meta_plotter = ImagingPlotterMeta(
-            imaging=self.imaging,
+            dataset=self.imaging,
             get_visuals_2d=self.get_visuals_2d,
             mat_plot_2d=self.mat_plot_2d,
             include_2d=self.include_2d,
@@ -252,7 +204,7 @@ class ImagingPlotter(Plotter):
 
         self.figures_2d = self._imaging_meta_plotter.figures_2d
         self.subplot = self._imaging_meta_plotter.subplot
-        self.subplot_imaging = self._imaging_meta_plotter.subplot_imaging
+        self.subplot_dataset = self._imaging_meta_plotter.subplot_dataset
 
     def get_visuals_2d(self):
         return self.get_2d.via_mask_from(mask=self.imaging.mask)

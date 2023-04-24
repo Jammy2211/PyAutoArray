@@ -4,7 +4,6 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 class Grid2DTransformed(Grid2D):
-
     pass
 
 

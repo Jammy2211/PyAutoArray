@@ -45,9 +45,11 @@ Colorbar:            # wrapper for `plt.colorbar()`: customize the figure colorb
     pad: 0.01
 ColorbarTickParams:  # wrapper for `cb.ax.tick_params()`: customize the ticks of the figure's colorbar.
   figure:
-    labelsize: 10
+    labelrotation: 90
+    labelsize: 14
   subplot:
-    labelsize: 10
+    labelrotation: 90
+    labelsize: 14
 Figure:              # wrapper for `plt.figure()`: customize the figure size.
   figure:
     aspect: square
@@ -86,24 +88,42 @@ Title:               # wrapper for `plt.title()`: customize the figure title.
   figure:
     fontsize: 16
   subplot:
-    fontsize: 10
-XLabel:              # wrapper for `plt.xlabel()`: customize the figure xlabel.
+    fontsize: 16
+XLabel:              # wrapper for `plt.xlabel()`: customize the figure ylabel.
   figure:
     fontsize: 16
+    xlabel: ""
   subplot:
     fontsize: 10
+    xlabel: ""
 XTicks:              # wrapper for `plt.xticks()`: customize the figure xticks.
+  manual:
+    extent_factor_1d: 1.0  # For 1D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.    
+    extent_factor_2d: 0.75 # For 2D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.
+    number_of_ticks_1d: 8  # For 1D plots, the number of ticks that appear on the x-axis.
+    number_of_ticks_2d: 3  # For 1D plots, the number of ticks that appear on the x-axis.
   figure:
     fontsize: 16
   subplot:
-    fontsize: 10
+    fontsize: 16
 YLabel:              # wrapper for `plt.ylabel()`: customize the figure ylabel.
   figure:
     fontsize: 16
+    ylabel: ""
   subplot:
     fontsize: 10
-YTicks:              # wrapper for `plt.xticks()`: customize the figure yticks.
+    ylabel: ""
+YTicks:              # wrapper for `plt.yticks()`: customize the figure yticks.
+  manual:
+    extent_factor_1d: 1.0  # For 1D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.    
+    extent_factor_2d: 0.75 # For 2D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.
+    number_of_ticks_1d: 8  # For 1D plots, the number of ticks that appear on the y-axis.
+    number_of_ticks_2d: 3  # For 1D plots, the number of ticks that appear on the y-axis.
   figure:
     fontsize: 16
+    rotation: vertical
+    va: center
   subplot:
-    fontsize: 10
+    fontsize: 16
+    rotation: vertical
+    va: center

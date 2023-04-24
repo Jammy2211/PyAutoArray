@@ -5,7 +5,6 @@ import autoarray as aa
 
 
 def test__regularization_matrix_from(delaunay_mapper_9_3x3):
-
     reg = aa.reg.AdaptiveBrightnessSplit(
         inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0
     )

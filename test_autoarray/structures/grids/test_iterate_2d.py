@@ -10,7 +10,6 @@ import autoarray as aa
 
 
 def test__manual_slim():
-
     grid = aa.Grid2DIterate.no_mask(
         values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
         shape_native=(2, 2),
@@ -37,7 +36,6 @@ def test__manual_slim():
 
 
 def test__from_mask():
-
     mask = np.array(
         [
             [True, True, False, False],
@@ -65,7 +63,6 @@ def test__from_mask():
 
 
 def test__uniform():
-
     grid = aa.Grid2DIterate.uniform(
         shape_native=(2, 2),
         pixel_scales=2.0,
@@ -93,7 +90,6 @@ def test__uniform():
 
 
 def test__grid_2d_via_deflection_grid_from():
-
     grid = aa.Grid2DIterate.uniform(
         shape_native=(2, 2),
         pixel_scales=2.0,
@@ -195,7 +191,6 @@ def test__blurring_grid_from():
 
 
 def test__padded_grid_from():
-
     grid = aa.Grid2DIterate.uniform(
         shape_native=(4, 4),
         pixel_scales=3.0,
@@ -236,7 +231,6 @@ def test__padded_grid_from():
 
 
 def test__threshold_mask_via_arrays_from():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
@@ -375,7 +369,6 @@ def test__threshold_mask_via_arrays_from():
 
 
 def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_sub():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -445,7 +438,6 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
 
 
 def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -491,7 +483,6 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
 
 
 def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -518,7 +509,6 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
 
 
 def test__threshold_mask_via_grids_from():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
@@ -657,7 +647,6 @@ def test__threshold_mask_via_grids_from():
 
 
 def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_sub():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -721,7 +710,6 @@ def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_s
 
 
 def test__iterated_grid_from__check_values_computed_to_fractional_accuracy():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -771,7 +759,6 @@ def test__iterated_grid_from__check_values_computed_to_fractional_accuracy():
 
 
 def test__iterated_grid_from__func_returns_all_zeros__iteration_terminated():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],

@@ -12,7 +12,6 @@ def make_plot_path_setup():
 
 
 def test__via_array_1d_from(array_1d_7):
-
     visuals_1d = aplt.Visuals1D(origin=(1.0, 1.0))
     include_1d = aplt.Include1D(origin=True, mask=True)
 

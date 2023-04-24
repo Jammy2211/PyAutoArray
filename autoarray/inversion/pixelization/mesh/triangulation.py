@@ -81,7 +81,6 @@ class Triangulation(AbstractMesh):
         )
 
         try:
-
             source_plane_mesh_grid = self.mesh_grid_from(
                 source_plane_data_grid=source_plane_data_grid,
                 source_plane_mesh_grid=relocated_source_plane_mesh_grid,

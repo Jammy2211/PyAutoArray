@@ -5,7 +5,6 @@ import autoarray as aa
 
 
 def test__from_grid_and_unmasked_2d_grid_shap():
-
     mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -197,7 +196,6 @@ def test__from_grid_and_unmasked_2d_grid_shap__mask_with_offset_centre():
 def test__from_grid_and_unmasked_2d_grid_shape__sets_up_with_correct_shape_and_pixel_scales(
     mask_2d_7x7,
 ):
-
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -237,7 +235,6 @@ def test__from_grid_and_unmasked_2d_grid_shape__sets_up_with_correct_shape_and_p
 
 
 def test__from_grid_and_unmasked_2d_grid_shape__offset_mask__origin_shift_corrects():
-
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -279,7 +276,6 @@ def test__from_grid_and_unmasked_2d_grid_shape__offset_mask__origin_shift_correc
 
 
 def test__from_total_pixels_grid_and_weight_map():
-
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -353,7 +349,6 @@ def test__from_total_pixels_grid_and_weight_map():
 
 
 def test__from_total_pixels_grid_and_weight_map__stochastic_true():
-
     mask = aa.Mask2D(
         mask=np.array(
             [

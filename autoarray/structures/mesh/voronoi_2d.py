@@ -66,7 +66,6 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
         )
 
         if use_nn:
-
             interpolated_array = mesh_util.voronoi_nn_interpolated_array_from(
                 shape_native=shape_native,
                 interpolation_grid_slim=interpolation_grid.slim,
@@ -75,7 +74,6 @@ class Mesh2DVoronoi(Abstract2DMeshTriangulation):
             )
 
         else:
-
             interpolated_array = griddata(
                 points=self.voronoi.points, values=values, xi=interpolation_grid
             )

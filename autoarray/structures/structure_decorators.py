@@ -506,7 +506,7 @@ def transform(func):
 def relocate_to_radial_minimum(func):
     """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
     the evaluation of a function (e.g. numerical integration reaching a singularity at (0.0, 0.0)). If any coordinates
-    are radially within the the radial minimum threshold, their (y,x) coordinates are shifted to that value to ensure
+    are radially within the radial minimum threshold, their (y,x) coordinates are shifted to that value to ensure
     they are evaluated at that coordinate.
 
     The value the (y,x) coordinates are rounded to is set in the 'radial_min.ini' config.
@@ -547,7 +547,6 @@ def relocate_to_radial_minimum(func):
         ][cls.__class__.__name__]
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
-
             grid_radii = cls.radial_grid_from(grid=grid)
 
             grid_radial_scale = np.where(

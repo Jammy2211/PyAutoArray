@@ -47,9 +47,7 @@ class AbstractDataset:
         self.noise_covariance_matrix = noise_covariance_matrix
 
         if noise_map is None:
-
             try:
-
                 noise_map = Array2D.no_mask(
                     values=np.diag(noise_covariance_matrix),
                     shape_native=data.shape_native,
@@ -67,7 +65,6 @@ class AbstractDataset:
                 )
 
             except ValueError as e:
-
                 raise exc.DatasetException(
                     """
                     No noise map or noise_covariance_matrix was passed to the Imaging object.
@@ -77,7 +74,6 @@ class AbstractDataset:
         self.noise_map = noise_map
 
         if conf.instance["general"]["structures"]["use_dataset_grids"]:
-
             mask_grid = mask.mask_new_sub_size_from(
                 mask=mask, sub_size=settings.sub_size
             )
@@ -108,10 +104,6 @@ class AbstractDataset:
         return self.data.mask
 
     @property
-    def inverse_noise_map(self) -> Structure:
-        return 1.0 / self.noise_map
-
-    @property
     def signal_to_noise_map(self) -> Structure:
         """
         The estimated signal-to-noise_maps mappers of the image.
@@ -132,35 +124,6 @@ class AbstractDataset:
         """
         return np.max(self.signal_to_noise_map)
 
-    @property
-    def absolute_signal_to_noise_map(self) -> Structure:
-        """
-        The estimated absolute_signal-to-noise_maps mappers of the image.
-        """
-        return np.divide(np.abs(self.data), self.noise_map)
-
-    @property
-    def absolute_signal_to_noise_max(self) -> float:
-        """
-        The maximum value of absolute signal-to-noise_map in an image pixel in the image's signal-to-noise_maps mappers.
-        """
-        return np.max(self.absolute_signal_to_noise_map)
-
-    @property
-    def potential_chi_squared_map(self) -> Structure:
-        """
-        The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to
-        the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0).
-        """
-        return np.square(self.absolute_signal_to_noise_map)
-
-    @property
-    def potential_chi_squared_max(self) -> float:
-        """
-        The maximum value of the potential chi-squared-map.
-        """
-        return np.max(self.potential_chi_squared_map)
-
     @cached_property
     def noise_covariance_matrix_inv(self) -> np.ndarray:
         """
@@ -170,7 +133,6 @@ class AbstractDataset:
         return np.linalg.inv(self.noise_covariance_matrix)
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
-
         imaging = copy.copy(self)
 
         imaging.data = imaging.data.trimmed_after_convolution_from(

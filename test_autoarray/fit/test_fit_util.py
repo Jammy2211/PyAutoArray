@@ -5,7 +5,6 @@ import pytest
 
 
 def test__residual_map_from():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     model_data = np.array([10.0, 10.0, 10.0, 10.0])
 
@@ -22,7 +21,6 @@ def test__residual_map_from():
 
 
 def test__residual_map_with_mask_from():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     mask = np.array([True, False, False, True])
     model_data = np.array([11.0, 10.0, 9.0, 8.0])
@@ -35,7 +33,6 @@ def test__residual_map_with_mask_from():
 
 
 def test__normalized_residual_map_from():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     noise_map = np.array([2.0, 2.0, 2.0, 2.0])
     model_data = np.array([10.0, 10.0, 10.0, 10.0])
@@ -63,7 +60,6 @@ def test__normalized_residual_map_from():
 
 
 def test__normalized_residual_map_with_mask_from():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     mask = np.array([True, False, False, True])
     noise_map = np.array([2.0, 2.0, 2.0, 2.0])
@@ -81,7 +77,6 @@ def test__normalized_residual_map_with_mask_from():
 
 
 def test__normalized_residual_map_complex_from():
-
     data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
     noise_map = np.array([2.0 + 2.0j, 2.0 + 2.0j])
     model_data = np.array([9.0 + 12.0j, 9.0 + 12.0j])
@@ -96,7 +91,6 @@ def test__normalized_residual_map_complex_from():
 
 
 def test__normalized_residual_map_complex_with_mask_from():
-
     data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
     mask = np.array([False, True])
     noise_map = np.array([2.0 + 2.0j, 2.0 + 0.0j])
@@ -116,7 +110,6 @@ def test__normalized_residual_map_complex_with_mask_from():
 
 
 def test__chi_squared_map_from():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     noise_map = np.array([2.0, 2.0, 2.0, 2.0])
     model_data = np.array([10.0, 10.0, 10.0, 10.0])
@@ -144,7 +137,6 @@ def test__chi_squared_map_from():
 
 
 def test__chi_squared_map_with_mask_from():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     mask = np.array([True, False, False, True])
     noise_map = np.array([2.0, 2.0, 2.0, 2.0])
@@ -174,7 +166,6 @@ def test__chi_squared_map_with_mask_from():
 
 
 def test__chi_squared_map_complex_from():
-
     data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
     noise_map = np.array([2.0 + 2.0j, 2.0 + 2.0j])
     model_data = np.array([9.0 + 12.0j, 9.0 + 12.0j])
@@ -189,7 +180,6 @@ def test__chi_squared_map_complex_from():
 
 
 def test__chi_squared_map_complex_with_mask_from():
-
     data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
     mask = np.array([False, True])
     noise_map = np.array([2.0 + 2.0j, 2.0 + 0.0j])
@@ -207,7 +197,6 @@ def test__chi_squared_map_complex_with_mask_from():
 
 
 def test__chi_squared_with_noise_covariance_from():
-
     resdiual_map = aa.Array2D.no_mask([[1.0, 1.0], [2.0, 2.0]], pixel_scales=1.0)
 
     noise_covariance_matrix_inv = np.array(
@@ -228,7 +217,6 @@ def test__chi_squared_with_noise_covariance_from():
 
 
 def test__chi_squared_with_mask_fast_from():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     mask = np.array([True, False, False, True])
     noise_map = np.array([1.0, 2.0, 3.0, 4.0])
@@ -283,7 +271,6 @@ def test__chi_squared_with_mask_fast_from():
 
 
 def test__log_likelihood_from():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     noise_map = np.array([2.0, 2.0, 2.0, 2.0])
     model_data = np.array([10.0, 10.0, 10.0, 10.0])
@@ -379,7 +366,6 @@ def test__log_likelihood_from():
 
 
 def test__log_likelihood_from__with_mask():
-
     data = np.array([10.0, 10.0, 10.0, 10.0])
     mask = np.array([True, False, False, True])
     noise_map = np.array([1.0, 2.0, 3.0, 4.0])
@@ -454,7 +440,6 @@ def test__log_likelihood_from__with_mask():
 
 
 def test__log_likelihood_from__complex_data():
-
     data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
     noise_map = np.array([2.0 + 1.0j, 2.0 + 1.0j])
     model_data = np.array([9.0 + 12.0j, 9.0 + 12.0j])
@@ -524,7 +509,6 @@ def test__log_likelihood_from__complex_data():
 
 
 def test__log_evidence_from():
-
     likelihood_with_regularization_terms = (
         aa.util.fit.log_likelihood_with_regularization_from(
             chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0

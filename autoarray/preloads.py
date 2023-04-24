@@ -36,7 +36,6 @@ class Preloads:
         traced_sparse_grids_list_of_planes=None,
         sparse_image_plane_grid_list=None,
     ):
-
         self.w_tilde = w_tilde
         self.use_w_tilde = use_w_tilde
 
@@ -88,7 +87,6 @@ class Preloads:
             return
 
         if np.max(abs(fit_0.noise_map - fit_1.noise_map)) < 1e-8:
-
             logger.info("PRELOADS - Computing W-Tilde... May take a moment.")
 
             from autoarray.dataset.imaging.w_tilde import WTildeImaging
@@ -122,7 +120,7 @@ class Preloads:
         This function compares the relocated grids of the mappers of two fit corresponding to two model instances, and
         preloads the grid if the grids of both fits are the same.
 
-        The preload is typically used in hyper searches, where the mass model is fixed and the hyper-parameters are
+        The preload is typically used in adapt searches, where the mass model is fixed and the hyper-parameters are
         varied.
 
         Parameters
@@ -151,7 +149,6 @@ class Preloads:
             mapper_0.source_plane_data_grid.shape[0]
             == mapper_1.source_plane_data_grid.shape[0]
         ):
-
             if (
                 np.max(
                     abs(
@@ -161,7 +158,6 @@ class Preloads:
                 )
                 < 1.0e-8
             ):
-
                 self.relocated_grid = mapper_0.source_plane_data_grid
 
                 logger.info(
@@ -207,9 +203,7 @@ class Preloads:
         inversion_1 = fit_1.inversion
 
         if inversion_0.mapping_matrix.shape[1] == inversion_1.mapping_matrix.shape[1]:
-
             if np.allclose(inversion_0.mapping_matrix, inversion_1.mapping_matrix):
-
                 self.mapper_list = inversion_0.cls_list_from(cls=AbstractMapper)
 
                 logger.info(
@@ -255,7 +249,6 @@ class Preloads:
             inversion_0.operated_mapping_matrix.shape[1]
             == inversion_1.operated_mapping_matrix.shape[1]
         ):
-
             if (
                 np.max(
                     abs(
@@ -265,7 +258,6 @@ class Preloads:
                 )
                 < 1e-8
             ):
-
                 self.operated_mapping_matrix = inversion_0.operated_mapping_matrix
 
                 logger.info(
@@ -312,16 +304,13 @@ class Preloads:
             inversion_0.linear_func_operated_mapping_matrix_dict.values(),
             inversion_1.linear_func_operated_mapping_matrix_dict.values(),
         ):
-
             if (
                 np.max(abs(operated_mapping_matrix_0 - operated_mapping_matrix_1))
                 < 1e-8
             ):
-
                 should_preload = True
 
         if should_preload:
-
             self.linear_func_operated_mapping_matrix_dict = (
                 inversion_0.linear_func_operated_mapping_matrix_dict
             )
@@ -371,12 +360,10 @@ class Preloads:
             return
 
         if inversion_0.curvature_matrix.shape == inversion_1.curvature_matrix.shape:
-
             if (
                 np.max(abs(inversion_0.curvature_matrix - inversion_1.curvature_matrix))
                 < 1e-8
             ):
-
                 self.curvature_matrix = inversion_0.curvature_matrix
 
                 logger.info(
@@ -395,7 +382,6 @@ class Preloads:
                     )
                     < 1e-8
                 ):
-
                     self.mapper_operated_mapping_matrix_dict = (
                         inversion_0.mapper_operated_mapping_matrix_dict
                     )
@@ -447,7 +433,6 @@ class Preloads:
             )
             < 1e-8
         ):
-
             self.regularization_matrix = inversion_0.regularization_matrix
             self.log_det_regularization_matrix_term = (
                 inversion_0.log_det_regularization_matrix_term
@@ -458,7 +443,6 @@ class Preloads:
             )
 
     def check_via_fit(self, fit):
-
         import copy
 
         settings_inversion = copy.deepcopy(fit.settings_inversion)
@@ -473,7 +457,6 @@ class Preloads:
         )
 
         try:
-
             preloads_check_threshold = conf.instance["general"]["test"][
                 "preloads_check_threshold"
             ]
@@ -485,7 +468,6 @@ class Preloads:
                 )
                 > preloads_check_threshold
             ):
-
                 raise exc.PreloadsException(
                     f"""
                     The log likelihood of fits using and not using preloads are not consistent by a value larger than
@@ -504,7 +486,6 @@ class Preloads:
                 )
 
         except exc.InversionException:
-
             data_vector_difference = np.max(
                 np.abs(
                     fit_with_preloads.inversion.data_vector

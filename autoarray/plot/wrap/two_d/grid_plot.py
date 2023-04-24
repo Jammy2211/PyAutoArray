@@ -62,7 +62,6 @@ class GridPlot(AbstractMatWrap2D):
         """
 
         try:
-
             color = self.config_dict["c"]
 
             if isinstance(color, list):

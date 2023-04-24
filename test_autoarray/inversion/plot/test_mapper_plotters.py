@@ -50,7 +50,6 @@ def test__get_2d__via_mapper_for_data_from(rectangular_mapper_7x7_3x3):
 
 
 def test__get_2d__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
-
     include = aplt.Include2D(
         origin=True,
         mapper_source_plane_data_grid=True,
@@ -159,7 +158,6 @@ def test__subplot_image_and_mapper(
     plot_path,
     plot_patch,
 ):
-
     visuals_2d = aplt.Visuals2D(
         indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
     )

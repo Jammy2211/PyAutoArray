@@ -39,7 +39,6 @@ class Cmap(AbstractMatWrap):
 
     @property
     def symmetric(self):
-
         cmap = copy.copy(self)
 
         cmap._symmetric = True
@@ -47,13 +46,11 @@ class Cmap(AbstractMatWrap):
         return cmap
 
     def vmin_from(self, array: np.ndarray):
-
         if self.config_dict["vmin"] is None:
             return np.min(array)
         return self.config_dict["vmin"]
 
     def vmax_from(self, array: np.ndarray):
-
         if self.config_dict["vmax"] is None:
             return np.max(array)
         return self.config_dict["vmax"]
@@ -114,9 +111,7 @@ class Cmap(AbstractMatWrap):
 
     @property
     def cmap(self):
-
         if self.config_dict["cmap"] == "default":
-
             from autoarray.plot.wrap.segmentdata import segmentdata
 
             return LinearSegmentedColormap(name="default", segmentdata=segmentdata)

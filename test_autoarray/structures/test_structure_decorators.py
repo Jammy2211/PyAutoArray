@@ -10,7 +10,6 @@ from autoarray.structures.mock.mock_structure_decorators import (
 
 
 def test__in_grid_1d__out_ndarray_1d():
-
     grid_1d = aa.Grid1D.no_mask(values=[1.0, 2.0, 3.0], pixel_scales=1.0)
 
     grid_like_object = aa.m.MockGrid1DLikeObj()
@@ -44,7 +43,6 @@ def test__in_grid_1d__out_ndarray_1d():
 
 
 def test__in_grid_1d__out_ndarray_2d():
-
     mask_1d = aa.Mask1D(
         mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
     )
@@ -62,7 +60,6 @@ def test__in_grid_1d__out_ndarray_2d():
 
 
 def test__in_grid_1d__out_ndarray_1d_list():
-
     mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1)
 
     grid_1d = aa.Grid1D.from_mask(mask=mask)
@@ -79,7 +76,6 @@ def test__in_grid_1d__out_ndarray_1d_list():
 
 
 def test__in_grid_1d__out_ndarray_2d_list():
-
     mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1)
 
     grid_1d = aa.Grid1D.from_mask(mask=mask)
@@ -100,7 +96,6 @@ def test__in_grid_1d__out_ndarray_2d_list():
 
 
 def test__in_grid_2d__out_ndarray_1d():
-
     grid_2d = aa.Grid2D.uniform(shape_native=(4, 4), pixel_scales=1.0, sub_size=1)
 
     grid_like_object = aa.m.MockGrid1DLikeObj()
@@ -151,7 +146,6 @@ def test__in_grid_2d__out_ndarray_1d():
 
 
 def test__in_grid_2d__out_ndarray_2d():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
@@ -184,7 +178,6 @@ def test__in_grid_2d__out_ndarray_2d():
 
 
 def test__in_grid_2d__out_ndarray_1d_list():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
@@ -230,7 +223,6 @@ def test__in_grid_2d__out_ndarray_1d_list():
 
 
 def test__in_grid_2d__out_ndarray_2d_list():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
@@ -276,7 +268,6 @@ def test__in_grid_2d__out_ndarray_2d_list():
 
 
 def test__in_grid_2d__out_ndarray_yx_2d():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
@@ -309,7 +300,6 @@ def test__in_grid_2d__out_ndarray_yx_2d():
 
 
 def test__in_grid_2d__out_ndarray_yx_2d_list():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True],
@@ -355,7 +345,6 @@ def test__in_grid_2d__out_ndarray_yx_2d_list():
 
 
 def test__in_grid_2d_irregular__out_ndarray_1d():
-
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
     grid_2d_irregular = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
@@ -367,7 +356,6 @@ def test__in_grid_2d_irregular__out_ndarray_1d():
 
 
 def test__in_grid_2d_irregular__out_ndarray_2d():
-
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
     grid_2d_irregular = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
@@ -378,7 +366,6 @@ def test__in_grid_2d_irregular__out_ndarray_2d():
 
 
 def test__in_grid_2d_irregular__out_ndarray_1d_list():
-
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
     grid_2d = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
@@ -390,7 +377,6 @@ def test__in_grid_2d_irregular__out_ndarray_1d_list():
 
 
 def test__in_grid_2d_irregular__out_ndarray_2d_list():
-
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
     grid_2d = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
@@ -402,7 +388,6 @@ def test__in_grid_2d_irregular__out_ndarray_2d_list():
 
 
 def test__in_grid_2d_irregular__out_ndarray_yx_2d():
-
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
     grid_2d = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
@@ -414,7 +399,6 @@ def test__in_grid_2d_irregular__out_ndarray_yx_2d():
 
 
 def test__in_grid_2d_irregular__out_ndarray_yx_2d_list():
-
     grid_like_object = aa.m.MockGrid2DLikeObj()
 
     grid_2d = aa.Grid2DIrregular(values=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
@@ -429,7 +413,6 @@ def test__in_grid_2d_irregular__out_ndarray_yx_2d_list():
 
 
 def test__in_grid_2d_iterate__out_ndarray_1d__values_use_iteration():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -498,7 +481,6 @@ def test__in_grid_2d_iterate__out_ndarray_1d__values_use_iteration():
 
 
 def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -573,7 +555,6 @@ def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
 
 
 def test__in_grid_2d_iterate__out_ndarray_1d_list__values_use_iteration():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -603,7 +584,6 @@ def test__in_grid_2d_iterate__out_ndarray_1d_list__values_use_iteration():
 
 
 def test__in_grid_2d_iterate__out_ndarray_2d_list__values_use_iteration():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -634,7 +614,6 @@ def test__in_grid_2d_iterate__out_ndarray_2d_list__values_use_iteration():
 
 
 def test__in_grid_2d_iterate__out_ndarray_yx_2d__values_use_iteration():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -697,7 +676,6 @@ def test__in_grid_2d_iterate__out_ndarray_yx_2d__values_use_iteration():
 
 
 def test__in_grid_2d_iterate__out_ndarray_yx_2d_list__values_use_iteration():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],

@@ -11,7 +11,6 @@ def radial_grid_from(grid):
 
 
 def ndarray_1d_from(profile, grid):
-
     sersic_constant = (
         (2 * 2.0)
         - (1.0 / 3.0)
@@ -200,7 +199,6 @@ class MockGridLikeIteratorObj:
 
 class MockGrid1DLikeObj:
     def __init__(self, centre=(0.0, 0.0), angle=0.0):
-
         self.centre = centre
         self.angle = angle
 

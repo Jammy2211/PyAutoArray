@@ -109,7 +109,6 @@ class MapperPlotter(Plotter):
         )
 
         if self.visuals_2d.pix_indexes is not None:
-
             indexes = self.mapper.pix_indexes_for_slim_indexes(
                 pix_indexes=self.visuals_2d.pix_indexes
             )
@@ -129,6 +128,8 @@ class MapperPlotter(Plotter):
     def plot_source_from(
         self,
         source_pixelization_values: np.ndarray,
+        zoom_to_brightest: bool = True,
+        interpolate_to_uniform: bool = False,
         auto_labels: AutoLabels = AutoLabels(),
     ):
         """
@@ -138,6 +139,12 @@ class MapperPlotter(Plotter):
         ----------
         source_pixelization_values
             The values of the mapper's source pixels used for coloring the figure.
+        zoom_to_brightest
+            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
+            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
+        interpolate_to_uniform
+            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
+            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         auto_labels
             The labels given to the figure.
         """
@@ -146,4 +153,6 @@ class MapperPlotter(Plotter):
             visuals_2d=self.get_visuals_2d_for_source(),
             auto_labels=auto_labels,
             source_pixelization_values=source_pixelization_values,
+            zoom_to_brightest=zoom_to_brightest,
+            interpolate_to_uniform=interpolate_to_uniform,
         )

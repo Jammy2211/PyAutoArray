@@ -27,9 +27,7 @@ class Mask1D(Mask):
         mask: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
-        origin: Tuple[
-            float,
-        ] = (0.0,),
+        origin: Tuple[float,] = (0.0,),
         invert: bool = False,
     ):
         """
@@ -75,7 +73,6 @@ class Mask1D(Mask):
         )
 
     def __array_finalize__(self, obj):
-
         super().__array_finalize__(obj=obj)
 
         if isinstance(obj, Mask1D):

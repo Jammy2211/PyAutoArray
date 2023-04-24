@@ -335,13 +335,11 @@ def reg_split_from(
     splitted_weights *= -1.0
 
     for i in range(len(splitted_mappings)):
-
         pixel_index = i // 4
 
         flag = 0
 
         for j in range(splitted_sizes[i]):
-
             if splitted_mappings[i][j] == pixel_index:
                 splitted_weights[i][j] += 1.0
                 flag = 1
@@ -366,7 +364,6 @@ def pixel_splitted_regularization_matrix_from(
     splitted_sizes: np.ndarray,
     splitted_weights: np.ndarray,
 ) -> np.ndarray:
-
     # I'm not sure what is the best way to add surface brightness weight to the regularization scheme here.
     # Currently, I simply mulitply the i-th weight to the i-th source pixel, but there should be different ways.
     # Need to keep an eye here.
@@ -378,11 +375,9 @@ def pixel_splitted_regularization_matrix_from(
     regularization_weight = regularization_weights**2.0
 
     for i in range(parameters):
-
         regularization_matrix[i, i] += 2e-8
 
         for j in range(4):
-
             k = i * 4 + j
 
             size = splitted_sizes[k]

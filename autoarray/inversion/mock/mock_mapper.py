@@ -20,7 +20,6 @@ class MockMapper(AbstractMapper):
         parameters=None,
         interpolated_array=None,
     ):
-
         mapper_grids = MapperGrids(
             source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,

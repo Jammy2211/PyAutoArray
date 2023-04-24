@@ -19,7 +19,6 @@ def test__dirty_properties(
     uv_wavelengths_7x2,
     sub_mask_2d_7x7,
 ):
-
     interferometer = aa.Interferometer(
         data=visibilities_7,
         noise_map=visibilities_noise_map_7,
@@ -44,16 +43,8 @@ def test__dirty_properties(
         )
     ).all()
 
-    assert interferometer.dirty_inverse_noise_map.shape_native == (7, 7)
-    assert (
-        interferometer.transformer.image_from(
-            visibilities=interferometer.inverse_noise_map
-        )
-    ).all()
-
 
 def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2d_7x7):
-
     interferometer = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
         data_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
@@ -75,7 +66,6 @@ def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2
 
 
 def test__output_all_arrays(sub_mask_2d_7x7):
-
     interferometer = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
         data_path=path.join(test_data_dir, "3x2_ones_twos.fits"),
@@ -125,7 +115,6 @@ def test__transformer(
     uv_wavelengths_7x2,
     sub_mask_2d_7x7,
 ):
-
     interferometer_7 = aa.Interferometer(
         data=visibilities_7,
         noise_map=visibilities_noise_map_7,
@@ -154,7 +143,6 @@ def test__transformer(
 def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
     sub_mask_2d_7x7,
 ):
-
     interferometer = aa.Interferometer(
         data=aa.Visibilities.ones(shape_slim=(19,)),
         noise_map=2.0 * aa.Visibilities.ones(shape_slim=(19,)),

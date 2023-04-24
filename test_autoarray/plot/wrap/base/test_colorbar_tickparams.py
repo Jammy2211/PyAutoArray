@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test__loads_values_from_config_if_not_manually_input():
-
     colorbar_tickparams = aplt.ColorbarTickParams()
 
     assert colorbar_tickparams.config_dict["labelsize"] == 1

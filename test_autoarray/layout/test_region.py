@@ -7,7 +7,6 @@ from autoarray import exc
 
 
 def test__slice_1d__extract():
-
     arr_1d = aa.Array1D.no_mask(
         values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), pixel_scales=1.0
     )
@@ -26,7 +25,6 @@ def test__slice_1d__extract():
 
 
 def test__slice_1d__addition():
-
     arr_1d = aa.Array1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
     image = aa.Array1D.full(fill_value=1.0, shape_native=6, pixel_scales=1.0)
@@ -47,7 +45,6 @@ def test__slice_1d__addition():
 
 
 def test__slice_1d__set_to_zeros():
-
     arr_1d = aa.Array1D.no_mask(values=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0)
 
     region = aa.Region1D(region=(0, 1))
@@ -66,7 +63,6 @@ def test__slice_1d__set_to_zeros():
 
 
 def test__front_region_from():
-
     region = aa.Region1D(region=(0, 3))
 
     # Front edge is pixel 0, so for 1 pixel we extract 0 -> 1
@@ -89,7 +85,6 @@ def test__front_region_from():
 
 
 def test__trailing_region_from():
-
     region = aa.Region1D(region=(0, 3))
 
     # Front edge ends pixel 3, so for 1 pixel we extract 3 -> 4
@@ -112,7 +107,6 @@ def test__trailing_region_from():
 
 
 def test__exception__first_pixel_or_column_equal_too_or_bigger_than_second():
-
     with pytest.raises(exc.RegionException):
         aa.Region1D(region=(2, 2))
 
@@ -121,9 +115,7 @@ def test__exception__first_pixel_or_column_equal_too_or_bigger_than_second():
 
 
 def test__exception__negative_coordinates_1d():
-
     with pytest.raises(exc.RegionException):
-
         aa.Region1D(region=(-1, 0))
 
     with pytest.raises(exc.RegionException):
@@ -131,7 +123,6 @@ def test__exception__negative_coordinates_1d():
 
 
 def test__slice_2d__extraction():
-
     array = aa.Array2D.no_mask(
         values=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
         pixel_scales=1.0,
@@ -156,7 +147,6 @@ def test__slice_2d__extraction():
 
 
 def test__slice_2d__addition():
-
     array = aa.Array2D.no_mask(values=np.zeros((2, 2)), pixel_scales=1.0)
     array = array.native
     image = np.ones((2, 2))
@@ -188,7 +178,6 @@ def test__slice_2d__addition():
 
 
 def test__slice_2d__set_to_zerose():
-
     array = aa.Array2D.no_mask(values=np.ones((2, 2)), pixel_scales=1.0)
     array = array.native
 
@@ -211,7 +200,6 @@ def test__slice_2d__set_to_zerose():
 
 
 def test__parallel_front_region_from():
-
     region = aa.Region2D(region=(0, 3, 0, 3))
 
     front_edge = region.parallel_front_region_from(pixels=(0, 1))
@@ -228,7 +216,6 @@ def test__parallel_front_region_from():
 
 
 def test__parallel_front_region_from__pixels_from_end():
-
     region = aa.Region2D(region=(0, 3, 0, 3))
 
     front_edge = region.parallel_front_region_from(pixels_from_end=1)
@@ -245,7 +232,6 @@ def test__parallel_front_region_from__pixels_from_end():
 
 
 def test__parallel_trailing_region_from():
-
     region = aa.Region2D(region=(0, 3, 0, 3))
 
     trails = region.parallel_trailing_region_from(pixels=(0, 1))
@@ -262,7 +248,6 @@ def test__parallel_trailing_region_from():
 
 
 def test__parallel_full_region_from():
-
     region = aa.Region2D(region=(1, 3, 0, 5))
 
     serial_region = region.parallel_full_region_from(shape_2d=(5, 5))
@@ -283,7 +268,6 @@ def test__parallel_full_region_from():
 
 
 def test__serial_front_region_from():
-
     region = aa.Region2D(region=(0, 3, 0, 3))
 
     front_edge = region.serial_front_region_from(pixels=(0, 1))
@@ -300,7 +284,6 @@ def test__serial_front_region_from():
 
 
 def test__serial_trailing_region_from():
-
     region = aa.Region2D(
         region=(0, 3, 0, 3)
     )  # The trails are column 3 and above, so extract 3 -> 4
@@ -323,7 +306,6 @@ def test__serial_trailing_region_from():
 
 
 def test__serial_towards_roe_full_region_from():
-
     region = aa.Region2D(region=(1, 3, 0, 5))
 
     parallel_region = region.serial_towards_roe_full_region_from(
@@ -370,7 +352,6 @@ def test__exception__first_row_or_column_equal_too_or_bigger_than_second():
 
 
 def test__exception__negative_coordinates_2d():
-
     with pytest.raises(exc.RegionException):
         aa.Region2D(region=(-1, 0, 1, 2))
 

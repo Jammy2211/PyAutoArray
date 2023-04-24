@@ -32,7 +32,6 @@ class MockInversion(AbstractInversion):
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-
         super().__init__(
             data=data,
             noise_map=noise_map,
@@ -77,7 +76,6 @@ class MockInversion(AbstractInversion):
 
     @property
     def regularization_matrix(self):
-
         if self._regularization_matrix is None:
             return super().regularization_matrix
 
@@ -85,7 +83,6 @@ class MockInversion(AbstractInversion):
 
     @property
     def curvature_matrix(self):
-
         if self._curvature_matrix is None:
             return super().curvature_matrix
 
@@ -93,7 +90,6 @@ class MockInversion(AbstractInversion):
 
     @property
     def _data_vector_mapper(self):
-
         if self.__data_vector_mapper is None:
             return super()._data_vector_mapper
 
@@ -101,7 +97,6 @@ class MockInversion(AbstractInversion):
 
     @property
     def _curvature_matrix_mapper_diag(self):
-
         if self.__curvature_matrix_mapper_diag is None:
             return super()._curvature_matrix_mapper_diag
 
@@ -109,7 +104,6 @@ class MockInversion(AbstractInversion):
 
     @property
     def mapper_operated_mapping_matrix_dict(self):
-
         if self._mapper_operated_mapping_matrix_dict is None:
             return super().mapper_operated_mapping_matrix_dict
 
@@ -121,14 +115,12 @@ class MockInversion(AbstractInversion):
 
     @property
     def reconstruction(self):
-
         if self._reconstruction is None:
             return super().reconstruction
         return self._reconstruction
 
     @property
     def reconstruction_dict(self):
-
         if self._reconstruction_dict is None:
             return super().reconstruction_dict
         return self._reconstruction_dict
@@ -175,21 +167,18 @@ class MockInversion(AbstractInversion):
 
     @property
     def errors(self):
-
         if self._errors is None:
             return super().errors
         return self._errors
 
     @property
     def errors_dict(self):
-
         if self._errors_dict is None:
             return super().errors_dict
         return self._errors_dict
 
     @property
     def regularization_term(self):
-
         if self._regularization_term is None:
             return super().regularization_term
 
@@ -197,7 +186,6 @@ class MockInversion(AbstractInversion):
 
     @property
     def log_det_curvature_reg_matrix_term(self):
-
         if self._log_det_curvature_reg_matrix_term is None:
             return super().log_det_curvature_reg_matrix_term
 
@@ -205,7 +193,6 @@ class MockInversion(AbstractInversion):
 
     @property
     def log_det_regularization_matrix_term(self):
-
         if self._log_det_regularization_matrix_term is None:
             return super().log_det_regularization_matrix_term
 

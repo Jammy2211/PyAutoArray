@@ -11,7 +11,6 @@ class MockFitInterferometer(FitInterferometer):
         inversion=None,
         noise_map=None,
     ):
-
         super().__init__(dataset=dataset, use_mask_in_fit=use_mask_in_fit)
 
         self._model_data = model_data

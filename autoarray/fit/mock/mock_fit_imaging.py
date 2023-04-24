@@ -15,7 +15,6 @@ class MockFitImaging(FitImaging):
         blurred_image=None,
         profiling_dict: Optional[Dict] = None,
     ):
-
         super().__init__(
             dataset=dataset,
             use_mask_in_fit=use_mask_in_fit,

@@ -5,7 +5,6 @@ import numpy as np
 def test__magnification__sparse_grid_from__returns_same_as_computed_from_grids_module(
     sub_grid_2d_7x7,
 ):
-
     pixelization = aa.mesh.VoronoiMagnification(shape=(3, 3))
 
     sparse_grid = pixelization.image_plane_mesh_grid_from(
@@ -25,7 +24,6 @@ def test__magnification__sparse_grid_from__returns_same_as_computed_from_grids_m
 
 
 def test__magnification__preloads_used_for_relocated_grid(sub_grid_2d_7x7):
-
     pixelization = aa.mesh.VoronoiMagnification(shape=(3, 3))
 
     relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
@@ -45,7 +43,6 @@ def test__magnification__preloads_used_for_relocated_grid(sub_grid_2d_7x7):
 
 
 def test__brightness__weight_map_from():
-
     hyper_data = np.array([0.0, 1.0, 0.0])
 
     pixelization = aa.mesh.VoronoiBrightnessImage(
@@ -110,7 +107,6 @@ def test__brightness__weight_map_from():
 def test__brightness__mesh_grid__matches_manual_comparison_to_grids_module(
     sub_grid_2d_7x7,
 ):
-
     pixelization = aa.mesh.VoronoiBrightnessImage(
         pixels=6, weight_floor=0.1, weight_power=2.0
     )

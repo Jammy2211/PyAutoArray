@@ -5,7 +5,6 @@ import autoarray as aa
 
 
 def test__interpolation_grid_from():
-
     mesh = aa.m.MockGrid2DMesh(extent=(-1.0, 1.0, -1.0, 1.0))
 
     interpolation_grid = mesh.interpolation_grid_from(shape_native=(3, 2))

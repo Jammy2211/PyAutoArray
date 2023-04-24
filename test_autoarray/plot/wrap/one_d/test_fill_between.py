@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test___from_config_or_via_manual_input():
-
     line_plot = aplt.FillBetween()
 
     assert line_plot.config_dict["alpha"] == 0.6
@@ -27,7 +26,6 @@ def test___from_config_or_via_manual_input():
 
 
 def test__plot_y_vs_x__works_for_reasonable_values():
-
     fill_between = aplt.FillBetween()
 
     fill_between.fill_between_shaded_regions(

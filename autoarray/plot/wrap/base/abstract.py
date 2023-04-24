@@ -30,7 +30,6 @@ def set_backend():
 
 
 def remove_spaces_and_commas_from(colors):
-
     colors = [color.strip(",").strip(" ") for color in colors]
     colors = list(filter(None, colors))
     if len(colors) == 1:
@@ -84,15 +83,9 @@ class AbstractMatWrap:
 
     @property
     def config_dict(self):
-
-        if not self.is_for_subplot:
-            category = "figure"
-        else:
-            category = "subplot"
-
         config_dict = conf.instance["visualize"][self.config_folder][
             self.__class__.__name__
-        ][category]
+        ][self.config_category]
 
         if "c" in config_dict:
             config_dict["c"] = remove_spaces_and_commas_from(colors=config_dict["c"])
@@ -111,3 +104,9 @@ class AbstractMatWrap:
     @property
     def config_folder(self):
         return "mat_wrap"
+
+    @property
+    def config_category(self):
+        if self.is_for_subplot:
+            return "subplot"
+        return "figure"

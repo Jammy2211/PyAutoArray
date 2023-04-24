@@ -4,21 +4,18 @@ import autoarray as aa
 
 
 def make_mask_1d_7():
-
     mask = np.array([True, True, False, False, False, True, True])
 
     return aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=1)
 
 
 def make_sub_mask_1d_7():
-
     mask = np.array([True, True, False, False, False, True, True])
 
     return aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=2)
 
 
 def make_mask_2d_7x7():
-
     mask = np.array(
         [
             [True, True, True, True, True, True, True],
@@ -153,7 +150,6 @@ def make_image_7x7():
 
 
 def make_psf_3x3():
-
     psf = np.array([[0.0, 0.5, 0.0], [0.5, 1.0, 0.5], [0.0, 0.5, 0.0]])
 
     return aa.Kernel2D.no_mask(values=psf, pixel_scales=(1.0, 1.0))
@@ -168,7 +164,6 @@ def make_noise_map_7x7():
 
 
 def make_noise_covariance_matrix_7x7():
-
     noise_covariance_matrix_7x7 = np.eye(N=49, M=49)
 
     noise_covariance_matrix_7x7[:, 24] = 1.0
@@ -275,7 +270,6 @@ def make_interferometer_7_grid():
 
 
 def make_interferometer_7_lop():
-
     return aa.Interferometer(
         data=make_visibilities_7(),
         noise_map=make_visibilities_noise_map_7(),
@@ -297,35 +291,30 @@ def make_transformer_7x7_7():
 
 
 def make_masked_imaging_7x7():
-
     imaging_7x7 = make_imaging_7x7()
 
     return imaging_7x7.apply_mask(mask=make_mask_2d_7x7())
 
 
 def make_masked_imaging_covariance_7x7():
-
     imaging_7x7 = make_imaging_covariance_7x7()
 
     return imaging_7x7.apply_mask(mask=make_mask_2d_7x7())
 
 
 def make_masked_imaging_7x7_no_blur():
-
     imaging_7x7 = make_imaging_7x7_no_blur()
 
     return imaging_7x7.apply_mask(mask=make_mask_2d_7x7())
 
 
 def make_model_image_7x7():
-
     imaging_7x7 = make_masked_imaging_7x7()
 
     return 5.0 * imaging_7x7.image
 
 
 def make_imaging_fit_x1_plane_7x7():
-
     imaging_7x7 = make_masked_imaging_7x7()
 
     model_data = 5.0 * imaging_7x7.image
@@ -336,7 +325,6 @@ def make_imaging_fit_x1_plane_7x7():
 
 
 def make_fit_interferometer_7():
-
     interferometer_7 = make_interferometer_7()
 
     model_data = 5.0 * interferometer_7.visibilities
@@ -373,7 +361,6 @@ def make_rectangular_mesh_grid_3x3():
 
 
 def make_delaunay_mesh_grid_9():
-
     grid_9 = aa.Grid2D.no_mask(
         values=[
             [0.6, -0.3],
@@ -394,7 +381,6 @@ def make_delaunay_mesh_grid_9():
 
 
 def make_voronoi_mesh_grid_9():
-
     grid_9 = aa.Grid2D.no_mask(
         values=[
             [0.6, -0.3],
@@ -420,7 +406,6 @@ def make_voronoi_mesh_grid_9():
 
 
 def make_rectangular_mapper_7x7_3x3():
-
     mapper_grids = aa.MapperGrids(
         source_plane_data_grid=make_sub_grid_2d_7x7(),
         source_plane_mesh_grid=make_rectangular_mesh_grid_3x3(),
@@ -434,7 +419,6 @@ def make_rectangular_mapper_7x7_3x3():
 
 
 def make_delaunay_mapper_9_3x3():
-
     mapper_grids = aa.MapperGrids(
         source_plane_data_grid=make_sub_grid_2d_7x7(),
         source_plane_mesh_grid=make_delaunay_mesh_grid_9(),
@@ -472,7 +456,6 @@ def make_voronoi_mapper_nn_9_3x3():
 
 
 def make_rectangular_inversion_7x7_3x3():
-
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_rectangular_mapper_7x7_3x3()],
@@ -480,7 +463,6 @@ def make_rectangular_inversion_7x7_3x3():
 
 
 def make_delaunay_inversion_9_3x3():
-
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(),
         linear_obj_list=[make_delaunay_mapper_9_3x3()],
@@ -488,7 +470,6 @@ def make_delaunay_inversion_9_3x3():
 
 
 def make_voronoi_inversion_9_3x3():
-
     return aa.Inversion(
         dataset=make_masked_imaging_7x7(), linear_obj_list=[make_voronoi_mapper_9_3x3()]
     )

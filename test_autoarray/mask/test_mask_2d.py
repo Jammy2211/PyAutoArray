@@ -13,7 +13,6 @@ test_data_dir = path.join(
 
 
 def test__constructor():
-
     mask = aa.Mask2D(mask=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1)
 
     assert type(mask) == aa.Mask2D
@@ -38,7 +37,6 @@ def test__constructor():
 
 
 def test__constructor__invert_is_true():
-
     mask = aa.Mask2D(
         mask=[[False, False, True], [True, True, False]],
         pixel_scales=1.0,
@@ -50,7 +48,6 @@ def test__constructor__invert_is_true():
 
 
 def test__all_false():
-
     mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0, invert=False)
 
     assert mask.shape == (5, 5)
@@ -86,7 +83,6 @@ def test__all_false():
 
 
 def test__circular():
-
     mask_via_util = aa.util.mask_2d.mask_2d_circular_from(
         shape_native=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
     )
@@ -284,7 +280,6 @@ def test__elliptical_annular():
 
 
 def test__from_pixel_coordinates():
-
     mask = aa.Mask2D.from_pixel_coordinates(
         shape_native=(5, 5), pixel_coordinates=[[2, 2]], pixel_scales=1.0, buffer=0
     )
@@ -343,7 +338,6 @@ def test__from_pixel_coordinates():
 
 
 def test__from_fits__output_to_fits():
-
     mask = aa.Mask2D.from_fits(
         file_path=path.join(test_data_dir, "3x3_ones.fits"),
         hdu=0,
@@ -379,7 +373,6 @@ def test__from_fits__output_to_fits():
 
 
 def test__from_fits__with_resized_mask_shape():
-
     mask = aa.Mask2D.from_fits(
         file_path=path.join(test_data_dir, "3x3_ones.fits"),
         hdu=0,
@@ -402,26 +395,20 @@ def test__from_fits__with_resized_mask_shape():
 
 
 def test__mask__input_is_1d_mask__no_shape_native__raises_exception():
-
     with pytest.raises(exc.MaskException):
-
         aa.Mask2D(mask=[False, False, True], pixel_scales=1.0)
 
     with pytest.raises(exc.MaskException):
-
         aa.Mask2D(mask=[False, False, True], pixel_scales=False)
 
     with pytest.raises(exc.MaskException):
-
         aa.Mask2D(mask=[False, False, True], pixel_scales=1.0, sub_size=1)
 
     with pytest.raises(exc.MaskException):
-
         aa.Mask2D(mask=[False, False, True], pixel_scales=False, sub_size=1)
 
 
 def test__is_all_true():
-
     mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=1.0)
 
     assert mask.is_all_true is False
@@ -440,7 +427,6 @@ def test__is_all_true():
 
 
 def test__is_all_false():
-
     mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=1.0)
 
     assert mask.is_all_false is True
@@ -459,7 +445,6 @@ def test__is_all_false():
 
 
 def test__sub_shape_native():
-
     mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0, sub_size=1)
 
     assert mask.sub_shape_native == (5, 5)
@@ -474,7 +459,6 @@ def test__sub_shape_native():
 
 
 def test__shape_native_masked_pixels():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True, True, True, True, True],
@@ -528,7 +512,6 @@ def test__shape_native_masked_pixels():
 
 
 def test__zoom_quantities():
-
     mask = aa.Mask2D.all_false(shape_native=(3, 5), pixel_scales=(1.0, 1.0))
     assert mask.zoom_centre == (1.0, 2.0)
     assert mask.zoom_offset_pixels == (0, 0)
@@ -551,7 +534,6 @@ def test__zoom_quantities():
 
 
 def test__mask_is_single_false__extraction_centre_is_central_pixel():
-
     mask = aa.Mask2D(
         mask=np.array([[False, True, True], [True, True, True], [True, True, True]]),
         pixel_scales=(1.0, 1.0),
@@ -744,7 +726,6 @@ def test__rectangular_mask():
 
 
 def test__zoom_mask_unmasked():
-
     mask = aa.Mask2D(
         mask=np.array(
             [

@@ -114,7 +114,6 @@ class AbstractInversionImaging(AbstractInversion):
         ]
 
     def _updated_cls_key_dict_from(self, cls: Type, preload_dict: Dict) -> Dict:
-
         cls_dict = {}
 
         for linear_func, values in zip(
@@ -151,7 +150,6 @@ class AbstractInversionImaging(AbstractInversion):
         linear_func_operated_mapping_matrix_dict = {}
 
         for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
-
             if linear_func.operated_mapping_matrix_override is not None:
                 operated_mapping_matrix = linear_func.operated_mapping_matrix_override
             else:
@@ -206,7 +204,6 @@ class AbstractInversionImaging(AbstractInversion):
         data_linear_func_matrix_dict = {}
 
         for func_index, linear_func in enumerate(linear_func_list):
-
             curvature_weights = (
                 self.linear_func_operated_mapping_matrix_dict[linear_func]
                 / self.noise_map[:, None] ** 2
@@ -251,7 +248,6 @@ class AbstractInversionImaging(AbstractInversion):
         mapper_operated_mapping_matrix_dict = {}
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-
             operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
                 mapping_matrix=mapper.mapping_matrix
             )

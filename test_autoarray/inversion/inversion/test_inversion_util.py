@@ -4,7 +4,6 @@ import pytest
 
 
 def test__curvature_matrix_from_w_tilde():
-
     w_tilde = np.array(
         [
             [1.0, 2.0, 3.0, 4.0],
@@ -29,7 +28,6 @@ def test__curvature_matrix_from_w_tilde():
 
 
 def test__curvature_matrix_via_mapping_matrix_from():
-
     blurred_mapping_matrix = np.array(
         [
             [1.0, 1.0, 0.0],
@@ -76,7 +74,6 @@ def test__curvature_matrix_via_mapping_matrix_from():
 
 
 def test__reconstruction_positive_negative_from():
-
     data_vector = np.array([1.0, 1.0, 2.0])
 
     curvature_reg_matrix = np.array([[2.0, 1.0, 0.0], [1.0, 3.0, 1.0], [0.0, 1.0, 1.0]])
@@ -91,7 +88,6 @@ def test__reconstruction_positive_negative_from():
 
 
 def test__reconstruction_positive_negative_from__check_solution_raises_error_cause_all_values_identical():
-
     data_vector = np.array([1.0, 1.0, 1.0])
 
     curvature_reg_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
@@ -99,7 +95,6 @@ def test__reconstruction_positive_negative_from__check_solution_raises_error_cau
     # reconstruction = np.array([1.0, 1.0, 1.0])
 
     with pytest.raises(aa.exc.InversionException):
-
         aa.util.inversion.reconstruction_positive_negative_from(
             data_vector=data_vector,
             curvature_reg_matrix_cholesky=np.linalg.cholesky(curvature_reg_matrix),
@@ -109,7 +104,6 @@ def test__reconstruction_positive_negative_from__check_solution_raises_error_cau
 
 
 def test__mapped_reconstructed_data_via_mapping_matrix_from():
-
     mapping_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
     reconstruction = np.array([1.0, 1.0, 2.0])
@@ -136,7 +130,6 @@ def test__mapped_reconstructed_data_via_mapping_matrix_from():
 
 
 def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
-
     pix_indexes_for_sub_slim_index = np.array([[0], [1], [2]])
     pix_indexes_for_sub_slim_index_sizes = np.array([1, 1, 1]).astype("int")
     pix_weights_for_sub_slim_index = np.array([[1.0], [1.0], [1.0]])
@@ -201,7 +194,6 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
 
 
 def test__preconditioner_matrix_via_mapping_matrix_from():
-
     mapping_matrix = np.array(
         [
             [1.0, 0.0, 0.0],
@@ -255,108 +247,3 @@ def test__preconditioner_matrix_via_mapping_matrix_from():
         preconditioner_matrix
         == np.array([[5.0, 2.0, 3.0], [4.0, 9.0, 6.0], [7.0, 8.0, 13.0]])
     ).all()
-
-
-def test__inversion_residual_map_from():
-
-    pixelization_values = np.ones(3)
-    reconstructed_data_1d = np.ones(9)
-    slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_slim_indexes_for_pix_index = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
-
-    pixelization_residuals = aa.util.inversion.inversion_residual_map_from(
-        reconstruction=pixelization_values,
-        data=reconstructed_data_1d,
-        slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index,
-    )
-
-    assert (pixelization_residuals == np.zeros(3)).all()
-
-    pixelization_values = np.ones(3)
-    reconstructed_data_1d = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0])
-    slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_slim_indexes_for_pix_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-
-    pixelization_residuals = aa.util.inversion.inversion_residual_map_from(
-        reconstruction=pixelization_values,
-        data=reconstructed_data_1d,
-        slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index,
-    )
-
-    assert (pixelization_residuals == np.array([0.0, 1.0, 2.0])).all()
-
-
-def test__inversion_normalized_residual_map_from():
-
-    pixelization_values = np.ones(3)
-    reconstructed_data_1d = np.ones(9)
-    noise_map_1d = np.ones(9)
-    slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_slim_indexes_for_pix_index = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
-
-    pixelization_normalized_residuals = (
-        aa.util.inversion.inversion_normalized_residual_map_from(
-            reconstruction=pixelization_values,
-            data=reconstructed_data_1d,
-            noise_map_1d=noise_map_1d,
-            slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-            sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index,
-        )
-    )
-
-    assert (pixelization_normalized_residuals == np.zeros(3)).all()
-
-    pixelization_values = np.ones(3)
-    reconstructed_data_1d = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0])
-    noise_map_1d = np.array([0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0])
-    slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_slim_indexes_for_pix_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-
-    pixelization_normalized_residuals = (
-        aa.util.inversion.inversion_normalized_residual_map_from(
-            reconstruction=pixelization_values,
-            data=reconstructed_data_1d,
-            noise_map_1d=noise_map_1d,
-            slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-            sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index,
-        )
-    )
-
-    assert (pixelization_normalized_residuals == np.array([0.0, 1.0, 1.0])).all()
-
-
-def test__inversion_chi_squared_map_from():
-
-    pixelization_values = np.ones(3)
-    reconstructed_data_1d = np.ones(9)
-    noise_map_1d = np.ones(9)
-    slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_slim_indexes_for_pix_index = [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
-
-    pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from(
-        reconstruction=pixelization_values,
-        data=reconstructed_data_1d,
-        noise_map_1d=noise_map_1d,
-        slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index,
-    )
-
-    assert (pixelization_chi_squareds == np.zeros(3)).all()
-
-    pixelization_values = np.ones(3)
-    reconstructed_data_1d = np.array([1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0])
-    noise_map_1d = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 4.0, 4.0, 4.0])
-    slim_index_for_sub_slim_index = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    sub_slim_indexes_for_pix_index = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-
-    pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from(
-        reconstruction=pixelization_values,
-        data=reconstructed_data_1d,
-        noise_map_1d=noise_map_1d,
-        slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index,
-    )
-
-    assert (pixelization_chi_squareds == np.array([0.0, 4.0, 0.25])).all()

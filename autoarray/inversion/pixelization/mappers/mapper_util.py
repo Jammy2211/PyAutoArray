@@ -14,12 +14,10 @@ def sub_slim_indexes_for_pix_index(
     pix_weights_for_sub_slim_index: np.ndarray,
     pix_pixels: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-
     sub_slim_sizes_for_pix_index = np.zeros(pix_pixels)
 
     for pix_indexes in pix_indexes_for_sub_slim_index:
         for pix_index in pix_indexes:
-
             sub_slim_sizes_for_pix_index[pix_index] += 1
 
     max_pix_size = np.max(sub_slim_sizes_for_pix_index)
@@ -29,11 +27,9 @@ def sub_slim_indexes_for_pix_index(
     sub_slim_sizes_for_pix_index = np.zeros(pix_pixels)
 
     for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
-
         pix_weights = pix_weights_for_sub_slim_index[slim_index]
 
         for pix_index, pix_weight in zip(pix_indexes, pix_weights):
-
             sub_slim_indexes_for_pix_index[
                 pix_index, int(sub_slim_sizes_for_pix_index[pix_index])
             ] = slim_index
@@ -112,7 +108,6 @@ def data_slim_to_pixelization_unique_from(
     pix_check = -1 * np.ones(shape=pix_pixels)
 
     for ip in range(data_pixels):
-
         pix_check[:] = -1
 
         pix_size = 0
@@ -121,18 +116,14 @@ def data_slim_to_pixelization_unique_from(
         ip_sub_end = ip_sub_start + sub_size**2
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
-
             for pix_interp_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
-
                 pix = pix_indexes_for_sub_slim_index[ip_sub, pix_interp_index]
                 pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_interp_index]
 
                 if pix_check[pix] > -0.5:
-
                     data_weights[ip, int(pix_check[pix])] += sub_fraction * pixel_weight
 
                 else:
-
                     data_to_pix_unique[ip, pix_size] = pix
                     data_weights[ip, pix_size] += sub_fraction * pixel_weight
                     pix_check[pix] = pix_size
@@ -221,7 +212,6 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     pix_indexes_for_sub_slim_index = np.zeros(shape=(grid.shape[0], 1))
 
     for sub_slim_index in range(grid.shape[0]):
-
         nearest_pix_index = nearest_pixelization_index_for_slim_index[
             slim_index_for_sub_slim_index[sub_slim_index]
         ]
@@ -229,7 +219,6 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         whiletime = 0
 
         while True:
-
             if whiletime > 1000000:
                 raise exc.MeshException
 
@@ -242,7 +231,6 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
             closest_separation_pix_to_neighbor = 1.0e8
 
             for neighbor_pix_index in range(neighbors_sizes[nearest_pix_index]):
-
                 neighbor = neighbors[nearest_pix_index, neighbor_pix_index]
 
                 distance_to_neighbor = (
@@ -302,11 +290,9 @@ def pixel_weights_delaunay_from(
     pixel_weights = np.zeros(pix_indexes_for_sub_slim_index.shape)
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
-
         pix_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
 
         if pix_indexes[1] != -1:
-
             vertices_of_the_simplex = source_plane_mesh_grid[pix_indexes]
 
             sub_gird_coordinate_on_source_place = source_plane_data_grid[sub_slim_index]
@@ -528,7 +514,6 @@ def adaptive_pixel_signals_from(
     pixel_sizes = np.zeros((pixels,))
 
     for sub_slim_index in range(len(pix_indexes_for_sub_slim_index)):
-
         vertices_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
 
         mask_1d_index = slim_index_for_sub_slim_index[sub_slim_index]
@@ -536,7 +521,6 @@ def adaptive_pixel_signals_from(
         pix_size_tem = pix_size_for_sub_slim_index[sub_slim_index]
 
         if pix_size_tem > 1:
-
             pixel_signals[vertices_indexes[:pix_size_tem]] += (
                 hyper_data[mask_1d_index] * pixel_weights[sub_slim_index]
             )
@@ -637,11 +621,9 @@ def mapping_matrix_from(
     mapping_matrix = np.zeros((total_mask_pixels, pixels))
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
-
         slim_index = slim_index_for_sub_slim_index[sub_slim_index]
 
         for pix_count in range(pix_size_for_sub_slim_index[sub_slim_index]):
-
             pix_index = pix_indexes_for_sub_slim_index[sub_slim_index, pix_count]
             pix_weight = pix_weights_for_sub_slim_index[sub_slim_index, pix_count]
 

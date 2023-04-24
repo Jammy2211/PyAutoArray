@@ -4,7 +4,6 @@ import pytest
 
 
 def test__central_pixel_coordinates_1d_from():
-
     central_pixel_coordinates = aa.util.geometry.central_pixel_coordinates_1d_from(
         shape_slim=(3,)
     )
@@ -19,7 +18,6 @@ def test__central_pixel_coordinates_1d_from():
 
 
 def test__pixel_coordinates_1d_from():
-
     pixel_coordinates = aa.util.geometry.pixel_coordinates_1d_from(
         scaled_coordinates_1d=(1.0,), shape_slim=(2,), pixel_scales=(2.0,)
     )
@@ -211,7 +209,6 @@ def test__pixel_coordinates_1d_from():
 
 
 def test__scaled_coordinates_1d_from():
-
     scaled_coordinates = aa.util.geometry.scaled_coordinates_1d_from(
         pixel_coordinates_1d=(0,), shape_slim=(3,), pixel_scales=(3.0,)
     )
@@ -277,7 +274,6 @@ def test__scaled_coordinates_1d_from():
 
 
 def test__central_pixel_coordinates_2d_from():
-
     central_pixel_coordinates = aa.util.geometry.central_pixel_coordinates_2d_from(
         shape_native=(3, 3)
     )
@@ -304,7 +300,6 @@ def test__central_pixel_coordinates_2d_from():
 
 
 def test__pixel_coordinates_2d_from():
-
     pixel_coordinates = aa.util.geometry.pixel_coordinates_2d_from(
         scaled_coordinates_2d=(1.0, -1.0),
         shape_native=(2, 2),
@@ -978,7 +973,6 @@ def test__pixel_coordinates_2d_from():
 
 
 def test__transform_2d_grid_to_reference_frame():
-
     grid_2d = np.array([[0.0, 1.0], [1.0, 1.0], [1.0, 0.0]])
 
     transformed_grid_2d = aa.util.geometry.transform_grid_2d_to_reference_frame(
@@ -1037,7 +1031,6 @@ def test__transform_2d_grid_to_reference_frame():
 
 
 def test__transform_2d_grid_from_reference_frame():
-
     grid_2d = np.array([[0.0, 1.0], [1.0, 1.0], [1.0, 0.0]])
 
     transformed_grid_2d = aa.util.geometry.transform_grid_2d_from_reference_frame(
@@ -1082,7 +1075,6 @@ def test__transform_2d_grid_from_reference_frame():
 
 
 def test__grid_pixels_2d_slim_from():
-
     # coordinates in centres_of_pixels
 
     grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
@@ -1135,7 +1127,6 @@ def test__grid_pixels_2d_slim_from():
 
 
 def test__grid_pixel_centres_2d_slim_from():
-
     # coordinates in centres of pixels
 
     grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
@@ -1188,7 +1179,6 @@ def test__grid_pixel_centres_2d_slim_from():
 
 
 def test__grid_pixel_indexes_2d_slim_from():
-
     # coordinates in centres of pixels
 
     grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
@@ -1241,7 +1231,6 @@ def test__grid_pixel_indexes_2d_slim_from():
 
 
 def test__grid_scaled_2d_slim_from():
-
     # coordinates in centres of pixels
 
     grid_pixels = np.array([[0.5, 0.5], [0.5, 1.5], [1.5, 0.5], [1.5, 1.5]])
@@ -1306,7 +1295,6 @@ def test__grid_scaled_2d_slim_from():
 
 
 def test__grid_pixel_centres_2d_from():
-
     # coordinates in centres of pixels
 
     grid_scaled = np.array([[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]])

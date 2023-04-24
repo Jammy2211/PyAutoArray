@@ -12,7 +12,6 @@ class MockLinearObj(LinearObj):
         operated_mapping_matrix_override=None,
         regularization=None,
     ):
-
         super().__init__(regularization=regularization)
 
         self.grid = grid

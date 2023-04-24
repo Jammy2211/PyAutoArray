@@ -42,7 +42,6 @@ class AbstractMesh:
             A 2D (y,x) grid of coordinates, whose coordinates outside the border are relocated to its edge.
         """
         if preloads.relocated_grid is None:
-
             if settings.use_border:
                 return source_plane_data_grid.relocated_grid_from(
                     grid=source_plane_data_grid
@@ -112,7 +111,6 @@ class AbstractMesh:
         raise NotImplementedError
 
     def weight_map_from(self, hyper_data: np.ndarray):
-
         raise NotImplementedError()
 
     @property

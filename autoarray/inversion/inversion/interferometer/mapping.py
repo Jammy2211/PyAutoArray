@@ -165,7 +165,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         operated_mapping_matrix_list = self.operated_mapping_matrix_list
 
         for index, linear_obj in enumerate(self.linear_obj_list):
-
             reconstruction = reconstruction_dict[linear_obj]
 
             visibilities = (

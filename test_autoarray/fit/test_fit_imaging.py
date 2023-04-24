@@ -4,7 +4,6 @@ import autoarray as aa
 
 
 def test__image_and_model_are_identical__no_masking__check_values_are_correct():
-
     mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -32,9 +31,6 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
     assert (fit.signal_to_noise_map.slim == np.array([0.5, 1.0, 1.5, 2.0])).all()
     assert (fit.signal_to_noise_map.native == np.array([[0.5, 1.0], [1.5, 2.0]])).all()
-    assert (
-        fit.potential_chi_squared_map.slim == np.array([0.25, 1.0, 2.25, 4.0])
-    ).all()
 
     assert (fit.model_image.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert (fit.model_image.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
@@ -57,7 +53,6 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
 
 def test__image_and_model_are_different__include_masking__check_values_are_correct():
-
     mask = aa.Mask2D(
         mask=[[False, False], [True, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -105,7 +100,6 @@ def test__image_and_model_are_different__include_masking__check_values_are_corre
 
 
 def test__image_and_model_are_identical__inversion_included__changes_certain_properties():
-
     mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -149,7 +143,6 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
 
 
 def test__profiling_dict__profiles_appropriate_functions():
-
     mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )

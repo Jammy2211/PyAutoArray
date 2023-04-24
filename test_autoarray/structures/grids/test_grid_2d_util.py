@@ -4,7 +4,6 @@ import pytest
 
 
 def test__grid_2d_slim_via_mask_from():
-
     mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
     grid = aa.util.grid_2d.grid_2d_slim_via_mask_from(
@@ -176,7 +175,6 @@ def test__grid_2d_slim_via_mask_from():
 
 
 def test__grid_2d_via_mask_from():
-
     mask = np.array([[False, True, True], [True, True, False], [True, True, True]])
 
     grid_2d = aa.util.grid_2d.grid_2d_via_mask_from(
@@ -214,7 +212,6 @@ def test__grid_2d_via_mask_from():
 
 
 def test__grid_2d_slim_via_shape_native_from():
-
     grid_2d = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
         shape_native=(2, 3), pixel_scales=(1.0, 1.0), sub_size=1
     )
@@ -332,7 +329,6 @@ def test__grid_2d_slim_via_shape_native_from():
 
 
 def test__grid_2d_via_shape_native_from():
-
     grid_2d = aa.util.grid_2d.grid_2d_via_shape_native_from(
         shape_native=(2, 3), pixel_scales=(1.0, 1.0), sub_size=1
     )
@@ -379,7 +375,6 @@ def test__grid_2d_via_shape_native_from():
 
 
 def test__radial_projected_shape_slim_from():
-
     shape_slim = aa.util.grid_2d._radial_projected_shape_slim_from(
         extent=np.array([-1.0, 1.0, -1.0, 1.0]),
         centre=(0.0, 0.0),
@@ -418,7 +413,6 @@ def test__radial_projected_shape_slim_from():
 
 
 def test__grid_scaled_2d_slim_radial_projected_from():
-
     grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
         extent=np.array([-1.0, 1.0, -1.0, 1.0]),
         centre=(0.0, 0.0),
@@ -586,7 +580,6 @@ def test__grid_scaled_2d_slim_radial_projected_from():
 
 
 def test__grid_2d_slim_from():
-
     grid_2d = np.array(
         [
             [[1, 1], [2, 2], [3, 3]],
@@ -690,7 +683,6 @@ def test__grid_2d_slim_from():
 
 
 def test__grid_2d_native_from():
-
     grid_slim = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
     mask = np.full(fill_value=False, shape=(2, 2))
@@ -774,7 +766,6 @@ def test__grid_2d_native_from():
 
 
 def test__grid_2d_slim_upscaled_from():
-
     grid_slim = np.array([[1.0, 1.0]])
 
     grid_upscaled_2d = aa.util.grid_2d.grid_2d_slim_upscaled_from(

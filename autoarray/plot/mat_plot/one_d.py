@@ -150,9 +150,11 @@ class MatPlot1D(AbstractMatPlot):
         y_errors=None,
         x_errors=None,
         y_extra=None,
+        ls_errorbar="",
+        text_manual_dict=None,
+        text_manual_dict_y=None,
         bypass: bool = False,
     ):
-
         if (y is None) or np.count_nonzero(y) == 0:
             return
 
@@ -190,10 +192,10 @@ class MatPlot1D(AbstractMatPlot):
             y_errors=y_errors,
             x_errors=x_errors,
             y_extra=y_extra,
+            ls_errorbar=ls_errorbar,
         )
 
         if visuals_1d.shaded_region is not None:
-
             self.fill_between.fill_between_shaded_regions(
                 x=x, y1=visuals_1d.shaded_region[0], y2=visuals_1d.shaded_region[1]
             )
@@ -201,39 +203,68 @@ class MatPlot1D(AbstractMatPlot):
         if "extent" in self.axis.config_dict:
             self.axis.set()
 
-        self.ylabel.set(units=self.units, include_brackets=False)
-        self.xlabel.set(units=self.units, include_brackets=False)
-
         self.tickparams.set()
 
         if plot_axis_type == "symlog":
             plt.yscale("symlog")
 
+        if x_errors is not None:
+            min_value_x = np.min(x - x_errors)
+            max_value_x = np.max(x + x_errors)
+        else:
+            min_value_x = np.min(x)
+            max_value_x = np.max(x)
+
+        if y_errors is not None:
+            min_value_y = np.min(y - y_errors)
+            max_value_y = np.max(y + y_errors)
+        else:
+            min_value_y = np.min(y)
+            max_value_y = np.max(y)
+
         self.xticks.set(
-            array=x,
-            min_value=np.min(x),
-            max_value=np.max(x),
+            min_value=min_value_x,
+            max_value=max_value_x,
             units=self.units,
             use_integers=use_integers,
+            is_for_1d_plot=True,
         )
 
-        # TODO : Implement properly
-
-        # self.yticks.set(
-        #     array=y,
-        #     min_value=np.min(y),
-        #     max_value=np.max(y),
-        #     units=self.units,
-        # )
+        self.yticks.set(
+            min_value=min_value_y,
+            max_value=max_value_y,
+            units=self.units,
+            yunit=auto_labels.yunit,
+            is_for_1d_plot=True,
+            is_log10="logy" in plot_axis_type,
+        )
 
         self.title.set(auto_title=auto_labels.title)
-        self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
-        self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
+        self.ylabel.set(auto_label=auto_labels.ylabel)
+        self.xlabel.set(auto_label=auto_labels.xlabel)
 
         if not isinstance(self.text, list):
             self.text.set()
         else:
             [text.set() for text in self.text]
+
+        # This is a horrific hack to get CTI plots to work, refactor one day.
+
+        from autoarray.plot.wrap.base.text import Text
+
+        if text_manual_dict is not None and ax is not None:
+            y = text_manual_dict_y
+            text_manual_list = []
+
+            for key, value in text_manual_dict.items():
+                text_manual_list.append(
+                    Text(
+                        x=0.65, y=y, s=f"{key} : {value}", c="b", transform=ax.transAxes
+                    )
+                )
+                y = y - 0.05
+
+            [text.set() for text in text_manual_list]
 
         if not isinstance(self.annotate, list):
             self.annotate.set()

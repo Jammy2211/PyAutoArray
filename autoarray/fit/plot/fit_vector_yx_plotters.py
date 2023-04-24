@@ -87,7 +87,6 @@ class FitVectorYXPlotterMeta(Plotter):
         fit_plotter_y = FitImaging(self.fit.data.y_array)
 
         if image:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=self.get_visuals_2d(),
@@ -95,7 +94,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if noise_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -103,7 +101,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if signal_to_noise_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -113,7 +110,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if model_image:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
                 visuals_2d=self.get_visuals_2d(),
@@ -121,7 +117,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if residual_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -129,7 +124,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if normalized_residual_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -139,7 +133,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if chi_squared_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -157,7 +150,7 @@ class FitVectorYXPlotterMeta(Plotter):
         residual_map: bool = False,
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
-        auto_filename: str = "subplot_fit_imaging",
+        auto_filename: str = "subplot_fit",
     ):
         """
         Plots the individual attributes of the plotter's `FitImaging` object in 2D on a subplot.
@@ -197,7 +190,7 @@ class FitVectorYXPlotterMeta(Plotter):
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
-    def subplot_fit_imaging(self):
+    def subplot_fit(self):
         """
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
@@ -258,7 +251,7 @@ class FitImagingPlotter(Plotter):
 
         self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
         self.subplot = self._fit_imaging_meta_plotter.subplot
-        self.subplot_fit_imaging = self._fit_imaging_meta_plotter.subplot_fit_imaging
+        self.subplot_fit = self._fit_imaging_meta_plotter.subplot_fit
 
     def get_visuals_2d(self) -> Visuals2D:
         return self.get_2d.via_fit_imaging_from(fit=self.fit)

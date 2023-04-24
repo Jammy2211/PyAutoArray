@@ -13,7 +13,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 class InterferometerPlotter(Plotter):
     def __init__(
         self,
-        interferometer: Interferometer,
+        dataset: Interferometer,
         mat_plot_1d: MatPlot1D = MatPlot1D(),
         visuals_1d: Visuals1D = Visuals1D(),
         include_1d: Include1D = Include1D(),
@@ -36,7 +36,7 @@ class InterferometerPlotter(Plotter):
 
         Parameters
         ----------
-        interferometer
+        dataset
             The interferometer dataset the plotter plots.
         mat_plot_1d
             Contains objects which wrap the matplotlib function calls that make 1D plots.
@@ -51,7 +51,7 @@ class InterferometerPlotter(Plotter):
         include_2d
             Specifies which attributes of the `Interferometer` are extracted and plotted as visuals for 2D plots.
         """
-        self.interferometer = interferometer
+        self.dataset = dataset
 
         super().__init__(
             mat_plot_1d=mat_plot_1d,
@@ -62,8 +62,12 @@ class InterferometerPlotter(Plotter):
             visuals_2d=visuals_2d,
         )
 
+    @property
+    def interferometer(self):
+        return self.dataset
+
     def get_visuals_2d_real_space(self):
-        return self.get_2d.via_mask_from(mask=self.interferometer.real_space_mask)
+        return self.get_2d.via_mask_from(mask=self.dataset.real_space_mask)
 
     def figures_2d(
         self,
@@ -77,7 +81,6 @@ class InterferometerPlotter(Plotter):
         dirty_image: bool = False,
         dirty_noise_map: bool = False,
         dirty_signal_to_noise_map: bool = False,
-        dirty_inverse_noise_map: bool = False,
     ):
         """
         Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D.
@@ -105,31 +108,26 @@ class InterferometerPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the dirty noise map.
         dirty_signal_to_noise_map
             Whether to make a 2D plot (via `imshow`) of the dirty signal-to-noise map.
-        dirty_inverse_noise_map
-            Whether to make a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
 
         if data:
-
             self.mat_plot_2d.plot_grid(
-                grid=self.interferometer.visibilities.in_grid,
+                grid=self.dataset.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Visibilities", filename="visibilities"),
             )
 
         if noise_map:
-
             self.mat_plot_2d.plot_grid(
-                grid=self.interferometer.visibilities.in_grid,
+                grid=self.dataset.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
-                color_array=self.interferometer.noise_map.real,
+                color_array=self.dataset.noise_map.real,
                 auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),
             )
 
         if u_wavelengths:
-
             self.mat_plot_1d.plot_yx(
-                y=self.interferometer.uv_wavelengths[:, 0],
+                y=self.dataset.uv_wavelengths[:, 0],
                 x=None,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
@@ -141,9 +139,8 @@ class InterferometerPlotter(Plotter):
             )
 
         if v_wavelengths:
-
             self.mat_plot_1d.plot_yx(
-                y=self.interferometer.uv_wavelengths[:, 1],
+                y=self.dataset.uv_wavelengths[:, 1],
                 x=None,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
@@ -155,11 +152,10 @@ class InterferometerPlotter(Plotter):
             )
 
         if uv_wavelengths:
-
             self.mat_plot_2d.plot_grid(
                 grid=Grid2DIrregular.from_yx_1d(
-                    y=self.interferometer.uv_wavelengths[:, 1] / 10**3.0,
-                    x=self.interferometer.uv_wavelengths[:, 0] / 10**3.0,
+                    y=self.dataset.uv_wavelengths[:, 1] / 10**3.0,
+                    x=self.dataset.uv_wavelengths[:, 0] / 10**3.0,
                 ),
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
@@ -168,10 +164,9 @@ class InterferometerPlotter(Plotter):
             )
 
         if amplitudes_vs_uv_distances:
-
             self.mat_plot_1d.plot_yx(
-                y=self.interferometer.amplitudes,
-                x=self.interferometer.uv_distances / 10**3.0,
+                y=self.dataset.amplitudes,
+                x=self.dataset.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Amplitudes vs UV-distances",
@@ -183,10 +178,9 @@ class InterferometerPlotter(Plotter):
             )
 
         if phases_vs_uv_distances:
-
             self.mat_plot_1d.plot_yx(
-                y=self.interferometer.phases,
-                x=self.interferometer.uv_distances / 10**3.0,
+                y=self.dataset.phases,
+                x=self.dataset.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Phases vs UV-distances",
@@ -198,17 +192,15 @@ class InterferometerPlotter(Plotter):
             )
 
         if dirty_image:
-
             self.mat_plot_2d.plot_array(
-                array=self.interferometer.dirty_image,
+                array=self.dataset.dirty_image,
                 visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
             )
 
         if dirty_noise_map:
-
             self.mat_plot_2d.plot_array(
-                array=self.interferometer.dirty_noise_map,
+                array=self.dataset.dirty_noise_map,
                 visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Noise Map", filename="dirty_noise_map_2d"
@@ -216,24 +208,12 @@ class InterferometerPlotter(Plotter):
             )
 
         if dirty_signal_to_noise_map:
-
             self.mat_plot_2d.plot_array(
-                array=self.interferometer.dirty_signal_to_noise_map,
+                array=self.dataset.dirty_signal_to_noise_map,
                 visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
                     filename="dirty_signal_to_noise_map_2d",
-                ),
-            )
-
-        if dirty_inverse_noise_map:
-
-            self.mat_plot_2d.plot_array(
-                array=self.interferometer.dirty_inverse_noise_map,
-                visuals_2d=self.get_visuals_2d_real_space(),
-                auto_labels=AutoLabels(
-                    title="Dirty Inverse Noise Map",
-                    filename="dirty_inverse_noise_map_2d",
                 ),
             )
 
@@ -249,8 +229,7 @@ class InterferometerPlotter(Plotter):
         dirty_image: bool = False,
         dirty_noise_map: bool = False,
         dirty_signal_to_noise_map: bool = False,
-        dirty_inverse_noise_map: bool = False,
-        auto_filename: str = "subplot_interferometer",
+        auto_filename: str = "subplot_dataset",
     ):
         """
         Plots the individual attributes of the plotter's `Interferometer` object in 1D and 2D on a subplot.
@@ -278,8 +257,6 @@ class InterferometerPlotter(Plotter):
             Whether or not to include a 2D plot (via `imshow`) of the dirty noise map.
         dirty_signal_to_noise_map
             Whether or not to include a 2D plot (via `imshow`) of the dirty signal-to-noise map.
-        dirty_inverse_noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the dirty inverse noise map.
         """
         self._subplot_custom_plot(
             data=data,
@@ -292,11 +269,10 @@ class InterferometerPlotter(Plotter):
             dirty_image=dirty_image,
             dirty_noise_map=dirty_noise_map,
             dirty_signal_to_noise_map=dirty_signal_to_noise_map,
-            dirty_inverse_noise_map=dirty_inverse_noise_map,
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
-    def subplot_interferometer(self):
+    def subplot_dataset(self):
         """
         Standard subplot of the attributes of the plotter's `Interferometer` object.
         """
@@ -305,7 +281,7 @@ class InterferometerPlotter(Plotter):
             uv_wavelengths=True,
             amplitudes_vs_uv_distances=True,
             phases_vs_uv_distances=True,
-            auto_filename="subplot_interferometer",
+            auto_filename="subplot_dataset",
         )
 
     def subplot_dirty_images(self):
@@ -316,6 +292,5 @@ class InterferometerPlotter(Plotter):
             dirty_image=True,
             dirty_noise_map=True,
             dirty_signal_to_noise_map=True,
-            dirty_inverse_noise_map=True,
             auto_filename="subplot_dirty_images",
         )

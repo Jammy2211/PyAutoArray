@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 
 def test__loads_values_from_config_if_not_manually_input():
-
     figure = aplt.Figure()
 
     assert figure.config_dict["figsize"] == (7, 7)
@@ -31,7 +30,6 @@ def test__loads_values_from_config_if_not_manually_input():
 
 
 def test__aspect_from():
-
     figure = aplt.Figure(aspect="auto")
 
     aspect = figure.aspect_from(shape_native=(2, 2))
@@ -50,7 +48,6 @@ def test__aspect_from():
 
 
 def test__open_and_close__open_and_close_figures_correct():
-
     figure = aplt.Figure()
 
     figure.open()

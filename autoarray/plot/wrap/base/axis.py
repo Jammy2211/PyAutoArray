@@ -42,7 +42,6 @@ class Axis(AbstractMatWrap):
             config_dict.pop("extent")
 
         if self.symmetric_around_centre:
-
             ymin = np.min(grid[:, 0])
             ymax = np.max(grid[:, 0])
             xmin = np.min(grid[:, 1])
@@ -56,7 +55,6 @@ class Axis(AbstractMatWrap):
             return plt.axis(extent_symmetric, **config_dict)
 
         else:
-
             if extent_dict is not None:
                 return plt.axis(extent_dict, **config_dict)
             return plt.axis(extent, **config_dict)
