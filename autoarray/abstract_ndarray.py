@@ -42,7 +42,9 @@ class AbstractNDArray(ABC):
         self._array = array
         try:
             register_pytree_node(
-                type(self), self.instance_flatten, self.instance_unflatten,
+                type(self),
+                self.instance_flatten,
+                self.instance_unflatten,
             )
         except ValueError:
             pass
@@ -111,7 +113,7 @@ class AbstractNDArray(ABC):
     @to_new_array
     @unwrap_array
     def __pow__(self, other):
-        return self._array ** other
+        return self._array**other
 
     @to_new_array
     @unwrap_array

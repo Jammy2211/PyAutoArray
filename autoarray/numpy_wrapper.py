@@ -1,7 +1,7 @@
 import logging
 
-import jax.numpy as jnp
 import numpy as np
+from os import environ
 
 
 def unwrap_arrays(args):
@@ -38,15 +38,32 @@ class Callable:
 
 
 class Numpy:
+    def __init__(self, jnp):
+        self.jnp = jnp
+
     def __getattr__(self, item):
         try:
-            attribute = getattr(jnp, item)
+            attribute = getattr(self.jnp, item)
         except AttributeError as e:
-            logging.exception(e)
+            logging.debug(e)
             attribute = getattr(np, item)
         if callable(attribute):
             return Callable(attribute)
         return attribute
 
 
-numpy = Numpy()
+use_jax = environ.get("USE_JAX", "0") == "1"
+
+if use_jax:
+    try:
+        import jax.numpy as jnp
+
+        numpy = Numpy(jnp)
+
+        print("JAX mode enabled")
+    except ImportError:
+        raise ImportError(
+            "JAX is not installed. Please install it with `pip install jax`."
+        )
+else:
+    numpy = Numpy(np)
