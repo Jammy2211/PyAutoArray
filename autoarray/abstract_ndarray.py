@@ -13,7 +13,6 @@ from autoarray.structures.arrays import array_2d_util
 
 class AbstractNDArray(np.ndarray, ABC):
     def __reduce__(self):
-
         pickled_state = super().__reduce__()
 
         class_dict = {}
@@ -25,7 +24,6 @@ class AbstractNDArray(np.ndarray, ABC):
 
     # noinspection PyMethodOverriding
     def __setstate__(self, state):
-
         for key, value in state[-1].items():
             setattr(self, key, value)
         super().__setstate__(state[0:-1])

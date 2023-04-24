@@ -14,7 +14,6 @@ from autoarray import type as ty
 
 
 def check_grid_slim(grid, shape_native):
-
     if shape_native is None:
         raise exc.GridException(
             f"""
@@ -36,7 +35,6 @@ def check_grid_slim(grid, shape_native):
 
 
 def convert_grid(grid: Union[np.ndarray, List]) -> np.ndarray:
-
     if type(grid) is list:
         grid = np.asarray(grid)
 
@@ -54,9 +52,7 @@ def check_grid_2d(grid_2d: np.ndarray):
 
 
 def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
-
     if len(grid_2d.shape) == 2:
-
         if grid_2d.shape[0] != mask_2d.sub_pixels_in_mask:
             raise exc.GridException(
                 f"""
@@ -71,7 +67,6 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
             )
 
     elif len(grid_2d.shape) == 3:
-
         if (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.sub_shape_native:
             raise exc.GridException(
                 f"""
@@ -264,15 +259,12 @@ def grid_2d_slim_via_mask_from(
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
-
             if not mask_2d[y, x]:
-
                 y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
                 x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
                 for y1 in range(sub_size):
                     for x1 in range(sub_size):
-
                         grid_slim[sub_index, 0] = -(
                             y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
                         )
@@ -608,7 +600,6 @@ def grid_scaled_2d_slim_radial_projected_from(
     radii = centre[1]
 
     for slim_index in range(shape_slim):
-
         grid_scaled_2d_slim_radii[slim_index, 1] = radii
         radii += pixel_scale / sub_size
 
@@ -664,9 +655,7 @@ def relocated_grid_via_jit_from(grid, border_grid):
     )
 
     for pixel_index in range(grid.shape[0]):
-
         if grid_radii[pixel_index] > border_min_radii:
-
             closest_pixel_index = np.argmin(
                 np.square(grid[pixel_index, 0] - border_grid[:, 0])
                 + np.square(grid[pixel_index, 1] - border_grid[:, 1])
@@ -677,7 +666,6 @@ def relocated_grid_via_jit_from(grid, border_grid):
             )
 
             if move_factor < 1.0:
-
                 grid_relocated[pixel_index, :] = (
                     move_factor * (grid[pixel_index, :] - border_origin[:])
                     + border_origin[:]
@@ -690,11 +678,9 @@ def relocated_grid_via_jit_from(grid, border_grid):
 def furthest_grid_2d_slim_index_from(
     grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
 ) -> int:
-
     distance_to_centre = 0.0
 
     for slim_index in slim_indexes:
-
         y = grid_2d_slim[slim_index, 0]
         x = grid_2d_slim[slim_index, 1]
         distance_to_centre_new = (x - coordinate[1]) ** 2 + (y - coordinate[0]) ** 2
@@ -819,13 +805,11 @@ def grid_2d_slim_upscaled_from(
     x_upscale_step = pixel_scales[1] / upscale_factor
 
     for slim_index in range(grid_slim.shape[0]):
-
         y_grid = grid_slim[slim_index, 0]
         x_grid = grid_slim[slim_index, 1]
 
         for y in range(upscale_factor):
             for x in range(upscale_factor):
-
                 grid_2d_slim_upscaled[upscale_index, 0] = (
                     y_grid
                     + y_upscale_half
@@ -861,7 +845,6 @@ def grid_2d_of_points_within_radius(
 
 
 def compute_polygon_area(points):
-
     x = points[:, 1]
     y = points[:, 0]
 

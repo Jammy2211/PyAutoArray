@@ -117,7 +117,6 @@ class AbstractInversionInterferometer(AbstractInversion):
         )
 
         for linear_obj in self.linear_obj_list:
-
             reconstruction = reconstruction_dict[linear_obj]
 
             mapped_reconstructed_image = (

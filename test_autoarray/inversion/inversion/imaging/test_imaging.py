@@ -12,7 +12,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__operated_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7_3x3):
-
     inversion = aa.m.MockInversionImaging(
         convolver=convolver_7x7, linear_obj_list=[rectangular_mapper_7x7_3x3]
     )
@@ -45,7 +44,6 @@ def test__operated_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7
 def test__operated_mapping_matrix_property__with_operated_mapping_matrix_override(
     convolver_7x7, rectangular_mapper_7x7_3x3
 ):
-
     convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
@@ -74,7 +72,6 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
 
 
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):
-
     noise_map = np.ones(2)
     convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 10)))
 
@@ -115,7 +112,6 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
 
 def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_noise_map():
-
     matrix_shape = (9, 3)
 
     mask = aa.Mask2D(
@@ -131,7 +127,6 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
     )
 
     with pytest.raises(exc.InversionException):
-
         # noinspection PyTypeChecker
         InversionImagingWTilde(
             data=np.ones(9),

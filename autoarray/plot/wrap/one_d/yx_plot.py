@@ -63,7 +63,6 @@ class YXPlot(AbstractMatWrap1D):
         elif plot_axis_type == "scatter":
             plt.scatter(x, y, label=label, **self.config_dict)
         elif plot_axis_type == "errorbar" or plot_axis_type == "errorbar_logy":
-
             plt.errorbar(
                 x,
                 y,
@@ -71,7 +70,7 @@ class YXPlot(AbstractMatWrap1D):
                 xerr=x_errors,
                 marker="o",
                 fmt="o",
-               # ls=ls_errorbar,
+                # ls=ls_errorbar,
                 **self.config_dict
             )
             if y_extra is not None:

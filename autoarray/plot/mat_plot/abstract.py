@@ -151,7 +151,6 @@ class AbstractMatPlot:
         other = copy.deepcopy(other)
 
         for attr, value in self.__dict__.items():
-
             try:
                 if value.kwargs.get("is_default") is not True:
                     other.__dict__[attr] = value

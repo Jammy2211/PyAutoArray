@@ -48,7 +48,6 @@ class FillBetween(AbstractMatWrap1D):
         config_dict = self.config_dict
 
         if self.match_color_to_yx:
-
             config_dict["color"] = plt.gca().lines[-1].get_color()
 
         plt.fill_between(x=x, y1=y1, y2=y2, **config_dict)

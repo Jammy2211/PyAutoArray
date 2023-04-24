@@ -71,7 +71,6 @@ class AbstractLinearObjFuncList(LinearObj):
         neighbors = -1 * np.ones(shape=(self.params, 2))
 
         for pixel_index in range(self.params):
-
             neighbors[pixel_index, 0] = pixel_index - 1
             neighbors[pixel_index, 1] = pixel_index + 1
 

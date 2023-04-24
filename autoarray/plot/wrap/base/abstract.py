@@ -30,7 +30,6 @@ def set_backend():
 
 
 def remove_spaces_and_commas_from(colors):
-
     colors = [color.strip(",").strip(" ") for color in colors]
     colors = list(filter(None, colors))
     if len(colors) == 1:
@@ -84,7 +83,6 @@ class AbstractMatWrap:
 
     @property
     def config_dict(self):
-
         config_dict = conf.instance["visualize"][self.config_folder][
             self.__class__.__name__
         ][self.config_category]

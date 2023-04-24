@@ -6,7 +6,6 @@ import autoarray as aa
 
 
 def test__constructor():
-
     mask = aa.Mask1D.all_false(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
     grid = aa.Grid1D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
@@ -34,7 +33,6 @@ def test__constructor():
 
 
 def test__no_mask():
-
     grid_1d = aa.Grid1D.no_mask(
         values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=2
     )
@@ -61,7 +59,6 @@ def test__no_mask():
 
 
 def test__from_mask():
-
     mask = aa.Mask1D.all_false(shape_slim=(4,), pixel_scales=1.0, sub_size=1)
     grid = aa.Grid1D.from_mask(mask=mask)
 
@@ -97,7 +94,6 @@ def test__from_mask():
 
 
 def test__uniform():
-
     grid_1d = aa.Grid1D.uniform(
         shape_native=(2,), pixel_scales=1.0, sub_size=1, origin=(0.0,)
     )
@@ -133,7 +129,6 @@ def test__uniform():
 
 
 def test__uniform_from_zero():
-
     grid_1d = aa.Grid1D.uniform_from_zero(
         shape_native=(2,), pixel_scales=1.0, sub_size=1
     )
@@ -169,7 +164,6 @@ def test__uniform_from_zero():
 
 
 def test__grid_2d_radial_projected_from():
-
     grid_1d = aa.Grid1D.no_mask(
         values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0, sub_size=1
     )
@@ -203,7 +197,6 @@ def test__grid_2d_radial_projected_from():
 
 
 def test__structure_2d_from():
-
     mask = np.array([True, False, False, True])
 
     mask = aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=1)
@@ -224,7 +217,6 @@ def test__structure_2d_from():
 
 
 def test__structure_2d_list_from():
-
     mask = np.array([True, False, False, True])
 
     mask = aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=1)
@@ -247,7 +239,6 @@ def test__structure_2d_list_from():
 
 
 def test__recursive_shape_storage():
-
     mask = aa.Mask1D.all_false(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
     grid = aa.Grid1D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 

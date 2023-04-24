@@ -25,10 +25,8 @@ def _choldowndate(U, x):
 
 @njit(fastmath=True)
 def _cholupdate(U, x):
-
     n = x.size
     for k in range(n - 1):
-
         Ukk = U[k, k]
         xk = x[k]
 
@@ -48,7 +46,6 @@ def _cholupdate(U, x):
 
 
 def cholinsert(U, index, x):
-
     S = np.insert(np.insert(U, index, 0, axis=0), index, 0, axis=1)
 
     S[:index, index] = S12 = linalg.solve_triangular(
@@ -87,11 +84,9 @@ def cholinsertlast(U, x):
 
 
 def choldeleteindexes(U, indexes):
-
     indexes = sorted(indexes, reverse=True)
 
     for index in indexes:
-
         L = np.delete(np.delete(U, index, axis=0), index, axis=1)
 
         # If the deleted index is at the end of matrix, then we do not need to update the U.

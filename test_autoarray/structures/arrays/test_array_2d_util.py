@@ -12,7 +12,6 @@ test_data_path = os.path.join(
 
 
 def test__resized_array_2d_from__trimming():
-
     array = np.ones((7, 7))
     array[3, 3] = 2.0
 
@@ -92,7 +91,6 @@ def test__resized_array_2d_from__trimming():
 
 
 def test__resized_array_2d_from__trimming_with_new_origin():
-
     array = np.ones((7, 7))
     array[4, 4] = 2.0
     resized_array_2d = util.array_2d.resized_array_2d_from(
@@ -135,7 +133,6 @@ def test__resized_array_2d_from__trimming_with_new_origin():
 
 
 def test__resized_array_2d_from__padding():
-
     array = np.ones((3, 3))
     array[1, 1] = 2.0
 
@@ -254,7 +251,6 @@ def test__resized_array_2d_from__padding():
 
 
 def test__resized_array_2d_from__padding_with_new_origin():
-
     array = np.ones((3, 3))
     array[2, 2] = 2.0
     resized_array_2d = util.array_2d.resized_array_2d_from(
@@ -294,7 +290,6 @@ def test__resized_array_2d_from__padding_with_new_origin():
 
 
 def test__numpy_array_2d_via_fits_from():
-
     arr = util.array_2d.numpy_array_2d_via_fits_from(
         file_path=os.path.join(test_data_path, "3x3_ones.fits"), hdu=0
     )
@@ -309,7 +304,6 @@ def test__numpy_array_2d_via_fits_from():
 
 
 def test__numpy_array_2d_to_fits():
-
     file_path = os.path.join(test_data_path, "array_out.fits")
 
     if os.path.exists(file_path):
@@ -325,7 +319,6 @@ def test__numpy_array_2d_to_fits():
 
 
 def test__header_obj_from():
-
     header_obj = util.array_2d.header_obj_from(
         file_path=os.path.join(test_data_path, "3x3_ones.fits"), hdu=0
     )
@@ -335,7 +328,6 @@ def test__header_obj_from():
 
 
 def test__replace_noise_map_2d_values_where_image_2d_values_are_negative():
-
     image_2d = np.ones(shape=(2, 2))
 
     noise_map_2d = np.array([[1.0, 2.0], [3.0, 4.0]])
@@ -400,7 +392,6 @@ def test__replace_noise_map_2d_values_where_image_2d_values_are_negative():
 
 
 def test__same_as_above__image_not_all_negative():
-
     image_2d = np.array([[1.0, -2.0], [5.0, -4.0]])
 
     noise_map_2d = np.array([[3.0, 1.0], [4.0, 8.0]])
@@ -427,7 +418,6 @@ def test__same_as_above__image_not_all_negative():
 
 
 def test__index_2d_for_index_slim_from():
-
     indexes_1d = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
     index_2d_for_index_1d = util.array_2d.index_2d_for_index_slim_from(
@@ -475,7 +465,6 @@ def test__index_2d_for_index_slim_from():
 
 
 def test__index_slim_for_index_2d_from():
-
     indexes_2d = np.array(
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
@@ -514,7 +503,6 @@ def test__index_slim_for_index_2d_from():
 
 
 def test__array_2d_slim_from__sub_size_1():
-
     array_2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
     mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
@@ -570,7 +558,6 @@ def test__array_2d_slim_from__sub_size_1():
 
 
 def test__array_2d_slim_from__sub_size_2_or_3():
-
     sub_array_2d = np.array(
         [
             [1, 2, 3, 4, 5, 6],
@@ -710,7 +697,6 @@ def test__array_2d_slim_from__sub_size_2_or_3():
 
 
 def test__array_2d_slim_from__complex_array():
-
     array_2d = np.array(
         [
             [1 + 1j, 2 + 2j, 3 + 3],
@@ -729,7 +715,6 @@ def test__array_2d_slim_from__complex_array():
 
 
 def test__array_2d_native_from__sub_size_1():
-
     array_2d_slim = np.array([1.0, 2.0, 3.0, 4.0])
 
     mask = np.full(fill_value=False, shape=(2, 2))
@@ -773,7 +758,6 @@ def test__array_2d_native_from__sub_size_1():
 
 
 def test__array_2d_native_from__sub_size_2():
-
     array_2d_slim = np.array(
         [1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0]
     )
@@ -798,7 +782,6 @@ def test__array_2d_native_from__sub_size_2():
 
 
 def test__array_2d_native_from__compelx_array():
-
     array_2d_slim = np.array(
         [1.0 + 1j, 2.0 + 2j, 3.0 + 3j, 4.0 + 4j], dtype="complex128"
     )

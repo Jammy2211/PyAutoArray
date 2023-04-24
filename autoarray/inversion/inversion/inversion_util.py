@@ -69,7 +69,6 @@ def curvature_matrix_with_added_to_diag_from(
 def curvature_matrix_mirrored_from(
     curvature_matrix: np.ndarray,
 ) -> np.ndarray:
-
     curvature_matrix_mirrored = np.zeros(
         (curvature_matrix.shape[0], curvature_matrix.shape[1])
     )
@@ -139,7 +138,6 @@ def mapped_reconstructed_data_via_image_to_pix_unique_from(
 
     for data_0 in range(data_pixels):
         for pix_0 in range(pix_lengths[data_0]):
-
             pix_for_data = data_to_pix_unique[data_0, pix_0]
 
             mapped_reconstructed_data[data_0] += (
@@ -224,7 +222,6 @@ def reconstruction_positive_negative_from(
         conf.instance["general"]["inversion"]["check_reconstruction"]
         or force_check_reconstruction
     ):
-
         for mapper_param_range in mapper_param_range_list:
             if np.allclose(
                 a=reconstruction[mapper_param_range[0] : mapper_param_range[1]],
@@ -285,10 +282,8 @@ def reconstruction_positive_only_from(
     """
 
     if len(data_vector):
-
         try:
             if settings.positive_only_uses_p_initial:
-
                 P_initial = (
                     scipy.linalg.cho_solve(
                         (curvature_reg_matrix_cholesky, True),
@@ -298,7 +293,6 @@ def reconstruction_positive_only_from(
                 )
 
             else:
-
                 P_initial = np.zeros(0, dtype=int)
 
             reconstruction = fnnls_cholesky(
@@ -342,4 +336,3 @@ def preconditioner_matrix_via_mapping_matrix_from(
     return (
         preconditioner_noise_normalization * curvature_matrix
     ) + regularization_matrix
-

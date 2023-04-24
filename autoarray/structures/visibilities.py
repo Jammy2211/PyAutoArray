@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class AbstractVisibilities(Structure):
-
     # noinspection PyUnusedLocal
     def __new__(cls, visibilities: Union[np.ndarray, List[complex]], *args, **kwargs):
         """
@@ -58,7 +57,6 @@ class AbstractVisibilities(Structure):
         return obj
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "ordered_1d"):
             self.ordered_1d = obj.ordered_1d
 
@@ -209,7 +207,6 @@ class Visibilities(AbstractVisibilities):
 
 
 class VisibilitiesNoiseMap(Visibilities):
-
     # noinspection PyUnusedLocal
     def __new__(cls, visibilities: Union[np.ndarray, List[complex]], *args, **kwargs):
         """
@@ -254,7 +251,6 @@ class VisibilitiesNoiseMap(Visibilities):
         return obj
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "ordered_1d"):
             self.ordered_1d = obj.ordered_1d
 

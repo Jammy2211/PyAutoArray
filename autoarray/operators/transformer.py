@@ -15,7 +15,6 @@ class PyLopsPlaceholder:
 try:
     from pynufft.linalg.nufft_cpu import NUFFT_cpu
 except ModuleNotFoundError:
-
     NUFFT_cpu = NUFFTPlaceholder
 
 try:
@@ -23,7 +22,6 @@ try:
 
     PyLopsOperator = pylops.LinearOperator
 except ModuleNotFoundError:
-
     PyLopsOperator = PyLopsPlaceholder
 
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -35,7 +33,6 @@ from autoarray.operators import transformer_util
 
 
 def pynufft_exception():
-
     raise ModuleNotFoundError(
         "\n--------------------\n"
         "You are attempting to perform interferometer analysis.\n\n"
@@ -46,7 +43,6 @@ def pynufft_exception():
 
 
 def pylops_exception():
-
     raise ModuleNotFoundError(
         "\n--------------------\n"
         "You are attempting to perform interferometer analysis.\n\n"
@@ -58,7 +54,6 @@ def pylops_exception():
 
 class TransformerDFT(PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
-
         if isinstance(self, PyLopsPlaceholder):
             pylops_exception()
 
@@ -74,7 +69,6 @@ class TransformerDFT(PyLopsOperator):
         self.preload_transform = preload_transform
 
         if preload_transform:
-
             self.preload_real_transforms = transformer_util.preload_real_transforms(
                 grid_radians=self.grid, uv_wavelengths=self.uv_wavelengths
             )
@@ -98,9 +92,7 @@ class TransformerDFT(PyLopsOperator):
         )
 
     def visibilities_from(self, image):
-
         if self.preload_transform:
-
             visibilities = transformer_util.visibilities_via_preload_jit_from(
                 image_1d=image.binned,
                 preloaded_reals=self.preload_real_transforms,
@@ -108,7 +100,6 @@ class TransformerDFT(PyLopsOperator):
             )
 
         else:
-
             visibilities = transformer_util.visibilities_jit(
                 image_1d=image.binned,
                 grid_radians=self.grid,
@@ -118,7 +109,6 @@ class TransformerDFT(PyLopsOperator):
         return Visibilities(visibilities=visibilities)
 
     def image_from(self, visibilities, use_adjoint_scaling: bool = False):
-
         image_slim = transformer_util.image_via_jit_from(
             n_pixels=self.grid.shape[0],
             grid_radians=self.grid,
@@ -135,9 +125,7 @@ class TransformerDFT(PyLopsOperator):
         return Array2D(values=image_native, mask=self.real_space_mask)
 
     def transform_mapping_matrix(self, mapping_matrix):
-
         if self.preload_transform:
-
             return transformer_util.transformed_mapping_matrix_via_preload_jit_from(
                 mapping_matrix=mapping_matrix,
                 preloaded_reals=self.preload_real_transforms,
@@ -145,7 +133,6 @@ class TransformerDFT(PyLopsOperator):
             )
 
         else:
-
             return transformer_util.transformed_mapping_matrix_jit(
                 mapping_matrix=mapping_matrix,
                 grid_radians=self.grid,
@@ -155,7 +142,6 @@ class TransformerDFT(PyLopsOperator):
 
 class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
     def __init__(self, uv_wavelengths, real_space_mask):
-
         if isinstance(self, NUFFTPlaceholder):
             pynufft_exception()
 
@@ -213,7 +199,6 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         )
 
     def initialize_plan(self, ratio=2, interp_kernel=(6, 6)):
-
         if not isinstance(ratio, int):
             ratio = int(ratio)
 
@@ -251,23 +236,19 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         )
 
     def image_from(self, visibilities, use_adjoint_scaling: bool = False):
-
         image = np.real(self.adjoint(visibilities))[::-1, :]
 
         if use_adjoint_scaling:
-
             image *= self.adjoint_scaling
 
         return Array2D(values=image, mask=self.real_space_mask)
 
     def transform_mapping_matrix(self, mapping_matrix):
-
         transformed_mapping_matrix = 0 + 0j * np.zeros(
             (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
         )
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
-
             image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
@@ -315,7 +296,6 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         warnings.filterwarnings("ignore")
 
         def a_complex_from(a_real, a_imag):
-
             return a_real + 1j * a_imag
 
         y = a_complex_from(

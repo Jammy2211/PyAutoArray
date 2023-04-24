@@ -66,7 +66,6 @@ def fnnls_cholesky(
     #     Cholesky factorisation simpler and thus save time.
 
     while (not np.all(P)) and np.max(w[~P]) > tolerance:
-
         # make copy of passive set to check for change at end of loop
 
         current_P = P.copy()

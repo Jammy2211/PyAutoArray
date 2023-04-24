@@ -47,9 +47,7 @@ class AbstractDataset:
         self.noise_covariance_matrix = noise_covariance_matrix
 
         if noise_map is None:
-
             try:
-
                 noise_map = Array2D.no_mask(
                     values=np.diag(noise_covariance_matrix),
                     shape_native=data.shape_native,
@@ -67,7 +65,6 @@ class AbstractDataset:
                 )
 
             except ValueError as e:
-
                 raise exc.DatasetException(
                     """
                     No noise map or noise_covariance_matrix was passed to the Imaging object.
@@ -77,7 +74,6 @@ class AbstractDataset:
         self.noise_map = noise_map
 
         if conf.instance["general"]["structures"]["use_dataset_grids"]:
-
             mask_grid = mask.mask_new_sub_size_from(
                 mask=mask, sub_size=settings.sub_size
             )
@@ -137,7 +133,6 @@ class AbstractDataset:
         return np.linalg.inv(self.noise_covariance_matrix)
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
-
         imaging = copy.copy(self)
 
         imaging.data = imaging.data.trimmed_after_convolution_from(

@@ -31,14 +31,12 @@ except Exception:
     parallel = False
 
 try:
-
     import numba
 
 except ModuleNotFoundError:
-
     logger.warning(
         f"\n******************************************************************************\n"
-        f"Numba is not being used, either because it is disabled in `config.general.ini` "
+        f"Numba is not being used, either because it is disabled in `config/general.yaml` "
         f"or because it is not installed.\n\n. "
         f"This will lead to slow performance.\n\n. "
         f"Install numba as described at the following webpage for improved performance. \n"
@@ -48,7 +46,6 @@ except ModuleNotFoundError:
 
 def jit(nopython=nopython, cache=cache, parallel=parallel):
     def wrapper(func):
-
         try:
             use_numba = conf.instance["general"]["numba"]["use_numba"]
 
@@ -56,17 +53,14 @@ def jit(nopython=nopython, cache=cache, parallel=parallel):
                 return func
 
         except KeyError:
-
             pass
 
         try:
-
             import numba
 
             return numba.jit(func, nopython=nopython, cache=cache, parallel=parallel)
 
         except ModuleNotFoundError:
-
             return func
 
     return wrapper
@@ -126,18 +120,14 @@ def profile_func(func: Callable):
         profile_call_max = 5
 
         for i in range(profile_call_max):
-
             key_func = f"{func.__name__}_{i}"
 
             if key_func not in obj.profiling_dict:
-
                 if last_key_before_call == last_key_after_call:
                     obj.profiling_dict[key_func] = time_func
                 else:
                     for key, value in reversed(list(obj.profiling_dict.items())):
-
                         if last_key_before_call == key:
-
                             obj.profiling_dict[key_func] = time_func
                             break
 

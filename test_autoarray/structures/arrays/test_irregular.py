@@ -11,7 +11,6 @@ test_values_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), 
 
 
 def test__input_as_list__convert_correctly():
-
     values = aa.ArrayIrregular(values=[1.0, -1.0])
 
     assert type(values) == aa.ArrayIrregular
@@ -20,7 +19,6 @@ def test__input_as_list__convert_correctly():
 
 
 def test__values_from():
-
     values = aa.ArrayIrregular(values=[1.0, 2.0])
 
     values_from_1d = values.values_from(array_slim=np.array([1.0, 2.0]))
@@ -35,7 +33,6 @@ def test__values_from():
 
 
 def test__coordinates_from_grid_1d():
-
     values = aa.ArrayIrregular(values=[1.0, 2.0])
 
     coordinate_from_1d = values.grid_from(grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]]))
@@ -52,7 +49,6 @@ def test__coordinates_from_grid_1d():
 
 
 def test__output_values_to_json():
-
     values = aa.ArrayIrregular(values=[6.0, 7.0, 8.0])
 
     output_values_dir = path.join(

@@ -87,7 +87,7 @@ class Pixelization:
 
         The following objects / packages are used with a ``Pixelization``:
 
-        - ``Mapper``: Computes the mappings between the the image's (y,x) grid and the mesh's pixels.
+        - ``Mapper``: Computes the mappings between the image's (y,x) grid and the mesh's pixels.
         - ``Inversion``: Use the ``Pixelization`` to reconstruct the data on the mesh via linear algebra.
         - ``Regularization``: Apply smoothing to the solutions computed using an ``Inversion``.
 
@@ -162,7 +162,6 @@ class Pixelization:
         return self.mesh.mapper_grids_from
 
     def __repr__(self):
-
         string = "{}\n{}".format(self.__class__.__name__, str(self.mesh))
         if self.regularization is not None:
             string += "{}\n{}".format(self.__class__.__name__, str(self.regularization))

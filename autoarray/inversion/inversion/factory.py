@@ -72,7 +72,6 @@ def inversion_from(
         w_tilde = None
 
     if isinstance(dataset, Imaging):
-
         return inversion_imaging_unpacked_from(
             data=dataset.data,
             noise_map=dataset.noise_map,
@@ -151,7 +150,6 @@ def inversion_unpacked_from(
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
     if isinstance(dataset, Imaging):
-
         return inversion_imaging_unpacked_from(
             data=data,
             noise_map=noise_map,
@@ -241,11 +239,9 @@ def inversion_imaging_unpacked_from(
         use_w_tilde = False
 
     if preloads.w_tilde is not None:
-
         w_tilde = preloads.w_tilde
 
     if use_w_tilde:
-
         return InversionImagingWTilde(
             data=data,
             noise_map=noise_map,
@@ -335,9 +331,7 @@ def inversion_interferometer_unpacked_from(
         use_w_tilde = settings.use_w_tilde
 
     if not settings.use_linear_operators:
-
         if use_w_tilde:
-
             return InversionInterferometerWTilde(
                 data=data,
                 noise_map=noise_map,
@@ -350,7 +344,6 @@ def inversion_interferometer_unpacked_from(
             )
 
         else:
-
             return InversionInterferometerMapping(
                 data=data,
                 noise_map=noise_map,
@@ -362,7 +355,6 @@ def inversion_interferometer_unpacked_from(
             )
 
     else:
-
         return InversionInterferometerMappingPyLops(
             data=data,
             noise_map=noise_map,

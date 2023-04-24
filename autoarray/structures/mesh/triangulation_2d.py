@@ -33,7 +33,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         These reflect the closely related geometric properties of the Delaunay and Voronoi grids, whereby the corner
         points of Delaunay triangles by definition represent the centres of the corresponding Voronoi mesh.
 
-        Different pixelizations, mappers and regularization schemes combine the the Delaunay and Voronoi
+        Different pixelizations, mappers and regularization schemes combine the Delaunay and Voronoi
         geometries in different ways to perform an Inversion. Thus, having all geometric methods contained in the
         single class here is necessary.
 
@@ -79,7 +79,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
     @property
     def geometry(self):
-
         shape_native_scaled = (
             np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),

@@ -77,7 +77,6 @@ class Output:
         return self.format
 
     def output_path_from(self, format):
-
         if format in "show":
             return None
 
@@ -91,7 +90,6 @@ class Output:
         return output_path
 
     def filename_from(self, auto_filename):
-
         filename = auto_filename if self.filename is None else self.filename
 
         if self.prefix is not None:
@@ -119,7 +117,6 @@ class Output:
         filename = self.filename_from(auto_filename=auto_filename)
 
         for format in self.format_list:
-
             output_path = self.output_path_from(format=format)
 
             if not self.bypass:
@@ -156,7 +153,6 @@ class Output:
         filename = self.filename_from(auto_filename=auto_filename)
 
         for format in self.format_list:
-
             output_path = self.output_path_from(format=format)
 
             if format == "show":

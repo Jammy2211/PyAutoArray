@@ -108,7 +108,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         mapper_param_range = self.param_range_list_from(cls=AbstractMapper)
 
         for mapper_index, mapper in enumerate(mapper_list):
-
             data_vector_mapper = (
                 inversion_imaging_util.data_vector_via_w_tilde_data_imaging_from(
                     w_tilde_data=self.w_tilde_data,
@@ -120,9 +119,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             )
             param_range = mapper_param_range[mapper_index]
 
-            data_vector[
-                param_range[0] : param_range[1],
-            ] = data_vector_mapper
+            data_vector[param_range[0] : param_range[1],] = data_vector_mapper
 
         return data_vector
 
@@ -221,7 +218,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         for linear_func_index, linear_func in enumerate(
             self.cls_list_from(cls=AbstractLinearObjFuncList)
         ):
-
             operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
                 linear_func
             ]
@@ -234,9 +230,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             param_range = linear_func_param_range[linear_func_index]
 
-            data_vector[
-                param_range[0] : param_range[1],
-            ] = diag
+            data_vector[param_range[0] : param_range[1],] = diag
 
         return data_vector
 
@@ -264,7 +258,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
 
         for i in range(len(mapper_list)):
-
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
@@ -316,7 +309,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
         """
 
         if self.preloads.curvature_matrix is not None:
-
             # Need to copy because of how curvature_reg_matirx overwrites memory.
 
             return copy.copy(self.preloads.curvature_matrix)
@@ -403,12 +395,10 @@ class InversionImagingWTilde(AbstractInversionImaging):
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
 
         for i in range(len(mapper_list)):
-
             mapper_i = mapper_list[i]
             mapper_param_range_i = mapper_param_range_list[i]
 
             for j in range(i + 1, len(mapper_list)):
-
                 mapper_j = mapper_list[j]
                 mapper_param_range_j = mapper_param_range_list[j]
 
@@ -451,16 +441,13 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
         for i in range(len(mapper_list)):
-
             mapper = mapper_list[i]
             mapper_param_range = mapper_param_range_list[i]
 
             for func_index, linear_func in enumerate(linear_func_list):
-
                 linear_func_param_range = linear_func_param_range_list[func_index]
 
                 if self.preloads.data_linear_func_matrix_dict is not None:
-
                     off_diag = inversion_imaging_util.curvature_matrix_off_diags_via_data_linear_func_matrix_from(
                         data_linear_func_matrix=self.data_linear_func_matrix_dict[
                             linear_func
@@ -472,7 +459,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     )
 
                 elif self.preloads.mapper_operated_mapping_matrix_dict is not None:
-
                     operated_mapping_matrix = self.mapper_operated_mapping_matrix_dict[
                         mapper
                     ]
@@ -484,7 +470,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     off_diag = np.dot(operated_mapping_matrix.T, curvature_weights)
 
                 else:
-
                     curvature_weights = (
                         self.linear_func_operated_mapping_matrix_dict[linear_func]
                         / self.noise_map[:, None] ** 2
@@ -507,7 +492,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 ] = off_diag
 
         for index_0, linear_func_0 in enumerate(linear_func_list):
-
             linear_func_param_range_0 = linear_func_param_range_list[index_0]
 
             weighted_vector_0 = (
@@ -516,7 +500,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
             )
 
             for index_1, linear_func_1 in enumerate(linear_func_list):
-
                 linear_func_param_range_1 = linear_func_param_range_list[index_1]
 
                 weighted_vector_1 = (
@@ -574,11 +557,9 @@ class InversionImagingWTilde(AbstractInversionImaging):
         )
 
         for linear_obj in self.linear_obj_list:
-
             reconstruction = reconstruction_dict[linear_obj]
 
             if isinstance(linear_obj, AbstractMapper):
-
                 mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_via_image_to_pix_unique_from(
                     data_to_pix_unique=linear_obj.unique_mappings.data_to_pix_unique,
                     data_weights=linear_obj.unique_mappings.data_weights,
@@ -596,7 +577,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 )
 
             else:
-
                 operated_mapping_matrix = self.linear_func_operated_mapping_matrix_dict[
                     linear_obj
                 ]

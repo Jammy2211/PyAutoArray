@@ -8,7 +8,6 @@ from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 class MockGeometry(AbstractGeometry2D):
     def __init__(self, extent):
-
         self._extent = extent
 
     @property
@@ -67,6 +66,5 @@ class MockGrid2DMesh(Abstract2DMesh):
 
 class MockMeshGrid:
     def __init__(self, neighbors=None, neighbors_sizes=None):
-
         self.neighbors = Neighbors(arr=neighbors, sizes=neighbors_sizes)
         self.shape = (len(self.neighbors.sizes),)

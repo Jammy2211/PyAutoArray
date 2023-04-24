@@ -18,7 +18,6 @@ def make_plot_path_setup():
 def test__multi_plotter__subplot_of_plotter_list_figure(
     imaging_7x7, plot_path, plot_patch
 ):
-
     mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(plot_path, format="png"))
 
     plotter_0 = aplt.ImagingPlotter(imaging=imaging_7x7, mat_plot_2d=mat_plot_2d)
@@ -50,7 +49,6 @@ class MockYX1DPlotter(aplt.YX1DPlotter):
         visuals_1d: aplt.Visuals1D = aplt.Visuals1D(),
         include_1d: aplt.Include1D = aplt.Include1D(),
     ):
-
         super().__init__(
             y=y,
             x=x,
@@ -60,16 +58,13 @@ class MockYX1DPlotter(aplt.YX1DPlotter):
         )
 
     def figures_1d(self, figure_name=False):
-
         if figure_name:
-
             self.figure_1d()
 
 
 def test__yx_plotter__subplot_of_plotter_list_figure(
     imaging_7x7, plot_path, plot_patch
 ):
-
     mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(plot_path, format="png"))
 
     plotter_0 = MockYX1DPlotter(

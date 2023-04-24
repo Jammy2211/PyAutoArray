@@ -87,7 +87,6 @@ class FitVectorYXPlotterMeta(Plotter):
         fit_plotter_y = FitImaging(self.fit.data.y_array)
 
         if image:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=self.get_visuals_2d(),
@@ -95,7 +94,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if noise_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -103,7 +101,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if signal_to_noise_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -113,7 +110,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if model_image:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
                 visuals_2d=self.get_visuals_2d(),
@@ -121,7 +117,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if residual_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -129,7 +124,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if normalized_residual_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -139,7 +133,6 @@ class FitVectorYXPlotterMeta(Plotter):
             )
 
         if chi_squared_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
                 visuals_2d=self.get_visuals_2d(),

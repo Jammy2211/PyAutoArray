@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test__loads_default_values_from_config_if_not_input():
-
     include = aplt.Include2D()
 
     assert include.origin is True

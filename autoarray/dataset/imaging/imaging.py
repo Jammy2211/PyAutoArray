@@ -52,7 +52,6 @@ class Imaging(AbstractDataset):
         self.pad_for_convolver = pad_for_convolver
 
         if pad_for_convolver and psf is not None:
-
             try:
                 data.mask.derive_mask.blurring_from(
                     kernel_shape_native=psf.shape_native
@@ -82,9 +81,7 @@ class Imaging(AbstractDataset):
         )
 
         if self.noise_map.native is not None:
-
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
-
                 zero_entries = np.argwhere(self.noise_map.native <= 0.0)
 
                 raise exc.DatasetException(
@@ -98,7 +95,6 @@ class Imaging(AbstractDataset):
                 )
 
         if psf is not None and settings.use_normalized_psf:
-
             psf = Kernel2D.no_mask(
                 values=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
@@ -232,7 +228,6 @@ class Imaging(AbstractDataset):
         )
 
         if psf_path is not None:
-
             psf = Kernel2D.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
@@ -241,7 +236,6 @@ class Imaging(AbstractDataset):
             )
 
         else:
-
             psf = None
 
         return Imaging(
@@ -279,7 +273,6 @@ class Imaging(AbstractDataset):
         )
 
         if unmasked_imaging.noise_covariance_matrix is not None:
-
             noise_covariance_matrix = unmasked_imaging.noise_covariance_matrix
 
             noise_covariance_matrix = np.delete(
@@ -290,7 +283,6 @@ class Imaging(AbstractDataset):
             )
 
         else:
-
             noise_covariance_matrix = None
 
         imaging = Imaging(

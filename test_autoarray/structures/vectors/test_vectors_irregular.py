@@ -9,7 +9,6 @@ from autoarray import exc
 
 
 def test__constructor():
-
     # Input tuples
 
     vectors = aa.VectorYX2DIrregular(
@@ -43,7 +42,6 @@ def test__constructor():
 
 
 def test__constructor__grid_conversions():
-
     # Input tuples
 
     vectors = aa.VectorYX2DIrregular(
@@ -74,7 +72,6 @@ def test__constructor__grid_conversions():
 
 
 def test__vectors_within_radius():
-
     vectors = aa.VectorYX2DIrregular(
         values=[(1.0, 1.0), (2.0, 2.0)], grid=[[0.0, 1.0], [0.0, 2.0]]
     )

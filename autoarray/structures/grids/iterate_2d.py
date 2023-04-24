@@ -15,7 +15,6 @@ from autoarray import type as ty
 
 
 def sub_steps_from(sub_steps):
-
     if sub_steps is None:
         return [2, 4, 8, 16]
     return sub_steps
@@ -90,7 +89,6 @@ class Grid2DIterate(Grid2D):
         return obj
 
     def __array_finalize__(self, obj):
-
         super().__array_finalize__(obj)
 
         if hasattr(obj, "grid"):
@@ -156,11 +154,9 @@ class Grid2DIterate(Grid2D):
         values = grid_2d_util.convert_grid(grid=values)
 
         if len(values.shape) == 2:
-
             grid_2d_util.check_grid_slim(grid=values, shape_native=shape_native)
 
         else:
-
             shape_native = (int(values.shape[0]), int(values.shape[1]))
 
         mask = Mask2D.all_false(
@@ -454,7 +450,6 @@ class Grid2DIterate(Grid2D):
 
     @staticmethod
     def array_at_sub_size_from(func: Callable, cls, mask: Mask2D, sub_size) -> Array2D:
-
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
         grid_compute = Grid2D.from_mask(mask=mask_higher_sub)
@@ -463,7 +458,6 @@ class Grid2DIterate(Grid2D):
 
     @staticmethod
     def grid_at_sub_size_from(func: Callable, cls, mask: Mask2D, sub_size) -> Grid2D:
-
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
         grid_compute = Grid2D.from_mask(mask=mask_higher_sub)
@@ -533,13 +527,10 @@ class Grid2DIterate(Grid2D):
         """
 
         if fractional_accuracy_threshold is not None:
-
             for y in range(threshold_mask.shape[0]):
                 for x in range(threshold_mask.shape[1]):
                     if not array_higher_mask[y, x]:
-
                         if array_lower_sub_2d[y, x] > 0:
-
                             fractional_accuracy = (
                                 array_lower_sub_2d[y, x] / array_higher_sub_2d[y, x]
                             )
@@ -548,18 +539,15 @@ class Grid2DIterate(Grid2D):
                                 fractional_accuracy = 1.0 / fractional_accuracy
 
                         else:
-
                             fractional_accuracy = 0.0
 
                         if fractional_accuracy < fractional_accuracy_threshold:
                             threshold_mask[y, x] = False
 
         if relative_accuracy_threshold is not None:
-
             for y in range(threshold_mask.shape[0]):
                 for x in range(threshold_mask.shape[1]):
                     if not array_higher_mask[y, x]:
-
                         if (
                             abs(array_lower_sub_2d[y, x] - array_higher_sub_2d[y, x])
                             > relative_accuracy_threshold
@@ -607,13 +595,11 @@ class Grid2DIterate(Grid2D):
         threshold_mask_lower_sub = self.mask
 
         for sub_size in self.sub_steps[:-1]:
-
             array_higher_sub = self.array_at_sub_size_from(
                 func=func, cls=cls, mask=threshold_mask_lower_sub, sub_size=sub_size
             )
 
             try:
-
                 threshold_mask_higher_sub = self.threshold_mask_via_arrays_from(
                     array_lower_sub_2d=array_lower_sub_2d,
                     array_higher_sub_2d=array_higher_sub,
@@ -627,11 +613,9 @@ class Grid2DIterate(Grid2D):
                 )
 
             except ZeroDivisionError:
-
                 return self.return_iterated_array_result(iterated_array=iterated_array)
 
             if threshold_mask_higher_sub.is_all_true:
-
                 return self.return_iterated_array_result(iterated_array=iterated_array)
 
             array_lower_sub_2d = array_higher_sub
@@ -757,19 +741,15 @@ class Grid2DIterate(Grid2D):
         for y in range(threshold_mask.shape[0]):
             for x in range(threshold_mask.shape[1]):
                 if not grid_higher_mask[y, x]:
-
                     if abs(grid_higher_sub_2d[y, x, 0]) > 0:
-
                         fractional_accuracy_y = (
                             grid_lower_sub_2d[y, x, 0] / grid_higher_sub_2d[y, x, 0]
                         )
 
                     else:
-
                         fractional_accuracy_y = 1.0
 
                     if abs(grid_higher_sub_2d[y, x, 1]) > 0:
-
                         fractional_accuracy_x = (
                             grid_lower_sub_2d[y, x, 1] / grid_higher_sub_2d[y, x, 1]
                         )
@@ -791,11 +771,9 @@ class Grid2DIterate(Grid2D):
                         threshold_mask[y, x] = False
 
         if relative_accuracy_threshold is not None:
-
             for y in range(threshold_mask.shape[0]):
                 for x in range(threshold_mask.shape[1]):
                     if not grid_higher_mask[y, x]:
-
                         relative_accuracy_y = abs(
                             grid_lower_sub_2d[y, x, 0] - grid_higher_sub_2d[y, x, 0]
                         )
@@ -851,7 +829,6 @@ class Grid2DIterate(Grid2D):
         threshold_mask_lower_sub = self.mask
 
         for sub_size in self.sub_steps[:-1]:
-
             grid_higher_sub = self.grid_at_sub_size_from(
                 func=func, cls=cls, mask=threshold_mask_lower_sub, sub_size=sub_size
             )
@@ -868,7 +845,6 @@ class Grid2DIterate(Grid2D):
             )
 
             if threshold_mask_higher_sub.is_all_true:
-
                 iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
                     mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
                 )

@@ -126,7 +126,6 @@ def pixel_coordinates_1d_from(
     pixel_scales: ty.PixelScales,
     origins: Tuple[float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float]]:
-
     central_pixel_coordinates = central_pixel_coordinates_1d_from(shape_slim=shape_slim)
 
     x_pixel = int(
@@ -145,7 +144,6 @@ def scaled_coordinates_1d_from(
     pixel_scales: ty.PixelScales,
     origins: Tuple[float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float]]:
-
     central_scaled_coordinates = central_scaled_coordinate_1d_from(
         shape_slim=shape_slim, pixel_scales=pixel_scales, origin=origins
     )
@@ -481,7 +479,6 @@ def grid_pixels_2d_slim_from(
     )
 
     for slim_index in range(grid_scaled_2d_slim.shape[0]):
-
         grid_pixels_2d_slim[slim_index, 0] = (
             (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
             + centres_scaled[0]
@@ -544,7 +541,6 @@ def grid_pixel_centres_2d_slim_from(
     )
 
     for slim_index in range(grid_scaled_2d_slim.shape[0]):
-
         grid_pixels_2d_slim[slim_index, 0] = int(
             (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
             + centres_scaled[0]
@@ -615,7 +611,6 @@ def grid_pixel_indexes_2d_slim_from(
     grid_pixel_indexes_2d_slim = np.zeros(grid_pixels_2d_slim.shape[0])
 
     for slim_index in range(grid_pixels_2d_slim.shape[0]):
-
         grid_pixel_indexes_2d_slim[slim_index] = int(
             grid_pixels_2d_slim[slim_index, 0] * shape_native[1]
             + grid_pixels_2d_slim[slim_index, 1]
@@ -671,7 +666,6 @@ def grid_scaled_2d_slim_from(
     )
 
     for slim_index in range(grid_scaled_2d_slim.shape[0]):
-
         grid_scaled_2d_slim[slim_index, 0] = (
             -(grid_pixels_2d_slim[slim_index, 0] - centres_scaled[0] - 0.5)
             * pixel_scales[0]
@@ -742,7 +736,9 @@ def grid_pixel_centres_2d_from(
     return grid_pixels_2d
 
 
-def extent_symmetric_from(extent : Tuple[float, float, float, float]) -> Tuple[float, float, float, float]:
+def extent_symmetric_from(
+    extent: Tuple[float, float, float, float]
+) -> Tuple[float, float, float, float]:
     """
     Given an input extent of the form (x_min, x_max, y_min, y_max), this function returns an extent which is
     symmetric about the origin.

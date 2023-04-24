@@ -17,7 +17,6 @@ def make_plot_path_setup():
 def test__individual_attributes_are_output(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-
     visuals_2d = aplt.Visuals2D(mask=mask_2d_7x7, positions=grid_2d_irregular_7x7_list)
 
     imaging_plotter = aplt.ImagingPlotter(
@@ -41,7 +40,8 @@ def test__individual_attributes_are_output(
     plot_patch.paths = []
 
     imaging_plotter.figures_2d(
-        data=True, psf=True,
+        data=True,
+        psf=True,
     )
 
     assert path.join(plot_path, "data.png") in plot_patch.paths
@@ -53,7 +53,6 @@ def test__individual_attributes_are_output(
 def test__subplot_is_output(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-
     imaging_plot = aplt.ImagingPlotter(
         imaging=imaging_7x7,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
@@ -67,7 +66,6 @@ def test__subplot_is_output(
 def test__output_as_fits__correct_output_format(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-
     imaging_plotter = aplt.ImagingPlotter(
         imaging=imaging_7x7,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),

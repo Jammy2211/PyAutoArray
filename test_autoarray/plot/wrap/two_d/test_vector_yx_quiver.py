@@ -3,7 +3,6 @@ import autoarray.plot as aplt
 
 
 def test__from_config_or_via_manual_input():
-
     vector_yx_quiver = aplt.VectorYXQuiver()
 
     assert vector_yx_quiver.config_dict["headlength"] == 0
@@ -24,7 +23,6 @@ def test__from_config_or_via_manual_input():
 
 
 def test__quiver_vectors():
-
     quiver = aplt.VectorYXQuiver(
         headlength=5,
         pivot="middle",

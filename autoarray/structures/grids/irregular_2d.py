@@ -44,7 +44,6 @@ class Grid2DIrregular(AbstractNDArray):
             return []
 
         if type(values) is list:
-
             if isinstance(values[0], Grid2DIrregular):
                 return values
 
@@ -281,7 +280,6 @@ class Grid2DIrregular(AbstractNDArray):
         radial_distances_max = np.zeros((self.shape[0]))
 
         for i in range(self.shape[0]):
-
             x_distances = np.square(np.subtract(self[i, 0], self[:, 0]))
             y_distances = np.square(np.subtract(self[i, 1], self[:, 1]))
 
@@ -308,7 +306,6 @@ class Grid2DIrregular(AbstractNDArray):
         grid_of_closest = np.zeros((grid_pair.shape[0], 2))
 
         for i in range(grid_pair.shape[0]):
-
             x_distances = np.square(np.subtract(grid_pair[i, 0], self[:, 0]))
             y_distances = np.square(np.subtract(grid_pair[i, 1], self[:, 1]))
 
@@ -365,7 +362,6 @@ class Grid2DIrregular(AbstractNDArray):
 
 
 class Grid2DIrregularTransformed(Grid2DIrregular):
-
     pass
 
 
@@ -436,7 +432,6 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         return obj
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "_internal_list"):
             self._internal_list = obj._internal_list
 
@@ -464,7 +459,6 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         pixel_scales,
         shape_native=None,
     ) -> "Grid2DIrregularUniform":
-
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_upscaled_1d = grid_2d_util.grid_2d_slim_upscaled_from(

@@ -92,7 +92,6 @@ class InversionPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the reconstructed image data.
         """
         if reconstructed_image:
-
             self.mat_plot_2d.plot_array(
                 array=self.inversion.mapped_reconstructed_image,
                 visuals_2d=self.get_visuals_2d_for_data(),
@@ -141,7 +140,6 @@ class InversionPlotter(Plotter):
         mapper_plotter = self.mapper_plotter_from(mapper_index=pixelization_index)
 
         if reconstructed_image:
-
             array = self.inversion.mapped_reconstructed_image_dict[
                 mapper_plotter.mapper
             ]
@@ -155,12 +153,10 @@ class InversionPlotter(Plotter):
             )
 
         if reconstruction:
-
             vmax_custom = False
 
             if "vmax" in self.mat_plot_2d.cmap.kwargs:
                 if self.mat_plot_2d.cmap.kwargs["vmax"] is None:
-
                     reconstruction_vmax_factor = conf.instance["visualize"]["general"][
                         "inversion"
                     ]["reconstruction_vmax_factor"]
@@ -189,9 +185,7 @@ class InversionPlotter(Plotter):
                 self.mat_plot_2d.cmap.kwargs["vmax"] = None
 
         if errors:
-
             try:
-
                 mapper_plotter.plot_source_from(
                     source_pixelization_values=self.inversion.errors_dict[
                         mapper_plotter.mapper
@@ -200,11 +194,9 @@ class InversionPlotter(Plotter):
                 )
 
             except TypeError:
-
                 pass
 
         if regularization_weights:
-
             mapper_plotter.plot_source_from(
                 source_pixelization_values=self.inversion.regularization_weights_mapper_dict[
                     mapper_plotter.mapper
@@ -238,14 +230,15 @@ class InversionPlotter(Plotter):
         )
         self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
 
-
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, regularization_weights=True
         )
 
         self.set_title(label="Source Reconstruction (Unzoomed)")
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstruction=True, zoom_to_brightest=False
+            pixelization_index=mapper_index,
+            reconstruction=True,
+            zoom_to_brightest=False,
         )
         self.set_title(label=None)
 

@@ -54,7 +54,6 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
         The mask of the output Array2D.
     """
     if len(array_2d.shape) == 1:
-
         if array_2d.shape[0] != mask_2d.sub_pixels_in_mask:
             raise exc.ArrayException(
                 f"""
@@ -73,7 +72,6 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
             )
 
     if len(array_2d.shape) == 2:
-
         if array_2d.shape != mask_2d.sub_shape_native:
             raise exc.ArrayException(
                 f"""
@@ -158,7 +156,6 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarra
     """
 
     if len(array_2d.shape) == 1:
-
         array_2d_slim = array_2d
 
         return array_2d_slim
@@ -186,7 +183,6 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
     """
 
     if len(array_2d.shape) == 2:
-
         array_2d_native = array_2d * np.invert(mask_2d)
 
         if array_2d.shape != mask_2d.sub_shape_native:
@@ -308,7 +304,6 @@ def resized_array_2d_from(
     x_is_even = int(array_2d.shape[1]) % 2 == 0
 
     if origin == (-1, -1):
-
         if y_is_even:
             y_centre = int(array_2d.shape[0] / 2)
         elif not y_is_even:
@@ -440,7 +435,6 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.n
     index_2d_for_index_slim = np.zeros((indexes_slim.shape[0], 2))
 
     for i, index_slim in enumerate(indexes_slim):
-
         index_2d_for_index_slim[i, 0] = int(index_slim / shape_native[1])
         index_2d_for_index_slim[i, 1] = int(index_slim % shape_native[1])
 
@@ -653,7 +647,6 @@ def array_2d_via_indexes_from(
     sub_array_native_2d = np.zeros(sub_shape)
 
     for slim_index in range(len(native_index_for_slim_index_2d)):
-
         sub_array_native_2d[
             native_index_for_slim_index_2d[slim_index, 0],
             native_index_for_slim_index_2d[slim_index, 1],
@@ -738,7 +731,6 @@ def array_2d_native_complex_via_indexes_from(
     sub_shape_native: Tuple[int, int],
     native_index_for_slim_index_2d: np.ndarray,
 ) -> np.ndarray:
-
     sub_array_2d = 0 + 0j * np.zeros(sub_shape_native)
 
     for slim_index in range(len(native_index_for_slim_index_2d)):

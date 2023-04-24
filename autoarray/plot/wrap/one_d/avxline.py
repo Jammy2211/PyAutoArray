@@ -52,7 +52,6 @@ class AXVLine(AbstractMatWrap1D):
         plt.axvline(x=vertical_line, label=label, **self.config_dict)
 
         if vertical_errors is not None:
-
             config_dict = self.config_dict
 
             if "linestyle" in config_dict:

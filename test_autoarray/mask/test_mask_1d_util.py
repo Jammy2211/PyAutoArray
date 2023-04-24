@@ -6,21 +6,18 @@ import pytest
 
 
 def test__total_image_pixels_1d_from():
-
     mask_1d = np.array([False, True, False, False, False, True])
 
     assert util.mask_1d.total_pixels_1d_from(mask_1d=mask_1d) == 4
 
 
 def test__total_sub_pixels_1d_from():
-
     mask_1d = np.array([False, True, False, False, False, True])
 
     assert util.mask_1d.total_sub_pixels_1d_from(mask_1d=mask_1d, sub_size=2) == 8
 
 
 def test__native_index_for_slim_index_1d_from():
-
     mask_1d = np.array([False, False, False, False])
 
     sub_native_index_for_sub_slim_index_1d = (

@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test__legend__from_config_or_via_manual_input():
-
     legend = aplt.Legend()
 
     assert legend.include is True
@@ -27,7 +26,6 @@ def test__legend__from_config_or_via_manual_input():
 
 
 def test__set_legend_works_for_plot():
-
     figure = aplt.Figure(aspect="auto")
 
     figure.open()

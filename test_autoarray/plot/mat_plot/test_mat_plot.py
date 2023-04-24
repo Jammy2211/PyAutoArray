@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test__add_mat_plot_objects_together():
-
     extent = [1.0, 2.0, 3.0, 4.0]
     fontsize = 20
 

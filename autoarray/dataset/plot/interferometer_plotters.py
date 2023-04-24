@@ -111,7 +111,6 @@ class InterferometerPlotter(Plotter):
         """
 
         if data:
-
             self.mat_plot_2d.plot_grid(
                 grid=self.dataset.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
@@ -119,7 +118,6 @@ class InterferometerPlotter(Plotter):
             )
 
         if noise_map:
-
             self.mat_plot_2d.plot_grid(
                 grid=self.dataset.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
@@ -128,7 +126,6 @@ class InterferometerPlotter(Plotter):
             )
 
         if u_wavelengths:
-
             self.mat_plot_1d.plot_yx(
                 y=self.dataset.uv_wavelengths[:, 0],
                 x=None,
@@ -142,7 +139,6 @@ class InterferometerPlotter(Plotter):
             )
 
         if v_wavelengths:
-
             self.mat_plot_1d.plot_yx(
                 y=self.dataset.uv_wavelengths[:, 1],
                 x=None,
@@ -156,11 +152,10 @@ class InterferometerPlotter(Plotter):
             )
 
         if uv_wavelengths:
-
             self.mat_plot_2d.plot_grid(
                 grid=Grid2DIrregular.from_yx_1d(
-                    y=self.dataset.uv_wavelengths[:, 1] / 10 ** 3.0,
-                    x=self.dataset.uv_wavelengths[:, 0] / 10 ** 3.0,
+                    y=self.dataset.uv_wavelengths[:, 1] / 10**3.0,
+                    x=self.dataset.uv_wavelengths[:, 0] / 10**3.0,
                 ),
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
@@ -169,10 +164,9 @@ class InterferometerPlotter(Plotter):
             )
 
         if amplitudes_vs_uv_distances:
-
             self.mat_plot_1d.plot_yx(
                 y=self.dataset.amplitudes,
-                x=self.dataset.uv_distances / 10 ** 3.0,
+                x=self.dataset.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Amplitudes vs UV-distances",
@@ -184,10 +178,9 @@ class InterferometerPlotter(Plotter):
             )
 
         if phases_vs_uv_distances:
-
             self.mat_plot_1d.plot_yx(
                 y=self.dataset.phases,
-                x=self.dataset.uv_distances / 10 ** 3.0,
+                x=self.dataset.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
                     title="Phases vs UV-distances",
@@ -199,7 +192,6 @@ class InterferometerPlotter(Plotter):
             )
 
         if dirty_image:
-
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_image,
                 visuals_2d=self.get_visuals_2d_real_space(),
@@ -207,7 +199,6 @@ class InterferometerPlotter(Plotter):
             )
 
         if dirty_noise_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_noise_map,
                 visuals_2d=self.get_visuals_2d_real_space(),
@@ -217,7 +208,6 @@ class InterferometerPlotter(Plotter):
             )
 
         if dirty_signal_to_noise_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_signal_to_noise_map,
                 visuals_2d=self.get_visuals_2d_real_space(),

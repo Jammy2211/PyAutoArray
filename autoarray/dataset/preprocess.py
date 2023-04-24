@@ -105,7 +105,6 @@ def array_adus_to_eps(array_adus, exposure_time_map, gain):
 
 
 def array_counts_to_counts_per_second(array_counts, exposure_time):
-
     if exposure_time is None:
         raise exc.ArrayException(
             "Cannot convert a Frame2D to units counts per second without an exposure time attribute (exposure_time = None)."
@@ -469,7 +468,6 @@ def data_with_gaussian_noise_added(data, sigma, seed=-1):
 
 
 def data_with_complex_gaussian_noise_added(data, sigma, seed=-1):
-
     gaussian_noise = gaussian_noise_via_shape_and_sigma_from(
         shape=(data.shape[0], 2), sigma=sigma, seed=seed
     )
@@ -539,7 +537,6 @@ def noise_map_with_signal_to_noise_limit_from(
 def visibilities_noise_map_with_signal_to_noise_limit_from(
     data, noise_map, signal_to_noise_limit
 ):
-
     from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
     # TODO : Refacotr into a util

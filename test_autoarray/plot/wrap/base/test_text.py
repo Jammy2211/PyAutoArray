@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test__loads_values_from_config_if_not_manually_input():
-
     title = aplt.Text()
 
     assert title.config_dict["fontsize"] == 16

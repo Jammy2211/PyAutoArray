@@ -13,7 +13,6 @@ class Annotate(AbstractMatWrap):
     """
 
     def set(self):
-
         if "x" not in self.kwargs and "y" not in self.kwargs and "s" not in self.kwargs:
             return
 

@@ -9,7 +9,6 @@ from typing import List, Union
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-
     from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.structures.abstract_structure import Structure
@@ -51,7 +50,6 @@ class ArrayIrregular(Structure):
             return []
 
         if type(values) is list:
-
             if isinstance(values, ArrayIrregular):
                 return values
 

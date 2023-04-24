@@ -156,7 +156,6 @@ class LinearObj:
         regularization it is bypassed.
         """
         if self.regularization is None:
-
             return np.zeros((self.params, self.params))
 
         return self.regularization.regularization_matrix_from(linear_obj=self)

@@ -4,7 +4,6 @@ import pytest
 
 
 def test__curvature_matrix_from_w_tilde():
-
     w_tilde = np.array(
         [
             [1.0, 2.0, 3.0, 4.0],
@@ -29,7 +28,6 @@ def test__curvature_matrix_from_w_tilde():
 
 
 def test__curvature_matrix_via_mapping_matrix_from():
-
     blurred_mapping_matrix = np.array(
         [
             [1.0, 1.0, 0.0],
@@ -76,7 +74,6 @@ def test__curvature_matrix_via_mapping_matrix_from():
 
 
 def test__reconstruction_positive_negative_from():
-
     data_vector = np.array([1.0, 1.0, 2.0])
 
     curvature_reg_matrix = np.array([[2.0, 1.0, 0.0], [1.0, 3.0, 1.0], [0.0, 1.0, 1.0]])
@@ -91,7 +88,6 @@ def test__reconstruction_positive_negative_from():
 
 
 def test__reconstruction_positive_negative_from__check_solution_raises_error_cause_all_values_identical():
-
     data_vector = np.array([1.0, 1.0, 1.0])
 
     curvature_reg_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
@@ -99,7 +95,6 @@ def test__reconstruction_positive_negative_from__check_solution_raises_error_cau
     # reconstruction = np.array([1.0, 1.0, 1.0])
 
     with pytest.raises(aa.exc.InversionException):
-
         aa.util.inversion.reconstruction_positive_negative_from(
             data_vector=data_vector,
             curvature_reg_matrix_cholesky=np.linalg.cholesky(curvature_reg_matrix),
@@ -109,7 +104,6 @@ def test__reconstruction_positive_negative_from__check_solution_raises_error_cau
 
 
 def test__mapped_reconstructed_data_via_mapping_matrix_from():
-
     mapping_matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
     reconstruction = np.array([1.0, 1.0, 2.0])
@@ -136,7 +130,6 @@ def test__mapped_reconstructed_data_via_mapping_matrix_from():
 
 
 def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
-
     pix_indexes_for_sub_slim_index = np.array([[0], [1], [2]])
     pix_indexes_for_sub_slim_index_sizes = np.array([1, 1, 1]).astype("int")
     pix_weights_for_sub_slim_index = np.array([[1.0], [1.0], [1.0]])
@@ -201,7 +194,6 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
 
 
 def test__preconditioner_matrix_via_mapping_matrix_from():
-
     mapping_matrix = np.array(
         [
             [1.0, 0.0, 0.0],

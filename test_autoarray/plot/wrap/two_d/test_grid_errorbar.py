@@ -3,7 +3,6 @@ import autoarray.plot as aplt
 
 
 def test__from_config_or_via_manual_input():
-
     grid_errorbar = aplt.GridErrorbar()
 
     assert grid_errorbar.config_dict["marker"] == "o"
@@ -28,7 +27,6 @@ def test__from_config_or_via_manual_input():
 
 
 def test__errorbar_grid():
-
     errorbar = aplt.GridErrorbar(marker="x", c="k")
 
     errorbar.errorbar_grid(
@@ -45,7 +43,6 @@ def test__errorbar_grid():
 
 
 def test__errorbar_coordinates():
-
     errorbar = aplt.GridErrorbar(marker="x", c="k")
 
     errorbar.errorbar_grid_list(

@@ -404,7 +404,6 @@ def delaunay_interpolated_array_from(
     interpolated_array = np.zeros(len(interpolation_grid_slim))
 
     for slim_index in range(len(interpolation_grid_slim)):
-
         simplex_index = simplex_index_for_interpolate_index[slim_index]
         interpolating_point = interpolation_grid_slim[slim_index]
 
@@ -612,7 +611,6 @@ def voronoi_nn_interpolated_array_from(
     pixel_values: np.ndarray,
     voronoi: scipy.spatial.Voronoi,
 ) -> np.ndarray:
-
     try:
         from autoarray.util.nn import nn_py
     except ImportError as e:

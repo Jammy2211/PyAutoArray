@@ -5,7 +5,6 @@ import autoarray as aa
 
 
 def test__all_false_sub_1():
-
     grid_2d_util = aa.util.grid_2d.grid_2d_via_shape_native_from(
         shape_native=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
     )
@@ -72,7 +71,6 @@ def test__all_false_sub_1():
 
 
 def test__unmasked_sub_1():
-
     mask = aa.Mask2D.all_false(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
@@ -208,7 +206,6 @@ def test__border_sub_1():
 
 
 def test__masked_grid():
-
     mask = aa.Mask2D.all_false(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
     mask[1, 1] = True
 
@@ -247,7 +244,6 @@ def test__masked_grid():
 
 
 def test__border_1d_grid():
-
     mask = np.array(
         [
             [True, True, True, True, True, True, True],

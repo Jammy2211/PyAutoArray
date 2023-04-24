@@ -17,7 +17,6 @@ def make_plot_path_setup():
 
 
 def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch):
-
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
@@ -124,7 +123,6 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
 
 def test__fit_sub_plots(fit_interferometer_7, plot_path, plot_patch):
-
     fit_interferometer_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),

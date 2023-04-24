@@ -5,7 +5,6 @@ class MockPixelization(Pixelization):
     def __init__(
         self, mesh=None, regularization=None, mapper=None, image_plane_mesh_grid=None
     ):
-
         super().__init__(mesh=mesh, regularization=regularization)
 
         self.mapper = mapper
@@ -27,7 +26,6 @@ class MockPixelization(Pixelization):
     def image_plane_mesh_grid_from(
         self, image_plane_data_grid, hyper_data, settings=None
     ):
-
         if hyper_data is not None and self.image_plane_mesh_grid is not None:
             return hyper_data * self.image_plane_mesh_grid
 

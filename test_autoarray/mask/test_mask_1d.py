@@ -6,7 +6,6 @@ from autoarray import exc
 
 
 def test__constructor():
-
     mask = aa.Mask1D(mask=[False, True], pixel_scales=1.0)
 
     assert type(mask) == aa.Mask1D
@@ -36,7 +35,6 @@ def test__constructor():
 
 
 def test__constructor__invert_is_true():
-
     mask = aa.Mask1D(mask=[True, True, False], pixel_scales=1.0, invert=True)
 
     assert type(mask) == aa.Mask1D
@@ -44,14 +42,11 @@ def test__constructor__invert_is_true():
 
 
 def test__constructor__input_is_2d_mask__raises_exception():
-
     with pytest.raises(exc.MaskException):
-
         aa.Mask1D(mask=[[False, False, True]], pixel_scales=1.0)
 
 
 def test__is_all_true():
-
     mask = aa.Mask1D(mask=[False, False, False, False], pixel_scales=1.0)
 
     assert mask.is_all_true is False
@@ -70,7 +65,6 @@ def test__is_all_true():
 
 
 def test__is_all_false():
-
     mask = aa.Mask1D(mask=[False, False, False, False], pixel_scales=1.0)
 
     assert mask.is_all_false is True

@@ -5,7 +5,6 @@ import matplotlib.colors as colors
 
 
 def test__loads_values_from_config_if_not_manually_input():
-
     cmap = aplt.Cmap()
 
     assert cmap.config_dict["cmap"] == "default"
@@ -30,7 +29,6 @@ def test__loads_values_from_config_if_not_manually_input():
 
 
 def test__norm_from__uses_input_vmin_and_max_if_input():
-
     cmap = aplt.Cmap(vmin=0.0, vmax=1.0, norm="linear")
 
     norm = cmap.norm_from(array=None)
@@ -60,7 +58,6 @@ def test__norm_from__uses_input_vmin_and_max_if_input():
 
 
 def test__norm_from__cmap_symmetric_true():
-
     cmap = aplt.Cmap(vmin=-0.5, vmax=1.0, norm="linear", symmetric=True)
 
     norm = cmap.norm_from(array=None)
@@ -80,7 +77,6 @@ def test__norm_from__cmap_symmetric_true():
 
 
 def test__norm_from__uses_array_to_get_vmin_and_max_if_no_manual_input():
-
     array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
     array[0] = 0.0
 

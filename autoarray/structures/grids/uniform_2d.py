@@ -289,11 +289,9 @@ class Grid2D(Structure):
         values = grid_2d_util.convert_grid(grid=values)
 
         if len(values.shape) == 2:
-
             grid_2d_util.check_grid_slim(grid=values, shape_native=shape_native)
 
         else:
-
             shape_native = (
                 int(values.shape[0] / sub_size),
                 int(values.shape[1] / sub_size),
@@ -575,14 +573,12 @@ class Grid2D(Structure):
         y_min, y_max, x_min, x_max = bounding_box
 
         if not buffer_around_corners:
-
             pixel_scales = (
                 (y_max - y_min) / (shape_native[0]),
                 (x_max - x_min) / (shape_native[1]),
             )
 
         else:
-
             pixel_scales = (
                 (y_max - y_min) / (shape_native[0] - 1),
                 (x_max - x_min) / (shape_native[1] - 1),
@@ -868,7 +864,6 @@ class Grid2D(Structure):
         distance_mask = np.full(fill_value=False, shape=self.shape_native)
 
         for coordinate in coordinates:
-
             distances = self.distances_to_coordinate_from(coordinate=coordinate)
 
             distance_mask += distances.native < distance
@@ -1098,7 +1093,6 @@ class Grid2D(Structure):
         )
 
         if conf.instance["general"]["grid"]["remove_projected_centre"]:
-
             grid_radial_projected_2d = grid_radial_projected_2d[1:, :]
 
         return Grid2DIrregular(values=grid_radial_projected_2d)

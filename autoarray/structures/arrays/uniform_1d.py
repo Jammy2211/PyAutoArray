@@ -23,7 +23,6 @@ class Array1D(Structure):
         *args,
         **kwargs
     ):
-
         values = array_1d_util.convert_array_1d(
             array_1d=values, mask_1d=mask, store_native=store_native
         )

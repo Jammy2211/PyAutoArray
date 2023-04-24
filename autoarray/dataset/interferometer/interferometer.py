@@ -90,7 +90,6 @@ class Interferometer(AbstractDataset):
         )
 
     def apply_settings(self, settings):
-
         return Interferometer(
             data=self.data,
             noise_map=self.noise_map,
@@ -183,7 +182,6 @@ class Interferometer(AbstractDataset):
 
     @property
     def signal_to_noise_map(self):
-
         signal_to_noise_map_real = np.divide(
             np.real(self.data), np.real(self.noise_map)
         )
@@ -210,7 +208,6 @@ class Interferometer(AbstractDataset):
         uv_wavelengths_path=None,
         overwrite=False,
     ):
-
         if data_path is not None:
             self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
 

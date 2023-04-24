@@ -5,7 +5,6 @@ import numpy as np
 
 
 def test__loads_values_from_config_if_not_manually_input():
-
     colorbar = aplt.Colorbar()
 
     assert colorbar.config_dict["fraction"] == 3.0
@@ -31,7 +30,6 @@ def test__loads_values_from_config_if_not_manually_input():
 
 
 def test__plot__works_for_reasonable_range_of_values():
-
     figure = aplt.Figure()
 
     fig, ax = figure.open()

@@ -11,7 +11,6 @@ test_data_path = os.path.join(
 
 
 def test__array_1d_slim_from():
-
     mask_1d = np.array([False, False, False, False])
 
     array_1d_native = np.array([1.0, 2.0, 3.0, 4.0])
@@ -46,7 +45,6 @@ def test__array_1d_slim_from():
 
 
 def test__array_1d_native_from():
-
     mask_1d = np.array([False, False, False, False])
 
     array_1d_slim = np.array([1.0, 2.0, 3.0, 4.0])
@@ -82,7 +80,6 @@ def test__array_1d_native_from():
 
 
 def test__numpy_array_1d_via_fits_from():
-
     arr = aa.util.array_1d.numpy_array_1d_via_fits_from(
         file_path=path.join(test_data_path, "3_ones.fits"), hdu=0
     )
@@ -91,7 +88,6 @@ def test__numpy_array_1d_via_fits_from():
 
 
 def test__numpy_array_1d_to_fits__output_and_load():
-
     file_path = path.join(test_data_path, "array_out.fits")
 
     if path.exists(file_path):

@@ -29,7 +29,6 @@ class Visuals2D(AbstractVisuals):
         indexes=None,
         pix_indexes=None,
     ):
-
         self.origin = origin
         self.mask = mask
         self.border = border
@@ -47,7 +46,6 @@ class Visuals2D(AbstractVisuals):
         self.pix_indexes = pix_indexes
 
     def plot_via_plotter(self, plotter, grid_indexes=None, mapper=None):
-
         if self.origin is not None:
             plotter.origin_scatter.scatter_grid(
                 grid=Grid2DIrregular(values=self.origin)
@@ -85,7 +83,6 @@ class Visuals2D(AbstractVisuals):
             )
 
         if self.pix_indexes is not None and mapper is not None:
-
             indexes = mapper.pix_indexes_for_slim_indexes(pix_indexes=self.pix_indexes)
 
             plotter.index_scatter.scatter_grid_indexes(

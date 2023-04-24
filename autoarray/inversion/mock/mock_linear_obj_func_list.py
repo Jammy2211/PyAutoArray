@@ -7,7 +7,6 @@ class MockLinearObjFuncList(AbstractLinearObjFuncList):
     def __init__(
         self, parameters=None, grid=None, mapping_matrix=None, regularization=None
     ):
-
         super().__init__(grid=grid, regularization=regularization)
 
         self._parameters = parameters

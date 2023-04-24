@@ -128,7 +128,6 @@ def total_sparse_pixels_2d_from(
     for unmasked_sparse_pixel_index in range(
         unmasked_sparse_grid_pixel_centres.shape[0]
     ):
-
         y = unmasked_sparse_grid_pixel_centres[unmasked_sparse_pixel_index, 0]
         x = unmasked_sparse_grid_pixel_centres[unmasked_sparse_pixel_index, 1]
 
@@ -180,7 +179,6 @@ def mask_2d_circular_from(
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
-
             y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
@@ -237,7 +235,6 @@ def mask_2d_circular_annular_from(
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
-
             y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
@@ -300,7 +297,6 @@ def mask_2d_circular_anti_annular_from(
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
-
             y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
@@ -338,7 +334,6 @@ def mask_2d_via_pixel_coordinates_from(
     mask_2d = np.full(shape=shape_native, fill_value=True)
 
     for y, x in pixel_coordinates:
-
         mask_2d[y, x] = False
 
     if buffer == 0:
@@ -436,7 +431,6 @@ def mask_2d_elliptical_from(
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
-
             y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
@@ -513,7 +507,6 @@ def mask_2d_elliptical_annular_from(
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
-
             y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
@@ -687,9 +680,7 @@ def mask_slim_indexes_from(
 
     for y in range(0, mask_2d.shape[0]):
         for x in range(0, mask_2d.shape[1]):
-
             if mask_2d[y, x] == return_masked_indexes:
-
                 mask_pixel_total += 1
 
     mask_pixels = np.zeros(mask_pixel_total)
@@ -698,9 +689,7 @@ def mask_slim_indexes_from(
 
     for y in range(0, mask_2d.shape[0]):
         for x in range(0, mask_2d.shape[1]):
-
             if mask_2d[y, x] == return_masked_indexes:
-
                 mask_pixels[mask_index] = regular_index
                 mask_index += 1
 
@@ -921,7 +910,6 @@ def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
     border_pixel_total = 0
 
     for i in range(edge_pixels.shape[0]):
-
         if check_if_border_pixel(mask_2d, edge_pixels[i], native_to_slim):
             border_pixel_total += 1
 
@@ -990,13 +978,11 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     border_pixel_index = 0
 
     for edge_pixel_index in range(edge_pixels.shape[0]):
-
         if check_if_border_pixel(
             mask_2d=mask_2d,
             edge_pixel_slim=edge_pixels[edge_pixel_index],
             native_to_slim=sub_native_index_for_sub_slim_index_2d,
         ):
-
             border_pixels[border_pixel_index] = edge_pixels[edge_pixel_index]
             border_pixel_index += 1
 
@@ -1048,7 +1034,7 @@ def sub_border_pixel_slim_indexes_from(
     )
     mask_centre = grid_2d_util.grid_2d_centre_from(grid_2d_slim=sub_grid_2d_slim)
 
-    for (border_1d_index, border_pixel) in enumerate(border_pixels):
+    for border_1d_index, border_pixel in enumerate(border_pixels):
         sub_border_pixels_of_border_pixel = sub_slim_indexes_for_slim_index[
             int(border_pixel)
         ]
@@ -1089,7 +1075,6 @@ def buffed_mask_2d_from(mask_2d: np.ndarray, buffer: int = 1) -> np.ndarray:
             if not mask_2d[y, x]:
                 for y0 in range(y - buffer, y + 1 + buffer):
                     for x0 in range(x - buffer, x + 1 + buffer):
-
                         if (
                             y0 >= 0
                             and x0 >= 0
@@ -1418,7 +1403,6 @@ def mask_2d_neighbors_from(mask_2d: np.ndarray) -> np.ndarray:
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
-
                 flag = True
 
                 if x + 1 < mask_2d.shape[1]:

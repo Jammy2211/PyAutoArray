@@ -351,24 +351,20 @@ class Convolver:
         blurring_frame_1d_kernels,
         blurring_frame_1d_lengths,
     ):
-
         blurred_image_1d = np.zeros(image_1d_array.shape)
 
         for image_1d_index in range(len(image_1d_array)):
-
             frame_1d_indexes = image_frame_1d_indexes[image_1d_index]
             frame_1d_kernel = image_frame_1d_kernels[image_1d_index]
             frame_1d_length = image_frame_1d_lengths[image_1d_index]
             image_value = image_1d_array[image_1d_index]
 
             for kernel_1d_index in range(frame_1d_length):
-
                 vector_index = frame_1d_indexes[kernel_1d_index]
                 kernel_value = frame_1d_kernel[kernel_1d_index]
                 blurred_image_1d[vector_index] += image_value * kernel_value
 
         for blurring_1d_index in range(len(blurring_1d_array)):
-
             frame_1d_indexes = blurring_frame_1d_indexes[blurring_1d_index]
             frame_1d_kernel = blurring_frame_1d_kernels[blurring_1d_index]
             frame_1d_length = blurring_frame_1d_lengths[blurring_1d_index]
@@ -429,18 +425,15 @@ class Convolver:
         image_frame_1d_kernels,
         image_frame_1d_lengths,
     ):
-
         blurred_image_1d = np.zeros(image_1d_array.shape)
 
         for image_1d_index in range(len(image_1d_array)):
-
             frame_1d_indexes = image_frame_1d_indexes[image_1d_index]
             frame_1d_kernel = image_frame_1d_kernels[image_1d_index]
             frame_1d_length = image_frame_1d_lengths[image_1d_index]
             image_value = image_1d_array[image_1d_index]
 
             for kernel_1d_index in range(frame_1d_length):
-
                 vector_index = frame_1d_indexes[kernel_1d_index]
                 kernel_value = frame_1d_kernel[kernel_1d_index]
                 blurred_image_1d[vector_index] += image_value * kernel_value
@@ -533,16 +526,13 @@ class Convolver:
         image_frame_1d_kernels,
         image_frame_1d_lengths,
     ):
-
         blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
 
         for pixel_1d_index in range(mapping_matrix.shape[1]):
             for image_1d_index in range(mapping_matrix.shape[0]):
-
                 value = mapping_matrix[image_1d_index, pixel_1d_index]
 
                 if value > 0:
-
                     frame_1d_indexes = image_frame_1d_indexes[image_1d_index]
                     frame_1d_kernel = image_frame_1d_kernels[image_1d_index]
                     frame_1d_length = image_frame_1d_lengths[image_1d_index]

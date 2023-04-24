@@ -54,7 +54,6 @@ class VoronoiDrawer(AbstractMatWrap2D):
         regions, vertices = mesh_util.voronoi_revised_from(voronoi=mapper.voronoi)
 
         if pixel_values is not None:
-
             vmin = cmap.vmin_from(array=pixel_values)
             vmax = cmap.vmax_from(array=pixel_values)
 
@@ -69,7 +68,6 @@ class VoronoiDrawer(AbstractMatWrap2D):
             cmap = plt.get_cmap(cmap.cmap)
 
             if colorbar is not None:
-
                 cb = colorbar.set_with_color_values(
                     units=units, cmap=cmap, color_values=color_values, ax=ax
                 )

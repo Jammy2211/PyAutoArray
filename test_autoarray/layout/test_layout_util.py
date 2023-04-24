@@ -4,7 +4,6 @@ import autoarray as aa
 
 
 def test__rotate_array_via_roe_corner_from():
-
     arr = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 0.0], [0.0, 0.0, 0.0]])
 
     arr_bl = aa.util.layout.rotate_array_via_roe_corner_from(
@@ -65,7 +64,6 @@ def test__rotate_array_via_roe_corner_from():
 
 
 def test__rotate_region_via_roe_corner_from():
-
     region = (0, 2, 1, 3)
 
     shape_native = (8, 10)
@@ -120,7 +118,6 @@ def test__rotate_region_via_roe_corner_from():
 
 
 def test__region_after_extraction():
-
     region = aa.util.layout.region_after_extraction(
         original_region=(2, 4, 2, 4), extraction_region=(0, 6, 0, 6)
     )
@@ -147,7 +144,6 @@ def test__region_after_extraction():
 
 
 def test__region_after_extraction__regions_do_not_overlap__returns_none():
-
     region = aa.util.layout.region_after_extraction(
         original_region=(2, 4, 2, 4), extraction_region=(0, 6, 0, 1)
     )
@@ -174,7 +170,6 @@ def test__region_after_extraction__regions_do_not_overlap__returns_none():
 
 
 def test__x0x1_after_extraction():
-
     # Simple extractions
 
     x0, x1 = aa.util.layout.x0x1_after_extraction(x0o=0, x1o=6, x0e=2, x1e=4)

@@ -32,7 +32,6 @@ def unmasked_sparse_for_sparse_from(
     pixel_index = 0
 
     for full_pixel_index in range(unmasked_sparse_grid_pixel_centres.shape[0]):
-
         y = unmasked_sparse_grid_pixel_centres[full_pixel_index, 0]
         x = unmasked_sparse_grid_pixel_centres[full_pixel_index, 1]
 
@@ -73,7 +72,6 @@ def sparse_for_unmasked_sparse_from(
     pixel_index = 0
 
     for unmasked_sparse_pixel_index in range(total_unmasked_sparse_pixels):
-
         y = unmasked_sparse_grid_pixel_centres[unmasked_sparse_pixel_index, 0]
         x = unmasked_sparse_grid_pixel_centres[unmasked_sparse_pixel_index, 1]
 

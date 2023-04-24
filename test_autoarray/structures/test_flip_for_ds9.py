@@ -10,7 +10,6 @@ test_path = "{}".format(path.dirname(path.realpath(__file__)))
 
 
 def create_fits(fits_path, array):
-
     if path.exists(fits_path):
         os.remove(fits_path)
 
@@ -22,7 +21,6 @@ def create_fits(fits_path, array):
 
 
 def test__from_fits__all_imaging_data_structures_are_flipped_for_ds9():
-
     conf.instance.push(new_path=path.join(test_path, "files", "config_flip"))
 
     fits_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")

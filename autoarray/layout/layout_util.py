@@ -26,7 +26,7 @@ def rotate_array_via_roe_corner_from(
         The array which is rotated.
     roe_corner
         The corner of the array at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
-        The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
+        The rotation is based on this such that the read-out electronics are in the bottom-left (e.g. (1, 0)).
 
     Returns
     -------
@@ -61,7 +61,7 @@ def rotate_region_via_roe_corner_from(
         The 2D shape of the `Array2D` the regions are located on, required to determine the rotated `region`.
     roe_corner
         The corner of the ``Array2D``at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
-        The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
+        The rotation is based on this such that the read-out electronics are in the bottom-left (e.g. (1, 0)).
 
     Returns
     -------
@@ -117,7 +117,7 @@ def rotate_pattern_ci_via_roe_corner_from(
         The 2D shape of the ``Array2D`` the regions are located on, required to determine the rotated ``region``.
     roe_corner
         The corner of the ``Array2D``at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
-        The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
+        The rotation is based on this such that the read-out electronics are in the bottom-left (e.g. (1, 0)).
 
     Returns
     -------
@@ -139,7 +139,6 @@ def rotate_pattern_ci_via_roe_corner_from(
 def region_after_extraction(
     original_region: Region2DLike, extraction_region: Region2DLike
 ) -> Optional[Region2D]:
-
     if original_region is None:
         return None
 

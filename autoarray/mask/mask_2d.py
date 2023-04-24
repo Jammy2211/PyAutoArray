@@ -27,7 +27,6 @@ logger = logging.getLogger(__name__)
 
 
 class Mask2D(Mask):
-
     # noinspection PyUnusedLocal
     def __new__(
         cls,
@@ -297,7 +296,6 @@ class Mask2D(Mask):
         return obj
 
     def __array_finalize__(self, obj):
-
         super().__array_finalize__(obj=obj)
 
         if not isinstance(obj, Mask2D):
@@ -875,7 +873,6 @@ class Mask2D(Mask):
 
     @property
     def zoom_centre(self) -> Tuple[float, float]:
-
         extraction_grid_1d = self.geometry.grid_pixels_2d_from(
             grid_scaled_2d=self.derive_grid.unmasked_sub_1.slim
         )
@@ -891,7 +888,6 @@ class Mask2D(Mask):
 
     @property
     def zoom_offset_pixels(self) -> Tuple[float, float]:
-
         if self.pixel_scales is None:
             return self.geometry.central_pixel_coordinates
 
@@ -902,7 +898,6 @@ class Mask2D(Mask):
 
     @property
     def zoom_offset_scaled(self) -> Tuple[float, float]:
-
         return (
             -self.pixel_scales[0] * self.zoom_offset_pixels[0],
             self.pixel_scales[1] * self.zoom_offset_pixels[1],

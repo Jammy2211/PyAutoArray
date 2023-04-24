@@ -166,9 +166,7 @@ class AbstractInversion:
         pixel_count = 0
 
         for linear_obj in self.linear_obj_list:
-
             if isinstance(linear_obj, cls):
-
                 index_list.append([pixel_count, pixel_count + linear_obj.params])
 
             pixel_count += linear_obj.params
@@ -260,7 +258,6 @@ class AbstractInversion:
 
     @property
     def no_regularization_index_list(self) -> List[int]:
-
         # TODO : Needs to be range based on pixels.
 
         no_regularization_index_list = []
@@ -270,11 +267,8 @@ class AbstractInversion:
         for linear_obj, regularization in zip(
             self.linear_obj_list, self.regularization_list
         ):
-
             if regularization is None:
-
                 for pixel in range(pixel_count, pixel_count + linear_obj.params):
-
                     no_regularization_index_list.append(pixel)
 
             pixel_count += linear_obj.params
@@ -408,7 +402,6 @@ class AbstractInversion:
             return self.curvature_matrix
 
         if len(self.regularization_list) == 1:
-
             curvature_matrix = self.curvature_matrix
             curvature_matrix += self.regularization_matrix
 
@@ -556,7 +549,6 @@ class AbstractInversion:
                 )
                 return solutions
             else:
-
                 solutions = inversion_util.reconstruction_positive_only_from(
                     data_vector=self.data_vector,
                     curvature_reg_matrix=self.curvature_reg_matrix,
@@ -623,7 +615,6 @@ class AbstractInversion:
         index = 0
 
         for linear_obj in self.linear_obj_list:
-
             source_quantity_dict[linear_obj] = source_quantity[
                 index : index + linear_obj.params
             ]
@@ -747,7 +738,6 @@ class AbstractInversion:
             return self.preloads.log_det_regularization_matrix_term
 
         try:
-
             lu = splu(csc_matrix(self.regularization_matrix_reduced))
             diagL = lu.L.diagonal()
             diagU = lu.U.diagonal()
@@ -757,7 +747,6 @@ class AbstractInversion:
             return np.real(np.log(diagL).sum() + np.log(diagU).sum())
 
         except RuntimeError:
-
             try:
                 return 2.0 * np.sum(
                     np.log(
@@ -846,7 +835,6 @@ class AbstractInversion:
 
     @property
     def magnification_list(self) -> List[float]:
-
         magnification_list = []
 
         interpolated_reconstruction_list = self.interpolated_reconstruction_list_from(
@@ -854,7 +842,6 @@ class AbstractInversion:
         )
 
         for i, linear_obj in enumerate(self.linear_obj_list):
-
             mapped_reconstructed_image = self.mapped_reconstructed_image_dict[
                 linear_obj
             ]
@@ -868,11 +855,9 @@ class AbstractInversion:
 
     @property
     def brightest_reconstruction_pixel_list(self):
-
         brightest_reconstruction_pixel_list = []
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-
             brightest_reconstruction_pixel_list.append(
                 np.argmax(self.reconstruction_dict[mapper])
             )
@@ -881,11 +866,9 @@ class AbstractInversion:
 
     @property
     def brightest_reconstruction_pixel_centre_list(self):
-
         brightest_reconstruction_pixel_centre_list = []
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-
             brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
 
             centre = Grid2DIrregular(
@@ -897,12 +880,10 @@ class AbstractInversion:
         return brightest_reconstruction_pixel_centre_list
 
     def regularization_weights_from(self, index: int) -> np.ndarray:
-
         linear_obj = self.linear_obj_list[index]
         regularization = self.regularization_list[index]
 
         if regularization is None:
-
             pixels = linear_obj.params
 
             return np.zero((pixels,))
@@ -911,11 +892,9 @@ class AbstractInversion:
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
-
         regularization_weights_dict = {}
 
         for index, mapper in enumerate(self.cls_list_from(cls=AbstractMapper)):
-
             regularization_weights_dict[mapper] = self.regularization_weights_from(
                 index=index
             )

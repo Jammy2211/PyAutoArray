@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test__ylabel__loads_values_from_config_if_not_manually_input():
-
     ylabel = aplt.YLabel()
 
     assert ylabel.config_dict["fontsize"] == 1

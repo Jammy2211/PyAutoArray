@@ -13,7 +13,6 @@ test_data_dir = path.join(
 
 
 def test__constructor():
-
     mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
     array_2d = aa.Array2D(values=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
@@ -71,7 +70,6 @@ def test__constructor():
 
 
 def test__no_mask():
-
     array_2d = aa.Array2D.no_mask(
         values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
     )
@@ -170,7 +168,6 @@ def test__no_mask():
 
 
 def test__apply_mask():
-
     mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
     array_2d = aa.Array2D.no_mask(
         values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
@@ -186,7 +183,6 @@ def test__apply_mask():
 
 
 def test__full():
-
     array_2d = aa.Array2D.full(
         fill_value=2.0, shape_native=(2, 2), pixel_scales=1.0, origin=(0.0, 1.0)
     )
@@ -214,7 +210,6 @@ def test__full():
 
 
 def test__ones():
-
     array_2d = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
     assert type(array_2d) == aa.Array2D
@@ -236,7 +231,6 @@ def test__ones():
 
 
 def test__zeros():
-
     array_2d = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0)
 
     assert type(array_2d) == aa.Array2D
@@ -256,7 +250,6 @@ def test__zeros():
 
 
 def test__from_fits():
-
     array_2d = aa.Array2D.from_fits(
         file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
@@ -267,7 +260,6 @@ def test__from_fits():
 
 
 def test__from_fits__loads_and_stores_header_info():
-
     array_2d = aa.Array2D.from_fits(
         file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
@@ -284,7 +276,6 @@ def test__from_fits__loads_and_stores_header_info():
 
 
 def test__from_yx_and_values():
-
     array_2d = aa.Array2D.from_yx_and_values(
         y=[0.5, 0.5, -0.5, -0.5],
         x=[-0.5, 0.5, -0.5, 0.5],
@@ -307,7 +298,6 @@ def test__from_yx_and_values():
 
 
 def test__output_to_fits():
-
     array_2d = aa.Array2D.from_fits(
         file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
@@ -373,7 +363,6 @@ def test__manual_mask__exception_raised_if_input_array_is_1d_and_not_number_of_m
 
 
 def test__resized_from():
-
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 
@@ -614,7 +603,6 @@ def test__extent_of_zoomed_array():
 
 
 def test__binned_across_columns():
-
     array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
 
     assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0, 1.0])).all()
@@ -644,7 +632,6 @@ def test__binned_across_columns():
 
 
 def test__binned_across_rows():
-
     array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
 
     assert (array.binned_across_rows == np.array([1.0, 1.0, 1.0])).all()
@@ -674,7 +661,6 @@ def test__binned_across_rows():
 
 
 def test__header__modified_julian_date():
-
     header_sci_obj = {"DATE-OBS": "2000-01-01", "TIME-OBS": "00:00:00"}
 
     header = aa.Header(header_sci_obj=header_sci_obj, header_hdu_obj=None)
@@ -683,7 +669,6 @@ def test__header__modified_julian_date():
 
 
 def test__array_2d__recursive_shape_storage():
-
     array_2d = aa.Array2D.no_mask(
         values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
     )

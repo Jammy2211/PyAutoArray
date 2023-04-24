@@ -27,7 +27,6 @@ class AbstractPlotter:
         visuals_2d: Visuals2D = None,
         include_2d: Include2D = None,
     ):
-
         self.visuals_1d = visuals_1d
         self.include_1d = include_1d
         self.mat_plot_1d = mat_plot_1d
@@ -39,7 +38,6 @@ class AbstractPlotter:
         self.subplot_figsize = None
 
     def set_title(self, label):
-
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.title.manual_label = label
 
@@ -47,7 +45,6 @@ class AbstractPlotter:
             self.mat_plot_2d.title.manual_label = label
 
     def set_filename(self, filename):
-
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.output.filename = filename
 
@@ -55,7 +52,6 @@ class AbstractPlotter:
             self.mat_plot_2d.output.filename = filename
 
     def set_format(self, format):
-
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.output._format = format
 
@@ -63,7 +59,6 @@ class AbstractPlotter:
             self.mat_plot_2d.output._format = format
 
     def set_mat_plot_1d_for_multi_plot(self, is_for_multi_plot, color: str):
-
         self.mat_plot_1d.set_for_multi_plot(
             is_for_multi_plot=is_for_multi_plot, color=color
         )
@@ -84,7 +79,6 @@ class AbstractPlotter:
 
     @property
     def is_for_subplot(self):
-
         if self.mat_plot_1d is not None:
             if self.mat_plot_1d.is_for_subplot:
                 return True
@@ -125,7 +119,6 @@ class AbstractPlotter:
         plt.figure(figsize=figsize)
 
     def close_subplot_figure(self):
-
         try:
             self.mat_plot_2d.figure.close()
         except AttributeError:
@@ -176,7 +169,6 @@ class AbstractPlotter:
         )
 
     def _subplot_custom_plot(self, **kwargs):
-
         figures_dict = dict(
             (key, value) for key, value in kwargs.items() if value is True
         )
@@ -184,7 +176,6 @@ class AbstractPlotter:
         self.open_subplot_figure(number_subplots=len(figures_dict))
 
         for index, (key, value) in enumerate(figures_dict.items()):
-
             if value:
                 try:
                     self.figures_2d(**{key: True})
@@ -203,11 +194,9 @@ class AbstractPlotter:
         self.close_subplot_figure()
 
     def subplot_of_plotters_figure(self, plotter_list, name):
-
         self.open_subplot_figure(number_subplots=len(plotter_list))
 
         for i, plotter in enumerate(plotter_list):
-
             plotter.figures_2d(**{name: True})
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_{name}")

@@ -299,7 +299,6 @@ class Kernel2D(AbstractArray2D):
         centre: Tuple[float, float] = (0.0, 0.0),
         normalize: bool = False,
     ) -> "Kernel2D":
-
         x_stddev = (
             x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
         )
@@ -395,7 +394,6 @@ class Kernel2D(AbstractArray2D):
         )
 
         if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
-
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(
@@ -407,7 +405,6 @@ class Kernel2D(AbstractArray2D):
             )
 
         elif kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 != 0:
-
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(kernel_rescaled.shape[0] + 1, kernel_rescaled.shape[1]),
@@ -416,7 +413,6 @@ class Kernel2D(AbstractArray2D):
             )
 
         elif kernel_rescaled.shape[0] % 2 != 0 and kernel_rescaled.shape[1] % 2 == 0:
-
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(kernel_rescaled.shape[0], kernel_rescaled.shape[1] + 1),
@@ -425,7 +421,6 @@ class Kernel2D(AbstractArray2D):
             )
 
         if self.pixel_scales is not None:
-
             pixel_scale_factors = (
                 self.mask.shape[0] / kernel_rescaled.shape[0],
                 self.mask.shape[1] / kernel_rescaled.shape[1],
@@ -437,7 +432,6 @@ class Kernel2D(AbstractArray2D):
             )
 
         else:
-
             pixel_scales = None
 
         return Kernel2D.no_mask(

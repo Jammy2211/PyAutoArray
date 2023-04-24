@@ -75,7 +75,6 @@ class SettingsInversion:
 
     @property
     def use_positive_only_solver(self):
-
         if self._use_positive_only_solver is None:
             return conf.instance["general"]["inversion"]["use_positive_only_solver"]
 
@@ -83,7 +82,6 @@ class SettingsInversion:
 
     @property
     def positive_only_uses_p_initial(self):
-
         if self._positive_only_uses_p_initial is None:
             return conf.instance["general"]["inversion"]["positive_only_uses_p_initial"]
 

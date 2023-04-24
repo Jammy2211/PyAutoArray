@@ -150,12 +150,11 @@ class MatPlot1D(AbstractMatPlot):
         y_errors=None,
         x_errors=None,
         y_extra=None,
-        ls_errorbar = "",
+        ls_errorbar="",
         text_manual_dict=None,
         text_manual_dict_y=None,
         bypass: bool = False,
     ):
-
         if (y is None) or np.count_nonzero(y) == 0:
             return
 
@@ -197,7 +196,6 @@ class MatPlot1D(AbstractMatPlot):
         )
 
         if visuals_1d.shaded_region is not None:
-
             self.fill_between.fill_between_shaded_regions(
                 x=x, y1=visuals_1d.shaded_region[0], y2=visuals_1d.shaded_region[1]
             )
@@ -229,7 +227,7 @@ class MatPlot1D(AbstractMatPlot):
             max_value=max_value_x,
             units=self.units,
             use_integers=use_integers,
-            is_for_1d_plot=True
+            is_for_1d_plot=True,
         )
 
         self.yticks.set(
@@ -238,7 +236,7 @@ class MatPlot1D(AbstractMatPlot):
             units=self.units,
             yunit=auto_labels.yunit,
             is_for_1d_plot=True,
-            is_log10="logy" in plot_axis_type
+            is_log10="logy" in plot_axis_type,
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -255,14 +253,14 @@ class MatPlot1D(AbstractMatPlot):
         from autoarray.plot.wrap.base.text import Text
 
         if text_manual_dict is not None and ax is not None:
-
             y = text_manual_dict_y
             text_manual_list = []
 
             for key, value in text_manual_dict.items():
-
                 text_manual_list.append(
-                    Text(x=0.65, y=y, s=f"{key} : {value}", c="b", transform=ax.transAxes)
+                    Text(
+                        x=0.65, y=y, s=f"{key} : {value}", c="b", transform=ax.transAxes
+                    )
                 )
                 y = y - 0.05
 

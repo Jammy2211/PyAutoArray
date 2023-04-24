@@ -3,7 +3,6 @@ import autoarray.plot as aplt
 
 
 def test__labels_with_suffix_from():
-
     yticks = aplt.YTicks()
 
     labels = yticks.labels_with_suffix_from(labels=["hi", "hello"], suffix="")
@@ -18,7 +17,6 @@ def test__labels_with_suffix_from():
 
 
 def test__yticks_loads_values_from_config_if_not_manually_input():
-
     yticks = aplt.YTicks()
 
     assert yticks.config_dict["fontsize"] == 16
@@ -44,7 +42,6 @@ def test__yticks_loads_values_from_config_if_not_manually_input():
 
 
 def test__yticks__set():
-
     array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
     units = aplt.Units(use_scaled=True, ticks_convert_factor=None)

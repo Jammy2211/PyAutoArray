@@ -6,7 +6,6 @@ import autoarray as aa
 
 
 def test__rectangular_neighbors_from():
-
     # I0I1I2I
     # I3I4I5I
     # I6I7I8I
@@ -108,7 +107,6 @@ def test__rectangular_neighbors_from():
 
 
 def test__voronoi_neighbors_from():
-
     points = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
 
     voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
@@ -159,7 +157,6 @@ def test__voronoi_neighbors_from():
 
 
 def test__delaunay_interpolated_grid_from():
-
     shape_native = (3, 3)
 
     grid_interpolate_slim = aa.Grid2D.uniform(

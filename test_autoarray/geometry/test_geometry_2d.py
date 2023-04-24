@@ -2,7 +2,6 @@ import autoarray as aa
 
 
 def test__central_pixel_coordinates():
-
     geometry = aa.Geometry2D(shape_native=(3, 3), pixel_scales=(0.1, 0.1))
 
     central_pixel_coordinates_util = aa.util.geometry.central_pixel_coordinates_2d_from(
@@ -21,7 +20,6 @@ def test__central_pixel_coordinates():
 
 
 def test__pixel_coordinates_2d_from():
-
     geometry = aa.Geometry2D(
         shape_native=(6, 7), pixel_scales=(2.4, 1.8), origin=(1.0, 1.5)
     )
@@ -40,7 +38,6 @@ def test__pixel_coordinates_2d_from():
 
 
 def test__scaled_coordinates_2d_from():
-
     geometry = aa.Geometry2D(
         shape_native=(6, 7), pixel_scales=(2.4, 1.8), origin=(1.0, 1.5)
     )
@@ -59,7 +56,6 @@ def test__scaled_coordinates_2d_from():
 
 
 def test__grid_pixels_2d_slim_from():
-
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
 
     grid_scaled_2d = aa.Grid2D.no_mask(
@@ -79,7 +75,6 @@ def test__grid_pixels_2d_slim_from():
 
 
 def test__grid_pixel_centres_2d_from():
-
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(7.0, 2.0))
 
     grid_scaled_2d = aa.Grid2D.no_mask(
@@ -99,7 +94,6 @@ def test__grid_pixel_centres_2d_from():
 
 
 def test__grid_pixel_indexes_2d_from():
-
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 4.0))
 
     grid_scaled_2d = aa.Grid2D.no_mask(
@@ -119,7 +113,6 @@ def test__grid_pixel_indexes_2d_from():
 
 
 def test__grid_scaled_2d_from():
-
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 2.0))
 
     grid_pixels = aa.Grid2D.no_mask(

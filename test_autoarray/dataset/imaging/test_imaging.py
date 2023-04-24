@@ -14,7 +14,6 @@ test_data_dir = path.join(
 
 
 def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
-
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     psf = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
@@ -37,7 +36,6 @@ def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
 
 
 def test__noise_covariance_input__noise_map_uses_diag():
-
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     noise_covariance_matrix = np.ones(shape=(9, 9))
 
@@ -49,16 +47,13 @@ def test__noise_covariance_input__noise_map_uses_diag():
 
 
 def test__no_noise_map__raises_exception():
-
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
     with pytest.raises(aa.exc.DatasetException):
-
         aa.Imaging(data=image)
 
 
 def test__from_fits():
-
     imaging = aa.Imaging.from_fits(
         pixel_scales=0.1,
         data_path=path.join(test_data_dir, "3x3_ones.fits"),
@@ -94,7 +89,6 @@ def test__from_fits():
 
 
 def test__output_to_fits():
-
     imaging = aa.Imaging.from_fits(
         pixel_scales=0.1,
         data_path=path.join(test_data_dir, "3x3_ones.fits"),
@@ -137,7 +131,6 @@ def test__output_to_fits():
 
 
 def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):
-
     masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
 
     assert (masked_imaging_7x7.image.slim == np.ones(9)).all()
@@ -162,7 +155,6 @@ def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):
 
 
 def test__apply_mask__noise_covariance_matrix():
-
     image = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=(1.0, 1.0))
 
     noise_covariance_matrix = np.array(
@@ -200,7 +192,6 @@ def test__apply_mask__apply_settings__grids(
     blurring_grid_2d_7x7,
     grid_2d_iterate_7x7,
 ):
-
     masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
     masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
         settings=aa.SettingsImaging(grid_class=aa.Grid2D, sub_size=2)
@@ -224,7 +215,6 @@ def test__apply_mask__apply_settings__grids(
 
 
 def test__different_imaging_without_mock_objects__customize_constructor_inputs():
-
     psf = aa.Kernel2D.ones(shape_native=(7, 7), pixel_scales=3.0)
 
     imaging = aa.Imaging(
@@ -250,17 +240,14 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
 
 
 def test__noise_map_unmasked_has_zeros_or_negative__raises_exception():
-
     array = aa.Array2D.no_mask([[1.0, 2.0]], pixel_scales=1.0)
 
     noise_map = aa.Array2D.no_mask([[0.0, 3.0]], pixel_scales=1.0)
 
     with pytest.raises(aa.exc.DatasetException):
-
         aa.Imaging(data=array, noise_map=noise_map)
 
     noise_map = aa.Array2D.no_mask([[-1.0, 3.0]], pixel_scales=1.0)
 
     with pytest.raises(aa.exc.DatasetException):
-
         aa.Imaging(data=array, noise_map=noise_map)

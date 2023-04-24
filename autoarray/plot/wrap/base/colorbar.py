@@ -59,7 +59,6 @@ class Colorbar(AbstractMatWrap):
         return self.manual_unit
 
     def manual_tick_values_from(self, norm=None):
-
         if (
             sum(
                 x is not None
@@ -76,15 +75,15 @@ class Colorbar(AbstractMatWrap):
             and self.manual_tick_labels is None
             and norm is not None
         ):
-
             min_value = norm.vmin
             max_value = norm.vmax
             mid_value = (max_value + min_value) / 2.0
 
             return [min_value, mid_value, max_value]
 
-    def manual_tick_labels_from(self, units: Units, manual_tick_values: List[float], cb_unit=None):
-
+    def manual_tick_labels_from(
+        self, units: Units, manual_tick_values: List[float], cb_unit=None
+    ):
         if manual_tick_values is None:
             return None
 
@@ -124,13 +123,6 @@ class Colorbar(AbstractMatWrap):
             cb.ax.set_yticklabels(
                 labels=manual_tick_labels, va=self.manual_alignment or "center"
             )
-
-        # if manual_tick_labels is None:
-        #     manual_tick_labels = ["{:.1f}".format(ytick) for ytick in cb.ax.get_yticks()]
-        #
-        # cb.ax.set_yticklabels(
-        #     labels=manual_tick_labels, va=self.manual_alignment or "center"
-        # )
 
         return cb
 
@@ -176,12 +168,5 @@ class Colorbar(AbstractMatWrap):
             cb.ax.set_yticklabels(
                 labels=manual_tick_labels, va=self.manual_alignment or "center"
             )
-
-        # if manual_tick_labels is None:
-        #     manual_tick_labels = ["{:.1f}".format(ytick) for ytick in cb.ax.get_yticks()]
-        #
-        # cb.ax.set_yticklabels(
-        #     labels=manual_tick_labels, va=self.manual_alignment or "center"
-        # )
 
         return cb

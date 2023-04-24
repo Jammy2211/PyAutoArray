@@ -56,7 +56,6 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
         return obj
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "grid"):
             self.grid = obj.grid
 

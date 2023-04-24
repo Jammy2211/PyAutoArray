@@ -12,7 +12,6 @@ test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "f
 
 
 def test__full():
-
     kernel_2d = aa.Kernel2D.full(fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0)
 
     assert kernel_2d.shape_native == (3, 3)
@@ -31,7 +30,6 @@ def test__ones():
 
 
 def test__zeros():
-
     kernel_2d = aa.Kernel2D.zeros(shape_native=(3, 3), pixel_scales=1.0)
 
     assert kernel_2d.shape_native == (3, 3)
@@ -89,7 +87,6 @@ def test__no_blur():
 
 
 def test__from_gaussian():
-
     kernel_2d = aa.Kernel2D.from_gaussian(
         shape_native=(3, 3),
         pixel_scales=1.0,
@@ -113,7 +110,6 @@ def test__from_gaussian():
 
 
 def test__manual__normalize():
-
     kernel_data = np.ones((3, 3)) / 9.0
     kernel_2d = aa.Kernel2D.no_mask(
         values=kernel_data, pixel_scales=1.0, normalize=True
@@ -181,7 +177,6 @@ def test__rescaled_with_odd_dimensions_from__evens_to_odds():
 
 
 def test__rescaled_with_odd_dimensions_from__different_scalings():
-
     kernel_2d = aa.Kernel2D.ones(shape_native=(2, 2), pixel_scales=1.0, normalize=False)
     kernel_2d = kernel_2d.rescaled_with_odd_dimensions_from(
         rescale_factor=2.0, normalize=True
@@ -252,7 +247,6 @@ def test__rescaled_with_odd_dimensions_from__different_scalings():
 
 
 def test__convolved_array_from():
-
     array_2d = aa.Array2D.no_mask(
         values=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]], pixel_scales=1.0
     )
@@ -413,7 +407,6 @@ def test__convolved_array_from():
 
 
 def test__convolved_array_from__not_odd_x_odd_kernel__raises_error():
-
     kernel_2d = aa.Kernel2D.no_mask(values=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
 
     with pytest.raises(exc.KernelException):

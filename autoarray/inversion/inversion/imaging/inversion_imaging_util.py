@@ -58,14 +58,12 @@ def w_tilde_data_imaging_from(
     weight_map_native = image_native / noise_map_native**2.0
 
     for ip0 in range(image_pixels):
-
         ip0_y, ip0_x = native_index_for_slim_index[ip0]
 
         value = 0.0
 
         for k0_y in range(kernel_native.shape[0]):
             for k0_x in range(kernel_native.shape[1]):
-
                 weight_value = weight_map_native[
                     ip0_y + k0_y + kernel_shift_y, ip0_x + k0_x + kernel_shift_x
                 ]
@@ -114,11 +112,9 @@ def w_tilde_curvature_imaging_from(
     w_tilde_curvature = np.zeros((image_pixels, image_pixels))
 
     for ip0 in range(w_tilde_curvature.shape[0]):
-
         ip0_y, ip0_x = native_index_for_slim_index[ip0]
 
         for ip1 in range(ip0, w_tilde_curvature.shape[1]):
-
             ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
             w_tilde_curvature[ip0, ip1] += w_tilde_curvature_value_from(
@@ -205,13 +201,11 @@ def w_tilde_curvature_preload_imaging_from(
     curvature_lengths = np.zeros(image_pixels)
 
     for ip0 in range(image_pixels):
-
         ip0_y, ip0_x = native_index_for_slim_index[ip0]
 
         kernel_index = 0
 
         for ip1 in range(ip0, curvature_preload_tmp.shape[0]):
-
             ip1_y, ip1_x = native_index_for_slim_index[ip1]
 
             noise_value = w_tilde_curvature_value_from(
@@ -227,7 +221,6 @@ def w_tilde_curvature_preload_imaging_from(
                 noise_value /= 2.0
 
             if noise_value > 0.0:
-
                 curvature_preload_tmp[ip0, kernel_index] = noise_value
                 curvature_indexes_tmp[ip0, kernel_index] = ip1
                 kernel_index += 1
@@ -242,9 +235,7 @@ def w_tilde_curvature_preload_imaging_from(
     index = 0
 
     for i in range(image_pixels):
-
         for data_index in range(int(curvature_lengths[i])):
-
             curvature_preload[index] = curvature_preload_tmp[i, data_index]
             curvature_indexes[index] = curvature_indexes_tmp[i, data_index]
 
@@ -322,13 +313,11 @@ def w_tilde_curvature_value_from(
 
     for k0_y in range(kernel_native.shape[0]):
         for k0_x in range(kernel_native.shape[1]):
-
             value = value_native[
                 ip0_y + k0_y + kernel_shift_y, ip0_x + k0_x + kernel_shift_x
             ]
 
             if value > 0.0:
-
                 k1_y = k0_y + ip_y_offset
                 k1_x = k0_x + ip_x_offset
 
@@ -338,7 +327,6 @@ def w_tilde_curvature_value_from(
                     and k1_y < kernel_native.shape[0]
                     and k1_x < kernel_native.shape[1]
                 ):
-
                     kernel_count += 1
 
                     kernel_value_0 = kernel_native[k0_y, k0_x]
@@ -394,9 +382,7 @@ def data_vector_via_w_tilde_data_imaging_from(
     data_vector = np.zeros(pix_pixels)
 
     for data_0 in range(data_pixels):
-
         for pix_0_index in range(pix_lengths[data_0]):
-
             data_0_weight = data_weights[data_0, pix_0_index]
             pix_0 = data_to_pix_unique[data_0, pix_0_index]
 
@@ -501,19 +487,15 @@ def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     curvature_index = 0
 
     for data_0 in range(data_pixels):
-
         for data_1_index in range(curvature_lengths[data_0]):
-
             data_1 = curvature_indexes[curvature_index]
             w_tilde_value = curvature_preload[curvature_index]
 
             for pix_0_index in range(pix_lengths[data_0]):
-
                 data_0_weight = data_weights[data_0, pix_0_index]
                 pix_0 = data_to_pix_unique[data_0, pix_0_index]
 
                 for pix_1_index in range(pix_lengths[data_1]):
-
                     data_1_weight = data_weights[data_1, pix_1_index]
                     pix_1 = data_to_pix_unique[data_1, pix_1_index]
 
@@ -603,19 +585,15 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
     curvature_index = 0
 
     for data_0 in range(data_pixels):
-
         for data_1_index in range(curvature_lengths[data_0]):
-
             data_1 = curvature_indexes[curvature_index]
             w_tilde_value = curvature_preload[curvature_index]
 
             for pix_0_index in range(pix_lengths_0[data_0]):
-
                 data_0_weight = data_weights_0[data_0, pix_0_index]
                 pix_0 = data_to_pix_unique_0[data_0, pix_0_index]
 
                 for pix_1_index in range(pix_lengths_1[data_1]):
-
                     data_1_weight = data_weights_1[data_1, pix_1_index]
                     pix_1 = data_to_pix_unique_1[data_1, pix_1_index]
 
@@ -681,14 +659,11 @@ def data_linear_func_matrix_from(
     data_linear_func_matrix_dict = np.zeros(shape=(data_pixels, linear_func_pixels))
 
     for data_0 in range(data_pixels):
-
         for psf_index in range(image_frame_1d_lengths[data_0]):
-
             data_index = image_frame_1d_indexes[data_0, psf_index]
             kernel_value = image_frame_1d_kernels[data_0, psf_index]
 
             for linear_index in range(linear_func_pixels):
-
                 data_linear_func_matrix_dict[data_0, linear_index] += (
                     kernel_value * curvature_weights_matrix[data_index, linear_index]
                 )
@@ -740,14 +715,11 @@ def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
     data_pixels = data_weights.shape[0]
 
     for data_0 in range(data_pixels):
-
         for pix_0_index in range(pix_lengths[data_0]):
-
             data_0_weight = data_weights[data_0, pix_0_index]
             pix_0 = data_to_pix_unique[data_0, pix_0_index]
 
             for linear_index in range(linear_func_pixels):
-
                 off_diag[pix_0, linear_index] += (
                     data_linear_func_matrix[data_0, linear_index] * data_0_weight
                 )
@@ -814,14 +786,11 @@ def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     off_diag = np.zeros((pix_pixels, linear_func_pixels))
 
     for data_0 in range(data_pixels):
-
         for pix_0_index in range(pix_lengths[data_0]):
-
             data_0_weight = data_weights[data_0, pix_0_index]
             pix_0 = data_to_pix_unique[data_0, pix_0_index]
 
             for psf_index in range(image_frame_1d_lengths[data_0]):
-
                 data_index = image_frame_1d_indexes[data_0, psf_index]
                 kernel_value = image_frame_1d_kernels[data_0, psf_index]
 

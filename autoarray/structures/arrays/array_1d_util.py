@@ -127,7 +127,6 @@ def array_1d_slim_from(
 def array_1d_native_from(
     array_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int
 ) -> np.ndarray:
-
     sub_shape = mask_1d.shape[0] * sub_size
 
     native_index_for_slim_index_1d = mask_1d_util.native_index_for_slim_index_1d_from(
@@ -185,7 +184,6 @@ def array_1d_via_indexes_1d_from(
     array_1d_native = np.zeros(sub_shape)
 
     for slim_index in range(len(native_index_for_slim_index_1d)):
-
         array_1d_native[native_index_for_slim_index_1d[slim_index]] = array_1d_slim[
             slim_index
         ]

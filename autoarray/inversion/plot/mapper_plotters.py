@@ -109,7 +109,6 @@ class MapperPlotter(Plotter):
         )
 
         if self.visuals_2d.pix_indexes is not None:
-
             indexes = self.mapper.pix_indexes_for_slim_indexes(
                 pix_indexes=self.visuals_2d.pix_indexes
             )

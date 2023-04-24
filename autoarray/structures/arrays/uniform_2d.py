@@ -269,7 +269,7 @@ class AbstractArray2D(Structure):
         Examples
         --------
 
-        This example uses the ``Array2D.no_mask`` method to create the the ``Array2D``.
+        This example uses the ``Array2D.no_mask`` method to create the ``Array2D``.
 
         Different methods using different inputs are available and documented throughout this webpage.
 
@@ -345,7 +345,6 @@ class AbstractArray2D(Structure):
         return obj
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 
@@ -714,7 +713,6 @@ class Array2D(AbstractArray2D):
         values = array_2d_util.convert_array(array=values)
 
         if len(values.shape) == 1:
-
             if shape_native is None:
                 raise exc.ArrayException(
                     f"""
@@ -735,7 +733,6 @@ class Array2D(AbstractArray2D):
                 )
 
         else:
-
             shape_native = (
                 int(values.shape[0] / sub_size),
                 int(values.shape[1] / sub_size),

@@ -3,7 +3,6 @@ import numpy as np
 from typing import TYPE_CHECKING, List, Union, Tuple
 
 if TYPE_CHECKING:
-
     from autoarray.structures.arrays.uniform_1d import Array1D
     from autoarray.structures.grids.uniform_2d import Grid2D
     from autoarray.structures.grids.transformed_2d import Grid2DTransformed

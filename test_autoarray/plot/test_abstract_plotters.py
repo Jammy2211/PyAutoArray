@@ -10,7 +10,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__get_subplot_shape():
-
     plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=aplt.MatPlot2D())
 
     subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=1)
@@ -26,7 +25,6 @@ def test__get_subplot_shape():
 
 
 def test__get_subplot_figsize():
-
     plotter = abstract_plotters.AbstractPlotter(
         mat_plot_2d=aplt.MatPlot2D(figure=aplt.Figure(figsize="auto"))
     )
@@ -51,7 +49,6 @@ def test__get_subplot_figsize():
 
 
 def test__open_and_close_subplot_figures():
-
     figure = aplt.Figure(figsize=(20, 20))
 
     plotter = abstract_plotters.AbstractPlotter(
@@ -82,7 +79,6 @@ def test__open_and_close_subplot_figures():
 
 
 def test__uses_figure_or_subplot_configs_correctly():
-
     figure = aplt.Figure(figsize=(8, 8))
     cmap = aplt.Cmap(cmap="warm")
 
@@ -112,7 +108,6 @@ def test__uses_figure_or_subplot_configs_correctly():
 
 
 def test__get__visuals():
-
     visuals_2d = aplt.Visuals2D()
     include_2d = aplt.Include2D(origin=False)
 

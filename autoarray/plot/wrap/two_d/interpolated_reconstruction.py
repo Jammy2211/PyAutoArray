@@ -85,7 +85,6 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         cmap = plt.get_cmap(cmap.cmap)
 
         if colorbar is not None:
-
             colorbar = colorbar.set_with_color_values(
                 units=units, cmap=cmap, color_values=color_values, ax=ax
             )

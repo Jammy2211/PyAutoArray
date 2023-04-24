@@ -53,7 +53,6 @@ def preload_real_transforms(
 
 @numba_util.jit()
 def preload_imag_transforms(grid_radians, uv_wavelengths):
-
     preloaded_imag_transforms = np.zeros(
         shape=(grid_radians.shape[0], uv_wavelengths.shape[0])
     )
@@ -74,7 +73,6 @@ def preload_imag_transforms(grid_radians, uv_wavelengths):
 
 @numba_util.jit()
 def visibilities_via_preload_jit_from(image_1d, preloaded_reals, preloaded_imags):
-
     visibilities = 0 + 0j * np.zeros(shape=(preloaded_reals.shape[1]))
 
     for image_1d_index in range(image_1d.shape[0]):
@@ -92,7 +90,6 @@ def visibilities_via_preload_jit_from(image_1d, preloaded_reals, preloaded_imags
 
 @numba_util.jit()
 def visibilities_jit(image_1d, grid_radians, uv_wavelengths):
-
     visibilities = 0 + 0j * np.zeros(shape=(uv_wavelengths.shape[0]))
 
     for image_1d_index in range(image_1d.shape[0]):
@@ -120,12 +117,10 @@ def visibilities_jit(image_1d, grid_radians, uv_wavelengths):
 
 @numba_util.jit()
 def image_via_jit_from(n_pixels, grid_radians, uv_wavelengths, visibilities):
-
     image_1d = np.zeros(n_pixels)
 
     for image_1d_index in range(image_1d.shape[0]):
         for vis_1d_index in range(uv_wavelengths.shape[0]):
-
             image_1d[image_1d_index] += visibilities[vis_1d_index, 0] * np.cos(
                 2.0
                 * np.pi
@@ -151,20 +146,16 @@ def image_via_jit_from(n_pixels, grid_radians, uv_wavelengths, visibilities):
 def transformed_mapping_matrix_via_preload_jit_from(
     mapping_matrix, preloaded_reals, preloaded_imags
 ):
-
     transfomed_mapping_matrix = 0 + 0j * np.zeros(
         (preloaded_reals.shape[1], mapping_matrix.shape[1])
     )
 
     for pixel_1d_index in range(mapping_matrix.shape[1]):
         for image_1d_index in range(mapping_matrix.shape[0]):
-
             value = mapping_matrix[image_1d_index, pixel_1d_index]
 
             if value > 0:
-
                 for vis_1d_index in range(preloaded_reals.shape[1]):
-
                     vis_real = value * preloaded_reals[image_1d_index, vis_1d_index]
                     vis_imag = value * preloaded_imags[image_1d_index, vis_1d_index]
                     transfomed_mapping_matrix[vis_1d_index, pixel_1d_index] += (
@@ -176,20 +167,16 @@ def transformed_mapping_matrix_via_preload_jit_from(
 
 @numba_util.jit()
 def transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelengths):
-
     transfomed_mapping_matrix = 0 + 0j * np.zeros(
         (uv_wavelengths.shape[0], mapping_matrix.shape[1])
     )
 
     for pixel_1d_index in range(mapping_matrix.shape[1]):
         for image_1d_index in range(mapping_matrix.shape[0]):
-
             value = mapping_matrix[image_1d_index, pixel_1d_index]
 
             if value > 0:
-
                 for vis_1d_index in range(uv_wavelengths.shape[0]):
-
                     vis_real = value * np.cos(
                         -2.0
                         * np.pi
