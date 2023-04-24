@@ -533,9 +533,12 @@ class AbstractInversion:
 
                 # TODO : Speed up via chol tools.
 
-                curvature_reg_matrix_cholesky_input = np.linalg.cholesky(
-                    curvature_reg_matrix_input
-                )
+                try:
+                    curvature_reg_matrix_cholesky_input = np.linalg.cholesky(
+                        curvature_reg_matrix_input
+                    )
+                except (RuntimeError, np.linalg.LinAlgError) as e:
+                    raise exc.InversionException() from e
 
                 solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
 
