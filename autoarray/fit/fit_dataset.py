@@ -50,7 +50,7 @@ class AbstractFitInversion(ABC):
         """
         warnings.filterwarnings("ignore")
         absolute_signal_to_noise_map = abs(self.data / self.noise_map)
-        return absolute_signal_to_noise_map**2
+        return absolute_signal_to_noise_map ** 2
 
     @property
     def residual_map(self) -> Structure:
@@ -131,6 +131,7 @@ class SimpleFit(AbstractFitInversion):
 
 
 class FitDataset(AbstractFitInversion):
+
     # noinspection PyUnresolvedReferences
     def __init__(
         self,
@@ -239,6 +240,7 @@ class FitDataset(AbstractFitInversion):
         """
 
         if self.dataset.noise_covariance_matrix is not None:
+
             return fit_util.chi_squared_with_noise_covariance_from(
                 residual_map=self.residual_map,
                 noise_covariance_matrix_inv=self.dataset.noise_covariance_matrix_inv,
@@ -302,6 +304,7 @@ class FitDataset(AbstractFitInversion):
             The normalization noise_map-term for the data's noise-map.
         """
         if self.inversion is not None:
+
             return fit_util.log_evidence_from(
                 chi_squared=self.chi_squared,
                 regularization_term=self.inversion.regularization_term,
@@ -313,10 +316,11 @@ class FitDataset(AbstractFitInversion):
     @property
     @profile_func
     def figure_of_merit(self) -> float:
+
         if self.inversion is not None:
             return self.log_evidence
 
-        return self.log_likelihood
+        return self.log_likelihood.array
 
     @property
     def inversion(self) -> Optional[AbstractInversion]:
