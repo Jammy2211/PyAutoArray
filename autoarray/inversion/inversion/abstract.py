@@ -454,36 +454,6 @@ class AbstractInversion:
 
     @cached_property
     @profile_func
-    def curvature_reg_matrix_cholesky(self) -> np.ndarray:
-        """
-        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
-        linear system of equations of the `Inversion`.
-
-        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
-        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
-        """
-        try:
-            return np.linalg.cholesky(self.curvature_reg_matrix)
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
-
-    @cached_property
-    @profile_func
-    def curvature_reg_matrix_reduced_cholesky(self) -> np.ndarray:
-        """
-        Performs a Cholesky decomposition of the `curvature_reg_matrix`, the result of which is used to solve the
-        linear system of equations of the `Inversion`.
-
-        The method `np.linalg.solve` is faster to do this, but the Cholesky decomposition is used later in the code
-        to speed up the calculation of `log_det_curvature_reg_matrix_term`.
-        """
-        try:
-            return np.linalg.cholesky(self.curvature_reg_matrix_reduced)
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
-
-    @cached_property
-    @profile_func
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
@@ -531,15 +501,6 @@ class AbstractInversion:
                     values_to_solve, :
                 ][:, values_to_solve]
 
-                # TODO : Speed up via chol tools.
-
-                try:
-                    curvature_reg_matrix_cholesky_input = np.linalg.cholesky(
-                        curvature_reg_matrix_input
-                    )
-                except (RuntimeError, np.linalg.LinAlgError) as e:
-                    raise exc.InversionException() from e
-
                 solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
 
                 solutions[
@@ -547,7 +508,6 @@ class AbstractInversion:
                 ] = inversion_util.reconstruction_positive_only_from(
                     data_vector=data_vector_input,
                     curvature_reg_matrix=curvature_reg_matrix_input,
-                    curvature_reg_matrix_cholesky=curvature_reg_matrix_cholesky_input,
                     settings=self.settings,
                 )
                 return solutions
@@ -555,7 +515,6 @@ class AbstractInversion:
                 solutions = inversion_util.reconstruction_positive_only_from(
                     data_vector=self.data_vector,
                     curvature_reg_matrix=self.curvature_reg_matrix,
-                    curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
                     settings=self.settings,
                 )
 
@@ -565,7 +524,7 @@ class AbstractInversion:
 
         return inversion_util.reconstruction_positive_negative_from(
             data_vector=self.data_vector,
-            curvature_reg_matrix_cholesky=self.curvature_reg_matrix_cholesky,
+            curvature_reg_matrix=self.curvature_reg_matrix,
             mapper_param_range_list=mapper_param_range_list,
         )
 
@@ -716,7 +675,12 @@ class AbstractInversion:
         if not self.has(cls=AbstractRegularization):
             return 0.0
 
-        return 2.0 * np.sum(np.log(np.diag(self.curvature_reg_matrix_reduced_cholesky)))
+        try:
+            return 2.0 * np.sum(
+                np.log(np.diag(np.linalg.cholesky(self.curvature_reg_matrix_reduced)))
+            )
+        except np.linalg.LinAlgError as e:
+            raise exc.InversionException() from e
 
     @cached_property
     @profile_func
