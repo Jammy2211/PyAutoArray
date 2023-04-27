@@ -271,7 +271,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper(
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(
             use_w_tilde=False,
-            no_regularization_add_to_curvature_diag=False,
+            no_regularization_add_to_curvature_diag_value=False,
         ),
     )
 
@@ -308,7 +308,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
         linear_obj_list=[linear_obj, voronoi_mapper_9_3x3],
         settings=aa.SettingsInversion(
             use_w_tilde=False,
-            no_regularization_add_to_curvature_diag=False,
+            no_regularization_add_to_curvature_diag_value=False,
             force_edge_pixels_to_zeros=True,
         ),
     )
@@ -323,7 +323,7 @@ def test__inversion_imaging__via_linear_obj_func_and_mapper__force_edge_pixels_t
         settings=aa.SettingsInversion(
             use_w_tilde=False,
             use_positive_only_solver=True,
-            no_regularization_add_to_curvature_diag=False,
+            no_regularization_add_to_curvature_diag_value=False,
             force_edge_pixels_to_zeros=True,
         ),
     )

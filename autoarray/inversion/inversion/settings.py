@@ -12,10 +12,10 @@ class SettingsInversion:
         use_w_tilde: bool = True,
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
-        force_edge_pixels_to_zeros: bool = False,
+        force_edge_pixels_to_zeros: bool = True,
         force_edge_image_pixels_to_zeros: bool = False,
         image_pixels_source_zero=None,
-        no_regularization_add_to_curvature_diag: bool = True,
+        no_regularization_add_to_curvature_diag_value : float = None,
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
         use_linear_operators: bool = False,
@@ -37,9 +37,9 @@ class SettingsInversion:
             Whether to use a positive-only linear system solver, which requires that every reconstructed value is
             positive but is computationally much slower than the default solver (which allows for positive and
             negative values).
-        no_regularization_add_to_curvature_diag
-            When True, if a linear object in the inversion has no regularization, values of 1.0e-8 are added to the
-            diagonal of its `curvature_matrix` to stablelize the linear algebra solver.
+        no_regularization_add_to_curvature_diag_value
+            If a linear func object does not have a corresponding regularization, this value is added to its 
+            diagonal entries of the curvature regularization matrix to ensure the matrix is positive-definite.
         use_w_tilde_numpy
             If True, the curvature_matrix is computed via numpy matrix multiplication (as opposed to numba functions
             which exploit sparsity to do the calculation normally in a more efficient way).
@@ -65,8 +65,8 @@ class SettingsInversion:
         self.image_pixels_source_zero = image_pixels_source_zero
         # force_edge_image_pixels_to_zeros is to force source pixels correspoding to the edge of an image to be 0.
         # image_pixels_source_zero is to a True/False array to identify those image pixels to which source's contribution should be 0.
-        self.no_regularization_add_to_curvature_diag = (
-            no_regularization_add_to_curvature_diag
+        self._no_regularization_add_to_curvature_diag_value = (
+            no_regularization_add_to_curvature_diag_value
         )
         self.tolerance = tolerance
         self.maxiter = maxiter
@@ -86,3 +86,10 @@ class SettingsInversion:
             return conf.instance["general"]["inversion"]["positive_only_uses_p_initial"]
 
         return self._positive_only_uses_p_initial
+
+    @property
+    def no_regularization_add_to_curvature_diag_value(self):
+        if self._no_regularization_add_to_curvature_diag_value is None:
+            return conf.instance["general"]["inversion"]["no_regularization_add_to_curvature_diag_value"]
+
+        return self._no_regularization_add_to_curvature_diag_value

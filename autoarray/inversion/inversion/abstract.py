@@ -10,6 +10,7 @@ from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -262,16 +263,13 @@ class AbstractInversion:
 
         no_regularization_index_list = []
 
-        pixel_count = 0
+        param_range_list = self.param_range_list_from(cls=LinearObj)
 
-        for linear_obj, regularization in zip(
-            self.linear_obj_list, self.regularization_list
+        for linear_obj, regularization, param_range in zip(
+            self.linear_obj_list, self.regularization_list, param_range_list
         ):
             if regularization is None:
-                for pixel in range(pixel_count, pixel_count + linear_obj.params):
-                    no_regularization_index_list.append(pixel)
-
-            pixel_count += linear_obj.params
+                no_regularization_index_list += range(param_range[0], param_range[1])
 
         return no_regularization_index_list
 

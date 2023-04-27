@@ -168,7 +168,8 @@ class InversionImagingMapping(AbstractInversionImaging):
             diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
                 mapping_matrix=operated_mapping_matrix,
                 noise_map=self.noise_map,
-                add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
+                settings=self.settings,
+                add_to_curvature_diag=True,
                 no_regularization_index_list=self.no_regularization_index_list,
             )
 
@@ -211,7 +212,8 @@ class InversionImagingMapping(AbstractInversionImaging):
         return inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix,
             noise_map=self.noise_map,
-            add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
+            settings=self.settings,
+            add_to_curvature_diag=True,
             no_regularization_index_list=self.no_regularization_index_list,
         )
 

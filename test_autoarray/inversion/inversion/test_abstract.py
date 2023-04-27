@@ -24,6 +24,7 @@ def test__has():
 
 
 def test__total_regularizations():
+
     reg = aa.m.MockRegularization()
 
     linear_obj_0 = aa.m.MockLinearObj(regularization=reg)

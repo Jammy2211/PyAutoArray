@@ -1,5 +1,4 @@
 import numpy as np
-import scipy
 
 from typing import List, Optional
 
@@ -42,7 +41,7 @@ def curvature_matrix_via_w_tilde_from(
 
 @numba_util.jit()
 def curvature_matrix_with_added_to_diag_from(
-    curvature_matrix: np.ndarray, no_regularization_index_list: Optional[List] = None
+    curvature_matrix: np.ndarray, value : float , no_regularization_index_list: Optional[List] = None,
 ) -> np.ndarray:
     """
     It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
@@ -60,7 +59,7 @@ def curvature_matrix_with_added_to_diag_from(
     """
 
     for i in no_regularization_index_list:
-        curvature_matrix[i, i] += 1e-8
+        curvature_matrix[i, i] += value
 
     return curvature_matrix
 
@@ -90,6 +89,7 @@ def curvature_matrix_via_mapping_matrix_from(
     noise_map: np.ndarray,
     add_to_curvature_diag: bool = False,
     no_regularization_index_list: Optional[List] = None,
+    settings: SettingsInversion = SettingsInversion(),
 ) -> np.ndarray:
     """
     Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
@@ -109,6 +109,7 @@ def curvature_matrix_via_mapping_matrix_from(
     if add_to_curvature_diag and len(no_regularization_index_list) > 0:
         curvature_matrix = curvature_matrix_with_added_to_diag_from(
             curvature_matrix=curvature_matrix,
+            value=settings.no_regularization_add_to_curvature_diag_value,
             no_regularization_index_list=no_regularization_index_list,
         )
 
@@ -278,9 +279,9 @@ def reconstruction_positive_only_from(
 
     if len(data_vector):
         try:
-            if settings.positive_only_uses_p_initial:
-                P_initial = np.linalg.solve(curvature_reg_matrix, data_vector)
 
+            if settings.positive_only_uses_p_initial:
+                P_initial = np.linalg.solve(curvature_reg_matrix, data_vector) > 0
             else:
                 P_initial = np.zeros(0, dtype=int)
 
@@ -289,6 +290,7 @@ def reconstruction_positive_only_from(
                 (data_vector).T,
                 P_initial=P_initial,
             )
+
         except (RuntimeError, np.linalg.LinAlgError) as e:
             raise exc.InversionException() from e
 

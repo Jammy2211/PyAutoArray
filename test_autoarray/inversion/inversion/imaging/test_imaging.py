@@ -89,7 +89,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
-        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=False),
+        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag_value=False),
     )
 
     assert inversion.curvature_matrix[0:2, 0:2] == pytest.approx(
@@ -104,7 +104,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
-        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),
+        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag_value=True),
     )
 
     assert inversion.curvature_matrix[0, 0] - 10.0 > 0.0
