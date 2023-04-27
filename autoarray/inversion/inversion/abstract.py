@@ -889,7 +889,7 @@ class AbstractInversion:
         if regularization is None:
             pixels = linear_obj.params
 
-            return np.zero((pixels,))
+            return np.zeros((pixels,))
 
         return regularization.regularization_weights_from(linear_obj=linear_obj)
 
