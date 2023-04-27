@@ -48,7 +48,7 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
-    linear_obj = aa.m.MockLinearObj(
+    linear_obj = aa.m.MockLinearObjFuncList(
         mapping_matrix=None,
         operated_mapping_matrix_override=operated_mapping_matrix_override,
     )
@@ -77,7 +77,7 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
-    linear_obj = aa.m.MockLinearObj(
+    linear_obj = aa.m.MockLinearObjFuncList(
         parameters=1,
         mapping_matrix=None,
         operated_mapping_matrix_override=operated_mapping_matrix_override,
@@ -89,7 +89,9 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
-        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag_value=False),
+        settings=aa.SettingsInversion(
+            no_regularization_add_to_curvature_diag_value=False
+        ),
     )
 
     assert inversion.curvature_matrix[0:2, 0:2] == pytest.approx(
@@ -104,7 +106,9 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
-        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag_value=True),
+        settings=aa.SettingsInversion(
+            no_regularization_add_to_curvature_diag_value=True
+        ),
     )
 
     assert inversion.curvature_matrix[0, 0] - 10.0 > 0.0

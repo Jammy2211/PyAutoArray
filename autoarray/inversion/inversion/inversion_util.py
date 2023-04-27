@@ -41,7 +41,9 @@ def curvature_matrix_via_w_tilde_from(
 
 @numba_util.jit()
 def curvature_matrix_with_added_to_diag_from(
-    curvature_matrix: np.ndarray, value : float , no_regularization_index_list: Optional[List] = None,
+    curvature_matrix: np.ndarray,
+    value: float,
+    no_regularization_index_list: Optional[List] = None,
 ) -> np.ndarray:
     """
     It is common for the `curvature_matrix` computed to not be positive-definite, leading for the inversion
@@ -279,7 +281,6 @@ def reconstruction_positive_only_from(
 
     if len(data_vector):
         try:
-
             if settings.positive_only_uses_p_initial:
                 P_initial = np.linalg.solve(curvature_reg_matrix, data_vector) > 0
             else:

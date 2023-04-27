@@ -117,8 +117,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
         curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
 
-        if (len(self.no_regularization_index_list) > 0
-        ):
+        if len(self.no_regularization_index_list) > 0:
             curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
                 curvature_matrix=curvature_matrix,
                 no_regularization_index_list=self.no_regularization_index_list,

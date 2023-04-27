@@ -109,7 +109,7 @@ class AbstractInversionImaging(AbstractInversion):
                 mapping_matrix=linear_obj.mapping_matrix
             )
             if linear_obj.operated_mapping_matrix_override is None
-            else linear_obj.operated_mapping_matrix_override
+            else self.linear_func_operated_mapping_matrix_dict[linear_obj]
             for linear_obj in self.linear_obj_list
         ]
 

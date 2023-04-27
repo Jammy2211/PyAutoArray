@@ -15,7 +15,7 @@ class SettingsInversion:
         force_edge_pixels_to_zeros: bool = True,
         force_edge_image_pixels_to_zeros: bool = False,
         image_pixels_source_zero=None,
-        no_regularization_add_to_curvature_diag_value : float = None,
+        no_regularization_add_to_curvature_diag_value: float = None,
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
         use_linear_operators: bool = False,
@@ -38,7 +38,7 @@ class SettingsInversion:
             positive but is computationally much slower than the default solver (which allows for positive and
             negative values).
         no_regularization_add_to_curvature_diag_value
-            If a linear func object does not have a corresponding regularization, this value is added to its 
+            If a linear func object does not have a corresponding regularization, this value is added to its
             diagonal entries of the curvature regularization matrix to ensure the matrix is positive-definite.
         use_w_tilde_numpy
             If True, the curvature_matrix is computed via numpy matrix multiplication (as opposed to numba functions
@@ -90,6 +90,8 @@ class SettingsInversion:
     @property
     def no_regularization_add_to_curvature_diag_value(self):
         if self._no_regularization_add_to_curvature_diag_value is None:
-            return conf.instance["general"]["inversion"]["no_regularization_add_to_curvature_diag_value"]
+            return conf.instance["general"]["inversion"][
+                "no_regularization_add_to_curvature_diag_value"
+            ]
 
         return self._no_regularization_add_to_curvature_diag_value
