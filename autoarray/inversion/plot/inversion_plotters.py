@@ -230,9 +230,12 @@ class InversionPlotter(Plotter):
         )
         self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
 
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, regularization_weights=True
-        )
+        try:
+            self.figures_2d_of_pixelization(
+                pixelization_index=mapper_index, regularization_weights=True
+            )
+        except IndexError:
+            pass
 
         self.set_title(label="Source Reconstruction (Unzoomed)")
         self.figures_2d_of_pixelization(
