@@ -46,10 +46,10 @@ Colorbar:            # wrapper for `plt.colorbar()`: customize the figure colorb
 ColorbarTickParams:  # wrapper for `cb.ax.tick_params()`: customize the ticks of the figure's colorbar.
   figure:
     labelrotation: 90
-    labelsize: 14
+    labelsize: 22
   subplot:
     labelrotation: 90
-    labelsize: 14
+    labelsize: 18
 Figure:              # wrapper for `plt.figure()`: customize the figure size.
   figure:
     aspect: square
@@ -86,7 +86,7 @@ TickParams:          # wrapper for `plt.tick_params()`: customize the figure tic
     labelsize: 10
 Title:               # wrapper for `plt.title()`: customize the figure title.
   figure:
-    fontsize: 16
+    fontsize: 24
   subplot:
     fontsize: 16
 XLabel:              # wrapper for `plt.xlabel()`: customize the figure ylabel.
@@ -103,9 +103,9 @@ XTicks:              # wrapper for `plt.xticks()`: customize the figure xticks.
     number_of_ticks_1d: 8  # For 1D plots, the number of ticks that appear on the x-axis.
     number_of_ticks_2d: 3  # For 1D plots, the number of ticks that appear on the x-axis.
   figure:
-    fontsize: 16
+    fontsize: 22
   subplot:
-    fontsize: 16
+    fontsize: 18
 YLabel:              # wrapper for `plt.ylabel()`: customize the figure ylabel.
   figure:
     fontsize: 16
@@ -120,10 +120,10 @@ YTicks:              # wrapper for `plt.yticks()`: customize the figure yticks.
     number_of_ticks_1d: 8  # For 1D plots, the number of ticks that appear on the y-axis.
     number_of_ticks_2d: 3  # For 1D plots, the number of ticks that appear on the y-axis.
   figure:
-    fontsize: 16
+    fontsize: 22
     rotation: vertical
     va: center
   subplot:
-    fontsize: 16
+    fontsize: 18
     rotation: vertical
     va: center

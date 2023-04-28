@@ -116,7 +116,8 @@ class Output:
         for format in self.format_list:
             output_path = self.output_path_from(format=format)
 
-            os.makedirs(output_path, exist_ok=True)
+            if format != "show":
+                os.makedirs(output_path, exist_ok=True)
 
             if not self.bypass:
                 if format == "show":
@@ -153,7 +154,8 @@ class Output:
         for format in self.format_list:
             output_path = self.output_path_from(format=format)
 
-            os.makedirs(output_path, exist_ok=True)
+            if format != "show":
+                os.makedirs(output_path, exist_ok=True)
 
             if format == "show":
                 plt.show()
