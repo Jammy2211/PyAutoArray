@@ -57,6 +57,10 @@ class Preloads:
         self.traced_sparse_grids_list_of_planes = traced_sparse_grids_list_of_planes
         self.sparse_image_plane_grid_list = sparse_image_plane_grid_list
 
+    @property
+    def check_threshold(self):
+        return conf.instance["general"]["test"]["preloads_check_threshold"]
+
     def set_w_tilde_imaging(self, fit_0, fit_1):
         """
         The w-tilde linear algebra formalism speeds up inversions by computing beforehand quantities that enable
@@ -457,21 +461,17 @@ class Preloads:
         )
 
         try:
-            preloads_check_threshold = conf.instance["general"]["test"][
-                "preloads_check_threshold"
-            ]
-
             if (
                 abs(
                     fit_with_preloads.figure_of_merit
                     - fit_without_preloads.figure_of_merit
                 )
-                > preloads_check_threshold
+                > self.check_threshold
             ):
                 raise exc.PreloadsException(
                     f"""
                     The log likelihood of fits using and not using preloads are not consistent by a value larger than
-                    the preloads check threshold of {preloads_check_threshold}, indicating preloading has gone wrong.
+                    the preloads check threshold of {self.check_threshold}, indicating preloading has gone wrong.
 
                     The likelihood values are: 
 

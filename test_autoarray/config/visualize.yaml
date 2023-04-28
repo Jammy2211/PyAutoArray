@@ -15,7 +15,7 @@ general:
     serial_prescan: true
   subplot_shape:
     1: (1, 1)                         # The shape of subplots for a figure with 1 subplot.
-    2: (1, 2)                         # The shape of subplots for a figure with 2 subplots.
+    2: (2, 2)                         # The shape of subplots for a figure with 2 subplots.
     4: (2, 2)                         # The shape of subplots for a figure with 4 (or less than the above value) of subplots.
     6: (2, 3)                         # The shape of subplots for a figure with 6 (or less than the above value) of subplots.
     9: (3, 3)                         # The shape of subplots for a figure with 9 (or less than the above value) of subplots.

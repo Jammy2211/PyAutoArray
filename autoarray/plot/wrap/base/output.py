@@ -51,9 +51,6 @@ class Output:
         """
         self.path = path
 
-        if path is not None and path:
-            os.makedirs(path, exist_ok=True)
-
         self.filename = filename
         self.prefix = prefix
         self.suffix = suffix
@@ -119,9 +116,10 @@ class Output:
         for format in self.format_list:
             output_path = self.output_path_from(format=format)
 
+            os.makedirs(output_path, exist_ok=True)
+
             if not self.bypass:
                 if format == "show":
-                    #    plt.tight_layout()
                     plt.show()
                 elif format == "png":
                     plt.savefig(
@@ -154,6 +152,8 @@ class Output:
 
         for format in self.format_list:
             output_path = self.output_path_from(format=format)
+
+            os.makedirs(output_path, exist_ok=True)
 
             if format == "show":
                 plt.show()

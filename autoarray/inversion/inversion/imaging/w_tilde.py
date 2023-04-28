@@ -234,6 +234,54 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         return data_vector
 
+    @cached_property
+    @profile_func
+    def curvature_matrix(self) -> np.ndarray:
+        """
+        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
+        construct the simultaneous linear equations.
+
+        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
+        curvature matrix given by equation (4) and the letter F.
+
+        This function computes F using the w_tilde formalism, which is faster as it precomputes the PSF convolution
+        of different noise-map pixels (see `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`).
+
+        If there are multiple linear objects the curvature_matrices are combined to ensure their values are solved
+        for simultaneously. In the w-tilde formalism this requires us to consider the mappings between data and every
+        linear object, meaning that the linear alegbra has both on and off diagonal terms.
+
+        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
+        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
+        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
+        array of memory.
+        """
+
+        if self.preloads.curvature_matrix is not None:
+            # Need to copy because of how curvature_reg_matirx overwrites memory.
+
+            return copy.copy(self.preloads.curvature_matrix)
+
+        if self.has(cls=AbstractLinearObjFuncList):
+            curvature_matrix = self._curvature_matrix_func_list_and_mapper
+        elif self.total(cls=AbstractMapper) == 1:
+            curvature_matrix = self._curvature_matrix_x1_mapper
+        else:
+            curvature_matrix = self._curvature_matrix_multi_mapper
+
+        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
+            curvature_matrix=curvature_matrix
+        )
+
+        if len(self.no_regularization_index_list) > 0:
+            curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
+                curvature_matrix=curvature_matrix,
+                value=self.settings.no_regularization_add_to_curvature_diag_value,
+                no_regularization_index_list=self.no_regularization_index_list,
+            )
+
+        return curvature_matrix
+
     @property
     @profile_func
     def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
@@ -279,45 +327,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             if self.total(cls=AbstractMapper) == 1:
                 return curvature_matrix
 
-        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix
-        )
-
         return curvature_matrix
-
-    @cached_property
-    @profile_func
-    def curvature_matrix(self) -> np.ndarray:
-        """
-        Returns the `curvature_matrix`, a 2D matrix which uses the mappings between the data and the linear objects to
-        construct the simultaneous linear equations.
-
-        The linear algebra is described in the paper https://arxiv.org/pdf/astro-ph/0302587.pdf, where the
-        curvature matrix given by equation (4) and the letter F.
-
-        This function computes F using the w_tilde formalism, which is faster as it precomputes the PSF convolution
-        of different noise-map pixels (see `curvature_matrix_via_w_tilde_curvature_preload_imaging_from`).
-
-        If there are multiple linear objects the curvature_matrices are combined to ensure their values are solved
-        for simultaneously. In the w-tilde formalism this requires us to consider the mappings between data and every
-        linear object, meaning that the linear alegbra has both on and off diagonal terms.
-
-        The `curvature_matrix` computed here is overwritten in memory when the regularization matrix is added to it,
-        because for large matrices this avoids overhead. For this reason, `curvature_matrix` is not a cached property
-        to ensure if we access it after computing the `curvature_reg_matrix` it is correctly recalculated in a new
-        array of memory.
-        """
-
-        if self.preloads.curvature_matrix is not None:
-            # Need to copy because of how curvature_reg_matirx overwrites memory.
-
-            return copy.copy(self.preloads.curvature_matrix)
-
-        if self.has(cls=AbstractLinearObjFuncList):
-            return self._curvature_matrix_func_list_and_mapper
-        elif self.total(cls=AbstractMapper) == 1:
-            return self._curvature_matrix_x1_mapper
-        return self._curvature_matrix_multi_mapper
 
     @profile_func
     def _curvature_matrix_off_diag_from(
@@ -410,10 +420,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     mapper_param_range_i[0] : mapper_param_range_i[1],
                     mapper_param_range_j[0] : mapper_param_range_j[1],
                 ] = off_diag
-
-        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix
-        )
 
         return curvature_matrix
 
@@ -516,10 +522,6 @@ class InversionImagingWTilde(AbstractInversionImaging):
                     linear_func_param_range_0[0] : linear_func_param_range_0[1],
                     linear_func_param_range_1[0] : linear_func_param_range_1[1],
                 ] = diag
-
-        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix
-        )
 
         return curvature_matrix
 

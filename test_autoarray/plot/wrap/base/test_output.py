@@ -34,6 +34,10 @@ def test__input_path_is_created():
 
     assert not path.exists(test_path)
 
-    output = aplt.Output(path=test_path)
+    output = aplt.Output(
+        path=test_path,
+        format="png",
+    )
+    output.to_figure(structure=None, auto_filename="test")
 
     assert path.exists(test_path)

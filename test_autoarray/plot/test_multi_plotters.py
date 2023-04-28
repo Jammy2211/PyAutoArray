@@ -21,7 +21,7 @@ def test__multi_plotter__subplot_of_plotter_list_figure(
     mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(plot_path, format="png"))
 
     plotter_0 = aplt.ImagingPlotter(imaging=imaging_7x7, mat_plot_2d=mat_plot_2d)
-    plotter_1 = aplt.ImagingPlotter(imaging=imaging_7x7)
+    plotter_1 = aplt.ImagingPlotter(imaging=imaging_7x7, mat_plot_2d=mat_plot_2d)
 
     plotter_list = [plotter_0, plotter_1]
 
