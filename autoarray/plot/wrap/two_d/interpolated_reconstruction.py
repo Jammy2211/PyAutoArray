@@ -99,3 +99,5 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
             extent=mapper.source_plane_mesh_grid.geometry.extent_square,
             aspect=aspect,
         )
+
+        return interpolation_array

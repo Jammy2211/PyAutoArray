@@ -109,14 +109,14 @@ def test__output_to_fits():
     os.makedirs(output_data_dir)
 
     imaging.output_to_fits(
-        data_path=path.join(output_data_dir, "image.fits"),
+        data_path=path.join(output_data_dir, "data.fits"),
         psf_path=path.join(output_data_dir, "psf.fits"),
         noise_map_path=path.join(output_data_dir, "noise_map.fits"),
     )
 
     imaging = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        data_path=path.join(output_data_dir, "image.fits"),
+        data_path=path.join(output_data_dir, "data.fits"),
         psf_path=path.join(output_data_dir, "psf.fits"),
         noise_map_path=path.join(output_data_dir, "noise_map.fits"),
     )

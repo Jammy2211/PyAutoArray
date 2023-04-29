@@ -77,13 +77,6 @@ class Cmap(AbstractMatWrap):
                     vmax = abs(vmin)
                 else:
                     vmin = -vmax
-            else:
-                logger.info(
-                    """
-                    Cannot make symmetric Cmap (e.g. vmax = -vmin) because 
-                    both vmin and vmax are positive or negative.
-                    """
-                )
 
         if isinstance(self.config_dict["norm"], colors.Normalize):
             return self.config_dict["norm"]

@@ -168,12 +168,10 @@ class InversionPlotter(Plotter):
                     )
                     vmax_custom = True
 
-            source_pixelization_values = self.inversion.reconstruction_dict[
-                mapper_plotter.mapper
-            ]
+            pixel_values = self.inversion.reconstruction_dict[mapper_plotter.mapper]
 
             mapper_plotter.plot_source_from(
-                source_pixelization_values=source_pixelization_values,
+                pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
                 interpolate_to_uniform=interpolate_to_uniform,
                 auto_labels=AutoLabels(
@@ -187,9 +185,7 @@ class InversionPlotter(Plotter):
         if errors:
             try:
                 mapper_plotter.plot_source_from(
-                    source_pixelization_values=self.inversion.errors_dict[
-                        mapper_plotter.mapper
-                    ],
+                    pixel_values=self.inversion.errors_dict[mapper_plotter.mapper],
                     auto_labels=AutoLabels(title="Errors", filename="errors"),
                 )
 
@@ -198,7 +194,7 @@ class InversionPlotter(Plotter):
 
         if regularization_weights:
             mapper_plotter.plot_source_from(
-                source_pixelization_values=self.inversion.regularization_weights_mapper_dict[
+                pixel_values=self.inversion.regularization_weights_mapper_dict[
                     mapper_plotter.mapper
                 ],
                 auto_labels=AutoLabels(

@@ -75,7 +75,7 @@ class MapperPlotter(Plotter):
             mapper=self.mapper,
             visuals_2d=self.get_2d.via_mapper_for_source_from(mapper=self.mapper),
             interpolate_to_uniform=interpolate_to_uniform,
-            source_pixelization_values=solution_vector,
+            pixel_values=solution_vector,
             auto_labels=AutoLabels(
                 title="Pixelization Mesh (Image-Plane)", filename="mapper"
             ),
@@ -127,7 +127,7 @@ class MapperPlotter(Plotter):
 
     def plot_source_from(
         self,
-        source_pixelization_values: np.ndarray,
+        pixel_values: np.ndarray,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
         auto_labels: AutoLabels = AutoLabels(),
@@ -137,7 +137,7 @@ class MapperPlotter(Plotter):
 
         Parameters
         ----------
-        source_pixelization_values
+        pixel_values
             The values of the mapper's source pixels used for coloring the figure.
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
@@ -152,7 +152,7 @@ class MapperPlotter(Plotter):
             mapper=self.mapper,
             visuals_2d=self.get_visuals_2d_for_source(),
             auto_labels=auto_labels,
-            source_pixelization_values=source_pixelization_values,
+            pixel_values=pixel_values,
             zoom_to_brightest=zoom_to_brightest,
             interpolate_to_uniform=interpolate_to_uniform,
         )

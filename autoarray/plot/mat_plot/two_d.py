@@ -428,7 +428,7 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = False,
-        source_pixelization_values: np.ndarray = Optional[None],
+        pixel_values: np.ndarray = Optional[None],
         zoom_to_brightest: bool = True,
     ):
         if isinstance(mapper, MapperRectangularNoInterp):
@@ -436,7 +436,7 @@ class MatPlot2D(AbstractMatPlot):
                 mapper=mapper,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
-                source_pixelization_values=source_pixelization_values,
+                pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
             )
 
@@ -446,7 +446,7 @@ class MatPlot2D(AbstractMatPlot):
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 interpolate_to_uniform=interpolate_to_uniform,
-                source_pixelization_values=source_pixelization_values,
+                pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
             )
         else:
@@ -455,7 +455,7 @@ class MatPlot2D(AbstractMatPlot):
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 interpolate_to_uniform=interpolate_to_uniform,
-                source_pixelization_values=source_pixelization_values,
+                pixel_values=pixel_values,
                 zoom_to_brightest=zoom_to_brightest,
             )
 
@@ -464,19 +464,19 @@ class MatPlot2D(AbstractMatPlot):
         mapper: MapperRectangularNoInterp,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
-        source_pixelization_values: np.ndarray = Optional[None],
+        pixel_values: np.ndarray = Optional[None],
         zoom_to_brightest: bool = True,
     ):
-        if source_pixelization_values is not None:
+        if pixel_values is not None:
             solution_array_2d = array_2d_util.array_2d_native_from(
-                array_2d_slim=source_pixelization_values,
+                array_2d_slim=pixel_values,
                 mask_2d=np.full(
                     fill_value=False, shape=mapper.source_plane_mesh_grid.shape_native
                 ),
                 sub_size=1,
             )
 
-            source_pixelization_values = Array2D.no_mask(
+            pixel_values = Array2D.no_mask(
                 values=solution_array_2d,
                 sub_size=1,
                 pixel_scales=mapper.source_plane_mesh_grid.pixel_scales,
@@ -486,7 +486,7 @@ class MatPlot2D(AbstractMatPlot):
         extent = self.axis.config_dict.get("extent")
         if extent is None:
             extent = mapper.extent_from(
-                values=source_pixelization_values, zoom_to_brightest=zoom_to_brightest
+                values=pixel_values, zoom_to_brightest=zoom_to_brightest
             )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
@@ -496,9 +496,9 @@ class MatPlot2D(AbstractMatPlot):
         else:
             ax = self.setup_subplot(aspect=aspect_inv)
 
-        if source_pixelization_values is not None:
+        if pixel_values is not None:
             self.plot_array(
-                array=source_pixelization_values,
+                array=pixel_values,
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 bypass=True,
@@ -543,13 +543,13 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = False,
-        source_pixelization_values: np.ndarray = Optional[None],
+        pixel_values: np.ndarray = Optional[None],
         zoom_to_brightest: bool = True,
     ):
         extent = self.axis.config_dict.get("extent")
         if extent is None:
             extent = mapper.extent_from(
-                values=source_pixelization_values, zoom_to_brightest=zoom_to_brightest
+                values=pixel_values, zoom_to_brightest=zoom_to_brightest
             )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
@@ -575,9 +575,9 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [annotate.set() for annotate in self.annotate]
 
-        self.interpolated_reconstruction.imshow_reconstruction(
+        interpolation_array = self.interpolated_reconstruction.imshow_reconstruction(
             mapper=mapper,
-            pixel_values=source_pixelization_values,
+            pixel_values=pixel_values,
             units=self.units,
             cmap=self.cmap,
             colorbar=self.colorbar,
@@ -595,7 +595,9 @@ class MatPlot2D(AbstractMatPlot):
         )
 
         if not self.is_for_subplot:
-            self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
+            self.output.to_figure(
+                structure=interpolation_array, auto_filename=auto_labels.filename
+            )
             self.figure.close()
 
     def _plot_voronoi_mapper(
@@ -604,14 +606,14 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
         interpolate_to_uniform: bool = False,
-        source_pixelization_values: np.ndarray = Optional[None],
+        pixel_values: np.ndarray = Optional[None],
         zoom_to_brightest: bool = True,
     ):
         extent = self.axis.config_dict.get("extent")
 
         if extent is None:
             extent = mapper.extent_from(
-                values=source_pixelization_values, zoom_to_brightest=zoom_to_brightest
+                values=pixel_values, zoom_to_brightest=zoom_to_brightest
             )
 
         aspect_inv = self.figure.aspect_for_subplot_from(extent=extent)
@@ -643,7 +645,7 @@ class MatPlot2D(AbstractMatPlot):
             self.voronoi_drawer.draw_voronoi_pixels(
                 mapper=mapper,
                 units=self.units,
-                pixel_values=source_pixelization_values,
+                pixel_values=pixel_values,
                 cmap=self.cmap,
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
@@ -653,7 +655,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
             self.interpolated_reconstruction.imshow_reconstruction(
                 mapper=mapper,
-                pixel_values=source_pixelization_values,
+                pixel_values=pixel_values,
                 units=self.units,
                 cmap=self.cmap,
                 colorbar=self.colorbar,
@@ -670,6 +672,13 @@ class MatPlot2D(AbstractMatPlot):
             plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
         )
 
+        if pixel_values is not None:
+            interpolation_array = mapper.interpolated_array_from(values=pixel_values)
+        else:
+            interpolation_array = None
+
         if not self.is_for_subplot:
-            self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
+            self.output.to_figure(
+                structure=interpolation_array, auto_filename=auto_labels.filename
+            )
             self.figure.close()
