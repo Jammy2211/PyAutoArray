@@ -36,7 +36,7 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
         dirty_signal_to_noise_map=True,
     )
 
-    assert path.join(plot_path, "visibilities.png") in plot_patch.paths
+    assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "u_wavelengths.png") in plot_patch.paths
     assert path.join(plot_path, "v_wavelengths.png") in plot_patch.paths
@@ -56,7 +56,7 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
         amplitudes_vs_uv_distances=True,
     )
 
-    assert path.join(plot_path, "visibilities.png") in plot_patch.paths
+    assert path.join(plot_path, "data.png") in plot_patch.paths
     assert not path.join(plot_path, "u_wavelengths.png") in plot_patch.paths
     assert path.join(plot_path, "v_wavelengths.png") in plot_patch.paths
     assert path.join(plot_path, "amplitudes_vs_uv_distances.png") in plot_patch.paths

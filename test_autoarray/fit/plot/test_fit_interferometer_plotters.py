@@ -43,7 +43,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
         dirty_chi_squared_map=True,
     )
 
-    assert path.join(plot_path, "visibilities.png") in plot_patch.paths
+    assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths
@@ -92,7 +92,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
         chi_squared_map_imag=True,
     )
 
-    assert path.join(plot_path, "visibilities.png") in plot_patch.paths
+    assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
     assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
     assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths

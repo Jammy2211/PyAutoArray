@@ -139,7 +139,7 @@ class FitInterferometerPlotterMeta(Plotter):
             self.mat_plot_2d.plot_grid(
                 grid=self.fit.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
-                auto_labels=AutoLabels(title="Visibilities", filename="visibilities"),
+                auto_labels=AutoLabels(title="Visibilities", filename="data"),
                 color_array=np.real(self.fit.noise_map),
             )
 
