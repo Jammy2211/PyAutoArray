@@ -192,16 +192,21 @@ class InversionPlotter(Plotter):
             except TypeError:
                 pass
 
+        # TODO : NEed to understand why this raises an error in voronoi_drawer.
+
         if regularization_weights:
-            mapper_plotter.plot_source_from(
-                pixel_values=self.inversion.regularization_weights_mapper_dict[
-                    mapper_plotter.mapper
-                ],
-                auto_labels=AutoLabels(
-                    title="Regularization weight_list",
-                    filename="regularization_weights",
-                ),
-            )
+            try:
+                mapper_plotter.plot_source_from(
+                    pixel_values=self.inversion.regularization_weights_mapper_dict[
+                        mapper_plotter.mapper
+                    ],
+                    auto_labels=AutoLabels(
+                        title="Regularization weight_list",
+                        filename="regularization_weights",
+                    ),
+                )
+            except IndexError:
+                pass
 
     def subplot_of_mapper(
         self, mapper_index: int = 0, auto_filename: str = "subplot_inversion"

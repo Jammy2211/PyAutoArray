@@ -126,13 +126,13 @@ class ImagingPlotterMeta(Plotter):
         Parameters
         ----------
         data
-            Whether or not to include a 2D plot (via `imshow`) of the image data.
+            Whether to include a 2D plot (via `imshow`) of the image data.
         noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the noise map.
+            Whether to include a 2D plot (via `imshow`) of the noise map.
         psf
-            Whether or not to include a 2D plot (via `imshow`) of the psf.
+            Whether to include a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the signal-to-noise map.
+            Whether to include a 2D plot (via `imshow`) of the signal-to-noise map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
