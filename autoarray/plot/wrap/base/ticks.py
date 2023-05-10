@@ -110,9 +110,15 @@ class AbstractTicks(AbstractMatWrap):
 
         ticks_convert_factor = units.ticks_convert_factor or 1.0
 
+        def signif(x, p):
+            x = np.asarray(x)
+            x_positive = np.where(np.isfinite(x) & (x != 0), np.abs(x), 10 ** (p - 1))
+            mags = 10 ** (p - 1 - np.floor(np.log10(x_positive)))
+            return np.round(x * mags) / mags
+
         if round_value:
             return np.asarray(
-                [np.round(value * ticks_convert_factor, 2) for value in tick_values]
+                [signif(value * ticks_convert_factor, 2) for value in tick_values]
             )
         return np.asarray([value * ticks_convert_factor for value in tick_values])
 
@@ -157,6 +163,19 @@ class AbstractTicks(AbstractMatWrap):
         labels
             The y and x labels which are append with the suffix.
         """
+
+        labels = [str(label) for label in labels]
+
+        all_end_0 = True
+
+        for label in labels:
+
+            if not label.endswith(".0"):
+                all_end_0 = False
+
+        if all_end_0:
+            labels = [label[:-2] for label in labels]
+
         return [f"{label}{suffix}" for label in labels]
 
 
@@ -254,10 +273,16 @@ class XTicks(AbstractTicks):
                 min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
             )
 
+            if not units.use_scaled:
+                ticks = ticks.astype("int")
+
             labels = self.tick_values_in_units_from(
                 tick_values=ticks,
                 units=units,
             )
+
+            if not units.use_scaled:
+                labels = [f"{int(label)}" for label in labels]
 
         suffix = self.suffix_from(units=units)
         labels = self.labels_with_suffix_from(labels=labels, suffix=suffix)
