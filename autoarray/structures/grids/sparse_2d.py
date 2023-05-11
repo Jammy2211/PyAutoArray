@@ -171,7 +171,7 @@ class Grid2DSparse(Structure):
         grid : Grid2D
             The grid of (y,x) coordinates corresponding to the weight map.
         weight_map
-            The 2D array of weight values that the KMeans clustering algorithm adapts to to determine the Grid2DSparse.
+            The 2D array of weight values that the KMeans clustering algorithm adapts to determine the Grid2DSparse.
         n_iter
             The number of times the KMeans algorithm is repeated.
         max_iter

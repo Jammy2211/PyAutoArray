@@ -169,7 +169,6 @@ class AbstractTicks(AbstractMatWrap):
         all_end_0 = True
 
         for label in labels:
-
             if not label.endswith(".0"):
                 all_end_0 = False
 
