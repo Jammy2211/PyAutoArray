@@ -3,10 +3,12 @@ import autoarray.plot as aplt
 
 from autoarray.plot.wrap.base.ticks import LabelMaker
 
-def test__labels_with_suffix_from():
 
+def test__labels_with_suffix_from():
     label_maker = LabelMaker(
-        tick_values=[1.0, 2.0, 3.0], units=aplt.Units(use_scaled=False), manual_suffix=""
+        tick_values=[1.0, 2.0, 3.0],
+        units=aplt.Units(use_scaled=False),
+        manual_suffix="",
     )
 
     labels = label_maker.with_appended_suffix(labels=["hi", "hello"])
@@ -14,7 +16,9 @@ def test__labels_with_suffix_from():
     assert labels == ["hi", "hello"]
 
     label_maker = LabelMaker(
-        tick_values=[1.0, 2.0, 3.0], units=aplt.Units(use_scaled=False), manual_suffix="11"
+        tick_values=[1.0, 2.0, 3.0],
+        units=aplt.Units(use_scaled=False),
+        manual_suffix="11",
     )
 
     labels = label_maker.with_appended_suffix(labels=["hi", "hello"])
