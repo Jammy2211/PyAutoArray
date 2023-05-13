@@ -9,6 +9,45 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 from autoarray.plot.wrap.base.units import Units
 
 
+class TickMaker:
+
+    def __init__(self, min_value: float, max_value: float, factor: float, number_of_ticks: int):
+
+        self.min_value = min_value
+        self.max_value = max_value
+        self.factor = factor
+        self.number_of_ticks = number_of_ticks
+
+    @property
+    def centre(self):
+        return self.max_value - ((self.max_value - self.min_value) / 2.0)
+
+    @property
+    def tick_values_linear(self):
+
+        value_0 = self.centre - ((self.centre - self.max_value)) * self.factor
+        value_1 = self.centre + ((self.min_value - self.centre)) * self.factor
+
+        return np.linspace(value_0, value_1, self.number_of_ticks)
+
+    @property
+    def tick_values_log10(self):
+
+        min_value = self.min_value
+
+        if self.min_value < 0.001:
+            min_value = 0.001
+
+        max_value = 10 ** np.ceil(np.log10(self.max_value))
+        number = int(abs(np.log10(max_value) - np.log10(min_value))) + 1
+        return np.logspace(np.log10(min_value), np.log10(max_value), number)
+
+    @property
+    def tick_values_integers(self):
+        return np.arange(int(self.max_value - self.min_value))
+
+
+
 class AbstractTicks(AbstractMatWrap):
     def __init__(
         self,
@@ -42,6 +81,32 @@ class AbstractTicks(AbstractMatWrap):
         self.manual_units = manual_units
         self.manual_suffix = manual_suffix
 
+    def factor_from(self, suffix):
+        if self.manual_extent_factor is not None:
+            return self.manual_extent_factor
+        return  conf.instance["visualize"][self.config_folder][
+                self.__class__.__name__
+            ]["manual"][f"extent_factor{suffix}"]
+
+    def number_of_ticks_from(self, suffix):
+        return conf.instance["visualize"][self.config_folder][
+            self.__class__.__name__
+        ]["manual"][f"number_of_ticks{suffix}"]
+
+    def tick_maker_from(self, min_value:float, max_value:float, is_for_1d_plot : bool):
+
+        suffix = "_1d" if is_for_1d_plot else "_2d"
+
+        factor = self.factor_from(suffix=suffix)
+        number_of_ticks = self.number_of_ticks_from(suffix=suffix)
+
+        return TickMaker(
+            min_value=min_value,
+            max_value=max_value,
+            factor=factor,
+            number_of_ticks=number_of_ticks,
+        )
+
     def tick_values_from(
         self, min_value: float, max_value: float, is_for_1d_plot: bool = False
     ) -> np.ndarray:
@@ -60,26 +125,7 @@ class AbstractTicks(AbstractMatWrap):
         if self.manual_values is not None:
             return self.manual_values
 
-        center = max_value - ((max_value - min_value) / 2.0)
 
-        if is_for_1d_plot:
-            suffix = "_1d"
-        else:
-            suffix = "_2d"
-
-        if self.manual_extent_factor is None:
-            factor = conf.instance["visualize"][self.config_folder][
-                self.__class__.__name__
-            ]["manual"][f"extent_factor{suffix}"]
-
-        number_of_ticks = conf.instance["visualize"][self.config_folder][
-            self.__class__.__name__
-        ]["manual"][f"number_of_ticks{suffix}"]
-
-        value_0 = center - ((center - max_value)) * factor
-        value_1 = center + ((min_value - center)) * factor
-
-        return np.linspace(value_0, value_1, number_of_ticks)
 
     def tick_values_in_units_from(
         self, tick_values, units: Units, round_value: bool = True
@@ -203,13 +249,15 @@ class YTicks(AbstractTicks):
             The units of the figure.
         """
 
-        if is_log10:
-            if min_value < 0.001:
-                min_value = 0.001
+        tick_maker = self.tick_maker_from(
+            min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
+        )
 
-            max_value = 10 ** np.ceil(np.log10(max_value))
-            number = int(abs(np.log10(max_value) - np.log10(min_value))) + 1
-            ticks = np.logspace(np.log10(min_value), np.log10(max_value), number)
+        if self.manual_values:
+            ticks = self.manual_values
+        elif is_log10:
+
+            ticks = tick_maker.tick_values_log10
 
             plt.ylim(min_value, max_value)
 
@@ -219,9 +267,7 @@ class YTicks(AbstractTicks):
             labels = ["{:.0e}".format(label) for label in labels]
 
         else:
-            ticks = self.tick_values_from(
-                min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
-            )
+            ticks = tick_maker.tick_values_linear
 
             labels = self.tick_values_in_units_from(
                 tick_values=ticks,
@@ -263,14 +309,16 @@ class XTicks(AbstractTicks):
             The units of the figure.
         """
 
+        tick_maker = self.tick_maker_from(
+            min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
+        )
+
         if use_integers:
-            ticks = np.arange(int(max_value - min_value))
+            ticks = tick_maker.tick_values_integers
             labels = ticks
 
         else:
-            ticks = self.tick_values_from(
-                min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
-            )
+            ticks = tick_maker.tick_values_linear
 
             if not units.use_scaled:
                 ticks = ticks.astype("int")
