@@ -154,7 +154,7 @@ class Grid2DIrregular(AbstractNDArray):
         grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
         values.
 
-        This is used by **PyAutoLens** to perform grid ray-tracing.
+        This is to perform grid ray-tracing.
 
         Parameters
         ----------
