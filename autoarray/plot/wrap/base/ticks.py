@@ -11,12 +11,13 @@ from autoarray.plot.wrap.base.units import Units
 
 class TickMaker:
 
-    def __init__(self, min_value: float, max_value: float, factor: float, number_of_ticks: int):
+    def __init__(self, min_value: float, max_value: float, factor: float, number_of_ticks: int, units):
 
         self.min_value = min_value
         self.max_value = max_value
         self.factor = factor
         self.number_of_ticks = number_of_ticks
+        self.units = units
 
     @property
     def centre(self):
@@ -44,9 +45,95 @@ class TickMaker:
 
     @property
     def tick_values_integers(self):
-        return np.arange(int(self.max_value - self.min_value))
 
+        ticks = np.arange(int(self.max_value - self.min_value))
 
+        if not self.units.use_scaled:
+            ticks = ticks.astype("int")
+
+        return ticks
+
+class LabelMaker:
+    
+    def __init__(self, tick_values, units, yunit=None, manual_suffix=None):
+        
+        self.tick_values = tick_values
+        self.units = units
+        self.convert_factor = self.units.ticks_convert_factor or 1.0
+        self.yunit = yunit
+        self.manual_suffix = manual_suffix
+
+    @property
+    def suffix(self) -> Optional[str]:
+        """
+        Returns the label of an object, by determining it from the figure units if the label is not manually specified.
+
+        Parameters
+        ----------
+        units
+           The units of the data structure that is plotted which informs the appropriate label text.
+        """
+
+        if self.manual_suffix is not None:
+            return self.manual_suffix
+
+        if self.yunit is not None:
+            return self.yunit
+
+        if self.units.ticks_label is not None:
+            return self.units.ticks_label
+
+        units_conf = conf.instance["visualize"]["general"]["units"]
+
+        if self.units is None:
+            return units_conf["unscaled_symbol"]
+
+        if self.units.use_scaled:
+            return units_conf["scaled_symbol"]
+
+        return units_conf["unscaled_symbol"]
+
+    @property
+    def labels_linear(self):
+        labels = np.asarray([value * self.convert_factor for value in self.tick_values])
+        if not self.units.use_scaled:
+            labels = [f"{int(label)}" for label in labels]
+        return self.with_appended_suffix(labels)
+
+    def labels_log10_from(self, p):
+        
+        values = np.asarray(self.tick_values)
+        values_positive = np.where(np.isfinite(values) & (values != 0), np.abs(values), 10 ** (p - 1))
+        mags = 10 ** (p - 1 - np.floor(np.log10(values_positive)))
+        labels = np.round(values * mags) / mags
+        labels = ["{:.0e}".format(label) for label in labels]
+        return self.with_appended_suffix(labels)
+
+    def with_appended_suffix(self, labels):
+        """
+        The labels used for the y and x ticks can be append with a suffix.
+
+        For example, if the labels were [-1.0, 0.0, 1.0] and the suffix is ", the labels with the suffix appended
+        is [-1.0", 0.0", 1.0"].
+
+        Parameters
+        ----------
+        labels
+            The y and x labels which are append with the suffix.
+        """
+
+        labels = [str(label) for label in labels]
+
+        all_end_0 = True
+
+        for label in labels:
+            if not label.endswith(".0"):
+                all_end_0 = False
+
+        if all_end_0:
+            labels = [label[:-2] for label in labels]
+
+        return [f"{label}{self.suffix}" for label in labels]
 
 class AbstractTicks(AbstractMatWrap):
     def __init__(
@@ -93,7 +180,7 @@ class AbstractTicks(AbstractMatWrap):
             self.__class__.__name__
         ]["manual"][f"number_of_ticks{suffix}"]
 
-    def tick_maker_from(self, min_value:float, max_value:float, is_for_1d_plot : bool):
+    def tick_maker_from(self, min_value:float, max_value:float, units, is_for_1d_plot : bool):
 
         suffix = "_1d" if is_for_1d_plot else "_2d"
 
@@ -104,125 +191,9 @@ class AbstractTicks(AbstractMatWrap):
             min_value=min_value,
             max_value=max_value,
             factor=factor,
+            units=units,
             number_of_ticks=number_of_ticks,
         )
-
-    def tick_values_from(
-        self, min_value: float, max_value: float, is_for_1d_plot: bool = False
-    ) -> np.ndarray:
-        """
-        Calculate the ticks used for the yticks or xticks from input values of the minimum and maximum coordinate
-        values of the y and x axis.
-
-        Parameters
-        ----------
-        min_value
-            the minimum value of the ticks that figure is plotted using.
-        max_value
-            the maximum value of the ticks that figure is plotted using.
-        """
-
-        if self.manual_values is not None:
-            return self.manual_values
-
-
-
-    def tick_values_in_units_from(
-        self, tick_values, units: Units, round_value: bool = True
-    ) -> Optional[np.ndarray]:
-        """
-        Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
-        values of the y and x axis.
-
-        The values are converted to the `Units` of the figure, via its conversion factor or using data properties.
-
-        Parameters
-        ----------
-        array
-            The array of data that is to be plotted, whose 2D shape is used to determine the tick values in units of
-            pixels if this is the units specified by `units`.
-        min_value
-            the minimum value of the ticks that figure is plotted using.
-        max_value
-            the maximum value of the ticks that figure is plotted using.
-        units
-            The units the tick values are plotted using.
-        axis
-            Whether to use the y or x axis to estimate the tick labels.
-        """
-
-        if self.manual_values is not None:
-            return np.asarray(self.manual_values)
-
-        ticks_convert_factor = units.ticks_convert_factor or 1.0
-
-        def signif(x, p):
-            x = np.asarray(x)
-            x_positive = np.where(np.isfinite(x) & (x != 0), np.abs(x), 10 ** (p - 1))
-            mags = 10 ** (p - 1 - np.floor(np.log10(x_positive)))
-            return np.round(x * mags) / mags
-
-        if round_value:
-            return np.asarray(
-                [signif(value * ticks_convert_factor, 2) for value in tick_values]
-            )
-        return np.asarray([value * ticks_convert_factor for value in tick_values])
-
-    def suffix_from(self, units: Units, yunit=None) -> Optional[str]:
-        """
-        Returns the label of an object, by determining it from the figure units if the label is not manually specified.
-
-        Parameters
-        ----------
-        units
-           The units of the data structure that is plotted which informs the appropriate label text.
-        """
-
-        if self.manual_suffix is not None:
-            return self.manual_suffix
-
-        if yunit is not None:
-            return yunit
-
-        if units.ticks_label is not None:
-            return units.ticks_label
-
-        units_conf = conf.instance["visualize"]["general"]["units"]
-
-        if units is None:
-            return units_conf["unscaled_symbol"]
-
-        if units.use_scaled:
-            return units_conf["scaled_symbol"]
-
-        return units_conf["unscaled_symbol"]
-
-    def labels_with_suffix_from(self, labels: List[str], suffix: str) -> List[str]:
-        """
-        The labels used for the y and x ticks can be append with a suffix.
-
-        For example, if the labels were [-1.0, 0.0, 1.0] and the suffix is ", the labels with the suffix appended
-        is [-1.0", 0.0", 1.0"].
-
-        Parameters
-        ----------
-        labels
-            The y and x labels which are append with the suffix.
-        """
-
-        labels = [str(label) for label in labels]
-
-        all_end_0 = True
-
-        for label in labels:
-            if not label.endswith(".0"):
-                all_end_0 = False
-
-        if all_end_0:
-            labels = [label[:-2] for label in labels]
-
-        return [f"{label}{suffix}" for label in labels]
-
 
 class YTicks(AbstractTicks):
     def set(
@@ -250,32 +221,30 @@ class YTicks(AbstractTicks):
         """
 
         tick_maker = self.tick_maker_from(
-            min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
+            min_value=min_value, max_value=max_value, units=units, is_for_1d_plot=is_for_1d_plot
         )
 
         if self.manual_values:
             ticks = self.manual_values
         elif is_log10:
-
             ticks = tick_maker.tick_values_log10
-
             plt.ylim(min_value, max_value)
-
-            labels = self.tick_values_in_units_from(
-                tick_values=ticks, units=units, round_value=False
-            )
-            labels = ["{:.0e}".format(label) for label in labels]
-
         else:
             ticks = tick_maker.tick_values_linear
 
-            labels = self.tick_values_in_units_from(
-                tick_values=ticks,
-                units=units,
-            )
+        label_maker = LabelMaker(
+            tick_values=ticks,
+            units=units,
+            yunit=yunit,
+            manual_suffix=self.manual_suffix,
+        )
 
-        suffix = self.suffix_from(units=units, yunit=yunit)
-        labels = self.labels_with_suffix_from(labels=labels, suffix=suffix)
+        if self.manual_units:
+            labels = ticks
+        elif is_log10:
+            labels = label_maker.labels_log10_from(p=2)
+        else:
+            labels = label_maker.labels_linear
 
         plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
 
@@ -310,29 +279,26 @@ class XTicks(AbstractTicks):
         """
 
         tick_maker = self.tick_maker_from(
-            min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
+            min_value=min_value, max_value=max_value, units=units, is_for_1d_plot=is_for_1d_plot
         )
-
-        if use_integers:
+        
+        if self.manual_values:
+            ticks = self.manual_values
+        elif use_integers:
             ticks = tick_maker.tick_values_integers
-            labels = ticks
-
         else:
             ticks = tick_maker.tick_values_linear
 
-            if not units.use_scaled:
-                ticks = ticks.astype("int")
+        label_maker = LabelMaker(
+            tick_values=ticks,
+            units=units,
+            manual_suffix=self.manual_suffix,
+        )
 
-            labels = self.tick_values_in_units_from(
-                tick_values=ticks,
-                units=units,
-            )
-
-            if not units.use_scaled:
-                labels = [f"{int(label)}" for label in labels]
-
-        suffix = self.suffix_from(units=units)
-        labels = self.labels_with_suffix_from(labels=labels, suffix=suffix)
+        if self.manual_units or use_integers:
+            labels = ticks
+        else:
+            labels = label_maker.labels_linear
 
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
 
