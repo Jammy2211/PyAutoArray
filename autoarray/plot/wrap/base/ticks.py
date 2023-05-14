@@ -355,6 +355,9 @@ class YTicks(AbstractTicks):
         if is_log10:
             plt.ylim(min_value, max_value)
 
+        if not is_for_1d_plot and not units.use_scaled:
+            labels = reversed(labels)
+
         plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
 
         if self.manual_units is not None:
