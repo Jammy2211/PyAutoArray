@@ -289,12 +289,14 @@ class MatPlot2D(AbstractMatPlot):
             min_value=extent_axis[2],
             max_value=extent_axis[3],
             units=self.units,
+            pixels=array.shape_native[0],
         )
 
         self.xticks.set(
             min_value=extent_axis[0],
             max_value=extent_axis[1],
             units=self.units,
+            pixels=array.shape_native[1],
         )
 
         self.title.set(auto_title=auto_labels.title)

@@ -58,10 +58,21 @@ class TickMaker:
 
 class LabelMaker:
     def __init__(
-        self, tick_values, units, round_sf: int = 2, yunit=None, manual_suffix=None
+        self,
+        tick_values,
+        min_value: float,
+        max_value: float,
+        units,
+        pixels: Optional[int] = None,
+        round_sf: int = 2,
+        yunit=None,
+        manual_suffix=None,
     ):
         self.tick_values = tick_values
+        self.min_value = min_value
+        self.max_value = max_value
         self.units = units
+        self.pixels = pixels
         self.convert_factor = self.units.ticks_convert_factor or 1.0
         self.yunit = yunit
         self.round_sf = round_sf
@@ -98,6 +109,10 @@ class LabelMaker:
         return units_conf["unscaled_symbol"]
 
     @property
+    def span(self):
+        return self.max_value - self.min_value
+
+    @property
     def tick_values_rounded(self):
         values = np.asarray(self.tick_values)
         values_positive = np.where(
@@ -110,11 +125,20 @@ class LabelMaker:
 
     @property
     def labels_linear(self):
+        if not self.units.use_scaled:
+            return self.labels_linear_pixels
+
         labels = np.asarray(
             [value * self.convert_factor for value in self.tick_values_rounded]
         )
         if not self.units.use_scaled:
             labels = [f"{int(label)}" for label in labels]
+        return self.with_appended_suffix(labels)
+
+    @property
+    def labels_linear_pixels(self):
+        ticks_from_zero = [tick - self.min_value for tick in self.tick_values]
+        labels = [(tick / self.span) * self.pixels for tick in ticks_from_zero]
         return self.with_appended_suffix(labels)
 
     @property
@@ -231,10 +255,22 @@ class AbstractTicks(AbstractMatWrap):
             return tick_maker.tick_values_log10
         return tick_maker.tick_values_linear
 
-    def labels_from(self, ticks, units, yunit, is_log10: bool = False):
+    def labels_from(
+        self,
+        ticks,
+        min_value: float,
+        max_value: float,
+        units,
+        yunit,
+        pixels: Optional[int] = None,
+        is_log10: bool = False,
+    ):
         label_maker = LabelMaker(
             tick_values=ticks,
+            min_value=min_value,
+            max_value=max_value,
             units=units,
+            pixels=pixels,
             yunit=yunit,
             manual_suffix=self.manual_suffix,
         )
@@ -250,6 +286,7 @@ class AbstractTicks(AbstractMatWrap):
         min_value,
         max_value,
         units,
+        pixels: Optional[int] = None,
         use_integers: bool = False,
         yunit=None,
         is_log10: bool = False,
@@ -266,10 +303,14 @@ class AbstractTicks(AbstractMatWrap):
             is_log10=is_log10,
             is_for_1d_plot=is_for_1d_plot,
         )
+
         labels = self.labels_from(
             ticks=ticks,
+            min_value=min_value,
+            max_value=max_value,
             units=units,
             yunit=yunit,
+            pixels=pixels,
             is_log10=is_log10,
         )
         return ticks, labels
@@ -281,6 +322,7 @@ class YTicks(AbstractTicks):
         min_value: float,
         max_value: float,
         units: Units,
+        pixels: Optional[int] = None,
         yunit=None,
         is_for_1d_plot: bool = False,
         is_log10: bool = False,
@@ -304,6 +346,7 @@ class YTicks(AbstractTicks):
             min_value=min_value,
             max_value=max_value,
             units=units,
+            pixels=pixels,
             yunit=yunit,
             is_log10=is_log10,
             is_for_1d_plot=is_for_1d_plot,
@@ -326,6 +369,7 @@ class XTicks(AbstractTicks):
         min_value: float,
         max_value: float,
         units: Units,
+        pixels: Optional[int] = None,
         use_integers=False,
         is_for_1d_plot: bool = False,
     ):
@@ -347,6 +391,7 @@ class XTicks(AbstractTicks):
         ticks, labels = self.ticks_and_labels_from(
             min_value=min_value,
             max_value=max_value,
+            pixels=pixels,
             units=units,
             use_integers=use_integers,
             is_for_1d_plot=is_for_1d_plot,
