@@ -9,10 +9,180 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 from autoarray.plot.wrap.base.units import Units
 
 
+class TickMaker:
+    def __init__(
+        self,
+        min_value: float,
+        max_value: float,
+        factor: float,
+        number_of_ticks: int,
+        units,
+    ):
+        self.min_value = min_value
+        self.max_value = max_value
+        self.factor = factor
+        self.number_of_ticks = number_of_ticks
+        self.units = units
+
+    @property
+    def centre(self):
+        return self.max_value - ((self.max_value - self.min_value) / 2.0)
+
+    @property
+    def tick_values_linear(self):
+        value_0 = self.centre - ((self.centre - self.max_value)) * self.factor
+        value_1 = self.centre + ((self.min_value - self.centre)) * self.factor
+
+        return np.linspace(value_0, value_1, self.number_of_ticks)
+
+    @property
+    def tick_values_log10(self):
+        min_value = self.min_value
+
+        if self.min_value < 0.001:
+            min_value = 0.001
+
+        max_value = 10 ** np.ceil(np.log10(self.max_value))
+        number = int(abs(np.log10(max_value) - np.log10(min_value))) + 1
+        return np.logspace(np.log10(min_value), np.log10(max_value), number)
+
+    @property
+    def tick_values_integers(self):
+        ticks = np.arange(int(self.max_value - self.min_value))
+
+        if not self.units.use_scaled:
+            ticks = ticks.astype("int")
+
+        return ticks
+
+
+class LabelMaker:
+    def __init__(
+        self,
+        tick_values,
+        min_value: float,
+        max_value: float,
+        units,
+        pixels: Optional[int] = None,
+        round_sf: int = 2,
+        yunit=None,
+        manual_suffix=None,
+    ):
+        self.tick_values = tick_values
+        self.min_value = min_value
+        self.max_value = max_value
+        self.units = units
+        self.pixels = pixels
+        self.convert_factor = self.units.ticks_convert_factor or 1.0
+        self.yunit = yunit
+        self.round_sf = round_sf
+        self.manual_suffix = manual_suffix
+
+    @property
+    def suffix(self) -> Optional[str]:
+        """
+        Returns the label of an object, by determining it from the figure units if the label is not manually specified.
+
+        Parameters
+        ----------
+        units
+           The units of the data structure that is plotted which informs the appropriate label text.
+        """
+
+        if self.manual_suffix is not None:
+            return self.manual_suffix
+
+        if self.yunit is not None:
+            return self.yunit
+
+        if self.units.ticks_label is not None:
+            return self.units.ticks_label
+
+        units_conf = conf.instance["visualize"]["general"]["units"]
+
+        if self.units is None:
+            return units_conf["unscaled_symbol"]
+
+        if self.units.use_scaled:
+            return units_conf["scaled_symbol"]
+
+        return units_conf["unscaled_symbol"]
+
+    @property
+    def span(self):
+        return self.max_value - self.min_value
+
+    @property
+    def tick_values_rounded(self):
+        values = np.asarray(self.tick_values)
+        values_positive = np.where(
+            np.isfinite(values) & (values != 0),
+            np.abs(values),
+            10 ** (self.round_sf - 1),
+        )
+        mags = 10 ** (self.round_sf - 1 - np.floor(np.log10(values_positive)))
+        return np.round(values * mags) / mags
+
+    @property
+    def labels_linear(self):
+        if not self.units.use_scaled:
+            return self.labels_linear_pixels
+
+        labels = np.asarray(
+            [value * self.convert_factor for value in self.tick_values_rounded]
+        )
+        if not self.units.use_scaled:
+            labels = [f"{int(label)}" for label in labels]
+        return self.with_appended_suffix(labels)
+
+    @property
+    def labels_linear_pixels(self):
+        if self.max_value == self.min_value:
+            labels = [f"{int(label)}" for label in self.tick_values]
+            return self.with_appended_suffix(labels)
+
+        ticks_from_zero = [tick - self.min_value for tick in self.tick_values]
+        labels = [(tick / self.span) * self.pixels for tick in ticks_from_zero]
+
+        labels = [f"{int(label)}" for label in labels]
+        return self.with_appended_suffix(labels)
+
+    @property
+    def labels_log10(self):
+        labels = ["{:.0e}".format(label) for label in self.tick_values]
+        return self.with_appended_suffix(labels)
+
+    def with_appended_suffix(self, labels):
+        """
+        The labels used for the y and x ticks can be append with a suffix.
+
+        For example, if the labels were [-1.0, 0.0, 1.0] and the suffix is ", the labels with the suffix appended
+        is [-1.0", 0.0", 1.0"].
+
+        Parameters
+        ----------
+        labels
+            The y and x labels which are append with the suffix.
+        """
+
+        labels = [str(label) for label in labels]
+
+        all_end_0 = True
+
+        for label in labels:
+            if not label.endswith(".0"):
+                all_end_0 = False
+
+        if all_end_0:
+            labels = [label[:-2] for label in labels]
+
+        return [f"{label}{self.suffix}" for label in labels]
+
+
 class AbstractTicks(AbstractMatWrap):
     def __init__(
         self,
-        manual_extent_factor: Optional[float] = None,
+        manual_factor: Optional[float] = None,
         manual_values: Optional[List[float]] = None,
         manual_units: Optional[str] = None,
         manual_suffix: Optional[str] = None,
@@ -37,145 +207,119 @@ class AbstractTicks(AbstractMatWrap):
         """
         super().__init__(**kwargs)
 
-        self.manual_extent_factor = manual_extent_factor
+        self.manual_factor = manual_factor
         self.manual_values = manual_values
         self.manual_units = manual_units
         self.manual_suffix = manual_suffix
 
-    def tick_values_from(
-        self, min_value: float, max_value: float, is_for_1d_plot: bool = False
-    ) -> np.ndarray:
-        """
-        Calculate the ticks used for the yticks or xticks from input values of the minimum and maximum coordinate
-        values of the y and x axis.
+    def factor_from(self, suffix):
+        if self.manual_factor is not None:
+            return self.manual_factor
+        return conf.instance["visualize"][self.config_folder][self.__class__.__name__][
+            "manual"
+        ][f"extent_factor{suffix}"]
 
-        Parameters
-        ----------
-        min_value
-            the minimum value of the ticks that figure is plotted using.
-        max_value
-            the maximum value of the ticks that figure is plotted using.
-        """
+    def number_of_ticks_from(self, suffix):
+        return conf.instance["visualize"][self.config_folder][self.__class__.__name__][
+            "manual"
+        ][f"number_of_ticks{suffix}"]
 
-        if self.manual_values is not None:
+    def tick_maker_from(
+        self, min_value: float, max_value: float, units, is_for_1d_plot: bool
+    ):
+        suffix = "_1d" if is_for_1d_plot else "_2d"
+
+        factor = self.factor_from(suffix=suffix)
+        number_of_ticks = self.number_of_ticks_from(suffix=suffix)
+
+        return TickMaker(
+            min_value=min_value,
+            max_value=max_value,
+            factor=factor,
+            units=units,
+            number_of_ticks=number_of_ticks,
+        )
+
+    def ticks_from(
+        self,
+        min_value: float,
+        max_value: float,
+        units: Units,
+        is_log10: bool = False,
+        is_for_1d_plot: bool = False,
+    ):
+        tick_maker = self.tick_maker_from(
+            min_value=min_value,
+            max_value=max_value,
+            units=units,
+            is_for_1d_plot=is_for_1d_plot,
+        )
+
+        if self.manual_values:
             return self.manual_values
+        elif is_log10:
+            return tick_maker.tick_values_log10
+        return tick_maker.tick_values_linear
 
-        center = max_value - ((max_value - min_value) / 2.0)
+    def labels_from(
+        self,
+        ticks,
+        min_value: float,
+        max_value: float,
+        units,
+        yunit,
+        pixels: Optional[int] = None,
+        is_log10: bool = False,
+    ):
+        label_maker = LabelMaker(
+            tick_values=ticks,
+            min_value=min_value,
+            max_value=max_value,
+            units=units,
+            pixels=pixels,
+            yunit=yunit,
+            manual_suffix=self.manual_suffix,
+        )
 
-        if is_for_1d_plot:
-            suffix = "_1d"
-        else:
-            suffix = "_2d"
+        if self.manual_units:
+            return ticks
+        elif is_log10:
+            return label_maker.labels_log10
+        return label_maker.labels_linear
 
-        if self.manual_extent_factor is None:
-            factor = conf.instance["visualize"][self.config_folder][
-                self.__class__.__name__
-            ]["manual"][f"extent_factor{suffix}"]
+    def ticks_and_labels_from(
+        self,
+        min_value,
+        max_value,
+        units,
+        pixels: Optional[int] = None,
+        use_integers: bool = False,
+        yunit=None,
+        is_log10: bool = False,
+        is_for_1d_plot: bool = False,
+    ):
+        if use_integers:
+            ticks = np.arange(int(max_value - min_value))
+            return ticks, ticks
 
-        number_of_ticks = conf.instance["visualize"][self.config_folder][
-            self.__class__.__name__
-        ]["manual"][f"number_of_ticks{suffix}"]
+        ticks = self.ticks_from(
+            min_value=min_value,
+            max_value=max_value,
+            units=units,
+            is_log10=is_log10,
+            is_for_1d_plot=is_for_1d_plot,
+        )
 
-        value_0 = center - ((center - max_value)) * factor
-        value_1 = center + ((min_value - center)) * factor
-
-        return np.linspace(value_0, value_1, number_of_ticks)
-
-    def tick_values_in_units_from(
-        self, tick_values, units: Units, round_value: bool = True
-    ) -> Optional[np.ndarray]:
-        """
-        Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
-        values of the y and x axis.
-
-        The values are converted to the `Units` of the figure, via its conversion factor or using data properties.
-
-        Parameters
-        ----------
-        array
-            The array of data that is to be plotted, whose 2D shape is used to determine the tick values in units of
-            pixels if this is the units specified by `units`.
-        min_value
-            the minimum value of the ticks that figure is plotted using.
-        max_value
-            the maximum value of the ticks that figure is plotted using.
-        units
-            The units the tick values are plotted using.
-        axis
-            Whether to use the y or x axis to estimate the tick labels.
-        """
-
-        if self.manual_values is not None:
-            return np.asarray(self.manual_values)
-
-        ticks_convert_factor = units.ticks_convert_factor or 1.0
-
-        def signif(x, p):
-            x = np.asarray(x)
-            x_positive = np.where(np.isfinite(x) & (x != 0), np.abs(x), 10 ** (p - 1))
-            mags = 10 ** (p - 1 - np.floor(np.log10(x_positive)))
-            return np.round(x * mags) / mags
-
-        if round_value:
-            return np.asarray(
-                [signif(value * ticks_convert_factor, 2) for value in tick_values]
-            )
-        return np.asarray([value * ticks_convert_factor for value in tick_values])
-
-    def suffix_from(self, units: Units, yunit=None) -> Optional[str]:
-        """
-        Returns the label of an object, by determining it from the figure units if the label is not manually specified.
-
-        Parameters
-        ----------
-        units
-           The units of the data structure that is plotted which informs the appropriate label text.
-        """
-
-        if self.manual_suffix is not None:
-            return self.manual_suffix
-
-        if yunit is not None:
-            return yunit
-
-        if units.ticks_label is not None:
-            return units.ticks_label
-
-        units_conf = conf.instance["visualize"]["general"]["units"]
-
-        if units is None:
-            return units_conf["unscaled_symbol"]
-
-        if units.use_scaled:
-            return units_conf["scaled_symbol"]
-
-        return units_conf["unscaled_symbol"]
-
-    def labels_with_suffix_from(self, labels: List[str], suffix: str) -> List[str]:
-        """
-        The labels used for the y and x ticks can be append with a suffix.
-
-        For example, if the labels were [-1.0, 0.0, 1.0] and the suffix is ", the labels with the suffix appended
-        is [-1.0", 0.0", 1.0"].
-
-        Parameters
-        ----------
-        labels
-            The y and x labels which are append with the suffix.
-        """
-
-        labels = [str(label) for label in labels]
-
-        all_end_0 = True
-
-        for label in labels:
-            if not label.endswith(".0"):
-                all_end_0 = False
-
-        if all_end_0:
-            labels = [label[:-2] for label in labels]
-
-        return [f"{label}{suffix}" for label in labels]
+        labels = self.labels_from(
+            ticks=ticks,
+            min_value=min_value,
+            max_value=max_value,
+            units=units,
+            yunit=yunit,
+            pixels=pixels,
+            is_log10=is_log10,
+        )
+        return ticks, labels
 
 
 class YTicks(AbstractTicks):
@@ -184,6 +328,7 @@ class YTicks(AbstractTicks):
         min_value: float,
         max_value: float,
         units: Units,
+        pixels: Optional[int] = None,
         yunit=None,
         is_for_1d_plot: bool = False,
         is_log10: bool = False,
@@ -203,33 +348,21 @@ class YTicks(AbstractTicks):
             The units of the figure.
         """
 
+        ticks, labels = self.ticks_and_labels_from(
+            min_value=min_value,
+            max_value=max_value,
+            units=units,
+            pixels=pixels,
+            yunit=yunit,
+            is_log10=is_log10,
+            is_for_1d_plot=is_for_1d_plot,
+        )
+
         if is_log10:
-            if min_value < 0.001:
-                min_value = 0.001
-
-            max_value = 10 ** np.ceil(np.log10(max_value))
-            number = int(abs(np.log10(max_value) - np.log10(min_value))) + 1
-            ticks = np.logspace(np.log10(min_value), np.log10(max_value), number)
-
             plt.ylim(min_value, max_value)
 
-            labels = self.tick_values_in_units_from(
-                tick_values=ticks, units=units, round_value=False
-            )
-            labels = ["{:.0e}".format(label) for label in labels]
-
-        else:
-            ticks = self.tick_values_from(
-                min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
-            )
-
-            labels = self.tick_values_in_units_from(
-                tick_values=ticks,
-                units=units,
-            )
-
-        suffix = self.suffix_from(units=units, yunit=yunit)
-        labels = self.labels_with_suffix_from(labels=labels, suffix=suffix)
+        if not is_for_1d_plot and not units.use_scaled:
+            labels = reversed(labels)
 
         plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
 
@@ -245,6 +378,7 @@ class XTicks(AbstractTicks):
         min_value: float,
         max_value: float,
         units: Units,
+        pixels: Optional[int] = None,
         use_integers=False,
         is_for_1d_plot: bool = False,
     ):
@@ -263,28 +397,14 @@ class XTicks(AbstractTicks):
             The units of the figure.
         """
 
-        if use_integers:
-            ticks = np.arange(int(max_value - min_value))
-            labels = ticks
-
-        else:
-            ticks = self.tick_values_from(
-                min_value=min_value, max_value=max_value, is_for_1d_plot=is_for_1d_plot
-            )
-
-            if not units.use_scaled:
-                ticks = ticks.astype("int")
-
-            labels = self.tick_values_in_units_from(
-                tick_values=ticks,
-                units=units,
-            )
-
-            if not units.use_scaled:
-                labels = [f"{int(label)}" for label in labels]
-
-        suffix = self.suffix_from(units=units)
-        labels = self.labels_with_suffix_from(labels=labels, suffix=suffix)
+        ticks, labels = self.ticks_and_labels_from(
+            min_value=min_value,
+            max_value=max_value,
+            pixels=pixels,
+            units=units,
+            use_integers=use_integers,
+            is_for_1d_plot=is_for_1d_plot,
+        )
 
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
 

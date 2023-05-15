@@ -19,7 +19,7 @@ class AbstractVisuals(ABC):
         Because `mask=True` in `Include2D` the function `figure` extracts the `Mask2D` from the `masked_array`
         and plots it. It does this by creating a new `Visuals2D` object.
 
-        If the user did not manually input a `Visuals2d` object, the one created in `function_array` is the one used to
+        If the user did not manually input a `Visuals2D` object, the one created in `function_array` is the one used to
         plot the image
 
         However, if the user specifies their own `Visuals2D` object and passed it to the plotter, e.g.:

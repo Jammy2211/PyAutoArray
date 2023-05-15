@@ -209,22 +209,23 @@ class MatPlot1D(AbstractMatPlot):
             plt.yscale("symlog")
 
         if x_errors is not None:
-            min_value_x = np.min(x - x_errors)
-            max_value_x = np.max(x + x_errors)
+            min_value_x = np.nanmin(x - x_errors)
+            max_value_x = np.nanmax(x + x_errors)
         else:
-            min_value_x = np.min(x)
-            max_value_x = np.max(x)
+            min_value_x = np.nanmin(x)
+            max_value_x = np.nanmax(x)
 
         if y_errors is not None:
-            min_value_y = np.min(y - y_errors)
-            max_value_y = np.max(y + y_errors)
+            min_value_y = np.nanmin(y - y_errors)
+            max_value_y = np.nanmax(y + y_errors)
         else:
-            min_value_y = np.min(y)
-            max_value_y = np.max(y)
+            min_value_y = np.nanmin(y)
+            max_value_y = np.nanmax(y)
 
         self.xticks.set(
             min_value=min_value_x,
             max_value=max_value_x,
+            pixels=len(x),
             units=self.units,
             use_integers=use_integers,
             is_for_1d_plot=True,
@@ -233,6 +234,7 @@ class MatPlot1D(AbstractMatPlot):
         self.yticks.set(
             min_value=min_value_y,
             max_value=max_value_y,
+            pixels=len(y),
             units=self.units,
             yunit=auto_labels.yunit,
             is_for_1d_plot=True,
