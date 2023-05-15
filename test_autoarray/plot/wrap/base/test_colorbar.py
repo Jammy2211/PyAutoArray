@@ -46,7 +46,7 @@ def test__plot__works_for_reasonable_range_of_values():
         manual_tick_values=[0.25, 0.5, 0.75],
         manual_tick_labels=[1.0, 2.0, 3.0],
     )
-    cb.set(ax=ax, units=None)
+    cb.set(ax=ax, units=aplt.Units())
     figure.close()
 
     fig, ax = figure.open()

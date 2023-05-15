@@ -137,8 +137,14 @@ class LabelMaker:
 
     @property
     def labels_linear_pixels(self):
+        if self.max_value == self.min_value:
+            labels = [f"{int(label)}" for label in self.tick_values]
+            return self.with_appended_suffix(labels)
+
         ticks_from_zero = [tick - self.min_value for tick in self.tick_values]
         labels = [(tick / self.span) * self.pixels for tick in ticks_from_zero]
+
+        labels = [f"{int(label)}" for label in labels]
         return self.with_appended_suffix(labels)
 
     @property
@@ -176,7 +182,7 @@ class LabelMaker:
 class AbstractTicks(AbstractMatWrap):
     def __init__(
         self,
-        manual_extent_factor: Optional[float] = None,
+        manual_factor: Optional[float] = None,
         manual_values: Optional[List[float]] = None,
         manual_units: Optional[str] = None,
         manual_suffix: Optional[str] = None,
@@ -201,14 +207,14 @@ class AbstractTicks(AbstractMatWrap):
         """
         super().__init__(**kwargs)
 
-        self.manual_extent_factor = manual_extent_factor
+        self.manual_factor = manual_factor
         self.manual_values = manual_values
         self.manual_units = manual_units
         self.manual_suffix = manual_suffix
 
     def factor_from(self, suffix):
-        if self.manual_extent_factor is not None:
-            return self.manual_extent_factor
+        if self.manual_factor is not None:
+            return self.manual_factor
         return conf.instance["visualize"][self.config_folder][self.__class__.__name__][
             "manual"
         ][f"extent_factor{suffix}"]

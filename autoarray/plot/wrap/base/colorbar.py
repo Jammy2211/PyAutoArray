@@ -70,6 +70,9 @@ class Colorbar(AbstractMatWrap):
                 "You can only manually specify the colorbar tick labels and values if both are input."
             )
 
+        if self.manual_tick_values is not None:
+            return self.manual_tick_values
+
         if (
             self.manual_tick_values is None
             and self.manual_tick_labels is None
@@ -89,9 +92,12 @@ class Colorbar(AbstractMatWrap):
 
         convert_factor = units.colorbar_convert_factor or 1.0
 
-        manual_tick_labels = [
-            np.round(value * convert_factor, 2) for value in manual_tick_values
-        ]
+        if self.manual_tick_labels is not None:
+            manual_tick_labels = self.manual_tick_labels
+        else:
+            manual_tick_labels = [
+                np.round(value * convert_factor, 2) for value in manual_tick_values
+            ]
 
         if units.colorbar_label is None:
             if cb_unit is None:
