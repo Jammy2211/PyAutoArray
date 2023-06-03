@@ -149,7 +149,7 @@ def w_tilde_curvature_preload_imaging_from(
     a sparse matrix that can compute the matrix `w_tilde_curvature` efficiently, albeit the linear algebra calculations
     in PyAutoArray bypass this matrix entirely to go straight to the curvature matrix.
 
-    For imaging data, w_tilde is a sparse matrix, whereby non-zero entries are only contained for pairs of image pixels
+    for dataset data, w_tilde is a sparse matrix, whereby non-zero entries are only contained for pairs of image pixels
     where the two pixels overlap due to the kernel size. For example, if the kernel size is (11, 11) and two image
     pixels are separated by more than 20 pixels, the kernel will never convolve flux between the two pixels. Two image
     pixels will only share a convolution if they are within `kernel_overlap_size = 2 * kernel_shape - 1` pixels within

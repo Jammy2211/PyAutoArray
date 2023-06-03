@@ -260,20 +260,20 @@ class Imaging(AbstractDataset):
             The 2D mask that is applied to the image.
         """
         if self.data.mask.is_all_false:
-            unmasked_imaging = self
+            unmasked_dataset = self
         else:
-            unmasked_imaging = self.unmasked
+            unmasked_dataset = self.unmasked
 
-        image = Array2D(
-            values=unmasked_imaging.image.native, mask=mask.derive_mask.sub_1
+        data = Array2D(
+            values=unmasked_dataset.image.native, mask=mask.derive_mask.sub_1
         )
 
         noise_map = Array2D(
-            values=unmasked_imaging.noise_map.native, mask=mask.derive_mask.sub_1
+            values=unmasked_dataset.noise_map.native, mask=mask.derive_mask.sub_1
         )
 
-        if unmasked_imaging.noise_covariance_matrix is not None:
-            noise_covariance_matrix = unmasked_imaging.noise_covariance_matrix
+        if unmasked_dataset.noise_covariance_matrix is not None:
+            noise_covariance_matrix = unmasked_dataset.noise_covariance_matrix
 
             noise_covariance_matrix = np.delete(
                 noise_covariance_matrix, mask.derive_indexes.masked_slim, 0
@@ -285,8 +285,8 @@ class Imaging(AbstractDataset):
         else:
             noise_covariance_matrix = None
 
-        imaging = Imaging(
-            data=image,
+        dataset = Imaging(
+            data=data,
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
@@ -294,13 +294,13 @@ class Imaging(AbstractDataset):
             pad_for_convolver=True,
         )
 
-        imaging.unmasked = unmasked_imaging
+        dataset.unmasked = unmasked_dataset
 
         logger.info(
             f"IMAGING - Data masked, contains a total of {mask.pixels_in_mask} image-pixels"
         )
 
-        return imaging
+        return dataset
 
     def apply_settings(self, settings: SettingsImaging) -> "Imaging":
         """

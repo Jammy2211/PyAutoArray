@@ -23,7 +23,7 @@ class FitInterferometer(FitDataset):
         ----------
         dataset : MaskedInterferometer
             The masked interferometer dataset that is fitted.
-        model_visibilities : Visibilities
+        model_data : Visibilities
             The model visibilities the masked imaging is fitted with.
         inversion : Inversion
             If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
@@ -145,7 +145,7 @@ class FitInterferometer(FitDataset):
 
     @property
     def dirty_model_image(self) -> Array2D:
-        return self.transformer.image_from(visibilities=self.model_visibilities)
+        return self.transformer.image_from(visibilities=self.model_data)
 
     @property
     def dirty_residual_map(self) -> Array2D:

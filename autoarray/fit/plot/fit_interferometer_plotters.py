@@ -78,7 +78,7 @@ class FitInterferometerPlotterMeta(Plotter):
         data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
-        model_visibilities: bool = False,
+        model_data: bool = False,
         residual_map_real: bool = False,
         residual_map_imag: bool = False,
         normalized_residual_map_real: bool = False,
@@ -107,7 +107,7 @@ class FitInterferometerPlotterMeta(Plotter):
             Whether to make a 2D plot (via `scatter`) of the noise-map.
         signal_to_noise_map
             Whether to make a 2D plot (via `scatter`) of the signal-to-noise-map.
-        model_visibilities
+        model_data
             Whether to make a 2D plot (via `scatter`) of the model visibility data.
         residual_map_real
             Whether to make a 1D plot (via `plot`) of the real component of the residual map.
@@ -161,12 +161,12 @@ class FitInterferometerPlotterMeta(Plotter):
                 color_array=np.real(self.fit.signal_to_noise_map),
             )
 
-        if model_visibilities:
+        if model_data:
             self.mat_plot_2d.plot_grid(
                 grid=self.fit.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(
-                    title="Model Visibilities", filename="model_visibilities"
+                    title="Model Visibilities", filename="model_data"
                 ),
                 color_array=np.real(self.fit.model_data),
             )
@@ -328,7 +328,7 @@ class FitInterferometerPlotterMeta(Plotter):
         data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
-        model_visibilities: bool = False,
+        model_data: bool = False,
         residual_map_real: bool = False,
         residual_map_imag: bool = False,
         normalized_residual_map_real: bool = False,
@@ -358,7 +358,7 @@ class FitInterferometerPlotterMeta(Plotter):
             Whether to make a 2D plot (via `scatter`) of the noise-map.
         signal_to_noise_map
             Whether to make a 2D plot (via `scatter`) of the signal-to-noise-map.
-        model_visibilities
+        model_data
             Whether to make a 2D plot (via `scatter`) of the model visibility data.
         residual_map_real
             Whether to make a 1D plot (via `plot`) of the real component of the residual map.
@@ -392,7 +392,7 @@ class FitInterferometerPlotterMeta(Plotter):
             visibilities=data,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
-            model_visibilities=model_visibilities,
+            model_data=model_data,
             residual_map_real=residual_map_real,
             residual_map_imag=residual_map_imag,
             normalized_residual_map_real=normalized_residual_map_real,

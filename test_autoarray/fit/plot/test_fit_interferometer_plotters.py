@@ -17,17 +17,17 @@ def make_plot_path_setup():
 
 
 def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch):
-    fit_interferometer_plotter = aplt.FitInterferometerPlotter(
+    fit_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_interferometer_plotter.figures_2d(
+    fit_plotter.figures_2d(
         data=True,
         noise_map=True,
         signal_to_noise_map=True,
-        model_visibilities=True,
+        model_data=True,
         residual_map_real=True,
         residual_map_imag=True,
         normalized_residual_map_real=True,
@@ -46,7 +46,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
-    assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths
+    assert path.join(plot_path, "model_data.png") in plot_patch.paths
     assert (
         path.join(plot_path, "real_residual_map_vs_uv_distances.png")
         in plot_patch.paths
@@ -83,11 +83,11 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
     plot_patch.paths = []
 
-    fit_interferometer_plotter.figures_2d(
+    fit_plotter.figures_2d(
         data=True,
         noise_map=False,
         signal_to_noise_map=False,
-        model_visibilities=True,
+        model_data=True,
         chi_squared_map_real=True,
         chi_squared_map_imag=True,
     )
@@ -95,7 +95,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
     assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths
+    assert path.join(plot_path, "model_data.png") in plot_patch.paths
     assert (
         path.join(plot_path, "real_residual_map_vs_uv_distances.png")
         not in plot_patch.paths
@@ -123,16 +123,16 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
 
 def test__fit_sub_plots(fit_interferometer_7, plot_path, plot_patch):
-    fit_interferometer_plotter = aplt.FitInterferometerPlotter(
+    fit_plotter = aplt.FitInterferometerPlotter(
         fit=fit_interferometer_7,
         mat_plot_1d=aplt.MatPlot1D(output=aplt.Output(path=plot_path, format="png")),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_interferometer_plotter.subplot_fit()
+    fit_plotter.subplot_fit()
 
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
 
-    fit_interferometer_plotter.subplot_fit_dirty_images()
+    fit_plotter.subplot_fit_dirty_images()
 
     assert path.join(plot_path, "subplot_fit_dirty_images.png") in plot_patch.paths

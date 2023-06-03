@@ -159,7 +159,7 @@ class ImagingPlotterMeta(Plotter):
 class ImagingPlotter(Plotter):
     def __init__(
         self,
-        imaging: Imaging,
+        dataset: Imaging,
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
@@ -192,10 +192,10 @@ class ImagingPlotter(Plotter):
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
-        self.imaging = imaging
+        self.dataset = dataset
 
         self._imaging_meta_plotter = ImagingPlotterMeta(
-            dataset=self.imaging,
+            dataset=self.dataset,
             get_visuals_2d=self.get_visuals_2d,
             mat_plot_2d=self.mat_plot_2d,
             include_2d=self.include_2d,
@@ -207,4 +207,4 @@ class ImagingPlotter(Plotter):
         self.subplot_dataset = self._imaging_meta_plotter.subplot_dataset
 
     def get_visuals_2d(self):
-        return self.get_2d.via_mask_from(mask=self.imaging.mask)
+        return self.get_2d.via_mask_from(mask=self.dataset.mask)

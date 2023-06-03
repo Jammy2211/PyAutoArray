@@ -261,7 +261,13 @@ class MatPlot1D(AbstractMatPlot):
             for key, value in text_manual_dict.items():
                 text_manual_list.append(
                     Text(
-                        x=0.5, y=y, s=f"{key} : {value}", c="b", transform=ax.transAxes
+                        x=0.95,
+                        y=y,
+                        s=f"{key} : {value}",
+                        c="b",
+                        transform=ax.transAxes,
+                        horizontalalignment="right",
+                        fontsize=12,
                     )
                 )
                 y = y - 0.05

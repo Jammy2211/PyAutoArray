@@ -133,13 +133,13 @@ class AbstractDataset:
         return np.linalg.inv(self.noise_covariance_matrix)
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
-        imaging = copy.copy(self)
+        dataset = copy.copy(self)
 
-        imaging.data = imaging.data.trimmed_after_convolution_from(
+        dataset.data = dataset.data.trimmed_after_convolution_from(
             kernel_shape=kernel_shape
         )
-        imaging.noise_map = imaging.noise_map.trimmed_after_convolution_from(
+        dataset.noise_map = dataset.noise_map.trimmed_after_convolution_from(
             kernel_shape=kernel_shape
         )
 
-        return imaging
+        return dataset

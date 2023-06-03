@@ -19,13 +19,13 @@ def test__individual_attributes_are_output(
 ):
     visuals_2d = aplt.Visuals2D(mask=mask_2d_7x7, positions=grid_2d_irregular_7x7_list)
 
-    imaging_plotter = aplt.ImagingPlotter(
-        imaging=imaging_7x7,
+    dataset_plotter = aplt.ImagingPlotter(
+        dataset=imaging_7x7,
         visuals_2d=visuals_2d,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    imaging_plotter.figures_2d(
+    dataset_plotter.figures_2d(
         data=True,
         noise_map=True,
         psf=True,
@@ -39,7 +39,7 @@ def test__individual_attributes_are_output(
 
     plot_patch.paths = []
 
-    imaging_plotter.figures_2d(
+    dataset_plotter.figures_2d(
         data=True,
         psf=True,
     )
@@ -54,7 +54,7 @@ def test__subplot_is_output(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
     imaging_plot = aplt.ImagingPlotter(
-        imaging=imaging_7x7,
+        dataset=imaging_7x7,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
@@ -66,12 +66,12 @@ def test__subplot_is_output(
 def test__output_as_fits__correct_output_format(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-    imaging_plotter = aplt.ImagingPlotter(
-        imaging=imaging_7x7,
+    dataset_plotter = aplt.ImagingPlotter(
+        dataset=imaging_7x7,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    imaging_plotter.figures_2d(data=True, psf=True)
+    dataset_plotter.figures_2d(data=True, psf=True)
 
     image_from_plot = aa.util.array_2d.numpy_array_2d_via_fits_from(
         file_path=path.join(plot_path, "data.fits"), hdu=0

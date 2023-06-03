@@ -142,18 +142,18 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
     psf = aa.Kernel2D.no_mask(values=kernel, pixel_scales=1.0)
 
-    imaging = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
+    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
 
-    masked_imaging = imaging.apply_mask(mask=mask)
+    masked_dataset = dataset.apply_mask(mask=mask)
 
     inversion_w_tilde = aa.Inversion(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
@@ -213,18 +213,18 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
     psf = aa.Kernel2D.no_mask(values=kernel, pixel_scales=1.0)
 
-    imaging = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
+    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
 
-    masked_imaging = imaging.apply_mask(mask=mask)
+    masked_dataset = dataset.apply_mask(mask=mask)
 
     inversion_w_tilde = aa.Inversion(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )

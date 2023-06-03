@@ -47,13 +47,13 @@ class SettingsInversion:
             Shhhh its a secret.
         use_linear_operators
             For an interferometer inversion, whether to use the linear operator solution to solve the linear system
-            or not (this input does nothing for imaging data).
+            or not (this input does nothing for dataset data).
         tolerance
             For an interferometer inversion using the linear operators method, sets the tolerance of the solver
-            (this input does nothing for imaging data and other interferometer methods).
+            (this input does nothing for dataset data and other interferometer methods).
         maxiter
             For an interferometer inversion using the linear operators method, sets the maximum number of iterations
-            of the solver (this input does nothing for imaging data and other interferometer methods).
+            of the solver (this input does nothing for dataset data and other interferometer methods).
         """
 
         self.use_w_tilde = use_w_tilde

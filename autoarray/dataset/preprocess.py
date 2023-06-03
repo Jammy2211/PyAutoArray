@@ -482,7 +482,7 @@ def noise_map_with_signal_to_noise_limit_from(
     Given data and its noise map, increase the noise-values of all data points which signal to noise is above an input
     `signal_to_noise_limit`, such that the signal to noise values do not exceed this limit.
 
-    This may be performed for imaging data with extremely high signal-to-noise regions in the data which are poorly
+    This may be performed for dataset data with extremely high signal-to-noise regions in the data which are poorly
     fit my the model. By downweighting their signal to noise values, the model-fit with focus on other parts of the
     data with low S/N.
 

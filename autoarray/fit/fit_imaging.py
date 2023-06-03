@@ -66,7 +66,7 @@ class FitImaging(FitDataset):
 
     @property
     def mask(self) -> Mask2D:
-        return self.imaging.mask
+        return self.dataset.mask
 
     @property
     def blurred_image(self) -> Array2D:

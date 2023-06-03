@@ -17,13 +17,13 @@ def make_plot_path_setup():
 
 
 def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
-    fit_imaging_plotter = aplt.FitImagingPlotter(
+    fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_7x7,
         include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.figures_2d(
+    fit_plotter.figures_2d(
         data=True,
         noise_map=True,
         signal_to_noise_map=True,
@@ -43,7 +43,7 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
 
     plot_patch.paths = []
 
-    fit_imaging_plotter.figures_2d(
+    fit_plotter.figures_2d(
         data=True,
         noise_map=False,
         signal_to_noise_map=False,
@@ -61,13 +61,13 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
 
 
 def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
-    fit_imaging_plotter = aplt.FitImagingPlotter(
+    fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_7x7,
         include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.subplot_fit()
+    fit_plotter.subplot_fit()
 
     assert path.join(plot_path, "subplot_fit.png") in plot_patch.paths
 
@@ -75,13 +75,13 @@ def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
 def test__output_as_fits__correct_output_format(
     fit_imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-    fit_imaging_plotter = aplt.FitImagingPlotter(
+    fit_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_7x7,
         include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    fit_imaging_plotter.figures_2d(data=True)
+    fit_plotter.figures_2d(data=True)
 
     image_from_plot = aa.util.array_2d.numpy_array_2d_via_fits_from(
         file_path=path.join(plot_path, "data.fits"), hdu=0
