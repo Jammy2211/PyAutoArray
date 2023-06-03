@@ -5,6 +5,7 @@ class AutoLabels:
         ylabel=None,
         xlabel=None,
         yunit=None,
+        xunit=None,
         cb_unit=None,
         legend=None,
         filename=None,
@@ -13,6 +14,7 @@ class AutoLabels:
         self.ylabel = ylabel
         self.xlabel = xlabel
         self.yunit = yunit
+        self.xunit = xunit
         self.cb_unit = cb_unit
         self.legend = legend
         self.filename = filename

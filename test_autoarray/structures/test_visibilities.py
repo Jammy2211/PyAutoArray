@@ -112,12 +112,10 @@ class TestVisibilities:
 
         os.makedirs(output_data_dir)
 
-        visibilities.output_to_fits(
-            file_path=path.join(output_data_dir, "visibilities.fits")
-        )
+        visibilities.output_to_fits(file_path=path.join(output_data_dir, "data.fits"))
 
         visibilities_from_out = aa.Visibilities.from_fits(
-            file_path=path.join(output_data_dir, "visibilities.fits"), hdu=0
+            file_path=path.join(output_data_dir, "data.fits"), hdu=0
         )
         assert (
             visibilities.slim == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])

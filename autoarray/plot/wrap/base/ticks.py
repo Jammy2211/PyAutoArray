@@ -66,6 +66,7 @@ class LabelMaker:
         pixels: Optional[int] = None,
         round_sf: int = 2,
         yunit=None,
+        xunit=None,
         manual_suffix=None,
     ):
         self.tick_values = tick_values
@@ -75,6 +76,7 @@ class LabelMaker:
         self.pixels = pixels
         self.convert_factor = self.units.ticks_convert_factor or 1.0
         self.yunit = yunit
+        self.xunit = xunit
         self.round_sf = round_sf
         self.manual_suffix = manual_suffix
 
@@ -94,6 +96,9 @@ class LabelMaker:
 
         if self.yunit is not None:
             return self.yunit
+
+        if self.xunit is not None:
+            return self.xunit
 
         if self.units.ticks_label is not None:
             return self.units.ticks_label
@@ -268,6 +273,7 @@ class AbstractTicks(AbstractMatWrap):
         max_value: float,
         units,
         yunit,
+        xunit,
         pixels: Optional[int] = None,
         is_log10: bool = False,
     ):
@@ -278,6 +284,7 @@ class AbstractTicks(AbstractMatWrap):
             units=units,
             pixels=pixels,
             yunit=yunit,
+            xunit=xunit,
             manual_suffix=self.manual_suffix,
         )
 
@@ -295,6 +302,7 @@ class AbstractTicks(AbstractMatWrap):
         pixels: Optional[int] = None,
         use_integers: bool = False,
         yunit=None,
+        xunit=None,
         is_log10: bool = False,
         is_for_1d_plot: bool = False,
     ):
@@ -316,6 +324,7 @@ class AbstractTicks(AbstractMatWrap):
             max_value=max_value,
             units=units,
             yunit=yunit,
+            xunit=xunit,
             pixels=pixels,
             is_log10=is_log10,
         )
@@ -382,6 +391,7 @@ class XTicks(AbstractTicks):
         max_value: float,
         units: Units,
         pixels: Optional[int] = None,
+        xunit=None,
         use_integers=False,
         is_for_1d_plot: bool = False,
     ):
@@ -405,6 +415,7 @@ class XTicks(AbstractTicks):
             max_value=max_value,
             pixels=pixels,
             units=units,
+            yunit=xunit,
             use_integers=use_integers,
             is_for_1d_plot=is_for_1d_plot,
         )

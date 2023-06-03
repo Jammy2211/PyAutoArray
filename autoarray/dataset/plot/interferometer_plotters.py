@@ -171,8 +171,8 @@ class InterferometerPlotter(Plotter):
                 auto_labels=AutoLabels(
                     title="Amplitudes vs UV-distances",
                     filename="amplitudes_vs_uv_distances",
-                    ylabel="amplitude (Jy)",
-                    xlabel="U-Wavelengths ($\lambda$)",
+                    yunit="Jy",
+                    xunit="k$\lambda$",
                 ),
                 plot_axis_type_override="scatter",
             )
@@ -185,8 +185,8 @@ class InterferometerPlotter(Plotter):
                 auto_labels=AutoLabels(
                     title="Phases vs UV-distances",
                     filename="phases_vs_uv_distances",
-                    ylabel="phase (deg)",
-                    xlabel=r"UV$_{distance}$ (k$\lambda$)",
+                    yunit="deg",
+                    xunit="k$\lambda$",
                 ),
                 plot_axis_type_override="scatter",
             )
@@ -195,7 +195,7 @@ class InterferometerPlotter(Plotter):
             self.mat_plot_2d.plot_array(
                 array=self.dataset.dirty_image,
                 visuals_2d=self.get_visuals_2d_real_space(),
-                auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image_2d"),
+                auto_labels=AutoLabels(title="Dirty Image", filename="dirty_image"),
             )
 
         if dirty_noise_map:
@@ -203,7 +203,7 @@ class InterferometerPlotter(Plotter):
                 array=self.dataset.dirty_noise_map,
                 visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
-                    title="Dirty Noise Map", filename="dirty_noise_map_2d"
+                    title="Dirty Noise Map", filename="dirty_noise_map"
                 ),
             )
 
@@ -213,7 +213,7 @@ class InterferometerPlotter(Plotter):
                 visuals_2d=self.get_visuals_2d_real_space(),
                 auto_labels=AutoLabels(
                     title="Dirty Signal-To-Noise Map",
-                    filename="dirty_signal_to_noise_map_2d",
+                    filename="dirty_signal_to_noise_map",
                 ),
             )
 

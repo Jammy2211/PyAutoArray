@@ -43,9 +43,9 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
     assert path.join(plot_path, "uv_wavelengths.png") in plot_patch.paths
     assert path.join(plot_path, "amplitudes_vs_uv_distances.png") in plot_patch.paths
     assert path.join(plot_path, "phases_vs_uv_distances.png") in plot_patch.paths
-    assert path.join(plot_path, "dirty_image_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "dirty_noise_map_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "dirty_signal_to_noise_map_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_image.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_noise_map.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_signal_to_noise_map.png") in plot_patch.paths
 
     plot_patch.paths = []
 

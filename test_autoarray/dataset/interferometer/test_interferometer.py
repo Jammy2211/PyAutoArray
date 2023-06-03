@@ -76,7 +76,7 @@ def test__output_all_arrays(sub_mask_2d_7x7):
     os.makedirs(output_data_dir)
 
     dataset.output_to_fits(
-        data_path=path.join(output_data_dir, "visibilities.fits"),
+        data_path=path.join(output_data_dir, "data.fits"),
         noise_map_path=path.join(output_data_dir, "noise_map.fits"),
         uv_wavelengths_path=path.join(output_data_dir, "uv_wavelengths.fits"),
         overwrite=True,
@@ -84,7 +84,7 @@ def test__output_all_arrays(sub_mask_2d_7x7):
 
     dataset = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
-        data_path=path.join(output_data_dir, "visibilities.fits"),
+        data_path=path.join(output_data_dir, "data.fits"),
         noise_map_path=path.join(output_data_dir, "noise_map.fits"),
         uv_wavelengths_path=path.join(output_data_dir, "uv_wavelengths.fits"),
     )

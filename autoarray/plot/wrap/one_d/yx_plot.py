@@ -68,7 +68,7 @@ class YXPlot(AbstractMatWrap1D):
                 y,
                 yerr=y_errors,
                 xerr=x_errors,
-                marker="o",
+                #     marker="o",
                 fmt="o",
                 # ls=ls_errorbar,
                 **self.config_dict

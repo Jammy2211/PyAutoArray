@@ -17,11 +17,11 @@ def make_plot_path_setup():
 def test__individual_attributes_are_output(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-    visuals_2d = aplt.Visuals2D(mask=mask_2d_7x7, positions=grid_2d_irregular_7x7_list)
+    visuals = aplt.Visuals2D(mask=mask_2d_7x7, positions=grid_2d_irregular_7x7_list)
 
     dataset_plotter = aplt.ImagingPlotter(
         dataset=imaging_7x7,
-        visuals_2d=visuals_2d,
+        visuals_2d=visuals,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
@@ -53,12 +53,12 @@ def test__individual_attributes_are_output(
 def test__subplot_is_output(
     imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
-    imaging_plot = aplt.ImagingPlotter(
+    dataset_plotter = aplt.ImagingPlotter(
         dataset=imaging_7x7,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    imaging_plot.subplot_dataset()
+    dataset_plotter.subplot_dataset()
 
     assert path.join(plot_path, "subplot_dataset.png") in plot_patch.paths
 

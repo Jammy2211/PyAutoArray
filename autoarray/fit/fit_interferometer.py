@@ -65,7 +65,7 @@ class FitInterferometer(FitDataset):
 
     @property
     def transformer(self) -> ty.Transformer:
-        return self.interferometer.transformer
+        return self.dataset.transformer
 
     @property
     def visibilities(self) -> Visibilities:

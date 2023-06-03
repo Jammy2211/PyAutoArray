@@ -71,9 +71,9 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
         path.join(plot_path, "imag_chi_squared_map_vs_uv_distances.png")
         in plot_patch.paths
     )
-    assert path.join(plot_path, "dirty_image_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "dirty_noise_map_2d.png") in plot_patch.paths
-    assert path.join(plot_path, "dirty_signal_to_noise_map_2d.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_image.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_noise_map.png") in plot_patch.paths
+    assert path.join(plot_path, "dirty_signal_to_noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "dirty_model_image_2d.png") in plot_patch.paths
     assert path.join(plot_path, "dirty_residual_map_2d.png") in plot_patch.paths
     assert (
