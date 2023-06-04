@@ -313,11 +313,11 @@ class MatPlot2D(AbstractMatPlot):
         else:
             [annotate.set() for annotate in self.annotate]
 
-        # if self.colorbar is not False:
-        #     cb = self.colorbar.set(
-        #         units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit
-        #     )
-        #     self.colorbar_tickparams.set(cb=cb)
+        if self.colorbar is not False:
+            cb = self.colorbar.set(
+                units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit
+            )
+            self.colorbar_tickparams.set(cb=cb)
 
         grid_indexes = None
 

@@ -299,6 +299,11 @@ class Preloads:
         if not inversion_0.has(cls=AbstractLinearObjFuncList):
             return
 
+        try:
+            inversion_0.linear_func_operated_mapping_matrix_dict
+        except NotImplementedError:
+            return
+
         if not hasattr(inversion_0, "linear_func_operated_mapping_matrix_dict"):
             return
 
