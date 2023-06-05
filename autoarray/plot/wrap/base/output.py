@@ -126,7 +126,6 @@ class Output:
                     plt.savefig(
                         path.join(output_path, f"{filename}.png"),
                         bbox_inches=self.bbox_inches,
-                        pad_inches=0,
                     )
                 elif format == "pdf":
                     plt.savefig(

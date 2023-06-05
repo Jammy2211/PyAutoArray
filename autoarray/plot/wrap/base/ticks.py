@@ -155,6 +155,12 @@ class LabelMaker:
     @property
     def labels_log10(self):
         labels = ["{:.0e}".format(label) for label in self.tick_values]
+        labels = [label.replace("1e", "$10^{") + "}$" for label in labels]
+        labels = [
+            label.replace("{-0", "{-").replace("{+0", "{+").replace("+", "")
+            for label in labels
+        ]
+        #     labels = [label.replace("1e", "").replace("-0", "-").replace("+0", "+").replace("+0", "0") for label in labels]
         return self.with_appended_suffix(labels)
 
     def with_appended_suffix(self, labels):
