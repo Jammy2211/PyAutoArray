@@ -584,7 +584,7 @@ def voronoi_revised_from(
 
             t = voronoi.points[p2] - voronoi.points[p1]  # tangent
             t /= np.linalg.norm(t)
-            n = np.array([-t[1], t[0]])  # hyper
+            n = np.array([-t[1], t[0]])
 
             midpoint = voronoi.points[[p1, p2]].mean(axis=0)
             direction = np.sign(np.dot(midpoint - center, n)) * n

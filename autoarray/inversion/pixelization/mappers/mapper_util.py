@@ -483,7 +483,7 @@ def adaptive_pixel_signals_from(
     adapt_data: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns the (hyper) signal in each pixel, where the signal is the sum of its mapped data values.
+    Returns the signal in each pixel, where the signal is the sum of its mapped data values.
     These pixel-signals are used to compute the effective regularization weight of each pixel.
 
     The pixel signals are computed as follows:
@@ -494,7 +494,7 @@ def adaptive_pixel_signals_from(
     2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
        regularization weight_list are defined identically for any data quantity or signal-to-noise_map ratio.
 
-    3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative
+    3) Raised to the power of the parameter *signal_scale*, so the method can control the relative
        contribution regularization in different regions of pixelization.
 
     Parameters

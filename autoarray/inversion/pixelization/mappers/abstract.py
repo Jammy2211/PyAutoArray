@@ -284,7 +284,7 @@ class AbstractMapper(LinearObj):
 
     def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
         """
-        Returns the (hyper) signal in each pixelization pixel, where this signal is an estimate of the expected signal
+        Returns the signal in each pixelization pixel, where this signal is an estimate of the expected signal
         each pixelization pixel contains given the data pixels it maps too.
 
         A full description of this is given in the function `mapper_util.adaptive_pixel_signals_from().
