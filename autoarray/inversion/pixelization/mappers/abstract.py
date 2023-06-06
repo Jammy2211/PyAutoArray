@@ -110,8 +110,8 @@ class AbstractMapper(LinearObj):
         return self.source_plane_mesh_grid.edge_pixel_list
 
     @property
-    def hyper_data(self) -> np.ndarray:
-        return self.mapper_grids.hyper_data
+    def adapt_data(self) -> np.ndarray:
+        return self.mapper_grids.adapt_data
 
     @property
     def neighbors(self) -> Neighbors:
@@ -302,7 +302,7 @@ class AbstractMapper(LinearObj):
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-            hyper_data=self.hyper_data,
+            adapt_data=self.adapt_data,
         )
 
     def pix_indexes_for_slim_indexes(self, pix_indexes: List) -> List[List]:

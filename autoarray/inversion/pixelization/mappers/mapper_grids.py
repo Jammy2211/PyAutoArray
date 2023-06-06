@@ -17,7 +17,7 @@ class MapperGrids:
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Abstract2DMesh = None,
         image_plane_mesh_grid: Grid2DSparse = None,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = None,
         profiling_dict: Optional[Dict] = None,
@@ -53,7 +53,7 @@ class MapperGrids:
         image_plane_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
             transformation applied to it to create the `source_plane_mesh_grid`.
-        hyper_data
+        adapt_data
             An image which is used to determine the `image_plane_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
         settings
@@ -70,7 +70,7 @@ class MapperGrids:
         self.source_plane_data_grid = source_plane_data_grid
         self.source_plane_mesh_grid = source_plane_mesh_grid
         self.image_plane_mesh_grid = image_plane_mesh_grid
-        self.hyper_data = hyper_data
+        self.adapt_data = adapt_data
         self.settings = settings
         self.preloads = preloads or Preloads()
         self.profiling_dict = profiling_dict

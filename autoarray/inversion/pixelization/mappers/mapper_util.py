@@ -480,7 +480,7 @@ def adaptive_pixel_signals_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
-    hyper_data: np.ndarray,
+    adapt_data: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the (hyper) signal in each pixel, where the signal is the sum of its mapped data values.
@@ -506,7 +506,7 @@ def adaptive_pixel_signals_from(
         low signal regions.
     regular_to_pix
         A 1D array util every pixel on the grid to a pixel on the pixelization.
-    hyper_data
+    adapt_data
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
@@ -522,11 +522,11 @@ def adaptive_pixel_signals_from(
 
         if pix_size_tem > 1:
             pixel_signals[vertices_indexes[:pix_size_tem]] += (
-                hyper_data[mask_1d_index] * pixel_weights[sub_slim_index]
+                adapt_data[mask_1d_index] * pixel_weights[sub_slim_index]
             )
             pixel_sizes[vertices_indexes] += 1
         else:
-            pixel_signals[vertices_indexes[0]] += hyper_data[mask_1d_index]
+            pixel_signals[vertices_indexes[0]] += adapt_data[mask_1d_index]
             pixel_sizes[vertices_indexes[0]] += 1
 
     pixel_sizes[pixel_sizes == 0] = 1

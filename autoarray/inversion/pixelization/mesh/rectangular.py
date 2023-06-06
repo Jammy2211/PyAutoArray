@@ -66,7 +66,7 @@ class Rectangular(AbstractMesh):
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -96,7 +96,7 @@ class Rectangular(AbstractMesh):
             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
         image_plane_mesh_grid
             Not used for a rectangular pixelization.
-        hyper_data
+        adapt_data
             Not used for a rectangular pixelization.
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
@@ -120,7 +120,7 @@ class Rectangular(AbstractMesh):
             source_plane_data_grid=relocated_grid,
             source_plane_mesh_grid=mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
-            hyper_data=hyper_data,
+            adapt_data=adapt_data,
             preloads=preloads,
             profiling_dict=profiling_dict,
         )
@@ -154,7 +154,7 @@ class Rectangular(AbstractMesh):
     def image_plane_mesh_grid_from(
         self,
         image_plane_data_grid: Grid2D,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
         """

@@ -114,7 +114,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     mapper = aa.m.MockMapper(
         source_plane_data_grid=grid_2d_7x7,
         pix_sub_weights=pix_sub_weights,
-        hyper_data=image_7x7,
+        adapt_data=image_7x7,
         parameters=pixels,
     )
 
@@ -127,7 +127,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         pix_indexes_for_sub_slim_index=pix_sub_weights.mappings,
         pix_size_for_sub_slim_index=pix_sub_weights.sizes,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
-        hyper_data=image_7x7,
+        adapt_data=image_7x7,
     )
 
     assert (pixel_signals == pixel_signals_util).all()
