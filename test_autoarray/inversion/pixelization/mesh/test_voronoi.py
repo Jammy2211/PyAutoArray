@@ -43,13 +43,13 @@ def test__magnification__preloads_used_for_relocated_grid(sub_grid_2d_7x7):
 
 
 def test__brightness__weight_map_from():
-    hyper_data = np.array([0.0, 1.0, 0.0])
+    adapt_data = np.array([0.0, 1.0, 0.0])
 
     pixelization = aa.mesh.VoronoiBrightnessImage(
         pixels=5, weight_floor=0.0, weight_power=0.0
     )
 
-    weight_map = pixelization.weight_map_from(hyper_data=hyper_data)
+    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
 
     assert (weight_map == np.ones(3)).all()
 
@@ -57,7 +57,7 @@ def test__brightness__weight_map_from():
         pixels=5, weight_floor=0.0, weight_power=1.0
     )
 
-    weight_map = pixelization.weight_map_from(hyper_data=hyper_data)
+    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
 
     assert (weight_map == np.array([0.0, 1.0, 0.0])).all()
 
@@ -65,7 +65,7 @@ def test__brightness__weight_map_from():
         pixels=5, weight_floor=1.0, weight_power=1.0
     )
 
-    weight_map = pixelization.weight_map_from(hyper_data=hyper_data)
+    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
 
     assert (weight_map == np.array([1.0, 2.0, 1.0])).all()
 
@@ -73,17 +73,17 @@ def test__brightness__weight_map_from():
         pixels=5, weight_floor=1.0, weight_power=2.0
     )
 
-    weight_map = pixelization.weight_map_from(hyper_data=hyper_data)
+    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
 
     assert (weight_map == np.array([1.0, 4.0, 1.0])).all()
 
-    hyper_data = np.array([-1.0, 1.0, 3.0])
+    adapt_data = np.array([-1.0, 1.0, 3.0])
 
     pixelization = aa.mesh.VoronoiBrightnessImage(
         pixels=5, weight_floor=0.0, weight_power=1.0
     )
 
-    weight_map = pixelization.weight_map_from(hyper_data=hyper_data)
+    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
 
     assert (weight_map == np.array([0.0, 0.5, 1.0])).all()
 
@@ -91,7 +91,7 @@ def test__brightness__weight_map_from():
         pixels=5, weight_floor=0.0, weight_power=2.0
     )
 
-    weight_map = pixelization.weight_map_from(hyper_data=hyper_data)
+    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
 
     assert (weight_map == np.array([0.0, 0.25, 1.0])).all()
 
@@ -99,7 +99,7 @@ def test__brightness__weight_map_from():
         pixels=5, weight_floor=1.0, weight_power=1.0
     )
 
-    weight_map = pixelization.weight_map_from(hyper_data=hyper_data)
+    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
 
     assert (weight_map == np.array([3.0, 3.5, 4.0])).all()
 
@@ -111,9 +111,9 @@ def test__brightness__mesh_grid__matches_manual_comparison_to_grids_module(
         pixels=6, weight_floor=0.1, weight_power=2.0
     )
 
-    hyper_data = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0])
+    adapt_data = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0])
 
-    weight_map = pixelization.weight_map_from(hyper_data=hyper_data)
+    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
 
     sparse_grid = aa.Grid2DSparse.from_total_pixels_grid_and_weight_map(
         total_pixels=pixelization.pixels,

@@ -515,7 +515,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_data=galaxy_image,
+        adapt_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
@@ -533,7 +533,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_data=galaxy_image,
+        adapt_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
@@ -551,7 +551,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_data=galaxy_image,
+        adapt_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 0.5, 0.5])).all()
@@ -569,7 +569,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_data=galaxy_image,
+        adapt_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 0.25, 0.25])).all()

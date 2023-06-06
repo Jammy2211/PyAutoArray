@@ -95,7 +95,7 @@ class AbstractMesh:
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DSparse = None,
         image_plane_mesh_grid: Grid2DSparse = None,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
         profiling_dict: Optional[Dict] = None,
@@ -110,7 +110,7 @@ class AbstractMesh:
     ):
         raise NotImplementedError
 
-    def weight_map_from(self, hyper_data: np.ndarray):
+    def weight_map_from(self, adapt_data: np.ndarray):
         raise NotImplementedError()
 
     @property

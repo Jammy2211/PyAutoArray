@@ -410,7 +410,7 @@ def make_rectangular_mapper_7x7_3x3():
         source_plane_data_grid=make_sub_grid_2d_7x7(),
         source_plane_mesh_grid=make_rectangular_mesh_grid_3x3(),
         image_plane_mesh_grid=None,
-        hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+        adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
     return aa.MapperRectangularNoInterp(
@@ -423,7 +423,7 @@ def make_delaunay_mapper_9_3x3():
         source_plane_data_grid=make_sub_grid_2d_7x7(),
         source_plane_mesh_grid=make_delaunay_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+        adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
     return aa.MapperDelaunay(
@@ -436,7 +436,7 @@ def make_voronoi_mapper_9_3x3():
         source_plane_data_grid=make_sub_grid_2d_7x7(),
         source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+        adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
     return aa.MapperVoronoiNoInterp(
@@ -449,7 +449,7 @@ def make_voronoi_mapper_nn_9_3x3():
         source_plane_data_grid=make_sub_grid_2d_7x7(),
         source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        hyper_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
+        adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
     return aa.MapperVoronoi(mapper_grids=mapper_grids, regularization=None)

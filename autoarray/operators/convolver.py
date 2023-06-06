@@ -473,7 +473,7 @@ class Convolver:
         [[0.0, 1.0, 1.0]]
         [[0.0, 0.0, 0.0]]
 
-        We then convolve each of these with our PSF kernel, in 2 dimensions, like we would a hyper grid. For
+        We then convolve each of these with our PSF kernel, in 2 dimensions, like we would a grid. For
         example, using the kernel below:
 
         kernel:
