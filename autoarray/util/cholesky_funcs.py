@@ -2,10 +2,10 @@ import numpy as np
 from scipy import linalg
 import math
 import time
-from numba import njit
+from autoarray import numba_util
 
 
-@njit(fastmath=True)
+@numba_util.jit()
 def _choldowndate(U, x):
     n = x.size
     for k in range(n - 1):
@@ -23,7 +23,7 @@ def _choldowndate(U, x):
     return U
 
 
-@njit(fastmath=True)
+@numba_util.jit()
 def _cholupdate(U, x):
     n = x.size
     for k in range(n - 1):
