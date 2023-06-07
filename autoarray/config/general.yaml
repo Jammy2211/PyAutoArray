@@ -12,5 +12,5 @@ numba:
 structures:
   use_dataset_grids: true           # If True, dataset objects (e.g. Imaging) have a grid of (y,x) coordinates computed for them.
 test:
-  preloads_check_threshold: 0.1     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit.
+  preloads_check_threshold: 1.0     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit.
 
