@@ -285,7 +285,7 @@ def edges_from(image, no_edges):
     return edges
 
 
-def background_sky_level_via_edges_of_image_from(image, no_edges):
+def background_sky_level_via_edges_from(image, no_edges):
     """
     Estimate the background sky level in an image using the data values at its edges. These edge values are extracted
     and their median is used to calculate the bakcground sky level.
@@ -302,7 +302,7 @@ def background_sky_level_via_edges_of_image_from(image, no_edges):
     return np.median(edges)
 
 
-def background_noise_map_via_edges_of_image_from(image, no_edges):
+def background_noise_map_via_edges_from(image, no_edges):
     """
     Estimate the background noise level in an image using the data values at its edges. These edge values are binned
     into a histogram, with a Gaussian profile fitted to this histogram, such that its standard deviation (sigma) gives

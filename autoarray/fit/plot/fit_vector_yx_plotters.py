@@ -90,7 +90,7 @@ class FitVectorYXPlotterMeta(Plotter):
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(title="Image", filename="image_2d"),
+                auto_labels=AutoLabels(title="Data", filename="image_2d"),
             )
 
         if noise_map:

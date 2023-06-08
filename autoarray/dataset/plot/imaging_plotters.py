@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.include.two_d import Include2D
@@ -60,6 +60,7 @@ class ImagingPlotterMeta(Plotter):
         noise_map: bool = False,
         psf: bool = False,
         signal_to_noise_map: bool = False,
+        title_str : Optional[str] = None,
     ):
         """
         Plots the individual attributes of the plotter's `Imaging` object in 2D.
@@ -81,23 +82,23 @@ class ImagingPlotterMeta(Plotter):
 
         if data:
             self.mat_plot_2d.plot_array(
-                array=self.dataset.image,
+                array=self.dataset.data,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(title="Image", filename="data"),
+                auto_labels=AutoLabels(title=title_str or f" Data", filename="data"),
             )
 
         if noise_map:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.noise_map,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels("Noise-Map", filename="noise_map"),
+                auto_labels=AutoLabels(title_str or f"Noise-Map", filename="noise_map"),
             )
 
         if psf:
             self.mat_plot_2d.plot_array(
                 array=self.dataset.psf,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(title="Point Spread Function", filename="psf"),
+                auto_labels=AutoLabels(title=title_str or f"Point Spread Function", filename="psf"),
             )
 
         if signal_to_noise_map:
@@ -105,7 +106,7 @@ class ImagingPlotterMeta(Plotter):
                 array=self.dataset.signal_to_noise_map,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
-                    title="Signal-To-Noise Map", filename="signal_to_noise_map"
+                    title=title_str or f"Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
             )
 

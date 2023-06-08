@@ -361,7 +361,7 @@ def test__noise_map_with_offset_values_added():
 def test__background_sky_level_via_edges_of_image_from():
     image = aa.Array2D.no_mask(values=np.ones((3, 3)), pixel_scales=1.0)
 
-    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_from(
         image=image, no_edges=1
     )
 
@@ -372,7 +372,7 @@ def test__background_sky_level_via_edges_of_image_from():
         pixel_scales=1.0,
     )
 
-    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_from(
         image=image, no_edges=1
     )
 
@@ -389,7 +389,7 @@ def test__background_sky_level_via_edges_of_image_from():
         pixel_scales=1.0,
     )
 
-    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_from(
         image=image, no_edges=2
     )
 
@@ -399,7 +399,7 @@ def test__background_sky_level_via_edges_of_image_from():
 def test__background_noise_map_via_edges_of_image_from():
     image = aa.Array2D.no_mask(values=np.ones((3, 3)), pixel_scales=1.0)
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=1
     )
 
@@ -412,7 +412,7 @@ def test__background_noise_map_via_edges_of_image_from():
         pixel_scales=1.0,
     )
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=1
     )
 
@@ -431,7 +431,7 @@ def test__background_noise_map_via_edges_of_image_from():
         pixel_scales=1.0,
     )
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=2
     )
 
@@ -451,7 +451,7 @@ def test__background_noise_map_via_edges_of_image_from():
         pixel_scales=1.0,
     )
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=2
     )
 
@@ -473,7 +473,7 @@ def test__background_noise_map_via_edges_of_image_from():
         pixel_scales=1.0,
     )
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=3
     )
 
