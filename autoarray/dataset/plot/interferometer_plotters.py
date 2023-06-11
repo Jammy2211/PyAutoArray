@@ -281,6 +281,8 @@ class InterferometerPlotter(Plotter):
             uv_wavelengths=True,
             amplitudes_vs_uv_distances=True,
             phases_vs_uv_distances=True,
+            dirty_image=True,
+            dirty_signal_to_noise_map=True,
             auto_filename="subplot_dataset",
         )
 

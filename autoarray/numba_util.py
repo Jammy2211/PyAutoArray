@@ -98,6 +98,10 @@ def profile_func(func: Callable):
         -------
             The result of the function being timed.
         """
+
+        if not hasattr(obj, "profiling_dict"):
+            return func(obj, *args, **kwargs)
+
         if obj.profiling_dict is None:
             return func(obj, *args, **kwargs)
 

@@ -182,6 +182,16 @@ class AbstractPlotter:
                 except AttributeError:
                     self.figures_1d(**{key: True})
 
+            try:
+                self.mat_plot_2d.subplot_index = max(
+                    self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
+                )
+                self.mat_plot_1d.subplot_index = max(
+                    self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
+                )
+            except AttributeError:
+                pass
+
         try:
             self.mat_plot_2d.output.subplot_to_figure(
                 auto_filename=kwargs["auto_labels"].filename

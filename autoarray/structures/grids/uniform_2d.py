@@ -1112,6 +1112,28 @@ class Grid2D(Structure):
             np.amax(self[:, 1]) - np.amin(self[:, 1]),
         )
 
+    @property
+    def scaled_minima(self) -> Tuple:
+        """
+        The (y,x) minimum values of the grid in scaled units, buffed such that their extent is further than the grid's
+        extent.
+        """
+        return (
+            np.amin(self[:, 0]).astype("float"),
+            np.amin(self[:, 1]).astype("float"),
+        )
+
+    @property
+    def scaled_maxima(self) -> Tuple:
+        """
+        The (y,x) maximum values of the grid in scaled units, buffed such that their extent is further than the grid's
+        extent.
+        """
+        return (
+            np.amax(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float"),
+        )
+
     def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:
         """
         The extent of the grid in scaled units returned as a list [x_min, x_max, y_min, y_max], where all values are

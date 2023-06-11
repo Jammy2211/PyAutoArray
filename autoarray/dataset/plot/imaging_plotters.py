@@ -60,7 +60,7 @@ class ImagingPlotterMeta(Plotter):
         noise_map: bool = False,
         psf: bool = False,
         signal_to_noise_map: bool = False,
-        title_str : Optional[str] = None,
+        title_str: Optional[str] = None,
     ):
         """
         Plots the individual attributes of the plotter's `Imaging` object in 2D.
@@ -98,7 +98,11 @@ class ImagingPlotterMeta(Plotter):
             self.mat_plot_2d.plot_array(
                 array=self.dataset.psf,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(title=title_str or f"Point Spread Function", filename="psf"),
+                auto_labels=AutoLabels(
+                    title=title_str or f"Point Spread Function",
+                    filename="psf",
+                    cb_unit="",
+                ),
             )
 
         if signal_to_noise_map:
@@ -106,7 +110,9 @@ class ImagingPlotterMeta(Plotter):
                 array=self.dataset.signal_to_noise_map,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
-                    title=title_str or f"Signal-To-Noise Map", filename="signal_to_noise_map"
+                    title=title_str or f"Signal-To-Noise Map",
+                    filename="signal_to_noise_map",
+                    cb_unit="",
                 ),
             )
 
