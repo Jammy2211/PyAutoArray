@@ -25,7 +25,7 @@ class AbstractInversionImaging(AbstractInversion):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads=None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -70,7 +70,7 @@ class AbstractInversionImaging(AbstractInversion):
         preloads
             Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
             for example certain matrices used by the linear algebra could be preloaded.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -86,7 +86,7 @@ class AbstractInversionImaging(AbstractInversion):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @property

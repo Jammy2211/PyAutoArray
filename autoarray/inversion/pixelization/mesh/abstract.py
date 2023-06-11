@@ -98,7 +98,7 @@ class AbstractMesh:
         adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         raise NotImplementedError
 

@@ -19,7 +19,7 @@ class MockPixelization(Pixelization):
         adapt_data=None,
         settings=None,
         preloads=None,
-        profiling_dict=None,
+        run_time_dict=None,
     ):
         return self.mapper
 

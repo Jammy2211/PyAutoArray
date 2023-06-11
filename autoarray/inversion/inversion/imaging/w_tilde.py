@@ -30,7 +30,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -55,7 +55,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -66,7 +66,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
         if self.settings.use_w_tilde:

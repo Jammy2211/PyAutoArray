@@ -31,7 +31,7 @@ class AbstractInversion:
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Optional["Preloads"] = None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -72,7 +72,7 @@ class AbstractInversion:
         preloads
             Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
             for example certain matrices used by the linear algebra could be preloaded.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -99,7 +99,7 @@ class AbstractInversion:
         self.settings = settings
 
         self.preloads = preloads
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     def has(self, cls: Type) -> bool:
         """

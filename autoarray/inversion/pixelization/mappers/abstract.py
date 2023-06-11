@@ -23,7 +23,7 @@ class AbstractMapper(LinearObj):
         self,
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -77,11 +77,11 @@ class AbstractMapper(LinearObj):
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(regularization=regularization, profiling_dict=profiling_dict)
+        super().__init__(regularization=regularization, run_time_dict=run_time_dict)
 
         self.mapper_grids = mapper_grids
 

@@ -70,7 +70,7 @@ def profile_func(func: Callable):
     """
     Time every function called in a class and averages over repeated calls for profiling likelihood functions.
 
-    The timings are stored in the variable `_profiling_dict` of the class(s) from which each function is called,
+    The timings are stored in the variable `_run_time_dict` of the class(s) from which each function is called,
     which are collected at the end of the profiling process via recursion.
 
     Parameters
@@ -87,11 +87,11 @@ def profile_func(func: Callable):
     def wrapper(obj, *args, **kwargs):
         """
         Time a function and average over repeated calls for profiling an `Analysis` class's likelihood function. The
-        time is stored in a `profiling_dict` attribute.
+        time is stored in a `run_time_dict` attribute.
 
         It is possible for multiple functions with the `profile_func` decorator to be called. In this circumstance,
         we risk repeated profiling of the same functionality in these nested functions. Thus, before added
-        the time to the profiling_dict, the keys of the dictionary are iterated over in reverse, subtracting off the
+        the time to the run_time_dict, the keys of the dictionary are iterated over in reverse, subtracting off the
         times of nested functions (which will already have been added to the profiling dict).
 
         Returns
@@ -99,16 +99,16 @@ def profile_func(func: Callable):
             The result of the function being timed.
         """
 
-        if not hasattr(obj, "profiling_dict"):
+        if not hasattr(obj, "run_time_dict"):
             return func(obj, *args, **kwargs)
 
-        if obj.profiling_dict is None:
+        if obj.run_time_dict is None:
             return func(obj, *args, **kwargs)
 
         repeats = conf.instance["general"]["profiling"]["repeats"]
 
         last_key_before_call = (
-            list(obj.profiling_dict)[-1] if obj.profiling_dict else None
+            list(obj.run_time_dict)[-1] if obj.run_time_dict else None
         )
 
         start = time.time()
@@ -118,7 +118,7 @@ def profile_func(func: Callable):
         time_func = (time.time() - start) / repeats
 
         last_key_after_call = (
-            list(obj.profiling_dict)[-1] if obj.profiling_dict else None
+            list(obj.run_time_dict)[-1] if obj.run_time_dict else None
         )
 
         profile_call_max = 5
@@ -126,16 +126,16 @@ def profile_func(func: Callable):
         for i in range(profile_call_max):
             key_func = f"{func.__name__}_{i}"
 
-            if key_func not in obj.profiling_dict:
+            if key_func not in obj.run_time_dict:
                 if last_key_before_call == last_key_after_call:
-                    obj.profiling_dict[key_func] = time_func
+                    obj.run_time_dict[key_func] = time_func
                 else:
-                    for key, value in reversed(list(obj.profiling_dict.items())):
+                    for key, value in reversed(list(obj.run_time_dict.items())):
                         if last_key_before_call == key:
-                            obj.profiling_dict[key_func] = time_func
+                            obj.run_time_dict[key_func] = time_func
                             break
 
-                        time_func -= obj.profiling_dict[key]
+                        time_func -= obj.run_time_dict[key]
 
                 break
 

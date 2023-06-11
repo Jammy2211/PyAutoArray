@@ -23,7 +23,7 @@ class MockMesh(AbstractMesh):
         adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         return MapperGrids(
             source_plane_data_grid=source_plane_data_grid,
@@ -32,7 +32,7 @@ class MockMesh(AbstractMesh):
             adapt_data=adapt_data,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     def image_plane_mesh_grid_from(

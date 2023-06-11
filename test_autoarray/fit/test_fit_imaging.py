@@ -142,7 +142,7 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
     assert fit.figure_of_merit == fit.log_evidence
 
 
-def test__profiling_dict__profiles_appropriate_functions():
+def test__run_time_dict__profiles_appropriate_functions():
     mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -156,14 +156,14 @@ def test__profiling_dict__profiles_appropriate_functions():
 
     model_image = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-    profiling_dict = {}
+    run_time_dict = {}
 
     fit = aa.m.MockFitImaging(
         dataset=masked_dataset,
         use_mask_in_fit=False,
         model_data=model_image,
-        profiling_dict=profiling_dict,
+        run_time_dict=run_time_dict,
     )
     fit.figure_of_merit
 
-    assert "figure_of_merit_0" in fit.profiling_dict
+    assert "figure_of_merit_0" in fit.run_time_dict

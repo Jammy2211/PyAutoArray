@@ -2,9 +2,9 @@ import autoarray as aa
 
 
 class MockClass:
-    def __init__(self, value, profiling_dict=None):
+    def __init__(self, value, run_time_dict=None):
         self._value = value
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     @property
     @aa.profile_func
@@ -13,7 +13,7 @@ class MockClass:
 
 
 def test__profile_decorator_times_decorated_function():
-    cls = MockClass(value=1.0, profiling_dict={})
+    cls = MockClass(value=1.0, run_time_dict={})
     cls.value
 
-    assert "value_0" in cls.profiling_dict
+    assert "value_0" in cls.run_time_dict
