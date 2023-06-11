@@ -120,6 +120,9 @@ class Output:
                 os.makedirs(output_path, exist_ok=True)
 
             if not self.bypass:
+                if os.environ.get("PYAUTOARRAY_OUTPUT_MODE") == "1":
+                    return self.to_figure_output_mode(filename=filename)
+
                 if format == "show":
                     plt.show()
                 elif format == "png":
@@ -157,6 +160,9 @@ class Output:
             if format != "show":
                 os.makedirs(output_path, exist_ok=True)
 
+            if os.environ.get("PYAUTOARRAY_OUTPUT_MODE") == "1":
+                return self.to_figure_output_mode(filename=filename)
+
             if format == "show":
                 plt.show()
             elif format == "png":
@@ -169,3 +175,23 @@ class Output:
                     path.join(output_path, f"{filename}.pdf"),
                     bbox_inches=self.bbox_inches,
                 )
+
+    def to_figure_output_mode(self, filename: str):
+        global COUNT
+
+        try:
+            COUNT += 1
+        except NameError:
+            COUNT = 0
+
+        import sys
+
+        script_name = path.split(sys.argv[0])[-1].replace(".py", "")
+
+        output_path = path.join(os.getcwd(), "output_mode", script_name)
+        os.makedirs(output_path, exist_ok=True)
+
+        plt.savefig(
+            path.join(output_path, f"{COUNT}_{filename}.png"),
+            bbox_inches=self.bbox_inches,
+        )

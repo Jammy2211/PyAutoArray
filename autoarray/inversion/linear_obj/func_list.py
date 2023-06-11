@@ -17,7 +17,7 @@ class AbstractLinearObjFuncList(LinearObj):
         self,
         grid: Grid1D2DLike,
         regularization: Optional[AbstractRegularization],
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
@@ -42,11 +42,11 @@ class AbstractLinearObjFuncList(LinearObj):
             is evaluated.
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(regularization=regularization, profiling_dict=profiling_dict)
+        super().__init__(regularization=regularization, run_time_dict=run_time_dict)
 
         self.grid = grid
 

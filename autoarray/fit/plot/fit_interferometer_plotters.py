@@ -213,7 +213,7 @@ class FitInterferometerPlotterMeta(Plotter):
 
         if normalized_residual_map_real:
             self.mat_plot_1d.plot_yx(
-                y=np.real(self.fit.residual_map),
+                y=np.real(self.fit.normalized_residual_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
@@ -226,7 +226,7 @@ class FitInterferometerPlotterMeta(Plotter):
             )
         if normalized_residual_map_imag:
             self.mat_plot_1d.plot_yx(
-                y=np.imag(self.fit.residual_map),
+                y=np.imag(self.fit.normalized_residual_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
@@ -240,7 +240,7 @@ class FitInterferometerPlotterMeta(Plotter):
 
         if chi_squared_map_real:
             self.mat_plot_1d.plot_yx(
-                y=np.real(self.fit.residual_map),
+                y=np.real(self.fit.chi_squared_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(
@@ -253,7 +253,7 @@ class FitInterferometerPlotterMeta(Plotter):
             )
         if chi_squared_map_imag:
             self.mat_plot_1d.plot_yx(
-                y=np.imag(self.fit.residual_map),
+                y=np.imag(self.fit.chi_squared_map),
                 x=self.fit.dataset.uv_distances / 10**3.0,
                 visuals_1d=self.visuals_1d,
                 auto_labels=AutoLabels(

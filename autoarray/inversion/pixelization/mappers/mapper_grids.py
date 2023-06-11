@@ -20,7 +20,7 @@ class MapperGrids:
         adapt_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Groups the different grids used by `Mesh` objects, the `mesh` package and the `pixelization` package, which
@@ -61,7 +61,7 @@ class MapperGrids:
         preloads
             Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
             for example the `source_plane_mesh_grid` could be preloaded.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -73,4 +73,4 @@ class MapperGrids:
         self.adapt_data = adapt_data
         self.settings = settings
         self.preloads = preloads or Preloads()
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict

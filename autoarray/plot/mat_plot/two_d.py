@@ -338,7 +338,7 @@ class MatPlot2D(AbstractMatPlot):
         color_array=None,
         y_errors=None,
         x_errors=None,
-        buffer=1.0,
+        buffer=0.1,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
 
@@ -407,8 +407,7 @@ class MatPlot2D(AbstractMatPlot):
         extent = self.axis.config_dict.get("extent")
 
         if extent is None:
-            extent = np.asarray(grid.geometry.extent)
-            extent = extent + (buffer * extent)
+            extent = grid.extent_with_buffer_from(buffer=buffer)
 
         self.axis.set(extent=extent, grid=grid)
 

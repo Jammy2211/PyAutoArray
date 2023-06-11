@@ -19,11 +19,11 @@ class MultiFigurePlotter:
 
         if self.plotter_list[0].mat_plot_1d is not None:
             self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
-                auto_filename=f"subplot_{figure_name}{filename_suffix}_list"
+                auto_filename=f"subplot_{figure_name}{filename_suffix}"
             )
         if self.plotter_list[0].mat_plot_2d is not None:
             self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
-                auto_filename=f"subplot_{figure_name}{filename_suffix}_list"
+                auto_filename=f"subplot_{figure_name}{filename_suffix}"
             )
         self.plotter_list[0].close_subplot_figure()
 

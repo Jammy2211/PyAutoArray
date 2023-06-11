@@ -18,7 +18,7 @@ class Triangulation(AbstractMesh):
         adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a mesh,
@@ -62,11 +62,11 @@ class Triangulation(AbstractMesh):
         preloads
             Object which may contain preloaded arrays of quantities computed in the mesh, which are passed via
             this object speed up the calculation.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
         source_plane_data_grid = self.relocated_grid_from(
             source_plane_data_grid=source_plane_data_grid,
@@ -95,5 +95,5 @@ class Triangulation(AbstractMesh):
             image_plane_mesh_grid=image_plane_mesh_grid,
             adapt_data=adapt_data,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )

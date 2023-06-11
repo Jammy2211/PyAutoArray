@@ -11,7 +11,7 @@ class FitImaging(FitDataset):
         self,
         dataset: Imaging,
         use_mask_in_fit: bool = False,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Class to fit a masked imaging dataset.
@@ -49,7 +49,7 @@ class FitImaging(FitDataset):
         super().__init__(
             dataset=dataset,
             use_mask_in_fit=use_mask_in_fit,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @property

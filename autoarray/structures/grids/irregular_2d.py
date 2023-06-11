@@ -120,6 +120,43 @@ class Grid2DIrregular(AbstractNDArray):
         """
         return [tuple(value) for value in self]
 
+    @property
+    def scaled_minima(self) -> Tuple:
+        """
+        The (y,x) minimum values of the grid in scaled units, buffed such that their extent is further than the grid's
+        extent.
+        """
+        return (
+            np.amin(self[:, 0]).astype("float"),
+            np.amin(self[:, 1]).astype("float"),
+        )
+
+    @property
+    def scaled_maxima(self) -> Tuple:
+        """
+        The (y,x) maximum values of the grid in scaled units, buffed such that their extent is further than the grid's
+        extent.
+        """
+        return (
+            np.amax(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float"),
+        )
+
+    def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:
+        """
+        The extent of the grid in scaled units returned as a list [x_min, x_max, y_min, y_max], where all values are
+        buffed such that their extent is further than the grid's extent..
+
+        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
+        is used for visualization in the plot module.
+        """
+        return [
+            self.scaled_minima[1] - buffer,
+            self.scaled_maxima[1] + buffer,
+            self.scaled_minima[0] - buffer,
+            self.scaled_maxima[0] + buffer,
+        ]
+
     def values_from(self, array_slim: np.ndarray) -> ArrayIrregular:
         """
         Create a *ArrayIrregular* object from a 1D NumPy array of values of shape [total_coordinates], which

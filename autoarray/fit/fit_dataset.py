@@ -127,7 +127,7 @@ class FitDataset(AbstractFitInversion):
         self,
         dataset: AbstractDataset,
         use_mask_in_fit: bool = False,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
@@ -163,7 +163,7 @@ class FitDataset(AbstractFitInversion):
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     @property
     @abstractmethod
