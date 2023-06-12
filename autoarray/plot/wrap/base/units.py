@@ -10,6 +10,7 @@ class Units:
     def __init__(
         self,
         use_scaled: Optional[bool] = None,
+        use_raw: Optional[bool] = False,
         ticks_convert_factor: Optional[float] = None,
         ticks_label: Optional[str] = None,
         colorbar_convert_factor: Optional[float] = None,
@@ -51,6 +52,8 @@ class Units:
                 ]
             except KeyError:
                 self.use_scaled = True
+
+        self.use_raw = use_raw
 
         self.colorbar_convert_factor = colorbar_convert_factor
         self.colorbar_label = colorbar_label

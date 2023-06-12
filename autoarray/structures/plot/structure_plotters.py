@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.visuals.one_d import Visuals1D
@@ -126,8 +126,8 @@ class Grid2DPlotter(Plotter):
 class YX1DPlotter(Plotter):
     def __init__(
         self,
-        y: Array1D,
-        x: Optional[Union[Array1D, Grid1D]] = None,
+        y: Union[Array1D, List],
+        x: Optional[Union[Array1D, Grid1D, List]] = None,
         mat_plot_1d: MatPlot1D = MatPlot1D(),
         visuals_1d: Visuals1D = Visuals1D(),
         include_1d: Include1D = Include1D(),
@@ -157,6 +157,12 @@ class YX1DPlotter(Plotter):
         include_1d
             Specifies which attributes of the `Array1D` are extracted and plotted as visuals for 1D plots.
         """
+
+        if isinstance(y, list):
+            y = Array1D.no_mask(values=y, pixel_scales=1.0)
+
+        if isinstance(x, list):
+            x = Array1D.no_mask(values=x, pixel_scales=1.0)
 
         super().__init__(
             visuals_1d=visuals_1d, include_1d=include_1d, mat_plot_1d=mat_plot_1d

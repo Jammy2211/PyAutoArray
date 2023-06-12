@@ -50,7 +50,11 @@ class MultiYX1DPlotter:
                 plotter.mat_plot_1d.yx_plot.label = self.legend_labels[i]
 
             func = getattr(plotter, func_name)
-            func(**{**{figure_name: True}, **kwargs})
+
+            if figure_name is None:
+                func(**{**{}, **kwargs})
+            else:
+                func(**{**{figure_name: True}, **kwargs})
 
             plotter.set_mat_plot_1d_for_multi_plot(is_for_multi_plot=False, color=None)
 

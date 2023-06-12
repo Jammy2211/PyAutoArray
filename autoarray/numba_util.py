@@ -117,9 +117,7 @@ def profile_func(func: Callable):
 
         time_func = (time.time() - start) / repeats
 
-        last_key_after_call = (
-            list(obj.run_time_dict)[-1] if obj.run_time_dict else None
-        )
+        last_key_after_call = list(obj.run_time_dict)[-1] if obj.run_time_dict else None
 
         profile_call_max = 5
 

@@ -42,8 +42,11 @@ class TickMaker:
         if self.min_value < 0.001:
             min_value = 0.001
 
+        min_value = 10 ** np.floor(np.log10(min_value))
+
         max_value = 10 ** np.ceil(np.log10(self.max_value))
         number = int(abs(np.log10(max_value) - np.log10(min_value))) + 1
+
         return np.logspace(np.log10(min_value), np.log10(max_value), number)
 
     @property
@@ -130,6 +133,9 @@ class LabelMaker:
 
     @property
     def labels_linear(self):
+        if self.units.use_raw:
+            return self.with_appended_suffix(self.tick_values_rounded)
+
         if not self.units.use_scaled:
             return self.labels_linear_pixels
 
@@ -150,6 +156,7 @@ class LabelMaker:
         labels = [(tick / self.span) * self.pixels for tick in ticks_from_zero]
 
         labels = [f"{int(label)}" for label in labels]
+
         return self.with_appended_suffix(labels)
 
     @property
@@ -161,6 +168,7 @@ class LabelMaker:
             for label in labels
         ]
         #     labels = [label.replace("1e", "").replace("-0", "-").replace("+0", "+").replace("+0", "0") for label in labels]
+
         return self.with_appended_suffix(labels)
 
     def with_appended_suffix(self, labels):
