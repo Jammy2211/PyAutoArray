@@ -119,7 +119,9 @@ class MatPlot1D(AbstractMatPlot):
         self.is_for_multi_plot = False
         self.is_for_subplot = False
 
-    def set_for_multi_plot(self, is_for_multi_plot: bool, color: str):
+    def set_for_multi_plot(
+        self, is_for_multi_plot: bool, color: str, xticks=None, yticks=None
+    ):
         """
         Sets the `is_for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
         the `is_for_subplot`. By changing this tag:
@@ -139,6 +141,9 @@ class MatPlot1D(AbstractMatPlot):
         self.vertical_line_axvline.kwargs["c"] = color
 
         self.vertical_line_axvline.no_label = True
+
+        if xticks is not None:
+            self.xticks = xticks
 
     def plot_yx(
         self,

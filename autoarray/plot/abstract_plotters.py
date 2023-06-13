@@ -58,9 +58,14 @@ class AbstractPlotter:
         if self.mat_plot_2d is not None:
             self.mat_plot_2d.output._format = format
 
-    def set_mat_plot_1d_for_multi_plot(self, is_for_multi_plot, color: str):
+    def set_mat_plot_1d_for_multi_plot(
+        self, is_for_multi_plot, color: str, xticks=None, yticks=None
+    ):
         self.mat_plot_1d.set_for_multi_plot(
-            is_for_multi_plot=is_for_multi_plot, color=color
+            is_for_multi_plot=is_for_multi_plot,
+            color=color,
+            xticks=xticks,
+            yticks=yticks,
         )
 
     def set_mat_plots_for_subplot(

@@ -62,7 +62,7 @@ class MockYX1DPlotter(aplt.YX1DPlotter):
             self.figure_1d()
 
 
-def test__yx_plotter__subplot_of_plotter_list_figure(
+def test__multi_yx_plotter__subplot_of_plotter_list_figure(
     imaging_7x7, plot_path, plot_patch
 ):
     mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(plot_path, format="png"))
@@ -79,9 +79,24 @@ def test__yx_plotter__subplot_of_plotter_list_figure(
         mat_plot_1d=mat_plot_1d,
     )
 
-    plotter_list = [plotter_0, plotter_1]
-
-    multi_plotter = aplt.MultiYX1DPlotter(plotter_list=plotter_list)
+    multi_plotter = aplt.MultiYX1DPlotter(plotter_list=[plotter_0, plotter_1])
     multi_plotter.figure_1d(func_name="figures_1d", figure_name="figure_name")
 
     assert path.join(plot_path, "multi_figure_name.png") in plot_patch.paths
+
+
+def test__multi_yx_plotter__xticks_span_all_plotter_ranges():
+    plotter_0 = MockYX1DPlotter(
+        y=aa.Array1D.no_mask([1.0, 2.0, 3.0], pixel_scales=1.0),
+        x=aa.Array1D.no_mask([0.5, 1.0, 1.5], pixel_scales=0.5),
+    )
+
+    plotter_1 = MockYX1DPlotter(
+        y=aa.Array1D.no_mask([1.0, 2.0, 4.0], pixel_scales=1.0),
+        x=aa.Array1D.no_mask([0.25, 1.0, 1.5], pixel_scales=0.5),
+    )
+
+    multi_plotter = aplt.MultiYX1DPlotter(plotter_list=[plotter_0, plotter_1])
+
+    assert multi_plotter.xticks.manual_min_max_value == (0.25, 1.5)
+    assert multi_plotter.yticks.manual_min_max_value == (1.0, 4.0)

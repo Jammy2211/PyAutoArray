@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import numpy as np
-from typing import List, Optional
+from typing import List, Tuple, Optional
 
 from autoconf import conf
 
@@ -203,6 +203,7 @@ class AbstractTicks(AbstractMatWrap):
         self,
         manual_factor: Optional[float] = None,
         manual_values: Optional[List[float]] = None,
+        manual_min_max_value: Optional[Tuple[float, float]] = None,
         manual_units: Optional[str] = None,
         manual_suffix: Optional[str] = None,
         **kwargs,
@@ -228,6 +229,7 @@ class AbstractTicks(AbstractMatWrap):
 
         self.manual_factor = manual_factor
         self.manual_values = manual_values
+        self.manual_min_max_value = manual_min_max_value
         self.manual_units = manual_units
         self.manual_suffix = manual_suffix
 
@@ -423,6 +425,10 @@ class XTicks(AbstractTicks):
         units
             The units of the figure.
         """
+
+        if self.manual_min_max_value:
+            min_value = self.manual_min_max_value[0]
+            max_value = self.manual_min_max_value[1]
 
         ticks, labels = self.ticks_and_labels_from(
             min_value=min_value,
