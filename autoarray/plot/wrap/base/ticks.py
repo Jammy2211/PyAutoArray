@@ -373,6 +373,10 @@ class YTicks(AbstractTicks):
             The units of the figure.
         """
 
+        if self.manual_min_max_value:
+            min_value = self.manual_min_max_value[0]
+            max_value = self.manual_min_max_value[1]
+
         ticks, labels = self.ticks_and_labels_from(
             min_value=min_value,
             max_value=max_value,

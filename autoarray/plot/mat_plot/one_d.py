@@ -142,6 +142,9 @@ class MatPlot1D(AbstractMatPlot):
 
         self.vertical_line_axvline.no_label = True
 
+        if yticks is not None:
+            self.yticks = yticks
+
         if xticks is not None:
             self.xticks = xticks
 
