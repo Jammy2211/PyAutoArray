@@ -82,7 +82,10 @@ class MultiYX1DPlotter:
 
         for i, plotter in enumerate(self.plotter_list):
             plotter.set_mat_plot_1d_for_multi_plot(
-                is_for_multi_plot=True, color=self.color_list[i], yticks=self.yticks, xticks=self.xticks
+                is_for_multi_plot=True,
+                color=self.color_list[i],
+                yticks=self.yticks,
+                xticks=self.xticks,
             )
 
             if self.legend_labels is not None:

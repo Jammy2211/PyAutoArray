@@ -192,10 +192,12 @@ class MatPlot1D(AbstractMatPlot):
         if plot_axis_type_override is not None:
             plot_axis_type = plot_axis_type_override
 
+        label = self.legend.label or auto_labels.legend
+
         self.yx_plot.plot_y_vs_x(
             y=y,
             x=x,
-            label=auto_labels.legend,
+            label=label,
             plot_axis_type=plot_axis_type,
             y_errors=y_errors,
             x_errors=x_errors,
@@ -289,8 +291,7 @@ class MatPlot1D(AbstractMatPlot):
 
         visuals_1d.plot_via_plotter(plotter=self)
 
-        if auto_labels.legend is not None:  # or vertical_line_labels is not None:
-            self.legend.set()
+        self.legend.set()
 
         if (not self.is_for_subplot) and (not self.is_for_multi_plot):
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
