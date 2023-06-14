@@ -108,14 +108,25 @@ class MultiYX1DPlotter:
 
     @property
     def yticks(self):
-        min_value = min([min(plotter.y) for plotter in self.plotter_list])
-        max_value = max([max(plotter.y) for plotter in self.plotter_list])
+
+        # TODO: Need to make this work for all plotters, rather than just y x, for example
+        # TODO : GalaxyPlotters where y and x are computed inside the function called via
+        # TODO : func(**{**{figure_name: True}, **kwargs})
+
+        try:
+            min_value = min([min(plotter.y) for plotter in self.plotter_list])
+            max_value = max([max(plotter.y) for plotter in self.plotter_list])
+        except AttributeError:
+            return
 
         return YTicks(manual_min_max_value=(min_value, max_value))
 
     @property
     def xticks(self):
-        min_value = min([min(plotter.x) for plotter in self.plotter_list])
-        max_value = max([max(plotter.x) for plotter in self.plotter_list])
+        try:
+            min_value = min([min(plotter.x) for plotter in self.plotter_list])
+            max_value = max([max(plotter.x) for plotter in self.plotter_list])
+        except AttributeError:
+            return
 
         return XTicks(manual_min_max_value=(min_value, max_value))
