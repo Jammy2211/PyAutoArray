@@ -108,7 +108,6 @@ class MultiYX1DPlotter:
 
     @property
     def yticks(self):
-
         # TODO: Need to make this work for all plotters, rather than just y x, for example
         # TODO : GalaxyPlotters where y and x are computed inside the function called via
         # TODO : func(**{**{figure_name: True}, **kwargs})

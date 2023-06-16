@@ -291,7 +291,8 @@ class MatPlot1D(AbstractMatPlot):
 
         visuals_1d.plot_via_plotter(plotter=self)
 
-        self.legend.set()
+        if label is not None:
+            self.legend.set()
 
         if (not self.is_for_subplot) and (not self.is_for_multi_plot):
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
