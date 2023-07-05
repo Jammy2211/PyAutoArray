@@ -169,7 +169,7 @@ def test__subplot_image_and_mapper(
         include_2d=aplt.Include2D(mapper_source_plane_mesh_grid=True),
     )
 
-    mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)
+    mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.data)
     assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
 
     plot_patch.paths = []
@@ -181,7 +181,7 @@ def test__subplot_image_and_mapper(
         include_2d=aplt.Include2D(mapper_source_plane_mesh_grid=True),
     )
 
-    mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)
+    mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.data)
     assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
 
     plot_patch.paths = []
@@ -193,5 +193,5 @@ def test__subplot_image_and_mapper(
         include_2d=aplt.Include2D(mapper_source_plane_mesh_grid=True),
     )
 
-    mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)
+    mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.data)
     assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths

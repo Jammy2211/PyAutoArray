@@ -133,10 +133,10 @@ def test__output_to_fits():
 def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):
     masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
 
-    assert (masked_imaging_7x7.image.slim == np.ones(9)).all()
+    assert (masked_imaging_7x7.data.slim == np.ones(9)).all()
 
     assert (
-        masked_imaging_7x7.image.native == np.ones((7, 7)) * np.invert(sub_mask_2d_7x7)
+        masked_imaging_7x7.data.native == np.ones((7, 7)) * np.invert(sub_mask_2d_7x7)
     ).all()
 
     assert (masked_imaging_7x7.noise_map.slim == 2.0 * np.ones(9)).all()
