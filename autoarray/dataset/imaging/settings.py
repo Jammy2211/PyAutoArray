@@ -1,8 +1,10 @@
 import logging
-from typing import List, Optional
+from typing import List, Optional, Tuple, Type, Union
 
 from autoarray.dataset.abstract.settings import AbstractSettingsDataset
+from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
+
 
 logger = logging.getLogger(__name__)
 
@@ -10,8 +12,8 @@ logger = logging.getLogger(__name__)
 class SettingsImaging(AbstractSettingsDataset):
     def __init__(
         self,
-        grid_class=Grid2D,
-        grid_pixelization_class=Grid2D,
+        grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
+        grid_pixelization_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
         sub_size: int = 1,
         sub_size_pixelization=4,
         fractional_accuracy: float = 0.9999,

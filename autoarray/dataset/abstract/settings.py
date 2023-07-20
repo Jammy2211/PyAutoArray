@@ -1,5 +1,7 @@
 from typing import List, Optional, Tuple, Type, Union
 
+from autoconf.dictable import Dictable
+
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.iterate_2d import Grid2DIterate
@@ -38,7 +40,7 @@ def grid_via_grid_class_from(
         )
 
 
-class AbstractSettingsDataset:
+class AbstractSettingsDataset(Dictable):
     def __init__(
         self,
         grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
@@ -80,8 +82,8 @@ class AbstractSettingsDataset:
             to meet the fractional accuracy when evaluating functions.
         """
 
-        self.grid_class = grid_class
-        self.grid_pixelization_class = grid_pixelization_class
+        self.grid_class = grid_class or Grid2D
+        self.grid_pixelization_class = grid_pixelization_class or Grid2D
         self.sub_size = sub_size
         self.sub_size_pixelization = sub_size_pixelization
         self.fractional_accuracy = fractional_accuracy

@@ -2,6 +2,7 @@ from __future__ import annotations
 from astropy.io import fits
 import numpy as np
 import os
+from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
 if TYPE_CHECKING:
