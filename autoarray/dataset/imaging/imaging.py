@@ -200,13 +200,14 @@ class Imaging(AbstractDataset):
         For each attribute of the imaging data (e.g. `data`, `noise_map`, `pre_cti_data`) the path to
         the .fits and the `hdu` containing the data can be specified.
 
-        The standard `noise_map` assumes the noise value in each `data` value are independent.
+        The `noise_map` assumes the noise value in each `data` value are independent, where these values are the
+        the RMS standard deviation error in each pixel.
 
         A `noise_covariance_matrix` can be input instead, which represents the covariance between noise values in
         the data and can be used to fit the data accounting for correlations (the `noise_map` is the diagonal values
         of this matrix).
 
-        If the dataset has a mask associted with it (e.g. in a `mask.fits` file) the file must be loades separately
+        If the dataset has a mask associated with it (e.g. in a `mask.fits` file) the file must be loaded separately
         via the `Mask2D` object and applied to the imaging after loading via fits using the `from_fits` method.
 
         Parameters
@@ -339,26 +340,25 @@ class Imaging(AbstractDataset):
         data_path: Union[Path, str],
         psf_path: Optional[Union[Path, str]] = None,
         noise_map_path: Optional[Union[Path, str]] = None,
-        mask_path: Optional[Union[Path, str]] = None,
         overwrite: bool = False,
     ):
         """
         Output an imaging dataset to multiple .fits file.
 
-        For each attribute of the imaging data (e.g. `data`, `noise_map`, `pre_cti_data`) the path to
+        For each attribute of the imaging data (e.g. `data`, `noise_map`) the path to
         the .fits can be specified, with `hdu=0` assumed automatically.
 
-        If the `data` has been masked, the mask is separately output to a file `mask.fits` if the `mask_path` is
-        specified.
+        If the `data` has been masked, the masked data is output to .fits files. A mask can be separately output to
+        a file `mask.fits` via the `Mask` objects `output_to_fits` method.
 
         Parameters
         ----------
         data_path
-            The path to the data .fits file where the image data is output (e.g. '/path/to/image.fits').
+            The path to the data .fits file where the image data is output (e.g. '/path/to/data.fits').
         psf_path
             The path to the psf .fits file where the psf is output (e.g. '/path/to/psf.fits').
         noise_map_path
-            The path to the noise_map .fits where the the noise_map is output (e.g. '/path/to/noise_map.fits').
+            The path to the noise_map .fits where the noise_map is output (e.g. '/path/to/noise_map.fits').
         overwrite
             If `True`, the .fits files are overwritten if they already exist, if `False` they are not and an
             exception is raised.
@@ -370,6 +370,3 @@ class Imaging(AbstractDataset):
 
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
-
-        if mask_path is not None:
-            self.mask.output_to_fits(file_path=mask_path, overwrite=overwrite)

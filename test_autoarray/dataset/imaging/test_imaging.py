@@ -125,24 +125,6 @@ def test__output_to_fits(imaging_7x7, output_data_dir):
     assert dataset.pixel_scales == (0.1, 0.1)
 
 
-def test__output_to_fits__mask(masked_imaging_7x7, output_data_dir):
-    masked_imaging_7x7.output_to_fits(
-        data_path=path.join(output_data_dir, "data.fits"),
-        noise_map_path=path.join(output_data_dir, "noise_map.fits"),
-        mask_path=path.join(output_data_dir, "mask.fits"),
-    )
-
-    data_via_fits = aa.Array2D.from_fits(
-        file_path=path.join(output_data_dir, "data.fits"), pixel_scales=0.1
-    )
-    mask_via_fits = aa.Mask2D.from_fits(
-        file_path=path.join(output_data_dir, "mask.fits"), pixel_scales=0.1
-    )
-
-    assert masked_imaging_7x7.data.native == pytest.approx(data_via_fits.native, 1.0e-4)
-    assert masked_imaging_7x7.mask == pytest.approx(mask_via_fits, 1.0e-4)
-
-
 def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):
     masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
 
