@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 import numpy as np
+from pathlib import Path
 from typing import TYPE_CHECKING, List, Tuple, Union
 
 if TYPE_CHECKING:
@@ -130,7 +131,7 @@ class Mask1D(Mask):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
+        file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         hdu: int = 0,
@@ -168,7 +169,7 @@ class Mask1D(Mask):
     def shape_slim(self) -> Tuple[int]:
         return self.shape
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Write the 1D mask to a .fits file.
 

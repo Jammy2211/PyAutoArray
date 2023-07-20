@@ -192,7 +192,7 @@ def array_1d_via_indexes_1d_from(
 
 
 def numpy_array_1d_to_fits(
-    array_1d: np.ndarray, file_path: str, overwrite: bool = False
+    array_1d: np.ndarray, file_path: Union[Path, str], overwrite: bool = False
 ):
     """
     Write a 1D NumPy array to a .fits file.
@@ -230,7 +230,7 @@ def numpy_array_1d_to_fits(
     hdu.writeto(file_path)
 
 
-def numpy_array_1d_via_fits_from(file_path: str, hdu: int):
+def numpy_array_1d_via_fits_from(file_path: Union[Path, str], hdu: int):
     """
     Read a 1D NumPy array from a .fits file.
 

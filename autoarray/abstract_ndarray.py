@@ -35,7 +35,7 @@ class AbstractNDArray(np.ndarray, ABC):
         Returns the data structure in its `native` format which contains all unmaksed values to the native dimensions.
         """
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the grid to a .fits file.
 

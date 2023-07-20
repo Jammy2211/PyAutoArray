@@ -103,7 +103,7 @@ class ArrayIrregular(Structure):
         return Grid2DIrregular(values=grid_slim)
 
     @classmethod
-    def from_file(cls, file_path: str) -> "ArrayIrregular":
+    def from_file(cls, file_path: Union[Path, str]) -> "ArrayIrregular":
         """
         Create a `ArrayIrregular` object from a  `.json` file which stores the coordinates as a list of list of tuples.
 
@@ -118,7 +118,7 @@ class ArrayIrregular(Structure):
 
         return ArrayIrregular(values=values)
 
-    def output_to_json(self, file_path: str, overwrite: bool = False):
+    def output_to_json(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output this instance of the `Grid2DIrregular` object to a list of list of tuples.
 

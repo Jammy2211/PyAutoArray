@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
@@ -624,7 +625,7 @@ class AbstractArray2D(Structure):
             store_native=self.store_native,
         )
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the array to a .fits file.
 
@@ -962,7 +963,7 @@ class Array2D(AbstractArray2D):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
+        file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         hdu: int = 0,
         sub_size: int = 1,

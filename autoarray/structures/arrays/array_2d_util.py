@@ -743,7 +743,7 @@ def array_2d_native_complex_via_indexes_from(
 
 
 def numpy_array_2d_to_fits(
-    array_2d: np.ndarray, file_path: str, overwrite: bool = False
+    array_2d: np.ndarray, file_path: Union[Path, str], overwrite: bool = False
 ):
     """
     Write a 2D NumPy array to a .fits file.
@@ -792,7 +792,7 @@ def numpy_array_2d_to_fits(
 
 
 def numpy_array_2d_via_fits_from(
-    file_path: str, hdu: int, do_not_scale_image_data: bool = False
+    file_path: Union[Path, str], hdu: int, do_not_scale_image_data: bool = False
 ):
     """
     Read a 2D NumPy array from a .fits file.
@@ -827,7 +827,7 @@ def numpy_array_2d_via_fits_from(
     return np.array(hdu_list[hdu].data).astype("float64")
 
 
-def header_obj_from(file_path: str, hdu: int) -> Dict:
+def header_obj_from(file_path: Union[Path, str], hdu: int) -> Dict:
     """
     Read a 2D NumPy array from a .fits file.
 

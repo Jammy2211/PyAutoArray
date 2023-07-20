@@ -1,4 +1,5 @@
 import numpy as np
+from pathlib import Path
 from typing import Optional, Union, Tuple, List
 
 from autoarray.structures.header import Header
@@ -212,7 +213,7 @@ class Array1D(Structure):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
+        file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         hdu: int = 0,
         sub_size: int = 1,
@@ -290,7 +291,7 @@ class Array1D(Structure):
             sub_size=self.sub_size,
         )
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the array to a .fits file.
 

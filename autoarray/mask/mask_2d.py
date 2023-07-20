@@ -724,7 +724,7 @@ class Mask2D(Mask):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
+        file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         hdu: int = 0,
         sub_size: int = 1,

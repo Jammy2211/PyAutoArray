@@ -1,6 +1,7 @@
 from astropy import units
 import numpy as np
 import scipy.signal
+from pathlib import Path
 from typing import List, Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
@@ -321,7 +322,7 @@ class Kernel2D(AbstractArray2D):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
+        file_path: Union[Path, str],
         hdu: int,
         pixel_scales,
         origin=(0.0, 0.0),

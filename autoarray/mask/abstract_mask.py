@@ -1,6 +1,8 @@
 from abc import ABC
 import logging
 import numpy as np
+from pathlib import Path
+from typing import Union
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
@@ -100,7 +102,7 @@ class Mask(AbstractNDArray, ABC):
         """
         return 1.0 / self.sub_length
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Overwrite with method to output the mask to a `.fits` file.
         """
