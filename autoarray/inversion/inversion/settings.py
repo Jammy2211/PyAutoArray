@@ -1,12 +1,14 @@
-from autoconf import conf
 import logging
 from typing import Optional
+
+from autoconf import conf
+from autoconf.dictable import Dictable
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class SettingsInversion:
+class SettingsInversion(Dictable):
     def __init__(
         self,
         use_w_tilde: bool = True,
