@@ -89,11 +89,15 @@ def test__from_fits():
 
 
 def test__output_to_fits():
-    dataset = aa.Imaging.from_fits(
-        pixel_scales=0.1,
-        data_path=path.join(test_data_dir, "3x3_ones.fits"),
-        psf_path=path.join(test_data_dir, "3x3_twos.fits"),
-        noise_map_path=path.join(test_data_dir, "3x3_threes.fits"),
+
+    data = aa.Array2D.full(fill_value=1.0, shape_native=(3, 3), pixel_scales=0.1)
+    psf = aa.Kernel2D.full(fill_value=2.0, shape_native=(3, 3), pixel_scales=0.1)
+    noise_map = aa.Array2D.full(fill_value=3.0, shape_native=(3, 3), pixel_scales=0.1)
+
+    dataset = aa.Imaging(
+        data=data,
+        psf=psf,
+        noise_map=noise_map,
     )
 
     output_data_dir = path.join(
@@ -128,6 +132,9 @@ def test__output_to_fits():
     assert dataset.pixel_scales == (0.1, 0.1)
     assert dataset.psf.mask.pixel_scales == (0.1, 0.1)
     assert dataset.noise_map.mask.pixel_scales == (0.1, 0.1)
+
+    mask = aa.Mask2D(mask=[[True, False, False], [False, False, False], [False, False, False]], pixel_scales=0.1)
+
 
 
 def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):

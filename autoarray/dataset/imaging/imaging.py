@@ -192,6 +192,8 @@ class Imaging(AbstractDataset):
         noise_map_hdu: int = 0,
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
+        mask_path: Optional[Union[Path, str]] = None,
+        mask_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
     ) -> "Imaging":
         """
@@ -336,11 +338,32 @@ class Imaging(AbstractDataset):
 
     def output_to_fits(
         self,
-        data_path: str,
-        psf_path: str = None,
-        noise_map_path: str = None,
+        data_path: Union[Path, str],
+        psf_path: Optional[Union[Path, str]] = None,
+        noise_map_path: Optional[Union[Path, str]] = None,
         overwrite: bool = False,
     ):
+        """
+        Output an imaging dataset to multiple .fits file.
+
+        For each attribute of the imaging data (e.g. `data`, `noise_map`, `pre_cti_data`) the path to
+        the .fits can be specified, with `hdu=0` assumed automatically.
+
+        If the `data` has been masked, the mask is separately output to a file `mask.fits` in the same folder as the
+        data.
+
+        Parameters
+        ----------
+        data_path
+            The path to the data .fits file where the image data is output (e.g. '/path/to/image.fits').
+        psf_path
+            The path to the psf .fits file where the psf is output (e.g. '/path/to/psf.fits').
+        noise_map_path
+            The path to the noise_map .fits where the the noise_map is output (e.g. '/path/to/noise_map.fits').
+        overwrite
+            If `True`, the .fits files are overwritten if they already exist, if `False` they are not and an
+            exception is raised.
+        """
         self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
 
         if self.psf is not None and psf_path is not None:
