@@ -192,14 +192,12 @@ class Imaging(AbstractDataset):
         noise_map_hdu: int = 0,
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
-        mask_path: Optional[Union[Path, str]] = None,
-        mask_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
     ) -> "Imaging":
         """
-        Load an imaging dataset from multiple .fits file. 
-        
-        For each attribute of the imaging data (e.g. `data`, `noise_map`, `pre_cti_data`) the path to 
+        Load an imaging dataset from multiple .fits file.
+
+        For each attribute of the imaging data (e.g. `data`, `noise_map`, `pre_cti_data`) the path to
         the .fits and the `hdu` containing the data can be specified.
 
         The standard `noise_map` assumes the noise value in each `data` value are independent.
@@ -207,9 +205,9 @@ class Imaging(AbstractDataset):
         A `noise_covariance_matrix` can be input instead, which represents the covariance between noise values in
         the data and can be used to fit the data accounting for correlations (the `noise_map` is the diagonal values
         of this matrix).
-        
-        If the path to a `mask` .fits file is given, this masked is applied to the data before it is returned from the 
-        function.
+
+        If the dataset has a mask associted with it (e.g. in a `mask.fits` file) the file must be loades separately
+        via the `Mask2D` object and applied to the imaging after loading via fits using the `from_fits` method.
 
         Parameters
         ----------
@@ -341,6 +339,7 @@ class Imaging(AbstractDataset):
         data_path: Union[Path, str],
         psf_path: Optional[Union[Path, str]] = None,
         noise_map_path: Optional[Union[Path, str]] = None,
+        mask_path: Optional[Union[Path, str]] = None,
         overwrite: bool = False,
     ):
         """
@@ -349,8 +348,8 @@ class Imaging(AbstractDataset):
         For each attribute of the imaging data (e.g. `data`, `noise_map`, `pre_cti_data`) the path to
         the .fits can be specified, with `hdu=0` assumed automatically.
 
-        If the `data` has been masked, the mask is separately output to a file `mask.fits` in the same folder as the
-        data.
+        If the `data` has been masked, the mask is separately output to a file `mask.fits` if the `mask_path` is
+        specified.
 
         Parameters
         ----------
@@ -371,3 +370,6 @@ class Imaging(AbstractDataset):
 
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
+
+        if mask_path is not None:
+            self.mask.output_to_fits(file_path=mask_path, overwrite=overwrite)

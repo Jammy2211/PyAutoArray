@@ -188,5 +188,5 @@ class YX1DPlotter(Plotter):
             visuals_1d=self.get_visuals_1d(),
             auto_labels=AutoLabels(),
             should_plot_grid=self.should_plot_grid,
-            plot_axis_type_override=self.plot_axis_type
+            plot_axis_type_override=self.plot_axis_type,
         )

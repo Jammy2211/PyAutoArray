@@ -13,6 +13,23 @@ test_data_dir = path.join(
 )
 
 
+@pytest.fixture(name="output_data_dir")
+def make_output_data_dir():
+    output_data_dir = path.join(
+        "{}".format(os.path.dirname(os.path.realpath(__file__))),
+        "files",
+        "array",
+        "output_test",
+    )
+
+    if os.path.exists(output_data_dir):
+        shutil.rmtree(output_data_dir)
+
+    os.makedirs(output_data_dir)
+
+    return output_data_dir
+
+
 def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     noise_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
@@ -88,31 +105,8 @@ def test__from_fits():
     assert dataset.noise_map.mask.pixel_scales == (0.1, 0.1)
 
 
-def test__output_to_fits():
-
-    data = aa.Array2D.full(fill_value=1.0, shape_native=(3, 3), pixel_scales=0.1)
-    psf = aa.Kernel2D.full(fill_value=2.0, shape_native=(3, 3), pixel_scales=0.1)
-    noise_map = aa.Array2D.full(fill_value=3.0, shape_native=(3, 3), pixel_scales=0.1)
-
-    dataset = aa.Imaging(
-        data=data,
-        psf=psf,
-        noise_map=noise_map,
-    )
-
-    output_data_dir = path.join(
-        "{}".format(os.path.dirname(os.path.realpath(__file__))),
-        "files",
-        "array",
-        "output_test",
-    )
-
-    if os.path.exists(output_data_dir):
-        shutil.rmtree(output_data_dir)
-
-    os.makedirs(output_data_dir)
-
-    dataset.output_to_fits(
+def test__output_to_fits(imaging_7x7, output_data_dir):
+    imaging_7x7.output_to_fits(
         data_path=path.join(output_data_dir, "data.fits"),
         psf_path=path.join(output_data_dir, "psf.fits"),
         noise_map_path=path.join(output_data_dir, "noise_map.fits"),
@@ -125,16 +119,28 @@ def test__output_to_fits():
         noise_map_path=path.join(output_data_dir, "noise_map.fits"),
     )
 
-    assert (dataset.data.native == np.ones((3, 3))).all()
-    assert (dataset.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
-    assert (dataset.noise_map.native == 3.0 * np.ones((3, 3))).all()
-
+    assert (dataset.data.native == np.ones((7, 7))).all()
+    assert dataset.psf.native[1, 1] == pytest.approx(0.33333, 1.0e-4)
+    assert (dataset.noise_map.native == 2.0 * np.ones((7, 7))).all()
     assert dataset.pixel_scales == (0.1, 0.1)
-    assert dataset.psf.mask.pixel_scales == (0.1, 0.1)
-    assert dataset.noise_map.mask.pixel_scales == (0.1, 0.1)
 
-    mask = aa.Mask2D(mask=[[True, False, False], [False, False, False], [False, False, False]], pixel_scales=0.1)
 
+def test__output_to_fits__mask(masked_imaging_7x7, output_data_dir):
+    masked_imaging_7x7.output_to_fits(
+        data_path=path.join(output_data_dir, "data.fits"),
+        noise_map_path=path.join(output_data_dir, "noise_map.fits"),
+        mask_path=path.join(output_data_dir, "mask.fits"),
+    )
+
+    data_via_fits = aa.Array2D.from_fits(
+        file_path=path.join(output_data_dir, "data.fits"), pixel_scales=0.1
+    )
+    mask_via_fits = aa.Mask2D.from_fits(
+        file_path=path.join(output_data_dir, "mask.fits"), pixel_scales=0.1
+    )
+
+    assert masked_imaging_7x7.data.native == pytest.approx(data_via_fits.native, 1.0e-4)
+    assert masked_imaging_7x7.mask == pytest.approx(mask_via_fits, 1.0e-4)
 
 
 def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):

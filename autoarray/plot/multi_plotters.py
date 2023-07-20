@@ -5,8 +5,12 @@ from autoarray.plot.wrap.base.ticks import XTicks
 
 
 class MultiFigurePlotter:
-    def __init__(self, plotter_list, subplot_shape: Tuple[int, int] = None,
-                 subplot_title : Optional[str] = None):
+    def __init__(
+        self,
+        plotter_list,
+        subplot_shape: Tuple[int, int] = None,
+        subplot_title: Optional[str] = None,
+    ):
         self.plotter_list = plotter_list
         self.subplot_shape = subplot_shape
         self.subplot_title = subplot_title
@@ -40,8 +44,9 @@ class MultiFigurePlotter:
         number_subplots = len(self.plotter_list)
 
         self.plotter_list[0].plotter_list[0].open_subplot_figure(
-            number_subplots=number_subplots, subplot_shape=self.subplot_shape,
-            subplot_title=self.subplot_title
+            number_subplots=number_subplots,
+            subplot_shape=self.subplot_shape,
+            subplot_title=self.subplot_title,
         )
 
         for i, plotter in enumerate(self.plotter_list):
