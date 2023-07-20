@@ -99,6 +99,7 @@ class AbstractPlotter:
         number_subplots: int,
         subplot_shape: Optional[Tuple[int, int]] = None,
         subplot_figsize: Optional[Tuple[int, int]] = None,
+        subplot_title : Optional[str] = None,
     ):
         """
         Setup a figure for plotting an image.
@@ -122,6 +123,7 @@ class AbstractPlotter:
 
         figsize = self.get_subplot_figsize(number_subplots=number_subplots)
         plt.figure(figsize=figsize)
+        plt.suptitle(subplot_title, fontsize=40, y=0.93)
 
     def close_subplot_figure(self):
         try:

@@ -73,8 +73,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -113,8 +113,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -149,8 +149,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -186,8 +186,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -212,8 +212,8 @@ class Kernel2D(AbstractArray2D):
         Parameters
         ----------
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         """
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
@@ -242,8 +242,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sigma
             The value of sigma in the equation, describing the size and full-width half maximum of the Gaussian.
         centre
@@ -338,8 +338,8 @@ class Kernel2D(AbstractArray2D):
         hdu
             The Header-Data Unit of the .fits file the array data is loaded from.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         normalize
