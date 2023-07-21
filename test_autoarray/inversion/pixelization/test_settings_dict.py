@@ -15,6 +15,7 @@ def make_settings_dict():
         "kmeans_seed": 0,
     }
 
+
 def test_settings_from_dict(settings_dict):
     assert isinstance(
         aa.SettingsPixelization.from_dict(settings_dict), aa.SettingsPixelization

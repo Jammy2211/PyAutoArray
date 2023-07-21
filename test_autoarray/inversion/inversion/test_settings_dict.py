@@ -38,7 +38,7 @@ def test_file():
 
     try:
         assert isinstance(
-            aa.SettingsInversion().from_json(filename), aa.SettingsInversion
+            aa.SettingsInversion.from_json(filename), aa.SettingsInversion
         )
     finally:
         os.remove(filename)
