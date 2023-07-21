@@ -82,8 +82,8 @@ class AbstractSettingsDataset(Dictable):
             to meet the fractional accuracy when evaluating functions.
         """
 
-        self.grid_class = grid_class or Grid2D
-        self.grid_pixelization_class = grid_pixelization_class or Grid2D
+        self.grid_class = grid_class
+        self.grid_pixelization_class = grid_pixelization_class
         self.sub_size = sub_size
         self.sub_size_pixelization = sub_size_pixelization
         self.fractional_accuracy = fractional_accuracy

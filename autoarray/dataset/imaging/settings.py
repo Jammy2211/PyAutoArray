@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Tuple, Type, Union
+from typing import List, Optional, Type, Union
 
 from autoarray.dataset.abstract.settings import AbstractSettingsDataset
 from autoarray.structures.grids.uniform_1d import Grid1D
