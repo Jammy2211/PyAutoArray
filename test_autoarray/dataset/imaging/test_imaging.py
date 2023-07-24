@@ -7,7 +7,7 @@ import shutil
 
 import autoarray as aa
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))),
     "files",
 )
@@ -73,9 +73,9 @@ def test__no_noise_map__raises_exception():
 def test__from_fits():
     dataset = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        data_path=path.join(test_data_dir, "3x3_ones.fits"),
-        psf_path=path.join(test_data_dir, "3x3_twos.fits"),
-        noise_map_path=path.join(test_data_dir, "3x3_threes.fits"),
+        data_path=path.join(test_data_path, "3x3_ones.fits"),
+        psf_path=path.join(test_data_path, "3x3_twos.fits"),
+        noise_map_path=path.join(test_data_path, "3x3_threes.fits"),
     )
 
     assert (dataset.data.native == np.ones((3, 3))).all()
@@ -88,11 +88,11 @@ def test__from_fits():
 
     dataset = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        data_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
+        data_path=path.join(test_data_path, "3x3_multiple_hdu.fits"),
         data_hdu=0,
-        psf_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
+        psf_path=path.join(test_data_path, "3x3_multiple_hdu.fits"),
         psf_hdu=1,
-        noise_map_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
+        noise_map_path=path.join(test_data_path, "3x3_multiple_hdu.fits"),
         noise_map_hdu=2,
     )
 

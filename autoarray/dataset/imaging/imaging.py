@@ -30,6 +30,7 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         settings: SettingsImaging = SettingsImaging(),
         pad_for_convolver: bool = False,
+        check_noise_map: bool = False,
     ):
         """
         A class containing an imaging dataset, including the image data, noise-map and a point spread function (PSF).
@@ -46,6 +47,8 @@ class Imaging(AbstractDataset):
             telescope optics via 2D convolution.
         settings
             Controls settings of how the dataset is set up (e.g. the types of grids used to perform calculations).
+        check_noise_map
+            If True, the noise-map is checked to ensure all values are above zero.
         """
 
         self.unmasked = None
@@ -81,7 +84,7 @@ class Imaging(AbstractDataset):
             settings=settings,
         )
 
-        if self.noise_map.native is not None:
+        if self.noise_map.native is not None and check_noise_map:
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
                 zero_entries = np.argwhere(self.noise_map.native <= 0.0)
 

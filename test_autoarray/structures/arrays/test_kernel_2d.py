@@ -8,7 +8,7 @@ from astropy.coordinates import Angle
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
+test_data_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
 def test__full():
@@ -40,13 +40,13 @@ def test__zeros():
 
 def test__from_fits():
     kernel_2d = aa.Kernel2D.from_fits(
-        file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "3x2_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert (kernel_2d.native == np.ones((3, 2))).all()
 
     kernel_2d = aa.Kernel2D.from_fits(
-        file_path=path.join(test_data_dir, "3x2_twos.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "3x2_twos.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert (kernel_2d.native == 2.0 * np.ones((3, 2))).all()
@@ -54,14 +54,14 @@ def test__from_fits():
 
 def test__from_fits__loads_and_stores_header_info():
     kernel_2d = aa.Kernel2D.from_fits(
-        file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "3x2_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert kernel_2d.header.header_sci_obj["BITPIX"] == -64
     assert kernel_2d.header.header_hdu_obj["BITPIX"] == -64
 
     kernel_2d = aa.Kernel2D.from_fits(
-        file_path=path.join(test_data_dir, "3x2_twos.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "3x2_twos.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert kernel_2d.header.header_sci_obj["BITPIX"] == -64

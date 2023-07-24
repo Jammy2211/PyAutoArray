@@ -7,7 +7,7 @@ import shutil
 import autoarray as aa
 from autoarray.structures import visibilities as vis
 
-test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
+test_data_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
 class TestVisibilitiesAPI:
@@ -81,7 +81,7 @@ class TestVisibilitiesAPI:
 
     def test__from_fits__makes_visibilities_without_other_inputs(self):
         visibilities = aa.Visibilities.from_fits(
-            file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0
+            file_path=path.join(test_data_path, "3x2_ones.fits"), hdu=0
         )
 
         assert type(visibilities) == vis.Visibilities
@@ -90,7 +90,7 @@ class TestVisibilitiesAPI:
         ).all()
 
         visibilities = aa.Visibilities.from_fits(
-            file_path=path.join(test_data_dir, "3x2_twos.fits"), hdu=0
+            file_path=path.join(test_data_path, "3x2_twos.fits"), hdu=0
         )
 
         assert type(visibilities) == vis.Visibilities
@@ -102,10 +102,10 @@ class TestVisibilitiesAPI:
 class TestVisibilities:
     def test__output_to_fits(self):
         visibilities = aa.Visibilities.from_fits(
-            file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0
+            file_path=path.join(test_data_path, "3x2_ones.fits"), hdu=0
         )
 
-        output_data_dir = path.join(test_data_dir, "output_test")
+        output_data_dir = path.join(test_data_path, "output_test")
 
         if path.exists(output_data_dir):
             shutil.rmtree(output_data_dir)

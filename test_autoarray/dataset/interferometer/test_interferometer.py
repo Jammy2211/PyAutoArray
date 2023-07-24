@@ -7,7 +7,7 @@ import autoarray as aa
 
 from autoarray.operators import transformer
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))),
     "files",
 )
@@ -41,11 +41,11 @@ def test__dirty_properties(
 def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2d_7x7):
     dataset = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
-        data_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
+        data_path=path.join(test_data_path, "3x2_multiple_hdu.fits"),
         visibilities_hdu=0,
-        noise_map_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
+        noise_map_path=path.join(test_data_path, "3x2_multiple_hdu.fits"),
         noise_map_hdu=1,
-        uv_wavelengths_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
+        uv_wavelengths_path=path.join(test_data_path, "3x2_multiple_hdu.fits"),
         uv_wavelengths_hdu=2,
     )
 
@@ -58,9 +58,9 @@ def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2
 def test__output_all_arrays(sub_mask_2d_7x7):
     dataset = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
-        data_path=path.join(test_data_dir, "3x2_ones_twos.fits"),
-        noise_map_path=path.join(test_data_dir, "3x2_threes_fours.fits"),
-        uv_wavelengths_path=path.join(test_data_dir, "3x2_fives_sixes.fits"),
+        data_path=path.join(test_data_path, "3x2_ones_twos.fits"),
+        noise_map_path=path.join(test_data_path, "3x2_threes_fours.fits"),
+        uv_wavelengths_path=path.join(test_data_path, "3x2_fives_sixes.fits"),
     )
 
     output_data_dir = path.join(
