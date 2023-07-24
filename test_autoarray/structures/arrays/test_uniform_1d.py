@@ -10,7 +10,7 @@ fits_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "array_1d"
 )
 
-output_data_dir = path.join(
+output_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "array", "output_test"
 )
 
@@ -160,15 +160,15 @@ def test__from_fits__loads_and_stores_header_info():
 def test__output_to_fits():
     arr = aa.Array1D.ones(shape_native=(3,), pixel_scales=1.0)
 
-    if path.exists(output_data_dir):
-        shutil.rmtree(output_data_dir)
+    if path.exists(output_data_path):
+        shutil.rmtree(output_data_path)
 
-    os.makedirs(output_data_dir)
+    os.makedirs(output_data_path)
 
-    arr.output_to_fits(file_path=path.join(output_data_dir, "array.fits"))
+    arr.output_to_fits(file_path=path.join(output_data_path, "array.fits"))
 
     array_from_out = aa.Array1D.from_fits(
-        file_path=path.join(output_data_dir, "array.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(output_data_path, "array.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert (array_from_out.native == np.ones((3,))).all()
