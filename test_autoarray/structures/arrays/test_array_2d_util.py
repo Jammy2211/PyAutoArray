@@ -318,6 +318,21 @@ def test__numpy_array_2d_to_fits():
     assert (arr == array_load).all()
 
 
+def test__numpy_array_2d_to_fits__header_dict():
+    file_path = os.path.join(test_data_path, "array_out.fits")
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
+
+    util.array_2d.numpy_array_2d_to_fits(arr, file_path=file_path, header_dict={"A": 1})
+
+    header = util.array_2d.header_obj_from(file_path=file_path, hdu=0)
+
+    assert header["A"] == 1
+
+
 def test__header_obj_from():
     header_obj = util.array_2d.header_obj_from(
         file_path=os.path.join(test_data_path, "3x3_ones.fits"), hdu=0

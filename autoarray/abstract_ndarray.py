@@ -2,8 +2,8 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from autoarray.structures.abstract_structure import Structure
