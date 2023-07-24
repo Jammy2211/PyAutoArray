@@ -1,3 +1,4 @@
+from astropy.io import fits
 import os
 from os import path
 
@@ -7,7 +8,7 @@ import shutil
 
 import autoarray as aa
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
 )
 
@@ -251,7 +252,7 @@ def test__zeros():
 
 def test__from_fits():
     array_2d = aa.Array2D.from_fits(
-        file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert type(array_2d) == aa.Array2D
@@ -261,18 +262,40 @@ def test__from_fits():
 
 def test__from_fits__loads_and_stores_header_info():
     array_2d = aa.Array2D.from_fits(
-        file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert array_2d.header.header_sci_obj["BITPIX"] == -64
     assert array_2d.header.header_hdu_obj["BITPIX"] == -64
 
     array_2d = aa.Array2D.from_fits(
-        file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert array_2d.header.header_sci_obj["BITPIX"] == -64
     assert array_2d.header.header_hdu_obj["BITPIX"] == -64
+
+
+def test__from_primary_hdu():
+    
+    file_path = os.path.join(test_data_path, "array_out.fits")
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
+
+    aa.util.array_2d.numpy_array_2d_to_fits(arr, file_path=file_path, header_dict={"PIXSCALE": 0.1})
+
+    primary_hdu = fits.open(file_path)
+
+    array_2d = aa.Array2D.from_primary_hdu(
+        primary_hdu=primary_hdu[0],
+    )
+
+    assert type(array_2d) == aa.Array2D
+    assert (array_2d.native == arr).all()
+    assert array_2d.pixel_scales == (0.1, 0.1)
 
 
 def test__from_yx_and_values():
@@ -299,7 +322,7 @@ def test__from_yx_and_values():
 
 def test__output_to_fits():
     array_2d = aa.Array2D.from_fits(
-        file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     output_data_dir = path.join(
