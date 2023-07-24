@@ -1046,7 +1046,10 @@ class Array2D(AbstractArray2D):
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Array2D":
         """
-        Returns an ``Array2D`` by loading the array values from a .fits file.
+        Returns an ``Array2D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
+
+        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
+        pixel-scale of the array.
 
         For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
         used by the API, see
@@ -1054,14 +1057,9 @@ class Array2D(AbstractArray2D):
 
         Parameters
         ----------
-        file_path
-            The path the file is loaded from, including the filename and the `.fits` extension,
-            e.g. '/path/to/filename.fits'
-        pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
-            it is converted to a (float, float) structure.
-        hdu
-            The Header-Data Unit of the .fits file the array data is loaded from.
+        primary_hdu
+            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
+            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -1072,14 +1070,15 @@ class Array2D(AbstractArray2D):
 
         .. code-block:: python
 
+            from astropy.io import fits
             import autoarray as aa
 
             # Make Array2D with sub_size 1.
 
-            array_2d = aa.Array2D.from_fits(
-                file_path="path/to/file.fits",
-                hdu=0,
-                pixel_scales=1.0,
+            primary_hdu = fits.open("path/to/file.fits")
+
+            array_2d = aa.Array2D.from_primary_hdu(
+                primary_hdu=primary_hdu,
                 sub_size=1
             )
 
@@ -1091,10 +1090,10 @@ class Array2D(AbstractArray2D):
             # (It is uncommon that a sub-gridded array would be loaded from
             # a .fits, but the API support its).
 
-            array_2d = aa.Array2D.from_fits(
-                file_path="path/to/file.fits",
-                hdu=0,
-                pixel_scales=1.0,
+             primary_hdu = fits.open("path/to/file.fits")
+
+            array_2d = aa.Array2D.from_primary_hdu(
+                primary_hdu=primary_hdu,
                 sub_size=2
             )
         """
