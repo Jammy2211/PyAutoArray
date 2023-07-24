@@ -277,7 +277,6 @@ def test__from_fits__loads_and_stores_header_info():
 
 
 def test__from_primary_hdu():
-    
     file_path = os.path.join(test_data_path, "array_out.fits")
 
     if os.path.exists(file_path):
@@ -285,7 +284,9 @@ def test__from_primary_hdu():
 
     arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
 
-    aa.util.array_2d.numpy_array_2d_to_fits(arr, file_path=file_path, header_dict={"PIXSCALE": 0.1})
+    aa.util.array_2d.numpy_array_2d_to_fits(
+        arr, file_path=file_path, header_dict={"PIXSCALE": 0.1}
+    )
 
     primary_hdu = fits.open(file_path)
 

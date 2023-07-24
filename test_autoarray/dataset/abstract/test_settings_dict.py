@@ -10,8 +10,11 @@ import autoarray as aa
 def make_settings_dict():
     return {
         "type": "autoarray.dataset.imaging.settings.SettingsImaging",
-        'grid_class': {'type': 'type', 'class_path': 'autoarray.structures.grids.uniform_2d.Grid2D'},
-        'grid_pixelization_class': None,
+        "grid_class": {
+            "type": "type",
+            "class_path": "autoarray.structures.grids.uniform_2d.Grid2D",
+        },
+        "grid_pixelization_class": None,
         "sub_size": 1,
         "sub_size_pixelization": 4,
         "fractional_accuracy": 0.9999,

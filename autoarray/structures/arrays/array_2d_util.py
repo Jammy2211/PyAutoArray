@@ -744,7 +744,10 @@ def array_2d_native_complex_via_indexes_from(
 
 
 def numpy_array_2d_to_fits(
-    array_2d: np.ndarray, file_path: Union[Path, str], overwrite: bool = False, header_dict: Optional[dict] = None
+    array_2d: np.ndarray,
+    file_path: Union[Path, str],
+    overwrite: bool = False,
+    header_dict: Optional[dict] = None,
 ):
     """
     Write a 2D NumPy array to a .fits file.
