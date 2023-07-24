@@ -338,11 +338,12 @@ def test__output_to_fits():
 
     array_2d.output_to_fits(file_path=path.join(output_data_dir, "array.fits"))
 
-    array_from_out = aa.Array2D.from_fits(
+    array_from_fits = aa.Array2D.from_fits(
         file_path=path.join(output_data_dir, "array.fits"), hdu=0, pixel_scales=1.0
     )
 
-    assert (array_from_out.native == np.ones((3, 3))).all()
+    assert (array_from_fits.native == np.ones((3, 3))).all()
+    assert array_from_fits.header.header_sci_obj["PIXSCALE"] == 1.0
 
 
 def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask():

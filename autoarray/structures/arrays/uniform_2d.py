@@ -630,6 +630,9 @@ class AbstractArray2D(Structure):
         """
         Output the array to a .fits file.
 
+        The `pixel_scale` is stored in the header as `PIXSCALE`, which is used by the `Array2D.from_primary_hdu`
+        method.
+
         Parameters
         ----------
         file_path
@@ -638,7 +641,7 @@ class AbstractArray2D(Structure):
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.native, file_path=file_path, overwrite=overwrite
+            array_2d=self.native, file_path=file_path, overwrite=overwrite, header_dict={"PIXSCALE" : self.pixel_scale}
         )
 
 
