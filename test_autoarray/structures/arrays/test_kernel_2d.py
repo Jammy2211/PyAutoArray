@@ -1,10 +1,12 @@
-from os import path
-import numpy as np
-import pytest
-
+from astropy.io import fits
 from astropy import units
 from astropy.modeling import functional_models
 from astropy.coordinates import Angle
+import numpy as np
+import pytest
+from os import path
+import os
+
 import autoarray as aa
 from autoarray import exc
 
@@ -107,6 +109,29 @@ def test__from_gaussian():
         ),
         1.0e-3,
     )
+
+
+def test__from_primary_hdu():
+    file_path = os.path.join(test_data_path, "array_out.fits")
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
+
+    aa.util.array_2d.numpy_array_2d_to_fits(
+        arr, file_path=file_path, header_dict={"PIXSCALE": 0.1}
+    )
+
+    primary_hdu = fits.open(file_path)
+
+    array_2d = aa.Kernel2D.from_primary_hdu(
+        primary_hdu=primary_hdu[0],
+    )
+
+    assert type(array_2d) == aa.Kernel2D
+    assert (array_2d.native == arr).all()
+    assert array_2d.pixel_scales == (0.1, 0.1)
 
 
 def test__manual__normalize():

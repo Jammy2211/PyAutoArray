@@ -280,7 +280,7 @@ class Imaging(AbstractDataset):
             unmasked_dataset = self.unmasked
 
         data = Array2D(
-            values=unmasked_dataset.image.native, mask=mask.derive_mask.sub_1
+            values=unmasked_dataset.data.native, mask=mask.derive_mask.sub_1
         )
 
         noise_map = Array2D(
