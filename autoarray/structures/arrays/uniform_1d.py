@@ -303,5 +303,8 @@ class Array1D(Structure):
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         array_1d_util.numpy_array_1d_to_fits(
-            array_1d=self.native, file_path=file_path, overwrite=overwrite, header_dict={"PIXSCALE": self.pixel_scale},
+            array_1d=self.native,
+            file_path=file_path,
+            overwrite=overwrite,
+            header_dict={"PIXSCALE": self.pixel_scale},
         )

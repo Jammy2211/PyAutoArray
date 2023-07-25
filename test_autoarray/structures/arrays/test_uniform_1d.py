@@ -173,6 +173,10 @@ def test__output_to_fits():
 
     assert (array_from_out.native == np.ones((3,))).all()
 
+    header_load = aa.util.array_2d.header_obj_from(file_path=output_data_path, hdu=0)
+
+    assert header_load["PIXSCALE"] == 1.0
+
 
 def test__recursive_shape_storage():
     array_1d = aa.Array1D.no_mask(values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
