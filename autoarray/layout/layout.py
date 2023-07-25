@@ -1,5 +1,7 @@
 from typing import Tuple, List
 
+from autoconf.dictable import Dictable
+
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.layout.region import Region1D
@@ -10,7 +12,7 @@ from autoarray.layout import layout_util
 from autoarray.type import Region1DLike, Region2DLike
 
 
-class Layout1D:
+class Layout1D(Dictable):
     def __init__(
         self, shape_1d, prescan: Region1DLike = None, overscan: Region1DLike = None
     ):

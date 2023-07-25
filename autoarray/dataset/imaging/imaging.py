@@ -30,7 +30,7 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         settings: SettingsImaging = SettingsImaging(),
         pad_for_convolver: bool = False,
-        check_noise_map: bool = False,
+        check_noise_map: bool = True,
     ):
         """
         A class containing an imaging dataset, including the image data, noise-map and a point spread function (PSF).

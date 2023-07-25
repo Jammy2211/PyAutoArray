@@ -339,6 +339,11 @@ def test__from_pixel_coordinates():
 
 
 def test__from_fits__output_to_fits():
+
+    test_data_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "files", "mask"
+    )
+
     mask = aa.Mask2D.from_fits(
         file_path=path.join(test_data_path, "3x3_ones.fits"),
         hdu=0,
@@ -375,6 +380,7 @@ def test__from_fits__output_to_fits():
     header = aa.util.array_2d.header_obj_from(file_path=path.join(test_data_path, "mask.fits"), hdu=0)
 
     assert header["PIXSCALE"] == 1.0
+
 
 def test__from_fits__with_resized_mask_shape():
     mask = aa.Mask2D.from_fits(

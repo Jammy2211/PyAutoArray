@@ -56,6 +56,12 @@ def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2
 
 
 def test__output_all_arrays(sub_mask_2d_7x7):
+
+    test_data_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "files",
+    )
+
     dataset = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
         data_path=path.join(test_data_path, "3x2_ones_twos.fits"),
