@@ -326,21 +326,21 @@ def test__output_to_fits():
         file_path=path.join(test_data_path, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
-    output_data_path = path.join(
+    test_data_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "array",
         "output_test",
     )
-    if path.exists(output_data_path):
-        shutil.rmtree(output_data_path)
+    if path.exists(test_data_path):
+        shutil.rmtree(test_data_path)
 
-    os.makedirs(output_data_path)
+    os.makedirs(test_data_path)
 
-    array_2d.output_to_fits(file_path=path.join(output_data_path, "array.fits"))
+    array_2d.output_to_fits(file_path=path.join(test_data_path, "array.fits"))
 
     array_from_fits = aa.Array2D.from_fits(
-        file_path=path.join(output_data_path, "array.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "array.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert (array_from_fits.native == np.ones((3, 3))).all()

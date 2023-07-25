@@ -346,22 +346,22 @@ def test__from_fits__output_to_fits():
         pixel_scales=(1.0, 1.0),
     )
 
-    output_data_path = path.join(
+    test_data_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "array",
         "output_test",
     )
 
-    if path.exists(output_data_path):
-        shutil.rmtree(output_data_path)
+    if path.exists(test_data_path):
+        shutil.rmtree(test_data_path)
 
-    os.makedirs(output_data_path)
+    os.makedirs(test_data_path)
 
-    mask.output_to_fits(file_path=path.join(output_data_path, "mask.fits"))
+    mask.output_to_fits(file_path=path.join(test_data_path, "mask.fits"))
 
     mask = aa.Mask2D.from_fits(
-        file_path=path.join(output_data_path, "mask.fits"),
+        file_path=path.join(test_data_path, "mask.fits"),
         hdu=0,
         sub_size=1,
         pixel_scales=(1.0, 1.0),
@@ -372,7 +372,7 @@ def test__from_fits__output_to_fits():
     assert mask.pixel_scales == (1.0, 1.0)
     assert mask.origin == (2.0, 2.0)
 
-    header = aa.util.array_2d.header_obj_from(file_path=path.join(output_data_path, "mask.fits"), hdu=0)
+    header = aa.util.array_2d.header_obj_from(file_path=path.join(test_data_path, "mask.fits"), hdu=0)
 
     assert header["PIXSCALE"] == 1.0
 

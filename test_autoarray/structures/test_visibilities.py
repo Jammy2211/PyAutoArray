@@ -105,17 +105,17 @@ class TestVisibilities:
             file_path=path.join(test_data_path, "3x2_ones.fits"), hdu=0
         )
 
-        output_data_path = path.join(test_data_path, "output_test")
+        test_data_path = path.join(test_data_path, "output_test")
 
-        if path.exists(output_data_path):
-            shutil.rmtree(output_data_path)
+        if path.exists(test_data_path):
+            shutil.rmtree(test_data_path)
 
-        os.makedirs(output_data_path)
+        os.makedirs(test_data_path)
 
-        visibilities.output_to_fits(file_path=path.join(output_data_path, "data.fits"))
+        visibilities.output_to_fits(file_path=path.join(test_data_path, "data.fits"))
 
         visibilities_from_out = aa.Visibilities.from_fits(
-            file_path=path.join(output_data_path, "data.fits"), hdu=0
+            file_path=path.join(test_data_path, "data.fits"), hdu=0
         )
         assert (
             visibilities.slim == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])

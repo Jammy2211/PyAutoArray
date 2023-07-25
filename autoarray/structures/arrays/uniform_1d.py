@@ -1,3 +1,4 @@
+from astropy.io import fits
 import numpy as np
 from pathlib import Path
 from typing import Optional, Union, Tuple, List
@@ -252,6 +253,73 @@ class Array1D(Structure):
             sub_size=sub_size,
             origin=origin,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
+        )
+
+    @classmethod
+    def from_primary_hdu(
+        cls,
+        primary_hdu: fits.PrimaryHDU,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Array1D":
+        """
+        Returns an ``Array1D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
+
+        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
+        pixel-scale of the array.
+
+        For a full description of ``Array1D`` objects, including a description of the ``slim`` and ``native`` attribute
+        used by the API, see
+        the :meth:`Array1D class API documentation <autoarray.structures.arrays.uniform_1d.AbstractArray1D.__new__>`.
+
+        Parameters
+        ----------
+        primary_hdu
+            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
+            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin
+            The (y,x) scaled units origin of the coordinate system.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            from astropy.io import fits
+            import autoarray as aa
+
+            # Make Array1D with sub_size 1.
+
+            primary_hdu = fits.open("path/to/file.fits")
+
+            array_1d = aa.Array1D.from_primary_hdu(
+                primary_hdu=primary_hdu,
+                sub_size=1
+            )
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Array1D with sub_size 2.
+            # (It is uncommon that a sub-gridded array would be loaded from
+            # a .fits, but the API support its).
+
+             primary_hdu = fits.open("path/to/file.fits")
+
+            array_1d = aa.Array1D.from_primary_hdu(
+                primary_hdu=primary_hdu,
+                sub_size=2
+            )
+        """
+        return cls.no_mask(
+            values=primary_hdu.data.astype("float"),
+            pixel_scales=primary_hdu.header["PIXSCALE"],
+            sub_size=sub_size,
+            origin=origin,
+            header=Header(header_sci_obj=primary_hdu.header),
         )
 
     @property

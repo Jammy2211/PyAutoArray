@@ -13,21 +13,21 @@ test_data_path = path.join(
 )
 
 
-@pytest.fixture(name="output_data_path")
-def make_output_data_path():
-    output_data_path = path.join(
+@pytest.fixture(name="test_data_path")
+def make_test_data_path():
+    test_data_path = path.join(
         "{}".format(os.path.dirname(os.path.realpath(__file__))),
         "files",
         "array",
         "output_test",
     )
 
-    if os.path.exists(output_data_path):
-        shutil.rmtree(output_data_path)
+    if os.path.exists(test_data_path):
+        shutil.rmtree(test_data_path)
 
-    os.makedirs(output_data_path)
+    os.makedirs(test_data_path)
 
-    return output_data_path
+    return test_data_path
 
 
 def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
@@ -105,18 +105,18 @@ def test__from_fits():
     assert dataset.noise_map.mask.pixel_scales == (0.1, 0.1)
 
 
-def test__output_to_fits(imaging_7x7, output_data_path):
+def test__output_to_fits(imaging_7x7, test_data_path):
     imaging_7x7.output_to_fits(
-        data_path=path.join(output_data_path, "data.fits"),
-        psf_path=path.join(output_data_path, "psf.fits"),
-        noise_map_path=path.join(output_data_path, "noise_map.fits"),
+        data_path=path.join(test_data_path, "data.fits"),
+        psf_path=path.join(test_data_path, "psf.fits"),
+        noise_map_path=path.join(test_data_path, "noise_map.fits"),
     )
 
     dataset = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        data_path=path.join(output_data_path, "data.fits"),
-        psf_path=path.join(output_data_path, "psf.fits"),
-        noise_map_path=path.join(output_data_path, "noise_map.fits"),
+        data_path=path.join(test_data_path, "data.fits"),
+        psf_path=path.join(test_data_path, "psf.fits"),
+        noise_map_path=path.join(test_data_path, "noise_map.fits"),
     )
 
     assert (dataset.data.native == np.ones((7, 7))).all()
