@@ -136,13 +136,13 @@ class LabelMaker:
         if self.units.use_raw:
             return self.with_appended_suffix(self.tick_values_rounded)
 
-        if not self.units.use_scaled:
+        if not self.units.use_scaled and self.yunit is None:
             return self.labels_linear_pixels
 
         labels = np.asarray(
             [value * self.convert_factor for value in self.tick_values_rounded]
         )
-        if not self.units.use_scaled:
+        if not self.units.use_scaled and self.yunit is None:
             labels = [f"{int(label)}" for label in labels]
         return self.with_appended_suffix(labels)
 

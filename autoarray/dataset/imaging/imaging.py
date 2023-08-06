@@ -105,10 +105,6 @@ class Imaging(AbstractDataset):
 
         self.psf = psf
 
-    @property
-    def image(self):
-        return self.data
-
     @cached_property
     def blurring_grid(self) -> Grid2D:
         """
@@ -146,6 +142,8 @@ class Imaging(AbstractDataset):
         Convolver
             The convolver given the masked imaging data's mask and PSF.
         """
+        print("sdfdfsfd")
+
         return Convolver(mask=self.mask, kernel=self.psf)
 
     @cached_property

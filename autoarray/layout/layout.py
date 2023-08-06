@@ -40,7 +40,7 @@ class Layout1D(Dictable):
         )
 
 
-class Layout2D:
+class Layout2D(Dictable):
     def __init__(
         self,
         shape_2d: Tuple[int, int],
