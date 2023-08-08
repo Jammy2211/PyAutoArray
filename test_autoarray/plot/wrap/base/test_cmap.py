@@ -67,7 +67,7 @@ def test__norm_from__cmap_symmetric_true():
     assert norm.vmax == 1.0
 
     cmap = aplt.Cmap(vmin=-2.0, vmax=1.0, norm="linear")
-    cmap = cmap.symmetric
+    cmap = cmap.symmetric_cmap_from()
 
     norm = cmap.norm_from(array=None)
 

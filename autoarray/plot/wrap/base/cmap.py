@@ -36,12 +36,14 @@ class Cmap(AbstractMatWrap):
         super().__init__(**kwargs)
 
         self._symmetric = symmetric
+        self.symmetric_value = None
 
-    @property
-    def symmetric(self):
+    def symmetric_cmap_from(self, symmetric_value=None):
+
         cmap = copy.copy(self)
 
         cmap._symmetric = True
+        cmap.symmetric_value = None
 
         return cmap
 
@@ -73,10 +75,14 @@ class Cmap(AbstractMatWrap):
 
         if self._symmetric:
             if vmin < 0.0 and vmax > 0.0:
-                if abs(vmin) > abs(vmax):
-                    vmax = abs(vmin)
+                if self.symmetric_value is None:
+                    if abs(vmin) > abs(vmax):
+                        vmax = abs(vmin)
+                    else:
+                        vmin = -vmax
                 else:
-                    vmin = -vmax
+                    vmin = -self.symmetric_value
+                    vmax = self.symmetric_value
 
         if isinstance(self.config_dict["norm"], colors.Normalize):
             return self.config_dict["norm"]

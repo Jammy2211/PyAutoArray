@@ -230,7 +230,7 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
         (1.0 / 49.0) * np.ones((7, 7)), 1.0e-4
     )
     assert masked_dataset.convolver.kernel.shape_native == (7, 7)
-    assert (masked_dataset.image == np.array([1.0])).all()
+    assert (masked_dataset.data == np.array([1.0])).all()
     assert (masked_dataset.noise_map == np.array([2.0])).all()
 
 
