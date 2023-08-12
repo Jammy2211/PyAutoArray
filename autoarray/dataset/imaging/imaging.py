@@ -142,7 +142,6 @@ class Imaging(AbstractDataset):
         Convolver
             The convolver given the masked imaging data's mask and PSF.
         """
-        print("sdfdfsfd")
 
         return Convolver(mask=self.mask, kernel=self.psf)
 
