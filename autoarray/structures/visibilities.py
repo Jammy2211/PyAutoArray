@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from pathlib import Path
 from typing import List, Tuple, Union
 
 from autoconf import cached_property
@@ -95,7 +96,7 @@ class AbstractVisibilities(Structure):
     def phases(self) -> np.ndarray:
         return np.arctan2(self.imag, self.real)
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the visibilities to a .fits file.
 
@@ -185,7 +186,7 @@ class Visibilities(AbstractVisibilities):
         return cls.full(fill_value=0.0, shape_slim=shape_slim)
 
     @classmethod
-    def from_fits(cls, file_path: str, hdu: int) -> "Visibilities":
+    def from_fits(cls, file_path: Union[Path, str], hdu: int) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) by loading the(real, imag) values from a .fits file.
 

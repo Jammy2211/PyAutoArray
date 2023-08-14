@@ -1,3 +1,4 @@
+from astropy.io import fits
 import os
 from os import path
 import numpy as np
@@ -7,7 +8,7 @@ import shutil
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "mask"
 )
 
@@ -338,29 +339,34 @@ def test__from_pixel_coordinates():
 
 
 def test__from_fits__output_to_fits():
+
+    test_data_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "files", "mask"
+    )
+
     mask = aa.Mask2D.from_fits(
-        file_path=path.join(test_data_dir, "3x3_ones.fits"),
+        file_path=path.join(test_data_path, "3x3_ones.fits"),
         hdu=0,
         sub_size=1,
         pixel_scales=(1.0, 1.0),
     )
 
-    output_data_dir = path.join(
+    test_data_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "array",
         "output_test",
     )
 
-    if path.exists(output_data_dir):
-        shutil.rmtree(output_data_dir)
+    if path.exists(test_data_path):
+        shutil.rmtree(test_data_path)
 
-    os.makedirs(output_data_dir)
+    os.makedirs(test_data_path)
 
-    mask.output_to_fits(file_path=path.join(output_data_dir, "mask.fits"))
+    mask.output_to_fits(file_path=path.join(test_data_path, "mask.fits"))
 
     mask = aa.Mask2D.from_fits(
-        file_path=path.join(output_data_dir, "mask.fits"),
+        file_path=path.join(test_data_path, "mask.fits"),
         hdu=0,
         sub_size=1,
         pixel_scales=(1.0, 1.0),
@@ -371,10 +377,14 @@ def test__from_fits__output_to_fits():
     assert mask.pixel_scales == (1.0, 1.0)
     assert mask.origin == (2.0, 2.0)
 
+    header = aa.util.array_2d.header_obj_from(file_path=path.join(test_data_path, "mask.fits"), hdu=0)
+
+    assert header["PIXSCALE"] == 1.0
+
 
 def test__from_fits__with_resized_mask_shape():
     mask = aa.Mask2D.from_fits(
-        file_path=path.join(test_data_dir, "3x3_ones.fits"),
+        file_path=path.join(test_data_path, "3x3_ones.fits"),
         hdu=0,
         sub_size=1,
         pixel_scales=(1.0, 1.0),
@@ -384,7 +394,7 @@ def test__from_fits__with_resized_mask_shape():
     assert mask.shape_native == (1, 1)
 
     mask = aa.Mask2D.from_fits(
-        file_path=path.join(test_data_dir, "3x3_ones.fits"),
+        file_path=path.join(test_data_path, "3x3_ones.fits"),
         hdu=0,
         sub_size=1,
         pixel_scales=(1.0, 1.0),
@@ -392,6 +402,29 @@ def test__from_fits__with_resized_mask_shape():
     )
 
     assert mask.shape_native == (5, 5)
+
+
+def test__from_primary_hdu():
+    file_path = os.path.join(test_data_path, "array_out.fits")
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    mask = np.array([[True, False, True], [False, False, True]]).astype("int")
+
+    aa.util.array_2d.numpy_array_2d_to_fits(
+        mask, file_path=file_path, header_dict={"PIXSCALE": 0.1}
+    )
+
+    primary_hdu = fits.open(file_path)
+
+    mask_via_hdu = aa.Mask2D.from_primary_hdu(
+        primary_hdu=primary_hdu[0],
+    )
+
+    assert type(mask_via_hdu) == aa.Mask2D
+    assert (mask_via_hdu == mask).all()
+    assert mask_via_hdu.pixel_scales == (0.1, 0.1)
 
 
 def test__mask__input_is_1d_mask__no_shape_native__raises_exception():

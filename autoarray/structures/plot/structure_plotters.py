@@ -131,6 +131,8 @@ class YX1DPlotter(Plotter):
         mat_plot_1d: MatPlot1D = MatPlot1D(),
         visuals_1d: Visuals1D = Visuals1D(),
         include_1d: Include1D = Include1D(),
+        should_plot_grid: bool = False,
+        plot_axis_type: Optional[str] = None,
     ):
         """
         Plots two 1D objects using the matplotlib method `plot()` (or a similar method) and many other matplotlib
@@ -170,6 +172,8 @@ class YX1DPlotter(Plotter):
 
         self.y = y
         self.x = y.grid_radial if x is None else x
+        self.should_plot_grid = should_plot_grid
+        self.plot_axis_type = plot_axis_type
 
     def get_visuals_1d(self) -> Visuals1D:
         return self.get_1d.via_array_1d_from(array_1d=self.x)
@@ -183,4 +187,6 @@ class YX1DPlotter(Plotter):
             x=self.x,
             visuals_1d=self.get_visuals_1d(),
             auto_labels=AutoLabels(),
+            should_plot_grid=self.should_plot_grid,
+            plot_axis_type_override=self.plot_axis_type,
         )

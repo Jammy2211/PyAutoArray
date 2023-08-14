@@ -2,7 +2,8 @@ from __future__ import annotations
 from astropy.io import fits
 import numpy as np
 import os
-from typing import TYPE_CHECKING, Dict, List, Tuple, Union
+from pathlib import Path
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
@@ -743,7 +744,10 @@ def array_2d_native_complex_via_indexes_from(
 
 
 def numpy_array_2d_to_fits(
-    array_2d: np.ndarray, file_path: str, overwrite: bool = False
+    array_2d: np.ndarray,
+    file_path: Union[Path, str],
+    overwrite: bool = False,
+    header_dict: Optional[dict] = None,
 ):
     """
     Write a 2D NumPy array to a .fits file.
@@ -761,6 +765,8 @@ def numpy_array_2d_to_fits(
     overwrite
         If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
         error is raised.
+    header_dict
+        A dictionary of values that are written to the header of the .fits file.
 
     Returns
     -------
@@ -780,19 +786,24 @@ def numpy_array_2d_to_fits(
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
-    new_hdr = fits.Header()
+    header = fits.Header()
+
+    if header_dict is not None:
+        for key, value in header_dict.items():
+            header.append((key, value, [""]))
 
     flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
 
     if flip_for_ds9:
-        hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
+        hdu = fits.PrimaryHDU(np.flipud(array_2d), header=header)
     else:
-        hdu = fits.PrimaryHDU(array_2d, new_hdr)
+        hdu = fits.PrimaryHDU(array_2d, header=header)
+
     hdu.writeto(file_path)
 
 
 def numpy_array_2d_via_fits_from(
-    file_path: str, hdu: int, do_not_scale_image_data: bool = False
+    file_path: Union[Path, str], hdu: int, do_not_scale_image_data: bool = False
 ):
     """
     Read a 2D NumPy array from a .fits file.
@@ -827,7 +838,7 @@ def numpy_array_2d_via_fits_from(
     return np.array(hdu_list[hdu].data).astype("float64")
 
 
-def header_obj_from(file_path: str, hdu: int) -> Dict:
+def header_obj_from(file_path: Union[Path, str], hdu: int) -> Dict:
     """
     Read a 2D NumPy array from a .fits file.
 

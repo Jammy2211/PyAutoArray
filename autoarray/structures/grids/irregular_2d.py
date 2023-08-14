@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from os import path
+from pathlib import Path
 from typing import List, Optional, Tuple, Union
 import json
 
@@ -353,7 +354,7 @@ class Grid2DIrregular(AbstractNDArray):
         return Grid2DIrregular(values=grid_of_closest)
 
     @classmethod
-    def from_json(cls, file_path: str) -> "Grid2DIrregular":
+    def from_json(cls, file_path: Union[Path, str]) -> "Grid2DIrregular":
         """
         Returns a `Grid2DIrregular` object from a .json file, which stores the coordinates as a list of list of tuples.
 
@@ -368,7 +369,7 @@ class Grid2DIrregular(AbstractNDArray):
 
         return Grid2DIrregular(values=grid)
 
-    def output_to_json(self, file_path: str, overwrite: bool = False):
+    def output_to_json(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output this instance of the `Grid2DIrregular` object to a .json file as a list of list of tuples.
 

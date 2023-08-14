@@ -311,13 +311,13 @@ def make_masked_imaging_7x7_no_blur():
 def make_model_image_7x7():
     imaging_7x7 = make_masked_imaging_7x7()
 
-    return 5.0 * imaging_7x7.image
+    return 5.0 * imaging_7x7.data
 
 
 def make_imaging_fit_x1_plane_7x7():
     imaging_7x7 = make_masked_imaging_7x7()
 
-    model_data = 5.0 * imaging_7x7.image
+    model_data = 5.0 * imaging_7x7.data
 
     return aa.m.MockFitImaging(
         dataset=imaging_7x7, use_mask_in_fit=False, model_data=model_data

@@ -95,10 +95,14 @@ def test__numpy_array_1d_to_fits__output_and_load():
 
     arr = np.array([10.0, 30.0, 40.0, 92.0, 19.0, 20.0])
 
-    aa.util.array_1d.numpy_array_1d_to_fits(arr, file_path=file_path)
+    aa.util.array_1d.numpy_array_1d_to_fits(arr, file_path=file_path, header_dict={"A": 1})
 
     array_load = aa.util.array_1d.numpy_array_1d_via_fits_from(
-        file_path=file_path, hdu=0
+        file_path=file_path, hdu=0,
     )
 
     assert (arr == array_load).all()
+
+    header_load = aa.util.array_2d.header_obj_from(file_path=file_path, hdu=0)
+
+    assert header_load["A"] == 1

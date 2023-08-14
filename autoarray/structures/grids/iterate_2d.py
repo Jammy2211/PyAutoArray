@@ -132,8 +132,8 @@ class Grid2DIterate(Grid2D):
         shape_native
             The 2D shape of the mask the grid is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
             of the value at a higher sub size to the value computed using the previous sub_size. The fractional
@@ -193,8 +193,8 @@ class Grid2DIterate(Grid2D):
         shape_native
             The 2D shape of the uniform grid and the mask that it is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
             of the value at a higher sub size to the value computed using the previous sub_size. The fractional

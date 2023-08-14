@@ -7,10 +7,27 @@ import shutil
 
 import autoarray as aa
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))),
     "files",
 )
+
+
+@pytest.fixture(name="test_data_path")
+def make_test_data_path():
+    test_data_path = path.join(
+        "{}".format(os.path.dirname(os.path.realpath(__file__))),
+        "files",
+        "array",
+        "output_test",
+    )
+
+    if os.path.exists(test_data_path):
+        shutil.rmtree(test_data_path)
+
+    os.makedirs(test_data_path)
+
+    return test_data_path
 
 
 def test__psf_and_mask_hit_edge__automatically_pads_image_and_noise_map():
@@ -56,9 +73,9 @@ def test__no_noise_map__raises_exception():
 def test__from_fits():
     dataset = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        data_path=path.join(test_data_dir, "3x3_ones.fits"),
-        psf_path=path.join(test_data_dir, "3x3_twos.fits"),
-        noise_map_path=path.join(test_data_dir, "3x3_threes.fits"),
+        data_path=path.join(test_data_path, "3x3_ones.fits"),
+        psf_path=path.join(test_data_path, "3x3_twos.fits"),
+        noise_map_path=path.join(test_data_path, "3x3_threes.fits"),
     )
 
     assert (dataset.data.native == np.ones((3, 3))).all()
@@ -71,11 +88,11 @@ def test__from_fits():
 
     dataset = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        data_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
+        data_path=path.join(test_data_path, "3x3_multiple_hdu.fits"),
         data_hdu=0,
-        psf_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
+        psf_path=path.join(test_data_path, "3x3_multiple_hdu.fits"),
         psf_hdu=1,
-        noise_map_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
+        noise_map_path=path.join(test_data_path, "3x3_multiple_hdu.fits"),
         noise_map_hdu=2,
     )
 
@@ -88,46 +105,24 @@ def test__from_fits():
     assert dataset.noise_map.mask.pixel_scales == (0.1, 0.1)
 
 
-def test__output_to_fits():
-    dataset = aa.Imaging.from_fits(
-        pixel_scales=0.1,
-        data_path=path.join(test_data_dir, "3x3_ones.fits"),
-        psf_path=path.join(test_data_dir, "3x3_twos.fits"),
-        noise_map_path=path.join(test_data_dir, "3x3_threes.fits"),
-    )
-
-    output_data_dir = path.join(
-        "{}".format(os.path.dirname(os.path.realpath(__file__))),
-        "files",
-        "array",
-        "output_test",
-    )
-
-    if os.path.exists(output_data_dir):
-        shutil.rmtree(output_data_dir)
-
-    os.makedirs(output_data_dir)
-
-    dataset.output_to_fits(
-        data_path=path.join(output_data_dir, "data.fits"),
-        psf_path=path.join(output_data_dir, "psf.fits"),
-        noise_map_path=path.join(output_data_dir, "noise_map.fits"),
+def test__output_to_fits(imaging_7x7, test_data_path):
+    imaging_7x7.output_to_fits(
+        data_path=path.join(test_data_path, "data.fits"),
+        psf_path=path.join(test_data_path, "psf.fits"),
+        noise_map_path=path.join(test_data_path, "noise_map.fits"),
     )
 
     dataset = aa.Imaging.from_fits(
         pixel_scales=0.1,
-        data_path=path.join(output_data_dir, "data.fits"),
-        psf_path=path.join(output_data_dir, "psf.fits"),
-        noise_map_path=path.join(output_data_dir, "noise_map.fits"),
+        data_path=path.join(test_data_path, "data.fits"),
+        psf_path=path.join(test_data_path, "psf.fits"),
+        noise_map_path=path.join(test_data_path, "noise_map.fits"),
     )
 
-    assert (dataset.data.native == np.ones((3, 3))).all()
-    assert (dataset.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
-    assert (dataset.noise_map.native == 3.0 * np.ones((3, 3))).all()
-
+    assert (dataset.data.native == np.ones((7, 7))).all()
+    assert dataset.psf.native[1, 1] == pytest.approx(0.33333, 1.0e-4)
+    assert (dataset.noise_map.native == 2.0 * np.ones((7, 7))).all()
     assert dataset.pixel_scales == (0.1, 0.1)
-    assert dataset.psf.mask.pixel_scales == (0.1, 0.1)
-    assert dataset.noise_map.mask.pixel_scales == (0.1, 0.1)
 
 
 def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):
@@ -235,7 +230,7 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
         (1.0 / 49.0) * np.ones((7, 7)), 1.0e-4
     )
     assert masked_dataset.convolver.kernel.shape_native == (7, 7)
-    assert (masked_dataset.image == np.array([1.0])).all()
+    assert (masked_dataset.data == np.array([1.0])).all()
     assert (masked_dataset.noise_map == np.array([2.0])).all()
 
 

@@ -1,4 +1,5 @@
 import numpy as np
+from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
 from autoconf import conf
@@ -15,7 +16,6 @@ from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.geometry import geometry_util
 
-from autoarray import exc
 from autoarray import type as ty
 
 
@@ -276,8 +276,8 @@ class Grid2D(Structure):
         shape_native
             The 2D shape of the mask the grid is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -331,8 +331,8 @@ class Grid2D(Structure):
         shape_native
             The 2D shape of the mask the grid is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -405,8 +405,8 @@ class Grid2D(Structure):
         x or list
             The x coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -466,8 +466,8 @@ class Grid2D(Structure):
         shape_native
             The 2D shape of the grid that is created within this extent.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -560,8 +560,8 @@ class Grid2D(Structure):
         shape_native
             The 2D shape of the uniform grid and the mask that it is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -618,7 +618,7 @@ class Grid2D(Structure):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
+        file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),

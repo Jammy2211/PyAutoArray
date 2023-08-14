@@ -7,7 +7,7 @@ import autoarray as aa
 
 from autoarray.operators import transformer
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))),
     "files",
 )
@@ -41,11 +41,11 @@ def test__dirty_properties(
 def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2d_7x7):
     dataset = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
-        data_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
+        data_path=path.join(test_data_path, "3x2_multiple_hdu.fits"),
         visibilities_hdu=0,
-        noise_map_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
+        noise_map_path=path.join(test_data_path, "3x2_multiple_hdu.fits"),
         noise_map_hdu=1,
-        uv_wavelengths_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
+        uv_wavelengths_path=path.join(test_data_path, "3x2_multiple_hdu.fits"),
         uv_wavelengths_hdu=2,
     )
 
@@ -56,37 +56,43 @@ def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2
 
 
 def test__output_all_arrays(sub_mask_2d_7x7):
-    dataset = aa.Interferometer.from_fits(
-        real_space_mask=sub_mask_2d_7x7,
-        data_path=path.join(test_data_dir, "3x2_ones_twos.fits"),
-        noise_map_path=path.join(test_data_dir, "3x2_threes_fours.fits"),
-        uv_wavelengths_path=path.join(test_data_dir, "3x2_fives_sixes.fits"),
+
+    test_data_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "files",
     )
 
-    output_data_dir = path.join(
+    dataset = aa.Interferometer.from_fits(
+        real_space_mask=sub_mask_2d_7x7,
+        data_path=path.join(test_data_path, "3x2_ones_twos.fits"),
+        noise_map_path=path.join(test_data_path, "3x2_threes_fours.fits"),
+        uv_wavelengths_path=path.join(test_data_path, "3x2_fives_sixes.fits"),
+    )
+
+    test_data_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "array",
         "output_test",
     )
 
-    if path.exists(output_data_dir):
-        shutil.rmtree(output_data_dir)
+    if path.exists(test_data_path):
+        shutil.rmtree(test_data_path)
 
-    os.makedirs(output_data_dir)
+    os.makedirs(test_data_path)
 
     dataset.output_to_fits(
-        data_path=path.join(output_data_dir, "data.fits"),
-        noise_map_path=path.join(output_data_dir, "noise_map.fits"),
-        uv_wavelengths_path=path.join(output_data_dir, "uv_wavelengths.fits"),
+        data_path=path.join(test_data_path, "data.fits"),
+        noise_map_path=path.join(test_data_path, "noise_map.fits"),
+        uv_wavelengths_path=path.join(test_data_path, "uv_wavelengths.fits"),
         overwrite=True,
     )
 
     dataset = aa.Interferometer.from_fits(
         real_space_mask=sub_mask_2d_7x7,
-        data_path=path.join(output_data_dir, "data.fits"),
-        noise_map_path=path.join(output_data_dir, "noise_map.fits"),
-        uv_wavelengths_path=path.join(output_data_dir, "uv_wavelengths.fits"),
+        data_path=path.join(test_data_path, "data.fits"),
+        noise_map_path=path.join(test_data_path, "noise_map.fits"),
+        uv_wavelengths_path=path.join(test_data_path, "uv_wavelengths.fits"),
     )
 
     assert (dataset.data == np.array([1.0 + 2.0j, 1.0 + 2.0j, 1.0 + 2.0j])).all()

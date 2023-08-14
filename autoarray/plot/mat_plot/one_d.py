@@ -159,6 +159,7 @@ class MatPlot1D(AbstractMatPlot):
         x_errors=None,
         y_extra=None,
         ls_errorbar="",
+        should_plot_grid=False,
         text_manual_dict=None,
         text_manual_dict_y=None,
         bypass: bool = False,
@@ -204,6 +205,8 @@ class MatPlot1D(AbstractMatPlot):
             y_extra=y_extra,
             ls_errorbar=ls_errorbar,
         )
+        if should_plot_grid:
+            plt.grid(True)
 
         if visuals_1d.shaded_region is not None:
             self.fill_between.fill_between_shaded_regions(

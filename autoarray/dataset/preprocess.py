@@ -166,7 +166,8 @@ def noise_map_via_weight_map_from(weight_map):
     Parameters
     ----------
     pixel_scales
-        The size of each pixel in scaled units.
+        The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
     weight_map
         The weight-value of each pixel which is converted to a variance.
     """

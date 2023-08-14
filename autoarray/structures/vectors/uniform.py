@@ -268,8 +268,8 @@ class VectorYX2D(AbstractVectorYX2D):
         shape_native
             The 2D shape of the mask the grid is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -366,8 +366,8 @@ class VectorYX2D(AbstractVectorYX2D):
         fill_value
             The value all array elements are filled with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -407,8 +407,8 @@ class VectorYX2D(AbstractVectorYX2D):
         fill_value
             The value all array elements are filled with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -442,8 +442,8 @@ class VectorYX2D(AbstractVectorYX2D):
         fill_value
             The value all array elements are filled with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin

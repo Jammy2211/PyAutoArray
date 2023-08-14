@@ -1,6 +1,7 @@
 import logging
 import numpy as np
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 from autoconf import cached_property
 
@@ -29,6 +30,7 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         settings: SettingsImaging = SettingsImaging(),
         pad_for_convolver: bool = False,
+        check_noise_map: bool = True,
     ):
         """
         A class containing an imaging dataset, including the image data, noise-map and a point spread function (PSF).
@@ -45,6 +47,8 @@ class Imaging(AbstractDataset):
             telescope optics via 2D convolution.
         settings
             Controls settings of how the dataset is set up (e.g. the types of grids used to perform calculations).
+        check_noise_map
+            If True, the noise-map is checked to ensure all values are above zero.
         """
 
         self.unmasked = None
@@ -80,7 +84,7 @@ class Imaging(AbstractDataset):
             settings=settings,
         )
 
-        if self.noise_map.native is not None:
+        if self.noise_map.native is not None and check_noise_map:
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
                 zero_entries = np.argwhere(self.noise_map.native <= 0.0)
 
@@ -100,10 +104,6 @@ class Imaging(AbstractDataset):
             )
 
         self.psf = psf
-
-    @property
-    def image(self):
-        return self.data
 
     @cached_property
     def blurring_grid(self) -> Grid2D:
@@ -142,6 +142,7 @@ class Imaging(AbstractDataset):
         Convolver
             The convolver given the masked imaging data's mask and PSF.
         """
+
         return Convolver(mask=self.mask, kernel=self.psf)
 
     @cached_property
@@ -184,42 +185,53 @@ class Imaging(AbstractDataset):
     @classmethod
     def from_fits(
         cls,
-        data_path: str,
         pixel_scales: ty.PixelScales,
-        noise_map_path: str,
+        data_path: Union[Path, str],
+        noise_map_path: Union[Path, str],
         data_hdu: int = 0,
         noise_map_hdu: int = 0,
-        psf_path: str = None,
+        psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
     ) -> "Imaging":
         """
-        Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the imaging-data.
+        Load an imaging dataset from multiple .fits file.
 
-        This factory also includes a number of routines for converting the imaging-data from unit_label not
-        supported by PyAutoLens (e.g. adus, electrons) to electrons per second.
+        For each attribute of the imaging data (e.g. `data`, `noise_map`, `pre_cti_data`) the path to
+        the .fits and the `hdu` containing the data can be specified.
+
+        The `noise_map` assumes the noise value in each `data` value are independent, where these values are the
+        the RMS standard deviation error in each pixel.
+
+        A `noise_covariance_matrix` can be input instead, which represents the covariance between noise values in
+        the data and can be used to fit the data accounting for correlations (the `noise_map` is the diagonal values
+        of this matrix).
+
+        If the dataset has a mask associated with it (e.g. in a `mask.fits` file) the file must be loaded separately
+        via the `Mask2D` object and applied to the imaging after loading via fits using the `from_fits` method.
 
         Parameters
         ----------
-        noise_map_non_constant
-        data_path
-            The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
         pixel_scales
-            The size of each pixel in scaled units.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
+        data_path
+            The path to the data .fits file containing the image data (e.g. '/path/to/image.fits').
         data_hdu
-            The hdu the image is contained in the .fits file specified by *data_path*.
+            The hdu the image data is contained in the .fits file specified by `data_path`.
         psf_path
-            The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
+            The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits').
         psf_hdu
-            The hdu the psf is contained in the .fits file specified by *psf_path*.
+            The hdu the psf is contained in the .fits file specified by `psf_path`.
         noise_map_path
-            The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
+            The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits').
         noise_map_hdu
-            The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
+            The hdu the noise map is contained in the .fits file specified by `noise_map_path`.
+        noise_covariance_matrix
+            A noise-map covariance matrix representing the covariance between noise in every `data` value.
         """
 
-        image = Array2D.from_fits(
+        data = Array2D.from_fits(
             file_path=data_path, hdu=data_hdu, pixel_scales=pixel_scales
         )
 
@@ -239,7 +251,7 @@ class Imaging(AbstractDataset):
             psf = None
 
         return Imaging(
-            data=image,
+            data=data,
             noise_map=noise_map,
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
@@ -265,7 +277,7 @@ class Imaging(AbstractDataset):
             unmasked_dataset = self.unmasked
 
         data = Array2D(
-            values=unmasked_dataset.image.native, mask=mask.derive_mask.sub_1
+            values=unmasked_dataset.data.native, mask=mask.derive_mask.sub_1
         )
 
         noise_map = Array2D(
@@ -325,11 +337,32 @@ class Imaging(AbstractDataset):
 
     def output_to_fits(
         self,
-        data_path: str,
-        psf_path: str = None,
-        noise_map_path: str = None,
+        data_path: Union[Path, str],
+        psf_path: Optional[Union[Path, str]] = None,
+        noise_map_path: Optional[Union[Path, str]] = None,
         overwrite: bool = False,
     ):
+        """
+        Output an imaging dataset to multiple .fits file.
+
+        For each attribute of the imaging data (e.g. `data`, `noise_map`) the path to
+        the .fits can be specified, with `hdu=0` assumed automatically.
+
+        If the `data` has been masked, the masked data is output to .fits files. A mask can be separately output to
+        a file `mask.fits` via the `Mask` objects `output_to_fits` method.
+
+        Parameters
+        ----------
+        data_path
+            The path to the data .fits file where the image data is output (e.g. '/path/to/data.fits').
+        psf_path
+            The path to the psf .fits file where the psf is output (e.g. '/path/to/psf.fits').
+        noise_map_path
+            The path to the noise_map .fits where the noise_map is output (e.g. '/path/to/noise_map.fits').
+        overwrite
+            If `True`, the .fits files are overwritten if they already exist, if `False` they are not and an
+            exception is raised.
+        """
         self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
 
         if self.psf is not None and psf_path is not None:

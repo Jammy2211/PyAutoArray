@@ -2,8 +2,8 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from autoarray.structures.abstract_structure import Structure
@@ -35,7 +35,7 @@ class AbstractNDArray(np.ndarray, ABC):
         Returns the data structure in its `native` format which contains all unmaksed values to the native dimensions.
         """
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the grid to a .fits file.
 

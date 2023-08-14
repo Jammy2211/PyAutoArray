@@ -7,7 +7,7 @@ import shutil
 
 import autoarray as aa
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "imaging"
 )
 
