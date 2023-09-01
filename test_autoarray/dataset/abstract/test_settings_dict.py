@@ -9,18 +9,21 @@ import autoarray as aa
 @pytest.fixture(name="settings_dict")
 def make_settings_dict():
     return {
-        "type": "autoarray.dataset.imaging.settings.SettingsImaging",
-        "grid_class": {
-            "type": "type",
-            "class_path": "autoarray.structures.grids.uniform_2d.Grid2D",
+        "type": "instance",
+        "class_path": "autoarray.dataset.imaging.settings.SettingsImaging",
+        "arguments": {
+            "grid_class": {
+                "type": "type",
+                "class_path": "autoarray.structures.grids.uniform_2d.Grid2D",
+            },
+            "grid_pixelization_class": None,
+            "sub_size": 1,
+            "sub_size_pixelization": 4,
+            "fractional_accuracy": 0.9999,
+            "relative_accuracy": None,
+            "sub_steps": None,
+            "use_normalized_psf": True,
         },
-        "grid_pixelization_class": None,
-        "sub_size": 1,
-        "sub_size_pixelization": 4,
-        "fractional_accuracy": 0.9999,
-        "relative_accuracy": None,
-        "sub_steps": None,
-        "use_normalized_psf": True,
     }
 
 

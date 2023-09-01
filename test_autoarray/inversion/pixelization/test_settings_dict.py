@@ -9,10 +9,13 @@ import autoarray as aa
 @pytest.fixture(name="settings_dict")
 def make_settings_dict():
     return {
-        "type": "autoarray.inversion.pixelization.settings.SettingsPixelization",
-        "use_border": True,
-        "is_stochastic": False,
-        "kmeans_seed": 0,
+        "type": "instance",
+        "class_path": "autoarray.inversion.pixelization.settings.SettingsPixelization",
+        "arguments": {
+            "use_border": True,
+            "is_stochastic": False,
+            "kmeans_seed": 0,
+        },
     }
 
 
