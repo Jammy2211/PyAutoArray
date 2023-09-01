@@ -1,6 +1,5 @@
 from typing import List, Optional, Tuple, Type, Union
 
-from autoconf.dictable import Dictable
 
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -40,7 +39,7 @@ def grid_via_grid_class_from(
         )
 
 
-class AbstractSettingsDataset(Dictable):
+class AbstractSettingsDataset:
     def __init__(
         self,
         grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,

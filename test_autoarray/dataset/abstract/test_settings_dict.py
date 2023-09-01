@@ -4,6 +4,7 @@ import pytest
 from pathlib import Path
 
 import autoarray as aa
+from autoconf.dictable import from_dict, output_to_json, from_json
 
 
 @pytest.fixture(name="settings_dict")
@@ -28,15 +29,15 @@ def make_settings_dict():
 
 
 def test_settings_from_dict(settings_dict):
-    assert isinstance(aa.SettingsImaging.from_dict(settings_dict), aa.SettingsImaging)
+    assert isinstance(from_dict(settings_dict), aa.SettingsImaging)
 
 
 def test_file():
     filename = Path("/tmp/temp.json")
 
-    aa.SettingsImaging(grid_class=aa.Grid2D).output_to_json(filename)
+    output_to_json(aa.SettingsImaging(grid_class=aa.Grid2D), filename)
 
     try:
-        assert isinstance(aa.SettingsImaging.from_json(filename), aa.SettingsImaging)
+        assert isinstance(from_json(filename), aa.SettingsImaging)
     finally:
         os.remove(filename)

@@ -1,10 +1,7 @@
 import copy
 
 
-from autoconf.dictable import Dictable
-
-
-class SettingsPixelization(Dictable):
+class SettingsPixelization:
     def __init__(
         self, use_border: bool = True, is_stochastic: bool = False, kmeans_seed: int = 0
     ):
