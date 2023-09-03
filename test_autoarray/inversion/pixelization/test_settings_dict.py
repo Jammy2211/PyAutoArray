@@ -4,32 +4,32 @@ import pytest
 from pathlib import Path
 
 import autoarray as aa
+from autoconf.dictable import from_dict, output_to_json, from_json
 
 
 @pytest.fixture(name="settings_dict")
 def make_settings_dict():
     return {
-        "type": "autoarray.inversion.pixelization.settings.SettingsPixelization",
-        "use_border": True,
-        "is_stochastic": False,
-        "kmeans_seed": 0,
+        "type": "instance",
+        "class_path": "autoarray.inversion.pixelization.settings.SettingsPixelization",
+        "arguments": {
+            "use_border": True,
+            "is_stochastic": False,
+            "kmeans_seed": 0,
+        },
     }
 
 
 def test_settings_from_dict(settings_dict):
-    assert isinstance(
-        aa.SettingsPixelization.from_dict(settings_dict), aa.SettingsPixelization
-    )
+    assert isinstance(from_dict(settings_dict), aa.SettingsPixelization)
 
 
 def test_file():
     filename = Path("/tmp/temp.json")
 
-    aa.SettingsPixelization().output_to_json(filename)
+    output_to_json(aa.SettingsPixelization(), filename)
 
     try:
-        assert isinstance(
-            aa.SettingsPixelization().from_json(filename), aa.SettingsPixelization
-        )
+        assert isinstance(from_json(filename), aa.SettingsPixelization)
     finally:
         os.remove(filename)
