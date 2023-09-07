@@ -1103,13 +1103,15 @@ class Array2D(AbstractArray2D):
                 sub_size=2
             )
         """
+
         return cls.no_mask(
-            values=primary_hdu.data.astype("float"),
+            values=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
             pixel_scales=primary_hdu.header["PIXSCALE"],
             sub_size=sub_size,
             origin=origin,
             header=Header(header_sci_obj=primary_hdu.header),
         )
+
 
     @classmethod
     def from_yx_and_values(
