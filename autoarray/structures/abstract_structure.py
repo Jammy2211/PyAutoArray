@@ -2,7 +2,7 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-from typing import TYPE_CHECKING, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Tuple, Union
 
 if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_1d import Grid1D
@@ -67,6 +67,10 @@ class Structure(AbstractNDArray, ABC):
     @property
     def pixel_scale(self) -> float:
         return self.mask.pixel_scale
+
+    @property
+    def pixel_scale_header(self) -> Dict:
+        return self.mask.pixel_scale_header
 
     @property
     def pixel_area(self):

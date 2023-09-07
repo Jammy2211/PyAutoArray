@@ -182,6 +182,7 @@ class YX1DPlotter(Plotter):
         """
         Plots the plotter's y and x values in 1D.
         """
+
         self.mat_plot_1d.plot_yx(
             y=self.y,
             x=self.x,

@@ -2,7 +2,7 @@ from abc import ABC
 import logging
 import numpy as np
 from pathlib import Path
-from typing import Union
+from typing import Dict, Union
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
@@ -79,6 +79,27 @@ class Mask(AbstractNDArray, ABC):
                 )
 
         return self.pixel_scales[0]
+
+    @property
+    def pixel_scale_header(self) -> Dict:
+        """
+        Returns the pixel scale of the mask as a header dictionary, which can be written to a .fits file.
+
+        If the array has different pixel scales in 2 dimensions, the header will contain both pixel scales as separate
+        y and x entries.
+
+        Returns
+        -------
+        A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
+        """
+        try:
+            return {"PIXSCALE": self.pixel_scale}
+        except exc.MaskException:
+            return {
+                "PIXSCALEY" : self.pixel_scales[0],
+                "PIXSCALEX" : self.pixel_scales[1]
+            }
+
 
     @property
     def dimensions(self) -> int:

@@ -374,5 +374,5 @@ class Array1D(Structure):
             array_1d=self.native,
             file_path=file_path,
             overwrite=overwrite,
-            header_dict={"PIXSCALE": self.pixel_scale},
+            header_dict=self.pixel_scale_header
         )

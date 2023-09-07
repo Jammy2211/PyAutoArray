@@ -23,6 +23,12 @@ class MultiFigurePlotter:
         )
 
         for i, plotter in enumerate(self.plotter_list):
+
+            plotter.mat_plot_2d.set_for_subplot(is_for_subplot=True)
+            plotter.mat_plot_2d.number_subplots = number_subplots
+            plotter.mat_plot_2d.subplot_shape = self.subplot_shape
+            plotter.mat_plot_2d.subplot_index = i + 1
+
             func = getattr(plotter, func_name)
 
             if figure_name is None:
@@ -75,7 +81,14 @@ class MultiFigurePlotter:
 
 
 class MultiYX1DPlotter:
-    def __init__(self, plotter_list, color_list=None, legend_labels=None):
+    def __init__(
+            self,
+            plotter_list,
+            color_list=None,
+            legend_labels=None,
+            y_manual_min_max_value=None,
+            x_manual_min_max_value=None,
+    ):
         self.plotter_list = plotter_list
 
         if color_list is None:
@@ -83,6 +96,9 @@ class MultiYX1DPlotter:
 
         self.color_list = color_list
         self.legend_labels = legend_labels
+
+        self.y_manual_min_max_value = y_manual_min_max_value
+        self.x_manual_min_max_value = x_manual_min_max_value
 
     def figure_1d(self, func_name, figure_name, is_for_subplot=False, **kwargs):
         if not is_for_subplot:
@@ -120,6 +136,10 @@ class MultiYX1DPlotter:
         # TODO : GalaxyPlotters where y and x are computed inside the function called via
         # TODO : func(**{**{figure_name: True}, **kwargs})
 
+        if self.y_manual_min_max_value is not None:
+
+            return YTicks(manual_min_max_value=self.y_manual_min_max_value)
+
         try:
             min_value = min([min(plotter.y) for plotter in self.plotter_list])
             max_value = max([max(plotter.y) for plotter in self.plotter_list])
@@ -130,6 +150,10 @@ class MultiYX1DPlotter:
 
     @property
     def xticks(self):
+
+        if self.x_manual_min_max_value is not None:
+            return XTicks(manual_min_max_value=self.x_manual_min_max_value)
+
         try:
             min_value = min([min(plotter.x) for plotter in self.plotter_list])
             max_value = max([max(plotter.x) for plotter in self.plotter_list])

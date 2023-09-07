@@ -262,5 +262,5 @@ class Mask1D(Mask):
             array_1d=self.astype("float"), 
             file_path=file_path, 
             overwrite=overwrite, 
-            header_dict={"PIXSCALE": self.pixel_scale},
+            header_dict=self.pixel_scale_header
         )

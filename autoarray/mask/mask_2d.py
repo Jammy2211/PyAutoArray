@@ -914,7 +914,10 @@ class Mask2D(Mask):
         mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
         array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.astype("float"), file_path=file_path, overwrite=overwrite, header_dict={"PIXSCALE": self.pixel_scale},
+            array_2d=self.astype("float"),
+            file_path=file_path,
+            overwrite=overwrite,
+            header_dict=self.pixel_scale_header
         )
 
     @property
