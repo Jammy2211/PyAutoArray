@@ -5,6 +5,8 @@ import numpy as np
 from pathlib import Path
 from typing import Union, TYPE_CHECKING
 
+from autoconf import conf
+
 if TYPE_CHECKING:
     from autoarray.structures.abstract_structure import Structure
 
@@ -34,6 +36,12 @@ class AbstractNDArray(np.ndarray, ABC):
         """
         Returns the data structure in its `native` format which contains all unmaksed values to the native dimensions.
         """
+
+    @staticmethod
+    def flip_hdu_for_ds9(values):
+        if conf.instance["general"]["fits"]["flip_for_ds9"]:
+            return np.flipud(values)
+        return values
 
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """

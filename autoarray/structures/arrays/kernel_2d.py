@@ -421,7 +421,7 @@ class Kernel2D(AbstractArray2D):
             )
         """
         return cls.no_mask(
-            values=primary_hdu.data.astype("float"),
+            values=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
             pixel_scales=primary_hdu.header["PIXSCALE"],
             origin=origin,
         )

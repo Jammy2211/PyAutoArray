@@ -825,7 +825,7 @@ class Mask2D(Mask):
             )
         """
         return cls(
-            mask=primary_hdu.data.astype("bool"),
+            mask=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
             pixel_scales=primary_hdu.header["PIXSCALE"],
             sub_size=sub_size,
             origin=origin,
