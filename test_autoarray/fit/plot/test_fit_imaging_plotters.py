@@ -87,4 +87,4 @@ def test__output_as_fits__correct_output_format(
         file_path=path.join(plot_path, "data.fits"), hdu=0
     )
 
-    assert image_from_plot.shape == (5, 5)
+    assert image_from_plot.shape == (7, 7)
