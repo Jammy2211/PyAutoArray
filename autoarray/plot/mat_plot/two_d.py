@@ -242,11 +242,23 @@ class MatPlot2D(AbstractMatPlot):
         else:
             buffer = 1
 
+        zoom_around_mask = False
+
         if conf.instance["visualize"]["general"]["general"]["zoom_around_mask"]:
+
+            zoom_around_mask = True
+
+        if self.output.format == "fits" and conf.instance["visualize"]["general"]["general"]["disable_zoom_for_fits"]:
+
+            zoom_around_mask = False
+
+        if zoom_around_mask:
+
             extent = array.extent_of_zoomed_array(buffer=buffer)
             array = array.zoomed_around_mask(buffer=buffer)
 
         else:
+
             extent = array.geometry.extent
 
         ax = None
