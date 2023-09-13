@@ -743,7 +743,7 @@ def array_2d_native_complex_via_indexes_from(
     return sub_array_2d
 
 
-def hdu_for_output_from(array_2d: np.ndarray, header_dict: Optional[dict] = None):
+def hdu_for_output_from(array_2d: np.ndarray, header_dict: Optional[dict] = None) -> fits.PrimaryHDU:
     """
     Returns the HDU which can be used to output an array to a .fits file.
 
