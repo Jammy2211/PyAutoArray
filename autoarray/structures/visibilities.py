@@ -1,3 +1,4 @@
+from astropy.io import fits
 import logging
 import numpy as np
 from pathlib import Path
@@ -95,6 +96,22 @@ class AbstractVisibilities(Structure):
     @cached_property
     def phases(self) -> np.ndarray:
         return np.arctan2(self.imag, self.real)
+
+    @property
+    def hdu_for_output(self) -> fits.PrimaryHDU:
+        """
+        The visibilities as an HDU object, which can be output to a .fits file.
+
+        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
+        files.
+
+        Returns
+        -------
+        The HDU containing the data which can then be written to .fits.
+        """
+        return array_2d_util.hdu_for_output_from(
+            array_2d=self.in_array,
+        )
 
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
