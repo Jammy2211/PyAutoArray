@@ -192,7 +192,10 @@ def array_1d_via_indexes_1d_from(
 
 
 def numpy_array_1d_to_fits(
-    array_1d: np.ndarray, file_path: Union[Path, str], overwrite: bool = False, header_dict: Optional[dict] = None,
+    array_1d: np.ndarray,
+    file_path: Union[Path, str],
+    overwrite: bool = False,
+    header_dict: Optional[dict] = None,
 ):
     """
     Write a 1D NumPy array to a .fits file.
@@ -232,7 +235,6 @@ def numpy_array_1d_to_fits(
     if header_dict is not None:
         for key, value in header_dict.items():
             header.append((key, value, [""]))
-
 
     hdu = fits.PrimaryHDU(array_1d, header)
     hdu.writeto(file_path)

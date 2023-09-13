@@ -903,8 +903,7 @@ class Mask2D(Mask):
         The HDU containing the data and its header which can then be written to .fits.
         """
         return array_2d_util.hdu_for_output_from(
-            array_2d=self.astype("float"),
-            header_dict=self.pixel_scale_header
+            array_2d=self.astype("float"), header_dict=self.pixel_scale_header
         )
 
     def output_to_fits(self, file_path, overwrite=False):
@@ -936,7 +935,7 @@ class Mask2D(Mask):
             array_2d=self.astype("float"),
             file_path=file_path,
             overwrite=overwrite,
-            header_dict=self.pixel_scale_header
+            header_dict=self.pixel_scale_header,
         )
 
     @property

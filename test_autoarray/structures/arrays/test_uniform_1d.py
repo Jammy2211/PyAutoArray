@@ -177,7 +177,7 @@ def test__from_primary_hdu():
 
     assert type(arr) == aa.Array1D
     assert (arr.native == arr).all()
-    assert arr.pixel_scales == (0.1, )
+    assert arr.pixel_scales == (0.1,)
 
 
 def test__output_to_fits():
@@ -196,7 +196,9 @@ def test__output_to_fits():
 
     assert (array_from_out.native == np.ones((3,))).all()
 
-    header_load = aa.util.array_2d.header_obj_from(file_path=path.join(test_data_path, "array.fits"), hdu=0)
+    header_load = aa.util.array_2d.header_obj_from(
+        file_path=path.join(test_data_path, "array.fits"), hdu=0
+    )
 
     assert header_load["PIXSCALE"] == 1.0
 

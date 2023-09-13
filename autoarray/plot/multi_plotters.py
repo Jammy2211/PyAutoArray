@@ -23,7 +23,6 @@ class MultiFigurePlotter:
         )
 
         for i, plotter in enumerate(self.plotter_list):
-
             plotter.mat_plot_2d.set_for_subplot(is_for_subplot=True)
             plotter.mat_plot_2d.number_subplots = number_subplots
             plotter.mat_plot_2d.subplot_shape = self.subplot_shape
@@ -82,12 +81,12 @@ class MultiFigurePlotter:
 
 class MultiYX1DPlotter:
     def __init__(
-            self,
-            plotter_list,
-            color_list=None,
-            legend_labels=None,
-            y_manual_min_max_value=None,
-            x_manual_min_max_value=None,
+        self,
+        plotter_list,
+        color_list=None,
+        legend_labels=None,
+        y_manual_min_max_value=None,
+        x_manual_min_max_value=None,
     ):
         self.plotter_list = plotter_list
 
@@ -137,7 +136,6 @@ class MultiYX1DPlotter:
         # TODO : func(**{**{figure_name: True}, **kwargs})
 
         if self.y_manual_min_max_value is not None:
-
             return YTicks(manual_min_max_value=self.y_manual_min_max_value)
 
         try:
@@ -150,7 +148,6 @@ class MultiYX1DPlotter:
 
     @property
     def xticks(self):
-
         if self.x_manual_min_max_value is not None:
             return XTicks(manual_min_max_value=self.x_manual_min_max_value)
 

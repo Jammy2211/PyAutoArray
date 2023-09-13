@@ -322,7 +322,9 @@ def test__from_yx_and_values():
 
 
 def test__output_to_fits():
-    test_data_path = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
+    test_data_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "files"
+    )
 
     array_2d = aa.Array2D.from_fits(
         file_path=path.join(test_data_path, "3x3_ones.fits"), hdu=0, pixel_scales=1.0

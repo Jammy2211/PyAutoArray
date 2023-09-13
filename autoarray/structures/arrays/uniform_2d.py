@@ -641,8 +641,7 @@ class AbstractArray2D(Structure):
         The HDU containing the data and its header which can then be written to .fits.
         """
         return array_2d_util.hdu_for_output_from(
-            array_2d=self.native,
-            header_dict=self.pixel_scale_header
+            array_2d=self.native, header_dict=self.pixel_scale_header
         )
 
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
@@ -663,7 +662,7 @@ class AbstractArray2D(Structure):
             array_2d=self.native,
             file_path=file_path,
             overwrite=overwrite,
-            header_dict=self.pixel_scale_header
+            header_dict=self.pixel_scale_header,
         )
 
 
@@ -1130,7 +1129,6 @@ class Array2D(AbstractArray2D):
             origin=origin,
             header=Header(header_sci_obj=primary_hdu.header),
         )
-
 
     @classmethod
     def from_yx_and_values(
