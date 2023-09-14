@@ -768,7 +768,7 @@ def hdu_for_output_from(
     Examples
     --------
     array_2d = np.ones((5,5))
-    numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
+    hdu_for_output_from(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
     header = fits.Header()
 

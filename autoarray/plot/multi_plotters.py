@@ -23,10 +23,16 @@ class MultiFigurePlotter:
         )
 
         for i, plotter in enumerate(self.plotter_list):
-            plotter.mat_plot_2d.set_for_subplot(is_for_subplot=True)
-            plotter.mat_plot_2d.number_subplots = number_subplots
-            plotter.mat_plot_2d.subplot_shape = self.subplot_shape
-            plotter.mat_plot_2d.subplot_index = i + 1
+            try:
+                plotter.mat_plot_2d.set_for_subplot(is_for_subplot=True)
+                plotter.mat_plot_2d.number_subplots = number_subplots
+                plotter.mat_plot_2d.subplot_shape = self.subplot_shape
+                plotter.mat_plot_2d.subplot_index = i + 1
+            except AttributeError:
+                plotter.mat_plot_1d.set_for_subplot(is_for_subplot=True)
+                plotter.mat_plot_1d.number_subplots = number_subplots
+                plotter.mat_plot_1d.subplot_shape = self.subplot_shape
+                plotter.mat_plot_1d.subplot_index = i + 1
 
             func = getattr(plotter, func_name)
 
