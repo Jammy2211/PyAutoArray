@@ -251,8 +251,7 @@ class Mask1D(Mask):
         The HDU containing the data and its header which can then be written to .fits.
         """
         return array_1d_util.hdu_for_output_from(
-            array_1d=self.astype("float"),
-            header_dict=self.pixel_scale_header
+            array_1d=self.astype("float"), header_dict=self.pixel_scale_header
         )
 
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):

@@ -225,7 +225,6 @@ def hdu_for_output_from(
     return fits.PrimaryHDU(array_1d, header)
 
 
-
 def numpy_array_1d_to_fits(
     array_1d: np.ndarray,
     file_path: Union[Path, str],
@@ -265,10 +264,7 @@ def numpy_array_1d_to_fits(
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
-    hdu = hdu_for_output_from(
-        array_1d=array_1d,
-        header_dict=header_dict
-    )
+    hdu = hdu_for_output_from(array_1d=array_1d, header_dict=header_dict)
     hdu.writeto(file_path)
 
 
