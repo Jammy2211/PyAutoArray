@@ -39,7 +39,6 @@ class Cmap(AbstractMatWrap):
         self.symmetric_value = None
 
     def symmetric_cmap_from(self, symmetric_value=None):
-
         cmap = copy.copy(self)
 
         cmap._symmetric = True

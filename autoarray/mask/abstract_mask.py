@@ -96,10 +96,9 @@ class Mask(AbstractNDArray, ABC):
             return {"PIXSCALE": self.pixel_scale}
         except exc.MaskException:
             return {
-                "PIXSCALEY" : self.pixel_scales[0],
-                "PIXSCALEX" : self.pixel_scales[1]
+                "PIXSCALEY": self.pixel_scales[0],
+                "PIXSCALEX": self.pixel_scales[1],
             }
-
 
     @property
     def dimensions(self) -> int:

@@ -743,6 +743,46 @@ def array_2d_native_complex_via_indexes_from(
     return sub_array_2d
 
 
+def hdu_for_output_from(
+    array_2d: np.ndarray, header_dict: Optional[dict] = None
+) -> fits.PrimaryHDU:
+    """
+    Returns the HDU which can be used to output an array to a .fits file.
+
+    Before outputting a NumPy array, the array may be flipped upside-down using np.flipud depending on the project
+    config files. This is for Astronomy projects so that structures appear the same orientation as ``.fits`` files
+    loaded in DS9.
+
+    Parameters
+    ----------
+    array_2d
+        The 2D array that is written to fits.
+    header_dict
+        A dictionary of values that are written to the header of the .fits file.
+
+    Returns
+    -------
+    hdu
+        The HDU containing the data and its header which can then be written to .fits.
+
+    Examples
+    --------
+    array_2d = np.ones((5,5))
+    hdu_for_output_from(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
+    """
+    header = fits.Header()
+
+    if header_dict is not None:
+        for key, value in header_dict.items():
+            header.append((key, value, [""]))
+
+    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
+
+    if flip_for_ds9:
+        return fits.PrimaryHDU(np.flipud(array_2d), header=header)
+    return fits.PrimaryHDU(array_2d, header=header)
+
+
 def numpy_array_2d_to_fits(
     array_2d: np.ndarray,
     file_path: Union[Path, str],
@@ -786,18 +826,7 @@ def numpy_array_2d_to_fits(
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
-    header = fits.Header()
-
-    if header_dict is not None:
-        for key, value in header_dict.items():
-            header.append((key, value, [""]))
-
-    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
-
-    if flip_for_ds9:
-        hdu = fits.PrimaryHDU(np.flipud(array_2d), header=header)
-    else:
-        hdu = fits.PrimaryHDU(array_2d, header=header)
+    hdu = hdu_for_output_from(array_2d=array_2d, header_dict=header_dict)
 
     hdu.writeto(file_path)
 

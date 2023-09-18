@@ -888,6 +888,24 @@ class Mask2D(Mask):
             padded_array=blurred_image, image_shape=image_shape
         )
 
+    @property
+    def hdu_for_output(self) -> fits.PrimaryHDU:
+        """
+        The mask as a HDU object, which can be output to a .fits file.
+
+        The header of the HDU is used to store the `pixel_scale` of the array, which is used by the `Array2D.from_hdu`.
+
+        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
+        files.
+
+        Returns
+        -------
+        The HDU containing the data and its header which can then be written to .fits.
+        """
+        return array_2d_util.hdu_for_output_from(
+            array_2d=self.astype("float"), header_dict=self.pixel_scale_header
+        )
+
     def output_to_fits(self, file_path, overwrite=False):
         """
         Write the 2D Mask to a .fits file.
@@ -917,7 +935,7 @@ class Mask2D(Mask):
             array_2d=self.astype("float"),
             file_path=file_path,
             overwrite=overwrite,
-            header_dict=self.pixel_scale_header
+            header_dict=self.pixel_scale_header,
         )
 
     @property

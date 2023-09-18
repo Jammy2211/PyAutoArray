@@ -191,8 +191,45 @@ def array_1d_via_indexes_1d_from(
     return array_1d_native
 
 
+def hdu_for_output_from(
+    array_1d: np.ndarray,
+    header_dict: Optional[dict] = None,
+):
+    """
+    Returns the HDU which can be used to output an array to a .fits file.
+
+    Parameters
+    ----------
+    array_1d
+        The 1D array that is written to fits.
+    header_dict
+        A dictionary of values that are written to the header of the .fits file.
+
+    Returns
+    -------
+    hdu
+        The HDU containing the data and its header which can then be written to .fits.
+
+    Examples
+    --------
+    array_1d = np.ones((5,5))
+    hdu_for_output_from(array_1d=array_1d, file_path='/path/to/file/filename.fits', overwrite=True)
+    """
+
+    header = fits.Header()
+
+    if header_dict is not None:
+        for key, value in header_dict.items():
+            header.append((key, value, [""]))
+
+    return fits.PrimaryHDU(array_1d, header)
+
+
 def numpy_array_1d_to_fits(
-    array_1d: np.ndarray, file_path: Union[Path, str], overwrite: bool = False, header_dict: Optional[dict] = None,
+    array_1d: np.ndarray,
+    file_path: Union[Path, str],
+    overwrite: bool = False,
+    header_dict: Optional[dict] = None,
 ):
     """
     Write a 1D NumPy array to a .fits file.
@@ -227,14 +264,7 @@ def numpy_array_1d_to_fits(
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
-    header = fits.Header()
-
-    if header_dict is not None:
-        for key, value in header_dict.items():
-            header.append((key, value, [""]))
-
-
-    hdu = fits.PrimaryHDU(array_1d, header)
+    hdu = hdu_for_output_from(array_1d=array_1d, header_dict=header_dict)
     hdu.writeto(file_path)
 
 

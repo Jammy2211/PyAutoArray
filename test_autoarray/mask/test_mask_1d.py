@@ -88,6 +88,7 @@ def test__is_all_false():
 
     assert mask.is_all_false is False
 
+
 def test__from_primary_hdu():
     file_path = os.path.join(test_data_path, "mask_out.fits")
 
@@ -108,4 +109,4 @@ def test__from_primary_hdu():
 
     assert type(mask_via_hdu) == aa.Mask1D
     assert (mask_via_hdu == mask).all()
-    assert mask_via_hdu.pixel_scales == (0.1, )
+    assert mask_via_hdu.pixel_scales == (0.1,)
