@@ -41,10 +41,7 @@ class AbstractDataset:
         """
 
         self.data = data
-        self.noise_map = noise_map
         self.settings = settings
-
-        mask = self.mask
 
         self.noise_covariance_matrix = noise_covariance_matrix
 
@@ -86,6 +83,7 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure.
         """
+        fff
 
         mask_grid = self.mask.mask_new_sub_size_from(
             mask=self.mask, sub_size=self.settings.sub_size
