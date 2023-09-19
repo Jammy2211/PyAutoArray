@@ -10,6 +10,8 @@ from autoconf import conf
 from autoarray.dataset.abstract.settings import AbstractSettingsDataset
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.uniform_1d import Grid1D
+from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 
@@ -74,10 +76,6 @@ class AbstractDataset:
         self.noise_map = noise_map
 
         if conf.instance["general"]["structures"]["use_dataset_grids"]:
-            mask_grid = mask.mask_new_sub_size_from(
-                mask=mask, sub_size=settings.sub_size
-            )
-            self.grid = settings.grid_from(mask=mask_grid)
 
             mask_inversion = mask.mask_new_sub_size_from(
                 mask=mask, sub_size=settings.sub_size_pixelization
@@ -86,6 +84,25 @@ class AbstractDataset:
             self.grid_pixelization = settings.grid_pixelization_from(
                 mask=mask_inversion
             )
+
+    @cached_property
+    def grid(self) -> Union[Grid1D, Grid2D]:
+        """
+        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data structure.
+
+        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
+
+        Returns
+        -------
+        The (y,x) coordinates of every pixel in the data structure, returned as a `Grid` object.
+
+        """
+
+        mask_grid = self.mask.mask_new_sub_size_from(
+            mask=self.mask,
+            sub_size=self.settings.sub_size
+        )
+        return self.settings.grid_from(mask=mask_grid)
 
     @property
     def shape_native(self):
