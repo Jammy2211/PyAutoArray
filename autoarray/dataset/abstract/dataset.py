@@ -75,16 +75,6 @@ class AbstractDataset:
 
         self.noise_map = noise_map
 
-        if conf.instance["general"]["structures"]["use_dataset_grids"]:
-
-            mask_inversion = mask.mask_new_sub_size_from(
-                mask=mask, sub_size=settings.sub_size_pixelization
-            )
-
-            self.grid_pixelization = settings.grid_pixelization_from(
-                mask=mask_inversion
-            )
-
     @cached_property
     def grid(self) -> Union[Grid1D, Grid2D]:
         """
@@ -94,15 +84,35 @@ class AbstractDataset:
 
         Returns
         -------
-        The (y,x) coordinates of every pixel in the data structure, returned as a `Grid` object.
-
+        The (y,x) coordinates of every pixel in the data structure.
         """
 
         mask_grid = self.mask.mask_new_sub_size_from(
-            mask=self.mask,
-            sub_size=self.settings.sub_size
+            mask=self.mask, sub_size=self.settings.sub_size
         )
         return self.settings.grid_from(mask=mask_grid)
+
+    @cached_property
+    def grid_pixelization(self) -> Grid2D:
+        """
+        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data structure which is used
+        specifically for pixelization reconstructions (e.g. an `inversion`).
+
+        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
+
+        A pixelization often uses a different grid of coordinates compared to the main `grid` of the data structure.
+        A common example is that a pixelization may use a higher `sub_size` than the main grid, in order to better
+        prevent aliasing effects.
+
+        Returns
+        -------
+        The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
+        """
+        mask_inversion = self.mask.mask_new_sub_size_from(
+            mask=self.mask, sub_size=self.settings.sub_size_pixelization
+        )
+
+        return self.settings.grid_pixelization_from(mask=mask_inversion)
 
     @property
     def shape_native(self):
