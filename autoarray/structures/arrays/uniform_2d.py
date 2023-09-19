@@ -339,7 +339,7 @@ class AbstractArray2D(Structure):
             array_2d.output_to_fits(file_path="/path/for/output")
         """
 
-        if conf["general"]["structures"]["native_binned_only"]:
+        if conf.instance["general"]["structures"]["native_binned_only"]:
             store_native = True
 
         values = array_2d_util.convert_array_2d(
@@ -430,7 +430,7 @@ class AbstractArray2D(Structure):
         Significant memory can be saved by only store this format, thus the `native_binned_only` config override
         can force this behaviour. It is recommended users do not use this option to avoid unexpected behaviour.
         """
-        if conf["general"]["structures"]["native_binned_only"]:
+        if conf.instance["general"]["structures"]["native_binned_only"]:
             return self
 
         array_2d_slim = self.slim
