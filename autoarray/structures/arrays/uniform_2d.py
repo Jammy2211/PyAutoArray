@@ -4,6 +4,8 @@ import numpy as np
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
+from autoconf import conf
+
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.header import Header
@@ -257,6 +259,10 @@ class AbstractArray2D(Structure):
                      array_2d.slim[7] = value of first sub-pixel in pixel 7.
                      array_2d.slim[8] = value of first sub-pixel in pixel 8.
 
+        In **PyAutoCTI** all `Array2D` objects are used in their `native` representation without sub-gridding.
+        Significant memory can be saved by only store this format, thus the `native_binned_only` config override
+        can force this behaviour. It is recommended users do not use this option to avoid unexpected behaviour.
+
         Parameters
         ----------
         values
@@ -332,6 +338,9 @@ class AbstractArray2D(Structure):
 
             array_2d.output_to_fits(file_path="/path/for/output")
         """
+
+        if conf.instance["general"]["structures"]["native_binned_only"]:
+            store_native = True
 
         values = array_2d_util.convert_array_2d(
             array_2d=values,
@@ -416,7 +425,13 @@ class AbstractArray2D(Structure):
         performed by taking the mean of all (y,x) values in each sub pixel.
 
         If the array is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+
+        In **PyAutoCTI** all `Array2D` objects are used in their `native` representation without sub-gridding.
+        Significant memory can be saved by only store this format, thus the `native_binned_only` config override
+        can force this behaviour. It is recommended users do not use this option to avoid unexpected behaviour.
         """
+        if conf.instance["general"]["structures"]["native_binned_only"]:
+            return self
 
         array_2d_slim = self.slim
 
