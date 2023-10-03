@@ -122,7 +122,7 @@ class LabelMaker:
 
     @property
     def tick_values_rounded(self):
-        values = np.asarray(self.tick_values)
+        values = np.asarray(self.tick_values * self.convert_factor)
         values_positive = np.where(
             np.isfinite(values) & (values != 0),
             np.abs(values),
@@ -139,9 +139,8 @@ class LabelMaker:
         if not self.units.use_scaled and self.yunit is None:
             return self.labels_linear_pixels
 
-        labels = np.asarray(
-            [value * self.convert_factor for value in self.tick_values_rounded]
-        )
+        labels = np.asarray([value for value in self.tick_values_rounded])
+
         if not self.units.use_scaled and self.yunit is None:
             labels = [f"{int(label)}" for label in labels]
         return self.with_appended_suffix(labels)

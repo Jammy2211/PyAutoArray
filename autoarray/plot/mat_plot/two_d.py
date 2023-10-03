@@ -237,6 +237,12 @@ class MatPlot2D(AbstractMatPlot):
 
         array = array.binned
 
+        # Hack being used for BELLSABSORB with Tania, remove later and code up automatic method to make it
+        # so that if a mask is irregular and zooming in creates white edges, that instead it doesnt have the eddge.
+        # This could just be a matplotlib settings to change the edge color?
+
+  #      array = array.resized_from(new_shape=(401, 401))
+
         if array.mask.is_all_false:
             buffer = 0
         else:
@@ -331,6 +337,15 @@ class MatPlot2D(AbstractMatPlot):
                 units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit
             )
             self.colorbar_tickparams.set(cb=cb)
+
+        # levels = np.logspace(np.log10(0.3), np.log10(20.0), 10)
+        # plt.contour(
+        #   #  array.mask.derive_grid.unmasked_sub_1,
+        #     array.native[::-1],
+        #     levels=levels,
+        #     colors="black",
+        #     extent=extent,
+        # )
 
         grid_indexes = None
 
