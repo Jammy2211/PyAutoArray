@@ -310,6 +310,25 @@ class FitDataset(AbstractFitInversion):
         return self.log_likelihood
 
     @property
+    def residual_flux_fraction_map(self) -> Structure:
+        """
+        Returns the residual flux fraction map, which shows the fraction of signal in each pixel that is not fitted
+        by the model, therefore where:
+
+        Residual_Flux_Fraction = ((Residuals) / (Data)) = ((Data - Model))/(Data)
+
+        This quantity is not used for computing the log likelihood, but is available for plotting and inspection.
+
+        It does not use the noise-map in its calculation, and therefore the residual flux fraction should only be
+        reliably interpreted in high signal-to-noise regions of a dataset.
+        """
+        if self.use_mask_in_fit:
+            return fit_util.chi_squared_map_with_mask_from(
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+            )
+        return super().chi_squared_map
+
+    @property
     def inversion(self) -> Optional[AbstractInversion]:
         """
         Overwrite this method so it returns the inversion used to fit the dataset.

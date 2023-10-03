@@ -526,3 +526,54 @@ def test__log_evidence_from():
     )
 
     assert evidences == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
+
+
+def test__residual_flux_fraction_map_from():
+    data = np.array([10.0, 10.0, 10.0, 10.0])
+    model_data = np.array([10.0, 10.0, 10.0, 10.0])
+
+    residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
+
+    residual_flux_fraction_map = aa.util.fit.residual_flux_fraction_map_from(
+        residual_map=residual_map, data=data
+    )
+
+    assert (residual_flux_fraction_map == np.array([0.0, 0.0, 0.0, 0.0])).all()
+
+    model_data = np.array([11.0, 10.0, 9.0, 8.0])
+
+    residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
+
+    residual_flux_fraction_map = aa.util.fit.residual_flux_fraction_map_from(
+        residual_map=residual_map, data=data
+    )
+
+    assert (residual_flux_fraction_map == np.array([-0.1, 0.0, 0.1, 0.2])).all()
+
+
+def test__residual_flux_fraction_map_with_mask_from():
+    data = np.array([10.0, 10.0, 10.0, 10.0])
+    mask = np.array([True, False, False, True])
+    model_data = np.array([11.0, 10.0, 9.0, 8.0])
+
+    residual_map = aa.util.fit.residual_map_with_mask_from(
+        data=data, mask=mask, model_data=model_data
+    )
+
+    residual_flux_fraction_map = aa.util.fit.residual_flux_fraction_map_with_mask_from(
+        residual_map=residual_map, mask=mask, data=data
+    )
+
+    assert (residual_flux_fraction_map == np.array([0.0, 0.0, 0.1, 0.0])).all()
+
+    model_data = np.array([11.0, 9.0, 8.0, 8.0])
+
+    residual_map = aa.util.fit.residual_map_with_mask_from(
+        data=data, mask=mask, model_data=model_data
+    )
+
+    residual_flux_fraction_map = aa.util.fit.residual_flux_fraction_map_with_mask_from(
+        residual_map=residual_map, mask=mask, data=data
+    )
+
+    assert (residual_flux_fraction_map == np.array([0.0, 0.1, 0.2, 0.0])).all()

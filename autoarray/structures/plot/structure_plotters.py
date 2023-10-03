@@ -132,6 +132,7 @@ class YX1DPlotter(Plotter):
         visuals_1d: Visuals1D = Visuals1D(),
         include_1d: Include1D = Include1D(),
         should_plot_grid: bool = False,
+        should_plot_zero: bool = False,
         plot_axis_type: Optional[str] = None,
     ):
         """
@@ -173,6 +174,7 @@ class YX1DPlotter(Plotter):
         self.y = y
         self.x = y.grid_radial if x is None else x
         self.should_plot_grid = should_plot_grid
+        self.should_plot_zero = should_plot_zero
         self.plot_axis_type = plot_axis_type
 
     def get_visuals_1d(self) -> Visuals1D:
@@ -189,5 +191,6 @@ class YX1DPlotter(Plotter):
             visuals_1d=self.get_visuals_1d(),
             auto_labels=AutoLabels(),
             should_plot_grid=self.should_plot_grid,
+            should_plot_zero=self.should_plot_zero,
             plot_axis_type_override=self.plot_axis_type,
         )

@@ -208,7 +208,7 @@ class MatPlot1D(AbstractMatPlot):
         )
 
         if should_plot_zero:
-            plt.plot(x, np.ones(shape=y.shape), c="b", ls="--")
+            plt.plot(x, 1.0e-6 * np.ones(shape=y.shape), c="b", ls="--")
 
         if should_plot_grid:
             plt.grid(True)
@@ -239,6 +239,10 @@ class MatPlot1D(AbstractMatPlot):
         else:
             min_value_y = np.nanmin(y)
             max_value_y = np.nanmax(y)
+
+        if should_plot_zero:
+            if min_value_y > 0:
+                min_value_y = 0
 
         self.xticks.set(
             min_value=min_value_x,

@@ -151,7 +151,9 @@ class VoronoiMagnification(Voronoi):
 
 
 class VoronoiBrightnessImage(Voronoi):
-    def __init__(self, pixels=10, weight_floor: float = 0.0, weight_power: float = 0.0):
+    def __init__(
+        self, pixels=10, weight_floor: float = 0.0, weight_power: float = 0.0, **kwargs
+    ):
         """
         An irregular mesh of Voronoi pixels, which using no interpolation are paired with a 2D grid of (y,x)
         coordinates. The Voronoi cell centers are derived in the image-plane by applying a KMeans
