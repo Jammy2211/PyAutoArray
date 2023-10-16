@@ -122,7 +122,7 @@ class LabelMaker:
 
     @property
     def tick_values_rounded(self):
-        values = np.asarray(self.tick_values * self.convert_factor)
+        values = np.asarray(self.tick_values) * self.convert_factor
         values_positive = np.where(
             np.isfinite(values) & (values != 0),
             np.abs(values),
