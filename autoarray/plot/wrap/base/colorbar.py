@@ -18,6 +18,7 @@ class Colorbar(AbstractMatWrap):
         manual_tick_values: Optional[List[float]] = None,
         manual_alignment: Optional[str] = None,
         manual_unit: Optional[str] = None,
+        manual_log10 : bool = False,
         **kwargs,
     ):
         """
@@ -51,6 +52,7 @@ class Colorbar(AbstractMatWrap):
         self.manual_tick_values = manual_tick_values
         self.manual_alignment = manual_alignment
         self.manual_unit = manual_unit
+        self.manual_log10 = manual_log10
 
     @property
     def cb_unit(self):
@@ -98,6 +100,14 @@ class Colorbar(AbstractMatWrap):
             manual_tick_labels = [
                 np.round(value * convert_factor, 2) for value in manual_tick_values
             ]
+
+            if self.manual_log10:
+                manual_tick_labels = ["{:.0e}".format(label) for label in manual_tick_labels]
+                manual_tick_labels = [label.replace("1e", "$10^{") + "}$" for label in manual_tick_labels]
+                manual_tick_labels = [
+                    label.replace("{-0", "{-").replace("{+0", "{+").replace("+", "")
+                    for label in manual_tick_labels
+                ]
 
         if units.colorbar_label is None:
             if cb_unit is None:
