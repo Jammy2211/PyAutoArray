@@ -1115,13 +1115,22 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
 
     warnings.filterwarnings("ignore")
 
-    rescaled_mask_2d = rescale(
-        image=mask_2d,
-        scale=rescale_factor,
-        mode="edge",
-        anti_aliasing=False,
-        multichannel=False,
-    )
+    try:
+        rescaled_mask_2d = rescale(
+            image=mask_2d,
+            scale=rescale_factor,
+            mode="edge",
+            anti_aliasing=False,
+            multichannel=False,
+        )
+    except TypeError:
+        rescaled_mask_2d = rescale(
+            image=mask_2d,
+            scale=rescale_factor,
+            mode="edge",
+            anti_aliasing=False,
+          #  multichannel=False,
+        )
 
     rescaled_mask_2d[0, :] = 1
     rescaled_mask_2d[rescaled_mask_2d.shape[0] - 1, :] = 1
