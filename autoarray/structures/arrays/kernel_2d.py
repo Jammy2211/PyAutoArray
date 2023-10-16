@@ -451,13 +451,22 @@ class Kernel2D(AbstractArray2D):
 
         from skimage.transform import resize, rescale
 
-        kernel_rescaled = rescale(
-            self.native,
-            rescale_factor,
-            anti_aliasing=False,
-            mode="constant",
-            multichannel=False,
-        )
+        try:
+            kernel_rescaled = rescale(
+                self.native,
+                rescale_factor,
+                anti_aliasing=False,
+                mode="constant",
+                multichannel=False,
+            )
+        except TypeError:
+            kernel_rescaled = rescale(
+                self.native,
+                rescale_factor,
+                anti_aliasing=False,
+                mode="constant",
+             #   multichannel=False,
+            )
 
         if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
             kernel_rescaled = resize(

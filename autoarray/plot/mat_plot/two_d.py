@@ -241,7 +241,7 @@ class MatPlot2D(AbstractMatPlot):
         # so that if a mask is irregular and zooming in creates white edges, that instead it doesnt have the eddge.
         # This could just be a matplotlib settings to change the edge color?
 
-  #      array = array.resized_from(new_shape=(401, 401))
+        # array = array.resized_from(new_shape=(401, 401))
 
         if array.mask.is_all_false:
             buffer = 0

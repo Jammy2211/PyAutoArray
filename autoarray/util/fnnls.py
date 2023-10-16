@@ -43,7 +43,7 @@ def fnnls_cholesky(
     no_update = 0
     loop_count = 0
 
-    P = np.zeros(n, dtype=np.bool)
+    P = np.zeros(n, dtype=bool)
     P[P_initial] = True
     d = np.zeros(n)
     w = ZTx - (ZTZ) @ d
