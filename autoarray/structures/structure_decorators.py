@@ -542,9 +542,35 @@ def relocate_to_radial_minimum(func):
             The grid_like object whose coordinates are radially moved from (0.0, 0.0).
         """
 
-        grid_radial_minimum = conf.instance["grids"]["radial_minimum"][
-            "radial_minimum"
-        ][cls.__class__.__name__]
+        try:
+            grid_radial_minimum = conf.instance["grids"]["radial_minimum"][
+                "radial_minimum"
+            ][cls.__class__.__name__]
+        except KeyError as e:
+            print(
+                fr"""
+                The {cls.__class__.__name__} profile you are using does not have a corresponding
+                entry in the `config/grid.yaml` config file.
+                
+                When a profile is evaluated at (0.0, 0.0), they commonly break due to numericalinstabilities (e.g. 
+                division by zero). To prevent this, the code relocates the (y,x) coordinates of the grid to a 
+                minimum radial value, specified in the `config/grids.yaml` config file.
+                
+                For example, if the value in `grid.yaml` is `radial_minimum: 1e-6`, then any (y,x) coordinates
+                with a radial distance less than 1e-6 to (0.0, 0.0) are relocated to 1e-6.
+                
+                For a profile to be used it must have an entry in the `config/grids.yaml` config file. Go to this
+                file now and add your profile to the `radial_minimum` section. Adopting a value of 1e-6 is a good
+                default choice.
+                
+                If you are going to make a pull request to add your profile to the source code, you should also
+                add an entry to the `config/grids.yaml` config file of the source code itself
+                (e.g. `PyAutoGalaxy/autogalaxy/config/grids.yaml`).
+                """
+            )
+
+            import sys
+            sys.exit(1)
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
             grid_radii = cls.radial_grid_from(grid=grid)

@@ -29,7 +29,7 @@ output:
   model_results_every_update: 100
   remove_files: false
 pixelization:
-  voronoi_nn_max_interpolation_neighbors: 100
+  voronoi_nn_max_interpolation_neighbors: 300
 profiling:
   perform: false
   repeats: 1
