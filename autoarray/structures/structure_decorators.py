@@ -3,6 +3,7 @@ from functools import wraps
 from typing import List, Optional, Union
 
 from autoconf import conf
+from autoconf.exc import ConfigException
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -547,7 +548,7 @@ def relocate_to_radial_minimum(func):
                 "radial_minimum"
             ][cls.__class__.__name__]
         except KeyError as e:
-            print(
+            raise ConfigException(
                 fr"""
                 The {cls.__class__.__name__} profile you are using does not have a corresponding
                 entry in the `config/grid.yaml` config file.
@@ -568,9 +569,6 @@ def relocate_to_radial_minimum(func):
                 (e.g. `PyAutoGalaxy/autogalaxy/config/grids.yaml`).
                 """
             )
-
-            import sys
-            sys.exit(1)
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
             grid_radii = cls.radial_grid_from(grid=grid)

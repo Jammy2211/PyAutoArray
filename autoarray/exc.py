@@ -18,16 +18,6 @@ class ArrayException(Exception):
     pass
 
 
-
-class ConfigException(Exception):
-    """
-    Raises exceptions associated with the `structures/array` modules and `Array` classes.
-
-    For example if a 2D array's shape and its corresponding 2D mask shape do not match.
-    """
-
-    pass
-
 class GridException(Exception):
     """
     Raises exceptions associated with the `structures/grid` modules and `Grid` classes.
