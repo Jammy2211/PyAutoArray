@@ -1129,7 +1129,7 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
             scale=rescale_factor,
             mode="edge",
             anti_aliasing=False,
-          #  multichannel=False,
+            #  multichannel=False,
         )
 
     rescaled_mask_2d[0, :] = 1

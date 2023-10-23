@@ -3,6 +3,7 @@ from functools import wraps
 from typing import List, Optional, Union
 
 from autoconf import conf
+from autoconf.exc import ConfigException
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -39,7 +40,7 @@ def grid_1d_to_structure(func):
         obj: object,
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[Array1D, ArrayIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
@@ -128,7 +129,7 @@ def grid_1d_output_structure(func):
         obj,
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[Array1D, ArrayIrregular]:
         """
         This decorator homogenizes the output of functions which compute a 1D result, by inspecting the output
@@ -184,7 +185,7 @@ def grid_2d_to_structure(func):
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
@@ -261,7 +262,7 @@ def grid_2d_to_structure_list(func):
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
-        **kwargs
+        **kwargs,
     ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
         """
         This decorator serves the same purpose as the `grid_2d_to_structure` decorator, but it deals with functions
@@ -329,7 +330,7 @@ def grid_2d_to_vector_yx(func):
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`, `Grid2DIterate`,
@@ -399,7 +400,7 @@ def grid_2d_to_vector_yx_list(func):
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
-        **kwargs
+        **kwargs,
     ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
         """
         This decorator serves the same purpose as the `grid_2d_to_vector_yx` decorator, but it deals with functions
@@ -463,7 +464,7 @@ def transform(func):
             Grid2DIrregularTransformed,
         ],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[
         np.ndarray,
         Grid2D,
@@ -526,7 +527,7 @@ def relocate_to_radial_minimum(func):
         cls,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid2DIterate],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[np.ndarray, Grid2D, Grid2DIrregular, Grid2DIterate]:
         """
 
@@ -542,9 +543,32 @@ def relocate_to_radial_minimum(func):
             The grid_like object whose coordinates are radially moved from (0.0, 0.0).
         """
 
-        grid_radial_minimum = conf.instance["grids"]["radial_minimum"][
-            "radial_minimum"
-        ][cls.__class__.__name__]
+        try:
+            grid_radial_minimum = conf.instance["grids"]["radial_minimum"][
+                "radial_minimum"
+            ][cls.__class__.__name__]
+        except KeyError as e:
+            raise ConfigException(
+                rf"""
+                The {cls.__class__.__name__} profile you are using does not have a corresponding
+                entry in the `config/grid.yaml` config file.
+                
+                When a profile is evaluated at (0.0, 0.0), they commonly break due to numericalinstabilities (e.g. 
+                division by zero). To prevent this, the code relocates the (y,x) coordinates of the grid to a 
+                minimum radial value, specified in the `config/grids.yaml` config file.
+                
+                For example, if the value in `grid.yaml` is `radial_minimum: 1e-6`, then any (y,x) coordinates
+                with a radial distance less than 1e-6 to (0.0, 0.0) are relocated to 1e-6.
+                
+                For a profile to be used it must have an entry in the `config/grids.yaml` config file. Go to this
+                file now and add your profile to the `radial_minimum` section. Adopting a value of 1e-6 is a good
+                default choice.
+                
+                If you are going to make a pull request to add your profile to the source code, you should also
+                add an entry to the `config/grids.yaml` config file of the source code itself
+                (e.g. `PyAutoGalaxy/autogalaxy/config/grids.yaml`).
+                """
+            )
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
             grid_radii = cls.radial_grid_from(grid=grid)
