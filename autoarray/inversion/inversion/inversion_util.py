@@ -292,7 +292,7 @@ def reconstruction_positive_only_from(
                 P_initial=P_initial,
             )
 
-        except (RuntimeError, np.linalg.LinAlgError) as e:
+        except (RuntimeError, np.linalg.LinAlgError, ValueError) as e:
             raise exc.InversionException() from e
 
     else:

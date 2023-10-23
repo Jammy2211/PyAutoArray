@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import os
 from typing import List
 
 from autoconf import conf
@@ -464,6 +465,9 @@ class Preloads:
             preloads=self.__class__(use_w_tilde=False),
             settings_inversion=settings_inversion,
         )
+
+        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+            return
 
         try:
             if (
