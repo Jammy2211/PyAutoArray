@@ -40,7 +40,7 @@ def grid_1d_to_structure(func):
         obj: object,
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[Array1D, ArrayIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
@@ -129,7 +129,7 @@ def grid_1d_output_structure(func):
         obj,
         grid: Union[Grid1D, Grid2D, Grid2DIterate, Grid2DIrregular],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[Array1D, ArrayIrregular]:
         """
         This decorator homogenizes the output of functions which compute a 1D result, by inspecting the output
@@ -185,7 +185,7 @@ def grid_2d_to_structure(func):
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
@@ -262,7 +262,7 @@ def grid_2d_to_structure_list(func):
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
-        **kwargs
+        **kwargs,
     ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
         """
         This decorator serves the same purpose as the `grid_2d_to_structure` decorator, but it deals with functions
@@ -330,7 +330,7 @@ def grid_2d_to_vector_yx(func):
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`, `Grid2DIterate`,
@@ -400,7 +400,7 @@ def grid_2d_to_vector_yx_list(func):
         obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIterate, Grid2DIrregular, Grid1D],
         *args,
-        **kwargs
+        **kwargs,
     ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
         """
         This decorator serves the same purpose as the `grid_2d_to_vector_yx` decorator, but it deals with functions
@@ -464,7 +464,7 @@ def transform(func):
             Grid2DIrregularTransformed,
         ],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[
         np.ndarray,
         Grid2D,
@@ -527,7 +527,7 @@ def relocate_to_radial_minimum(func):
         cls,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid2DIterate],
         *args,
-        **kwargs
+        **kwargs,
     ) -> Union[np.ndarray, Grid2D, Grid2DIrregular, Grid2DIterate]:
         """
 
@@ -549,7 +549,7 @@ def relocate_to_radial_minimum(func):
             ][cls.__class__.__name__]
         except KeyError as e:
             raise ConfigException(
-                fr"""
+                rf"""
                 The {cls.__class__.__name__} profile you are using does not have a corresponding
                 entry in the `config/grid.yaml` config file.
                 
