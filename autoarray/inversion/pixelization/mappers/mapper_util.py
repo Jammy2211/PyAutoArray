@@ -174,6 +174,30 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 
 @numba_util.jit()
 def nearest_pixelization_index_for_slim_index_from(grid, mesh_grid):
+    """
+    Uses a nearest neighbor search to determine for each data pixel its nearest pixelization pixel.
+
+    This is used to speed up the `pix_indexes_for_sub_slim_index_voronoi_from` function, which otherwise would
+    have to loop over every pixelization pixel to determine the nearest pixelization pixel to each data pixel.
+
+    This is only used for a regular `Voronoi` mesh, not a `Delaunay` or `VoronoiNN`, and therefore has limited
+    use in general given the `VoronoiNN` is a superior mesh because it uses natural neighbor interpolation.
+
+
+    Parameters
+    ----------
+    grid
+        The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
+        to an irgrid via lens.
+    mesh_grid
+        The (y,x) centre of every Voronoi pixel in arc-seconds.
+
+    Returns
+    -------
+    A 1D array of length (total_unmasked_pixels) where each entry corresponds to the index of the nearest
+    pixelization pixel to each data pixel.
+    """
+
     nearest_pixelization_index_for_slim_index = np.zeros((grid.shape[0],))
 
     for image_index in range(grid.shape[0]):
