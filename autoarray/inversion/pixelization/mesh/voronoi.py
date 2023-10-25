@@ -364,8 +364,10 @@ class VoronoiSNRImage(Voronoi):
         """
         snr_map = self.weight_map_from(adapt_data=adapt_data, noise_map=noise_map)
 
-        return Grid2DSparse.from_weight_map_split(
+        return Grid2DSparse.from_snr_split(
             pixels=self.pixels,
+            fraction_high_snr=self.fraction_high_snr,
+            snr_cut=self.snr_cut,
             grid=image_plane_data_grid,
             snr_map=snr_map,
             seed=settings.kmeans_seed,
