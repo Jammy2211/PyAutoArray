@@ -156,6 +156,7 @@ class Rectangular(AbstractMesh):
         image_plane_data_grid: Grid2D,
         adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Not used for rectangular pixelization.

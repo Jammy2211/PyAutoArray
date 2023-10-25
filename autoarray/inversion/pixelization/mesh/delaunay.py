@@ -114,6 +114,7 @@ class DelaunayMagnification(Delaunay):
         image_plane_data_grid: Grid2D,
         adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Computes the ``mesh_grid`` in the image-plane, by overlaying a uniform grid of coordinates over the
@@ -214,6 +215,7 @@ class DelaunayBrightnessImage(Delaunay):
         image_plane_data_grid: Grid2D,
         adapt_data: np.ndarray,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Computes the ``mesh_grid`` in the image-plane, by overlaying a uniform grid of coordinates over the
