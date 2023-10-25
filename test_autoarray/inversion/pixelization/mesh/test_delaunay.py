@@ -13,14 +13,9 @@ def test__magnification__sparse_grid_from__returns_same_as_computed_from_grids_m
 
     mesh_grid = aa.Mesh2DDelaunay(
         values=sparse_grid,
-        nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
     )
 
     assert (mesh_grid == sparse_grid).all()
-    assert (
-        mesh_grid.nearest_pixelization_index_for_slim_index
-        == sparse_grid.sparse_index_for_slim_index
-    ).all()
 
 
 def test__magnification__preloads_used_for_relocated_grid(sub_grid_2d_7x7):
@@ -124,11 +119,6 @@ def test__brightness_mesh_grid__matches_manual_comparison_to_grids_module(
 
     mesh_grid = aa.Mesh2DDelaunay(
         values=sparse_grid,
-        nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
     )
 
     assert (mesh_grid == sparse_grid).all()
-    assert (
-        mesh_grid.nearest_pixelization_index_for_slim_index
-        == sparse_grid.sparse_index_for_slim_index
-    ).all()

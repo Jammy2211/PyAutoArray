@@ -15,20 +15,19 @@ from autoarray.structures.grids import grid_2d_util
 from autoarray.mask.mask_2d import mask_2d_util
 from autoarray.structures.grids import sparse_2d_util
 
-def distance(point_i, point_j):
 
+def distance(point_i, point_j):
     return np.linalg.norm(np.array(point_i) - np.array(point_j))
 
-def find_closest_point_index_from_points(input_point, points):
 
-    distances = [
-        distance(input_point, point) for point in points
-    ]
+def find_closest_point_index_from_points(input_point, points):
+    distances = [distance(input_point, point) for point in points]
 
     return np.argmin(distances)
 
+
 class Grid2DSparse(Structure):
-    def __new__(cls, values: np.ndarray, sparse_index_for_slim_index: np.ndarray):
+    def __new__(cls, values: np.ndarray):
         """
         A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such
@@ -54,21 +53,12 @@ class Grid2DSparse(Structure):
         ----------
         sparse_grid or Grid2D
             The (y,x) grid of sparse coordinates.
-        sparse_index_for_slim_index
-            An array whose indexes map pixels from a Grid2D's mask to the closest (y,x) coordinate on the sparse_grid.
         """
-
-        obj = values.view(cls)
-        obj.sparse_index_for_slim_index = sparse_index_for_slim_index
-
-        return obj
+        return values.view(cls)
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "mask"):
             self.mask = obj.mask
-
-        if hasattr(obj, "sparse_index_for_slim_index"):
-            self.sparse_index_for_slim_index = obj.sparse_index_for_slim_index
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(
@@ -140,20 +130,13 @@ class Grid2DSparse(Structure):
             origin=origin,
         ).astype("int")
 
-        sparse_index_for_slim_index = (
-            sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-            ).astype("int")
-        )
-
         sparse_grid = sparse_2d_util.sparse_grid_via_unmasked_from(
             unmasked_sparse_grid=unmasked_sparse_grid_1d,
             unmasked_sparse_for_sparse=unmasked_sparse_for_sparse,
         )
 
         return Grid2DSparse(
-            values=sparse_grid, sparse_index_for_slim_index=sparse_index_for_slim_index
+            values=sparse_grid,
         )
 
     @classmethod
@@ -216,23 +199,21 @@ class Grid2DSparse(Structure):
 
         return Grid2DSparse(
             values=kmeans.cluster_centers_,
-            sparse_index_for_slim_index=kmeans.labels_.astype("int"),
         )
 
     @classmethod
     def from_snr_split(
-            cls,
-            pixels : int,
-            fraction_high_snr : float,
-            snr_cut : float,
-            grid: Grid2D,
-            snr_map: np.ndarray,
-            n_iter: int = 1,
-            max_iter: int = 5,
-            seed: Optional[int] = None,
-            stochastic: bool = False,
+        cls,
+        pixels: int,
+        fraction_high_snr: float,
+        snr_cut: float,
+        grid: Grid2D,
+        snr_map: np.ndarray,
+        n_iter: int = 1,
+        max_iter: int = 5,
+        seed: Optional[int] = None,
+        stochastic: bool = False,
     ):
-
         warnings.filterwarnings("ignore")
 
         if stochastic:
@@ -274,27 +255,12 @@ class Grid2DSparse(Structure):
             raise exc.InversionException()
 
         sparse_image_plane_grid = np.concatenate(
-            (kmeans_high_snr.cluster_centers_, kmeans_low_snr.cluster_centers_),
-            axis=0
+            (kmeans_high_snr.cluster_centers_, kmeans_low_snr.cluster_centers_), axis=0
         )
         sparse_image_plane_grid = np.asarray(sparse_image_plane_grid)
 
-        # NOTE: Compute the "sparse_index_for_slim_index", this is the the index of the closest point in the
-        # sparse_image_plane_grid to each grid point.
-
-        sparse_index_for_slim_index = []
-
-        for input_point in grid:
-            index = find_closest_point_index_from_points(
-                input_point=input_point, points=sparse_image_plane_grid
-            )
-            sparse_index_for_slim_index.append(index)
-
-        sparse_index_for_slim_index = np.asarray(sparse_index_for_slim_index)
-
         return Grid2DSparse(
             values=sparse_image_plane_grid,
-            sparse_index_for_slim_index=sparse_index_for_slim_index
         )
 
     @property

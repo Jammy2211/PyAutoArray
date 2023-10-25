@@ -26,7 +26,11 @@ class MockPixelization(Pixelization):
         return self.mapper
 
     def image_plane_mesh_grid_from(
-        self, image_plane_data_grid, adapt_data, settings=None, noise_map : np.ndarray = None,
+        self,
+        image_plane_data_grid,
+        adapt_data,
+        settings=None,
+        noise_map: np.ndarray = None,
     ):
         if adapt_data is not None and self.image_plane_mesh_grid is not None:
             return adapt_data * self.image_plane_mesh_grid

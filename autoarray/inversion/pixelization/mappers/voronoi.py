@@ -230,7 +230,6 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
         """
         mappings = mapper_util.pix_indexes_for_sub_slim_index_voronoi_from(
             grid=self.source_plane_data_grid,
-            nearest_pixelization_index_for_slim_index=self.source_plane_mesh_grid.nearest_pixelization_index_for_slim_index,
             slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
             mesh_grid=self.source_plane_mesh_grid,
             neighbors=self.source_plane_mesh_grid.neighbors,

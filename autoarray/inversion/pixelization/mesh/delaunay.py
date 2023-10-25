@@ -45,7 +45,6 @@ class Delaunay(Triangulation):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        sparse_index_for_slim_index=None,
     ):
         """
         Return the Delaunay ``source_plane_mesh_grid`` as a ``Mesh2DDelaunay`` object, which provides additional

@@ -9,11 +9,8 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         pixel_scales=1.0,
     )
 
-    nearest_pixelization_index_for_slim_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
-
     source_plane_mesh_grid = aa.Mesh2DVoronoi(
         values=source_plane_mesh_grid,
-        nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
         uses_interpolation=False,
     )
 
@@ -28,7 +25,6 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         [
             aa.util.mapper.pix_indexes_for_sub_slim_index_voronoi_from(
                 grid=grid_2d_7x7,
-                nearest_pixelization_index_for_slim_index=source_plane_mesh_grid.nearest_pixelization_index_for_slim_index,
                 slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
                 mesh_grid=source_plane_mesh_grid,
                 neighbors=source_plane_mesh_grid.neighbors,
@@ -43,7 +39,6 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
 
     source_plane_mesh_grid = aa.Mesh2DVoronoi(
         values=source_plane_mesh_grid,
-        nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
         uses_interpolation=True,
     )
 

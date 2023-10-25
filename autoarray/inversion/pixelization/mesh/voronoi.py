@@ -48,15 +48,10 @@ class Voronoi(Triangulation):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        sparse_index_for_slim_index=None,
     ) -> Mesh2DVoronoi:
         """
         Return the Voronoi `source_plane_mesh_grid` as a `Mesh2DVoronoi` object, which provides additional
         functionality for performing operations that exploit the geometry of a Voronoi mesh.
-
-        The array `sparse_index_for_slim_index` encodes the closest source pixel of every pixel on the
-        (full resolution) sub image-plane grid. This is used for efficiently pairing every image-plane pixel to its
-        corresponding source-plane pixel.
 
         Parameters
         ----------
@@ -73,7 +68,6 @@ class Voronoi(Triangulation):
 
         return Mesh2DVoronoi(
             values=source_plane_mesh_grid,
-            nearest_pixelization_index_for_slim_index=sparse_index_for_slim_index,
             uses_interpolation=self.uses_interpolation,
         )
 
@@ -269,9 +263,8 @@ class VoronoiBrightnessImage(Voronoi):
 
 
 class VoronoiSNRImage(Voronoi):
-
     def __init__(
-        self, pixels=10, fraction_high_snr = 0.5, snr_cut: float = 3.0, **kwargs
+        self, pixels=10, fraction_high_snr=0.5, snr_cut: float = 3.0, **kwargs
     ):
         """
         An irregular mesh of Voronoi pixels, which using no interpolation are paired with a 2D grid of (y,x)
@@ -321,7 +314,9 @@ class VoronoiSNRImage(Voronoi):
         self.fraction_high_snr = fraction_high_snr
         self.snr_cut = snr_cut
 
-    def weight_map_from(self, adapt_data: np.ndarray, noise_map : np.ndarray) -> np.ndarray:
+    def weight_map_from(
+        self, adapt_data: np.ndarray, noise_map: np.ndarray
+    ) -> np.ndarray:
         """
         Computes a `weight_map` from an input `adapt_data`, where this image represents components in the masked 2d
         data in the `data` frame. This applies the `weight_floor` and `weight_power` attributes of the class, which
@@ -343,7 +338,7 @@ class VoronoiSNRImage(Voronoi):
         image_plane_data_grid: Grid2D,
         adapt_data: np.ndarray,
         settings=SettingsPixelization(),
-        noise_map : np.ndarray = None,
+        noise_map: np.ndarray = None,
     ):
         """
         Computes the `mesh_grid` in the `data` frame, by overlaying a uniform grid of coordinates over the
@@ -367,10 +362,7 @@ class VoronoiSNRImage(Voronoi):
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
-        snr_map = self.weight_map_from(
-            adapt_data=adapt_data,
-            noise_map=noise_map
-        )
+        snr_map = self.weight_map_from(adapt_data=adapt_data, noise_map=noise_map)
 
         return Grid2DSparse.from_weight_map_split(
             pixels=self.pixels,

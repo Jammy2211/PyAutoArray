@@ -399,9 +399,6 @@ def make_voronoi_mesh_grid_9():
 
     return aa.Mesh2DVoronoi(
         values=grid_9,
-        nearest_pixelization_index_for_slim_index=np.zeros(
-            shape=make_grid_2d_7x7().shape_slim, dtype="int"
-        ),
     )
 
 

@@ -1244,5 +1244,4 @@ class Grid2D(Structure):
             values=grid_2d_util.relocated_grid_via_jit_from(
                 grid=mesh_grid, border_grid=self.sub_border_grid
             ),
-            sparse_index_for_slim_index=mesh_grid.sparse_index_for_slim_index,
         )
