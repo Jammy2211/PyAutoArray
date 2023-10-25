@@ -16,16 +16,6 @@ from autoarray.mask.mask_2d import mask_2d_util
 from autoarray.structures.grids import sparse_2d_util
 
 
-def distance(point_i, point_j):
-    return np.linalg.norm(np.array(point_i) - np.array(point_j))
-
-
-def find_closest_point_index_from_points(input_point, points):
-    distances = [distance(input_point, point) for point in points]
-
-    return np.argmin(distances)
-
-
 class Grid2DSparse(Structure):
     def __new__(cls, values: np.ndarray):
         """
