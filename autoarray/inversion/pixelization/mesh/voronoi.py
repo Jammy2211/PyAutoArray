@@ -367,15 +367,15 @@ class VoronoiSNRImage(Voronoi):
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
-        weight_map = self.weight_map_from(
+        snr_map = self.weight_map_from(
             adapt_data=adapt_data,
             noise_map=noise_map
         )
 
-        return Grid2DSparse.from_total_pixels_grid_and_weight_map(
-            total_pixels=self.pixels,
+        return Grid2DSparse.from_weight_map_split(
+            pixels=self.pixels,
             grid=image_plane_data_grid,
-            weight_map=weight_map,
+            snr_map=snr_map,
             seed=settings.kmeans_seed,
             stochastic=settings.is_stochastic,
         )
