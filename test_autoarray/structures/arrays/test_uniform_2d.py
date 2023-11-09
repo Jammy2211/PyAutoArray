@@ -631,35 +631,6 @@ def test__extent_of_zoomed_array():
     assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
 
 
-def test__binned_across_columns():
-    array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
-
-    assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0, 1.0])).all()
-
-    array = aa.Array2D.no_mask(values=np.ones((3, 4)), pixel_scales=1.0)
-
-    assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0])).all()
-
-    array = aa.Array2D.no_mask(
-        values=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
-        pixel_scales=1.0,
-    )
-
-    assert (array.binned_across_columns == np.array([2.0, 6.0, 9.0])).all()
-
-    mask = aa.Mask2D(
-        mask=[[False, False, True], [False, False, False], [False, False, False]],
-        pixel_scales=1.0,
-    )
-
-    array = aa.Array2D(
-        values=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
-        mask=mask,
-    )
-
-    assert (array.binned_across_columns == np.array([1.5, 6.0, 9.0])).all()
-
-
 def test__binned_across_rows():
     array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
 
@@ -687,6 +658,35 @@ def test__binned_across_rows():
     )
 
     assert (array.binned_across_rows == np.array([1.5, 6.0, 9.0])).all()
+
+
+def test__binned_across_columns():
+    array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
+
+    assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0, 1.0])).all()
+
+    array = aa.Array2D.no_mask(values=np.ones((3, 4)), pixel_scales=1.0)
+
+    assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0])).all()
+
+    array = aa.Array2D.no_mask(
+        values=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
+        pixel_scales=1.0,
+    )
+
+    assert (array.binned_across_columns == np.array([2.0, 6.0, 9.0])).all()
+
+    mask = aa.Mask2D(
+        mask=[[False, False, True], [False, False, False], [False, False, False]],
+        pixel_scales=1.0,
+    )
+
+    array = aa.Array2D(
+        values=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
+        mask=mask,
+    )
+
+    assert (array.binned_across_columns == np.array([1.5, 6.0, 9.0])).all()
 
 
 def test__header__modified_julian_date():
