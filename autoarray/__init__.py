@@ -10,10 +10,10 @@ from .dataset.abstract.dataset import AbstractDataset
 from .dataset.abstract.settings import AbstractSettingsDataset
 from .dataset.abstract.w_tilde import AbstractWTilde
 from .dataset.imaging.settings import SettingsImaging
-from .dataset.imaging.imaging import Imaging
+from .dataset.imaging.dataset import Imaging
 from .dataset.imaging.simulator import SimulatorImaging
 from .dataset.imaging.w_tilde import WTildeImaging
-from .dataset.interferometer.interferometer import Interferometer
+from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.settings import SettingsInterferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer

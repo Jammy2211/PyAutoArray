@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.dataset.interferometer.interferometer import Interferometer
+from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 

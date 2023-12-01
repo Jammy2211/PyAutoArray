@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 
-from autoarray.dataset.imaging.imaging import Imaging
+from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
@@ -78,7 +78,8 @@ class SimulatorImaging:
         """
         Simulate an `Imaging` dataset from an input image.
 
-        The steps of the `SimulatorImaging` are described in the `SimulatorImaging` `__init__` method docstring.
+        The steps of the `SimulatorImaging` simulation process (e.g. PSF convolution, noise addition) are
+        described in the `SimulatorImaging` `__init__` method docstring.
 
         Parameters
         ----------

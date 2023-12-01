@@ -6,7 +6,7 @@ from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.one_d import MatPlot1D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
-from autoarray.dataset.interferometer.interferometer import Interferometer
+from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
