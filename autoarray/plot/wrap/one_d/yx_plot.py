@@ -73,8 +73,6 @@ class YXPlot(AbstractMatWrap1D):
                 # ls=ls_errorbar,
                 **self.config_dict
             )
-            if y_extra is not None:
-                plt.plot(x, y_extra, c="r")
             if plot_axis_type == "errorbar_logy":
                 plt.yscale("log")
         else:
@@ -82,3 +80,6 @@ class YXPlot(AbstractMatWrap1D):
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
                 "{semilogy, loglog})"
             )
+
+        if y_extra is not None:
+            plt.plot(x, y_extra, c="r")
