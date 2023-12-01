@@ -173,9 +173,46 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 
 
 @numba_util.jit()
+def nearest_pixelization_index_for_slim_index_from(grid, mesh_grid):
+    """
+    Uses a nearest neighbor search to determine for each data pixel its nearest pixelization pixel.
+
+    This is used to speed up the `pix_indexes_for_sub_slim_index_voronoi_from` function, which otherwise would
+    have to loop over every pixelization pixel to determine the nearest pixelization pixel to each data pixel.
+
+    This is only used for a regular `Voronoi` mesh, not a `Delaunay` or `VoronoiNN`, and therefore has limited
+    use in general given the `VoronoiNN` is a superior mesh because it uses natural neighbor interpolation.
+
+
+    Parameters
+    ----------
+    grid
+        The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
+        to an irgrid via lens.
+    mesh_grid
+        The (y,x) centre of every Voronoi pixel in arc-seconds.
+
+    Returns
+    -------
+    A 1D array of length (total_unmasked_pixels) where each entry corresponds to the index of the nearest
+    pixelization pixel to each data pixel.
+    """
+
+    nearest_pixelization_index_for_slim_index = np.zeros((grid.shape[0],))
+
+    for image_index in range(grid.shape[0]):
+        distances = (grid[image_index, 0] - mesh_grid[:, 0]) ** 2 + (
+            grid[image_index, 1] - mesh_grid[:, 1]
+        ) ** 2
+
+        nearest_pixelization_index_for_slim_index[image_index] = np.argmin(distances)
+
+    return nearest_pixelization_index_for_slim_index
+
+
+@numba_util.jit()
 def pix_indexes_for_sub_slim_index_voronoi_from(
     grid: np.ndarray,
-    nearest_pixelization_index_for_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
     mesh_grid: np.ndarray,
     neighbors: np.ndarray,
@@ -195,8 +232,6 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pixelization_index_for_slim_index
-        A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
     mesh_grid
@@ -208,6 +243,12 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     """
+
+    nearest_pixelization_index_for_slim_index = (
+        nearest_pixelization_index_for_slim_index_from(
+            grid=grid, mesh_grid=mesh_grid
+        ).astype("int")
+    )
 
     pix_indexes_for_sub_slim_index = np.zeros(shape=(grid.shape[0], 1))
 
@@ -342,8 +383,6 @@ def pix_size_weights_voronoi_nn_from(
     grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pixelization_index_for_slim_index
-        A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
     mesh_grid

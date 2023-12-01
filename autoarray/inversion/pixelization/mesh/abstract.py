@@ -106,7 +106,6 @@ class AbstractMesh:
         self,
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DSparse,
-        sparse_index_for_slim_index: np.ndarray = None,
     ):
         raise NotImplementedError
 

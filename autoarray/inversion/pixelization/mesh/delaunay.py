@@ -45,7 +45,6 @@ class Delaunay(Triangulation):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        sparse_index_for_slim_index=None,
     ):
         """
         Return the Delaunay ``source_plane_mesh_grid`` as a ``Mesh2DDelaunay`` object, which provides additional
@@ -114,6 +113,7 @@ class DelaunayMagnification(Delaunay):
         image_plane_data_grid: Grid2D,
         adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Computes the ``mesh_grid`` in the image-plane, by overlaying a uniform grid of coordinates over the
@@ -214,6 +214,7 @@ class DelaunayBrightnessImage(Delaunay):
         image_plane_data_grid: Grid2D,
         adapt_data: np.ndarray,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Computes the ``mesh_grid`` in the image-plane, by overlaying a uniform grid of coordinates over the

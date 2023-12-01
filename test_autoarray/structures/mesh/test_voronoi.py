@@ -75,14 +75,10 @@ def test__mesh_areas():
 def test__mesh_grid__attributes():
     mesh = aa.Mesh2DVoronoi(
         values=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]]),
-        nearest_pixelization_index_for_slim_index=np.array([0, 1, 2, 3]),
     )
 
     assert type(mesh) == aa.Mesh2DVoronoi
     assert (mesh == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])).all()
-    assert (
-        mesh.nearest_pixelization_index_for_slim_index == np.array([0, 1, 2, 3])
-    ).all()
 
 
 def test__edge_pixel_list():
@@ -122,14 +118,9 @@ def test__from_unmasked_sparse_shape_and_grid():
 
     mesh = aa.Mesh2DVoronoi(
         values=sparse_grid,
-        nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
     )
 
     assert (sparse_grid == mesh).all()
-    assert (
-        sparse_grid.sparse_index_for_slim_index
-        == mesh.nearest_pixelization_index_for_slim_index
-    ).all()
 
 
 def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():

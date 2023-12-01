@@ -130,7 +130,6 @@ class Rectangular(AbstractMesh):
         self,
         source_plane_data_grid: Optional[Grid2D] = None,
         source_plane_mesh_grid: Optional[Grid2D] = None,
-        sparse_index_for_slim_index: Optional[np.ndarray] = None,
     ) -> Mesh2DRectangular:
         """
         Return the rectangular `source_plane_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
@@ -144,8 +143,6 @@ class Rectangular(AbstractMesh):
         source_plane_mesh_grid
             Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
-        sparse_index_for_slim_index
-            Not used for a rectangular pixelization.
         """
         return Mesh2DRectangular.overlay_grid(
             shape_native=self.shape, grid=source_plane_data_grid
@@ -156,6 +153,7 @@ class Rectangular(AbstractMesh):
         image_plane_data_grid: Grid2D,
         adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Not used for rectangular pixelization.

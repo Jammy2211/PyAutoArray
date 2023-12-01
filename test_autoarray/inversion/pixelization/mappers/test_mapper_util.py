@@ -485,11 +485,8 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
         [grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7, mesh_grid)]
     ).T
 
-    nearest_pixelization_index_for_slim_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
-
     mesh_grid = aa.Mesh2DVoronoi(
         values=mesh_grid,
-        nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
     )
 
     mapper_grids = aa.MapperGrids(

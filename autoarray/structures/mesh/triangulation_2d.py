@@ -17,7 +17,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
     def __new__(
         cls,
         values: Union[np.ndarray, List],
-        nearest_pixelization_index_for_slim_index: Optional[np.ndarray] = None,
         uses_interpolation: bool = False,
         *args,
         **kwargs
@@ -47,32 +46,20 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         ----------
         values
             The grid of (y,x) coordinates corresponding to the Delaunay triangle corners and Voronoi pixel centres.
-        nearest_pixelization_index_for_slim_index
-            When a Voronoi grid is used to create a mapper and inversion, there are mappings between the `data` pixels
-            and Voronoi mesh. This array contains these mappings and it is used to speed up the creation of the
-            mapper.
         """
 
         if type(values) is list:
             values = np.asarray(values)
 
         obj = values.view(cls)
-        obj.nearest_pixelization_index_for_slim_index = (
-            nearest_pixelization_index_for_slim_index
-        )
         obj.uses_interpolation = uses_interpolation
 
         return obj
 
     def __array_finalize__(self, obj: object):
         """
-        Ensures that the attributes `nearest_pixelization_index_for_slim_index` and `uses_interpolation` are retained
-        when numpy array calculations are performed.
+        Ensures that the attribute `uses_interpolation` are retained when numpy array calculations are performed.
         """
-        if hasattr(obj, "nearest_pixelization_index_for_slim_index"):
-            self.nearest_pixelization_index_for_slim_index = (
-                obj.nearest_pixelization_index_for_slim_index
-            )
 
         if hasattr(obj, "uses_interpolation"):
             self.uses_interpolation = obj.uses_interpolation

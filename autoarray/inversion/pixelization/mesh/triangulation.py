@@ -84,7 +84,6 @@ class Triangulation(AbstractMesh):
             source_plane_mesh_grid = self.mesh_grid_from(
                 source_plane_data_grid=source_plane_data_grid,
                 source_plane_mesh_grid=relocated_source_plane_mesh_grid,
-                sparse_index_for_slim_index=source_plane_mesh_grid.sparse_index_for_slim_index,
             )
         except ValueError as e:
             raise e
