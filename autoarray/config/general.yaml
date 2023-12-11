@@ -1,12 +1,18 @@
 inversion:
-  check_reconstruction: true        # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
-  reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
+  check_reconstruction: true          # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
+  use_positive_only_solver: true      # If True, inversion's use a positive-only linear algebra solver by default, which is slower but prevents unphysical negative values in the reconstructed solutuion.
+  no_regularization_add_to_curvature_diag_value : 1.0e-3 # The default value added to the curvature matrix's diagonal when regularization is not applied to a linear object, which prevents inversion's failing due to the matrix being singular.
+  positive_only_uses_p_initial: true  # If True, the positive-only solver of an inversion's uses an initial guess of the reconstructed data's values as which values should be positive, speeding up the solver.
+  reconstruction_vmax_factor: 0.5     # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
 numba:
   use_numba: true
   cache: false
   nopython: true
   parallel: false
+pixelization:
+  voronoi_nn_max_interpolation_neighbors: 300
 structures:
-  use_dataset_grids: true           # If True, dataset objects (e.g. Imaging) have a grid of (y,x) coordinates computed for them.
-units:
-  in_kpc: false                     # If True, plots that are normally in arc-seconds are instead plotted using kiloparsecs.
+  native_binned_only: false           # If True, data structures are only stored in their native and binned format. This is used to reduce memory usage in autocti.
+test:
+  preloads_check_threshold: 1.0     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit.
+

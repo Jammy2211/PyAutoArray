@@ -14,12 +14,10 @@ def sub_slim_indexes_for_pix_index(
     pix_weights_for_sub_slim_index: np.ndarray,
     pix_pixels: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-
     sub_slim_sizes_for_pix_index = np.zeros(pix_pixels)
 
     for pix_indexes in pix_indexes_for_sub_slim_index:
         for pix_index in pix_indexes:
-
             sub_slim_sizes_for_pix_index[pix_index] += 1
 
     max_pix_size = np.max(sub_slim_sizes_for_pix_index)
@@ -29,11 +27,9 @@ def sub_slim_indexes_for_pix_index(
     sub_slim_sizes_for_pix_index = np.zeros(pix_pixels)
 
     for slim_index, pix_indexes in enumerate(pix_indexes_for_sub_slim_index):
-
         pix_weights = pix_weights_for_sub_slim_index[slim_index]
 
         for pix_index, pix_weight in zip(pix_indexes, pix_weights):
-
             sub_slim_indexes_for_pix_index[
                 pix_index, int(sub_slim_sizes_for_pix_index[pix_index])
             ] = slim_index
@@ -57,6 +53,7 @@ def data_slim_to_pixelization_unique_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_sizes_for_sub_slim_index: np.ndarray,
     pix_weights_for_sub_slim_index,
+    pix_pixels: int,
     sub_size: int,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -108,8 +105,10 @@ def data_slim_to_pixelization_unique_from(
     data_to_pix_unique = -1 * np.ones((data_pixels, max_pix_mappings * sub_size**2))
     data_weights = np.zeros((data_pixels, max_pix_mappings * sub_size**2))
     pix_lengths = np.zeros(data_pixels)
+    pix_check = -1 * np.ones(shape=pix_pixels)
 
     for ip in range(data_pixels):
+        pix_check[:] = -1
 
         pix_size = 0
 
@@ -117,26 +116,17 @@ def data_slim_to_pixelization_unique_from(
         ip_sub_end = ip_sub_start + sub_size**2
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
+            for pix_interp_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
+                pix = pix_indexes_for_sub_slim_index[ip_sub, pix_interp_index]
+                pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_interp_index]
 
-            for pix_to_slim_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
+                if pix_check[pix] > -0.5:
+                    data_weights[ip, int(pix_check[pix])] += sub_fraction * pixel_weight
 
-                pix = pix_indexes_for_sub_slim_index[ip_sub, pix_to_slim_index]
-                pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_to_slim_index]
-
-                stored_already = False
-
-                for i in range(pix_size):
-
-                    if data_to_pix_unique[ip, i] == pix:
-
-                        data_weights[ip, i] += sub_fraction * pixel_weight
-                        stored_already = True
-
-                if not stored_already:
-
+                else:
                     data_to_pix_unique[ip, pix_size] = pix
                     data_weights[ip, pix_size] += sub_fraction * pixel_weight
-
+                    pix_check[pix] = pix_size
                     pix_size += 1
 
         pix_lengths[ip] = pix_size
@@ -183,9 +173,46 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 
 
 @numba_util.jit()
+def nearest_pixelization_index_for_slim_index_from(grid, mesh_grid):
+    """
+    Uses a nearest neighbor search to determine for each data pixel its nearest pixelization pixel.
+
+    This is used to speed up the `pix_indexes_for_sub_slim_index_voronoi_from` function, which otherwise would
+    have to loop over every pixelization pixel to determine the nearest pixelization pixel to each data pixel.
+
+    This is only used for a regular `Voronoi` mesh, not a `Delaunay` or `VoronoiNN`, and therefore has limited
+    use in general given the `VoronoiNN` is a superior mesh because it uses natural neighbor interpolation.
+
+
+    Parameters
+    ----------
+    grid
+        The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
+        to an irgrid via lens.
+    mesh_grid
+        The (y,x) centre of every Voronoi pixel in arc-seconds.
+
+    Returns
+    -------
+    A 1D array of length (total_unmasked_pixels) where each entry corresponds to the index of the nearest
+    pixelization pixel to each data pixel.
+    """
+
+    nearest_pixelization_index_for_slim_index = np.zeros((grid.shape[0],))
+
+    for image_index in range(grid.shape[0]):
+        distances = (grid[image_index, 0] - mesh_grid[:, 0]) ** 2 + (
+            grid[image_index, 1] - mesh_grid[:, 1]
+        ) ** 2
+
+        nearest_pixelization_index_for_slim_index[image_index] = np.argmin(distances)
+
+    return nearest_pixelization_index_for_slim_index
+
+
+@numba_util.jit()
 def pix_indexes_for_sub_slim_index_voronoi_from(
     grid: np.ndarray,
-    nearest_pixelization_index_for_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
     mesh_grid: np.ndarray,
     neighbors: np.ndarray,
@@ -205,8 +232,6 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pixelization_index_for_slim_index
-        A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
     mesh_grid
@@ -219,10 +244,15 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         Voronoi grid.
     """
 
+    nearest_pixelization_index_for_slim_index = (
+        nearest_pixelization_index_for_slim_index_from(
+            grid=grid, mesh_grid=mesh_grid
+        ).astype("int")
+    )
+
     pix_indexes_for_sub_slim_index = np.zeros(shape=(grid.shape[0], 1))
 
     for sub_slim_index in range(grid.shape[0]):
-
         nearest_pix_index = nearest_pixelization_index_for_slim_index[
             slim_index_for_sub_slim_index[sub_slim_index]
         ]
@@ -230,7 +260,6 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
         whiletime = 0
 
         while True:
-
             if whiletime > 1000000:
                 raise exc.MeshException
 
@@ -243,7 +272,6 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
             closest_separation_pix_to_neighbor = 1.0e8
 
             for neighbor_pix_index in range(neighbors_sizes[nearest_pix_index]):
-
                 neighbor = neighbors[nearest_pix_index, neighbor_pix_index]
 
                 distance_to_neighbor = (
@@ -303,11 +331,9 @@ def pixel_weights_delaunay_from(
     pixel_weights = np.zeros(pix_indexes_for_sub_slim_index.shape)
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
-
         pix_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
 
         if pix_indexes[1] != -1:
-
             vertices_of_the_simplex = source_plane_mesh_grid[pix_indexes]
 
             sub_gird_coordinate_on_source_place = source_plane_data_grid[sub_slim_index]
@@ -357,8 +383,6 @@ def pix_size_weights_voronoi_nn_from(
     grid
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pixelization_index_for_slim_index
-        A 1D array that maps every slimmed data-plane pixel to its nearest pixelization pixel.
     slim_index_for_sub_slim_index
         The mappings between the data slimmed sub-pixels and their regular pixels.
     mesh_grid
@@ -444,6 +468,7 @@ def pix_size_weights_voronoi_nn_from(
     )
 
 
+@numba_util.jit()
 def remove_bad_entries_voronoi_nn(
     bad_indexes,
     pix_weights_for_sub_slim_index,
@@ -494,10 +519,10 @@ def adaptive_pixel_signals_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
-    hyper_data: np.ndarray,
+    adapt_data: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns the (hyper) signal in each pixel, where the signal is the sum of its mapped data values.
+    Returns the signal in each pixel, where the signal is the sum of its mapped data values.
     These pixel-signals are used to compute the effective regularization weight of each pixel.
 
     The pixel signals are computed as follows:
@@ -508,7 +533,7 @@ def adaptive_pixel_signals_from(
     2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
        regularization weight_list are defined identically for any data quantity or signal-to-noise_map ratio.
 
-    3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative
+    3) Raised to the power of the parameter *signal_scale*, so the method can control the relative
        contribution regularization in different regions of pixelization.
 
     Parameters
@@ -520,7 +545,7 @@ def adaptive_pixel_signals_from(
         low signal regions.
     regular_to_pix
         A 1D array util every pixel on the grid to a pixel on the pixelization.
-    hyper_data
+    adapt_data
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
@@ -528,7 +553,6 @@ def adaptive_pixel_signals_from(
     pixel_sizes = np.zeros((pixels,))
 
     for sub_slim_index in range(len(pix_indexes_for_sub_slim_index)):
-
         vertices_indexes = pix_indexes_for_sub_slim_index[sub_slim_index]
 
         mask_1d_index = slim_index_for_sub_slim_index[sub_slim_index]
@@ -536,13 +560,12 @@ def adaptive_pixel_signals_from(
         pix_size_tem = pix_size_for_sub_slim_index[sub_slim_index]
 
         if pix_size_tem > 1:
-
             pixel_signals[vertices_indexes[:pix_size_tem]] += (
-                hyper_data[mask_1d_index] * pixel_weights[sub_slim_index]
+                adapt_data[mask_1d_index] * pixel_weights[sub_slim_index]
             )
             pixel_sizes[vertices_indexes] += 1
         else:
-            pixel_signals[vertices_indexes[0]] += hyper_data[mask_1d_index]
+            pixel_signals[vertices_indexes[0]] += adapt_data[mask_1d_index]
             pixel_sizes[vertices_indexes[0]] += 1
 
     pixel_sizes[pixel_sizes == 0] = 1
@@ -637,11 +660,9 @@ def mapping_matrix_from(
     mapping_matrix = np.zeros((total_mask_pixels, pixels))
 
     for sub_slim_index in range(slim_index_for_sub_slim_index.shape[0]):
-
         slim_index = slim_index_for_sub_slim_index[sub_slim_index]
 
         for pix_count in range(pix_size_for_sub_slim_index[sub_slim_index]):
-
             pix_index = pix_indexes_for_sub_slim_index[sub_slim_index, pix_count]
             pix_weight = pix_weights_for_sub_slim_index[sub_slim_index, pix_count]
 

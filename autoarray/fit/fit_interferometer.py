@@ -1,8 +1,10 @@
 import numpy as np
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 
-from autoarray.dataset.interferometer.interferometer import Interferometer
 from autoarray.structures.abstract_structure import Structure
+
+from autoarray.dataset.interferometer.dataset import Interferometer
+
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.fit.fit_dataset import FitDataset
@@ -16,7 +18,7 @@ class FitInterferometer(FitDataset):
         self,
         dataset: Interferometer,
         use_mask_in_fit: bool = False,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked interferometer dataset.
 
@@ -24,7 +26,7 @@ class FitInterferometer(FitDataset):
         ----------
         dataset : MaskedInterferometer
             The masked interferometer dataset that is fitted.
-        model_visibilities : Visibilities
+        model_data : Visibilities
             The model visibilities the masked imaging is fitted with.
         inversion : Inversion
             If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
@@ -53,12 +55,12 @@ class FitInterferometer(FitDataset):
         super().__init__(
             dataset=dataset,
             use_mask_in_fit=use_mask_in_fit,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @property
     def mask(self) -> np.ndarray:
-        return np.full(shape=self.visibilities.shape, fill_value=False)
+        return np.full(shape=self.data.shape, fill_value=False)
 
     @property
     def interferometer(self) -> Interferometer:
@@ -66,7 +68,7 @@ class FitInterferometer(FitDataset):
 
     @property
     def transformer(self) -> ty.Transformer:
-        return self.interferometer.transformer
+        return self.dataset.transformer
 
     @property
     def visibilities(self) -> Visibilities:
@@ -111,11 +113,6 @@ class FitInterferometer(FitDataset):
         return signal_to_noise_map_real + 1.0j * signal_to_noise_map_imag
 
     @property
-    def potential_chi_squared_map(self) -> np.ndarray:
-        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
-        return self.signal_to_noise_map
-
-    @property
     def chi_squared(self) -> float:
         """
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
@@ -137,7 +134,7 @@ class FitInterferometer(FitDataset):
 
     @property
     def dirty_image(self) -> Array2D:
-        return self.transformer.image_from(visibilities=self.visibilities)
+        return self.transformer.image_from(visibilities=self.data)
 
     @property
     def dirty_noise_map(self) -> Array2D:
@@ -149,7 +146,7 @@ class FitInterferometer(FitDataset):
 
     @property
     def dirty_model_image(self) -> Array2D:
-        return self.transformer.image_from(visibilities=self.model_visibilities)
+        return self.transformer.image_from(visibilities=self.model_data)
 
     @property
     def dirty_residual_map(self) -> Array2D:

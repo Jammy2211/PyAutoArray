@@ -1,6 +1,8 @@
+from astropy.io import fits
 from astropy import units
 import numpy as np
 import scipy.signal
+from pathlib import Path
 from typing import List, Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
@@ -71,8 +73,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -111,8 +113,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -147,8 +149,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -184,8 +186,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
@@ -210,8 +212,8 @@ class Kernel2D(AbstractArray2D):
         Parameters
         ----------
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         """
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
@@ -240,8 +242,8 @@ class Kernel2D(AbstractArray2D):
         shape_native
             The 2D shape of the mask the array is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sigma
             The value of sigma in the equation, describing the size and full-width half maximum of the Gaussian.
         centre
@@ -297,7 +299,6 @@ class Kernel2D(AbstractArray2D):
         centre: Tuple[float, float] = (0.0, 0.0),
         normalize: bool = False,
     ) -> "Kernel2D":
-
         x_stddev = (
             x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
         )
@@ -320,7 +321,7 @@ class Kernel2D(AbstractArray2D):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
+        file_path: Union[Path, str],
         hdu: int,
         pixel_scales,
         origin=(0.0, 0.0),
@@ -337,8 +338,8 @@ class Kernel2D(AbstractArray2D):
         hdu
             The Header-Data Unit of the .fits file the array data is loaded from.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         normalize
@@ -357,6 +358,70 @@ class Kernel2D(AbstractArray2D):
             mask=array.mask,
             normalize=normalize,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
+        )
+
+    @classmethod
+    def from_primary_hdu(
+        cls,
+        primary_hdu: fits.PrimaryHDU,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Kernel2D":
+        """
+        Returns an ``Kernel2D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
+
+        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
+        pixel-scale of the array.
+
+        For a full description of ``Kernel2D`` objects, including a description of the ``slim`` and ``native`` attribute
+        used by the API, see
+        the :meth:`Kernel2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractKernel2D.__new__>`.
+
+        Parameters
+        ----------
+        primary_hdu
+            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
+            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin
+            The (y,x) scaled units origin of the coordinate system.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            from astropy.io import fits
+            import autoarray as aa
+
+            # Make Kernel2D with sub_size 1.
+
+            primary_hdu = fits.open("path/to/file.fits")
+
+            array_2d = aa.Kernel2D.from_primary_hdu(
+                primary_hdu=primary_hdu,
+                sub_size=1
+            )
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Kernel2D with sub_size 2.
+            # (It is uncommon that a sub-gridded array would be loaded from
+            # a .fits, but the API support its).
+
+             primary_hdu = fits.open("path/to/file.fits")
+
+            array_2d = aa.Kernel2D.from_primary_hdu(
+                primary_hdu=primary_hdu,
+                sub_size=2
+            )
+        """
+        return cls.no_mask(
+            values=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
+            pixel_scales=primary_hdu.header["PIXSCALE"],
+            origin=origin,
         )
 
     def rescaled_with_odd_dimensions_from(
@@ -384,16 +449,24 @@ class Kernel2D(AbstractArray2D):
 
         from skimage.transform import resize, rescale
 
-        kernel_rescaled = rescale(
-            self.native,
-            rescale_factor,
-            anti_aliasing=False,
-            mode="constant",
-            multichannel=False,
-        )
+        try:
+            kernel_rescaled = rescale(
+                self.native,
+                rescale_factor,
+                anti_aliasing=False,
+                mode="constant",
+                multichannel=False,
+            )
+        except TypeError:
+            kernel_rescaled = rescale(
+                self.native,
+                rescale_factor,
+                anti_aliasing=False,
+                mode="constant",
+                #   multichannel=False,
+            )
 
         if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
-
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(
@@ -405,7 +478,6 @@ class Kernel2D(AbstractArray2D):
             )
 
         elif kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 != 0:
-
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(kernel_rescaled.shape[0] + 1, kernel_rescaled.shape[1]),
@@ -414,7 +486,6 @@ class Kernel2D(AbstractArray2D):
             )
 
         elif kernel_rescaled.shape[0] % 2 != 0 and kernel_rescaled.shape[1] % 2 == 0:
-
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(kernel_rescaled.shape[0], kernel_rescaled.shape[1] + 1),
@@ -423,7 +494,6 @@ class Kernel2D(AbstractArray2D):
             )
 
         if self.pixel_scales is not None:
-
             pixel_scale_factors = (
                 self.mask.shape[0] / kernel_rescaled.shape[0],
                 self.mask.shape[1] / kernel_rescaled.shape[1],
@@ -435,7 +505,6 @@ class Kernel2D(AbstractArray2D):
             )
 
         else:
-
             pixel_scales = None
 
         return Kernel2D.no_mask(

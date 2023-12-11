@@ -1,16 +1,19 @@
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type
 
 from autoconf import cached_property
 
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
+from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
+
+from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
 
 class AbstractInversionImaging(AbstractInversion):
@@ -22,7 +25,7 @@ class AbstractInversionImaging(AbstractInversion):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads=None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -67,7 +70,7 @@ class AbstractInversionImaging(AbstractInversion):
         preloads
             Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
             for example certain matrices used by the linear algebra could be preloaded.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -83,7 +86,7 @@ class AbstractInversionImaging(AbstractInversion):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @property
@@ -106,21 +109,20 @@ class AbstractInversionImaging(AbstractInversion):
                 mapping_matrix=linear_obj.mapping_matrix
             )
             if linear_obj.operated_mapping_matrix_override is None
-            else linear_obj.operated_mapping_matrix_override
+            else self.linear_func_operated_mapping_matrix_dict[linear_obj]
             for linear_obj in self.linear_obj_list
         ]
 
-    def _linear_func_preload_dict_map(self, linear_func_preload_dict: Dict) -> Dict:
-
-        linear_func_dict = {}
+    def _updated_cls_key_dict_from(self, cls: Type, preload_dict: Dict) -> Dict:
+        cls_dict = {}
 
         for linear_func, values in zip(
-            self.cls_list_from(cls=AbstractLinearObjFuncList),
-            linear_func_preload_dict.values(),
+            self.cls_list_from(cls=cls),
+            preload_dict.values(),
         ):
-            linear_func_dict[linear_func] = values
+            cls_dict[linear_func] = values
 
-        return linear_func_dict
+        return cls_dict
 
     @cached_property
     @profile_func
@@ -140,14 +142,14 @@ class AbstractInversionImaging(AbstractInversion):
         """
 
         if self.preloads.linear_func_operated_mapping_matrix_dict is not None:
-            return self._linear_func_preload_dict_map(
-                linear_func_preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict
+            return self._updated_cls_key_dict_from(
+                cls=AbstractLinearObjFuncList,
+                preload_dict=self.preloads.linear_func_operated_mapping_matrix_dict,
             )
 
         linear_func_operated_mapping_matrix_dict = {}
 
         for linear_func in self.cls_list_from(cls=AbstractLinearObjFuncList):
-
             if linear_func.operated_mapping_matrix_override is not None:
                 operated_mapping_matrix = linear_func.operated_mapping_matrix_override
             else:
@@ -161,71 +163,95 @@ class AbstractInversionImaging(AbstractInversion):
 
         return linear_func_operated_mapping_matrix_dict
 
-    @cached_property
-    @profile_func
-    def linear_func_weighted_mapping_vectors_dict(self) -> Dict:
+    @property
+    def data_linear_func_matrix_dict(self):
         """
-        The diagonals of the `curvature_matrix` of linear func objects are computed by multiplying the operated
-        values of each linear func by the noise-map.
+        Returns a matrix that for each data pixel, maps it to the sum of the values of a linear object function
+        convolved with the PSF kernel at the data pixel.
 
-        This property therefore returns a dictionary mapping every linear func object to this quantity.
+        If a linear function in an inversion is fixed, its values can be evaluated and preloaded beforehand. For every
+        data pixel, the PSF convolution with this preloaded linear function can also be preloaded, in a matrix of
+        shape [data_pixels, 1].
+
+        Given that multiple linear functions can be used and fixed in an inversion, this matrix is extended to have
+        dimensions [data_pixels, total_fixed_linear_functions].
+
+        When mapper objects and linear functions are used simultaneously in an inversion, this preloaded matrix
+        significantly speed up the computation of their off-diagonal terms in the curvature matrix.
+
+        This is similar to the preloading performed via the w-tilde formalism, except that there it is the PSF convolved
+        values of each noise-map value pair that are preloaded.
+
+        In **PyAutoGalaxy** and **PyAutoLens**, this preload is used when linear light profiles are fixed in the model.
+        For example, when using a multi Gaussian expansion, the values defining how those Gaussians are evaluated
+        (e.g. `centre`, `ell_comps` and `sigma`) are often fixed in a model, meaning this matrix can be preloaded and
+        used for speed up.
 
         Returns
         -------
-        A dictionary mapping every linear function object to its operated mapping matrix divided by the noise and
-        convolved with the kernel.
+        ndarray
+            A matrix of shape [data_pixels, total_fixed_linear_functions] that for each data pixel, maps it to the sum
+            of the values of a linear object function convolved with the PSF kernel at the data pixel.
         """
-
-        if self.preloads.linear_func_weighted_mapping_vectors_dict is not None:
-            return self._linear_func_preload_dict_map(
-                linear_func_preload_dict=self.preloads.linear_func_weighted_mapping_vectors_dict
+        if self.preloads.data_linear_func_matrix_dict is not None:
+            return self._updated_cls_key_dict_from(
+                cls=AbstractLinearObjFuncList,
+                preload_dict=self.preloads.data_linear_func_matrix_dict,
             )
 
-        linear_func_weighted_mapping_vectors_dict = {}
+        linear_func_list = self.cls_list_from(cls=AbstractLinearObjFuncList)
 
-        for (
-            linear_func,
-            operated_mapping_matrix,
-        ) in self.linear_func_operated_mapping_matrix_dict.items():
+        data_linear_func_matrix_dict = {}
 
-            linear_func_weighted_mapping_vectors_dict[linear_func] = (
-                operated_mapping_matrix / self.noise_map[:, None]
+        for func_index, linear_func in enumerate(linear_func_list):
+            curvature_weights = (
+                self.linear_func_operated_mapping_matrix_dict[linear_func]
+                / self.noise_map[:, None] ** 2
             )
 
-        return linear_func_weighted_mapping_vectors_dict
+            data_linear_func_matrix = (
+                inversion_imaging_util.data_linear_func_matrix_from(
+                    curvature_weights_matrix=curvature_weights,
+                    image_frame_1d_lengths=self.convolver.image_frame_1d_lengths,
+                    image_frame_1d_indexes=self.convolver.image_frame_1d_indexes,
+                    image_frame_1d_kernels=self.convolver.image_frame_1d_kernels,
+                )
+            )
+
+            data_linear_func_matrix_dict[linear_func] = data_linear_func_matrix
+
+        return data_linear_func_matrix_dict
 
     @cached_property
     @profile_func
-    def linear_func_curvature_vectors_dict(self) -> Dict:
+    def mapper_operated_mapping_matrix_dict(self) -> Dict:
         """
-        The rows (and columns) of the `curvature_matrix` of a linear object are computed by dividing the operated
-        values of each linear func by the noise-map squared and convolving with the kernel.
+        The `operated_mapping_matrix` of a `Mapper` object describes the mappings between the observed data's values
+        and the mapper's mesh pixels after a 2D convolution operation. It is described fully in the method
+        `operated_mapping_matrix`.
 
-        This property therefore returns a dictionary mapping every linear func object to this quantity, which is
-        termed the curvature vector and is representative of a linear func's row of the curvature matrix.
+        This property returns a dictionary mapping every mapper object to its corresponded operated mapping
+        matrix, which is used for constructing the matrices that perform the linear inversion in an efficent way
+        for the w_tilde calculation.
 
         Returns
         -------
-        A dictionary mapping every linear function object to its curvature vector (its operated mapping matrix
-        divided by the noise squared convolved with the kernel).
+        A dictionary mapping every mapper object to its operated mapping matrix.
         """
 
-        if self.preloads.linear_func_curvature_vectors_dict is not None:
-            return self._linear_func_preload_dict_map(
-                linear_func_preload_dict=self.preloads.linear_func_curvature_vectors_dict
+        if self.preloads.mapper_operated_mapping_matrix_dict is not None:
+            return self._updated_cls_key_dict_from(
+                cls=AbstractMapper,
+                preload_dict=self.preloads.mapper_operated_mapping_matrix_dict,
             )
 
-        linear_func_curvature_vectors_dict = {}
+        mapper_operated_mapping_matrix_dict = {}
 
-        for (
-            linear_func,
-            operated_mapping_matrix,
-        ) in self.linear_func_operated_mapping_matrix_dict.items():
-
-            linear_func_curvature_vectors_dict[
-                linear_func
-            ] = self.convolver.convolve_mapping_matrix(
-                mapping_matrix=operated_mapping_matrix / self.noise_map[:, None] ** 2
+        for mapper in self.cls_list_from(cls=AbstractMapper):
+            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                mapping_matrix=mapper.mapping_matrix
             )
 
-        return linear_func_curvature_vectors_dict
+            mapper_operated_mapping_matrix_dict[mapper] = operated_mapping_matrix
+
+        return mapper_operated_mapping_matrix_dict

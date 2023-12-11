@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple, Type, Union
 
+
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.iterate_2d import Grid2DIterate
@@ -14,7 +15,6 @@ def grid_via_grid_class_from(
     relative_accuracy: Optional[float],
     sub_steps: List[int],
 ) -> Optional[Union[Grid1D, Grid2D, Grid2DIterate]]:
-
     if mask.pixel_scales is None:
         return None
 
@@ -25,15 +25,12 @@ def grid_via_grid_class_from(
             grid_class = Grid2D
 
     if grid_class is Grid1D:
-
         return Grid1D.from_mask(mask=mask)
 
     if grid_class is Grid2D:
-
         return Grid2D.from_mask(mask=mask)
 
     elif grid_class is Grid2DIterate:
-
         return Grid2DIterate.from_mask(
             mask=mask,
             fractional_accuracy=fractional_accuracy,
@@ -47,8 +44,8 @@ class AbstractSettingsDataset:
         self,
         grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
         grid_pixelization_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
-        sub_size: int = 2,
-        sub_size_pixelization: int = 2,
+        sub_size: int = 1,
+        sub_size_pixelization: int = 4,
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
         sub_steps: Tuple[int] = (2, 4, 8, 16),
@@ -93,7 +90,6 @@ class AbstractSettingsDataset:
         self.sub_steps = sub_steps
 
     def grid_from(self, mask) -> Union[Grid1D, Grid2D]:
-
         return grid_via_grid_class_from(
             mask=mask,
             grid_class=self.grid_class,
@@ -103,7 +99,6 @@ class AbstractSettingsDataset:
         )
 
     def grid_pixelization_from(self, mask) -> Union[Grid1D, Grid2D]:
-
         return grid_via_grid_class_from(
             mask=mask,
             grid_class=self.grid_pixelization_class,

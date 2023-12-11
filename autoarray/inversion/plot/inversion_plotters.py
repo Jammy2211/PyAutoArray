@@ -43,9 +43,7 @@ class InversionPlotter(Plotter):
             Contains 2D visuals that can be overlaid on 2D plots.
         include_2d
             Specifies which attributes of the `Inversion` are extracted and plotted as visuals for 2D plots.
-        residuals_symmetric_cmap
-            If true, the `residual_map` and `normalized_residual_map` are plotted with a symmetric color map such
-            that `abs(vmin) = abs(vmax)`.
+
         """
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
@@ -94,7 +92,6 @@ class InversionPlotter(Plotter):
             Whether to make a 2D plot (via `imshow`) of the reconstructed image data.
         """
         if reconstructed_image:
-
             self.mat_plot_2d.plot_array(
                 array=self.inversion.mapped_reconstructed_image,
                 visuals_2d=self.get_visuals_2d_for_data(),
@@ -109,10 +106,9 @@ class InversionPlotter(Plotter):
         reconstructed_image: bool = False,
         reconstruction: bool = False,
         errors: bool = False,
-        residual_map: bool = False,
-        normalized_residual_map: bool = False,
-        chi_squared_map: bool = False,
         regularization_weights: bool = False,
+        zoom_to_brightest: bool = True,
+        interpolate_to_uniform: bool = False,
     ):
         """
         Plots the individual attributes of a specific `Mapper` of the plotter's `Inversion` object in 2D.
@@ -130,16 +126,12 @@ class InversionPlotter(Plotter):
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
         errors
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
-        residual_map
-            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane residual map.
-        normalized_residual_map
-            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane normalized residual
-            map.
-        chi_squared_map
-            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane chi-squared map.
-        residual_map
-            Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane regularization
-            weights.
+        zoom_to_brightest
+            For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
+            the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
+        interpolate_to_uniform
+            If `True`, the mapper's reconstruction is interpolated to a uniform grid before plotting, for example
+            meaning that an irregular Delaunay grid can be plotted as a uniform grid.
         """
 
         if not self.inversion.has(cls=AbstractMapper):
@@ -148,7 +140,6 @@ class InversionPlotter(Plotter):
         mapper_plotter = self.mapper_plotter_from(mapper_index=pixelization_index)
 
         if reconstructed_image:
-
             array = self.inversion.mapped_reconstructed_image_dict[
                 mapper_plotter.mapper
             ]
@@ -162,12 +153,10 @@ class InversionPlotter(Plotter):
             )
 
         if reconstruction:
-
             vmax_custom = False
 
             if "vmax" in self.mat_plot_2d.cmap.kwargs:
                 if self.mat_plot_2d.cmap.kwargs["vmax"] is None:
-
                     reconstruction_vmax_factor = conf.instance["visualize"]["general"][
                         "inversion"
                     ]["reconstruction_vmax_factor"]
@@ -179,14 +168,14 @@ class InversionPlotter(Plotter):
                     )
                     vmax_custom = True
 
-            source_pixelization_values = self.inversion.reconstruction_dict[
-                mapper_plotter.mapper
-            ]
+            pixel_values = self.inversion.reconstruction_dict[mapper_plotter.mapper]
 
             mapper_plotter.plot_source_from(
-                source_pixelization_values=source_pixelization_values,
+                pixel_values=pixel_values,
+                zoom_to_brightest=zoom_to_brightest,
+                interpolate_to_uniform=interpolate_to_uniform,
                 auto_labels=AutoLabels(
-                    title="Source Inversion", filename="reconstruction"
+                    title="Source Reconstruction", filename="reconstruction"
                 ),
             )
 
@@ -194,70 +183,30 @@ class InversionPlotter(Plotter):
                 self.mat_plot_2d.cmap.kwargs["vmax"] = None
 
         if errors:
-
             try:
-
                 mapper_plotter.plot_source_from(
-                    source_pixelization_values=self.inversion.errors_dict[
-                        mapper_plotter.mapper
-                    ],
+                    pixel_values=self.inversion.errors_dict[mapper_plotter.mapper],
                     auto_labels=AutoLabels(title="Errors", filename="errors"),
                 )
 
             except TypeError:
-
                 pass
 
-        cmap_original = self.mat_plot_2d.cmap
-
-        if self.residuals_symmetric_cmap:
-
-            self.mat_plot_2d.cmap = self.mat_plot_2d.cmap.symmetric
-
-        if residual_map:
-
-            mapper_plotter.plot_source_from(
-                source_pixelization_values=self.inversion.residual_map_mapper_dict[
-                    mapper_plotter.mapper
-                ],
-                auto_labels=AutoLabels(title="Residual Map", filename="residual_map"),
-            )
-
-        if normalized_residual_map:
-
-            mapper_plotter.plot_source_from(
-                source_pixelization_values=self.inversion.normalized_residual_map_mapper_dict[
-                    mapper_plotter.mapper
-                ],
-                auto_labels=AutoLabels(
-                    title="Normalized Residual Map", filename="normalized_residual_map"
-                ),
-            )
-
-        self.mat_plot_2d.cmap = cmap_original
-
-        if chi_squared_map:
-
-            mapper_plotter.plot_source_from(
-                source_pixelization_values=self.inversion.chi_squared_map_mapper_dict[
-                    mapper_plotter.mapper
-                ],
-                auto_labels=AutoLabels(
-                    title="Chi-Squared Map", filename="chi_squared_map"
-                ),
-            )
+        # TODO : NEed to understand why this raises an error in voronoi_drawer.
 
         if regularization_weights:
-
-            mapper_plotter.plot_source_from(
-                source_pixelization_values=self.inversion.regularization_weights_mapper_dict[
-                    mapper_plotter.mapper
-                ],
-                auto_labels=AutoLabels(
-                    title="Regularization weight_list",
-                    filename="regularization_weights",
-                ),
-            )
+            try:
+                mapper_plotter.plot_source_from(
+                    pixel_values=self.inversion.regularization_weights_mapper_dict[
+                        mapper_plotter.mapper
+                    ],
+                    auto_labels=AutoLabels(
+                        title="Regularization weight_list",
+                        filename="regularization_weights",
+                    ),
+                )
+            except IndexError:
+                pass
 
     def subplot_of_mapper(
         self, mapper_index: int = 0, auto_filename: str = "subplot_inversion"
@@ -281,15 +230,27 @@ class InversionPlotter(Plotter):
             pixelization_index=mapper_index, reconstruction=True
         )
         self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
+
+        try:
+            self.figures_2d_of_pixelization(
+                pixelization_index=mapper_index, regularization_weights=True
+            )
+        except IndexError:
+            pass
+
+        self.set_title(label="Source Reconstruction (Unzoomed)")
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, residual_map=True
+            pixelization_index=mapper_index,
+            reconstruction=True,
+            zoom_to_brightest=False,
         )
+        self.set_title(label=None)
+
+        self.set_title(label="Errors (Unzoomed)")
         self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, normalized_residual_map=True
+            pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
         )
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, chi_squared_map=True
-        )
+        self.set_title(label=None)
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{mapper_index}"

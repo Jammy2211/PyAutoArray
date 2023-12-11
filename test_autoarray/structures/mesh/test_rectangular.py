@@ -100,7 +100,6 @@ def test__shape_native_and_pixel_scales():
 
 
 def test__pixel_centres__3x3_grid__pixel_centres():
-
     grid = np.array(
         [
             [1.0, -1.0],
@@ -174,7 +173,6 @@ def test__pixel_centres__3x3_grid__pixel_centres():
 
 
 def test__interpolated_array_from():
-
     grid = aa.Grid2D.no_mask(
         values=[[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]],
         shape_native=(2, 2),

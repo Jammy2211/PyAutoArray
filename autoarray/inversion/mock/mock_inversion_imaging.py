@@ -16,14 +16,10 @@ class MockInversionImaging(InversionImagingMapping):
         linear_obj_list=None,
         operated_mapping_matrix=None,
         linear_func_operated_mapping_matrix_dict=None,
-        linear_func_weighted_mapping_vectors_dict=None,
-        linear_func_curvature_vectors_dict=None,
-        curvature_matrix_preload=None,
-        curvature_matrix_counts=None,
+        data_linear_func_matrix_dict=None,
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-
         super().__init__(
             data=data,
             noise_map=noise_map,
@@ -38,12 +34,7 @@ class MockInversionImaging(InversionImagingMapping):
         self._linear_func_operated_mapping_matrix_dict = (
             linear_func_operated_mapping_matrix_dict
         )
-        self._linear_func_weighted_mapping_vectors_dict = (
-            linear_func_weighted_mapping_vectors_dict
-        )
-        self._linear_func_curvature_vectors_dict = linear_func_curvature_vectors_dict
-        self._curvature_matrix_preload = curvature_matrix_preload
-        self._curvature_matrix_counts = curvature_matrix_counts
+        self._data_linear_func_matrix_dict = data_linear_func_matrix_dict
 
     @property
     def operated_mapping_matrix(self) -> np.ndarray:
@@ -60,37 +51,15 @@ class MockInversionImaging(InversionImagingMapping):
         return self._linear_func_operated_mapping_matrix_dict
 
     @property
-    def linear_func_weighted_mapping_vectors_dict(self) -> Dict:
-        if self._linear_func_weighted_mapping_vectors_dict is None:
-            return super().linear_func_weighted_mapping_vectors_dict
+    def data_linear_func_matrix_dict(self) -> Dict:
+        if self._data_linear_func_matrix_dict is None:
+            return super().data_linear_func_matrix_dict
 
-        return self._linear_func_weighted_mapping_vectors_dict
-
-    @property
-    def linear_func_curvature_vectors_dict(self) -> Dict:
-        if self._linear_func_curvature_vectors_dict is None:
-            return super().linear_func_curvature_vectors_dict
-
-        return self._linear_func_curvature_vectors_dict
-
-    @property
-    def curvature_matrix_preload(self):
-        if self._curvature_matrix_preload is None:
-            return super().curvature_matrix_preload
-
-        return self._curvature_matrix_preload
-
-    @property
-    def curvature_matrix_counts(self):
-        if self._curvature_matrix_counts is None:
-            return super().curvature_matrix_counts
-
-        return self._curvature_matrix_counts
+        return self._data_linear_func_matrix_dict
 
 
 class MockWTildeImaging:
     def check_noise_map(self, noise_map):
-
         pass
 
 
@@ -106,7 +75,6 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-
         super().__init__(
             data=data,
             noise_map=noise_map,

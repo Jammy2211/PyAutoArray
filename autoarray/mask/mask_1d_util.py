@@ -111,7 +111,6 @@ def native_index_for_slim_index_1d_from(
     for x in range(mask_1d.shape[0]):
         if not mask_1d[x]:
             for x1 in range(sub_size):
-
                 sub_native_index_for_sub_slim_index_1d[sub_slim_index] = (
                     x * sub_size
                 ) + x1

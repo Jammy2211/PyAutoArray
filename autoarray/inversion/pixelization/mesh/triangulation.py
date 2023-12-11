@@ -15,10 +15,10 @@ class Triangulation(AbstractMesh):
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DSparse = None,
         image_plane_mesh_grid: Grid2DSparse = None,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a mesh,
@@ -55,18 +55,18 @@ class Triangulation(AbstractMesh):
         image_plane_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the `data` frame. This has a
             transformation applied to it to create the `source_plane_mesh_grid`.
-        hyper_data
+        adapt_data
             Not used for a rectangular mesh.
         settings
             Settings controlling the mesh for example if a border is used to relocate its exterior coordinates.
         preloads
             Object which may contain preloaded arrays of quantities computed in the mesh, which are passed via
             this object speed up the calculation.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
         source_plane_data_grid = self.relocated_grid_from(
             source_plane_data_grid=source_plane_data_grid,
@@ -81,11 +81,9 @@ class Triangulation(AbstractMesh):
         )
 
         try:
-
             source_plane_mesh_grid = self.mesh_grid_from(
                 source_plane_data_grid=source_plane_data_grid,
                 source_plane_mesh_grid=relocated_source_plane_mesh_grid,
-                sparse_index_for_slim_index=source_plane_mesh_grid.sparse_index_for_slim_index,
             )
         except ValueError as e:
             raise e
@@ -94,7 +92,7 @@ class Triangulation(AbstractMesh):
             source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
-            hyper_data=hyper_data,
+            adapt_data=adapt_data,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )

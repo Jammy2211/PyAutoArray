@@ -42,7 +42,6 @@ class AbstractMesh:
             A 2D (y,x) grid of coordinates, whose coordinates outside the border are relocated to its edge.
         """
         if preloads.relocated_grid is None:
-
             if settings.use_border:
                 return source_plane_data_grid.relocated_grid_from(
                     grid=source_plane_data_grid
@@ -96,10 +95,10 @@ class AbstractMesh:
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DSparse = None,
         image_plane_mesh_grid: Grid2DSparse = None,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         raise NotImplementedError
 
@@ -107,12 +106,10 @@ class AbstractMesh:
         self,
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2DSparse,
-        sparse_index_for_slim_index: np.ndarray = None,
     ):
         raise NotImplementedError
 
-    def weight_map_from(self, hyper_data: np.ndarray):
-
+    def weight_map_from(self, adapt_data: np.ndarray):
         raise NotImplementedError()
 
     @property

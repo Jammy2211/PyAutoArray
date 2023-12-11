@@ -16,7 +16,6 @@ class ArrayOverlay(AbstractMatWrap2D):
     """
 
     def overlay_array(self, array, figure):
-
         aspect = figure.aspect_from(shape_native=array.shape_native)
         extent = array.extent_of_zoomed_array(buffer=0)
 

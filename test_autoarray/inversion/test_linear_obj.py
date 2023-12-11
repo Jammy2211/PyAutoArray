@@ -3,7 +3,6 @@ import numpy as np
 
 
 def test__data_to_pix_unique_from():
-
     image_pixels = 2
     sub_size = 2
 
@@ -33,6 +32,7 @@ def test__data_to_pix_unique_from():
         pix_indexes_for_sub_slim_index=pix_index_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_sizes_for_sub_slim_index,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_pixels=2,
         sub_size=sub_size,
     )
 

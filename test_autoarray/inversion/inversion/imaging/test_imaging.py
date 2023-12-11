@@ -12,7 +12,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__operated_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7_3x3):
-
     inversion = aa.m.MockInversionImaging(
         convolver=convolver_7x7, linear_obj_list=[rectangular_mapper_7x7_3x3]
     )
@@ -45,12 +44,11 @@ def test__operated_mapping_matrix_property(convolver_7x7, rectangular_mapper_7x7
 def test__operated_mapping_matrix_property__with_operated_mapping_matrix_override(
     convolver_7x7, rectangular_mapper_7x7_3x3
 ):
-
     convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 2)))
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
-    linear_obj = aa.m.MockLinearObj(
+    linear_obj = aa.m.MockLinearObjFuncList(
         mapping_matrix=None,
         operated_mapping_matrix_override=operated_mapping_matrix_override,
     )
@@ -74,13 +72,12 @@ def test__operated_mapping_matrix_property__with_operated_mapping_matrix_overrid
 
 
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):
-
     noise_map = np.ones(2)
     convolver = aa.m.MockConvolver(operated_mapping_matrix=np.ones((2, 10)))
 
     operated_mapping_matrix_override = np.array([[1.0, 2.0], [3.0, 4.0]])
 
-    linear_obj = aa.m.MockLinearObj(
+    linear_obj = aa.m.MockLinearObjFuncList(
         parameters=1,
         mapping_matrix=None,
         operated_mapping_matrix_override=operated_mapping_matrix_override,
@@ -92,7 +89,9 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
-        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=False),
+        settings=aa.SettingsInversion(
+            no_regularization_add_to_curvature_diag_value=False
+        ),
     )
 
     assert inversion.curvature_matrix[0:2, 0:2] == pytest.approx(
@@ -107,7 +106,9 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
-        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),
+        settings=aa.SettingsInversion(
+            no_regularization_add_to_curvature_diag_value=True
+        ),
     )
 
     assert inversion.curvature_matrix[0, 0] - 10.0 > 0.0
@@ -115,7 +116,6 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
 
 
 def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_noise_map():
-
     matrix_shape = (9, 3)
 
     mask = aa.Mask2D(
@@ -131,7 +131,6 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
     )
 
     with pytest.raises(exc.InversionException):
-
         # noinspection PyTypeChecker
         InversionImagingWTilde(
             data=np.ones(9),

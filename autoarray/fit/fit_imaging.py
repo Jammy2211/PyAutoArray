@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-from autoarray.dataset.imaging.imaging import Imaging
+from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.fit.fit_dataset import FitDataset
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -11,7 +11,7 @@ class FitImaging(FitDataset):
         self,
         dataset: Imaging,
         use_mask_in_fit: bool = False,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Class to fit a masked imaging dataset.
@@ -49,7 +49,7 @@ class FitImaging(FitDataset):
         super().__init__(
             dataset=dataset,
             use_mask_in_fit=use_mask_in_fit,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @property
@@ -66,7 +66,7 @@ class FitImaging(FitDataset):
 
     @property
     def mask(self) -> Mask2D:
-        return self.imaging.mask
+        return self.dataset.mask
 
     @property
     def blurred_image(self) -> Array2D:

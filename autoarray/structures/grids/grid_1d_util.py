@@ -3,7 +3,6 @@ import numpy as np
 from typing import TYPE_CHECKING, List, Union, Tuple
 
 if TYPE_CHECKING:
-
     from autoarray.mask.mask_1d import Mask1D
 
 from autoarray.structures.arrays import array_1d_util
@@ -157,13 +156,10 @@ def grid_1d_slim_via_mask_from(
     x_sub_step = pixel_scales[0] / (sub_size)
 
     for x in range(mask_1d.shape[0]):
-
         if not mask_1d[x]:
-
             x_scaled = (x - centres_scaled[0]) * pixel_scales[0]
 
             for x1 in range(sub_size):
-
                 grid_1d[sub_index] = (
                     x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
                 )

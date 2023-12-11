@@ -3,7 +3,6 @@ import numpy as np
 from typing import TYPE_CHECKING, List, Union, Tuple
 
 if TYPE_CHECKING:
-
     from autoarray.structures.arrays.uniform_1d import Array1D
     from autoarray.structures.grids.uniform_2d import Grid2D
     from autoarray.structures.grids.transformed_2d import Grid2DTransformed
@@ -209,8 +208,8 @@ class Grid1D(Structure):
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin

@@ -35,7 +35,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
     def __init__(
         self,
         values: Union[np.ndarray, List],
-        nearest_pixelization_index_for_slim_index: Optional[np.ndarray] = None,
         uses_interpolation: bool = False,
     ):
         """
@@ -49,7 +48,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         These reflect the closely related geometric properties of the Delaunay and Voronoi grids, whereby the corner
         points of Delaunay triangles by definition represent the centres of the corresponding Voronoi mesh.
 
-        Different pixelizations, mappers and regularization schemes combine the the Delaunay and Voronoi
+        Different pixelizations, mappers and regularization schemes combine the Delaunay and Voronoi
         geometries in different ways to perform an Inversion. Thus, having all geometric methods contained in the
         single class here is necessary.
 
@@ -63,10 +62,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         ----------
         values
             The grid of (y,x) coordinates corresponding to the Delaunay triangle corners and Voronoi pixel centres.
-        nearest_pixelization_index_for_slim_index
-            When a Voronoi grid is used to create a mapper and inversion, there are mappings between the `data` pixels
-            and Voronoi mesh. This array contains these mappings and it is used to speed up the creation of the
-            mapper.
         """
 
         if type(values) is list:
@@ -81,20 +76,14 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
 
     def __array_finalize__(self, obj: object):
         """
-        Ensures that the attributes `nearest_pixelization_index_for_slim_index` and `uses_interpolation` are retained
-        when numpy array calculations are performed.
+        Ensures that the attribute `uses_interpolation` are retained when numpy array calculations are performed.
         """
-        if hasattr(obj, "nearest_pixelization_index_for_slim_index"):
-            self.nearest_pixelization_index_for_slim_index = (
-                obj.nearest_pixelization_index_for_slim_index
-            )
 
         if hasattr(obj, "uses_interpolation"):
             self.uses_interpolation = obj.uses_interpolation
 
     @property
     def geometry(self):
-
         shape_native_scaled = (
             np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
             np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),

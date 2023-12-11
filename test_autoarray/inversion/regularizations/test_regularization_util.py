@@ -5,7 +5,6 @@ import pytest
 
 
 def test__zeroth_regularization_matrix_from():
-
     regularization_matrix = aa.util.regularization.zeroth_regularization_matrix_from(
         coefficient=1.0, pixels=3
     )
@@ -146,7 +145,6 @@ def test__constant_regularization_matrix_from():
 
 
 def test__constant_zeroth_regularization_matrix_from():
-
     neighbors = np.array([[1, 2, -1], [0, -1, -1], [0, -1, -1]])
 
     neighbors_sizes = np.array([2, 1, 1])
@@ -167,7 +165,6 @@ def test__constant_zeroth_regularization_matrix_from():
 
 
 def test__adaptive_regularization_weights_from():
-
     pixel_signals = np.array([1.0, 1.0, 1.0])
 
     weight_list = aa.util.regularization.adaptive_regularization_weights_from(
@@ -202,7 +199,6 @@ def test__adaptive_regularization_weights_from():
 
 
 def test__brightness_zeroth_regularization_weights_from():
-
     pixel_signals = np.array([1.0, 1.0, 1.0])
 
     weight_list = aa.util.regularization.brightness_zeroth_regularization_weights_from(
@@ -229,7 +225,6 @@ def test__brightness_zeroth_regularization_weights_from():
 
 
 def test__weighted_regularization_matrix_from():
-
     neighbors = np.array([[2], [3], [0], [1]])
 
     neighbors_sizes = np.array([1, 1, 1, 1])
@@ -515,7 +510,6 @@ def test__weighted_regularization_matrix_from():
 
 
 def test__brightness_zeroth_regularization_matrix_from():
-
     regularization_weights = np.ones(shape=(3,))
 
     regularization_matrix = (

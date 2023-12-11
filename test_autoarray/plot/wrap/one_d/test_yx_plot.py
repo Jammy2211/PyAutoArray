@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test___from_config_or_via_manual_input():
-
     line_plot = aplt.YXPlot()
 
     assert line_plot.config_dict["linewidth"] == 3
@@ -27,7 +26,6 @@ def test___from_config_or_via_manual_input():
 
 
 def test__plot_y_vs_x__works_for_reasonable_values():
-
     line = aplt.YXPlot(linewidth=2, linestyle="-", c="k")
 
     line.plot_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear")

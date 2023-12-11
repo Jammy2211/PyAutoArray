@@ -18,7 +18,7 @@ class AbstractMapperVoronoi(AbstractMapper):
         self,
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -65,13 +65,13 @@ class AbstractMapperVoronoi(AbstractMapper):
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
         super().__init__(
             mapper_grids=mapper_grids,
             regularization=regularization,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @property
@@ -230,7 +230,6 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
         """
         mappings = mapper_util.pix_indexes_for_sub_slim_index_voronoi_from(
             grid=self.source_plane_data_grid,
-            nearest_pixelization_index_for_slim_index=self.source_plane_mesh_grid.nearest_pixelization_index_for_slim_index,
             slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
             mesh_grid=self.source_plane_mesh_grid,
             neighbors=self.source_plane_mesh_grid.neighbors,

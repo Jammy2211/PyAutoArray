@@ -17,7 +17,6 @@ class Header:
         original_roe_corner: Tuple[int, int] = None,
         readout_offsets: Optional[Tuple] = None,
     ):
-
         self.header_sci_obj = header_sci_obj
         self.header_hdu_obj = header_hdu_obj
         self.original_roe_corner = original_roe_corner

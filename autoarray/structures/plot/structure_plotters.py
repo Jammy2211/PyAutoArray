@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from autoarray.plot.abstract_plotters import Plotter
 from autoarray.plot.visuals.one_d import Visuals1D
@@ -126,11 +126,14 @@ class Grid2DPlotter(Plotter):
 class YX1DPlotter(Plotter):
     def __init__(
         self,
-        y: Array1D,
-        x: Optional[Union[Array1D, Grid1D]] = None,
+        y: Union[Array1D, List],
+        x: Optional[Union[Array1D, Grid1D, List]] = None,
         mat_plot_1d: MatPlot1D = MatPlot1D(),
         visuals_1d: Visuals1D = Visuals1D(),
         include_1d: Include1D = Include1D(),
+        should_plot_grid: bool = False,
+        should_plot_zero: bool = False,
+        plot_axis_type: Optional[str] = None,
     ):
         """
         Plots two 1D objects using the matplotlib method `plot()` (or a similar method) and many other matplotlib
@@ -158,12 +161,21 @@ class YX1DPlotter(Plotter):
             Specifies which attributes of the `Array1D` are extracted and plotted as visuals for 1D plots.
         """
 
+        if isinstance(y, list):
+            y = Array1D.no_mask(values=y, pixel_scales=1.0)
+
+        if isinstance(x, list):
+            x = Array1D.no_mask(values=x, pixel_scales=1.0)
+
         super().__init__(
             visuals_1d=visuals_1d, include_1d=include_1d, mat_plot_1d=mat_plot_1d
         )
 
         self.y = y
         self.x = y.grid_radial if x is None else x
+        self.should_plot_grid = should_plot_grid
+        self.should_plot_zero = should_plot_zero
+        self.plot_axis_type = plot_axis_type
 
     def get_visuals_1d(self) -> Visuals1D:
         return self.get_1d.via_array_1d_from(array_1d=self.x)
@@ -172,9 +184,13 @@ class YX1DPlotter(Plotter):
         """
         Plots the plotter's y and x values in 1D.
         """
+
         self.mat_plot_1d.plot_yx(
             y=self.y,
             x=self.x,
             visuals_1d=self.get_visuals_1d(),
             auto_labels=AutoLabels(),
+            should_plot_grid=self.should_plot_grid,
+            should_plot_zero=self.should_plot_zero,
+            plot_axis_type_override=self.plot_axis_type,
         )

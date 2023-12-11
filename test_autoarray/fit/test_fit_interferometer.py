@@ -5,7 +5,6 @@ import autoarray as aa
 
 
 def test__visibilities_and_model_are_identical__no_masking__check_values_are_correct():
-
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -13,17 +12,17 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
     data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
     noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
-    interferometer = aa.Interferometer(
-        visibilities=data,
+    dataset = aa.Interferometer(
+        data=data,
         noise_map=noise_map,
         uv_wavelengths=np.ones(shape=(2, 2)),
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
+    model_data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
 
     fit = aa.m.MockFitInterferometer(
-        dataset=interferometer, use_mask_in_fit=False, model_data=model_visibilities
+        dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
     assert (fit.visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
@@ -32,7 +31,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
 
     assert (fit.signal_to_noise_map.slim == np.array([0.5 + 1.0j, 1.5 + 2.0j])).all()
 
-    assert (fit.model_visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
+    assert (fit.model_data.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
 
     assert (fit.residual_map.slim == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
@@ -51,7 +50,6 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
 
 
 def test__visibilities_and_model_are_different__no_masking__check_values_are_correct():
-
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -59,17 +57,17 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
     data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
     noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
-    interferometer = aa.Interferometer(
-        visibilities=data,
+    dataset = aa.Interferometer(
+        data=data,
         noise_map=noise_map,
         uv_wavelengths=np.ones(shape=(2, 2)),
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 3.0j])
+    model_data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 3.0j])
 
     fit = aa.m.MockFitInterferometer(
-        dataset=interferometer, use_mask_in_fit=False, model_data=model_visibilities
+        dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
     assert (fit.visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
@@ -78,7 +76,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
 
     assert (fit.signal_to_noise_map.slim == np.array([0.5 + 1.0j, 1.5 + 2.0j])).all()
 
-    assert (fit.model_visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 3.0j])).all()
+    assert (fit.model_data.slim == np.array([1.0 + 2.0j, 3.0 + 3.0j])).all()
 
     assert (fit.residual_map.slim == np.array([0.0 + 0.0j, 0.0 + 1.0j])).all()
 
@@ -97,7 +95,6 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
 
 
 def test__visibilities_and_model_are_identical__inversion_included__changes_certain_properties():
-
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
     )
@@ -105,14 +102,14 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
     data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
     noise_map = aa.VisibilitiesNoiseMap(visibilities=[2.0 + 2.0j, 2.0 + 2.0j])
 
-    interferometer = aa.Interferometer(
-        visibilities=data,
+    dataset = aa.Interferometer(
+        data=data,
         noise_map=noise_map,
         uv_wavelengths=np.ones(shape=(2, 2)),
         real_space_mask=real_space_mask,
     )
 
-    model_visibilities = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
+    model_data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper()],
@@ -123,9 +120,9 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
     )
 
     fit = aa.m.MockFitInterferometer(
-        dataset=interferometer,
+        dataset=dataset,
         use_mask_in_fit=False,
-        model_data=model_visibilities,
+        model_data=model_data,
         inversion=inversion,
     )
 
@@ -146,7 +143,6 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
 
 
 def test__dirty_quantities(transformer_7x7_7, interferometer_7, fit_interferometer_7):
-
     fit_interferometer_7.dataset.transformer = transformer_7x7_7
 
     dirty_image = transformer_7x7_7.image_from(
@@ -167,7 +163,7 @@ def test__dirty_quantities(transformer_7x7_7, interferometer_7, fit_interferomet
     ).all()
 
     dirty_model_image = transformer_7x7_7.image_from(
-        visibilities=fit_interferometer_7.model_visibilities
+        visibilities=fit_interferometer_7.model_data
     )
     assert (fit_interferometer_7.dirty_model_image == dirty_model_image).all()
 

@@ -80,7 +80,6 @@ class GridScatter(AbstractMatWrap2D):
 
         try:
             for grid in grid_list:
-
                 plt.scatter(y=grid[:, 0], x=grid[:, 1], c=next(color), **config_dict)
         except IndexError:
             return None
@@ -145,11 +144,9 @@ class GridScatter(AbstractMatWrap2D):
         config_dict.pop("c")
 
         for index_list in indexes:
-
             if all([isinstance(index, float) for index in index_list]) or all(
                 [isinstance(index, int) for index in index_list]
             ):
-
                 plt.scatter(
                     y=grid[index_list, 0],
                     x=grid[index_list, 1],
@@ -160,7 +157,6 @@ class GridScatter(AbstractMatWrap2D):
             elif all([isinstance(index, tuple) for index in index_list]) or all(
                 [isinstance(index, list) for index in index_list]
             ):
-
                 ys, xs = map(list, zip(*index_list))
 
                 plt.scatter(
@@ -171,7 +167,6 @@ class GridScatter(AbstractMatWrap2D):
                 )
 
             else:
-
                 raise exc.PlottingException(
                     "The indexes input into the grid_scatter_index method do not conform to a "
                     "useable type"

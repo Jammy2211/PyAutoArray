@@ -404,7 +404,6 @@ def delaunay_interpolated_array_from(
     interpolated_array = np.zeros(len(interpolation_grid_slim))
 
     for slim_index in range(len(interpolation_grid_slim)):
-
         simplex_index = simplex_index_for_interpolate_index[slim_index]
         interpolating_point = interpolation_grid_slim[slim_index]
 
@@ -585,7 +584,7 @@ def voronoi_revised_from(
 
             t = voronoi.points[p2] - voronoi.points[p1]  # tangent
             t /= np.linalg.norm(t)
-            n = np.array([-t[1], t[0]])  # hyper
+            n = np.array([-t[1], t[0]])
 
             midpoint = voronoi.points[[p1, p2]].mean(axis=0)
             direction = np.sign(np.dot(midpoint - center, n)) * n
@@ -612,7 +611,6 @@ def voronoi_nn_interpolated_array_from(
     pixel_values: np.ndarray,
     voronoi: scipy.spatial.Voronoi,
 ) -> np.ndarray:
-
     try:
         from autoarray.util.nn import nn_py
     except ImportError as e:

@@ -26,7 +26,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads=None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -48,7 +48,7 @@ class InversionImagingMapping(AbstractInversionImaging):
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -59,8 +59,50 @@ class InversionImagingMapping(AbstractInversionImaging):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
+
+    @property
+    @profile_func
+    def _data_vector_mapper(self) -> np.ndarray:
+        """
+        Returns the `data_vector` of all mappers, a 1D vector whose values are solved for by the simultaneous
+        linear equations constructed by this object. The object is described in full in the method `data_vector`.
+
+        This method is used to compute part of the `data_vector` if there are also linear function list objects
+        in the inversion, and is separated into a separate method to enable preloading of the mapper `data_vector`.
+        """
+
+        if self.preloads.data_vector_mapper is not None:
+            return self.preloads.data_vector_mapper
+
+        if not self.has(cls=AbstractMapper):
+            return None
+
+        data_vector = np.zeros(self.total_params)
+
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+
+        for i in range(len(mapper_list)):
+            mapper = mapper_list[i]
+            param_range = mapper_param_range_list[i]
+
+            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                mapping_matrix=mapper.mapping_matrix
+            )
+
+            data_vector_mapper = (
+                inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
+                    blurred_mapping_matrix=operated_mapping_matrix,
+                    image=self.data,
+                    noise_map=self.noise_map,
+                )
+            )
+
+            data_vector[param_range[0] : param_range[1],] = data_vector_mapper
+
+        return data_vector
 
     @cached_property
     @profile_func
@@ -78,6 +120,9 @@ class InversionImagingMapping(AbstractInversionImaging):
         The calculation is described in more detail in `inversion_util.data_vector_via_blurred_mapping_matrix_from`.
         """
 
+        if self.preloads.data_vector_mapper is not None:
+            return self.preloads.data_vector_mapper
+
         if self.preloads.operated_mapping_matrix is not None:
             operated_mapping_matrix = self.preloads.operated_mapping_matrix
         else:
@@ -88,6 +133,56 @@ class InversionImagingMapping(AbstractInversionImaging):
             image=self.data,
             noise_map=self.noise_map,
         )
+
+    @property
+    @profile_func
+    def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
+        """
+        Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
+        and the linear objects to construct the simultaneous linear equations. The object is described in full in
+        the method `curvature_matrix`.
+
+        This method computes the diagonal entries of all mapper objects in the `curvature_matrix`. It is separate from
+        other calculations to enable preloading of this calculation.
+        """
+
+        if self.preloads.curvature_matrix_mapper_diag is not None:
+            return self.preloads.curvature_matrix_mapper_diag
+
+        if not self.has(cls=AbstractMapper):
+            return None
+
+        curvature_matrix = np.zeros((self.total_params, self.total_params))
+
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
+
+        for i in range(len(mapper_list)):
+            mapper_i = mapper_list[i]
+            mapper_param_range_i = mapper_param_range_list[i]
+
+            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
+                mapping_matrix=mapper_i.mapping_matrix
+            )
+
+            diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=operated_mapping_matrix,
+                noise_map=self.noise_map,
+                settings=self.settings,
+                add_to_curvature_diag=True,
+                no_regularization_index_list=self.no_regularization_index_list,
+            )
+
+            curvature_matrix[
+                mapper_param_range_i[0] : mapper_param_range_i[1],
+                mapper_param_range_i[0] : mapper_param_range_i[1],
+            ] = diag
+
+        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
+            curvature_matrix=curvature_matrix
+        )
+
+        return curvature_matrix
 
     @cached_property
     @profile_func
@@ -110,73 +205,17 @@ class InversionImagingMapping(AbstractInversionImaging):
         """
 
         if self.preloads.curvature_matrix is not None:
-
             # Need to copy because of how curvature_reg_matirx overwrites memory.
 
             return copy.copy(self.preloads.curvature_matrix)
 
-        if self.preloads.curvature_matrix_preload is None:
-
-            return inversion_util.curvature_matrix_via_mapping_matrix_from(
-                mapping_matrix=self.operated_mapping_matrix,
-                noise_map=self.noise_map,
-                add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
-                no_regularization_index_list=self.no_regularization_index_list,
-            )
-
-        return inversion_util.curvature_matrix_via_sparse_preload_from(
+        return inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=self.operated_mapping_matrix,
             noise_map=self.noise_map,
-            curvature_matrix_preload=self.preloads.curvature_matrix_preload,
-            curvature_matrix_counts=self.preloads.curvature_matrix_counts,
+            settings=self.settings,
+            add_to_curvature_diag=True,
+            no_regularization_index_list=self.no_regularization_index_list,
         )
-
-    @property
-    @profile_func
-    def _curvature_matrix_mapper_diag(self) -> np.ndarray:
-        """
-        Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data
-        and the linear objects to construct the simultaneous linear equations. The object is described in full in
-        the method `curvature_matrix`.
-
-        This method computes the diagonal entries of all mapper objects in the `curvature_matrix`. It is separate from
-        other calculations to enable preloading of this calculation.
-        """
-
-        if self.preloads.curvature_matrix_mapper_diag is not None:
-            return self.preloads.curvature_matrix_mapper_diag
-
-        curvature_matrix = np.zeros((self.total_params, self.total_params))
-
-        mapper_list = self.cls_list_from(cls=AbstractMapper)
-        mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
-
-        for i in range(len(mapper_list)):
-
-            mapper_i = mapper_list[i]
-            mapper_param_range_i = mapper_param_range_list[i]
-
-            operated_mapping_matrix = self.convolver.convolve_mapping_matrix(
-                mapping_matrix=mapper_i.mapping_matrix
-            )
-
-            diag = inversion_util.curvature_matrix_via_mapping_matrix_from(
-                mapping_matrix=operated_mapping_matrix,
-                noise_map=self.noise_map,
-                add_to_curvature_diag=self.settings.no_regularization_add_to_curvature_diag,
-                no_regularization_index_list=self.no_regularization_index_list,
-            )
-
-            curvature_matrix[
-                mapper_param_range_i[0] : mapper_param_range_i[1],
-                mapper_param_range_i[0] : mapper_param_range_i[1],
-            ] = diag
-
-        curvature_matrix = inversion_util.curvature_matrix_mirrored_from(
-            curvature_matrix=curvature_matrix
-        )
-
-        return curvature_matrix
 
     @property
     @profile_func
@@ -213,7 +252,6 @@ class InversionImagingMapping(AbstractInversionImaging):
         operated_mapping_matrix_list = self.operated_mapping_matrix_list
 
         for index, linear_obj in enumerate(self.linear_obj_list):
-
             reconstruction = reconstruction_dict[linear_obj]
 
             mapped_reconstructed_image = (

@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple
 
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -98,7 +98,6 @@ class Layout2D:
         serial_prescan=None,
         serial_overscan=None,
     ):
-
         parallel_overscan = layout_util.rotate_region_via_roe_corner_from(
             region=parallel_overscan, shape_native=shape_native, roe_corner=roe_corner
         )
@@ -118,7 +117,6 @@ class Layout2D:
         )
 
     def layout_extracted_from(self, extraction_region):
-
         parallel_overscan = layout_util.region_after_extraction(
             original_region=self.parallel_overscan, extraction_region=extraction_region
         )
@@ -138,7 +136,6 @@ class Layout2D:
         )
 
     def new_rotated_from(self, roe_corner):
-
         parallel_overscan = layout_util.rotate_region_via_roe_corner_from(
             region=self.parallel_overscan,
             shape_native=self.shape_2d,

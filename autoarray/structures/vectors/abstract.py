@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 class AbstractVectorYX2D(Structure):
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 

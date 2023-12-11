@@ -4,7 +4,6 @@ import pytest
 
 
 def test__sets_up_scaled_alone_grid():
-
     grid_slim = aa.util.grid_1d.grid_1d_slim_via_shape_slim_from(
         shape_slim=(3,), pixel_scales=(1.0,), sub_size=1
     )
@@ -19,7 +18,6 @@ def test__sets_up_scaled_alone_grid():
 
 
 def test__grid_1d_is_actual_via_via_mask_from():
-
     mask = np.array([False, True, False, False])
 
     grid_slim = aa.util.grid_1d.grid_1d_slim_via_mask_from(
@@ -38,7 +36,6 @@ def test__grid_1d_is_actual_via_via_mask_from():
 
 
 def test__grid_1d_slim_from():
-
     mask_1d = np.array([False, False, False, False])
 
     grid_1d_native = np.array([1.0, 2.0, 3.0, 4.0])
@@ -73,7 +70,6 @@ def test__grid_1d_slim_from():
 
 
 def test__grid_1d_native_from():
-
     mask_1d = np.array([False, False, False, False])
 
     grid_1d_slim = np.array([1.0, 2.0, 3.0, 4.0])

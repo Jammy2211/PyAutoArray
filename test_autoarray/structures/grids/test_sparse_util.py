@@ -5,7 +5,6 @@ import numpy as np
 
 
 def test__unmasked_sparse_for_sparse_from():
-
     mask_2d = aa.Mask2D(
         mask=np.array(
             [[False, False, False], [False, False, False], [False, False, False]]
@@ -104,7 +103,6 @@ def test__unmasked_sparse_for_sparse_from():
 
 
 def test__sparse_for_unmasked_sparse_from():
-
     mask_2d = aa.Mask2D(
         mask=np.array(
             [[False, False, False], [False, False, False], [False, False, False]]
@@ -183,7 +181,6 @@ def test__sparse_for_unmasked_sparse_from():
 
 
 def test__sparse_slim_index_for_mask_slim_index_from():
-
     regular_to_unmasked_sparse = np.array([0, 1, 2, 3, 4])
     sparse_for_unmasked_sparse = np.array([0, 1, 2, 3, 4])
     sparse_index_for_slim_index = (
@@ -230,7 +227,6 @@ def test__sparse_slim_index_for_mask_slim_index_from():
 
 
 def test__sparse_grid_via_unmasked_from():
-
     unmasked_sparse_grid = np.array([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
     unmasked_sparse_for_sparse = np.array([0, 1, 2, 3])
     pix_grid = aa.util.sparse.sparse_grid_via_unmasked_from(

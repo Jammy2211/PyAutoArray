@@ -40,7 +40,6 @@ def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
 
 
 def _test__sub_slim_indexes_for_pix_index():
-
     pix_indexes_for_sub_slim_index = np.array(
         [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
     ).astype("int")
@@ -97,7 +96,6 @@ def _test__sub_slim_indexes_for_pix_index():
 
 
 def test__mapping_matrix(three_pixels, five_pixels):
-
     pix_indexes_for_sub_slim_index = np.array([[0], [1], [2]])
     slim_index_for_sub_slim_index = np.array([0, 1, 2])
 
@@ -338,7 +336,6 @@ def test__mapping_matrix(three_pixels, five_pixels):
 
 
 def test__data_to_pix_unique_from():
-
     image_pixels = 2
     sub_size = 2
 
@@ -368,6 +365,7 @@ def test__data_to_pix_unique_from():
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_pixels=3,
         sub_size=sub_size,
     )
 
@@ -403,6 +401,7 @@ def test__data_to_pix_unique_from():
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
         pix_sizes_for_sub_slim_index=pix_size_for_sub_slim_index,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
+        pix_pixels=3,
         sub_size=sub_size,
     )
 
@@ -418,7 +417,6 @@ def test__data_to_pix_unique_from():
 
 
 def test__weights():
-
     source_plane_data_grid = np.array([[0.1, 0.1], [1.0, 1.0]])
 
     source_plane_mesh_grid = np.array([[0.0, 0.0], [0.1, 0.0], [0.2, 0.0]])
@@ -438,7 +436,6 @@ def test__weights():
 
 
 def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
-
     pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
     grid = aa.Grid2D.no_mask(
         values=[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
@@ -488,11 +485,8 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
         [grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7, mesh_grid)]
     ).T
 
-    nearest_pixelization_index_for_slim_index = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
-
     mesh_grid = aa.Mesh2DVoronoi(
         values=mesh_grid,
-        nearest_pixelization_index_for_slim_index=nearest_pixelization_index_for_slim_index,
     )
 
     mapper_grids = aa.MapperGrids(
@@ -505,7 +499,6 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
 
 
 def test__adaptive_pixel_signals_from():
-
     pix_indexes_for_sub_slim_index = np.array([[0], [1], [2]])
     pixel_weights = np.ones((3, 1), dtype="int")
     pixel_sizes = np.ones(3, dtype="int")
@@ -519,7 +512,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_data=galaxy_image,
+        adapt_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
@@ -537,7 +530,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_data=galaxy_image,
+        adapt_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
@@ -555,7 +548,7 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_data=galaxy_image,
+        adapt_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 0.5, 0.5])).all()
@@ -573,14 +566,13 @@ def test__adaptive_pixel_signals_from():
         pix_size_for_sub_slim_index=pixel_sizes,
         pixel_weights=pixel_weights,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        hyper_data=galaxy_image,
+        adapt_data=galaxy_image,
     )
 
     assert (pixel_signals == np.array([1.0, 0.25, 0.25])).all()
 
 
 def test_mapped_to_source_via_mapping_matrix_from():
-
     mapping_matrix = np.array([[1.0, 0.0], [0.0, 1.0], [0.0, 1.0]])
 
     array_slim = np.array([1.0, 2.0, 3.0])

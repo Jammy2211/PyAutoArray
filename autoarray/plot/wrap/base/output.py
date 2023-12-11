@@ -16,7 +16,7 @@ class Output:
         format: Union[str, List[str]] = None,
         format_folder: bool = False,
         bypass: bool = False,
-        bbox_inches: Optional[str] = None,
+        bbox_inches: str = "tight",
         **kwargs,
     ):
         """
@@ -51,9 +51,6 @@ class Output:
         """
         self.path = path
 
-        if path is not None and path:
-            os.makedirs(path, exist_ok=True)
-
         self.filename = filename
         self.prefix = prefix
         self.suffix = suffix
@@ -77,7 +74,6 @@ class Output:
         return self.format
 
     def output_path_from(self, format):
-
         if format in "show":
             return None
 
@@ -91,7 +87,6 @@ class Output:
         return output_path
 
     def filename_from(self, auto_filename):
-
         filename = auto_filename if self.filename is None else self.filename
 
         if self.prefix is not None:
@@ -119,10 +114,15 @@ class Output:
         filename = self.filename_from(auto_filename=auto_filename)
 
         for format in self.format_list:
-
             output_path = self.output_path_from(format=format)
 
+            if format != "show":
+                os.makedirs(output_path, exist_ok=True)
+
             if not self.bypass:
+                if os.environ.get("PYAUTOARRAY_OUTPUT_MODE") == "1":
+                    return self.to_figure_output_mode(filename=filename)
+
                 if format == "show":
                     plt.show()
                 elif format == "png":
@@ -155,8 +155,13 @@ class Output:
         filename = self.filename_from(auto_filename=auto_filename)
 
         for format in self.format_list:
-
             output_path = self.output_path_from(format=format)
+
+            if format != "show":
+                os.makedirs(output_path, exist_ok=True)
+
+            if os.environ.get("PYAUTOARRAY_OUTPUT_MODE") == "1":
+                return self.to_figure_output_mode(filename=filename)
 
             if format == "show":
                 plt.show()
@@ -170,3 +175,23 @@ class Output:
                     path.join(output_path, f"{filename}.pdf"),
                     bbox_inches=self.bbox_inches,
                 )
+
+    def to_figure_output_mode(self, filename: str):
+        global COUNT
+
+        try:
+            COUNT += 1
+        except NameError:
+            COUNT = 0
+
+        import sys
+
+        script_name = path.split(sys.argv[0])[-1].replace(".py", "")
+
+        output_path = path.join(os.getcwd(), "output_mode", script_name)
+        os.makedirs(output_path, exist_ok=True)
+
+        plt.savefig(
+            path.join(output_path, f"{COUNT}_{filename}.png"),
+            bbox_inches=self.bbox_inches,
+        )

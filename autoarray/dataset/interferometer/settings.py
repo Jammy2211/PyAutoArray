@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional, Type, Union
 
 from autoarray.dataset.abstract.settings import AbstractSettingsDataset
+from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.operators.transformer import TransformerNUFFT
 
@@ -8,8 +9,8 @@ from autoarray.operators.transformer import TransformerNUFFT
 class SettingsInterferometer(AbstractSettingsDataset):
     def __init__(
         self,
-        grid_class=Grid2D,
-        grid_pixelization_class=Grid2D,
+        grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
+        grid_pixelization_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
         sub_size: int = 1,
         sub_size_pixelization=1,
         fractional_accuracy: float = 0.9999,

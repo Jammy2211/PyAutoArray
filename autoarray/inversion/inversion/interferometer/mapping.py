@@ -28,7 +28,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -52,7 +52,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -63,7 +63,7 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
         self.transformer = transformer
@@ -117,13 +117,11 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
         curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
 
-        if (
-            self.settings.no_regularization_add_to_curvature_diag
-            and len(self.no_regularization_index_list) > 0
-        ):
+        if len(self.no_regularization_index_list) > 0:
             curvature_matrix = inversion_util.curvature_matrix_with_added_to_diag_from(
                 curvature_matrix=curvature_matrix,
                 no_regularization_index_list=self.no_regularization_index_list,
+                value=self.settings.no_regularization_add_to_curvature_diag_value,
             )
 
         return curvature_matrix
@@ -165,7 +163,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         operated_mapping_matrix_list = self.operated_mapping_matrix_list
 
         for index, linear_obj in enumerate(self.linear_obj_list):
-
             reconstruction = reconstruction_dict[linear_obj]
 
             visibilities = (

@@ -8,7 +8,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__curvature_matrix(rectangular_mapper_7x7_3x3):
-
     operated_mapping_matrix = np.array(
         [[1.0 + 1j, 1.0 + 1j, 1.0 + 1j], [1.0 + 1j, 1.0 + 1j, 1.0 + 1j]]
     )
@@ -18,7 +17,9 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[aa.m.MockLinearObj(parameters=1), rectangular_mapper_7x7_3x3],
         operated_mapping_matrix=operated_mapping_matrix,
         noise_map=noise_map,
-        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=False),
+        settings=aa.SettingsInversion(
+            no_regularization_add_to_curvature_diag_value=False
+        ),
     )
 
     assert inversion.curvature_matrix[0:2, 0:2] == pytest.approx(
@@ -32,7 +33,9 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         linear_obj_list=[aa.m.MockLinearObj(parameters=1), rectangular_mapper_7x7_3x3],
         operated_mapping_matrix=operated_mapping_matrix,
         noise_map=noise_map,
-        settings=aa.SettingsInversion(no_regularization_add_to_curvature_diag=True),
+        settings=aa.SettingsInversion(
+            no_regularization_add_to_curvature_diag_value=True
+        ),
     )
 
     assert inversion.curvature_matrix[0, 0] - 4.0 > 0.0

@@ -7,7 +7,6 @@ from autoarray import exc
 
 @pytest.fixture(name="simple_mask_2d_7x7")
 def make_simple_mask_2d_7x7():
-
     mask = [
         [True, True, True, True, True, True, True],
         [True, True, True, True, True, True, True],
@@ -23,7 +22,6 @@ def make_simple_mask_2d_7x7():
 
 @pytest.fixture(name="simple_mask_5x5")
 def make_simple_mask_5x5():
-
     mask = [
         [True, True, True, True, True],
         [True, False, False, False, True],
@@ -49,7 +47,6 @@ def make_cross_mask():
 
 
 def test__numbering__uses_mask_correctly(simple_mask_5x5, cross_mask):
-
     convolver = aa.Convolver(
         mask=simple_mask_5x5,
         kernel=aa.Kernel2D.ones(shape_native=(1, 1), pixel_scales=1.0),
@@ -91,7 +88,6 @@ def test__numbering__uses_mask_correctly(simple_mask_5x5, cross_mask):
 
 
 def test__even_kernel_failure():
-
     with pytest.raises(exc.KernelException):
         aa.Convolver(
             mask=np.full((3, 3), False),
@@ -100,7 +96,6 @@ def test__even_kernel_failure():
 
 
 def test__frame_extraction__frame_and_kernel_frame_at_coords(simple_mask_5x5):
-
     convolver = aa.Convolver(
         mask=simple_mask_5x5,
         kernel=aa.Kernel2D.no_mask(
@@ -149,7 +144,6 @@ def test__frame_extraction__frame_and_kernel_frame_at_coords(simple_mask_5x5):
 
 
 def test__frame_extraction__more_complicated_frames(simple_mask_2d_7x7):
-
     convolver = aa.Convolver(
         mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.no_mask(
@@ -286,7 +280,6 @@ def test__frame_extraction__more_complicated_frames(simple_mask_2d_7x7):
 
 
 def test__image_frame_indexes__for_different_masks(cross_mask, simple_mask_2d_7x7):
-
     convolver = aa.Convolver(
         mask=cross_mask,
         kernel=aa.Kernel2D.no_mask(
@@ -698,7 +691,6 @@ def test__image_frame_indexes__for_different_masks(cross_mask, simple_mask_2d_7x
 def test_image_frame_kernels__different_shape_masks(
     simple_mask_5x5, simple_mask_2d_7x7
 ):
-
     convolver = aa.Convolver(
         mask=simple_mask_5x5,
         kernel=aa.Kernel2D.no_mask(
@@ -841,7 +833,6 @@ def test_image_frame_kernels__different_shape_masks(
 
 
 def test__blurring_frame_indexes__blurring_region_3x3_kernel(cross_mask):
-
     convolver = aa.Convolver(
         mask=cross_mask, kernel=aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     )
@@ -865,7 +856,6 @@ def test__blurring_frame_indexes__blurring_region_3x3_kernel(cross_mask):
 
 
 def test__blurring_frame_kernels__blurring_region_3x3_kernel(cross_mask):
-
     convolver = aa.Convolver(
         mask=cross_mask,
         kernel=aa.Kernel2D.no_mask(
@@ -894,7 +884,6 @@ def test__blurring_frame_kernels__blurring_region_3x3_kernel(cross_mask):
 def test__frame_lengths__frames_are_from_examples_above__lengths_are_right(
     simple_mask_2d_7x7,
 ):
-
     convolver = aa.Convolver(
         mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.ones(shape_native=(3, 5), pixel_scales=1.0),
@@ -916,7 +905,6 @@ def test__frame_lengths__frames_are_from_examples_above__lengths_are_right(
 
 
 def test__convolve_mapping_matrix__asymetric_convolver__matrix_blurred_correctly():
-
     mask = np.array(
         [
             [True, True, True, True, True, True],
@@ -1044,7 +1032,6 @@ def test__convolve_mapping_matrix__asymetric_convolver__matrix_blurred_correctly
 
 
 def test__convolution__cross_mask_with_blurring_entries__returns_array():
-
     cross_mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -1154,7 +1141,6 @@ def test__compare_to_full_2d_convolution__no_blurring_image():
 
 
 def test__summed_convolved_array_from():
-
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],

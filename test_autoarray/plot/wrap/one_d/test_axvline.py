@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test___from_config_or_via_manual_input():
-
     line_plot = aplt.AXVLine()
 
     assert line_plot.config_dict["ymin"] == 0.5
@@ -23,7 +22,6 @@ def test___from_config_or_via_manual_input():
 
 
 def test__plot_vertical_lines__works_for_reasonable_values():
-
     line = aplt.AXVLine(linewidth=2, linestyle="-", c="k")
 
     line.axvline_vertical_line(vertical_line=0.0, label="hi")

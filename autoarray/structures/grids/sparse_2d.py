@@ -60,8 +60,6 @@ class Grid2DSparse(Structure):
         ----------
         sparse_grid or Grid2D
             The (y,x) grid of sparse coordinates.
-        sparse_index_for_slim_index
-            An array whose indexes map pixels from a Grid2D's mask to the closest (y,x) coordinate on the sparse_grid.
         """
 
         self.sparse_index_for_slim_index = sparse_index_for_slim_index
@@ -69,12 +67,8 @@ class Grid2DSparse(Structure):
         super().__init__(values)
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "mask"):
             self.mask = obj.mask
-
-        if hasattr(obj, "sparse_index_for_slim_index"):
-            self.sparse_index_for_slim_index = obj.sparse_index_for_slim_index
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(
@@ -114,12 +108,12 @@ class Grid2DSparse(Structure):
             origin=origin,
         )
 
-        unmasked_sparse_grid_pixel_centres = geometry_util.grid_pixel_centres_2d_slim_from(
-            grid_scaled_2d_slim=unmasked_sparse_grid_1d,
-            shape_native=grid.mask.shape_native,
-            pixel_scales=grid.mask.pixel_scales,
-        ).astype(
-            "int"
+        unmasked_sparse_grid_pixel_centres = (
+            geometry_util.grid_pixel_centres_2d_slim_from(
+                grid_scaled_2d_slim=unmasked_sparse_grid_1d,
+                shape_native=grid.mask.shape_native,
+                pixel_scales=grid.mask.pixel_scales,
+            ).astype("int")
         )
 
         total_sparse_pixels = mask_2d_util.total_sparse_pixels_2d_from(
@@ -146,11 +140,11 @@ class Grid2DSparse(Structure):
             origin=origin,
         ).astype("int")
 
-        sparse_index_for_slim_index = sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-        ).astype(
-            "int"
+        sparse_index_for_slim_index = (
+            sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            ).astype("int")
         )
 
         sparse_grid = sparse_2d_util.sparse_grid_via_unmasked_from(
@@ -159,7 +153,8 @@ class Grid2DSparse(Structure):
         )
 
         return Grid2DSparse(
-            values=sparse_grid, sparse_index_for_slim_index=sparse_index_for_slim_index
+            values=sparse_grid,
+            sparse_index_for_slim_index=sparse_index_for_slim_index,
         )
 
     @classmethod
@@ -188,7 +183,7 @@ class Grid2DSparse(Structure):
         grid : Grid2D
             The grid of (y,x) coordinates corresponding to the weight map.
         weight_map
-            The 2D array of weight values that the KMeans clustering algorithm adapts to to determine the Grid2DSparse.
+            The 2D array of weight values that the KMeans clustering algorithm adapts to determine the Grid2DSparse.
         n_iter
             The number of times the KMeans algorithm is repeated.
         max_iter
@@ -203,7 +198,7 @@ class Grid2DSparse(Structure):
         warnings.filterwarnings("ignore")
 
         if stochastic:
-            seed = np.random.randint(low=1, high=2 ** 31)
+            seed = np.random.randint(low=1, high=2**31)
 
         if total_pixels > grid.shape[0]:
             raise exc.GridException
@@ -222,7 +217,69 @@ class Grid2DSparse(Structure):
 
         return Grid2DSparse(
             values=kmeans.cluster_centers_,
-            sparse_index_for_slim_index=kmeans.labels_.astype("int"),
+            sparse_index_for_slim_index=kmeans.labels_,
+        )
+
+    @classmethod
+    def from_snr_split(
+        cls,
+        pixels: int,
+        fraction_high_snr: float,
+        snr_cut: float,
+        grid: Grid2D,
+        snr_map: np.ndarray,
+        n_iter: int = 1,
+        max_iter: int = 5,
+        seed: Optional[int] = None,
+        stochastic: bool = False,
+    ):
+        warnings.filterwarnings("ignore")
+
+        if stochastic:
+            seed = np.random.randint(low=1, high=2**31)
+
+        if pixels > grid.shape[0]:
+            raise exc.GridException
+
+        high_snr_pixels = int(pixels * fraction_high_snr)
+
+        grid_high_snr = grid.binned[snr_map > snr_cut]
+
+        kmeans = KMeans(
+            n_clusters=high_snr_pixels,
+            random_state=seed,
+            n_init=n_iter,
+            max_iter=max_iter,
+        )
+
+        try:
+            kmeans_high_snr = kmeans.fit(X=grid_high_snr)
+        except ValueError or OverflowError:
+            raise exc.InversionException()
+
+        low_snr_pixels = pixels - high_snr_pixels
+
+        grid_low_snr = grid.binned[snr_map < snr_cut]
+
+        kmeans = KMeans(
+            n_clusters=low_snr_pixels,
+            random_state=seed,
+            n_init=n_iter,
+            max_iter=max_iter,
+        )
+
+        try:
+            kmeans_low_snr = kmeans.fit(X=grid_low_snr)
+        except ValueError or OverflowError:
+            raise exc.InversionException()
+
+        sparse_image_plane_grid = np.concatenate(
+            (kmeans_high_snr.cluster_centers_, kmeans_low_snr.cluster_centers_), axis=0
+        )
+        sparse_image_plane_grid = np.asarray(sparse_image_plane_grid)
+
+        return Grid2DSparse(
+            values=sparse_image_plane_grid,
         )
 
     @property

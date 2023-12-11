@@ -5,12 +5,16 @@ from copy import copy
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
+
 from jax._src.tree_util import register_pytree_node
 
 from autoarray.numpy_wrapper import numpy as npw
 from jax import Array
 
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import Union, TYPE_CHECKING
+
+from autoconf import conf
 
 if TYPE_CHECKING:
     from autoarray.structures.abstract_structure import Structure
@@ -23,6 +27,11 @@ def to_new_array(func):
         return self.with_new_array(func(self, *args, **kwargs))
 
     return wrapper
+
+
+class AbstractNDArray(np.ndarray, ABC):
+    def __reduce__(self):
+        pickled_state = super().__reduce__()
 
 
 def unwrap_array(func):
@@ -182,6 +191,12 @@ class AbstractNDArray(ABC):
     def __float__(self):
         return float(self._array)
 
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super().__setstate__(state[0:-1])
+
     @property
     @abstractmethod
     def native(self) -> Structure:
@@ -189,7 +204,13 @@ class AbstractNDArray(ABC):
         Returns the data structure in its `native` format which contains all unmaksed values to the native dimensions.
         """
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    @staticmethod
+    def flip_hdu_for_ds9(values):
+        if conf.instance["general"]["fits"]["flip_for_ds9"]:
+            return np.flipud(values)
+        return values
+
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the grid to a .fits file.
 

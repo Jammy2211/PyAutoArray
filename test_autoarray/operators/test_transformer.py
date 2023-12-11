@@ -6,7 +6,6 @@ import pytest
 
 class MockDeriveMask2D:
     def __init__(self, grid):
-
         self.mask = grid.derive_mask.all_false
         self.grid = grid
         self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
@@ -28,13 +27,11 @@ class MockDeriveMask2D:
 
 class MockDeriveGrid2D:
     def __init__(self, grid):
-
         self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
 
 
 class MockRealSpaceMask:
     def __init__(self, grid):
-
         self.grid = grid
 
     @property
@@ -64,25 +61,21 @@ class MockRealSpaceMask:
 
 class MockMaskedGrid:
     def __init__(self, grid):
-
         self.binned = MockMaskedGrid2(grid=grid)
 
 
 class MockMaskedGrid2:
     def __init__(self, grid):
-
         self.slim = MockMaskedGrid3(grid=grid)
         self.in_radians = grid
 
 
 class MockMaskedGrid3:
     def __init__(self, grid):
-
         self.in_radians = grid
 
 
 def test__dft__visibilities_from():
-
     uv_wavelengths = np.ones(shape=(4, 2))
 
     grid_radians = aa.Grid2D.no_mask(values=[[[1.0, 1.0]]], pixel_scales=1.0)
@@ -152,7 +145,6 @@ def test__dft__visibilities_from():
 
 
 def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
-
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
     grid_radians = aa.Grid2D.no_mask(
         values=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
@@ -179,7 +171,6 @@ def test__dft__visibilities_from__preload_and_non_preload_give_same_answer():
 
 
 def test__dft__transform_mapping_matrix():
-
     uv_wavelengths = np.ones(shape=(4, 2))
     grid_radians = aa.Grid2D.no_mask(values=[[[1.0, 1.0]]], pixel_scales=1.0)
     real_space_mask = MockRealSpaceMask(grid=grid_radians)
@@ -261,7 +252,6 @@ def test__dft__transform_mapping_matrix():
 
 
 def test__dft__transformed_mapping_matrix__preload_and_non_preload_give_same_answer():
-
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
     grid_radians = aa.Grid2D.no_mask(
         values=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
@@ -294,7 +284,6 @@ def test__dft__transformed_mapping_matrix__preload_and_non_preload_give_same_ans
 
 
 def test__nufft__visibilities_from():
-
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
     grid_radians = aa.Grid2D.uniform(shape_native=(5, 5), pixel_scales=0.005).in_radians
@@ -326,7 +315,6 @@ def test__nufft__visibilities_from():
 
 
 def test__nufft__transform_mapping_matrix():
-
     uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
     grid_radians = aa.Grid2D.uniform(shape_native=(5, 5), pixel_scales=0.005)

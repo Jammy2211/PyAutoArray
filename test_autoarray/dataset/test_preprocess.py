@@ -7,13 +7,12 @@ import shutil
 
 import autoarray as aa
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "imaging"
 )
 
 
 def test__array_with_new_shape():
-
     arr = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
     arr = aa.preprocess.array_with_new_shape(array=arr, new_shape=(5, 5))
@@ -34,7 +33,6 @@ def test__array_with_new_shape():
 
 
 def test__array_from_electrons_per_second_to_counts():
-
     arr_eps = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.full(
         fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
@@ -48,7 +46,6 @@ def test__array_from_electrons_per_second_to_counts():
 
 
 def test__array_from_counts_to_electrons_per_second():
-
     arr_counts = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.full(
         fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
@@ -62,7 +59,6 @@ def test__array_from_counts_to_electrons_per_second():
 
 
 def test__array_from_electrons_per_second_to_adus():
-
     arr_eps = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.full(
         fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
@@ -82,7 +78,6 @@ def test__array_from_electrons_per_second_to_adus():
 
 
 def test__array_from_adus_to_electrons_per_second():
-
     arr_adus = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.full(
         fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
@@ -102,7 +97,6 @@ def test__array_from_adus_to_electrons_per_second():
 
 
 def test__noise_map_from_image_exposure_time_map():
-
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     poisson_noise_map = aa.preprocess.noise_map_via_data_eps_and_exposure_time_map_from(
@@ -151,7 +145,6 @@ def test__noise_map_from_image_exposure_time_map():
 
 
 def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
-
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     background_noise_map = aa.Array2D.full(
@@ -295,7 +288,6 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
 
 
 def test__noise_map_from_image_exposure_time_map_and_background_variances():
-
     image = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
     background_variances = aa.Array2D.full(
@@ -312,7 +304,6 @@ def test__noise_map_from_image_exposure_time_map_and_background_variances():
 
 
 def test__noise_map_via_weight_map_from():
-
     weight_map = aa.Array2D.no_mask(
         [[1.0, 4.0, 16.0], [1.0, 4.0, 16.0]], pixel_scales=1.0
     )
@@ -333,7 +324,6 @@ def test__noise_map_via_weight_map_from():
 
 
 def test__noise_map_via_inverse_noise_map_from():
-
     inverse_noise_map = aa.Array2D.no_mask(
         [[1.0, 4.0, 16.0], [1.0, 4.0, 16.0]], pixel_scales=1.0
     )
@@ -348,7 +338,6 @@ def test__noise_map_via_inverse_noise_map_from():
 
 
 def test__noise_map_with_offset_values_added():
-
     np.random.seed(1)
 
     noise_map = aa.Array2D.full(fill_value=3.0, shape_native=(3, 3), pixel_scales=1.0)
@@ -370,10 +359,9 @@ def test__noise_map_with_offset_values_added():
 
 
 def test__background_sky_level_via_edges_of_image_from():
-
     image = aa.Array2D.no_mask(values=np.ones((3, 3)), pixel_scales=1.0)
 
-    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_from(
         image=image, no_edges=1
     )
 
@@ -384,7 +372,7 @@ def test__background_sky_level_via_edges_of_image_from():
         pixel_scales=1.0,
     )
 
-    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_from(
         image=image, no_edges=1
     )
 
@@ -401,7 +389,7 @@ def test__background_sky_level_via_edges_of_image_from():
         pixel_scales=1.0,
     )
 
-    background_sky_level = aa.preprocess.background_sky_level_via_edges_of_image_from(
+    background_sky_level = aa.preprocess.background_sky_level_via_edges_from(
         image=image, no_edges=2
     )
 
@@ -409,10 +397,9 @@ def test__background_sky_level_via_edges_of_image_from():
 
 
 def test__background_noise_map_via_edges_of_image_from():
-
     image = aa.Array2D.no_mask(values=np.ones((3, 3)), pixel_scales=1.0)
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=1
     )
 
@@ -427,7 +414,7 @@ def test__background_noise_map_via_edges_of_image_from_2():
         pixel_scales=1.0,
     )
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=1
     )
 
@@ -448,7 +435,7 @@ def test__background_noise_map_via_edges_of_image_from_3():
         pixel_scales=1.0,
     )
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=2
     )
 
@@ -470,7 +457,7 @@ def test__background_noise_map_via_edges_of_image_from_4():
         pixel_scales=1.0,
     )
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=2
     )
 
@@ -495,7 +482,7 @@ def test__background_noise_map_via_edges_of_image_from_5():
         pixel_scales=1.0,
     )
 
-    background_noise_map = aa.preprocess.background_noise_map_via_edges_of_image_from(
+    background_noise_map = aa.preprocess.background_noise_map_via_edges_from(
         image=image, no_edges=3
     )
 
@@ -506,7 +493,6 @@ def test__background_noise_map_via_edges_of_image_from_5():
 
 
 def test__exposure_time_map_from_exposure_time_and_inverse_noise_map():
-
     exposure_time = 6.0
     background_noise_map = aa.Array2D.full(
         fill_value=0.25, shape_native=(3, 3), pixel_scales=1.0
@@ -524,7 +510,6 @@ def test__exposure_time_map_from_exposure_time_and_inverse_noise_map():
 
 
 def test__poisson_noise_from_data():
-
     data = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
@@ -568,7 +553,6 @@ def test__poisson_noise_from_data():
 
 
 def test__data_with_poisson_noised_added():
-
     data = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0)
     exposure_time_map = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
     data_with_poisson_noise = aa.preprocess.data_eps_with_poisson_noise_added(
@@ -611,7 +595,6 @@ def test__data_with_poisson_noised_added():
 
 
 def test__gaussian_noise_via_shape_and_sigma_from():
-
     gaussian_noise = aa.preprocess.gaussian_noise_via_shape_and_sigma_from(
         shape=(9,), sigma=0.0, seed=1
     )
@@ -628,7 +611,6 @@ def test__gaussian_noise_via_shape_and_sigma_from():
 
 
 def test__data_with_gaussian_noise_added():
-
     data = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
 
     data_with_noise = aa.preprocess.data_with_gaussian_noise_added(
@@ -660,7 +642,6 @@ def test__data_with_gaussian_noise_added():
 
 
 def test__data_with_complex_gaussian_noise_added():
-
     data = (1.0 + 1.0j) * np.ones(shape=(3,))
 
     data_with_noise = aa.preprocess.data_with_complex_gaussian_noise_added(
@@ -679,7 +660,6 @@ def test__data_with_complex_gaussian_noise_added():
 
 
 def test__noise_map_with_signal_to_noise_limit_from():
-
     image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
     image[3] = 5.0
 

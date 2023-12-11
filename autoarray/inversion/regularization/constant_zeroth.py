@@ -12,7 +12,6 @@ from autoarray.inversion.regularization import regularization_util
 
 class ConstantZeroth(AbstractRegularization):
     def __init__(self, coefficient_neighbor=1.0, coefficient_zeroth=1.0):
-
         super().__init__()
 
         self.coefficient_neighbor = coefficient_neighbor

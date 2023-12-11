@@ -6,7 +6,6 @@ from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 
 class Aspect(Enum):
-
     square = 1
     auto = 2
     equal = 3
@@ -42,7 +41,6 @@ class Figure(AbstractMatWrap):
         return config_dict
 
     def aspect_for_subplot_from(self, extent):
-
         ratio = float((extent[1] - extent[0]) / (extent[3] - extent[2]))
 
         aspect = Aspect[self.config_dict["aspect"]]

@@ -3,7 +3,6 @@ import numpy as np
 
 
 def test__weight_list__matches_util():
-
     reg = aa.reg.AdaptiveBrightness(inner_coefficient=10.0, outer_coefficient=15.0)
 
     pixel_signals = np.array([0.21, 0.586, 0.45])
@@ -20,7 +19,6 @@ def test__weight_list__matches_util():
 
 
 def test__regularization_matrix__matches_util():
-
     reg = aa.reg.AdaptiveBrightness(
         inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0
     )

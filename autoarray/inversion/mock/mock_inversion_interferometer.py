@@ -18,7 +18,6 @@ class MockInversionInterferometer(InversionInterferometerMapping):
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-
         super().__init__(
             data=data,
             noise_map=noise_map,

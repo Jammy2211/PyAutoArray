@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Union
 
-from autoarray.dataset.imaging.imaging import Imaging
+from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -31,7 +31,7 @@ def inversion_from(
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
-    profiling_dict: Optional[Dict] = None,
+    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given an input dataset and list of linear objects, creates an `Inversion`.
@@ -59,7 +59,7 @@ def inversion_from(
     preloads
         Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
         for example certain matrices used by the linear algebra could be preloaded.
-    profiling_dict
+    run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
@@ -72,26 +72,25 @@ def inversion_from(
         w_tilde = None
 
     if isinstance(dataset, Imaging):
-
         return inversion_imaging_unpacked_from(
-            image=dataset.image,
+            data=dataset.data,
             noise_map=dataset.noise_map,
             convolver=dataset.convolver,
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     return inversion_interferometer_unpacked_from(
-        visibilities=dataset.visibilities,
+        data=dataset.visibilities,
         noise_map=dataset.noise_map,
         transformer=dataset.transformer,
         w_tilde=w_tilde,
         linear_obj_list=linear_obj_list,
         settings=settings,
-        profiling_dict=profiling_dict,
+        run_time_dict=run_time_dict,
     )
 
 
@@ -103,7 +102,7 @@ def inversion_unpacked_from(
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
-    profiling_dict: Optional[Dict] = None,
+    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given an input dataset and list of linear objects, creates an `Inversion`.
@@ -143,7 +142,7 @@ def inversion_unpacked_from(
     preloads
         Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
         for example certain matrices used by the linear algebra could be preloaded.
-    profiling_dict
+    run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
@@ -151,38 +150,37 @@ def inversion_unpacked_from(
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
     if isinstance(dataset, Imaging):
-
         return inversion_imaging_unpacked_from(
-            image=data,
+            data=data,
             noise_map=noise_map,
             convolver=dataset.convolver,
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     return inversion_interferometer_unpacked_from(
-        visibilities=data,
+        data=data,
         noise_map=noise_map,
         transformer=dataset.transformer,
         w_tilde=w_tilde,
         linear_obj_list=linear_obj_list,
         settings=settings,
-        profiling_dict=profiling_dict,
+        run_time_dict=run_time_dict,
     )
 
 
 def inversion_imaging_unpacked_from(
-    image: Array2D,
+    data: Array2D,
     noise_map: Array2D,
     convolver: Convolver,
     w_tilde: WTildeImaging,
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
-    profiling_dict: Optional[Dict] = None,
+    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given an input `Imaging` dataset and list of linear objects, creates an `InversionImaging`.
@@ -204,7 +202,7 @@ def inversion_imaging_unpacked_from(
 
     Parameters
     ----------
-    image
+    data
         The `image` data of the `Imaging` dataset which may have been changed.
     noise_map
         The noise_map of the `Imaging` dataset which may have been changed.
@@ -219,7 +217,7 @@ def inversion_imaging_unpacked_from(
     preloads
         Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
         for example certain matrices used by the linear algebra could be preloaded.
-    profiling_dict
+    run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
@@ -227,7 +225,7 @@ def inversion_imaging_unpacked_from(
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
 
-    if any(
+    if all(
         isinstance(linear_obj, AbstractLinearObjFuncList)
         for linear_obj in linear_obj_list
     ):
@@ -241,42 +239,40 @@ def inversion_imaging_unpacked_from(
         use_w_tilde = False
 
     if preloads.w_tilde is not None:
-
         w_tilde = preloads.w_tilde
 
     if use_w_tilde:
-
         return InversionImagingWTilde(
-            data=image,
+            data=data,
             noise_map=noise_map,
             convolver=convolver,
             w_tilde=w_tilde,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     return InversionImagingMapping(
-        data=image,
+        data=data,
         noise_map=noise_map,
         convolver=convolver,
         linear_obj_list=linear_obj_list,
         settings=settings,
         preloads=preloads,
-        profiling_dict=profiling_dict,
+        run_time_dict=run_time_dict,
     )
 
 
 def inversion_interferometer_unpacked_from(
-    visibilities: Visibilities,
+    data: Visibilities,
     noise_map: VisibilitiesNoiseMap,
     transformer: Union[TransformerDFT, TransformerNUFFT],
     w_tilde: WTildeInterferometer,
     linear_obj_list: List[LinearObj],
     settings: SettingsInversion = SettingsInversion(),
     preloads: Preloads = Preloads(),
-    profiling_dict: Optional[Dict] = None,
+    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given an input `Interferometer` dataset and list of linear objects, creates
@@ -299,7 +295,7 @@ def inversion_interferometer_unpacked_from(
 
     Parameters
     ----------
-    image
+    data
         The `image` data of the `Imaging` dataset which may have been changed.
     noise_map
         The noise_map of the `Imaging` dataset which may have been changed.
@@ -314,7 +310,7 @@ def inversion_interferometer_unpacked_from(
     preloads
         Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
         for example certain matrices used by the linear algebra could be preloaded.
-    profiling_dict
+    run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
@@ -335,40 +331,36 @@ def inversion_interferometer_unpacked_from(
         use_w_tilde = settings.use_w_tilde
 
     if not settings.use_linear_operators:
-
         if use_w_tilde:
-
             return InversionInterferometerWTilde(
-                data=visibilities,
+                data=data,
                 noise_map=noise_map,
                 transformer=transformer,
                 w_tilde=w_tilde,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
                 preloads=preloads,
-                profiling_dict=profiling_dict,
+                run_time_dict=run_time_dict,
             )
 
         else:
-
             return InversionInterferometerMapping(
-                data=visibilities,
+                data=data,
                 noise_map=noise_map,
                 transformer=transformer,
                 linear_obj_list=linear_obj_list,
                 settings=settings,
                 preloads=preloads,
-                profiling_dict=profiling_dict,
+                run_time_dict=run_time_dict,
             )
 
     else:
-
         return InversionInterferometerMappingPyLops(
-            data=visibilities,
+            data=data,
             noise_map=noise_map,
             transformer=transformer,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )

@@ -16,7 +16,6 @@ def make_plot_path_setup():
 
 
 def test__plot_yx_line(plot_path, plot_patch):
-
     visuals_1d = aplt.Visuals1D(vertical_line=1.0)
 
     mat_plot_1d = aplt.MatPlot1D(
@@ -45,7 +44,6 @@ def test__array(
     plot_path,
     plot_patch,
 ):
-
     array_plotter = aplt.Array2DPlotter(
         array=array_2d_7x7,
         mat_plot_2d=aplt.MatPlot2D(
@@ -93,7 +91,6 @@ def test__array(
 
 
 def test__array__fits_files_output_correctly(array_2d_7x7, plot_path):
-
     plot_path = path.join(plot_path, "fits")
 
     array_plotter = aplt.Array2DPlotter(
@@ -123,7 +120,6 @@ def test__grid(
     plot_path,
     plot_patch,
 ):
-
     grid_2d_plotter = aplt.Grid2DPlotter(
         grid=grid_2d_7x7,
         visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),

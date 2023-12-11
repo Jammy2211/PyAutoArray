@@ -7,7 +7,6 @@ import autoarray as aa
 
 
 def test__mesh_areas():
-
     grid = np.array(
         [
             [-2.0, 0.0],
@@ -44,7 +43,6 @@ def test__mesh_areas():
 
 
 def test__edge_pixel_list():
-
     grid = np.array(
         [
             [1.0, -1.0],
@@ -65,7 +63,6 @@ def test__edge_pixel_list():
 
 
 def test__interpolated_array_from():
-
     grid = aa.Grid2D.no_mask(
         values=[[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),

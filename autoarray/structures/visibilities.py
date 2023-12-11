@@ -1,7 +1,10 @@
 from abc import ABC
 
+from astropy.io import fits
+
 import logging
 import numpy as np
+from pathlib import Path
 from typing import List, Tuple, Union
 
 from autoconf import cached_property
@@ -16,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class AbstractVisibilities(Structure, ABC):
-
     # noinspection PyUnusedLocal
     def __init__(self, visibilities: Union[np.ndarray, List[complex]]):
         """
@@ -58,7 +60,6 @@ class AbstractVisibilities(Structure, ABC):
         super().__init__(array=visibilities)
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "ordered_1d"):
             self.ordered_1d = obj.ordered_1d
 
@@ -97,7 +98,23 @@ class AbstractVisibilities(Structure, ABC):
     def phases(self) -> np.ndarray:
         return np.arctan2(self.imag, self.real)
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    @property
+    def hdu_for_output(self) -> fits.PrimaryHDU:
+        """
+        The visibilities as an HDU object, which can be output to a .fits file.
+
+        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
+        files.
+
+        Returns
+        -------
+        The HDU containing the data which can then be written to .fits.
+        """
+        return array_2d_util.hdu_for_output_from(
+            array_2d=self.in_array,
+        )
+
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the visibilities to a .fits file.
 
@@ -200,7 +217,7 @@ class Visibilities(AbstractVisibilities):
         return cls.full(fill_value=0.0, shape_slim=shape_slim)
 
     @classmethod
-    def from_fits(cls, file_path: str, hdu: int) -> "Visibilities":
+    def from_fits(cls, file_path: Union[Path, str], hdu: int) -> "Visibilities":
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) by loading the(real, imag) values from a .fits file.
 
@@ -222,7 +239,6 @@ class Visibilities(AbstractVisibilities):
 
 
 class VisibilitiesNoiseMap(Visibilities):
-
     # noinspection PyUnusedLocal
     def __init__(self, visibilities: Union[np.ndarray, List[complex]], *args, **kwargs):
         """
@@ -255,14 +271,13 @@ class VisibilitiesNoiseMap(Visibilities):
         )
         super().__init__(visibilities=visibilities)
 
-        weight_list = 1.0 / self.in_array ** 2.0
+        weight_list = 1.0 / self.in_array**2.0
 
         self.weight_list_ordered_1d = np.concatenate(
             (weight_list[:, 0], weight_list[:, 1]), axis=0
         )
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "ordered_1d"):
             self.ordered_1d = obj.ordered_1d
 

@@ -1,6 +1,10 @@
+from astropy.io import fits
 import logging
 import numpy as np
+from pathlib import Path
 from typing import List, Optional, Tuple, Union
+
+from autoconf import conf
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
@@ -257,6 +261,10 @@ class AbstractArray2D(Structure):
                      array_2d.slim[7] = value of first sub-pixel in pixel 7.
                      array_2d.slim[8] = value of first sub-pixel in pixel 8.
 
+        In **PyAutoCTI** all `Array2D` objects are used in their `native` representation without sub-gridding.
+        Significant memory can be saved by only store this format, thus the `native_binned_only` config override
+        can force this behaviour. It is recommended users do not use this option to avoid unexpected behaviour.
+
         Parameters
         ----------
         values
@@ -271,7 +279,7 @@ class AbstractArray2D(Structure):
         Examples
         --------
 
-        This example uses the ``Array2D.no_mask`` method to create the the ``Array2D``.
+        This example uses the ``Array2D.no_mask`` method to create the ``Array2D``.
 
         Different methods using different inputs are available and documented throughout this webpage.
 
@@ -337,6 +345,8 @@ class AbstractArray2D(Structure):
             values = values._array
         except AttributeError:
             pass
+        if conf.instance["general"]["structures"]["native_binned_only"]:
+            store_native = True
 
         values = array_2d_util.convert_array_2d(
             array_2d=values,
@@ -350,7 +360,6 @@ class AbstractArray2D(Structure):
         self.header = header
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 
@@ -418,7 +427,13 @@ class AbstractArray2D(Structure):
         performed by taking the mean of all (y,x) values in each sub pixel.
 
         If the array is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+
+        In **PyAutoCTI** all `Array2D` objects are used in their `native` representation without sub-gridding.
+        Significant memory can be saved by only store this format, thus the `native_binned_only` config override
+        can force this behaviour. It is recommended users do not use this option to avoid unexpected behaviour.
         """
+        if conf.instance["general"]["structures"]["native_binned_only"]:
+            return self
 
         array_2d_slim = self.slim
 
@@ -458,12 +473,22 @@ class AbstractArray2D(Structure):
 
     @property
     def binned_across_rows(self) -> Array1D:
+        """
+        Bins the 2D array up to a 1D array, where each value is the mean of all unmasked values in each row.
+        """
         binned_array = np.mean(self.native.array, axis=0, where=~self.mask)
+
+        # binned_array = (self.native*np.invert(self.mask)).sum(axis=0)/np.invert(self.mask).sum(axis=0)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     @property
     def binned_across_columns(self) -> Array1D:
+        """
+        Bins the 2D array up to a 1D array, where each value is the mean of all unmasked values in each column.
+        """
         binned_array = np.mean(self.native.array, axis=1, where=~self.mask)
+
+        # binned_array = (self.native*np.invert(self.mask)).sum(axis=1)/np.invert(self.mask).sum(axis=1)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
@@ -628,9 +653,30 @@ class AbstractArray2D(Structure):
             store_native=self.store_native,
         )
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    @property
+    def hdu_for_output(self) -> fits.PrimaryHDU:
+        """
+        The array as an HDU object, which can be output to a .fits file.
+
+        The header of the HDU is used to store the `pixel_scale` of the array, which is used by the `Array2D.from_hdu`.
+
+        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
+        files.
+
+        Returns
+        -------
+        The HDU containing the data and its header which can then be written to .fits.
+        """
+        return array_2d_util.hdu_for_output_from(
+            array_2d=self.native, header_dict=self.pixel_scale_header
+        )
+
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output the array to a .fits file.
+
+        The `pixel_scale` is stored in the header as `PIXSCALE`, which is used by the `Array2D.from_primary_hdu`
+        method.
 
         Parameters
         ----------
@@ -640,7 +686,10 @@ class AbstractArray2D(Structure):
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.native, file_path=file_path, overwrite=overwrite
+            array_2d=self.native,
+            file_path=file_path,
+            overwrite=overwrite,
+            header_dict=self.pixel_scale_header,
         )
 
 
@@ -717,7 +766,6 @@ class Array2D(AbstractArray2D):
         values = array_2d_util.convert_array(array=values)
 
         if len(values.shape) == 1:
-
             if shape_native is None:
                 raise exc.ArrayException(
                     f"""
@@ -738,7 +786,6 @@ class Array2D(AbstractArray2D):
                 )
 
         else:
-
             shape_native = (
                 int(values.shape[0] / sub_size),
                 int(values.shape[1] / sub_size),
@@ -968,8 +1015,8 @@ class Array2D(AbstractArray2D):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
-        pixel_scales: ty.PixelScales,
+        file_path: Union[Path, str],
+        pixel_scales: Optional[ty.PixelScales],
         hdu: int = 0,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
@@ -1040,6 +1087,74 @@ class Array2D(AbstractArray2D):
             sub_size=sub_size,
             origin=origin,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
+        )
+
+    @classmethod
+    def from_primary_hdu(
+        cls,
+        primary_hdu: fits.PrimaryHDU,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Array2D":
+        """
+        Returns an ``Array2D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
+
+        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
+        pixel-scale of the array.
+
+        For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
+        used by the API, see
+        the :meth:`Array2D class API documentation <autoarray.structures.arrays.uniform_2d.AbstractArray2D.__new__>`.
+
+        Parameters
+        ----------
+        primary_hdu
+            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
+            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin
+            The (y,x) scaled units origin of the coordinate system.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            from astropy.io import fits
+            import autoarray as aa
+
+            # Make Array2D with sub_size 1.
+
+            primary_hdu = fits.open("path/to/file.fits")
+
+            array_2d = aa.Array2D.from_primary_hdu(
+                primary_hdu=primary_hdu,
+                sub_size=1
+            )
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Array2D with sub_size 2.
+            # (It is uncommon that a sub-gridded array would be loaded from
+            # a .fits, but the API support its).
+
+             primary_hdu = fits.open("path/to/file.fits")
+
+            array_2d = aa.Array2D.from_primary_hdu(
+                primary_hdu=primary_hdu,
+                sub_size=2
+            )
+        """
+
+        return cls.no_mask(
+            values=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
+            pixel_scales=primary_hdu.header["PIXSCALE"],
+            sub_size=sub_size,
+            origin=origin,
+            header=Header(header_sci_obj=primary_hdu.header),
         )
 
     @classmethod

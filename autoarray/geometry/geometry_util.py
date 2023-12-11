@@ -126,7 +126,6 @@ def pixel_coordinates_1d_from(
     pixel_scales: ty.PixelScales,
     origins: Tuple[float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float]]:
-
     central_pixel_coordinates = central_pixel_coordinates_1d_from(shape_slim=shape_slim)
 
     x_pixel = int(
@@ -145,7 +144,6 @@ def scaled_coordinates_1d_from(
     pixel_scales: ty.PixelScales,
     origins: Tuple[float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float]]:
-
     central_scaled_coordinates = central_scaled_coordinate_1d_from(
         shape_slim=shape_slim, pixel_scales=pixel_scales, origin=origins
     )
@@ -481,7 +479,6 @@ def grid_pixels_2d_slim_from(
     )
 
     for slim_index in range(grid_scaled_2d_slim.shape[0]):
-
         grid_pixels_2d_slim[slim_index, 0] = (
             (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
             + centres_scaled[0]
@@ -544,7 +541,6 @@ def grid_pixel_centres_2d_slim_from(
     )
 
     for slim_index in range(grid_scaled_2d_slim.shape[0]):
-
         grid_pixels_2d_slim[slim_index, 0] = int(
             (-grid_scaled_2d_slim[slim_index, 0] / pixel_scales[0])
             + centres_scaled[0]
@@ -615,7 +611,6 @@ def grid_pixel_indexes_2d_slim_from(
     grid_pixel_indexes_2d_slim = np.zeros(grid_pixels_2d_slim.shape[0])
 
     for slim_index in range(grid_pixels_2d_slim.shape[0]):
-
         grid_pixel_indexes_2d_slim[slim_index] = int(
             grid_pixels_2d_slim[slim_index, 0] * shape_native[1]
             + grid_pixels_2d_slim[slim_index, 1]
@@ -671,7 +666,6 @@ def grid_scaled_2d_slim_from(
     )
 
     for slim_index in range(grid_scaled_2d_slim.shape[0]):
-
         grid_scaled_2d_slim[slim_index, 0] = (
             -(grid_pixels_2d_slim[slim_index, 0] - centres_scaled[0] - 0.5)
             * pixel_scales[0]
@@ -740,3 +734,41 @@ def grid_pixel_centres_2d_from(
             )
 
     return grid_pixels_2d
+
+
+def extent_symmetric_from(
+    extent: Tuple[float, float, float, float]
+) -> Tuple[float, float, float, float]:
+    """
+    Given an input extent of the form (x_min, x_max, y_min, y_max), this function returns an extent which is
+    symmetric about the origin.
+
+    For example, if the sepration from x_min to x_max is 2.0 and the separation from y_min to y_max is 1.0, the
+    returned extent expands the y-axis to also have a separation of 2.0.
+
+    Parameters
+    ----------
+    extent
+        The extent which is to be made symmetric about the origin.
+
+    Returns
+    -------
+    The new extent which is symmetric about the origin.
+    """
+
+    y_min = extent[2]
+    y_max = extent[3]
+    x_min = extent[0]
+    x_max = extent[1]
+
+    y_sep = y_max - y_min
+    x_sep = x_max - x_min
+
+    if y_sep > x_sep:
+        x_min -= (y_sep - x_sep) / 2
+        x_max += (y_sep - x_sep) / 2
+    elif x_sep > y_sep:
+        y_min -= (x_sep - y_sep) / 2
+        y_max += (x_sep - y_sep) / 2
+
+    return (x_min, x_max, y_min, y_max)

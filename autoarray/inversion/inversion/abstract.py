@@ -10,6 +10,7 @@ from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
+from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -30,7 +31,7 @@ class AbstractInversion:
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Optional["Preloads"] = None,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         An `Inversion` reconstructs an input dataset using a list of linear objects (e.g. a list of analytic functions
@@ -71,7 +72,7 @@ class AbstractInversion:
         preloads
             Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
             for example certain matrices used by the linear algebra could be preloaded.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -98,7 +99,7 @@ class AbstractInversion:
         self.settings = settings
 
         self.preloads = preloads
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     def has(self, cls: Type) -> bool:
         """
@@ -166,9 +167,7 @@ class AbstractInversion:
         pixel_count = 0
 
         for linear_obj in self.linear_obj_list:
-
             if isinstance(linear_obj, cls):
-
                 index_list.append([pixel_count, pixel_count + linear_obj.params])
 
             pixel_count += linear_obj.params
@@ -260,24 +259,17 @@ class AbstractInversion:
 
     @property
     def no_regularization_index_list(self) -> List[int]:
-
         # TODO : Needs to be range based on pixels.
 
         no_regularization_index_list = []
 
-        pixel_count = 0
+        param_range_list = self.param_range_list_from(cls=LinearObj)
 
-        for linear_obj, regularization in zip(
-            self.linear_obj_list, self.regularization_list
+        for linear_obj, regularization, param_range in zip(
+            self.linear_obj_list, self.regularization_list, param_range_list
         ):
-
             if regularization is None:
-
-                for pixel in range(pixel_count, pixel_count + linear_obj.params):
-
-                    no_regularization_index_list.append(pixel)
-
-            pixel_count += linear_obj.params
+                no_regularization_index_list += range(param_range[0], param_range[1])
 
         return no_regularization_index_list
 
@@ -408,7 +400,6 @@ class AbstractInversion:
             return self.curvature_matrix
 
         if len(self.regularization_list) == 1:
-
             curvature_matrix = self.curvature_matrix
             curvature_matrix += self.regularization_matrix
 
@@ -417,19 +408,6 @@ class AbstractInversion:
             return curvature_matrix
 
         return np.add(self.curvature_matrix, self.regularization_matrix)
-
-    @cached_property
-    def curvature_reg_matrix_solver(self):
-
-        if self.settings.force_edge_pixels_to_zeros:
-
-            curvature_reg_matrix_solver = copy.copy(self.curvature_reg_matrix)
-
-            curvature_reg_matrix_solver[:, self.mapper_edge_pixel_list] = 0.0
-
-            return curvature_reg_matrix_solver
-
-        return self.curvature_reg_matrix
 
     @cached_property
     @profile_func
@@ -454,28 +432,97 @@ class AbstractInversion:
 
         return curvature_reg_matrix
 
+    @property
+    def mapper_zero_pixel_list(self) -> np.ndarray:
+        mapper_zero_pixel_list = []
+        param_range_list = self.param_range_list_from(cls=LinearObj)
+        for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
+            if isinstance(linear_obj, AbstractMapper):
+                mapping_matrix_for_image_pixels_source_zero = linear_obj.mapping_matrix[
+                    self.settings.image_pixels_source_zero
+                ]
+                source_pixels_zero = (
+                    np.sum(mapping_matrix_for_image_pixels_source_zero != 0, axis=0)
+                    != 0
+                )
+                mapper_zero_pixel_list.append(
+                    np.where(source_pixels_zero == True)[0] + param_range[0]
+                )
+        return mapper_zero_pixel_list
+
     @cached_property
     @profile_func
     def reconstruction(self) -> np.ndarray:
         """
         Solve the linear system [F + reg_coeff*H] S = D -> S = [F + reg_coeff*H]^-1 D given by equation (12)
-        of https://arxiv.org/pdf/astro-ph/0302587.pdf
+        of https://arxiv.org/pdf/astro-ph/0302587.pdf (Positive-Negative solution)
 
-        S is the vector of reconstructed inversion values.
+        ============================================================================================
+
+        Solve the Eq.(2) of https://arxiv.org/pdf/astro-ph/0302587.pdf (Non-negative solution)
+        Find non-negative solution that minimizes |Z * S - x|^2.
+
+        We use fnnls (https://github.com/jvendrow/fnnls) to optimize the quadratic value. Two commonly used
+        variables in the code are defined as follows:
+            ZTZ := np.dot(Z.T, Z)
+            ZTx := np.dot(Z.T, x)
         """
         if self.settings.use_positive_only_solver:
+            """
+            For the new implementation, we now need to take out the cols and rows of
+            the curvature_reg_matrix that corresponds to the parameters we force to be 0.
+            Similar for the data vector.
 
-            return inversion_util.reconstruction_positive_only_from(
-                data_vector=self.data_vector,
-                curvature_reg_matrix=self.curvature_reg_matrix_solver,
-                settings=self.settings,
-            )
+            What we actually doing is that we have set the correspoding cols of the Z to be 0.
+            As the curvature_reg_matrix = ZTZ, so the cols and rows are all taken out.
+            And the data_vector = ZTx, so the corresponding row is also taken out.
+            """
+
+            if self.settings.force_edge_pixels_to_zeros:
+                if self.settings.force_edge_image_pixels_to_zeros:
+                    ids_zeros = np.unique(
+                        np.append(
+                            self.mapper_edge_pixel_list, self.mapper_zero_pixel_list
+                        )
+                    )
+                else:
+                    ids_zeros = self.mapper_edge_pixel_list
+
+                values_to_solve = np.ones(
+                    np.shape(self.curvature_reg_matrix)[0], dtype=bool
+                )
+                values_to_solve[ids_zeros] = False
+
+                data_vector_input = self.data_vector[values_to_solve]
+
+                curvature_reg_matrix_input = self.curvature_reg_matrix[
+                    values_to_solve, :
+                ][:, values_to_solve]
+
+                solutions = np.zeros(np.shape(self.curvature_reg_matrix)[0])
+
+                solutions[
+                    values_to_solve
+                ] = inversion_util.reconstruction_positive_only_from(
+                    data_vector=data_vector_input,
+                    curvature_reg_matrix=curvature_reg_matrix_input,
+                    settings=self.settings,
+                )
+                return solutions
+            else:
+                solutions = inversion_util.reconstruction_positive_only_from(
+                    data_vector=self.data_vector,
+                    curvature_reg_matrix=self.curvature_reg_matrix,
+                    settings=self.settings,
+                )
+
+                return solutions
 
         mapper_param_range_list = self.param_range_list_from(cls=AbstractMapper)
 
         return inversion_util.reconstruction_positive_negative_from(
             data_vector=self.data_vector,
-            curvature_reg_matrix=self.curvature_reg_matrix_solver,
+            curvature_reg_matrix=self.curvature_reg_matrix,
             mapper_param_range_list=mapper_param_range_list,
         )
 
@@ -528,7 +575,6 @@ class AbstractInversion:
         index = 0
 
         for linear_obj in self.linear_obj_list:
-
             source_quantity_dict[linear_obj] = source_quantity[
                 index : index + linear_obj.params
             ]
@@ -657,7 +703,6 @@ class AbstractInversion:
             return self.preloads.log_det_regularization_matrix_term
 
         try:
-
             lu = splu(csc_matrix(self.regularization_matrix_reduced))
             diagL = lu.L.diagonal()
             diagU = lu.U.diagonal()
@@ -667,7 +712,6 @@ class AbstractInversion:
             return np.real(np.log(diagL).sum() + np.log(diagU).sum())
 
         except RuntimeError:
-
             try:
                 return 2.0 * np.sum(
                     np.log(
@@ -756,7 +800,6 @@ class AbstractInversion:
 
     @property
     def magnification_list(self) -> List[float]:
-
         magnification_list = []
 
         interpolated_reconstruction_list = self.interpolated_reconstruction_list_from(
@@ -764,7 +807,6 @@ class AbstractInversion:
         )
 
         for i, linear_obj in enumerate(self.linear_obj_list):
-
             mapped_reconstructed_image = self.mapped_reconstructed_image_dict[
                 linear_obj
             ]
@@ -778,11 +820,9 @@ class AbstractInversion:
 
     @property
     def brightest_reconstruction_pixel_list(self):
-
         brightest_reconstruction_pixel_list = []
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-
             brightest_reconstruction_pixel_list.append(
                 np.argmax(self.reconstruction_dict[mapper])
             )
@@ -791,11 +831,9 @@ class AbstractInversion:
 
     @property
     def brightest_reconstruction_pixel_centre_list(self):
-
         brightest_reconstruction_pixel_centre_list = []
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-
             brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
 
             centre = Grid2DIrregular(
@@ -807,25 +845,21 @@ class AbstractInversion:
         return brightest_reconstruction_pixel_centre_list
 
     def regularization_weights_from(self, index: int) -> np.ndarray:
-
         linear_obj = self.linear_obj_list[index]
         regularization = self.regularization_list[index]
 
         if regularization is None:
-
             pixels = linear_obj.params
 
-            return np.zero((pixels,))
+            return np.zeros((pixels,))
 
         return regularization.regularization_weights_from(linear_obj=linear_obj)
 
     @property
     def regularization_weights_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
-
         regularization_weights_dict = {}
 
         for index, mapper in enumerate(self.cls_list_from(cls=AbstractMapper)):
-
             regularization_weights_dict[mapper] = self.regularization_weights_from(
                 index=index
             )
@@ -833,64 +867,23 @@ class AbstractInversion:
         return regularization_weights_dict
 
     @property
-    def residual_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
-
-        return {
-            mapper: inversion_util.inversion_residual_map_from(
-                reconstruction=self.reconstruction_dict[mapper],
-                data=self.data,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
-            )
-            for mapper in self.cls_list_from(cls=AbstractMapper)
-        }
+    @profile_func
+    def _data_vector_mapper(self) -> np.ndarray:
+        raise NotImplementedError
 
     @property
-    def normalized_residual_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
-
-        return {
-            mapper: inversion_util.inversion_normalized_residual_map_from(
-                reconstruction=self.reconstruction_dict[mapper],
-                data=self.data,
-                noise_map_1d=self.noise_map.slim,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
-            )
-            for mapper in self.cls_list_from(cls=AbstractMapper)
-        }
+    @profile_func
+    def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
+        raise NotImplementedError
 
     @property
-    def chi_squared_map_mapper_dict(self) -> Dict[LinearObj, np.ndarray]:
-
-        return {
-            mapper: inversion_util.inversion_chi_squared_map_from(
-                reconstruction=self.reconstruction_dict[mapper],
-                data=self.data,
-                noise_map_1d=self.noise_map.slim,
-                slim_index_for_sub_slim_index=mapper.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-                sub_slim_indexes_for_pix_index=mapper.sub_slim_indexes_for_pix_index,
-            )
-            for mapper in self.cls_list_from(cls=AbstractMapper)
-        }
+    def linear_func_operated_mapping_matrix_dict(self) -> Dict:
+        raise NotImplementedError
 
     @property
-    def curvature_matrix_preload(self) -> np.ndarray:
-        (
-            curvature_matrix_preload,
-            curvature_matrix_counts,
-        ) = inversion_util.curvature_matrix_preload_from(
-            mapping_matrix=self.operated_mapping_matrix
-        )
-
-        return curvature_matrix_preload
+    def data_linear_func_matrix_dict(self):
+        raise NotImplementedError
 
     @property
-    def curvature_matrix_counts(self) -> np.ndarray:
-        (
-            curvature_matrix_preload,
-            curvature_matrix_counts,
-        ) = inversion_util.curvature_matrix_preload_from(
-            mapping_matrix=self.operated_mapping_matrix
-        )
-
-        return curvature_matrix_counts
+    def mapper_operated_mapping_matrix_dict(self) -> Dict:
+        raise NotImplementedError

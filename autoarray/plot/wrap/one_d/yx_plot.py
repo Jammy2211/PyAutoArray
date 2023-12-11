@@ -32,6 +32,7 @@ class YXPlot(AbstractMatWrap1D):
         y_errors=None,
         x_errors=None,
         y_extra=None,
+        ls_errorbar="",
     ):
         """
         Plots 1D y-data against 1D x-data using the matplotlib method `plt.plot`, `plt.semilogy`, `plt.loglog`,
@@ -62,18 +63,16 @@ class YXPlot(AbstractMatWrap1D):
         elif plot_axis_type == "scatter":
             plt.scatter(x, y, label=label, **self.config_dict)
         elif plot_axis_type == "errorbar" or plot_axis_type == "errorbar_logy":
-
             plt.errorbar(
                 x,
                 y,
                 yerr=y_errors,
                 xerr=x_errors,
-                marker="o",
+                #     marker="o",
                 fmt="o",
+                # ls=ls_errorbar,
                 **self.config_dict
             )
-            if y_extra is not None:
-                plt.plot(x, y_extra, c="r")
             if plot_axis_type == "errorbar_logy":
                 plt.yscale("log")
         else:
@@ -81,3 +80,6 @@ class YXPlot(AbstractMatWrap1D):
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
                 "{semilogy, loglog})"
             )
+
+        if y_extra is not None:
+            plt.plot(x, y_extra, c="r")

@@ -3,6 +3,7 @@ import numpy as np
 from typing import Optional
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
+from autoarray.plot.wrap.base.units import Units
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.pixelization.mesh import mesh_util
 
@@ -25,6 +26,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         self,
         mapper: MapperVoronoiNoInterp,
         pixel_values: Optional[np.ndarray],
+        units: Units,
         cmap: Optional[wb.Cmap],
         colorbar: Optional[wb.Colorbar],
         colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
@@ -52,7 +54,6 @@ class VoronoiDrawer(AbstractMatWrap2D):
         regions, vertices = mesh_util.voronoi_revised_from(voronoi=mapper.voronoi)
 
         if pixel_values is not None:
-
             vmin = cmap.vmin_from(array=pixel_values)
             vmax = cmap.vmax_from(array=pixel_values)
 
@@ -67,9 +68,8 @@ class VoronoiDrawer(AbstractMatWrap2D):
             cmap = plt.get_cmap(cmap.cmap)
 
             if colorbar is not None:
-
                 cb = colorbar.set_with_color_values(
-                    cmap=cmap, color_values=color_values, ax=ax
+                    units=units, cmap=cmap, color_values=color_values, ax=ax
                 )
 
                 if cb is not None and colorbar_tickparams is not None:

@@ -2,7 +2,8 @@ from __future__ import annotations
 from astropy.io import fits
 import numpy as np
 import os
-from typing import TYPE_CHECKING, Dict, List, Tuple, Union
+from pathlib import Path
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
@@ -54,7 +55,6 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
         The mask of the output Array2D.
     """
     if len(array_2d.shape) == 1:
-
         if array_2d.shape[0] != mask_2d.sub_pixels_in_mask:
             raise exc.ArrayException(
                 f"""
@@ -73,7 +73,6 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
             )
 
     if len(array_2d.shape) == 2:
-
         if array_2d.shape != mask_2d.sub_shape_native:
             raise exc.ArrayException(
                 f"""
@@ -158,7 +157,6 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarra
     """
 
     if len(array_2d.shape) == 1:
-
         array_2d_slim = array_2d
 
         return array_2d_slim
@@ -186,7 +184,6 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
     """
 
     if len(array_2d.shape) == 2:
-
         array_2d_native = array_2d * np.invert(mask_2d)
 
         if array_2d.shape != mask_2d.sub_shape_native:
@@ -308,7 +305,6 @@ def resized_array_2d_from(
     x_is_even = int(array_2d.shape[1]) % 2 == 0
 
     if origin == (-1, -1):
-
         if y_is_even:
             y_centre = int(array_2d.shape[0] / 2)
         elif not y_is_even:
@@ -440,7 +436,6 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.n
     index_2d_for_index_slim = np.zeros((indexes_slim.shape[0], 2))
 
     for i, index_slim in enumerate(indexes_slim):
-
         index_2d_for_index_slim[i, 0] = int(index_slim / shape_native[1])
         index_2d_for_index_slim[i, 1] = int(index_slim % shape_native[1])
 
@@ -653,7 +648,6 @@ def array_2d_via_indexes_from(
     sub_array_native_2d = np.zeros(sub_shape)
 
     for slim_index in range(len(native_index_for_slim_index_2d)):
-
         sub_array_native_2d[
             native_index_for_slim_index_2d[slim_index, 0],
             native_index_for_slim_index_2d[slim_index, 1],
@@ -738,7 +732,6 @@ def array_2d_native_complex_via_indexes_from(
     sub_shape_native: Tuple[int, int],
     native_index_for_slim_index_2d: np.ndarray,
 ) -> np.ndarray:
-
     sub_array_2d = 0 + 0j * np.zeros(sub_shape_native)
 
     for slim_index in range(len(native_index_for_slim_index_2d)):
@@ -750,8 +743,51 @@ def array_2d_native_complex_via_indexes_from(
     return sub_array_2d
 
 
+def hdu_for_output_from(
+    array_2d: np.ndarray, header_dict: Optional[dict] = None
+) -> fits.PrimaryHDU:
+    """
+    Returns the HDU which can be used to output an array to a .fits file.
+
+    Before outputting a NumPy array, the array may be flipped upside-down using np.flipud depending on the project
+    config files. This is for Astronomy projects so that structures appear the same orientation as ``.fits`` files
+    loaded in DS9.
+
+    Parameters
+    ----------
+    array_2d
+        The 2D array that is written to fits.
+    header_dict
+        A dictionary of values that are written to the header of the .fits file.
+
+    Returns
+    -------
+    hdu
+        The HDU containing the data and its header which can then be written to .fits.
+
+    Examples
+    --------
+    array_2d = np.ones((5,5))
+    hdu_for_output_from(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
+    """
+    header = fits.Header()
+
+    if header_dict is not None:
+        for key, value in header_dict.items():
+            header.append((key, value, [""]))
+
+    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
+
+    if flip_for_ds9:
+        return fits.PrimaryHDU(np.flipud(array_2d), header=header)
+    return fits.PrimaryHDU(array_2d, header=header)
+
+
 def numpy_array_2d_to_fits(
-    array_2d: np.ndarray, file_path: str, overwrite: bool = False
+    array_2d: np.ndarray,
+    file_path: Union[Path, str],
+    overwrite: bool = False,
+    header_dict: Optional[dict] = None,
 ):
     """
     Write a 2D NumPy array to a .fits file.
@@ -769,6 +805,8 @@ def numpy_array_2d_to_fits(
     overwrite
         If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
         error is raised.
+    header_dict
+        A dictionary of values that are written to the header of the .fits file.
 
     Returns
     -------
@@ -788,19 +826,13 @@ def numpy_array_2d_to_fits(
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
-    new_hdr = fits.Header()
+    hdu = hdu_for_output_from(array_2d=array_2d, header_dict=header_dict)
 
-    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
-
-    if flip_for_ds9:
-        hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
-    else:
-        hdu = fits.PrimaryHDU(array_2d, new_hdr)
     hdu.writeto(file_path)
 
 
 def numpy_array_2d_via_fits_from(
-    file_path: str, hdu: int, do_not_scale_image_data: bool = False
+    file_path: Union[Path, str], hdu: int, do_not_scale_image_data: bool = False
 ):
     """
     Read a 2D NumPy array from a .fits file.
@@ -835,7 +867,7 @@ def numpy_array_2d_via_fits_from(
     return np.array(hdu_list[hdu].data).astype("float64")
 
 
-def header_obj_from(file_path: str, hdu: int) -> Dict:
+def header_obj_from(file_path: Union[Path, str], hdu: int) -> Dict:
     """
     Read a 2D NumPy array from a .fits file.
 

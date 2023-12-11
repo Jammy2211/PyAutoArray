@@ -30,7 +30,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         Constructs linear equations (via vectors and matrices) which allow for sets of simultaneous linear equations
@@ -57,7 +57,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         linear_obj_list
             The linear objects used to reconstruct the data's observed values. If multiple linear objects are passed
             the simultaneous linear equations are combined and solved simultaneously.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
@@ -71,7 +71,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
         self.settings = settings
@@ -125,7 +125,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         """
 
         if self.settings.use_w_tilde_numpy:
-
             return inversion_util.curvature_matrix_via_w_tilde_from(
                 w_tilde=self.w_tilde.w_matrix, mapping_matrix=self.mapping_matrix
             )
@@ -135,14 +134,13 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         mapper = self.cls_list_from(cls=AbstractMapper)[0]
 
         if not self.settings.use_source_loop:
-
             return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from(
                 curvature_preload=self.w_tilde.curvature_preload,
                 pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
                 pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
                 pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
                 native_index_for_slim_index=self.transformer.real_space_mask.derive_indexes.native_for_slim,
-                pix_pixels=self.linear_obj_list[0].pixels,
+                pix_pixels=self.linear_obj_list[0].params,
             )
 
         (
@@ -154,7 +152,7 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         return inversion_util_secret.curvature_matrix_via_w_tilde_curvature_preload_interferometer_from_2(
             curvature_preload=self.w_tilde.curvature_preload,
             native_index_for_slim_index=self.transformer.real_space_mask.derive_indexes.native_for_slim,
-            pix_pixels=self.linear_obj_list[0].pixels,
+            pix_pixels=self.linear_obj_list[0].params,
             sub_slim_indexes_for_pix_index=sub_slim_indexes_for_pix_index.astype("int"),
             sub_slim_sizes_for_pix_index=sub_slim_sizes_for_pix_index.astype("int"),
             sub_slim_weights_for_pix_index=sub_slim_weights_for_pix_index,
@@ -193,7 +191,6 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         image_dict = self.mapped_reconstructed_image_dict
 
         for linear_obj in self.linear_obj_list:
-
             visibilities = self.transformer.visibilities_from(
                 image=image_dict[linear_obj]
             )

@@ -24,7 +24,6 @@ class AbstractWTilde:
         self.noise_map_value = noise_map_value
 
     def check_noise_map(self, noise_map):
-
         if noise_map[0] != self.noise_map_value:
             raise exc.InversionException(
                 "The preloaded values of WTildeImaging are not consistent with the noise-map passed to them, thus "

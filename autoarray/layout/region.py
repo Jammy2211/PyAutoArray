@@ -96,7 +96,6 @@ class Region1D(AbstractRegion):
         """
 
         if pixels_from_end is not None:
-
             pixels = (self.total_pixels - pixels_from_end, self.total_pixels)
 
         x_min = self.x0 + pixels[0]
@@ -252,7 +251,6 @@ class Region2D(AbstractRegion):
         """
 
         if pixels_from_end is not None:
-
             pixels = (self.total_rows - pixels_from_end, self.total_rows)
 
         y_coord = self.y0
@@ -326,7 +324,6 @@ class Region2D(AbstractRegion):
         """
 
         if pixels_from_end is not None:
-
             pixels = (self.total_columns - pixels_from_end, self.total_columns)
 
         x_min, x_max = self.serial_x_front_range_from(pixels)

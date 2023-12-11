@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 def test__dataset_takes_structures_of_different_formats():
-
     array = aa.Array1D.no_mask([1.0, 2.0], pixel_scales=1.0)
     noise_map = aa.Array1D.no_mask([1.0, 3.0], pixel_scales=1.0)
 
@@ -24,18 +23,6 @@ def test__dataset_takes_structures_of_different_formats():
 
     assert (dataset.data.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
     assert (dataset.noise_map.native == np.array([[1.0, 2.0], [3.0, 5.0]])).all()
-
-
-def test__inverse_noise_map():
-
-    array = aa.Array2D.no_mask([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.no_mask([[1.0, 2.0], [4.0, 8.0]], pixel_scales=1.0)
-
-    dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
-
-    assert (
-        dataset.inverse_noise_map.native == np.array([[1.0, 0.5], [0.25, 0.125]])
-    ).all()
 
 
 def test__signal_to_noise_map():
@@ -61,35 +48,6 @@ def test__signal_to_noise_map():
     assert dataset.signal_to_noise_max == 0.2
 
 
-def test__absolute_signal_to_noise_map():
-
-    array = aa.Array2D.no_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
-
-    noise_map = aa.Array2D.no_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
-
-    dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
-
-    assert (
-        dataset.absolute_signal_to_noise_map.native
-        == np.array([[0.1, 0.2], [0.1, 1.0]])
-    ).all()
-    assert dataset.absolute_signal_to_noise_max == 1.0
-
-
-def test__potential_chi_squared_map():
-
-    array = aa.Array2D.no_mask([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
-    noise_map = aa.Array2D.no_mask([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
-
-    dataset = ds.AbstractDataset(data=array, noise_map=noise_map)
-
-    assert (
-        dataset.potential_chi_squared_map.native
-        == np.array([[0.1 ** 2.0, 0.2 ** 2.0], [0.1 ** 2.0, 1.0 ** 2.0]])
-    ).all()
-    assert dataset.potential_chi_squared_max == 1.0
-
-
 def test__grid__uses_mask_and_settings(
     image_7x7,
     noise_map_7x7,
@@ -98,7 +56,6 @@ def test__grid__uses_mask_and_settings(
     sub_grid_2d_7x7,
     grid_2d_iterate_7x7,
 ):
-
     dataset_1d = ds.AbstractDataset(
         data=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
         noise_map=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
@@ -118,7 +75,7 @@ def test__grid__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(),
+        settings=ds.AbstractSettingsDataset(sub_size=2),
     )
 
     assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
@@ -138,14 +95,13 @@ def test__grid__uses_mask_and_settings(
 def test__grid_pixelization__uses_mask_and_settings(
     image_7x7, noise_map_7x7, sub_mask_2d_7x7, grid_2d_7x7, sub_grid_2d_7x7
 ):
-
-    masked_dataset_1d = ds.AbstractDataset(
+    masked_dataset = ds.AbstractDataset(
         data=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
         noise_map=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
         settings=ds.AbstractSettingsDataset(),
     )
 
-    assert isinstance(masked_dataset_1d.grid, aa.Grid1D)
+    assert isinstance(masked_dataset.grid, aa.Grid1D)
 
     masked_image_7x7 = aa.Array2D(
         values=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
@@ -180,7 +136,6 @@ def test__grid_pixelization__uses_mask_and_settings(
 
 
 def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
-
     dataset_7x7 = ds.AbstractDataset(
         data=image_7x7,
         noise_map=noise_map_7x7,

@@ -8,7 +8,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__constructor():
-
     output = aplt.Output()
 
     assert output.path == None
@@ -28,7 +27,6 @@ def test__constructor():
 
 
 def test__input_path_is_created():
-
     test_path = path.join(directory, "files", "output_path")
 
     if path.exists(test_path):
@@ -36,6 +34,10 @@ def test__input_path_is_created():
 
     assert not path.exists(test_path)
 
-    output = aplt.Output(path=test_path)
+    output = aplt.Output(
+        path=test_path,
+        format="png",
+    )
+    output.to_figure(structure=None, auto_filename="test")
 
     assert path.exists(test_path)

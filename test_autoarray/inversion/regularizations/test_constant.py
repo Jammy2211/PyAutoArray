@@ -5,7 +5,6 @@ np.set_printoptions(threshold=np.inf)
 
 
 def test__regularization_matrix__matches_util():
-
     neighbors = np.array(
         [
             [1, 3, 7, 2],

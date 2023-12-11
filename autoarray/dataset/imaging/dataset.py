@@ -1,6 +1,7 @@
 import logging
 import numpy as np
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 from autoconf import cached_property
 
@@ -23,19 +24,20 @@ logger = logging.getLogger(__name__)
 class Imaging(AbstractDataset):
     def __init__(
         self,
-        image: Array2D,
+        data: Array2D,
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         settings: SettingsImaging = SettingsImaging(),
         pad_for_convolver: bool = False,
+        check_noise_map: bool = True,
     ):
         """
         A class containing an imaging dataset, including the image data, noise-map and a point spread function (PSF).
 
         Parameters
         ----------
-        image
+        data
             The array of the image data, for example in units of electrons per second.
         noise_map
             An array describing the RMS standard deviation error in each pixel, for example in units of electrons per
@@ -45,6 +47,8 @@ class Imaging(AbstractDataset):
             telescope optics via 2D convolution.
         settings
             Controls settings of how the dataset is set up (e.g. the types of grids used to perform calculations).
+        check_noise_map
+            If True, the noise-map is checked to ensure all values are above zero.
         """
 
         self.unmasked = None
@@ -52,13 +56,12 @@ class Imaging(AbstractDataset):
         self.pad_for_convolver = pad_for_convolver
 
         if pad_for_convolver and psf is not None:
-
             try:
-                image.mask.derive_mask.blurring_from(
+                data.mask.derive_mask.blurring_from(
                     kernel_shape_native=psf.shape_native
                 )
             except exc.MaskException:
-                image = image.padded_before_convolution_from(
+                data = data.padded_before_convolution_from(
                     kernel_shape=psf.shape_native, mask_pad_value=1
                 )
                 if noise_map is not None:
@@ -67,7 +70,7 @@ class Imaging(AbstractDataset):
                     )
                 logger.info(
                     f"The image and noise map of the `Imaging` objected have been padded to the dimensions"
-                    f"{image.shape}. This is because the blurring region around the mask (which defines where"
+                    f"{data.shape}. This is because the blurring region around the mask (which defines where"
                     f"PSF flux may be convolved into the masked region) extended beyond the edge of the image."
                     f""
                     f"This can be prevented by using a smaller mask, smaller PSF kernel size or manually padding"
@@ -75,34 +78,32 @@ class Imaging(AbstractDataset):
                 )
 
         super().__init__(
-            data=image,
+            data=data,
             noise_map=noise_map,
             noise_covariance_matrix=noise_covariance_matrix,
             settings=settings,
         )
 
-        if self.noise_map.native is not None:
-
+        if self.noise_map.native is not None and check_noise_map:
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
+                zero_entries = np.argwhere(self.noise_map.native <= 0.0)
+
                 raise exc.DatasetException(
                     f"""
                     A value in the noise-map of the dataset is {np.min(self.noise_map)}. 
 
                     This is less than or equal to zero, and therefore an ill-defined value which must be corrected.
+                    
+                    The 2D indexes of the arrays in the native noise map array are {zero_entries}.
                     """
                 )
 
         if psf is not None and settings.use_normalized_psf:
-
             psf = Kernel2D.no_mask(
                 values=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
 
         self.psf = psf
-
-    @property
-    def image(self):
-        return self.data
 
     @cached_property
     def blurring_grid(self) -> Grid2D:
@@ -141,6 +142,7 @@ class Imaging(AbstractDataset):
         Convolver
             The convolver given the masked imaging data's mask and PSF.
         """
+
         return Convolver(mask=self.mask, kernel=self.psf)
 
     @cached_property
@@ -183,43 +185,54 @@ class Imaging(AbstractDataset):
     @classmethod
     def from_fits(
         cls,
-        image_path: str,
         pixel_scales: ty.PixelScales,
-        noise_map_path: str,
-        image_hdu: int = 0,
+        data_path: Union[Path, str],
+        noise_map_path: Union[Path, str],
+        data_hdu: int = 0,
         noise_map_hdu: int = 0,
-        psf_path: str = None,
+        psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
     ) -> "Imaging":
         """
-        Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the imaging-data.
+        Load an imaging dataset from multiple .fits file.
 
-        This factory also includes a number of routines for converting the imaging-data from unit_label not
-        supported by PyAutoLens (e.g. adus, electrons) to electrons per second.
+        For each attribute of the imaging data (e.g. `data`, `noise_map`, `pre_cti_data`) the path to
+        the .fits and the `hdu` containing the data can be specified.
+
+        The `noise_map` assumes the noise value in each `data` value are independent, where these values are the
+        the RMS standard deviation error in each pixel.
+
+        A `noise_covariance_matrix` can be input instead, which represents the covariance between noise values in
+        the data and can be used to fit the data accounting for correlations (the `noise_map` is the diagonal values
+        of this matrix).
+
+        If the dataset has a mask associated with it (e.g. in a `mask.fits` file) the file must be loaded separately
+        via the `Mask2D` object and applied to the imaging after loading via fits using the `from_fits` method.
 
         Parameters
         ----------
-        noise_map_non_constant
-        image_path
-            The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
         pixel_scales
-            The size of each pixel in scaled units.
-        image_hdu
-            The hdu the image is contained in the .fits file specified by *image_path*.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
+        data_path
+            The path to the data .fits file containing the image data (e.g. '/path/to/image.fits').
+        data_hdu
+            The hdu the image data is contained in the .fits file specified by `data_path`.
         psf_path
-            The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
+            The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits').
         psf_hdu
-            The hdu the psf is contained in the .fits file specified by *psf_path*.
+            The hdu the psf is contained in the .fits file specified by `psf_path`.
         noise_map_path
-            The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
+            The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits').
         noise_map_hdu
-            The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
+            The hdu the noise map is contained in the .fits file specified by `noise_map_path`.
+        noise_covariance_matrix
+            A noise-map covariance matrix representing the covariance between noise in every `data` value.
         """
 
-        image = Array2D.from_fits(
-            file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
+        data = Array2D.from_fits(
+            file_path=data_path, hdu=data_hdu, pixel_scales=pixel_scales
         )
 
         noise_map = Array2D.from_fits(
@@ -227,7 +240,6 @@ class Imaging(AbstractDataset):
         )
 
         if psf_path is not None:
-
             psf = Kernel2D.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
@@ -236,11 +248,10 @@ class Imaging(AbstractDataset):
             )
 
         else:
-
             psf = None
 
         return Imaging(
-            image=image,
+            data=data,
             noise_map=noise_map,
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
@@ -260,22 +271,19 @@ class Imaging(AbstractDataset):
         mask
             The 2D mask that is applied to the image.
         """
-        if self.image.mask.is_all_false:
-            unmasked_imaging = self
+        if self.data.mask.is_all_false:
+            unmasked_dataset = self
         else:
-            unmasked_imaging = self.unmasked
+            unmasked_dataset = self.unmasked
 
-        image = Array2D(
-            values=unmasked_imaging.image.native, mask=mask.derive_mask.sub_1
-        )
+        data = Array2D(values=unmasked_dataset.data.native, mask=mask.derive_mask.sub_1)
 
         noise_map = Array2D(
-            values=unmasked_imaging.noise_map.native, mask=mask.derive_mask.sub_1
+            values=unmasked_dataset.noise_map.native, mask=mask.derive_mask.sub_1
         )
 
-        if unmasked_imaging.noise_covariance_matrix is not None:
-
-            noise_covariance_matrix = unmasked_imaging.noise_covariance_matrix
+        if unmasked_dataset.noise_covariance_matrix is not None:
+            noise_covariance_matrix = unmasked_dataset.noise_covariance_matrix
 
             noise_covariance_matrix = np.delete(
                 noise_covariance_matrix, mask.derive_indexes.masked_slim, 0
@@ -285,11 +293,10 @@ class Imaging(AbstractDataset):
             )
 
         else:
-
             noise_covariance_matrix = None
 
-        imaging = Imaging(
-            image=image,
+        dataset = Imaging(
+            data=data,
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
@@ -297,13 +304,13 @@ class Imaging(AbstractDataset):
             pad_for_convolver=True,
         )
 
-        imaging.unmasked = unmasked_imaging
+        dataset.unmasked = unmasked_dataset
 
         logger.info(
             f"IMAGING - Data masked, contains a total of {mask.pixels_in_mask} image-pixels"
         )
 
-        return imaging
+        return dataset
 
     def apply_settings(self, settings: SettingsImaging) -> "Imaging":
         """
@@ -318,7 +325,7 @@ class Imaging(AbstractDataset):
             The settings for the imaging data that control things like the grids used for calculations.
         """
         return Imaging(
-            image=self.image,
+            data=self.data,
             noise_map=self.noise_map,
             psf=self.psf,
             noise_covariance_matrix=self.noise_covariance_matrix,
@@ -328,12 +335,33 @@ class Imaging(AbstractDataset):
 
     def output_to_fits(
         self,
-        image_path: str,
-        psf_path: str = None,
-        noise_map_path: str = None,
+        data_path: Union[Path, str],
+        psf_path: Optional[Union[Path, str]] = None,
+        noise_map_path: Optional[Union[Path, str]] = None,
         overwrite: bool = False,
     ):
-        self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
+        """
+        Output an imaging dataset to multiple .fits file.
+
+        For each attribute of the imaging data (e.g. `data`, `noise_map`) the path to
+        the .fits can be specified, with `hdu=0` assumed automatically.
+
+        If the `data` has been masked, the masked data is output to .fits files. A mask can be separately output to
+        a file `mask.fits` via the `Mask` objects `output_to_fits` method.
+
+        Parameters
+        ----------
+        data_path
+            The path to the data .fits file where the image data is output (e.g. '/path/to/data.fits').
+        psf_path
+            The path to the psf .fits file where the psf is output (e.g. '/path/to/psf.fits').
+        noise_map_path
+            The path to the noise_map .fits where the noise_map is output (e.g. '/path/to/noise_map.fits').
+        overwrite
+            If `True`, the .fits files are overwritten if they already exist, if `False` they are not and an
+            exception is raised.
+        """
+        self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
 
         if self.psf is not None and psf_path is not None:
             self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)

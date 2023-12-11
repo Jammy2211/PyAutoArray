@@ -10,8 +10,11 @@ class Units:
     def __init__(
         self,
         use_scaled: Optional[bool] = None,
-        conversion_factor: Optional[float] = None,
-        in_kpc: Optional[bool] = None,
+        use_raw: Optional[bool] = False,
+        ticks_convert_factor: Optional[float] = None,
+        ticks_label: Optional[str] = None,
+        colorbar_convert_factor: Optional[float] = None,
+        colorbar_label: Optional[str] = None,
         **kwargs
     ):
         """
@@ -30,19 +33,15 @@ class Units:
         ----------
         use_scaled
             If True, plot the 2D data with y and x ticks corresponding to its scaled
-            coordinates (its `pixel_scales` attribute is used as the `conversion_factor`). If `False` plot them in
+            coordinates (its `pixel_scales` attribute is used as the `ticks_convert_factor`). If `False` plot them in
             pixel units.
-        conversion_factor
+        ticks_convert_factor
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
-        in_kpc
-            If True, the scaled units are converted to kilo-parsecs via the input Comsology of the
-            plot (this is only relevant for the projects PyAutoGalaxy / PyAutoLens).
         """
 
-        self.use_scaled = use_scaled
-        self.conversion_factor = conversion_factor
-        self.in_kpc = in_kpc
+        self.ticks_convert_factor = ticks_convert_factor
+        self.ticks_label = ticks_label
 
         if use_scaled is not None:
             self.use_scaled = use_scaled
@@ -54,13 +53,9 @@ class Units:
             except KeyError:
                 self.use_scaled = True
 
-        try:
-            self.in_kpc = (
-                in_kpc
-                if in_kpc is not None
-                else conf.instance["visualize"]["general"]["units"]["in_kpc"]
-            )
-        except KeyError:
-            self.in_kpc = None
+        self.use_raw = use_raw
+
+        self.colorbar_convert_factor = colorbar_convert_factor
+        self.colorbar_label = colorbar_label
 
         self.kwargs = kwargs

@@ -1,6 +1,8 @@
 from __future__ import annotations
 import json
 import logging
+from pathlib import Path
+
 import numpy as np
 import os
 from os import path
@@ -9,7 +11,6 @@ from typing import List, Union
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-
     from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.structures.abstract_structure import Structure
@@ -63,6 +64,9 @@ class ArrayIrregular(Structure):
         # if len(values) == 0:
         #     return []
 
+        # if isinstance(values, ArrayIrregular):
+        #     return values
+
         if type(values) is list:
             values = np.asarray(values)
 
@@ -112,7 +116,7 @@ class ArrayIrregular(Structure):
         return Grid2DIrregular(values=grid_slim)
 
     @classmethod
-    def from_file(cls, file_path: str) -> "ArrayIrregular":
+    def from_file(cls, file_path: Union[Path, str]) -> "ArrayIrregular":
         """
         Create a `ArrayIrregular` object from a  `.json` file which stores the coordinates as a list of list of tuples.
 
@@ -127,7 +131,7 @@ class ArrayIrregular(Structure):
 
         return ArrayIrregular(values=values)
 
-    def output_to_json(self, file_path: str, overwrite: bool = False):
+    def output_to_json(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output this instance of the `Grid2DIrregular` object to a list of list of tuples.
 

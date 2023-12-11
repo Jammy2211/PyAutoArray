@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from os import path
+from pathlib import Path
 from typing import List, Optional, Tuple, Union
 import json
 
@@ -44,7 +45,6 @@ class Grid2DIrregular(AbstractNDArray):
         #     return []
 
         if type(values) is list:
-
             if isinstance(values[0], Grid2DIrregular):
                 values = values
             else:
@@ -87,6 +87,10 @@ class Grid2DIrregular(AbstractNDArray):
     def native(self) -> "Grid2DIrregular":
         return self
 
+    @property
+    def sub_shape_slim(self) -> int:
+        return len(self.slim)
+
     @classmethod
     def from_yx_1d(cls, y: np.ndarray, x: np.ndarray) -> "Grid2DIrregular":
         """
@@ -118,6 +122,43 @@ class Grid2DIrregular(AbstractNDArray):
         Return the coordinates in a list.
         """
         return [tuple(value) for value in self]
+
+    @property
+    def scaled_minima(self) -> Tuple:
+        """
+        The (y,x) minimum values of the grid in scaled units, buffed such that their extent is further than the grid's
+        extent.
+        """
+        return (
+            np.amin(self[:, 0]).astype("float"),
+            np.amin(self[:, 1]).astype("float"),
+        )
+
+    @property
+    def scaled_maxima(self) -> Tuple:
+        """
+        The (y,x) maximum values of the grid in scaled units, buffed such that their extent is further than the grid's
+        extent.
+        """
+        return (
+            np.amax(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float"),
+        )
+
+    def extent_with_buffer_from(self, buffer: float = 1.0e-8) -> List[float]:
+        """
+        The extent of the grid in scaled units returned as a list [x_min, x_max, y_min, y_max], where all values are
+        buffed such that their extent is further than the grid's extent..
+
+        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
+        is used for visualization in the plot module.
+        """
+        return [
+            self.scaled_minima[1] - buffer,
+            self.scaled_maxima[1] + buffer,
+            self.scaled_minima[0] - buffer,
+            self.scaled_maxima[0] + buffer,
+        ]
 
     def values_from(self, array_slim: np.ndarray) -> ArrayIrregular:
         """
@@ -153,7 +194,7 @@ class Grid2DIrregular(AbstractNDArray):
         grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
         values.
 
-        This is used by **PyAutoLens** to perform grid ray-tracing.
+        This is to perform grid ray-tracing.
 
         Parameters
         ----------
@@ -279,7 +320,6 @@ class Grid2DIrregular(AbstractNDArray):
         radial_distances_max = np.zeros((self.shape[0]))
 
         for i in range(self.shape[0]):
-
             x_distances = np.square(np.subtract(self[i, 0], self[:, 0]))
             y_distances = np.square(np.subtract(self[i, 1], self[:, 1]))
 
@@ -306,7 +346,6 @@ class Grid2DIrregular(AbstractNDArray):
         grid_of_closest = np.zeros((grid_pair.shape[0], 2))
 
         for i in range(grid_pair.shape[0]):
-
             x_distances = np.square(np.subtract(grid_pair[i, 0], self[:, 0]))
             y_distances = np.square(np.subtract(grid_pair[i, 1], self[:, 1]))
 
@@ -317,7 +356,7 @@ class Grid2DIrregular(AbstractNDArray):
         return Grid2DIrregular(values=grid_of_closest)
 
     @classmethod
-    def from_json(cls, file_path: str) -> "Grid2DIrregular":
+    def from_json(cls, file_path: Union[Path, str]) -> "Grid2DIrregular":
         """
         Returns a `Grid2DIrregular` object from a .json file, which stores the coordinates as a list of list of tuples.
 
@@ -332,7 +371,7 @@ class Grid2DIrregular(AbstractNDArray):
 
         return Grid2DIrregular(values=grid)
 
-    def output_to_json(self, file_path: str, overwrite: bool = False):
+    def output_to_json(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Output this instance of the `Grid2DIrregular` object to a .json file as a list of list of tuples.
 
@@ -363,7 +402,6 @@ class Grid2DIrregular(AbstractNDArray):
 
 
 class Grid2DIrregularTransformed(Grid2DIrregular):
-
     pass
 
 
@@ -433,7 +471,6 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         super().__init__(coordinates_arr)
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "_internal_list"):
             self._internal_list = obj._internal_list
 
@@ -461,7 +498,6 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         pixel_scales,
         shape_native=None,
     ) -> "Grid2DIrregularUniform":
-
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_upscaled_1d = grid_2d_util.grid_2d_slim_upscaled_from(

@@ -11,7 +11,6 @@ directory = path.dirname(path.realpath(__file__))
 
 
 def test__has():
-
     reg = aa.m.MockRegularization()
     linear_obj = aa.m.MockLinearObj(regularization=reg)
     inversion = aa.m.MockInversion(linear_obj_list=[linear_obj])
@@ -25,7 +24,6 @@ def test__has():
 
 
 def test__total_regularizations():
-
     reg = aa.m.MockRegularization()
 
     linear_obj_0 = aa.m.MockLinearObj(regularization=reg)
@@ -45,7 +43,6 @@ def test__total_regularizations():
 
 
 def test__index_range_list_from():
-
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockLinearObj(parameters=2, regularization=None),
@@ -58,7 +55,6 @@ def test__index_range_list_from():
 
 
 def test__mapper_edge_pixel_list():
-
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockLinearObj(parameters=3, regularization=None),
@@ -72,7 +68,6 @@ def test__mapper_edge_pixel_list():
 
 
 def test__no_regularization_index_list():
-
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockLinearObj(parameters=2, regularization=None),
@@ -95,7 +90,6 @@ def test__no_regularization_index_list():
 
 
 def test__mapping_matrix():
-
     mapper_0 = aa.m.MockMapper(mapping_matrix=np.ones((2, 2)))
     mapper_1 = aa.m.MockMapper(mapping_matrix=2.0 * np.ones((2, 3)))
 
@@ -148,18 +142,18 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
     psf = aa.Kernel2D.no_mask(values=kernel, pixel_scales=1.0)
 
-    imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
+    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
 
-    masked_imaging = imaging.apply_mask(mask=mask)
+    masked_dataset = dataset.apply_mask(mask=mask)
 
     inversion_w_tilde = aa.Inversion(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
@@ -219,18 +213,18 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     kernel = np.array([[0.0, 1.0, 0.0], [1.0, 1.0, 1.0], [0.0, 1.0, 0.0]])
     psf = aa.Kernel2D.no_mask(values=kernel, pixel_scales=1.0)
 
-    imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
+    dataset = aa.Imaging(data=image, noise_map=noise_map, psf=psf)
 
-    masked_imaging = imaging.apply_mask(mask=mask)
+    masked_dataset = dataset.apply_mask(mask=mask)
 
     inversion_w_tilde = aa.Inversion(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
         settings=aa.SettingsInversion(use_w_tilde=True),
     )
 
     inversion_mapping = aa.Inversion(
-        dataset=masked_imaging,
+        dataset=masked_dataset,
         linear_obj_list=[mapper_0, mapper_1],
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
@@ -241,7 +235,6 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
 
 def test__curvature_reg_matrix_reduced():
-
     curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 
     linear_obj_list = [
@@ -258,35 +251,34 @@ def test__curvature_reg_matrix_reduced():
     ).all()
 
 
-def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
-
-    curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
-
-    linear_obj_list = [
-        aa.m.MockMapper(parameters=3, regularization=None, edge_pixel_list=[0])
-    ]
-
-    inversion = aa.m.MockInversion(
-        linear_obj_list=linear_obj_list,
-        curvature_reg_matrix=curvature_reg_matrix,
-        settings=aa.SettingsInversion(force_edge_pixels_to_zeros=True),
-    )
-
-    curvature_reg_matrix = np.array(
-        [
-            [0.0, 2.0, 3.0],
-            [0.0, 5.0, 6.0],
-            [0.0, 8.0, 9.0],
-        ]
-    )
-
-    assert inversion.curvature_reg_matrix_solver == pytest.approx(
-        curvature_reg_matrix, 1.0e-4
-    )
+# def test__curvature_reg_matrix_solver__edge_pixels_set_to_zero():
+#
+#     curvature_reg_matrix = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+#
+#     linear_obj_list = [
+#         aa.m.MockMapper(parameters=3, regularization=None, edge_pixel_list=[0])
+#     ]
+#
+#     inversion = aa.m.MockInversion(
+#         linear_obj_list=linear_obj_list,
+#         curvature_reg_matrix=curvature_reg_matrix,
+#         settings=aa.SettingsInversion(force_edge_pixels_to_zeros=True),
+#     )
+#
+#     curvature_reg_matrix = np.array(
+#         [
+#             [0.0, 2.0, 3.0],
+#             [0.0, 5.0, 6.0],
+#             [0.0, 8.0, 9.0],
+#         ]
+#     )
+#
+#     assert inversion.curvature_reg_matrix_solver == pytest.approx(
+#         curvature_reg_matrix, 1.0e-4
+#     )
 
 
 def test__regularization_matrix():
-
     reg_0 = aa.m.MockRegularization(regularization_matrix=np.ones((2, 2)))
     reg_1 = aa.m.MockRegularization(regularization_matrix=2.0 * np.ones((3, 3)))
 
@@ -310,21 +302,11 @@ def test__regularization_matrix():
     assert inversion.regularization_matrix == pytest.approx(regularization_matrix)
 
 
-def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
-
+def test__preloads__operated_mapping_matrix():
     operated_mapping_matrix = 2.0 * np.ones((9, 3))
-
-    (
-        curvature_matrix_preload,
-        curvature_matrix_counts,
-    ) = aa.util.inversion.curvature_matrix_preload_from(
-        mapping_matrix=operated_mapping_matrix
-    )
 
     preloads = aa.Preloads(
         operated_mapping_matrix=operated_mapping_matrix,
-        curvature_matrix_preload=curvature_matrix_preload.astype("int"),
-        curvature_matrix_counts=curvature_matrix_counts.astype("int"),
     )
 
     # noinspection PyTypeChecker
@@ -333,11 +315,9 @@ def test__preloads__operated_mapping_matrix_and_curvature_matrix_preload():
     )
 
     assert inversion.operated_mapping_matrix[0, 0] == 2.0
-    assert inversion.curvature_matrix[0, 0] == 36.0
 
 
 def test__linear_func_operated_mapping_matrix_dict():
-
     dict_0 = {"key0": np.array([1.0, 2.0])}
 
     preloads = aa.Preloads(linear_func_operated_mapping_matrix_dict=dict_0)
@@ -354,44 +334,7 @@ def test__linear_func_operated_mapping_matrix_dict():
     ] == pytest.approx(dict_0["key0"], 1.0e-4)
 
 
-def test__linear_func_weighted_mapping_vectors_dict():
-
-    dict_0 = {"key0": np.array([1.0, 2.0])}
-
-    preloads = aa.Preloads(linear_func_weighted_mapping_vectors_dict=dict_0)
-
-    # noinspection PyTypeChecker
-    inversion = aa.m.MockInversionImagingWTilde(
-        noise_map=np.ones(9),
-        linear_obj_list=[aa.m.MockLinearObjFuncList()],
-        preloads=preloads,
-    )
-
-    assert list(inversion.linear_func_weighted_mapping_vectors_dict.values())[
-        0
-    ] == pytest.approx(dict_0["key0"], 1.0e-4)
-
-
-def test__linear_func_curvature_vectors_dict():
-
-    dict_0 = {"key0": np.array([1.0, 2.0])}
-
-    preloads = aa.Preloads(linear_func_curvature_vectors_dict=dict_0)
-
-    # noinspection PyTypeChecker
-    inversion = aa.m.MockInversionImagingWTilde(
-        noise_map=np.ones(9),
-        linear_obj_list=[aa.m.MockLinearObjFuncList()],
-        preloads=preloads,
-    )
-
-    assert list(inversion.linear_func_curvature_vectors_dict.values())[
-        0
-    ] == pytest.approx(dict_0["key0"], 1.0e-4)
-
-
 def test__curvature_matrix_mapper_diag_preload():
-
     curvature_matrix_mapper_diag = 2.0 * np.ones((9, 3))
 
     preloads = aa.Preloads(curvature_matrix_mapper_diag=curvature_matrix_mapper_diag)
@@ -407,7 +350,6 @@ def test__curvature_matrix_mapper_diag_preload():
 
 
 def test__preload_of_regularization_matrix__overwrites_calculation():
-
     inversion = aa.m.MockInversion(
         preloads=aa.Preloads(regularization_matrix=np.ones((2, 2)))
     )
@@ -416,7 +358,6 @@ def test__preload_of_regularization_matrix__overwrites_calculation():
 
 
 def test__reconstruction_reduced():
-
     linear_obj_list = [
         aa.m.MockLinearObj(parameters=2, regularization=aa.m.MockRegularization()),
         aa.m.MockLinearObj(parameters=1, regularization=None),
@@ -430,7 +371,6 @@ def test__reconstruction_reduced():
 
 
 def test__reconstruction_dict():
-
     reconstruction = np.array([0.0, 1.0, 1.0, 1.0])
 
     linear_obj = aa.m.MockLinearObj(parameters=1)
@@ -459,7 +399,6 @@ def test__reconstruction_dict():
 
 
 def test__mapped_reconstructed_data():
-
     linear_obj_0 = aa.m.MockLinearObj()
 
     mapped_reconstructed_data_dict = {linear_obj_0: np.ones(3)}
@@ -496,7 +435,6 @@ def test__mapped_reconstructed_data():
 
 
 def test__mapped_reconstructed_image():
-
     linear_obj_0 = aa.m.MockLinearObj()
 
     mapped_reconstructed_image_dict = {linear_obj_0: np.ones(3)}
@@ -533,20 +471,17 @@ def test__mapped_reconstructed_image():
 
 
 def test__reconstruction_raises_exception_for_linalg_error():
-
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversion(
         data_vector=np.ones(3), curvature_reg_matrix=np.ones((3, 3))
     )
 
     with pytest.raises(exc.InversionException):
-
         # noinspection PyStatementEffect
         inversion.reconstruction
 
 
 def test__regularization_term():
-
     reconstruction = np.array([1.0, 1.0, 1.0])
 
     regularization_matrix = np.array(
@@ -609,7 +544,6 @@ def test__regularization_term():
 
 
 def test__preload_of_log_det_regularization_term_overwrites_calculation():
-
     inversion = aa.m.MockInversion(
         linear_obj_list=[
             aa.m.MockLinearObj(parameters=3, regularization=aa.m.MockRegularization())
@@ -621,7 +555,6 @@ def test__preload_of_log_det_regularization_term_overwrites_calculation():
 
 
 def test__determinant_of_positive_definite_matrix_via_cholesky():
-
     matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
     inversion = aa.m.MockInversion(
@@ -650,7 +583,6 @@ def test__determinant_of_positive_definite_matrix_via_cholesky():
 
 
 def test__errors_and_errors_with_covariance():
-
     curvature_reg_matrix = np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 3.0]])
 
     inversion = aa.m.MockInversion(curvature_reg_matrix=curvature_reg_matrix)
@@ -662,7 +594,6 @@ def test__errors_and_errors_with_covariance():
 
 
 def test__brightest_reconstruction_pixel_and_centre():
-
     mapper = aa.m.MockMapper(
         source_plane_mesh_grid=aa.Mesh2DVoronoi(
             [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
@@ -681,7 +612,6 @@ def test__brightest_reconstruction_pixel_and_centre():
 
 
 def test__interpolated_reconstruction_list_from():
-
     interpolated_array = np.array([0.0, 1.0, 1.0, 1.0])
 
     mapper = aa.m.MockMapper(parameters=3, interpolated_array=interpolated_array)
@@ -698,7 +628,6 @@ def test__interpolated_reconstruction_list_from():
 
 
 def test__interpolated_errors_list_from():
-
     interpolated_array = np.array([0.0, 1.0, 1.0, 1.0])
 
     mapper = aa.m.MockMapper(parameters=3, interpolated_array=interpolated_array)

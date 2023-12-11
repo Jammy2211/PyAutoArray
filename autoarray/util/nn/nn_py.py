@@ -41,7 +41,6 @@ try:
     interpolate_from.restype = ctypes.c_int
 
     def natural_interpolation_weights(x_in, y_in, x_target, y_target, max_nneighbours):
-
         nin = len(x_in)
         nout = len(x_target)
 
@@ -73,7 +72,6 @@ try:
         )
 
     def natural_interpolation(x_in, y_in, z_in, x_target, y_target):
-
         nin = len(x_in)
         nout = len(x_target)
 

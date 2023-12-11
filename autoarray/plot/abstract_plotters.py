@@ -1,3 +1,5 @@
+from autoconf import conf
+
 from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
@@ -25,7 +27,6 @@ class AbstractPlotter:
         visuals_2d: Visuals2D = None,
         include_2d: Include2D = None,
     ):
-
         self.visuals_1d = visuals_1d
         self.include_1d = include_1d
         self.mat_plot_1d = mat_plot_1d
@@ -37,7 +38,6 @@ class AbstractPlotter:
         self.subplot_figsize = None
 
     def set_title(self, label):
-
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.title.manual_label = label
 
@@ -45,7 +45,6 @@ class AbstractPlotter:
             self.mat_plot_2d.title.manual_label = label
 
     def set_filename(self, filename):
-
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.output.filename = filename
 
@@ -53,17 +52,20 @@ class AbstractPlotter:
             self.mat_plot_2d.output.filename = filename
 
     def set_format(self, format):
-
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.output._format = format
 
         if self.mat_plot_2d is not None:
             self.mat_plot_2d.output._format = format
 
-    def set_mat_plot_1d_for_multi_plot(self, is_for_multi_plot, color: str):
-
+    def set_mat_plot_1d_for_multi_plot(
+        self, is_for_multi_plot, color: str, xticks=None, yticks=None
+    ):
         self.mat_plot_1d.set_for_multi_plot(
-            is_for_multi_plot=is_for_multi_plot, color=color
+            is_for_multi_plot=is_for_multi_plot,
+            color=color,
+            xticks=xticks,
+            yticks=yticks,
         )
 
     def set_mat_plots_for_subplot(
@@ -82,7 +84,6 @@ class AbstractPlotter:
 
     @property
     def is_for_subplot(self):
-
         if self.mat_plot_1d is not None:
             if self.mat_plot_1d.is_for_subplot:
                 return True
@@ -98,8 +99,10 @@ class AbstractPlotter:
         number_subplots: int,
         subplot_shape: Optional[Tuple[int, int]] = None,
         subplot_figsize: Optional[Tuple[int, int]] = None,
+        subplot_title: Optional[str] = None,
     ):
-        """Setup a figure for plotting an image.
+        """
+        Setup a figure for plotting an image.
 
         Parameters
         ----------
@@ -120,9 +123,9 @@ class AbstractPlotter:
 
         figsize = self.get_subplot_figsize(number_subplots=number_subplots)
         plt.figure(figsize=figsize)
+        plt.suptitle(subplot_title, fontsize=40, y=0.93)
 
     def close_subplot_figure(self):
-
         try:
             self.mat_plot_2d.figure.close()
         except AttributeError:
@@ -131,7 +134,8 @@ class AbstractPlotter:
         self.subplot_figsize = None
 
     def get_subplot_figsize(self, number_subplots):
-        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
+        """
+        Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
 
         Parameters
         ----------
@@ -150,25 +154,28 @@ class AbstractPlotter:
             if self.mat_plot_2d.figure.config_dict["figsize"] is not None:
                 return self.mat_plot_2d.figure.config_dict["figsize"]
 
-        if number_subplots <= 2:
-            return (18, 8)
-        elif number_subplots <= 4:
-            return (13, 10)
-        elif number_subplots <= 6:
-            return (18, 12)
-        elif number_subplots <= 9:
-            return (25, 20)
-        elif number_subplots <= 12:
-            return (25, 20)
-        elif number_subplots <= 16:
-            return (25, 20)
-        elif number_subplots <= 20:
-            return (25, 20)
-        else:
-            return (25, 20)
+        try:
+            subplot_shape = self.mat_plot_1d.get_subplot_shape(
+                number_subplots=number_subplots
+            )
+        except AttributeError:
+            subplot_shape = self.mat_plot_2d.get_subplot_shape(
+                number_subplots=number_subplots
+            )
+
+        subplot_shape_to_figsize_factor = conf.instance["visualize"]["general"][
+            "subplot_shape_to_figsize_factor"
+        ]
+        subplot_shape_to_figsize_factor = tuple(
+            map(int, subplot_shape_to_figsize_factor[1:-1].split(","))
+        )
+
+        return (
+            subplot_shape[1] * subplot_shape_to_figsize_factor[1],
+            subplot_shape[0] * subplot_shape_to_figsize_factor[0],
+        )
 
     def _subplot_custom_plot(self, **kwargs):
-
         figures_dict = dict(
             (key, value) for key, value in kwargs.items() if value is True
         )
@@ -176,12 +183,21 @@ class AbstractPlotter:
         self.open_subplot_figure(number_subplots=len(figures_dict))
 
         for index, (key, value) in enumerate(figures_dict.items()):
-
             if value:
                 try:
                     self.figures_2d(**{key: True})
                 except AttributeError:
                     self.figures_1d(**{key: True})
+
+            try:
+                self.mat_plot_2d.subplot_index = max(
+                    self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
+                )
+                self.mat_plot_1d.subplot_index = max(
+                    self.mat_plot_1d.subplot_index, self.mat_plot_2d.subplot_index
+                )
+            except AttributeError:
+                pass
 
         try:
             self.mat_plot_2d.output.subplot_to_figure(
@@ -195,11 +211,9 @@ class AbstractPlotter:
         self.close_subplot_figure()
 
     def subplot_of_plotters_figure(self, plotter_list, name):
-
         self.open_subplot_figure(number_subplots=len(plotter_list))
 
         for i, plotter in enumerate(plotter_list):
-
             plotter.figures_2d(**{name: True})
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_{name}")

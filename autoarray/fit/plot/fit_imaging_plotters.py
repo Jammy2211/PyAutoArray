@@ -56,13 +56,14 @@ class FitImagingPlotterMeta(Plotter):
 
     def figures_2d(
         self,
-        image: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
         model_image: bool = False,
         residual_map: bool = False,
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
+        residual_flux_fraction_map: bool = False,
         suffix: str = "",
     ):
         """
@@ -73,7 +74,7 @@ class FitImagingPlotterMeta(Plotter):
 
         Parameters
         ----------
-        image
+        data
             Whether to make a 2D plot (via `imshow`) of the image data.
         noise_map
             Whether to make a 2D plot (via `imshow`) of the noise map.
@@ -87,18 +88,18 @@ class FitImagingPlotterMeta(Plotter):
             Whether to make a 2D plot (via `imshow`) of the normalized residual map.
         chi_squared_map
             Whether to make a 2D plot (via `imshow`) of the chi-squared map.
+        residual_flux_fraction_map
+            Whether to make a 2D plot (via `imshow`) of the residual flux fraction map.
         """
 
-        if image:
-
+        if data:
             self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=self.get_visuals_2d(),
-                auto_labels=AutoLabels(title="Image", filename=f"image_2d{suffix}"),
+                auto_labels=AutoLabels(title="Data", filename=f"data{suffix}"),
             )
 
         if noise_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -108,7 +109,6 @@ class FitImagingPlotterMeta(Plotter):
             )
 
         if signal_to_noise_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -118,7 +118,6 @@ class FitImagingPlotterMeta(Plotter):
             )
 
         if model_image:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
                 visuals_2d=self.get_visuals_2d(),
@@ -130,11 +129,9 @@ class FitImagingPlotterMeta(Plotter):
         cmap_original = self.mat_plot_2d.cmap
 
         if self.residuals_symmetric_cmap:
-
-            self.mat_plot_2d.cmap = self.mat_plot_2d.cmap.symmetric
+            self.mat_plot_2d.cmap = self.mat_plot_2d.cmap.symmetric_cmap_from()
 
         if residual_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -144,7 +141,6 @@ class FitImagingPlotterMeta(Plotter):
             )
 
         if normalized_residual_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -157,7 +153,6 @@ class FitImagingPlotterMeta(Plotter):
         self.mat_plot_2d.cmap = cmap_original
 
         if chi_squared_map:
-
             self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
                 visuals_2d=self.get_visuals_2d(),
@@ -166,16 +161,27 @@ class FitImagingPlotterMeta(Plotter):
                 ),
             )
 
+        if residual_flux_fraction_map:
+            self.mat_plot_2d.plot_array(
+                array=self.fit.residual_map,
+                visuals_2d=self.get_visuals_2d(),
+                auto_labels=AutoLabels(
+                    title="Residual Flux Fraction Map",
+                    filename=f"residual_flux_fraction_map{suffix}",
+                ),
+            )
+
     def subplot(
         self,
-        image: bool = False,
+        data: bool = False,
         noise_map: bool = False,
         signal_to_noise_map: bool = False,
         model_image: bool = False,
         residual_map: bool = False,
         normalized_residual_map: bool = False,
         chi_squared_map: bool = False,
-        auto_filename: str = "subplot_fit_imaging",
+        residual_flux_fraction_map: bool = False,
+        auto_filename: str = "subplot_fit",
     ):
         """
         Plots the individual attributes of the plotter's `FitImaging` object in 2D on a subplot.
@@ -185,42 +191,45 @@ class FitImagingPlotterMeta(Plotter):
 
         Parameters
         ----------
-        image
-            Whether or not to include a 2D plot (via `imshow`) of the image data.
+        data
+            Whether to include a 2D plot (via `imshow`) of the image data.
         noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the noise map.
+            Whether to include a 2D plot (via `imshow`) of the noise map.
         psf
-            Whether or not to include a 2D plot (via `imshow`) of the psf.
+            Whether to include a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
-            Whether or not to include a 2D plot (via `imshow`) of the signal-to-noise map.
+            Whether to include a 2D plot (via `imshow`) of the signal-to-noise map.
         model_image
-            Whether or not to include a 2D plot (via `imshow`) of the model image.
+            Whether to include a 2D plot (via `imshow`) of the model image.
         residual_map
-            Whether or not to include a 2D plot (via `imshow`) of the residual map.
+            Whether to include a 2D plot (via `imshow`) of the residual map.
         normalized_residual_map
-            Whether or not to include a 2D plot (via `imshow`) of the normalized residual map.
+            Whether to include a 2D plot (via `imshow`) of the normalized residual map.
         chi_squared_map
-            Whether or not to include a 2D plot (via `imshow`) of the chi-squared map.
+            Whether to include a 2D plot (via `imshow`) of the chi-squared map.
+        residual_flux_fraction_map
+            Whether to include a 2D plot (via `imshow`) of the residual flux fraction map.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
         self._subplot_custom_plot(
-            image=image,
+            data=data,
             noise_map=noise_map,
             signal_to_noise_map=signal_to_noise_map,
             model_image=model_image,
             residual_map=residual_map,
             normalized_residual_map=normalized_residual_map,
             chi_squared_map=chi_squared_map,
+            residual_flux_fraction_map=residual_flux_fraction_map,
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
-    def subplot_fit_imaging(self):
+    def subplot_fit(self):
         """
         Standard subplot of the attributes of the plotter's `FitImaging` object.
         """
         return self.subplot(
-            image=True,
+            data=True,
             signal_to_noise_map=True,
             model_image=True,
             residual_map=True,
@@ -276,7 +285,7 @@ class FitImagingPlotter(Plotter):
 
         self.figures_2d = self._fit_imaging_meta_plotter.figures_2d
         self.subplot = self._fit_imaging_meta_plotter.subplot
-        self.subplot_fit_imaging = self._fit_imaging_meta_plotter.subplot_fit_imaging
+        self.subplot_fit = self._fit_imaging_meta_plotter.subplot_fit
 
     def get_visuals_2d(self) -> Visuals2D:
         return self.get_2d.via_fit_imaging_from(fit=self.fit)

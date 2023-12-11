@@ -1,3 +1,4 @@
+from astropy.io import fits
 import os
 from os import path
 
@@ -7,13 +8,12 @@ import shutil
 
 import autoarray as aa
 
-test_data_dir = path.join(
+test_data_path = path.join(
     "{}".format(os.path.dirname(os.path.realpath(__file__))), "files"
 )
 
 
 def test__constructor():
-
     mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
     array_2d = aa.Array2D(values=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
@@ -71,7 +71,6 @@ def test__constructor():
 
 
 def test__no_mask():
-
     array_2d = aa.Array2D.no_mask(
         values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
     )
@@ -170,7 +169,6 @@ def test__no_mask():
 
 
 def test__apply_mask():
-
     mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
     array_2d = aa.Array2D.no_mask(
         values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
@@ -186,7 +184,6 @@ def test__apply_mask():
 
 
 def test__full():
-
     array_2d = aa.Array2D.full(
         fill_value=2.0, shape_native=(2, 2), pixel_scales=1.0, origin=(0.0, 1.0)
     )
@@ -214,7 +211,6 @@ def test__full():
 
 
 def test__ones():
-
     array_2d = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
     assert type(array_2d) == aa.Array2D
@@ -236,7 +232,6 @@ def test__ones():
 
 
 def test__zeros():
-
     array_2d = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0)
 
     assert type(array_2d) == aa.Array2D
@@ -256,9 +251,8 @@ def test__zeros():
 
 
 def test__from_fits():
-
     array_2d = aa.Array2D.from_fits(
-        file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert type(array_2d) == aa.Array2D
@@ -267,24 +261,45 @@ def test__from_fits():
 
 
 def test__from_fits__loads_and_stores_header_info():
-
     array_2d = aa.Array2D.from_fits(
-        file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert array_2d.header.header_sci_obj["BITPIX"] == -64
     assert array_2d.header.header_hdu_obj["BITPIX"] == -64
 
     array_2d = aa.Array2D.from_fits(
-        file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
+        file_path=path.join(test_data_path, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
     )
 
     assert array_2d.header.header_sci_obj["BITPIX"] == -64
     assert array_2d.header.header_hdu_obj["BITPIX"] == -64
+
+
+def test__from_primary_hdu():
+    file_path = os.path.join(test_data_path, "array_out.fits")
+
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
+
+    aa.util.array_2d.numpy_array_2d_to_fits(
+        arr, file_path=file_path, header_dict={"PIXSCALE": 0.1}
+    )
+
+    primary_hdu = fits.open(file_path)
+
+    array_2d = aa.Array2D.from_primary_hdu(
+        primary_hdu=primary_hdu[0],
+    )
+
+    assert type(array_2d) == aa.Array2D
+    assert (array_2d.native == arr).all()
+    assert array_2d.pixel_scales == (0.1, 0.1)
 
 
 def test__from_yx_and_values():
-
     array_2d = aa.Array2D.from_yx_and_values(
         y=[0.5, 0.5, -0.5, -0.5],
         x=[-0.5, 0.5, -0.5, 0.5],
@@ -307,29 +322,33 @@ def test__from_yx_and_values():
 
 
 def test__output_to_fits():
-
-    array_2d = aa.Array2D.from_fits(
-        file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
+    test_data_path = path.join(
+        "{}".format(path.dirname(path.realpath(__file__))), "files"
     )
 
-    output_data_dir = path.join(
+    array_2d = aa.Array2D.from_fits(
+        file_path=path.join(test_data_path, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
+    )
+
+    test_data_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
         "array",
         "output_test",
     )
-    if path.exists(output_data_dir):
-        shutil.rmtree(output_data_dir)
+    if path.exists(test_data_path):
+        shutil.rmtree(test_data_path)
 
-    os.makedirs(output_data_dir)
+    os.makedirs(test_data_path)
 
-    array_2d.output_to_fits(file_path=path.join(output_data_dir, "array.fits"))
+    array_2d.output_to_fits(file_path=path.join(test_data_path, "array.fits"))
 
-    array_from_out = aa.Array2D.from_fits(
-        file_path=path.join(output_data_dir, "array.fits"), hdu=0, pixel_scales=1.0
+    array_from_fits = aa.Array2D.from_fits(
+        file_path=path.join(test_data_path, "array.fits"), hdu=0, pixel_scales=1.0
     )
 
-    assert (array_from_out.native == np.ones((3, 3))).all()
+    assert (array_from_fits.native == np.ones((3, 3))).all()
+    assert array_from_fits.header.header_sci_obj["PIXSCALE"] == 1.0
 
 
 def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask():
@@ -373,7 +392,6 @@ def test__manual_mask__exception_raised_if_input_array_is_1d_and_not_number_of_m
 
 
 def test__resized_from():
-
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 
@@ -613,38 +631,7 @@ def test__extent_of_zoomed_array():
     assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
 
 
-def test__binned_across_columns():
-
-    array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
-
-    assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0, 1.0])).all()
-
-    array = aa.Array2D.no_mask(values=np.ones((3, 4)), pixel_scales=1.0)
-
-    assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0])).all()
-
-    array = aa.Array2D.no_mask(
-        values=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
-        pixel_scales=1.0,
-    )
-
-    assert (array.binned_across_columns == np.array([2.0, 6.0, 9.0])).all()
-
-    mask = aa.Mask2D(
-        mask=[[False, False, True], [False, False, False], [False, False, False]],
-        pixel_scales=1.0,
-    )
-
-    array = aa.Array2D(
-        values=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
-        mask=mask,
-    )
-
-    assert (array.binned_across_columns == np.array([1.5, 6.0, 9.0])).all()
-
-
 def test__binned_across_rows():
-
     array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
 
     assert (array.binned_across_rows == np.array([1.0, 1.0, 1.0])).all()
@@ -673,8 +660,36 @@ def test__binned_across_rows():
     assert (array.binned_across_rows == np.array([1.5, 6.0, 9.0])).all()
 
 
-def test__header__modified_julian_date():
+def test__binned_across_columns():
+    array = aa.Array2D.no_mask(values=np.ones((4, 3)), pixel_scales=1.0)
 
+    assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0, 1.0])).all()
+
+    array = aa.Array2D.no_mask(values=np.ones((3, 4)), pixel_scales=1.0)
+
+    assert (array.binned_across_columns == np.array([1.0, 1.0, 1.0])).all()
+
+    array = aa.Array2D.no_mask(
+        values=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
+        pixel_scales=1.0,
+    )
+
+    assert (array.binned_across_columns == np.array([2.0, 6.0, 9.0])).all()
+
+    mask = aa.Mask2D(
+        mask=[[False, False, True], [False, False, False], [False, False, False]],
+        pixel_scales=1.0,
+    )
+
+    array = aa.Array2D(
+        values=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
+        mask=mask,
+    )
+
+    assert (array.binned_across_columns == np.array([1.5, 6.0, 9.0])).all()
+
+
+def test__header__modified_julian_date():
     header_sci_obj = {"DATE-OBS": "2000-01-01", "TIME-OBS": "00:00:00"}
 
     header = aa.Header(header_sci_obj=header_sci_obj, header_hdu_obj=None)
@@ -683,7 +698,6 @@ def test__header__modified_julian_date():
 
 
 def test__array_2d__recursive_shape_storage():
-
     array_2d = aa.Array2D.no_mask(
         values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
     )

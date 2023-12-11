@@ -10,7 +10,7 @@ class MockMapper(AbstractMapper):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        hyper_data=None,
+        adapt_data=None,
         edge_pixel_list=None,
         regularization=None,
         pix_sub_weights=None,
@@ -20,11 +20,10 @@ class MockMapper(AbstractMapper):
         parameters=None,
         interpolated_array=None,
     ):
-
         mapper_grids = MapperGrids(
             source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
-            hyper_data=hyper_data,
+            adapt_data=adapt_data,
         )
 
         super().__init__(mapper_grids=mapper_grids, regularization=regularization)

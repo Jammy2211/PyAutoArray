@@ -10,7 +10,7 @@ from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 def mapper_from(
     mapper_grids: MapperGrids,
     regularization: Optional[AbstractRegularization],
-    profiling_dict: Optional[Dict] = None,
+    run_time_dict: Optional[Dict] = None,
 ):
     """
     Factory which given input `MapperGrids` and `Regularization` objects creates a `Mapper`.
@@ -30,7 +30,7 @@ def mapper_from(
     regularization
         The regularization scheme which may be applied to this linear object in order to smooth its solution,
         which for a mapper smooths neighboring pixels on the mesh.
-    profiling_dict
+    run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
 
     Returns
@@ -45,31 +45,27 @@ def mapper_from(
     from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 
     if isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
-
         return MapperRectangularNoInterp(
             mapper_grids=mapper_grids,
             regularization=regularization,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
-
         return MapperDelaunay(
             mapper_grids=mapper_grids,
             regularization=regularization,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DVoronoi):
-
         if mapper_grids.source_plane_mesh_grid.uses_interpolation:
-
             return MapperVoronoi(
                 mapper_grids=mapper_grids,
                 regularization=regularization,
-                profiling_dict=profiling_dict,
+                run_time_dict=run_time_dict,
             )
 
         return MapperVoronoiNoInterp(
             mapper_grids=mapper_grids,
             regularization=regularization,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )

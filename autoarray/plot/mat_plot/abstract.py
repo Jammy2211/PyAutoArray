@@ -1,3 +1,5 @@
+from autoconf import conf
+
 from autoarray.plot.wrap.base.abstract import set_backend
 
 set_backend()
@@ -7,6 +9,7 @@ import matplotlib.pyplot as plt
 from typing import Optional, List, Tuple, Union
 
 from autoarray.plot.wrap import base as wb
+from autoarray import exc
 
 
 class AbstractMatPlot:
@@ -124,8 +127,8 @@ class AbstractMatPlot:
         mat_plot_2d_base = aplt.MatPlot2D(
             yticks=aplt.YTicks(fontsize=18),
             xticks=aplt.XTicks(fontsize=18),
-            ylabel=aplt.YLabel(label=""),
-            xlabel=aplt.XLabel(label=""),
+            ylabel=aplt.YLabel(ylabel=""),
+            xlabel=aplt.XLabel(xlabel=""),
         )
 
         However, one may require many unique `MatPlot` objects for a number of different figures, which all use
@@ -148,7 +151,6 @@ class AbstractMatPlot:
         other = copy.deepcopy(other)
 
         for attr, value in self.__dict__.items():
-
             try:
                 if value.kwargs.get("is_default") is not True:
                     other.__dict__[attr] = value
@@ -162,7 +164,7 @@ class AbstractMatPlot:
         Sets the `is_for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
         the `is_for_subplot`. By changing this tag:
 
-            - The [subplot] section of the config file of every `MatWrap` object is used instead of [figure].
+            - The subplot: section of the config file of every `MatWrap` object is used instead of figure:.
             - Calls which output or close the matplotlib figure are over-ridden so that the subplot is not removed.
 
         Parameters
@@ -177,7 +179,7 @@ class AbstractMatPlot:
             if hasattr(value, "is_for_subplot"):
                 value.is_for_subplot = is_for_subplot
 
-    def get_subplot_rows_columns(self, number_subplots):
+    def get_subplot_shape(self, number_subplots):
         """
         Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are
         going to be plotted.
@@ -191,27 +193,35 @@ class AbstractMatPlot:
         if self.subplot_shape is not None:
             return self.subplot_shape
 
-        if number_subplots <= 2:
-            return 1, 2
-        elif number_subplots <= 4:
-            return 2, 2
-        elif number_subplots <= 6:
-            return 2, 3
-        elif number_subplots <= 9:
-            return 3, 3
-        elif number_subplots <= 12:
-            return 3, 4
-        elif number_subplots <= 16:
-            return 4, 4
-        elif number_subplots <= 20:
-            return 4, 5
-        else:
-            return 6, 6
+        subplot_shape_dict = conf.instance["visualize"]["general"]["subplot_shape"]
+
+        try:
+            subplot_shape = subplot_shape_dict[number_subplots]
+        except KeyError:
+            try:
+                key = min(
+                    filter(lambda x: x > number_subplots, subplot_shape_dict.keys())
+                )
+                subplot_shape = subplot_shape_dict[key]
+            except ValueError:
+                raise exc.PlottingException(
+                    f"""
+                    The number of subplots is greater than the maximum number of subplots specified
+                    in the visualization/general.yaml config file, in the section "subplot_shape".
+                    
+                    The total number of subplots in the figure is {number_subplots}, whereas this config file only
+                    specifies the subplot shape for up to a number of subplots less than this.
+
+                    To fix this, add a new entry to the "subplot_shape" section of the visualization/general.yaml.           
+                    """
+                )
+
+        return tuple(map(int, subplot_shape[1:-1].split(",")))
 
     def setup_subplot(
         self,
         aspect: Optional[Tuple[float, float]] = None,
-        subplot_rows_columns: Tuple[int, int] = None,
+        subplot_shape: Tuple[int, int] = None,
     ):
         """
         Setup a new figure to be plotted on a subplot, which is used by a `Plotter` when plotting multiple images
@@ -229,21 +239,21 @@ class AbstractMatPlot:
         ----------
         aspect
             The aspect ratio of the overall subplot.
-        subplot_rows_columns
+        subplot_shape
             The number of rows and columns in the subplot.
         """
-        if subplot_rows_columns is None:
-            rows, columns = self.get_subplot_rows_columns(
-                number_subplots=self.number_subplots
-            )
-        else:
-            rows = subplot_rows_columns[0]
-            columns = subplot_rows_columns[1]
+        if subplot_shape is None:
+            subplot_shape = self.get_subplot_shape(number_subplots=self.number_subplots)
 
         if aspect is None:
-            ax = plt.subplot(rows, columns, self.subplot_index)
+            ax = plt.subplot(subplot_shape[0], subplot_shape[1], self.subplot_index)
         else:
-            ax = plt.subplot(rows, columns, self.subplot_index, aspect=float(aspect))
+            ax = plt.subplot(
+                subplot_shape[0],
+                subplot_shape[1],
+                self.subplot_index,
+                aspect=float(aspect),
+            )
 
         self.subplot_index += 1
 

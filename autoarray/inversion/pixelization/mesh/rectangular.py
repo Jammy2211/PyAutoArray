@@ -52,7 +52,7 @@ class Rectangular(AbstractMesh):
         self.pixels = self.shape[0] * self.shape[1]
         super().__init__()
 
-        self.profiling_dict = {}
+        self.run_time_dict = {}
 
     @property
     def uses_interpolation(self) -> bool:
@@ -66,10 +66,10 @@ class Rectangular(AbstractMesh):
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings: SettingsPixelization = SettingsPixelization(),
         preloads: Preloads = Preloads(),
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         """
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
@@ -96,18 +96,18 @@ class Rectangular(AbstractMesh):
             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
         image_plane_mesh_grid
             Not used for a rectangular pixelization.
-        hyper_data
+        adapt_data
             Not used for a rectangular pixelization.
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         preloads
             Object which may contain preloaded arrays of quantities computed in the pixelization, which are passed via
             this object speed up the calculation.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
         relocated_grid = self.relocated_grid_from(
             source_plane_data_grid=source_plane_data_grid,
@@ -120,9 +120,9 @@ class Rectangular(AbstractMesh):
             source_plane_data_grid=relocated_grid,
             source_plane_mesh_grid=mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,
-            hyper_data=hyper_data,
+            adapt_data=adapt_data,
             preloads=preloads,
-            profiling_dict=profiling_dict,
+            run_time_dict=run_time_dict,
         )
 
     @profile_func
@@ -130,7 +130,6 @@ class Rectangular(AbstractMesh):
         self,
         source_plane_data_grid: Optional[Grid2D] = None,
         source_plane_mesh_grid: Optional[Grid2D] = None,
-        sparse_index_for_slim_index: Optional[np.ndarray] = None,
     ) -> Mesh2DRectangular:
         """
         Return the rectangular `source_plane_mesh_grid` as a `Mesh2DRectangular` object, which provides additional
@@ -144,8 +143,6 @@ class Rectangular(AbstractMesh):
         source_plane_mesh_grid
             Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
-        sparse_index_for_slim_index
-            Not used for a rectangular pixelization.
         """
         return Mesh2DRectangular.overlay_grid(
             shape_native=self.shape, grid=source_plane_data_grid
@@ -154,8 +151,9 @@ class Rectangular(AbstractMesh):
     def image_plane_mesh_grid_from(
         self,
         image_plane_data_grid: Grid2D,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Not used for rectangular pixelization.

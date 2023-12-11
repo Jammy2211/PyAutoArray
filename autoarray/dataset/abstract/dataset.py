@@ -4,6 +4,9 @@ import numpy as np
 import warnings
 from typing import Optional, Union
 
+from autoarray.structures.grids.uniform_1d import Grid1D
+from autoarray.structures.grids.uniform_2d import Grid2D
+
 from autoarray import exc
 from autoarray.dataset.abstract.settings import AbstractSettingsDataset
 from autoarray.mask.mask_1d import Mask1D
@@ -11,7 +14,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoconf import cached_property
-from autoconf import conf
+
 
 logger = logging.getLogger(__name__)
 
@@ -37,17 +40,12 @@ class AbstractDataset:
         """
 
         self.data = data
-        self.noise_map = noise_map
         self.settings = settings
-
-        mask = self.mask
 
         self.noise_covariance_matrix = noise_covariance_matrix
 
         if noise_map is None:
-
             try:
-
                 noise_map = Array2D.no_mask(
                     values=np.diag(noise_covariance_matrix),
                     shape_native=data.shape_native,
@@ -65,7 +63,6 @@ class AbstractDataset:
                 )
 
             except ValueError as e:
-
                 raise exc.DatasetException(
                     """
                     No noise map or noise_covariance_matrix was passed to the Imaging object.
@@ -74,20 +71,44 @@ class AbstractDataset:
 
         self.noise_map = noise_map
 
-        if conf.instance["general"]["structures"]["use_dataset_grids"]:
+    @cached_property
+    def grid(self) -> Union[Grid1D, Grid2D]:
+        """
+        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data structure.
 
-            mask_grid = mask.mask_new_sub_size_from(
-                mask=mask, sub_size=settings.sub_size
-            )
-            self.grid = settings.grid_from(mask=mask_grid)
+        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
 
-            mask_inversion = mask.mask_new_sub_size_from(
-                mask=mask, sub_size=settings.sub_size_pixelization
-            )
+        Returns
+        -------
+        The (y,x) coordinates of every pixel in the data structure.
+        """
 
-            self.grid_pixelization = settings.grid_pixelization_from(
-                mask=mask_inversion
-            )
+        mask_grid = self.mask.mask_new_sub_size_from(
+            mask=self.mask, sub_size=self.settings.sub_size
+        )
+        return self.settings.grid_from(mask=mask_grid)
+
+    @cached_property
+    def grid_pixelization(self) -> Grid2D:
+        """
+        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data structure which is used
+        specifically for pixelization reconstructions (e.g. an `inversion`).
+
+        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
+
+        A pixelization often uses a different grid of coordinates compared to the main `grid` of the data structure.
+        A common example is that a pixelization may use a higher `sub_size` than the main grid, in order to better
+        prevent aliasing effects.
+
+        Returns
+        -------
+        The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
+        """
+        mask_inversion = self.mask.mask_new_sub_size_from(
+            mask=self.mask, sub_size=self.settings.sub_size_pixelization
+        )
+
+        return self.settings.grid_pixelization_from(mask=mask_inversion)
 
     @property
     def shape_native(self):
@@ -104,10 +125,6 @@ class AbstractDataset:
     @property
     def mask(self) -> Union[Mask1D, Mask2D]:
         return self.data.mask
-
-    @property
-    def inverse_noise_map(self) -> Structure:
-        return 1.0 / self.noise_map
 
     @property
     def signal_to_noise_map(self) -> Structure:
@@ -130,35 +147,6 @@ class AbstractDataset:
         """
         return np.max(self.signal_to_noise_map)
 
-    @property
-    def absolute_signal_to_noise_map(self) -> Structure:
-        """
-        The estimated absolute_signal-to-noise_maps mappers of the image.
-        """
-        return abs(self.data) / self.noise_map
-
-    @property
-    def absolute_signal_to_noise_max(self) -> float:
-        """
-        The maximum value of absolute signal-to-noise_map in an image pixel in the image's signal-to-noise_maps mappers.
-        """
-        return np.max(self.absolute_signal_to_noise_map)
-
-    @property
-    def potential_chi_squared_map(self) -> Structure:
-        """
-        The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to
-        the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0).
-        """
-        return self.absolute_signal_to_noise_map ** 2
-
-    @property
-    def potential_chi_squared_max(self) -> float:
-        """
-        The maximum value of the potential chi-squared-map.
-        """
-        return np.max(self.potential_chi_squared_map)
-
     @cached_property
     def noise_covariance_matrix_inv(self) -> np.ndarray:
         """
@@ -168,14 +156,13 @@ class AbstractDataset:
         return np.linalg.inv(self.noise_covariance_matrix)
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "AbstractDataset":
+        dataset = copy.copy(self)
 
-        imaging = copy.copy(self)
-
-        imaging.data = imaging.data.trimmed_after_convolution_from(
+        dataset.data = dataset.data.trimmed_after_convolution_from(
             kernel_shape=kernel_shape
         )
-        imaging.noise_map = imaging.noise_map.trimmed_after_convolution_from(
+        dataset.noise_map = dataset.noise_map.trimmed_after_convolution_from(
             kernel_shape=kernel_shape
         )
 
-        return imaging
+        return dataset

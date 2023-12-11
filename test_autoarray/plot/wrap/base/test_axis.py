@@ -3,7 +3,6 @@ import autoarray.plot as aplt
 
 
 def test__loads_values_from_config_if_not_manually_input():
-
     axis = aplt.Axis()
 
     assert axis.config_dict["emit"] is True
@@ -24,7 +23,6 @@ def test__loads_values_from_config_if_not_manually_input():
 
 
 def test__sets_axis_correct_for_different_settings():
-
     axis = aplt.Axis(symmetric_source_centre=False)
 
     axis.set(extent=[0.1, 0.2, 0.3, 0.4])

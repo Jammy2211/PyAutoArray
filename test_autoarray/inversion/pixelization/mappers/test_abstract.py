@@ -6,7 +6,6 @@ from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
 
 
 def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
-
     mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
             mappings=np.array([[0], [0], [0], [0], [0], [0], [0], [0]]),
@@ -39,7 +38,6 @@ def test__pix_indexes_for_slim_indexes__different_types_of_lists_input():
 
 
 def _test__sub_slim_indexes_for_pix_index():
-
     mapper = aa.m.MockMapper(
         pix_sub_weights=PixSubWeights(
             mappings=np.array(
@@ -104,7 +102,6 @@ def _test__sub_slim_indexes_for_pix_index():
 
 
 def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
-
     pixels = 6
     signal_scale = 2.0
     pix_sub_weights = PixSubWeights(
@@ -117,7 +114,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     mapper = aa.m.MockMapper(
         source_plane_data_grid=grid_2d_7x7,
         pix_sub_weights=pix_sub_weights,
-        hyper_data=image_7x7,
+        adapt_data=image_7x7,
         parameters=pixels,
     )
 
@@ -130,14 +127,13 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         pix_indexes_for_sub_slim_index=pix_sub_weights.mappings,
         pix_size_for_sub_slim_index=pix_sub_weights.sizes,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
-        hyper_data=image_7x7,
+        adapt_data=image_7x7,
     )
 
     assert (pixel_signals == pixel_signals_util).all()
 
 
 def test__interpolated_array_from(grid_2d_7x7):
-
     mesh_grid_ndarray = aa.Grid2D.no_mask(
         values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),
@@ -168,7 +164,6 @@ def test__interpolated_array_from(grid_2d_7x7):
 
 
 def test__mapped_to_source_from(grid_2d_7x7):
-
     mesh_grid = aa.Grid2D.no_mask(
         values=[[0.1, 0.1], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),

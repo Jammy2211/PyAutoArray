@@ -8,7 +8,6 @@ import autoarray as aa
 
 
 def test__constructor():
-
     # Input tuple
 
     grid = aa.Grid2DIrregular(values=[(1.0, -1.0)])
@@ -43,7 +42,6 @@ def test__constructor():
 
 
 def test__from_yx_1d():
-
     grid = aa.Grid2DIrregular.from_yx_1d(y=[1.0, 1.0], x=[-1.0, 1.0])
 
     assert grid.in_list == [(1.0, -1.0), (1.0, 1.0)]
@@ -56,7 +54,6 @@ def test__from_yx_1d():
 
 
 def test__from_pixels_and_mask():
-
     mask = aa.Mask2D(
         mask=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
     )
@@ -68,7 +65,6 @@ def test__from_pixels_and_mask():
 
 
 def test__values_from():
-
     grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
 
     values_from_1d = grid.values_from(array_slim=np.array([1.0, 2.0]))
@@ -85,7 +81,6 @@ def test__values_from():
 
 
 def test__values_via_value_from():
-
     grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
 
     values_via_value_from = grid.values_via_value_from(value=1.0)
@@ -94,7 +89,6 @@ def test__values_via_value_from():
 
 
 def test__grid_from():
-
     grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
 
     grid_from_1d = grid.grid_from(grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]]))
@@ -113,7 +107,6 @@ def test__grid_from():
 
 
 def test__grid_2d_via_deflection_grid_from():
-
     grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
 
     grid = grid.grid_2d_via_deflection_grid_from(
@@ -125,7 +118,6 @@ def test__grid_2d_via_deflection_grid_from():
 
 
 def test__furthest_distances_to_other_coordinates():
-
     grid = aa.Grid2DIrregular(values=[(0.0, 0.0), (0.0, 1.0)])
 
     assert grid.furthest_distances_to_other_coordinates.in_list == [1.0, 1.0]
@@ -143,7 +135,6 @@ def test__furthest_distances_to_other_coordinates():
 
 
 def test__grid_of_closest_from():
-
     grid = aa.Grid2DIrregular(values=[(0.0, 0.0), (0.0, 1.0)])
 
     grid_of_closest = grid.grid_of_closest_from(grid_pair=np.array([[0.0, 0.1]]))
@@ -166,7 +157,6 @@ def test__grid_of_closest_from():
 
 
 def test__structure_2d_from():
-
     grid = aa.Grid2DIrregular(values=[(1.0, -1.0), (1.0, 1.0)])
 
     result = grid.structure_2d_from(result=np.array([1.0, 2.0]))
@@ -181,7 +171,6 @@ def test__structure_2d_from():
 
 
 def test__structure_2d_list_from():
-
     grid = aa.Grid2DIrregular(values=[(1.0, -1.0), (1.0, 1.0)])
 
     result = grid.structure_2d_list_from(result_list=[np.array([1.0, 2.0])])
@@ -198,7 +187,6 @@ def test__structure_2d_list_from():
 
 
 def test__from_and_to_file_json():
-
     grid = aa.Grid2DIrregular(values=[(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)])
 
     output_grid_dir = path.join(
@@ -228,7 +216,6 @@ def test__from_and_to_file_json():
 
 
 def test__uniform__from_grid_sparse_uniform_upscale():
-
     grid_sparse_uniform = aa.Grid2DIrregularUniform(
         values=[[(1.0, 1.0), (1.0, 3.0)]], pixel_scales=2.0
     )
@@ -269,7 +256,6 @@ def test__uniform__from_grid_sparse_uniform_upscale():
 
 
 def test__uniform__grid_2d_via_deflection_grid_from():
-
     grid = aa.Grid2DIrregularUniform(
         values=[(1.0, 1.0), (2.0, 2.0)], pixel_scales=(1.0, 1.0), shape_native=(3, 3)
     )
@@ -285,7 +271,6 @@ def test__uniform__grid_2d_via_deflection_grid_from():
 
 
 def test__uniform__grid_from():
-
     grid = aa.Grid2DIrregularUniform(
         values=[(1.0, 1.0), (2.0, 2.0)], pixel_scales=(1.0, 1.0), shape_native=(3, 3)
     )

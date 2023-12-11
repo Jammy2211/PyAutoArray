@@ -13,7 +13,7 @@ class LinearObj:
     def __init__(
         self,
         regularization: Optional[AbstractRegularization],
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         A linear object which reconstructs a dataset based on mapping between the data points of that dataset and
@@ -33,11 +33,11 @@ class LinearObj:
         ----------
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
         self.regularization = regularization
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     @property
     def params(self) -> int:
@@ -156,7 +156,6 @@ class LinearObj:
         regularization it is bypassed.
         """
         if self.regularization is None:
-
             return np.zeros((self.params, self.params))
 
         return self.regularization.regularization_matrix_from(linear_obj=self)

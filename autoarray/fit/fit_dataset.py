@@ -44,15 +44,6 @@ class AbstractFitInversion(ABC):
         return signal_to_noise_map
 
     @property
-    def potential_chi_squared_map(self) -> ty.DataLike:
-        """
-        The signal-to-noise_map of the dataset and noise-map which are fitted.
-        """
-        warnings.filterwarnings("ignore")
-        absolute_signal_to_noise_map = abs(self.data / self.noise_map)
-        return absolute_signal_to_noise_map**2
-
-    @property
     def residual_map(self) -> Structure:
         """
         Returns the residual-map between the masked dataset and model data, where:
@@ -136,7 +127,7 @@ class FitDataset(AbstractFitInversion):
         self,
         dataset: AbstractDataset,
         use_mask_in_fit: bool = False,
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
@@ -172,7 +163,7 @@ class FitDataset(AbstractFitInversion):
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
 
-        self.profiling_dict = profiling_dict
+        self.run_time_dict = run_time_dict
 
     @property
     @abstractmethod
@@ -320,6 +311,25 @@ class FitDataset(AbstractFitInversion):
             return self.log_likelihood.array
         except AttributeError:
             return self.log_likelihood
+
+    @property
+    def residual_flux_fraction_map(self) -> Structure:
+        """
+        Returns the residual flux fraction map, which shows the fraction of signal in each pixel that is not fitted
+        by the model, therefore where:
+
+        Residual_Flux_Fraction = ((Residuals) / (Data)) = ((Data - Model))/(Data)
+
+        This quantity is not used for computing the log likelihood, but is available for plotting and inspection.
+
+        It does not use the noise-map in its calculation, and therefore the residual flux fraction should only be
+        reliably interpreted in high signal-to-noise regions of a dataset.
+        """
+        if self.use_mask_in_fit:
+            return fit_util.chi_squared_map_with_mask_from(
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+            )
+        return super().chi_squared_map
 
     @property
     def inversion(self) -> Optional[AbstractInversion]:

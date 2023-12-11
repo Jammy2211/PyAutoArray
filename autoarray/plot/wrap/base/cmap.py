@@ -36,24 +36,22 @@ class Cmap(AbstractMatWrap):
         super().__init__(**kwargs)
 
         self._symmetric = symmetric
+        self.symmetric_value = None
 
-    @property
-    def symmetric(self):
-
+    def symmetric_cmap_from(self, symmetric_value=None):
         cmap = copy.copy(self)
 
         cmap._symmetric = True
+        cmap.symmetric_value = symmetric_value
 
         return cmap
 
     def vmin_from(self, array: np.ndarray):
-
         if self.config_dict["vmin"] is None:
             return np.min(array)
         return self.config_dict["vmin"]
 
     def vmax_from(self, array: np.ndarray):
-
         if self.config_dict["vmax"] is None:
             return np.max(array)
         return self.config_dict["vmax"]
@@ -76,17 +74,14 @@ class Cmap(AbstractMatWrap):
 
         if self._symmetric:
             if vmin < 0.0 and vmax > 0.0:
-                if abs(vmin) > abs(vmax):
-                    vmax = abs(vmin)
+                if self.symmetric_value is None:
+                    if abs(vmin) > abs(vmax):
+                        vmax = abs(vmin)
+                    else:
+                        vmin = -vmax
                 else:
-                    vmin = -vmax
-            else:
-                logger.info(
-                    """
-                    Cannot make symmetric Cmap (e.g. vmax = -vmin) because 
-                    both vmin and vmax are positive or negative.
-                    """
-                )
+                    vmin = -self.symmetric_value
+                    vmax = self.symmetric_value
 
         if isinstance(self.config_dict["norm"], colors.Normalize):
             return self.config_dict["norm"]
@@ -114,9 +109,7 @@ class Cmap(AbstractMatWrap):
 
     @property
     def cmap(self):
-
         if self.config_dict["cmap"] == "default":
-
             from autoarray.plot.wrap.segmentdata import segmentdata
 
             return LinearSegmentedColormap(name="default", segmentdata=segmentdata)

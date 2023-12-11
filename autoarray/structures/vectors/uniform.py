@@ -239,7 +239,6 @@ class VectorYX2D(AbstractVectorYX2D):
         super().__init__(values)
 
     def __array_finalize__(self, obj):
-
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 
@@ -277,8 +276,8 @@ class VectorYX2D(AbstractVectorYX2D):
         shape_native
             The 2D shape of the mask the grid is paired with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -290,7 +289,6 @@ class VectorYX2D(AbstractVectorYX2D):
         values = grid_2d_util.convert_grid(grid=values)
 
         if len(values.shape) == 2:
-
             if shape_native is None:
                 raise exc.VectorYXException(
                     f"""
@@ -312,7 +310,6 @@ class VectorYX2D(AbstractVectorYX2D):
                 )
 
         else:
-
             shape_native = (
                 int(values.shape[0] / sub_size),
                 int(values.shape[1] / sub_size),
@@ -377,8 +374,8 @@ class VectorYX2D(AbstractVectorYX2D):
         fill_value
             The value all array elements are filled with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -418,8 +415,8 @@ class VectorYX2D(AbstractVectorYX2D):
         fill_value
             The value all array elements are filled with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin
@@ -453,8 +450,8 @@ class VectorYX2D(AbstractVectorYX2D):
         fill_value
             The value all array elements are filled with.
         pixel_scales
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin

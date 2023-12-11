@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class Interferometer(AbstractDataset):
     def __init__(
         self,
-        visibilities: Visibilities,
+        data: Visibilities,
         noise_map: VisibilitiesNoiseMap,
         uv_wavelengths: np.ndarray,
         real_space_mask,
@@ -29,7 +29,7 @@ class Interferometer(AbstractDataset):
 
         Parameters
         ----------
-        visibilities
+        data
             The array of the visibilities data, containing by real and complex values.
         noise_map
             An array describing the RMS standard deviation error in each visibility.
@@ -43,7 +43,7 @@ class Interferometer(AbstractDataset):
         """
         self.real_space_mask = real_space_mask
 
-        super().__init__(data=visibilities, noise_map=noise_map, settings=settings)
+        super().__init__(data=data, noise_map=noise_map, settings=settings)
 
         self.uv_wavelengths = uv_wavelengths
 
@@ -54,7 +54,7 @@ class Interferometer(AbstractDataset):
     @classmethod
     def from_fits(
         cls,
-        visibilities_path,
+        data_path,
         noise_map_path,
         uv_wavelengths_path,
         real_space_mask,
@@ -71,9 +71,7 @@ class Interferometer(AbstractDataset):
         not supported by PyAutoLens (e.g. adus, electrons) to electrons per second.
         """
 
-        visibilities = Visibilities.from_fits(
-            file_path=visibilities_path, hdu=visibilities_hdu
-        )
+        visibilities = Visibilities.from_fits(file_path=data_path, hdu=visibilities_hdu)
 
         noise_map = VisibilitiesNoiseMap.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu
@@ -85,16 +83,15 @@ class Interferometer(AbstractDataset):
 
         return Interferometer(
             real_space_mask=real_space_mask,
-            visibilities=visibilities,
+            data=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
             settings=settings,
         )
 
     def apply_settings(self, settings):
-
         return Interferometer(
-            visibilities=self.visibilities,
+            data=self.data,
             noise_map=self.noise_map,
             uv_wavelengths=self.uv_wavelengths,
             real_space_mask=self.real_space_mask,
@@ -119,9 +116,9 @@ class Interferometer(AbstractDataset):
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
-        from autoarray.inversion.inversion import inversion_util_secret
-
         logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
+
+        import inversion_util_secret
 
         curvature_preload = inversion_util_secret.w_tilde_curvature_preload_interferometer_from(
             noise_map_real=self.noise_map.real,
@@ -136,8 +133,8 @@ class Interferometer(AbstractDataset):
         )
 
         dirty_image = self.transformer.image_from(
-            visibilities=self.visibilities.real * self.noise_map.real ** -2.0
-            + 1j * self.visibilities.imag * self.noise_map.imag ** -2.0,
+            visibilities=self.data.real * self.noise_map.real**-2.0
+            + 1j * self.data.imag * self.noise_map.imag**-2.0,
             use_adjoint_scaling=True,
         )
 
@@ -159,11 +156,11 @@ class Interferometer(AbstractDataset):
 
     @property
     def amplitudes(self):
-        return self.visibilities.amplitudes
+        return self.data.amplitudes
 
     @property
     def phases(self):
-        return self.visibilities.phases
+        return self.data.phases
 
     @property
     def uv_distances(self):
@@ -173,7 +170,7 @@ class Interferometer(AbstractDataset):
 
     @property
     def dirty_image(self):
-        return self.transformer.image_from(visibilities=self.visibilities)
+        return self.transformer.image_from(visibilities=self.data)
 
     @property
     def dirty_noise_map(self):
@@ -184,12 +181,7 @@ class Interferometer(AbstractDataset):
         return self.transformer.image_from(visibilities=self.signal_to_noise_map)
 
     @property
-    def dirty_inverse_noise_map(self):
-        return self.transformer.image_from(visibilities=self.inverse_noise_map)
-
-    @property
     def signal_to_noise_map(self):
-
         signal_to_noise_map_real = np.divide(
             np.real(self.data), np.real(self.noise_map)
         )
@@ -213,16 +205,13 @@ class Interferometer(AbstractDataset):
 
     def output_to_fits(
         self,
-        visibilities_path=None,
+        data_path=None,
         noise_map_path=None,
         uv_wavelengths_path=None,
         overwrite=False,
     ):
-
-        if visibilities_path is not None:
-            self.visibilities.output_to_fits(
-                file_path=visibilities_path, overwrite=overwrite
-            )
+        if data_path is not None:
+            self.data.output_to_fits(file_path=data_path, overwrite=overwrite)
 
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)

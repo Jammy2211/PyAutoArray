@@ -3,6 +3,7 @@ import numpy as np
 from typing import Union
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
+from autoarray.plot.wrap.base.units import Units
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
@@ -32,6 +33,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         self,
         mapper: Union[MapperDelaunay, MapperVoronoiNoInterp, MapperVoronoi],
         pixel_values: np.ndarray,
+        units: Units,
         cmap: wb.Cmap,
         colorbar: wb.Colorbar,
         colorbar_tickparams: wb.ColorbarTickParams = None,
@@ -83,9 +85,8 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         cmap = plt.get_cmap(cmap.cmap)
 
         if colorbar is not None:
-
             colorbar = colorbar.set_with_color_values(
-                cmap=cmap, color_values=color_values, ax=ax
+                units=units, cmap=cmap, color_values=color_values, ax=ax
             )
             if colorbar is not None and colorbar_tickparams is not None:
                 colorbar_tickparams.set(cb=colorbar)
@@ -98,3 +99,5 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
             extent=mapper.source_plane_mesh_grid.geometry.extent_square,
             aspect=aspect,
         )
+
+        return interpolation_array

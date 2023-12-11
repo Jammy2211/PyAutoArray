@@ -4,7 +4,6 @@ import pytest
 
 
 def test__w_tilde_imaging_from():
-
     noise_map_2d = np.array(
         [
             [0.0, 0.0, 0.0, 0.0],
@@ -38,7 +37,6 @@ def test__w_tilde_imaging_from():
 
 
 def test__w_tilde_data_imaging_from():
-
     image_2d = np.array(
         [
             [0.0, 0.0, 0.0, 0.0],
@@ -72,7 +70,6 @@ def test__w_tilde_data_imaging_from():
 
 
 def test__w_tilde_curvature_preload_imaging_from():
-
     noise_map_2d = np.array(
         [
             [0.0, 0.0, 0.0, 0.0],
@@ -110,7 +107,6 @@ def test__w_tilde_curvature_preload_imaging_from():
 
 
 def test__data_vector_via_blurred_mapping_matrix_from():
-
     blurred_mapping_matrix = np.array(
         [
             [1.0, 1.0, 0.0],
@@ -173,7 +169,6 @@ def test__data_vector_via_blurred_mapping_matrix_from():
 
 
 def test__data_vector_via_w_tilde_data_two_methods_agree():
-
     mask = aa.Mask2D.circular(
         shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
     )
@@ -195,7 +190,6 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
     # TODO : Use pytest.parameterize
 
     for sub_size in range(1, 3):
-
         mask_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
         grid = aa.Grid2D.from_mask(mask=mask_sub)
@@ -234,6 +228,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+            pix_pixels=mapper.params,
             sub_size=sub_size,
         )
 
@@ -251,7 +246,6 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
 
 def test__curvature_matrix_via_w_tilde_two_methods_agree():
-
     mask = aa.Mask2D.circular(
         shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
     )
@@ -296,7 +290,6 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
 
 
 def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
-
     mask = aa.Mask2D.circular(
         shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
     )
@@ -313,7 +306,6 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     for sub_size in range(1, 2, 3):
-
         mask_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
         grid = aa.Grid2D.from_mask(mask=mask_sub)
@@ -343,6 +335,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             pix_indexes_for_sub_slim_index=mapper.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+            pix_pixels=mapper.params,
             sub_size=sub_size,
         )
 

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from astropy.io import fits
 import logging
 import numpy as np
+from pathlib import Path
 from typing import List, Tuple, Union
 
 
@@ -68,11 +70,13 @@ class Mask1D(Mask):
 
         # noinspection PyArgumentList
         super().__init__(
-            mask=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin,
+            mask=mask,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
         )
 
     def __array_finalize__(self, obj):
-
         super().__array_finalize__(obj=obj)
 
         if isinstance(obj, Mask1D):
@@ -130,7 +134,7 @@ class Mask1D(Mask):
     @classmethod
     def from_fits(
         cls,
-        file_path: str,
+        file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         hdu: int = 0,
@@ -156,6 +160,72 @@ class Mask1D(Mask):
             origin=origin,
         )
 
+    @classmethod
+    def from_primary_hdu(
+        cls,
+        primary_hdu: fits.PrimaryHDU,
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Mask1D":
+        """
+        Returns an ``Mask1D`` by from a `PrimaryHDU` object which has been loaded via `astropy.fits`
+
+        This assumes that the `header` of the `PrimaryHDU` contains an entry named `PIXSCALE` which gives the
+        pixel-scale of the array.
+
+        For a full description of ``Mask1D`` objects, including a description of the ``slim`` and ``native`` attribute
+        used by the API, see
+        the :meth:`Mask1D class API documentation <autoarray.structures.arrays.uniform_1d.AbstractMask1D.__new__>`.
+
+        Parameters
+        ----------
+        primary_hdu
+            The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
+            the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin
+            The (y,x) scaled units origin of the coordinate system.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            from astropy.io import fits
+            import autoarray as aa
+
+            # Make Mask1D with sub_size 1.
+
+            primary_hdu = fits.open("path/to/file.fits")
+
+            array_1d = aa.Mask1D.from_primary_hdu(
+                primary_hdu=primary_hdu,
+                sub_size=1
+            )
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            # Make Mask1D with sub_size 2.
+            # (It is uncommon that a sub-gridded array would be loaded from
+            # a .fits, but the API support its).
+
+             primary_hdu = fits.open("path/to/file.fits")
+
+            array_1d = aa.Mask1D.from_primary_hdu(
+                primary_hdu=primary_hdu,
+                sub_size=2
+            )
+        """
+        return cls(
+            mask=primary_hdu.data.astype("bool"),
+            pixel_scales=primary_hdu.header["PIXSCALE"],
+            sub_size=sub_size,
+            origin=origin,
+        )
+
     @property
     def shape_native(self) -> Tuple[int]:
         return self.shape
@@ -168,7 +238,25 @@ class Mask1D(Mask):
     def shape_slim(self) -> Tuple[int]:
         return self.shape
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    @property
+    def hdu_for_output(self) -> fits.PrimaryHDU:
+        """
+        The mask as a HDU object, which can be output to a .fits file.
+
+        The header of the HDU is used to store the `pixel_scale` of the array, which is used by the `Array1D.from_hdu`.
+
+        This method is used in other projects (E.g. PyAutoGalaxy, PyAutoLens) to conveniently output the array to .fits
+        files.
+
+        Returns
+        -------
+        The HDU containing the data and its header which can then be written to .fits.
+        """
+        return array_1d_util.hdu_for_output_from(
+            array_1d=self.astype("float"), header_dict=self.pixel_scale_header
+        )
+
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Write the 1D mask to a .fits file.
 
@@ -190,5 +278,8 @@ class Mask1D(Mask):
         mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
         array_1d_util.numpy_array_1d_to_fits(
-            array_1d=self.astype("float"), file_path=file_path, overwrite=overwrite
+            array_1d=self.astype("float"),
+            file_path=file_path,
+            overwrite=overwrite,
+            header_dict=self.pixel_scale_header,
         )

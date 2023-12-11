@@ -9,7 +9,6 @@ from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 
 class MockGeometry(AbstractGeometry2D):
     def __init__(self, extent):
-
         self._extent = extent
 
     @property
@@ -68,8 +67,6 @@ class MockGrid2DMesh(Abstract2DMesh):
             it is converted to a (float, float) structure.
         origin
             The (y,x) origin of the pixelization.
-        nearest_pixelization_index_for_slim_index
-            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
         if grid is None:
@@ -90,6 +87,5 @@ class MockGrid2DMesh(Abstract2DMesh):
 
 class MockMeshGrid:
     def __init__(self, neighbors=None, neighbors_sizes=None):
-
         self.neighbors = Neighbors(arr=neighbors, sizes=neighbors_sizes)
         self.shape = (len(self.neighbors.sizes),)

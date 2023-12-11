@@ -119,12 +119,14 @@ class MatPlot1D(AbstractMatPlot):
         self.is_for_multi_plot = False
         self.is_for_subplot = False
 
-    def set_for_multi_plot(self, is_for_multi_plot: bool, color: str):
+    def set_for_multi_plot(
+        self, is_for_multi_plot: bool, color: str, xticks=None, yticks=None
+    ):
         """
         Sets the `is_for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
         the `is_for_subplot`. By changing this tag:
 
-            - The [subplot] section of the config file of every `MatWrap` object is used instead of [figure].
+            - The subplot: section of the config file of every `MatWrap` object is used instead of figure:.
             - Calls which output or close the matplotlib figure are over-ridden so that the subplot is not removed.
 
         Parameters
@@ -140,6 +142,12 @@ class MatPlot1D(AbstractMatPlot):
 
         self.vertical_line_axvline.no_label = True
 
+        if yticks is not None:
+            self.yticks = yticks
+
+        if xticks is not None:
+            self.xticks = xticks
+
     def plot_yx(
         self,
         y: Union[Array1D],
@@ -150,9 +158,13 @@ class MatPlot1D(AbstractMatPlot):
         y_errors=None,
         x_errors=None,
         y_extra=None,
+        ls_errorbar="",
+        should_plot_grid=False,
+        should_plot_zero=False,
+        text_manual_dict=None,
+        text_manual_dict_y=None,
         bypass: bool = False,
     ):
-
         if (y is None) or np.count_nonzero(y) == 0:
             return
 
@@ -182,18 +194,26 @@ class MatPlot1D(AbstractMatPlot):
         if plot_axis_type_override is not None:
             plot_axis_type = plot_axis_type_override
 
+        label = self.legend.label or auto_labels.legend
+
         self.yx_plot.plot_y_vs_x(
             y=y,
             x=x,
-            label=auto_labels.legend,
+            label=label,
             plot_axis_type=plot_axis_type,
             y_errors=y_errors,
             x_errors=x_errors,
             y_extra=y_extra,
+            ls_errorbar=ls_errorbar,
         )
 
-        if visuals_1d.shaded_region is not None:
+        if should_plot_zero:
+            plt.plot(x, 1.0e-6 * np.ones(shape=y.shape), c="b", ls="--")
 
+        if should_plot_grid:
+            plt.grid(True)
+
+        if visuals_1d.shaded_region is not None:
             self.fill_between.fill_between_shaded_regions(
                 x=x, y1=visuals_1d.shaded_region[0], y2=visuals_1d.shaded_region[1]
             )
@@ -201,39 +221,80 @@ class MatPlot1D(AbstractMatPlot):
         if "extent" in self.axis.config_dict:
             self.axis.set()
 
-        self.ylabel.set(units=self.units, include_brackets=False)
-        self.xlabel.set(units=self.units, include_brackets=False)
-
         self.tickparams.set()
 
         if plot_axis_type == "symlog":
             plt.yscale("symlog")
 
+        if x_errors is not None:
+            min_value_x = np.nanmin(x - x_errors)
+            max_value_x = np.nanmax(x + x_errors)
+        else:
+            min_value_x = np.nanmin(x)
+            max_value_x = np.nanmax(x)
+
+        if y_errors is not None:
+            min_value_y = np.nanmin(y - y_errors)
+            max_value_y = np.nanmax(y + y_errors)
+        else:
+            min_value_y = np.nanmin(y)
+            max_value_y = np.nanmax(y)
+
+        if should_plot_zero:
+            if min_value_y > 0:
+                min_value_y = 0
+
         self.xticks.set(
-            array=x,
-            min_value=np.min(x),
-            max_value=np.max(x),
+            min_value=min_value_x,
+            max_value=max_value_x,
+            pixels=len(x),
             units=self.units,
             use_integers=use_integers,
+            is_for_1d_plot=True,
         )
 
-        # TODO : Implement properly
-
-        # self.yticks.set(
-        #     array=y,
-        #     min_value=np.min(y),
-        #     max_value=np.max(y),
-        #     units=self.units,
-        # )
+        self.yticks.set(
+            min_value=min_value_y,
+            max_value=max_value_y,
+            pixels=len(y),
+            units=self.units,
+            yunit=auto_labels.yunit,
+            is_for_1d_plot=True,
+            is_log10="logy" in plot_axis_type,
+        )
 
         self.title.set(auto_title=auto_labels.title)
-        self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
-        self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
+        self.ylabel.set(auto_label=auto_labels.ylabel)
+        self.xlabel.set(auto_label=auto_labels.xlabel)
 
         if not isinstance(self.text, list):
             self.text.set()
         else:
             [text.set() for text in self.text]
+
+        # This is a horrific hack to get CTI plots to work, refactor one day.
+
+        from autoarray.plot.wrap.base.text import Text
+
+        if text_manual_dict is not None and ax is not None:
+            y = text_manual_dict_y
+            text_manual_list = []
+
+            for key, value in text_manual_dict.items():
+                text_manual_list.append(
+                    Text(
+                        x=0.95,
+                        y=y,
+                        s=f"{key} : {value}",
+                        c="b",
+                        transform=ax.transAxes,
+                        horizontalalignment="right",
+                        fontsize=12,
+                    )
+                )
+                y = y - 0.05
+
+            [text.set() for text in text_manual_list]
 
         if not isinstance(self.annotate, list):
             self.annotate.set()
@@ -242,7 +303,7 @@ class MatPlot1D(AbstractMatPlot):
 
         visuals_1d.plot_via_plotter(plotter=self)
 
-        if auto_labels.legend is not None:  # or vertical_line_labels is not None:
+        if label is not None:
             self.legend.set()
 
         if (not self.is_for_subplot) and (not self.is_for_multi_plot):

@@ -1,6 +1,8 @@
 from abc import ABC
 import logging
 import numpy as np
+from pathlib import Path
+from typing import Dict, Union
 
 from autoarray.abstract_ndarray import AbstractNDArray
 
@@ -12,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class Mask(AbstractNDArray, ABC):
-
     pixel_scales = None
 
     # noinspection PyUnusedLocal
@@ -56,7 +57,6 @@ class Mask(AbstractNDArray, ABC):
         self.origin = origin
 
     def __array_finalize__(self, obj):
-
         if isinstance(obj, Mask):
             self.sub_size = obj.sub_size
             self.pixel_scales = obj.pixel_scales
@@ -81,6 +81,26 @@ class Mask(AbstractNDArray, ABC):
         return self.pixel_scales[0]
 
     @property
+    def pixel_scale_header(self) -> Dict:
+        """
+        Returns the pixel scale of the mask as a header dictionary, which can be written to a .fits file.
+
+        If the array has different pixel scales in 2 dimensions, the header will contain both pixel scales as separate
+        y and x entries.
+
+        Returns
+        -------
+        A dictionary containing the pixel scale of the mask, which can be output to a .fits file.
+        """
+        try:
+            return {"PIXSCALE": self.pixel_scale}
+        except exc.MaskException:
+            return {
+                "PIXSCALEY": self.pixel_scales[0],
+                "PIXSCALEX": self.pixel_scales[1],
+            }
+
+    @property
     def dimensions(self) -> int:
         return len(self.shape)
 
@@ -102,7 +122,7 @@ class Mask(AbstractNDArray, ABC):
         """
         return 1.0 / self.sub_length
 
-    def output_to_fits(self, file_path: str, overwrite: bool = False):
+    def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Overwrite with method to output the mask to a `.fits` file.
         """

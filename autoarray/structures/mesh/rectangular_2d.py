@@ -64,8 +64,6 @@ class Mesh2DRectangular(Abstract2DMesh):
             it is converted to a (float, float) structure.
         origin
             The (y,x) origin of the pixelization.
-        nearest_pixelization_index_for_slim_index
-            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
         mask = Mask2D.all_false(

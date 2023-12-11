@@ -4,7 +4,6 @@ import autoarray as aa
 
 
 def test__pix_indexes_for_sub_slim_index__matches_util():
-
     grid = aa.Grid2D.no_mask(
         values=[
             [1.5, -1.0],
@@ -46,13 +45,12 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
 
 
 def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
-
     mesh_grid = aa.Mesh2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid_2d_7x7)
 
     mapper_grids = aa.MapperGrids(
         source_plane_data_grid=grid_2d_7x7,
         source_plane_mesh_grid=mesh_grid,
-        hyper_data=image_7x7,
+        adapt_data=image_7x7,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -66,7 +64,7 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
         pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
         pixel_weights=mapper.pix_weights_for_sub_slim_index,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
-        hyper_data=image_7x7,
+        adapt_data=image_7x7,
     )
 
     assert (pixel_signals == pixel_signals_util).all()

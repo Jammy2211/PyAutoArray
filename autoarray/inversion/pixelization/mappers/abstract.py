@@ -2,6 +2,7 @@ import itertools
 import numpy as np
 from typing import Dict, List, Optional, Tuple
 
+from autoconf import conf
 from autoconf import cached_property
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
@@ -22,7 +23,7 @@ class AbstractMapper(LinearObj):
         self,
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
-        profiling_dict: Optional[Dict] = None,
+        run_time_dict: Optional[Dict] = None,
     ):
         """
         To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -76,11 +77,11 @@ class AbstractMapper(LinearObj):
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
-        profiling_dict
+        run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
-        super().__init__(regularization=regularization, profiling_dict=profiling_dict)
+        super().__init__(regularization=regularization, run_time_dict=run_time_dict)
 
         self.mapper_grids = mapper_grids
 
@@ -109,8 +110,8 @@ class AbstractMapper(LinearObj):
         return self.source_plane_mesh_grid.edge_pixel_list
 
     @property
-    def hyper_data(self) -> np.ndarray:
-        return self.mapper_grids.hyper_data
+    def adapt_data(self) -> np.ndarray:
+        return self.mapper_grids.adapt_data
 
     @property
     def neighbors(self) -> Neighbors:
@@ -237,6 +238,7 @@ class AbstractMapper(LinearObj):
         A full description of these mappings is given in the
         function `mapper_util.data_slim_to_pixelization_unique_from()`.
         """
+
         (
             data_to_pix_unique,
             data_weights,
@@ -246,6 +248,7 @@ class AbstractMapper(LinearObj):
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
+            pix_pixels=self.params,
             sub_size=self.source_plane_data_grid.sub_size,
         )
 
@@ -281,7 +284,7 @@ class AbstractMapper(LinearObj):
 
     def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
         """
-        Returns the (hyper) signal in each pixelization pixel, where this signal is an estimate of the expected signal
+        Returns the signal in each pixelization pixel, where this signal is an estimate of the expected signal
         each pixelization pixel contains given the data pixels it maps too.
 
         A full description of this is given in the function `mapper_util.adaptive_pixel_signals_from().
@@ -299,7 +302,7 @@ class AbstractMapper(LinearObj):
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-            hyper_data=self.hyper_data,
+            adapt_data=self.adapt_data,
         )
 
     def pix_indexes_for_slim_indexes(self, pix_indexes: List) -> List[List]:
@@ -360,6 +363,35 @@ class AbstractMapper(LinearObj):
         return mapper_util.mapped_to_source_via_mapping_matrix_from(
             mapping_matrix=self.mapping_matrix, array_slim=array.binned.slim
         )
+
+    def extent_from(
+        self, values: np.ndarray = None, zoom_to_brightest: bool = True
+    ) -> Tuple[float, float, float, float]:
+        if zoom_to_brightest and values is not None:
+            zoom_percent = conf.instance["visualize"]["general"]["zoom"][
+                "inversion_percent"
+            ]
+
+            fractional_value = np.max(values) * zoom_percent
+            fractional_bool = values > fractional_value
+            true_indices = np.argwhere(fractional_bool)
+            true_grid = self.source_plane_mesh_grid[true_indices]
+
+            from autoarray.geometry import geometry_util
+
+            try:
+                return geometry_util.extent_symmetric_from(
+                    extent=(
+                        np.min(true_grid[:, 0, 1]),
+                        np.max(true_grid[:, 0, 1]),
+                        np.min(true_grid[:, 0, 0]),
+                        np.max(true_grid[:, 0, 0]),
+                    )
+                )
+            except ValueError:
+                return self.source_plane_mesh_grid.geometry.extent
+
+        return self.source_plane_mesh_grid.geometry.extent
 
     def interpolated_array_from(
         self,

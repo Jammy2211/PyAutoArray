@@ -1,23 +1,41 @@
 from os import path
 import pytest
 import matplotlib.pyplot as plt
+
+import autoarray as aa
 import autoarray.plot as aplt
 from autoarray.plot import abstract_plotters
 
 directory = path.dirname(path.realpath(__file__))
 
 
-def test__get_subplot_figsize():
+def test__get_subplot_shape():
+    plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=aplt.MatPlot2D())
 
-    plotter = abstract_plotters.AbstractPlotter()
+    subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=1)
+
+    assert subplot_shape == (1, 1)
+
+    subplot_shape = plotter.mat_plot_2d.get_subplot_shape(number_subplots=3)
+
+    assert subplot_shape == (2, 2)
+
+    with pytest.raises(aa.exc.PlottingException):
+        plotter.mat_plot_2d.get_subplot_shape(number_subplots=1000)
+
+
+def test__get_subplot_figsize():
+    plotter = abstract_plotters.AbstractPlotter(
+        mat_plot_2d=aplt.MatPlot2D(figure=aplt.Figure(figsize="auto"))
+    )
 
     figsize = plotter.get_subplot_figsize(number_subplots=1)
 
-    assert figsize == (18, 8)
+    assert figsize == (6, 6)
 
     figsize = plotter.get_subplot_figsize(number_subplots=4)
 
-    assert figsize == (13, 10)
+    assert figsize == (12, 12)
 
     figure = aplt.Figure(figsize=(20, 20))
 
@@ -30,23 +48,7 @@ def test__get_subplot_figsize():
     assert figsize == (20, 20)
 
 
-def test__get_subplot_rows_columns():
-
-    plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=aplt.MatPlot2D())
-
-    rows, columns = plotter.mat_plot_2d.get_subplot_rows_columns(number_subplots=1)
-
-    assert rows == 1
-    assert columns == 2
-
-    rows, columns = plotter.mat_plot_2d.get_subplot_rows_columns(number_subplots=4)
-
-    assert rows == 2
-    assert columns == 2
-
-
 def test__open_and_close_subplot_figures():
-
     figure = aplt.Figure(figsize=(20, 20))
 
     plotter = abstract_plotters.AbstractPlotter(
@@ -77,7 +79,6 @@ def test__open_and_close_subplot_figures():
 
 
 def test__uses_figure_or_subplot_configs_correctly():
-
     figure = aplt.Figure(figsize=(8, 8))
     cmap = aplt.Cmap(cmap="warm")
 
@@ -107,7 +108,6 @@ def test__uses_figure_or_subplot_configs_correctly():
 
 
 def test__get__visuals():
-
     visuals_2d = aplt.Visuals2D()
     include_2d = aplt.Include2D(origin=False)
 

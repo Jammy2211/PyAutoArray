@@ -106,11 +106,11 @@ PositionsScatter:    # wrapper for `plt.scatter()`: customize the appearance of 
   figure:
     c: k,m,y,b,r,g
     marker: .
-    s: 16
+    s: 32
   subplot:
     c: k,m,y,b,r,g
     marker: .
-    s: 16
+    s: 32
 VectorYXQuiver:      # wrapper for `plt.quiver()`: customize (y,x) vectors appearances (e.g. a shear field).
   figure:
     alpha: 1.0

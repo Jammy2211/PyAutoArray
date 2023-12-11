@@ -30,7 +30,6 @@ def set_backend():
 
 
 def remove_spaces_and_commas_from(colors):
-
     colors = [color.strip(",").strip(" ") for color in colors]
     colors = list(filter(None, colors))
     if len(colors) == 1:
@@ -68,10 +67,10 @@ class AbstractMatWrap:
         The matplotlib wrapper objects in ths module also use configuration files to choose their default settings.
         For example, in `autoarray.config.visualize.mat_base.Figure.ini` you will note the section:
 
-        [figure]
+        figure:
         figsize=(7, 7)
 
-        [subplot]
+        subplot:
         figsize=auto
 
         This specifies that when a data structure (like the `Array2D` above) is plotted, the figsize will always
@@ -84,15 +83,9 @@ class AbstractMatWrap:
 
     @property
     def config_dict(self):
-
-        if not self.is_for_subplot:
-            category = "figure"
-        else:
-            category = "subplot"
-
         config_dict = conf.instance["visualize"][self.config_folder][
             self.__class__.__name__
-        ][category]
+        ][self.config_category]
 
         if "c" in config_dict:
             config_dict["c"] = remove_spaces_and_commas_from(colors=config_dict["c"])
@@ -111,3 +104,9 @@ class AbstractMatWrap:
     @property
     def config_folder(self):
         return "mat_wrap"
+
+    @property
+    def config_category(self):
+        if self.is_for_subplot:
+            return "subplot"
+        return "figure"

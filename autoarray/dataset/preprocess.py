@@ -105,7 +105,6 @@ def array_adus_to_eps(array_adus, exposure_time_map, gain):
 
 
 def array_counts_to_counts_per_second(array_counts, exposure_time):
-
     if exposure_time is None:
         raise exc.ArrayException(
             "Cannot convert a Frame2D to units counts per second without an exposure time attribute (exposure_time = None)."
@@ -167,7 +166,8 @@ def noise_map_via_weight_map_from(weight_map):
     Parameters
     ----------
     pixel_scales
-        The size of each pixel in scaled units.
+        The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
     weight_map
         The weight-value of each pixel which is converted to a variance.
     """
@@ -279,7 +279,7 @@ def edges_from(image, no_edges):
     return edges
 
 
-def background_sky_level_via_edges_of_image_from(image, no_edges):
+def background_sky_level_via_edges_from(image, no_edges):
     """
     Estimate the background sky level in an image using the data values at its edges. These edge values are extracted
     and their median is used to calculate the bakcground sky level.
@@ -296,7 +296,7 @@ def background_sky_level_via_edges_of_image_from(image, no_edges):
     return np.median(edges)
 
 
-def background_noise_map_via_edges_of_image_from(image, no_edges):
+def background_noise_map_via_edges_from(image, no_edges):
     """
     Estimate the background noise level in an image using the data values at its edges. These edge values are binned
     into a histogram, with a Gaussian profile fitted to this histogram, such that its standard deviation (sigma) gives
@@ -462,7 +462,6 @@ def data_with_gaussian_noise_added(data, sigma, seed=-1):
 
 
 def data_with_complex_gaussian_noise_added(data, sigma, seed=-1):
-
     gaussian_noise = gaussian_noise_via_shape_and_sigma_from(
         shape=(data.shape[0], 2), sigma=sigma, seed=seed
     )
@@ -477,7 +476,7 @@ def noise_map_with_signal_to_noise_limit_from(
     Given data and its noise map, increase the noise-values of all data points which signal to noise is above an input
     `signal_to_noise_limit`, such that the signal to noise values do not exceed this limit.
 
-    This may be performed for imaging data with extremely high signal-to-noise regions in the data which are poorly
+    This may be performed for dataset data with extremely high signal-to-noise regions in the data which are poorly
     fit my the model. By downweighting their signal to noise values, the model-fit with focus on other parts of the
     data with low S/N.
 
@@ -532,7 +531,6 @@ def noise_map_with_signal_to_noise_limit_from(
 def visibilities_noise_map_with_signal_to_noise_limit_from(
     data, noise_map, signal_to_noise_limit
 ):
-
     from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
     # TODO : Refacotr into a util

@@ -7,7 +7,6 @@ import autoarray as aa
 
 
 def test__neighbors__compare_to_mesh_util():
-
     # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
     grid = np.array(
@@ -39,7 +38,6 @@ def test__neighbors__compare_to_mesh_util():
 
 
 def test__mesh_areas():
-
     grid = np.array(
         [
             [-2.0, 0.0],
@@ -75,21 +73,15 @@ def test__mesh_areas():
 
 
 def test__mesh_grid__attributes():
-
     mesh = aa.Mesh2DVoronoi(
         values=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]]),
-        nearest_pixelization_index_for_slim_index=np.array([0, 1, 2, 3]),
     )
 
     assert type(mesh) == aa.Mesh2DVoronoi
     assert (mesh == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])).all()
-    assert (
-        mesh.nearest_pixelization_index_for_slim_index == np.array([0, 1, 2, 3])
-    ).all()
 
 
 def test__edge_pixel_list():
-
     grid = np.array(
         [
             [1.0, -1.0],
@@ -110,7 +102,6 @@ def test__edge_pixel_list():
 
 
 def test__from_unmasked_sparse_shape_and_grid():
-
     mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -127,18 +118,12 @@ def test__from_unmasked_sparse_shape_and_grid():
 
     mesh = aa.Mesh2DVoronoi(
         values=sparse_grid,
-        nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
     )
 
     assert (sparse_grid == mesh).all()
-    assert (
-        sparse_grid.sparse_index_for_slim_index
-        == mesh.nearest_pixelization_index_for_slim_index
-    ).all()
 
 
 def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():
-
     # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
     grid = np.array(
@@ -256,7 +241,6 @@ def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():
 
 
 def test__qhull_error_is_caught():
-
     grid = np.array([[3.0, 0.0]])
     mesh = aa.Mesh2DVoronoi(values=grid)
 
@@ -265,7 +249,6 @@ def test__qhull_error_is_caught():
 
 
 def _test__interpolated_array_from():
-
     grid = aa.Grid2D(
         [[0.0, 0.0], [1.1, 0.6], [2.1, 0.1], [0.4, 1.1], [1.1, 7.1], [2.1, 1.1]],
         shape_native=(3, 2),

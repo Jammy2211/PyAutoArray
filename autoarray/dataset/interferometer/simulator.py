@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.dataset.interferometer.interferometer import Interferometer
+from autoarray.dataset.interferometer.dataset import Interferometer
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
@@ -27,7 +27,8 @@ class SimulatorInterferometer:
             The shape of the observation. Note that we do not simulator a full Imaging array (e.g. 2000 x 2000 pixels for \
             Hubble imaging), but instead just a cut-out around the strong lens.
         real_space_pixel_scales
-            The size of each pixel in scaled units.
+            The (y,x) arcsecond-to-pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float, float).
         psf : PSF
             An arrays describing the PSF kernel of the image.
         exposure_time_map
@@ -88,7 +89,7 @@ class SimulatorInterferometer:
             )
 
         return Interferometer(
-            visibilities=visibilities,
+            data=visibilities,
             noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
             real_space_mask=image.mask,

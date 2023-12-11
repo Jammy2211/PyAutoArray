@@ -45,7 +45,6 @@ class Delaunay(Triangulation):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        sparse_index_for_slim_index=None,
     ):
         """
         Return the Delaunay ``source_plane_mesh_grid`` as a ``Mesh2DDelaunay`` object, which provides additional
@@ -112,8 +111,9 @@ class DelaunayMagnification(Delaunay):
     def image_plane_mesh_grid_from(
         self,
         image_plane_data_grid: Grid2D,
-        hyper_data: np.ndarray = None,
+        adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Computes the ``mesh_grid`` in the image-plane, by overlaying a uniform grid of coordinates over the
@@ -128,7 +128,7 @@ class DelaunayMagnification(Delaunay):
         image_plane_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the image-plane. This has a
             transformation applied to it to create the ``source_plane_mesh_grid``.
-        hyper_data
+        adapt_data
             An image which is used to determine the ``image_plane_mesh_grid`` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
         settings
@@ -188,32 +188,33 @@ class DelaunayBrightnessImage(Delaunay):
         self.weight_floor = weight_floor
         self.weight_power = weight_power
 
-    def weight_map_from(self, hyper_data: np.ndarray):
+    def weight_map_from(self, adapt_data: np.ndarray):
         """
-        Computes a ``weight_map`` from an input ``hyper_data``, where this image represents components in the masked 2d
+        Computes a ``weight_map`` from an input ``adapt_data``, where this image represents components in the masked 2d
         data in the image-plane. This applies the ``weight_floor`` and ``weight_power`` attributes of the class, which
         scale the weights to make different components upweighted relative to one another.
 
         Parameters
         ----------
-        hyper_data
+        adapt_data
             A image which represents one or more components in the masked 2D data in the image-plane.
 
         Returns
         -------
         The weight map which is used to adapt the Delaunay pixels in the image-plane to components in the data.
         """
-        weight_map = (hyper_data - np.min(hyper_data)) / (
-            np.max(hyper_data) - np.min(hyper_data)
-        ) + self.weight_floor * np.max(hyper_data)
+        weight_map = (adapt_data - np.min(adapt_data)) / (
+            np.max(adapt_data) - np.min(adapt_data)
+        ) + self.weight_floor * np.max(adapt_data)
 
         return np.power(weight_map, self.weight_power)
 
     def image_plane_mesh_grid_from(
         self,
         image_plane_data_grid: Grid2D,
-        hyper_data: np.ndarray,
+        adapt_data: np.ndarray,
         settings=SettingsPixelization(),
+        noise_map: np.ndarray = None,
     ):
         """
         Computes the ``mesh_grid`` in the image-plane, by overlaying a uniform grid of coordinates over the
@@ -223,7 +224,7 @@ class DelaunayBrightnessImage(Delaunay):
         which then act the centres of the Delaunay pixelization's pixels.
 
         For a ``DelaunayBrightnessImage`` this grid is computed by applying a KMeans clustering algorithm to the masked
-        data's values, where these values are reweighted by the ``hyper_data`` so that the algorithm can adapt to
+        data's values, where these values are reweighted by the ``adapt_data`` so that the algorithm can adapt to
         specific parts of the data.
 
         Parameters
@@ -231,13 +232,13 @@ class DelaunayBrightnessImage(Delaunay):
         image_plane_mesh_grid
             The sparse set of (y,x) coordinates computed from the unmasked data in the image-plane. This has a
             transformation applied to it to create the ``source_plane_mesh_grid``.
-        hyper_data
+        adapt_data
             An image which is used to determine the ``image_plane_mesh_grid`` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
-        weight_map = self.weight_map_from(hyper_data=hyper_data)
+        weight_map = self.weight_map_from(adapt_data=adapt_data)
 
         return Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,

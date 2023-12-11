@@ -5,7 +5,6 @@ import autoarray as aa
 
 
 def test__from_grid_and_unmasked_2d_grid_shap():
-
     mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -58,21 +57,11 @@ def test__from_grid_and_unmasked_2d_grid_shap():
         total_sparse_pixels=total_sparse_pixels,
     ).astype("int")
 
-    sparse_index_for_slim_index_util = (
-        aa.util.sparse.sparse_slim_index_for_mask_slim_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse_2d_util,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_2d_util,
-        )
-    )
-
     sparse_grid_util = aa.util.sparse.sparse_grid_via_unmasked_from(
         unmasked_sparse_grid=unmasked_sparse_grid_util,
         unmasked_sparse_for_sparse=unmasked_sparse_for_sparse_2d_util,
     )
 
-    assert (
-        sparse_grid.sparse_index_for_slim_index == sparse_index_for_slim_index_util
-    ).all()
     assert (sparse_grid == sparse_grid_util).all()
 
 
@@ -91,7 +80,6 @@ def test__from_grid_and_unmasked_2d_grid_shap__sparse_grid_overlaps_mask_perfect
         unmasked_sparse_shape=(3, 3), grid=grid
     )
 
-    assert (sparse_grid.sparse_index_for_slim_index == np.array([0, 1, 2, 3, 4])).all()
     assert (
         sparse_grid
         == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
@@ -130,9 +118,6 @@ def test__from_grid_and_unmasked_2d_grid_shap__sparse_grid_overlaps_mask_perfect
             ]
         )
     ).all()
-    assert (
-        sparse_grid.sparse_index_for_slim_index == np.array([0, 1, 2, 3, 4, 5, 6, 7])
-    ).all()
 
 
 def test__from_grid_and_unmasked_2d_grid_shap__mask_with_offset_centre():
@@ -163,7 +148,6 @@ def test__from_grid_and_unmasked_2d_grid_shap__mask_with_offset_centre():
         sparse_grid
         == np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
     ).all()
-    assert (sparse_grid.sparse_index_for_slim_index == np.array([0, 1, 2, 3, 4])).all()
 
     mask = aa.Mask2D(
         mask=np.array(
@@ -191,13 +175,11 @@ def test__from_grid_and_unmasked_2d_grid_shap__mask_with_offset_centre():
         sparse_grid
         == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0], [-2.0, 2.0]])
     ).all()
-    assert (sparse_grid.sparse_index_for_slim_index == np.array([0, 1, 2, 3, 4])).all()
 
 
 def test__from_grid_and_unmasked_2d_grid_shape__sets_up_with_correct_shape_and_pixel_scales(
     mask_2d_7x7,
 ):
-
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -231,13 +213,9 @@ def test__from_grid_and_unmasked_2d_grid_shape__sets_up_with_correct_shape_and_p
             ]
         )
     ).all()
-    assert (
-        sparse_grid.sparse_index_for_slim_index == np.array([0, 1, 2, 3, 4, 5, 6, 7])
-    ).all()
 
 
 def test__from_grid_and_unmasked_2d_grid_shape__offset_mask__origin_shift_corrects():
-
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -273,13 +251,9 @@ def test__from_grid_and_unmasked_2d_grid_shape__offset_mask__origin_shift_correc
             ]
         )
     ).all()
-    assert (
-        sparse_grid.sparse_index_for_slim_index == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    ).all()
 
 
 def test__from_total_pixels_grid_and_weight_map():
-
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -317,11 +291,6 @@ def test__from_total_pixels_grid_and_weight_map():
         )
     ).all()
 
-    assert (
-        sparse_grid.sparse_index_for_slim_index
-        == np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])
-    ).all()
-
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -346,14 +315,8 @@ def test__from_total_pixels_grid_and_weight_map():
 
     assert sparse_grid[1] == pytest.approx(np.array([0.4166666, -0.0833333]), 1.0e-4)
 
-    assert (
-        sparse_grid.sparse_index_for_slim_index
-        == np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])
-    ).all()
-
 
 def test__from_total_pixels_grid_and_weight_map__stochastic_true():
-
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -414,3 +377,57 @@ def test__from_total_pixels_grid_and_weight_map__stochastic_true():
     )
 
     assert (sparse_grid_weight_0 != sparse_grid_weight_1).any()
+
+
+def test__from_snr_split():
+    mask = aa.Mask2D(
+        mask=np.array(
+            [
+                [False, False, False, False],
+                [False, False, False, False],
+                [False, False, False, False],
+                [False, False, False, False],
+            ]
+        ),
+        pixel_scales=(0.5, 0.5),
+        sub_size=1,
+    )
+
+    grid = aa.Grid2D.from_mask(mask=mask)
+
+    snr_map = aa.Array2D(
+        values=[
+            [1.0, 1.0, 1.0, 1.0],
+            [1.0, 4.0, 4.0, 1.0],
+            [1.0, 4.0, 4.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0],
+        ],
+        mask=mask,
+    )
+
+    sparse_grid = aa.Grid2DSparse.from_snr_split(
+        pixels=8,
+        fraction_high_snr=0.5,
+        snr_cut=3.0,
+        grid=grid,
+        snr_map=snr_map,
+        n_iter=10,
+        max_iter=20,
+        seed=1,
+    )
+
+    assert sparse_grid == pytest.approx(
+        np.array(
+            [
+                [0.25, 0.25],
+                [-0.25, 0.25],
+                [-0.25, -0.25],
+                [0.25, -0.25],
+                [0.58333, 0.58333],
+                [0.58333, -0.58333],
+                [-0.58333, -0.58333],
+                [-0.58333, 0.58333],
+            ]
+        ),
+        1.0e-4,
+    )
