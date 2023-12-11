@@ -128,13 +128,13 @@ def profile_func(func: Callable):
         for i in range(profile_call_max):
             key_func = f"{func.__name__}_{i}"
 
-            if key_func not in obj.profiling_dict:
+            if key_func not in obj.run_time_dict:
                 if last_key_before_call == last_key_after_call:
                     obj.run_time_dict[key_func] = time_func
                 else:
-                    for key, value in reversed(list(obj.profiling_dict.items())):
+                    for key, value in reversed(list(obj.run_time_dict.items())):
                         if last_key_before_call == key:
-                            obj.profiling_dict[key_func] = time_func
+                            obj.run_time_dict[key_func] = time_func
                             break
 
                         time_func -= obj.run_time_dict[key]
