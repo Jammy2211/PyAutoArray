@@ -5,7 +5,6 @@ from typing import List
 
 from autoconf import conf
 
-from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 
@@ -101,9 +100,11 @@ class Preloads:
                 indexes,
                 lengths,
             ) = inversion_imaging_util.w_tilde_curvature_preload_imaging_from(
-                noise_map_native=fit_0.noise_map.native,
-                kernel_native=fit_0.dataset.psf.native,
-                native_index_for_slim_index=fit_0.dataset.mask.derive_indexes.native_for_slim,
+                noise_map_native=np.array(fit_0.noise_map.native),
+                kernel_native=np.array(fit_0.dataset.psf.native),
+                native_index_for_slim_index=np.array(
+                    fit_0.dataset.mask.derive_indexes.native_for_slim
+                ),
             )
 
             self.w_tilde = WTildeImaging(
