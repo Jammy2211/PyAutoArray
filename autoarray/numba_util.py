@@ -1,3 +1,4 @@
+import os
 from functools import wraps
 import logging
 import time
@@ -31,7 +32,10 @@ except Exception:
     parallel = False
 
 try:
-    import numba
+    if os.environ.get("USE_JAX") == "1":
+        logger.warning("JAX and numba do not work together, so JAX is being used.")
+    else:
+        import numba
 
 except ModuleNotFoundError:
     logger.warning(
@@ -124,13 +128,23 @@ def profile_func(func: Callable):
         for i in range(profile_call_max):
             key_func = f"{func.__name__}_{i}"
 
+<<<<<<< HEAD
             if key_func not in obj.run_time_dict:
+=======
+            if key_func not in obj.profiling_dict:
+>>>>>>> feature/jax
                 if last_key_before_call == last_key_after_call:
                     obj.run_time_dict[key_func] = time_func
                 else:
+<<<<<<< HEAD
                     for key, value in reversed(list(obj.run_time_dict.items())):
                         if last_key_before_call == key:
                             obj.run_time_dict[key_func] = time_func
+=======
+                    for key, value in reversed(list(obj.profiling_dict.items())):
+                        if last_key_before_call == key:
+                            obj.profiling_dict[key_func] = time_func
+>>>>>>> feature/jax
                             break
 
                         time_func -= obj.run_time_dict[key]
