@@ -21,7 +21,10 @@ from autoarray import type as ty
 
 class Grid1D(Structure):
     def __init__(
-        self, values: Union[np.ndarray, List], mask: Mask1D, store_native: bool = False,
+        self,
+        values: Union[np.ndarray, List],
+        mask: Mask1D,
+        store_native: bool = False,
     ):
         """
         A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
@@ -265,7 +268,7 @@ class Grid1D(Structure):
         """
 
         sub_grid_1d = grid_1d_util.grid_1d_slim_via_mask_from(
-            mask_1d=mask,
+            mask_1d=np.array(mask),
             pixel_scales=mask.pixel_scales,
             sub_size=mask.sub_size,
             origin=mask.origin,

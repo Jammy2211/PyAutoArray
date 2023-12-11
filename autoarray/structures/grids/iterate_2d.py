@@ -82,7 +82,9 @@ class Grid2DIterate(Grid2D):
         self.sub_steps = sub_steps
 
         super().__init__(
-            values=values, mask=mask, store_native=store_native,
+            values=values,
+            mask=mask,
+            store_native=store_native,
         )
 
     def __array_finalize__(self, obj):
@@ -258,7 +260,10 @@ class Grid2DIterate(Grid2D):
         """
 
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=1, origin=mask.origin
+            mask_2d=np.array(mask),
+            pixel_scales=mask.pixel_scales,
+            sub_size=1,
+            origin=mask.origin,
         )
 
         return Grid2DIterate(

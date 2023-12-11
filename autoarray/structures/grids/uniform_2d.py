@@ -238,7 +238,9 @@ class Grid2D(Structure):
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
         values = grid_2d_util.convert_grid_2d(
-            grid_2d=values, mask_2d=mask, store_native=store_native,
+            grid_2d=values,
+            mask_2d=mask,
+            store_native=store_native,
         )
 
         super().__init__(values)
@@ -604,7 +606,7 @@ class Grid2D(Structure):
         """
 
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=mask,
+            mask_2d=np.array(mask),
             pixel_scales=mask.pixel_scales,
             sub_size=mask.sub_size,
             origin=mask.origin,
@@ -1071,12 +1073,14 @@ class Grid2D(Structure):
             positive x-axis.
         """
 
-        grid_radial_projected_2d = grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
-            extent=self.geometry.extent,
-            centre=centre,
-            pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
-            shape_slim=shape_slim,
+        grid_radial_projected_2d = (
+            grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
+                extent=self.geometry.extent,
+                centre=centre,
+                pixel_scales=self.mask.pixel_scales,
+                sub_size=self.mask.sub_size,
+                shape_slim=shape_slim,
+            )
         )
 
         grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(
