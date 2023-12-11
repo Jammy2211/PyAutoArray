@@ -461,7 +461,7 @@ class AbstractArray2D(Structure):
     @property
     def original_orientation(self) -> Union[np.ndarray, "Array2D"]:
         return layout_util.rotate_array_via_roe_corner_from(
-            array=self, roe_corner=self.header.original_roe_corner
+            array=np.array(self), roe_corner=self.header.original_roe_corner
         )
 
     @property
@@ -504,7 +504,7 @@ class AbstractArray2D(Structure):
         """
 
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=self.native,
+            array_2d=np.array(self.native),
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
             x0=self.mask.zoom_region[2] - buffer,
@@ -539,7 +539,7 @@ class AbstractArray2D(Structure):
             The number pixels around the extracted array used as a buffer.
         """
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=self.native,
+            array_2d=np.array(self.native),
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
             x0=self.mask.zoom_region[2] - buffer,
@@ -574,7 +574,7 @@ class AbstractArray2D(Structure):
         """
 
         resized_array_2d = array_2d_util.resized_array_2d_from(
-            array_2d=self.native, resized_shape=new_shape
+            array_2d=np.array(self.native), resized_shape=new_shape
         )
 
         resized_mask = self.mask.derive_mask.resized_from(
@@ -668,7 +668,7 @@ class AbstractArray2D(Structure):
         The HDU containing the data and its header which can then be written to .fits.
         """
         return array_2d_util.hdu_for_output_from(
-            array_2d=self.native, header_dict=self.pixel_scale_header
+            array_2d=np.array(self.native), header_dict=self.pixel_scale_header
         )
 
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
@@ -686,7 +686,7 @@ class AbstractArray2D(Structure):
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.native,
+            array_2d=np.array(self.native),
             file_path=file_path,
             overwrite=overwrite,
             header_dict=self.pixel_scale_header,
@@ -1169,7 +1169,7 @@ class Array2D(AbstractArray2D):
         header: Header = None,
     ) -> "Array2D":
         """
-        Returns an ``Array2D`` by by inputting the y and x pixel values where the array is filled and the values that
+        Returns an ``Array2D`` by inputting the y and x pixel values where the array is filled and the values that
         fill it.
 
         For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
@@ -1235,7 +1235,7 @@ class Array2D(AbstractArray2D):
         )
 
         grid_pixels = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid.slim,
+            grid_scaled_2d_slim=np.array(grid.slim),
             shape_native=shape_native,
             pixel_scales=pixel_scales,
         )
