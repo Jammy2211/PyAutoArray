@@ -181,7 +181,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
         return mask_2d_util.native_index_for_slim_index_2d_from(
-            mask_2d=self.mask, sub_size=self.mask.sub_size
+            mask_2d=self.mask.array, sub_size=self.mask.sub_size
         ).astype("int")
 
     @cached_property
