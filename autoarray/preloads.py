@@ -22,7 +22,7 @@ class Preloads:
         self,
         w_tilde=None,
         use_w_tilde=None,
-        sparse_image_plane_grid_pg_list=None,
+        image_plane_mesh_grid_pg_list=None,
         relocated_grid=None,
         mapper_list=None,
         operated_mapping_matrix=None,
@@ -35,12 +35,12 @@ class Preloads:
         regularization_matrix=None,
         log_det_regularization_matrix_term=None,
         traced_sparse_grids_list_of_planes=None,
-        sparse_image_plane_grid_list=None,
+        image_plane_mesh_grid_list=None,
     ):
         self.w_tilde = w_tilde
         self.use_w_tilde = use_w_tilde
 
-        self.sparse_image_plane_grid_pg_list = sparse_image_plane_grid_pg_list
+        self.image_plane_mesh_grid_pg_list = image_plane_mesh_grid_pg_list
         self.relocated_grid = relocated_grid
         self.mapper_list = mapper_list
         self.operated_mapping_matrix = operated_mapping_matrix
@@ -56,7 +56,7 @@ class Preloads:
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
         self.traced_sparse_grids_list_of_planes = traced_sparse_grids_list_of_planes
-        self.sparse_image_plane_grid_list = sparse_image_plane_grid_list
+        self.image_plane_mesh_grid_list = image_plane_mesh_grid_list
 
     @property
     def check_threshold(self):
