@@ -113,7 +113,6 @@ def test__from_pixels_grid_and_weight_map__stochastic_true():
         n_iter=1,
         max_iter=2,
         seed=1,
-        stochastic=False,
     )
     image_mesh_weight_0 = kmeans.image_plane_mesh_grid_from(
         grid=grid, adapt_data=weight_map
@@ -124,7 +123,6 @@ def test__from_pixels_grid_and_weight_map__stochastic_true():
         n_iter=1,
         max_iter=2,
         seed=1,
-        stochastic=False,
     )
     image_mesh_weight_1 = kmeans.image_plane_mesh_grid_from(
         grid=grid, adapt_data=weight_map
@@ -137,7 +135,6 @@ def test__from_pixels_grid_and_weight_map__stochastic_true():
         n_iter=1,
         max_iter=2,
         seed=1,
-        stochastic=True,
     )
     image_mesh_weight_0 = kmeans.image_plane_mesh_grid_from(
         grid=grid, adapt_data=weight_map
@@ -147,8 +144,7 @@ def test__from_pixels_grid_and_weight_map__stochastic_true():
         pixels=8,
         n_iter=1,
         max_iter=2,
-        seed=1,
-        stochastic=True,
+        seed=2,
     )
     image_mesh_weight_1 = kmeans.image_plane_mesh_grid_from(
         grid=grid, adapt_data=weight_map

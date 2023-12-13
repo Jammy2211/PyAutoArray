@@ -21,8 +21,7 @@ class KMeans(AbstractImageMesh):
         weight_power = 0.0,
         n_iter: int = 1,
         max_iter: int = 5,
-        seed: int = None,
-        stochastic: bool = False,
+        seed: int = 1,
     ):
         """
         Computes an image-mesh by running a weighted KMeans clustering algorithm.
@@ -48,9 +47,6 @@ class KMeans(AbstractImageMesh):
             The maximum number of iterations in one run of the KMeans algorithm.
         seed
             The random number seed, which can be used to reproduce the same image mesh via the kmeans for the same inputs.
-        stochastic
-            If True, the random number seed is randommly chosen every time the function is called, ensuring every
-            pixel-grid is randomly determined and thus stochastic.
         """
 
         super().__init__()
@@ -61,7 +57,6 @@ class KMeans(AbstractImageMesh):
         self.n_iter = n_iter
         self.max_iter = max_iter
         self.seed = seed
-        self.stochastic = stochastic
 
     def weight_map_from(self, adapt_data: np.ndarray):
         """
@@ -114,17 +109,12 @@ class KMeans(AbstractImageMesh):
 
         weight_map = self.weight_map_from(adapt_data=adapt_data)
 
-        if self.stochastic:
-            seed = np.random.randint(low=1, high=2**31)
-        else:
-            seed = self.seed
-
         if self.pixels > grid.shape[0]:
             raise exc.GridException
 
         kmeans = ScipyKMeans(
             n_clusters=int(self.pixels),
-            random_state=seed,
+            random_state=self.seed,
             n_init=self.n_iter,
             max_iter=self.max_iter,
         )
@@ -137,3 +127,7 @@ class KMeans(AbstractImageMesh):
         return Grid2DIrregular(
             values=kmeans.cluster_centers_,
         )
+
+    @property
+    def is_stochastic(self):
+        return True

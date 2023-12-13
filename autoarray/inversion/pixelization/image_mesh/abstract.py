@@ -14,6 +14,10 @@ class AbstractImageMesh:
         """
         pass
 
+    @property
+    def is_stochastic(self):
+        return False
+
     def image_plane_mesh_grid_from(
         self, grid: Grid2D, adapt_data: Optional[np.ndarray]
     ) -> Grid2DIrregular:

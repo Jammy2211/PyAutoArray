@@ -109,13 +109,6 @@ class AbstractMesh:
     ):
         raise NotImplementedError
 
-    def weight_map_from(self, adapt_data: np.ndarray):
-        raise NotImplementedError()
-
-    @property
-    def is_stochastic(self):
-        return False
-
     def __str__(self):
         return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
 
