@@ -3,7 +3,7 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.pixelization.data_grid import kmeans as data_grid
+from autoarray.inversion.pixelization.image_mesh import kmeans as data_grid
 
 
 def test__from_total_pixels_grid_and_weight_map():

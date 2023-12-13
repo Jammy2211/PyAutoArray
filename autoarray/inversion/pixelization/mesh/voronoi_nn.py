@@ -95,7 +95,6 @@ class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
 
 
 class VoronoiNNHilbert(VoronoiHilbert):
-
     @property
     def uses_interpolation(self):
         return True

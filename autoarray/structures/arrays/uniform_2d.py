@@ -474,7 +474,9 @@ class AbstractArray2D(Structure):
         """
         Bins the 2D array up to a 1D array, where each value is the mean of all unmasked values in each row.
         """
-        binned_array = (self.native*np.invert(self.mask)).sum(axis=0)/np.invert(self.mask).sum(axis=0)
+        binned_array = (self.native * np.invert(self.mask)).sum(axis=0) / np.invert(
+            self.mask
+        ).sum(axis=0)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     @property
@@ -482,7 +484,9 @@ class AbstractArray2D(Structure):
         """
         Bins the 2D array up to a 1D array, where each value is the mean of all unmasked values in each column.
         """
-        binned_array = (self.native*np.invert(self.mask)).sum(axis=1)/np.invert(self.mask).sum(axis=1)
+        binned_array = (self.native * np.invert(self.mask)).sum(axis=1) / np.invert(
+            self.mask
+        ).sum(axis=1)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":

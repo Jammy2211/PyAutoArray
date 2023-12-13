@@ -124,7 +124,7 @@ def test__delaunay_mapper():
 
     pix = aa.mesh.DelaunayMagnification(shape=(3, 3))
     sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        grid=grid, unmasked_sparse_shape=pix.shape
+        grid=grid, shape_overlay=pix.shape
     )
 
     mapper_grids = pix.mapper_grids_from(
@@ -198,7 +198,7 @@ def test__voronoi_mapper():
 
     pix = aa.mesh.VoronoiMagnification(shape=(3, 3))
     sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        grid=grid, unmasked_sparse_shape=pix.shape
+        grid=grid, shape_overlay=pix.shape
     )
 
     mapper_grids = pix.mapper_grids_from(

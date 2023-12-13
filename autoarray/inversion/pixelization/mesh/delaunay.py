@@ -6,6 +6,8 @@ from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
 from autoarray.inversion.pixelization.settings import SettingsPixelization
 
+from autoarray.inversion.pixelization import image_mesh
+
 from autoarray.numba_util import profile_func
 
 
@@ -134,8 +136,8 @@ class DelaunayMagnification(Delaunay):
         settings
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
-        return Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-            grid=image_plane_data_grid, unmasked_sparse_shape=self.shape
+        return image_mesh.via_magnification_from(
+            grid=image_plane_data_grid, shape_overlay=self.shape
         )
 
 

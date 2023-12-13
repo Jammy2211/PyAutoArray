@@ -141,7 +141,7 @@ class VoronoiMagnification(Voronoi):
             Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         """
         return Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-            grid=image_plane_data_grid, unmasked_sparse_shape=self.shape
+            grid=image_plane_data_grid, shape_overlay=self.shape
         )
 
 
@@ -263,7 +263,6 @@ class VoronoiBrightnessImage(Voronoi):
 
 
 class VoronoiHilbert(Voronoi):
-
     def __init__(
         self, pixels=10, weight_floor: float = 0.0, weight_power: float = 0.0, **kwargs
     ):
@@ -378,7 +377,7 @@ class VoronoiHilbert(Voronoi):
             mask=adapt_data.mask,
             mask_radius=adapt_data.mask.radius,
             pixel_scales=adapt_data.mask.pixel_scales,
-            length_hb=193
+            length_hb=193,
         )
 
         weight_map = self.weight_map_from(adapt_data=adapt_data_hb)
@@ -392,4 +391,3 @@ class VoronoiHilbert(Voronoi):
     @property
     def is_stochastic(self) -> bool:
         return True
-

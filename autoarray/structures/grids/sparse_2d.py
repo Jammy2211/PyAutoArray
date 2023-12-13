@@ -8,7 +8,6 @@ if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
 
 
-
 from autoarray.structures.abstract_structure import Structure
 
 from autoarray import exc
@@ -51,12 +50,16 @@ class Grid2DSparse(Structure):
 
     @classmethod
     def from_hilbert_curve(
-            cls,
-            total_pixels: int,
-            weight_map: np.ndarray,
-            grid_hb: np.ndarray,
+        cls,
+        total_pixels: int,
+        weight_map: np.ndarray,
+        grid_hb: np.ndarray,
     ):
-        drawn_id, drawn_x, drawn_y = sparse_2d_util.inverse_transform_sampling_interpolated(
+        (
+            drawn_id,
+            drawn_x,
+            drawn_y,
+        ) = sparse_2d_util.inverse_transform_sampling_interpolated(
             probabilities=weight_map,
             n_samples=total_pixels,
             gridx=grid_hb[:, 1],

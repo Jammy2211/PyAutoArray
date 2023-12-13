@@ -184,11 +184,11 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     pix_1 = aa.mesh.DelaunayMagnification(shape=(4, 4))
 
     sparse_grid_0 = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        grid=grid, unmasked_sparse_shape=pix_0.shape
+        grid=grid, shape_overlay=pix_0.shape
     )
 
     sparse_grid_1 = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        grid=grid, unmasked_sparse_shape=pix_1.shape
+        grid=grid, shape_overlay=pix_1.shape
     )
 
     mapper_grids_0 = pix_0.mapper_grids_from(
