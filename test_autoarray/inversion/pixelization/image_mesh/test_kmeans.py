@@ -71,7 +71,7 @@ def test__from_pixels_grid_and_weight_map():
     weight_map = np.ones(mask.pixels_in_mask)
 
     kmeans = aa.image_mesh.KMeans(pixels=8, n_iter=10, max_iter=20, seed=1)
-    image_mesh = kmeans.image_mesh_from(grid=grid, weight_map=weight_map)
+    image_mesh = kmeans.image_mesh_grid_from(grid=grid, weight_map=weight_map)
 
     assert (
         image_mesh
@@ -108,7 +108,7 @@ def test__from_pixels_grid_and_weight_map():
     weight_map[0:15] = 0.00000001
 
     kmeans = aa.image_mesh.KMeans(pixels=8, n_iter=10, max_iter=30, seed=1)
-    image_mesh = kmeans.image_mesh_from(grid=grid, weight_map=weight_map)
+    image_mesh = kmeans.image_mesh_grid_from(grid=grid, weight_map=weight_map)
 
     assert image_mesh[1] == pytest.approx(np.array([0.4166666, -0.0833333]), 1.0e-4)
 
@@ -138,7 +138,7 @@ def test__from_pixels_grid_and_weight_map__stochastic_true():
         seed=1,
         stochastic=False,
     )
-    image_mesh_weight_0 = kmeans.image_mesh_from(grid=grid, weight_map=weight_map)
+    image_mesh_weight_0 = kmeans.image_mesh_grid_from(grid=grid, weight_map=weight_map)
 
     kmeans = aa.image_mesh.KMeans(
         pixels=8,
@@ -147,7 +147,7 @@ def test__from_pixels_grid_and_weight_map__stochastic_true():
         seed=1,
         stochastic=False,
     )
-    image_mesh_weight_1 = kmeans.image_mesh_from(grid=grid, weight_map=weight_map)
+    image_mesh_weight_1 = kmeans.image_mesh_grid_from(grid=grid, weight_map=weight_map)
 
     assert (image_mesh_weight_0 == image_mesh_weight_1).all()
 
@@ -158,7 +158,7 @@ def test__from_pixels_grid_and_weight_map__stochastic_true():
         seed=1,
         stochastic=True,
     )
-    image_mesh_weight_0 = kmeans.image_mesh_from(grid=grid, weight_map=weight_map)
+    image_mesh_weight_0 = kmeans.image_mesh_grid_from(grid=grid, weight_map=weight_map)
 
     kmeans = aa.image_mesh.KMeans(
         pixels=8,
@@ -167,6 +167,6 @@ def test__from_pixels_grid_and_weight_map__stochastic_true():
         seed=1,
         stochastic=True,
     )
-    image_mesh_weight_1 = kmeans.image_mesh_from(grid=grid, weight_map=weight_map)
+    image_mesh_weight_1 = kmeans.image_mesh_grid_from(grid=grid, weight_map=weight_map)
 
     assert (image_mesh_weight_0 != image_mesh_weight_1).any()

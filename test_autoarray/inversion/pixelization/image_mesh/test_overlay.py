@@ -242,7 +242,7 @@ def test__overlay_via_unmasked_overlaid_from():
     ).all()
 
 
-def test__image_mesh_from__simple():
+def test__image_mesh_grid_from__simple():
     mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -254,7 +254,7 @@ def test__image_mesh_from__simple():
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(10, 10))
-    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_mesh_grid_from(grid=grid, weight_map=None)
 
     unmasked_overlay_grid_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
         shape_native=(10, 10), pixel_scales=(0.15, 0.15), sub_size=1, origin=(0.0, 0.0)
@@ -285,7 +285,7 @@ def test__image_mesh_from__simple():
     assert (image_mesh == image_mesh_util).all()
 
 
-def test__image_mesh_from__image_mesh_overlaps_mask_perfectly():
+def test__image_mesh_grid_from__image_mesh_overlaps_mask_perfectly():
     mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -297,7 +297,7 @@ def test__image_mesh_from__image_mesh_overlaps_mask_perfectly():
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_mesh_grid_from(grid=grid, weight_map=None)
 
     assert (
         image_mesh
@@ -320,7 +320,7 @@ def test__image_mesh_from__image_mesh_overlaps_mask_perfectly():
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(4, 3))
-    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_mesh_grid_from(grid=grid, weight_map=None)
 
     assert (
         image_mesh
@@ -339,7 +339,7 @@ def test__image_mesh_from__image_mesh_overlaps_mask_perfectly():
     ).all()
 
 
-def test__image_mesh_from__mask_with_offset_centre():
+def test__image_mesh_grid_from__mask_with_offset_centre():
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -360,7 +360,7 @@ def test__image_mesh_from__mask_with_offset_centre():
     # the central (3x3) pixels only.
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_mesh_grid_from(grid=grid, weight_map=None)
 
     assert (
         image_mesh
@@ -387,14 +387,14 @@ def test__image_mesh_from__mask_with_offset_centre():
     # the central (3x3) pixels only.
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_mesh_grid_from(grid=grid, weight_map=None)
     assert (
         image_mesh
         == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0], [-2.0, 2.0]])
     ).all()
 
 
-def test__image_mesh_from__sets_up_with_correct_shape_and_pixel_scales(
+def test__image_mesh_grid_from__sets_up_with_correct_shape_and_pixel_scales(
     mask_2d_7x7,
 ):
     mask = aa.Mask2D(
@@ -413,7 +413,7 @@ def test__image_mesh_from__sets_up_with_correct_shape_and_pixel_scales(
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(4, 3))
-    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_mesh_grid_from(grid=grid, weight_map=None)
     assert (
         image_mesh
         == np.array(
@@ -431,7 +431,7 @@ def test__image_mesh_from__sets_up_with_correct_shape_and_pixel_scales(
     ).all()
 
 
-def test__image_mesh_from__offset_mask__origin_shift_corrects():
+def test__image_mesh_grid_from__offset_mask__origin_shift_corrects():
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -449,7 +449,7 @@ def test__image_mesh_from__offset_mask__origin_shift_corrects():
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_mesh_grid_from(grid=grid, weight_map=None)
     assert (
         image_mesh
         == np.array(

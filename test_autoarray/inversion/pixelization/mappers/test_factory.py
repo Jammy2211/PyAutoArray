@@ -50,9 +50,9 @@ def test__rectangular_mapper():
         mask=mask,
     )
 
-    pix = aa.mesh.Rectangular(shape=(3, 3))
+    mesh = aa.mesh.Rectangular(shape=(3, 3))
 
-    mapper_grids = pix.mapper_grids_from(
+    mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
         settings=aa.SettingsPixelization(use_border=False),
@@ -122,14 +122,13 @@ def test__delaunay_mapper():
 
     grid = aa.Grid2D(values=grid, mask=mask)
 
-    pix = aa.mesh.DelaunayMagnification(shape=(3, 3))
-    sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        grid=grid, shape_overlay=pix.shape
-    )
+    mesh = aa.mesh.Delaunay()
+    image_mesh = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    image_mesh_grid = image_mesh.image_mesh_grid_from(grid=grid, weight_map=None)
 
-    mapper_grids = pix.mapper_grids_from(
+    mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
-        source_plane_mesh_grid=sparse_grid,
+        source_plane_mesh_grid=image_mesh_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -139,7 +138,7 @@ def test__delaunay_mapper():
     assert mapper.source_plane_data_grid.shape_native_scaled_interior == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
-    assert (mapper.source_plane_mesh_grid == sparse_grid).all()
+    assert (mapper.source_plane_mesh_grid == image_mesh_grid).all()
     assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     assert mapper.mapping_matrix == pytest.approx(
@@ -196,14 +195,13 @@ def test__voronoi_mapper():
 
     grid = aa.Grid2D(values=grid, mask=mask)
 
-    pix = aa.mesh.VoronoiMagnification(shape=(3, 3))
-    sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        grid=grid, shape_overlay=pix.shape
-    )
+    mesh = aa.mesh.Voronoi()
+    image_mesh = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    image_mesh_grid = image_mesh.image_mesh_grid_from(grid=grid, weight_map=None)
 
-    mapper_grids = pix.mapper_grids_from(
+    mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
-        source_plane_mesh_grid=sparse_grid,
+        source_plane_mesh_grid=image_mesh_grid,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
@@ -213,7 +211,7 @@ def test__voronoi_mapper():
     assert mapper.source_plane_data_grid.shape_native_scaled_interior == pytest.approx(
         (2.02, 2.01), 1.0e-4
     )
-    assert (mapper.source_plane_mesh_grid == sparse_grid).all()
+    assert (mapper.source_plane_mesh_grid == image_mesh_grid).all()
     assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
     assert (
