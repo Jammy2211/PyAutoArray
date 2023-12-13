@@ -147,15 +147,3 @@ class Rectangular(AbstractMesh):
         return Mesh2DRectangular.overlay_grid(
             shape_native=self.shape, grid=source_plane_data_grid
         )
-
-    def image_plane_mesh_grid_from(
-        self,
-        image_plane_data_grid: Grid2D,
-        adapt_data: np.ndarray = None,
-        settings=SettingsPixelization(),
-        noise_map: np.ndarray = None,
-    ):
-        """
-        Not used for rectangular pixelization.
-        """
-        return None
