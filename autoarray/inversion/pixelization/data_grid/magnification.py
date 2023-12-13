@@ -159,7 +159,7 @@ def sparse_grid_via_unmasked_from(
     return pix_grid
 
 
-def via_magnification_from(grid: Grid2D, unmasked_sparse_shape: Tuple[int, int]):
+def via_magnification_from(grid: Grid2D, unmasked_sparse_shape: Tuple[int, int]) -> Grid2DIrregular:
     """
     Calculate `Grid2D` from the unmasked 2D shape of the sparse grid.
 

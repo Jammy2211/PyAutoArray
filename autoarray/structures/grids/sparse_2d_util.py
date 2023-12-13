@@ -2,10 +2,6 @@ import logging
 import numpy as np
 from scipy.interpolate import interp1d, griddata
 
-from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.util.gilbert_2d import gilbert2d
-from autoarray import numba_util
-
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
@@ -17,6 +13,8 @@ def create_grid_hb_order(length, mask_radius):
         length: the size of the square grid.
         mask_radius: the circular mask radius. This code only works with a circular mask.
     '''
+
+    from autoarray.util.gilbert_2d import gilbert2d
 
     xy_generator = gilbert2d(length, length)
 
@@ -47,6 +45,8 @@ def create_img_and_grid_hb_order(img_2d, mask, mask_radius, pixel_scales, length
         This code will create a grid in Hilbert space-filling curve order and an interpolated hyper
         image associated to that grid.
     '''
+
+    from autoarray.structures.grids.uniform_2d import Grid2D
 
     shape_nnn = np.shape(mask)[0]
 

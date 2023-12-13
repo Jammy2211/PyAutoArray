@@ -1,7 +1,7 @@
 from __future__ import annotations
 import numpy as np
 from sklearn.cluster import KMeans
-from typing import TYPE_CHECKING, Optional, Tuple
+from typing import TYPE_CHECKING, Optional
 import warnings
 
 if TYPE_CHECKING:
@@ -10,10 +10,6 @@ if TYPE_CHECKING:
 from autoarray.structures.abstract_structure import Structure
 
 from autoarray import exc
-from autoarray.mask.mask_2d import Mask2D
-from autoarray.geometry import geometry_util
-from autoarray.structures.grids import grid_2d_util
-from autoarray.mask.mask_2d import mask_2d_util
 from autoarray.structures.grids import sparse_2d_util
 
 
