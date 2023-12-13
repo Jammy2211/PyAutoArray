@@ -3,7 +3,7 @@ import pytest
 
 import autoarray as aa
 
-from autoarray.inversion.pixelization.image_mesh import overlay
+from autoarray.inversion.pixelization.image_mesh import overlay as overlay_util
 
 
 def test__overlay_for_mask_from():
@@ -19,12 +19,12 @@ def test__overlay_for_mask_from():
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    total_masked_pixels = overlay.total_pixels_2d_from(
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
         mask_2d=mask_2d,
         overlaid_centres=overlaid_centres,
     )
 
-    overlay_for_mask = overlay.overlay_for_mask_from(
+    overlay_for_mask = overlay_util.overlay_for_mask_from(
         total_pixels=total_masked_pixels,
         mask=mask_2d,
         overlaid_centres=overlaid_centres,
@@ -36,12 +36,12 @@ def test__overlay_for_mask_from():
         [[0, 0], [0, 1], [2, 2], [1, 1], [0, 2], [2, 0], [0, 2]]
     )
 
-    total_masked_pixels = overlay.total_pixels_2d_from(
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
         mask_2d=mask_2d,
         overlaid_centres=overlaid_centres,
     )
 
-    overlay_for_mask = overlay.overlay_for_mask_from(
+    overlay_for_mask = overlay_util.overlay_for_mask_from(
         total_pixels=total_masked_pixels,
         mask=mask_2d,
         overlaid_centres=overlaid_centres,
@@ -61,12 +61,12 @@ def test__overlay_for_mask_from():
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    total_masked_pixels = overlay.total_pixels_2d_from(
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
         mask_2d=mask_2d,
         overlaid_centres=overlaid_centres,
     )
 
-    overlay_for_mask = overlay.overlay_for_mask_from(
+    overlay_for_mask = overlay_util.overlay_for_mask_from(
         total_pixels=total_masked_pixels,
         mask=mask_2d,
         overlaid_centres=overlaid_centres,
@@ -90,12 +90,12 @@ def test__overlay_for_mask_from():
         [[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1], [2, 3], [2, 2]]
     )
 
-    total_masked_pixels = overlay.total_pixels_2d_from(
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
         mask_2d=mask_2d,
         overlaid_centres=overlaid_centres,
     )
 
-    overlay_for_mask = overlay.overlay_for_mask_from(
+    overlay_for_mask = overlay_util.overlay_for_mask_from(
         total_pixels=total_masked_pixels,
         mask=mask_2d,
         overlaid_centres=overlaid_centres,
@@ -117,7 +117,7 @@ def test__mask_for_overlay_from():
         [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
     )
 
-    mask_for_overlay = overlay.mask_for_overlay_from(
+    mask_for_overlay = overlay_util.mask_for_overlay_from(
         mask=mask_2d,
         overlaid_centres=overlaid_centres,
         total_pixels=9,
@@ -129,7 +129,7 @@ def test__mask_for_overlay_from():
         [[0, 0], [0, 1], [2, 2], [1, 1], [0, 2], [2, 0], [0, 2]]
     )
 
-    mask_for_overlay = overlay.mask_for_overlay_from(
+    mask_for_overlay = overlay_util.mask_for_overlay_from(
         mask=mask_2d,
         overlaid_centres=overlaid_centres,
         total_pixels=9,
@@ -147,7 +147,7 @@ def test__mask_for_overlay_from():
 
     overlaid_centres = np.array([[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1]])
 
-    mask_for_overlay = overlay.mask_for_overlay_from(
+    mask_for_overlay = overlay_util.mask_for_overlay_from(
         mask=mask_2d,
         overlaid_centres=overlaid_centres,
         total_pixels=4,
@@ -171,7 +171,7 @@ def test__mask_for_overlay_from():
         [[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1], [2, 3], [0, 2]]
     )
 
-    mask_for_overlay = overlay.mask_for_overlay_from(
+    mask_for_overlay = overlay_util.mask_for_overlay_from(
         mask=mask_2d,
         overlaid_centres=overlaid_centres,
         total_pixels=5,
@@ -183,7 +183,7 @@ def test__mask_for_overlay_from():
 def test__overlay_via_unmasked_overlaid_from():
     unmasked_overlay_grid = np.array([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
     overlay_for_mask = np.array([0, 1, 2, 3])
-    pix_grid = overlay.overlay_via_unmasked_overlaid_from(
+    pix_grid = overlay_util.overlay_via_unmasked_overlaid_from(
         unmasked_overlay_grid=unmasked_overlay_grid,
         overlay_for_mask=overlay_for_mask,
     )
@@ -194,7 +194,7 @@ def test__overlay_via_unmasked_overlaid_from():
 
     unmasked_overlay_grid = np.array([[0.0, 0.0], [4.0, 5.0], [2.0, 2.0], [8.0, 7.0]])
     overlay_for_mask = np.array([1, 0, 3, 2])
-    pix_grid = overlay.overlay_via_unmasked_overlaid_from(
+    pix_grid = overlay_util.overlay_via_unmasked_overlaid_from(
         unmasked_overlay_grid=unmasked_overlay_grid,
         overlay_for_mask=overlay_for_mask,
     )
@@ -205,7 +205,7 @@ def test__overlay_via_unmasked_overlaid_from():
 
     unmasked_overlay_grid = np.array([[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
     overlay_for_mask = np.array([1, 2])
-    pix_grid = overlay.overlay_via_unmasked_overlaid_from(
+    pix_grid = overlay_util.overlay_via_unmasked_overlaid_from(
         unmasked_overlay_grid=unmasked_overlay_grid,
         overlay_for_mask=overlay_for_mask,
     )
@@ -214,7 +214,7 @@ def test__overlay_via_unmasked_overlaid_from():
 
     unmasked_overlay_grid = np.array([[0.0, 0.0], [4.0, 5.0], [2.0, 2.0], [8.0, 7.0]])
     overlay_for_mask = np.array([2, 2, 3])
-    pix_grid = overlay.overlay_via_unmasked_overlaid_from(
+    pix_grid = overlay_util.overlay_via_unmasked_overlaid_from(
         unmasked_overlay_grid=unmasked_overlay_grid,
         overlay_for_mask=overlay_for_mask,
     )
@@ -232,7 +232,7 @@ def test__overlay_via_unmasked_overlaid_from():
         ]
     )
     overlay_for_mask = np.array([1, 0, 5, 2])
-    pix_grid = overlay.overlay_via_unmasked_overlaid_from(
+    pix_grid = overlay_util.overlay_via_unmasked_overlaid_from(
         unmasked_overlay_grid=unmasked_overlay_grid,
         overlay_for_mask=overlay_for_mask,
     )
@@ -242,7 +242,7 @@ def test__overlay_via_unmasked_overlaid_from():
     ).all()
 
 
-def test__via_magnification_from__simple():
+def test__image_mesh_from__simple():
     mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -252,8 +252,9 @@ def test__via_magnification_from__simple():
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
-
-    grid_overlay = overlay.via_magnification_from(shape_overlay=(10, 10), grid=grid)
+    
+    overlay = aa.image_mesh.Overlay(shape_overlay=(10, 10))
+    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
 
     unmasked_overlay_grid_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
         shape_native=(10, 10), pixel_scales=(0.15, 0.15), sub_size=1, origin=(0.0, 0.0)
@@ -265,26 +266,26 @@ def test__via_magnification_from__simple():
         pixel_scales=grid.pixel_scales,
     ).astype("int")
 
-    total_pixels = overlay.total_pixels_2d_from(
+    total_pixels = overlay_util.total_pixels_2d_from(
         mask_2d=mask,
         overlaid_centres=overlaid_centres,
     )
 
-    overlay_for_mask_2d_util = overlay.overlay_for_mask_from(
+    overlay_for_mask_2d_util = overlay_util.overlay_for_mask_from(
         total_pixels=total_pixels,
         mask=mask,
         overlaid_centres=overlaid_centres,
     ).astype("int")
 
-    grid_overlay_util = overlay.overlay_via_unmasked_overlaid_from(
+    image_mesh_util = overlay_util.overlay_via_unmasked_overlaid_from(
         unmasked_overlay_grid=unmasked_overlay_grid_util,
         overlay_for_mask=overlay_for_mask_2d_util,
     )
 
-    assert (grid_overlay == grid_overlay_util).all()
+    assert (image_mesh == image_mesh_util).all()
 
 
-def test__via_magnification_from__grid_overlay_overlaps_mask_perfectly():
+def test__image_mesh_from__image_mesh_overlaps_mask_perfectly():
     mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -294,11 +295,12 @@ def test__via_magnification_from__grid_overlay_overlaps_mask_perfectly():
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
-
-    grid_overlay = overlay.via_magnification_from(shape_overlay=(3, 3), grid=grid)
+    
+    overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
 
     assert (
-        grid_overlay
+        image_mesh
         == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
     ).all()
 
@@ -317,9 +319,11 @@ def test__via_magnification_from__grid_overlay_overlaps_mask_perfectly():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    grid_overlay = overlay.via_magnification_from(shape_overlay=(4, 3), grid=grid)
+    overlay = aa.image_mesh.Overlay(shape_overlay=(4, 3))
+    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
+
     assert (
-        grid_overlay
+        image_mesh
         == np.array(
             [
                 [1.5, 0.0],
@@ -335,7 +339,7 @@ def test__via_magnification_from__grid_overlay_overlaps_mask_perfectly():
     ).all()
 
 
-def test__via_magnification_from__mask_with_offset_centre():
+def test__image_mesh_from__mask_with_offset_centre():
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -355,10 +359,11 @@ def test__via_magnification_from__mask_with_offset_centre():
     # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
     # the central (3x3) pixels only.
 
-    grid_overlay = overlay.via_magnification_from(shape_overlay=(3, 3), grid=grid)
+    overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
 
     assert (
-        grid_overlay
+        image_mesh
         == np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
     ).all()
 
@@ -381,14 +386,15 @@ def test__via_magnification_from__mask_with_offset_centre():
     # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
     # the central (3x3) pixels only.
 
-    grid_overlay = overlay.via_magnification_from(shape_overlay=(3, 3), grid=grid)
+    overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
     assert (
-        grid_overlay
+        image_mesh
         == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0], [-2.0, 2.0]])
     ).all()
 
 
-def test__via_magnification_from__sets_up_with_correct_shape_and_pixel_scales(
+def test__image_mesh_from__sets_up_with_correct_shape_and_pixel_scales(
     mask_2d_7x7,
 ):
     mask = aa.Mask2D(
@@ -406,9 +412,10 @@ def test__via_magnification_from__sets_up_with_correct_shape_and_pixel_scales(
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    grid_overlay = overlay.via_magnification_from(shape_overlay=(4, 3), grid=grid)
+    overlay = aa.image_mesh.Overlay(shape_overlay=(4, 3))
+    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
     assert (
-        grid_overlay
+        image_mesh
         == np.array(
             [
                 [1.5, 0.0],
@@ -424,7 +431,7 @@ def test__via_magnification_from__sets_up_with_correct_shape_and_pixel_scales(
     ).all()
 
 
-def test__via_magnification_from__offset_mask__origin_shift_corrects():
+def test__image_mesh_from__offset_mask__origin_shift_corrects():
     mask = aa.Mask2D(
         mask=np.array(
             [
@@ -441,9 +448,10 @@ def test__via_magnification_from__offset_mask__origin_shift_corrects():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    grid_overlay = overlay.via_magnification_from(shape_overlay=(3, 3), grid=grid)
+    overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
     assert (
-        grid_overlay
+        image_mesh
         == np.array(
             [
                 [2.0, 0.0],

@@ -1,9 +1,7 @@
-from typing import Optional, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from autoarray.structures.grids.uniform_2d import Grid2D
+from typing import Optional
 
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 class AbstractImageMesh:

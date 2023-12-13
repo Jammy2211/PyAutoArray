@@ -23,6 +23,7 @@ from .fit.fit_interferometer import FitInterferometer
 from .geometry.geometry_2d import Geometry2D
 from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization import mesh
+from .inversion.pixelization import image_mesh
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.abstract import AbstractInversion
