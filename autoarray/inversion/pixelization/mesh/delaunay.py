@@ -1,12 +1,6 @@
-import numpy as np
 
-from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.sparse_2d import Grid2DSparse
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
-from autoarray.inversion.pixelization.settings import SettingsPixelization
-
-from autoarray.inversion.pixelization import image_mesh
 
 from autoarray.numba_util import profile_func
 
