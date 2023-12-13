@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 from autoarray.structures.abstract_structure import Structure
 
 from autoarray import exc
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
 from autoarray.mask.mask_2d import mask_2d_util
@@ -49,85 +50,6 @@ class Grid2DSparse(Structure):
     def __array_finalize__(self, obj):
         if hasattr(obj, "mask"):
             self.mask = obj.mask
-
-    @classmethod
-    def from_grid_and_unmasked_2d_grid_shape(
-        cls, grid: Grid2D, unmasked_sparse_shape: Tuple[int, int]
-    ) -> "Grid2DSparse":
-        """
-        Calculate a Grid2DSparse a Grid2D from the unmasked 2D shape of the sparse grid.
-
-        This is performed by overlaying the 2D sparse grid (computed from the unmaksed sparse shape) over the edge
-        values of the Grid2D.
-
-        This function is used in the `Inversion` package to set up the VoronoiMagnification Mesh.
-
-        Parameters
-        ----------
-        grid : Grid2D
-            The grid of (y,x) scaled coordinates at the centre of every image value (e.g. image-pixels).
-        unmasked_sparse_shape
-            The 2D shape of the sparse grid which is overlaid over the grid.
-        """
-
-        pixel_scales = grid.mask.pixel_scales
-
-        pixel_scales = (
-            (grid.shape_native_scaled_interior[0] + pixel_scales[0])
-            / (unmasked_sparse_shape[0]),
-            (grid.shape_native_scaled_interior[1] + pixel_scales[1])
-            / (unmasked_sparse_shape[1]),
-        )
-
-        origin = grid.mask.mask_centre
-
-        unmasked_sparse_grid_1d = grid_2d_util.grid_2d_slim_via_shape_native_from(
-            shape_native=unmasked_sparse_shape,
-            pixel_scales=pixel_scales,
-            sub_size=1,
-            origin=origin,
-        )
-
-        unmasked_sparse_grid_pixel_centres = (
-            geometry_util.grid_pixel_centres_2d_slim_from(
-                grid_scaled_2d_slim=unmasked_sparse_grid_1d,
-                shape_native=grid.mask.shape_native,
-                pixel_scales=grid.mask.pixel_scales,
-            ).astype("int")
-        )
-
-        total_sparse_pixels = mask_2d_util.total_sparse_pixels_2d_from(
-            mask_2d=grid.mask,
-            unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
-        )
-
-        sparse_for_unmasked_sparse = sparse_2d_util.sparse_for_unmasked_sparse_from(
-            mask=grid.mask,
-            unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
-            total_sparse_pixels=total_sparse_pixels,
-        ).astype("int")
-
-        unmasked_sparse_for_sparse = sparse_2d_util.unmasked_sparse_for_sparse_from(
-            total_sparse_pixels=total_sparse_pixels,
-            mask=grid.mask,
-            unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
-        ).astype("int")
-
-        regular_to_unmasked_sparse = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid,
-            shape_native=unmasked_sparse_shape,
-            pixel_scales=pixel_scales,
-            origin=origin,
-        ).astype("int")
-
-        sparse_grid = sparse_2d_util.sparse_grid_via_unmasked_from(
-            unmasked_sparse_grid=unmasked_sparse_grid_1d,
-            unmasked_sparse_for_sparse=unmasked_sparse_for_sparse,
-        )
-
-        return Grid2DSparse(
-            values=sparse_grid,
-        )
 
     @classmethod
     def from_total_pixels_grid_and_weight_map(
@@ -190,6 +112,24 @@ class Grid2DSparse(Structure):
         return Grid2DSparse(
             values=kmeans.cluster_centers_,
         )
+
+    @classmethod
+    def from_hilbert_curve(
+            cls,
+            total_pixels: int,
+            weight_map: np.ndarray,
+            grid_hb: np.ndarray,
+    ):
+        drawn_id, drawn_x, drawn_y = sparse_2d_util.inverse_transform_sampling_interpolated(
+            probabilities=weight_map,
+            n_samples=total_pixels,
+            gridx=grid_hb[:, 1],
+            gridy=grid_hb[:, 0],
+        )
+
+        spix_centers = np.stack((drawn_y, drawn_x), axis=-1)
+
+        return Grid2DSparse(values=spix_centers)
 
     @classmethod
     def from_snr_split(

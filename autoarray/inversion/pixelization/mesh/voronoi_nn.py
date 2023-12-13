@@ -1,5 +1,6 @@
 from autoarray.inversion.pixelization.mesh.voronoi import VoronoiMagnification
 from autoarray.inversion.pixelization.mesh.voronoi import VoronoiBrightnessImage
+from autoarray.inversion.pixelization.mesh.voronoi import VoronoiHilbert
 from autoarray.inversion.pixelization.mesh.voronoi import VoronoiSNRImage
 
 
@@ -93,10 +94,12 @@ class VoronoiNNBrightnessImage(VoronoiBrightnessImage):
     def uses_interpolation(self):
         return True
 
-    @property
-    def is_stochastic(self) -> bool:
-        return True
 
+class VoronoiNNHilbert(VoronoiHilbert):
+
+    @property
+    def uses_interpolation(self):
+        return True
 
 class VoronoiNNSNRImage(VoronoiSNRImage):
     """
@@ -144,8 +147,4 @@ class VoronoiNNSNRImage(VoronoiSNRImage):
 
     @property
     def uses_interpolation(self):
-        return True
-
-    @property
-    def is_stochastic(self) -> bool:
         return True
