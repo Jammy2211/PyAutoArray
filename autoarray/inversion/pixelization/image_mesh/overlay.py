@@ -160,7 +160,7 @@ def overlay_via_unmasked_overlaid_from(
 
 
 class Overlay(AbstractImageMesh):
-    def __init__(self, shape_overlay = (3, 3)):
+    def __init__(self, shape = (3, 3)):
         """
         Computes an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the
         pixelization is fitting.
@@ -168,7 +168,7 @@ class Overlay(AbstractImageMesh):
         For example, the masked image data may consist of a 2D annular region. This image mesh class determines
         the image-mesh grid as follows:
 
-        1) Overlay a uniform grid of dimensions `shape_overlay` over the annular mask, covering its four extreme (y,x)
+        1) Overlay a uniform grid of dimensions `shape` over the annular mask, covering its four extreme (y,x)
         coordinates (e.g. max(x), min(x), max(y), min(y)).
 
         2) Find all pixels in the overlaid uniform grid which are contained within the annular mask, discarding
@@ -176,13 +176,13 @@ class Overlay(AbstractImageMesh):
 
         Parameters
         ----------
-        shape_overlay
+        shape
             The 2D shape of the grid which is overlaid over the grid to determine the image mesh.
         """
 
         super().__init__()
 
-        self.shape_overlay = shape_overlay
+        self.shape = shape
 
     def image_plane_mesh_grid_from(
         self, grid: Grid2D, adapt_data: Optional[np.ndarray]
@@ -206,15 +206,15 @@ class Overlay(AbstractImageMesh):
 
         pixel_scales = (
             (grid.shape_native_scaled_interior[0] + pixel_scales[0])
-            / (self.shape_overlay[0]),
+            / (self.shape[0]),
             (grid.shape_native_scaled_interior[1] + pixel_scales[1])
-            / (self.shape_overlay[1]),
+            / (self.shape[1]),
         )
 
         origin = grid.mask.mask_centre
 
         unmasked_overlay_grid = grid_2d_util.grid_2d_slim_via_shape_native_from(
-            shape_native=self.shape_overlay,
+            shape_native=self.shape,
             pixel_scales=pixel_scales,
             sub_size=1,
             origin=origin,

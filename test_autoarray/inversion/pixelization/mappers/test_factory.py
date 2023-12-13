@@ -123,7 +123,7 @@ def test__delaunay_mapper():
     grid = aa.Grid2D(values=grid, mask=mask)
 
     mesh = aa.mesh.Delaunay()
-    image_mesh = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    image_mesh = aa.image_mesh.Overlay(shape=(3, 3))
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
         grid=grid, adapt_data=None
     )
@@ -198,7 +198,7 @@ def test__voronoi_mapper():
     grid = aa.Grid2D(values=grid, mask=mask)
 
     mesh = aa.mesh.Voronoi()
-    image_mesh = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    image_mesh = aa.image_mesh.Overlay(shape=(3, 3))
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
         grid=grid, adapt_data=None
     )

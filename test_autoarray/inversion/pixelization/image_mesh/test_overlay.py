@@ -316,7 +316,7 @@ def test__image_plane_mesh_grid_from__simple():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    overlay = aa.image_mesh.Overlay(shape_overlay=(10, 10))
+    overlay = aa.image_mesh.Overlay(shape=(10, 10))
     image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     unmasked_overlay_grid_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
@@ -359,7 +359,7 @@ def test__image_plane_mesh_grid_from__image_mesh_overlaps_mask_perfectly():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    overlay = aa.image_mesh.Overlay(shape=(3, 3))
     image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     assert (
@@ -382,7 +382,7 @@ def test__image_plane_mesh_grid_from__image_mesh_overlaps_mask_perfectly():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    overlay = aa.image_mesh.Overlay(shape_overlay=(4, 3))
+    overlay = aa.image_mesh.Overlay(shape=(4, 3))
     image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     assert (
@@ -422,7 +422,7 @@ def test__image_plane_mesh_grid_from__mask_with_offset_centre():
     # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
     # the central (3x3) pixels only.
 
-    overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    overlay = aa.image_mesh.Overlay(shape=(3, 3))
     image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     assert (
@@ -449,7 +449,7 @@ def test__image_plane_mesh_grid_from__mask_with_offset_centre():
     # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
     # the central (3x3) pixels only.
 
-    overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    overlay = aa.image_mesh.Overlay(shape=(3, 3))
     image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
     assert (
         image_mesh
@@ -475,7 +475,7 @@ def test__image_plane_mesh_grid_from__sets_up_with_correct_shape_and_pixel_scale
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    overlay = aa.image_mesh.Overlay(shape_overlay=(4, 3))
+    overlay = aa.image_mesh.Overlay(shape=(4, 3))
     image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
     assert (
         image_mesh
@@ -511,7 +511,7 @@ def test__image_plane_mesh_grid_from__offset_mask__origin_shift_corrects():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
+    overlay = aa.image_mesh.Overlay(shape=(3, 3))
     image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
     assert (
         image_mesh

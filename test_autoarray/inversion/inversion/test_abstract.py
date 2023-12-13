@@ -183,8 +183,8 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     mesh_0 = aa.mesh.Delaunay()
     mesh_1 = aa.mesh.Delaunay()
 
-    image_mesh_0 = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh_1 = aa.image_mesh.Overlay(shape_overlay=(4, 4))
+    image_mesh_0 = aa.image_mesh.Overlay(shape=(3, 3))
+    image_mesh_1 = aa.image_mesh.Overlay(shape=(4, 4))
 
     image_mesh_grid_0 = image_mesh_0.image_plane_mesh_grid_from(
         grid=grid, adapt_data=None

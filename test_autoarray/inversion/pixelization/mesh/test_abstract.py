@@ -15,7 +15,7 @@ def test__grid_is_relocated_via_border(sub_grid_2d_7x7):
     grid = aa.Grid2D.from_mask(mask=mask)
 
     image_mesh = aa.image_mesh.Overlay(
-        shape_overlay=(3, 3),
+        shape=(3, 3),
     )
     image_mesh = image_mesh.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
