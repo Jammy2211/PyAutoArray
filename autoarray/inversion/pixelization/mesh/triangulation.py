@@ -2,7 +2,7 @@ import numpy as np
 from typing import Dict, Optional
 
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.sparse_2d import Grid2DSparse
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.preloads import Preloads
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
@@ -13,8 +13,8 @@ class Triangulation(AbstractMesh):
     def mapper_grids_from(
         self,
         source_plane_data_grid: Grid2D,
-        source_plane_mesh_grid: Grid2DSparse = None,
-        image_plane_mesh_grid: Grid2DSparse = None,
+        source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
+        image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: np.ndarray = None,
         settings=SettingsPixelization(),
         preloads: Preloads = Preloads(),
