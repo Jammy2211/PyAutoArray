@@ -112,15 +112,19 @@ def test__from_shape_overlay_and_grid():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        shape_overlay=(10, 10), grid=grid
+    image_mesh = aa.image_mesh.Overlay(
+        shape_overlay=(10, 10),
+    )
+
+    image_mesh_grid = image_mesh.image_mesh_grid_from(
+        grid=grid, weight_map=None
     )
 
     mesh = aa.Mesh2DVoronoi(
-        values=sparse_grid,
+        values=image_mesh_grid,
     )
 
-    assert (sparse_grid == mesh).all()
+    assert (image_mesh_grid == mesh).all()
 
 
 def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():

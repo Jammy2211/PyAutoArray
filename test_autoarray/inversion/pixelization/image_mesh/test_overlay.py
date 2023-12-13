@@ -6,6 +6,71 @@ import autoarray as aa
 from autoarray.inversion.pixelization.image_mesh import overlay as overlay_util
 
 
+
+
+def test__total_pixels_2d_from():
+    mask_2d = np.array(
+        [[False, False, False], [False, False, False], [False, False, False]]
+    )
+
+    full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
+
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
+        mask_2d=mask_2d, overlaid_centres=full_pix_grid_pixel_centres
+    )
+
+    assert total_masked_pixels == 4
+
+    mask_2d = np.array(
+        [[True, False, True], [False, False, False], [True, False, True]]
+    )
+
+    full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
+
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
+        mask_2d=mask_2d, overlaid_centres=full_pix_grid_pixel_centres
+    )
+
+    assert total_masked_pixels == 2
+
+    full_pix_grid_pixel_centres = np.array(
+        [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [2, 1]]
+    )
+
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
+        mask_2d=mask_2d, overlaid_centres=full_pix_grid_pixel_centres
+    )
+
+    assert total_masked_pixels == 4
+
+    mask_2d = np.array(
+        [
+            [True, False, True],
+            [True, False, True],
+            [False, False, False],
+            [True, False, True],
+        ]
+    )
+
+    full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 1]])
+
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
+        mask_2d=mask_2d, overlaid_centres=full_pix_grid_pixel_centres
+    )
+
+    assert total_masked_pixels == 2
+
+    full_pix_grid_pixel_centres = np.array(
+        [[0, 0], [0, 1], [0, 2], [1, 1], [2, 0], [2, 1], [2, 2], [3, 1]]
+    )
+
+    total_masked_pixels = overlay_util.total_pixels_2d_from(
+        mask_2d=mask_2d, overlaid_centres=full_pix_grid_pixel_centres
+    )
+
+    assert total_masked_pixels == 6
+
+
 def test__overlay_for_mask_from():
     mask_2d = aa.Mask2D(
         mask=np.array(
