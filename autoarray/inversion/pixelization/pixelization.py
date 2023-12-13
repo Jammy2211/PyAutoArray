@@ -1,5 +1,6 @@
 from typing import Callable, Optional
 
+from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
@@ -9,6 +10,7 @@ class Pixelization:
         self,
         mesh: AbstractMesh,
         regularization: Optional[AbstractRegularization] = None,
+        image_mesh: Optional[AbstractImageMesh] = None,
     ):
         """
         Pairs a 2D grid of (y,x) coordinates with a 2D mesh, which can be combined with a ``Regularization``
@@ -114,6 +116,9 @@ class Pixelization:
         regularization
             The regularization object that can smooth ``Pixelization`` pixels with one another when it is used to
             reconstruct data via an `Inversion`.
+        image_mesh
+            The grid of mesh coordinates may be derived from the image, for example if the pixelization is adaptive.
+            This object controls how this mesh is computed.
 
         Examples
         --------
@@ -151,6 +156,7 @@ class Pixelization:
         """
         self.mesh = mesh
         self.regularization = regularization
+        self.image_mesh = image_mesh
 
     @property
     def mapper_grids_from(self) -> Callable:
