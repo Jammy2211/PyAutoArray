@@ -117,16 +117,16 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    pix_0 = aa.mesh.Rectangular(shape=(3, 3))
-    pix_1 = aa.mesh.Rectangular(shape=(4, 4))
+    mesh_0 = aa.mesh.Rectangular(shape=(3, 3))
+    mesh_1 = aa.mesh.Rectangular(shape=(4, 4))
 
-    mapper_grids_0 = pix_0.mapper_grids_from(
+    mapper_grids_0 = mesh_0.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
-    mapper_grids_1 = pix_1.mapper_grids_from(
+    mapper_grids_1 = mesh_1.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
         settings=aa.SettingsPixelization(use_border=False),
@@ -180,24 +180,27 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    pix_0 = aa.mesh.DelaunayMagnification(shape=(3, 3))
-    pix_1 = aa.mesh.DelaunayMagnification(shape=(4, 4))
+    mesh_0 = aa.mesh.Delaunay()
+    mesh_1 = aa.mesh.Delaunay()
 
-    sparse_grid_0 = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        grid=grid, shape_overlay=pix_0.shape
+    image_mesh_0 = aa.image_mesh.Overlay(shape_overlay=(3,3))
+    image_mesh_1 = aa.image_mesh.Overlay(shape_overlay=(4,4))
+
+    sparse_grid_0 = image_mesh_0.image_mesh_grid_from(
+        grid=grid, weight_map=None
     )
 
-    sparse_grid_1 = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        grid=grid, shape_overlay=pix_1.shape
+    sparse_grid_1 =image_mesh_1.image_mesh_grid_from(
+        grid=grid, weight_map=None
     )
 
-    mapper_grids_0 = pix_0.mapper_grids_from(
+    mapper_grids_0 = mesh_0.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=sparse_grid_0,
         settings=aa.SettingsPixelization(use_border=False),
     )
 
-    mapper_grids_1 = pix_1.mapper_grids_from(
+    mapper_grids_1 = mesh_1.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=sparse_grid_1,
         settings=aa.SettingsPixelization(use_border=False),
