@@ -317,7 +317,7 @@ def test__image_plane_mesh_grid_from__simple():
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(10, 10))
-    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     unmasked_overlay_grid_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
         shape_native=(10, 10), pixel_scales=(0.15, 0.15), sub_size=1, origin=(0.0, 0.0)
@@ -360,7 +360,7 @@ def test__image_plane_mesh_grid_from__image_mesh_overlaps_mask_perfectly():
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     assert (
         image_mesh
@@ -383,7 +383,7 @@ def test__image_plane_mesh_grid_from__image_mesh_overlaps_mask_perfectly():
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(4, 3))
-    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     assert (
         image_mesh
@@ -423,7 +423,7 @@ def test__image_plane_mesh_grid_from__mask_with_offset_centre():
     # the central (3x3) pixels only.
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     assert (
         image_mesh
@@ -450,7 +450,7 @@ def test__image_plane_mesh_grid_from__mask_with_offset_centre():
     # the central (3x3) pixels only.
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
     assert (
         image_mesh
         == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0], [-2.0, 2.0]])
@@ -476,7 +476,7 @@ def test__image_plane_mesh_grid_from__sets_up_with_correct_shape_and_pixel_scale
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(4, 3))
-    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
     assert (
         image_mesh
         == np.array(
@@ -512,7 +512,7 @@ def test__image_plane_mesh_grid_from__offset_mask__origin_shift_corrects():
     grid = aa.Grid2D.from_mask(mask=mask)
 
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
-    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, weight_map=None)
+    image_mesh = overlay.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
     assert (
         image_mesh
         == np.array(

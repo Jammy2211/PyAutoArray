@@ -90,7 +90,7 @@ class KMeans(AbstractImageMesh):
         return np.power(weight_map, self.weight_power)
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, weight_map: Optional[np.ndarray]
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray]
     ) -> Grid2DIrregular:
         """
         Returns an image mesh by running a KMeans clustering algorithm on the weight map.
@@ -102,7 +102,7 @@ class KMeans(AbstractImageMesh):
         grid
             The grid of (y,x) coordinates of the image data the pixelization fits, which the KMeans algorithm
             adapts to.
-        weight_map
+        adapt_data
             The weights defining the regions of the image the KMeans algorithm adapts to.
 
         Returns
@@ -111,6 +111,8 @@ class KMeans(AbstractImageMesh):
         """
 
         warnings.filterwarnings("ignore")
+
+        weight_map = self.weight_map_from(adapt_data=adapt_data)
 
         if self.stochastic:
             seed = np.random.randint(low=1, high=2**31)

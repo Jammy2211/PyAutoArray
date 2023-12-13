@@ -185,7 +185,7 @@ class Overlay(AbstractImageMesh):
         self.shape_overlay = shape_overlay
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, weight_map: Optional[np.ndarray]
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray]
     ) -> Grid2DIrregular:
         """
         Returns an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the
@@ -198,7 +198,7 @@ class Overlay(AbstractImageMesh):
         grid
             The grid of (y,x) coordinates of the image data the pixelization fits, which the overlay grid is laid
             over.
-        weight_map
+        adapt_data
             Not used by this image mesh.
         """
 

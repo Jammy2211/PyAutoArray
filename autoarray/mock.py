@@ -1,5 +1,6 @@
 from autoarray.dataset.mock.mock_dataset import MockDataset
 from autoarray.inversion.mock.mock_mesh import MockMesh
+from autoarray.inversion.mock.mock_image_mesh import MockImageMesh
 from autoarray.inversion.mock.mock_regularization import MockRegularization
 from autoarray.inversion.mock.mock_pixelization import MockPixelization
 from autoarray.inversion.mock.mock_mapper import MockMapper

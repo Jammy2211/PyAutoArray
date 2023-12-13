@@ -15,6 +15,6 @@ class AbstractImageMesh:
         pass
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, weight_map: Optional[np.ndarray]
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray]
     ) -> Grid2DIrregular:
         raise NotImplementedError

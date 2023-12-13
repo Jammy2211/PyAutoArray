@@ -117,7 +117,7 @@ def test__from_shape_overlay_and_grid():
     )
 
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-        grid=grid, weight_map=None
+        grid=grid, adapt_data=None
     )
 
     mesh = aa.Mesh2DVoronoi(
