@@ -43,6 +43,7 @@ from .inversion.pixelization.mappers.rectangular import MapperRectangularNoInter
 from .inversion.pixelization.mappers.delaunay import MapperDelaunay
 from .inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from .inversion.pixelization.mappers.voronoi import MapperVoronoi
+from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
 from .inversion.pixelization.settings import SettingsPixelization
 from .inversion.inversion.imaging.mapping import InversionImagingMapping

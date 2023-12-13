@@ -34,7 +34,7 @@ class Preloads:
         curvature_matrix_mapper_diag=None,
         regularization_matrix=None,
         log_det_regularization_matrix_term=None,
-        traced_sparse_grids_list_of_planes=None,
+        traced_mesh_grids_list_of_planes=None,
         image_plane_mesh_grid_list=None,
     ):
         self.w_tilde = w_tilde
@@ -55,7 +55,7 @@ class Preloads:
         self.regularization_matrix = regularization_matrix
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
-        self.traced_sparse_grids_list_of_planes = traced_sparse_grids_list_of_planes
+        self.traced_mesh_grids_list_of_planes = traced_mesh_grids_list_of_planes
         self.image_plane_mesh_grid_list = image_plane_mesh_grid_list
 
     @property

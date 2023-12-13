@@ -16,12 +16,12 @@ from autoarray import exc
 class KMeans(AbstractImageMesh):
     def __init__(
         self,
-        pixels=10,
-        weight_floor=0.0,
-        weight_power=0.0,
+        pixels = 10.0,
+        weight_floor = 0.0,
+        weight_power = 0.0,
         n_iter: int = 1,
         max_iter: int = 5,
-        seed: Optional[int] = None,
+        seed: int = None,
         stochastic: bool = False,
     ):
         """
