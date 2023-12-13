@@ -184,7 +184,7 @@ class Overlay(AbstractImageMesh):
 
         self.shape_overlay = shape_overlay
 
-    def image_mesh_grid_from(
+    def image_plane_mesh_grid_from(
         self, grid: Grid2D, weight_map: Optional[np.ndarray]
     ) -> Grid2DIrregular:
         """

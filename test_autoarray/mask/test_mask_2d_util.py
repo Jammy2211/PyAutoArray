@@ -34,6 +34,7 @@ def test__total_edge_pixels_from_mask():
 
     assert util.mask_2d.total_edge_pixels_from(mask_2d=mask_2d) == 8
 
+
 def test__mask_2d_circular_from():
     mask = util.mask_2d.mask_2d_circular_from(
         shape_native=(3, 3), pixel_scales=(1.0, 1.0), radius=0.5

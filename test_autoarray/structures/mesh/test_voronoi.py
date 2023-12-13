@@ -116,15 +116,15 @@ def test__from_shape_overlay_and_grid():
         shape_overlay=(10, 10),
     )
 
-    image_mesh_grid = image_mesh.image_mesh_grid_from(
+    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
         grid=grid, weight_map=None
     )
 
     mesh = aa.Mesh2DVoronoi(
-        values=image_mesh_grid,
+        values=image_plane_mesh_grid,
     )
 
-    assert (image_mesh_grid == mesh).all()
+    assert (image_plane_mesh_grid == mesh).all()
 
 
 def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():
