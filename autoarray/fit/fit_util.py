@@ -302,10 +302,10 @@ def chi_squared_with_mask_fast_from(
                     np.subtract(
                         data,
                         model_data,
-                    ),
-                    noise_map,
+                    )[np.asarray(mask) == 0],
+                    noise_map[np.asarray(mask) == 0],
                 )
-            )[np.asarray(mask) == 0]
+            )
         )
     )
 

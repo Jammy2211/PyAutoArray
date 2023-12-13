@@ -469,22 +469,6 @@ def voronoi_neighbors_from(
     -------
     The arrays containing the 1D index of every pixel's neighbors and the number of neighbors that each pixel has.
     """
-    """
-    Returns the neighbors and total number of neighbors of every cell on a Voronoi mesh. 
-    
-    Neighbors are returned as an ndarray of shape [total_pixels, max_neighbors_in_a_given_voronoi pixel], where 
-    entries have values of -1 if the pixel has no neighbor.
-    
-    The number of neighbors of every pixel is also returned as an ndarray of shape [total_pixels], where the values
-    are integers between 0 and the total neighbors in a given Voronoi pixel.
-    
-    Parameters
-    ----------
-    pixels
-        The number of pixels on the Voronoi mesh
-    ridge_points
-        Contains the information on every Voronoi pixel and its neighbors.
-    """
     neighbors_sizes = np.zeros(shape=(pixels))
 
     for ridge_index in range(ridge_points.shape[0]):

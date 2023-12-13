@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.spatial import cKDTree
 from typing import Tuple
 
 from autoconf import conf
@@ -171,6 +172,20 @@ def pix_indexes_for_sub_slim_index_delaunay_from(
 
     return pix_indexes_for_sub_slim_index, pix_indexes_for_sub_slim_index_sizes
 
+
+def nearest_pixelization_index_for_slim_index_from_kdtree(grid, mesh_grid):
+
+    kdtree = cKDTree(mesh_grid)
+
+    sparse_index_for_slim_index = []
+
+    for i in range(grid.shape[0]):
+
+        input_point = [grid[i, [0]], grid[i, 1]]
+        index = kdtree.query(input_point)[1]
+        sparse_index_for_slim_index.append(index)
+
+    return sparse_index_for_slim_index
 
 @numba_util.jit()
 def nearest_pixelization_index_for_slim_index_from(grid, mesh_grid):
