@@ -70,7 +70,3 @@ class Voronoi(Triangulation):
             values=source_plane_mesh_grid,
             uses_interpolation=self.uses_interpolation,
         )
-
-
-
-

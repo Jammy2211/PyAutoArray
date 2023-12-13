@@ -1,5 +1,6 @@
 from autoarray.inversion.pixelization.mesh.voronoi import Voronoi
 
+
 class VoronoiNN(Voronoi):
     """
     An irregular mesh of Voronoi pixels, which using natural neighbor interpolation are paired with a 2D grid of (y,x)
@@ -40,7 +41,3 @@ class VoronoiNN(Voronoi):
     @property
     def uses_interpolation(self):
         return True
-
-
-
-

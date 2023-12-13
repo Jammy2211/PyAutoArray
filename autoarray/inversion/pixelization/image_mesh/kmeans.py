@@ -84,7 +84,7 @@ class KMeans(AbstractImageMesh):
         The weight map which is used to adapt the Delaunay pixels in the image-plane to components in the data.
         """
         weight_map = (adapt_data - np.min(adapt_data)) / (
-                np.max(adapt_data) - np.min(adapt_data)
+            np.max(adapt_data) - np.min(adapt_data)
         ) + self.weight_floor * np.max(adapt_data)
 
         return np.power(weight_map, self.weight_power)

@@ -1,4 +1,3 @@
-
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
 
