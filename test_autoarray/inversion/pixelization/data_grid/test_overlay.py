@@ -252,7 +252,7 @@ def test__image_mesh_from__simple():
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
-    
+
     overlay = aa.image_mesh.Overlay(shape_overlay=(10, 10))
     image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
 
@@ -295,7 +295,7 @@ def test__image_mesh_from__image_mesh_overlaps_mask_perfectly():
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
-    
+
     overlay = aa.image_mesh.Overlay(shape_overlay=(3, 3))
     image_mesh = overlay.image_mesh_from(grid=grid, weight_map=None)
 

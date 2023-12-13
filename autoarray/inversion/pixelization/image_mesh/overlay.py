@@ -6,7 +6,6 @@ if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
-from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.geometry import geometry_util
@@ -161,7 +160,6 @@ def overlay_via_unmasked_overlaid_from(
 
 
 class Overlay(AbstractImageMesh):
-
     def __init__(self, shape_overlay: Tuple[int, int]):
         """
         Computes an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the
@@ -186,7 +184,9 @@ class Overlay(AbstractImageMesh):
 
         self.shape_overlay = shape_overlay
 
-    def image_mesh_from(self, grid: Grid2D, weight_map : Optional[Array2D]) -> Grid2DIrregular:
+    def image_mesh_from(
+        self, grid: Grid2D, weight_map: Optional[np.ndarray]
+    ) -> Grid2DIrregular:
         """
         Returns an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the
         pixelization is fitting.
@@ -205,8 +205,10 @@ class Overlay(AbstractImageMesh):
         pixel_scales = grid.mask.pixel_scales
 
         pixel_scales = (
-            (grid.shape_native_scaled_interior[0] + pixel_scales[0]) / (self.shape_overlay[0]),
-            (grid.shape_native_scaled_interior[1] + pixel_scales[1]) / (self.shape_overlay[1]),
+            (grid.shape_native_scaled_interior[0] + pixel_scales[0])
+            / (self.shape_overlay[0]),
+            (grid.shape_native_scaled_interior[1] + pixel_scales[1])
+            / (self.shape_overlay[1]),
         )
 
         origin = grid.mask.mask_centre

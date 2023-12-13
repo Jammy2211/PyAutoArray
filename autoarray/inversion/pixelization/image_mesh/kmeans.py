@@ -1,6 +1,6 @@
 from __future__ import annotations
 import numpy as np
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans as ScipyKMeans
 from typing import TYPE_CHECKING, Optional
 import warnings
 
@@ -8,16 +8,15 @@ if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
-from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray import exc
 
-class KMeans(AbstractImageMesh):
 
+class KMeans(AbstractImageMesh):
     def __init__(
         self,
-        pixels : int,
+        pixels: int,
         n_iter: int = 1,
         max_iter: int = 5,
         seed: Optional[int] = None,
@@ -60,7 +59,9 @@ class KMeans(AbstractImageMesh):
         self.seed = seed
         self.stochastic = stochastic
 
-    def image_mesh_from(self, grid: Grid2D, weight_map : Optional[Array2D]) -> Grid2DIrregular:
+    def image_mesh_from(
+        self, grid: Grid2D, weight_map: Optional[np.ndarray]
+    ) -> Grid2DIrregular:
         """
         Returns an image mesh by running a KMeans clustering algorithm on the weight map.
 
@@ -83,11 +84,13 @@ class KMeans(AbstractImageMesh):
 
         if self.stochastic:
             seed = np.random.randint(low=1, high=2**31)
+        else:
+            seed = self.seed
 
         if self.pixels > grid.shape[0]:
             raise exc.GridException
 
-        kmeans = KMeans(
+        kmeans = ScipyKMeans(
             n_clusters=int(self.pixels),
             random_state=seed,
             n_init=self.n_iter,
