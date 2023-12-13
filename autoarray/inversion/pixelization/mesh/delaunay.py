@@ -190,27 +190,6 @@ class DelaunayBrightnessImage(Delaunay):
         self.weight_floor = weight_floor
         self.weight_power = weight_power
 
-    def weight_map_from(self, adapt_data: np.ndarray):
-        """
-        Computes a ``weight_map`` from an input ``adapt_data``, where this image represents components in the masked 2d
-        data in the image-plane. This applies the ``weight_floor`` and ``weight_power`` attributes of the class, which
-        scale the weights to make different components upweighted relative to one another.
-
-        Parameters
-        ----------
-        adapt_data
-            A image which represents one or more components in the masked 2D data in the image-plane.
-
-        Returns
-        -------
-        The weight map which is used to adapt the Delaunay pixels in the image-plane to components in the data.
-        """
-        weight_map = (adapt_data - np.min(adapt_data)) / (
-            np.max(adapt_data) - np.min(adapt_data)
-        ) + self.weight_floor * np.max(adapt_data)
-
-        return np.power(weight_map, self.weight_power)
-
     def image_plane_mesh_grid_from(
         self,
         image_plane_data_grid: Grid2D,

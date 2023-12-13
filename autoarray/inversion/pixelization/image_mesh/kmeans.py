@@ -16,7 +16,9 @@ from autoarray import exc
 class KMeans(AbstractImageMesh):
     def __init__(
         self,
-        pixels: int,
+        pixels=10,
+        weight_floor=0.0,
+        weight_power=0.0,
         n_iter: int = 1,
         max_iter: int = 5,
         seed: Optional[int] = None,
@@ -54,10 +56,38 @@ class KMeans(AbstractImageMesh):
         super().__init__()
 
         self.pixels = pixels
+        self.weight_floor = weight_floor
+        self.weight_power = weight_power
         self.n_iter = n_iter
         self.max_iter = max_iter
         self.seed = seed
         self.stochastic = stochastic
+
+    def weight_map_from(self, adapt_data: np.ndarray):
+        """
+        Returns the weight-map used by the KMeans clustering algorithm to compute the Delaunay pixel corners.
+
+        This is computed from an input adapt_data, which is an image representing the data which the KMeans
+        clustering algorithm is applied too. This could be the image data itself, or a model fit which
+        only has certain features.
+
+        The ``weight_floor`` and ``weight_power`` attributes of the class are used to scale the weight map, which
+        gives the model flexibility in how it adapts the pixelization to the image data.
+
+        Parameters
+        ----------
+        adapt_data
+            A image which represents one or more components in the masked 2D data in the image-plane.
+
+        Returns
+        -------
+        The weight map which is used to adapt the Delaunay pixels in the image-plane to components in the data.
+        """
+        weight_map = (adapt_data - np.min(adapt_data)) / (
+                np.max(adapt_data) - np.min(adapt_data)
+        ) + self.weight_floor * np.max(adapt_data)
+
+        return np.power(weight_map, self.weight_power)
 
     def image_mesh_from(
         self, grid: Grid2D, weight_map: Optional[np.ndarray]
