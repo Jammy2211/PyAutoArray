@@ -56,9 +56,9 @@ class KMeans(AbstractImageMesh):
 
     def weight_map_from(self, adapt_data: np.ndarray):
         """
-        Returns the weight-map used by the KMeans clustering algorithm to compute the Delaunay pixel corners.
+        Returns the weight-map used by the KMeans clustering algorithm to compute the mesh pixel centres.
 
-        This is computed from an input adapt_data, which is an image representing the data which the KMeans
+        This is computed from an input adapt data, which is an image representing the data which the KMeans
         clustering algorithm is applied too. This could be the image data itself, or a model fit which
         only has certain features.
 
