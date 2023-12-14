@@ -99,6 +99,8 @@ def test__circular():
     assert (mask == mask_via_util).all()
     assert mask.origin == (0.0, 0.0)
     assert mask.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
+    assert mask.is_circular == True
+    assert mask.radius == 3.5
 
     mask = aa.Mask2D.circular(
         shape_native=(5, 4),
@@ -135,6 +137,7 @@ def test__circular_annular():
     assert (mask == mask_via_util).all()
     assert mask.origin == (0.0, 0.0)
     assert mask.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
+    assert mask.is_circular == False
 
     mask = aa.Mask2D.circular_annular(
         shape_native=(5, 4),
