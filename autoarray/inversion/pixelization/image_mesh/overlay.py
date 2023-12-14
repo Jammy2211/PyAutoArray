@@ -160,7 +160,7 @@ def overlay_via_unmasked_overlaid_from(
 
 
 class Overlay(AbstractImageMesh):
-    def __init__(self, shape = (3, 3)):
+    def __init__(self, shape=(3, 3)):
         """
         Computes an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the
         pixelization is fitting.
@@ -205,10 +205,8 @@ class Overlay(AbstractImageMesh):
         pixel_scales = grid.mask.pixel_scales
 
         pixel_scales = (
-            (grid.shape_native_scaled_interior[0] + pixel_scales[0])
-            / (self.shape[0]),
-            (grid.shape_native_scaled_interior[1] + pixel_scales[1])
-            / (self.shape[1]),
+            (grid.shape_native_scaled_interior[0] + pixel_scales[0]) / (self.shape[0]),
+            (grid.shape_native_scaled_interior[1] + pixel_scales[1]) / (self.shape[1]),
         )
 
         origin = grid.mask.mask_centre

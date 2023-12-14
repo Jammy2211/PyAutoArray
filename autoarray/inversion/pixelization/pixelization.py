@@ -4,6 +4,8 @@ from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMe
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
+from autoarray import exc
+
 
 class Pixelization:
     def __init__(
@@ -154,6 +156,19 @@ class Pixelization:
 
             model = af.Collection(galaxies=af.Collection(galaxy=galaxy))
         """
+
+        from autoarray.inversion.pixelization.mesh.rectangular import Rectangular
+
+        if not isinstance(mesh, Rectangular):
+            if image_mesh is None:
+                raise exc.PixelizationException(
+                    """
+                    A pixelization has been created which requires an image-mesh to be supplied (e.g. Delaunay, Voronoi).
+                    
+                    However, not image-mesh has been input.
+                    """
+                )
+
         self.mesh = mesh
         self.regularization = regularization
         self.image_mesh = image_mesh

@@ -2,9 +2,7 @@ import copy
 
 
 class SettingsPixelization:
-    def __init__(
-        self, use_border: bool = True, seed: int = 0
-    ):
+    def __init__(self, use_border: bool = True, seed: int = 0):
         """
         Settings which control how a pixelization is performed.
 

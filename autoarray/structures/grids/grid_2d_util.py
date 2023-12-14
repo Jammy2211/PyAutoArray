@@ -627,7 +627,7 @@ def relocated_grid_via_jit_from(grid, border_grid):
 
     Parameters
     ----------
-    grid : Grid2D
+    grid
         The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
     border_grid : Grid2D
         The grid of border (y,x) coordinates.

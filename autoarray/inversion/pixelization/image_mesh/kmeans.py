@@ -16,12 +16,9 @@ from autoarray import exc
 class KMeans(AbstractImageMesh):
     def __init__(
         self,
-        pixels = 10.0,
-        weight_floor = 0.0,
-        weight_power = 0.0,
-        n_iter: int = 1,
-        max_iter: int = 5,
-        seed: int = 1,
+        pixels=10.0,
+        weight_floor=0.0,
+        weight_power=0.0,
     ):
         """
         Computes an image-mesh by running a weighted KMeans clustering algorithm.
@@ -54,9 +51,8 @@ class KMeans(AbstractImageMesh):
         self.pixels = pixels
         self.weight_floor = weight_floor
         self.weight_power = weight_power
-        self.n_iter = n_iter
-        self.max_iter = max_iter
-        self.seed = seed
+
+        self.seed = 1
 
     def weight_map_from(self, adapt_data: np.ndarray):
         """
@@ -115,8 +111,8 @@ class KMeans(AbstractImageMesh):
         kmeans = ScipyKMeans(
             n_clusters=int(self.pixels),
             random_state=self.seed,
-            n_init=self.n_iter,
-            max_iter=self.max_iter,
+            n_init=1,
+            max_iter=5,
         )
 
         try:
