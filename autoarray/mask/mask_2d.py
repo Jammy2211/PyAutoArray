@@ -295,6 +295,9 @@ class Mask2D(Mask):
             origin=origin,
         )
 
+        obj.is_circular = False
+        obj.radius = None
+
         return obj
 
     def __array_finalize__(self, obj):
@@ -407,13 +410,18 @@ class Mask2D(Mask):
             centre=centre,
         )
 
-        return cls(
+        mask = cls(
             mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
+
+        mask.is_circular = True
+        mask.radius = radius
+
+        return mask
 
     @classmethod
     def circular_annular(
