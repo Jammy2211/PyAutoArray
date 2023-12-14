@@ -147,3 +147,7 @@ class Rectangular(AbstractMesh):
         return Mesh2DRectangular.overlay_grid(
             shape_native=self.shape, grid=source_plane_data_grid
         )
+
+    @property
+    def requires_image_mesh(self):
+        return False

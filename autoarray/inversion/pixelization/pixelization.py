@@ -157,10 +157,8 @@ class Pixelization:
             model = af.Collection(galaxies=af.Collection(galaxy=galaxy))
         """
 
-        from autoarray.inversion.pixelization.mesh.rectangular import Rectangular
-
-        if not isinstance(mesh, Rectangular):
-            if image_mesh is None:
+        if mesh is not None:
+            if mesh.requires_image_mesh and image_mesh is None:
                 raise exc.PixelizationException(
                     """
                     A pixelization has been created which requires an image-mesh to be supplied (e.g. Delaunay, Voronoi).

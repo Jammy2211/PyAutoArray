@@ -1,6 +1,5 @@
 import numpy as np
 
-from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from autoarray.inversion.pixelization.pixelization import Pixelization
 
 
@@ -13,8 +12,6 @@ class MockPixelization(Pixelization):
         mapper=None,
         image_plane_mesh_grid=None,
     ):
-
-        image_mesh = image_mesh or AbstractImageMesh
 
         super().__init__(
             mesh=mesh, regularization=regularization, image_mesh=image_mesh
