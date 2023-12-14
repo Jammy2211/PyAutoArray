@@ -867,3 +867,30 @@ def test__mask_centre():
     mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     assert mask.mask_centre == (-0.5, -0.5)
+
+
+def test__is_circular():
+
+    mask = np.array(
+        [
+            [True, True, True, True],
+            [True, False, False, True],
+            [True, True, True, True],
+        ]
+    )
+
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
+
+    assert mask.is_circular == False
+
+    mask = aa.Mask2D.circular(shape_native=(5,5), radius=1.0, pixel_scales=(1.0, 1.0))
+
+    assert mask.is_circular == True
+
+    mask = aa.Mask2D.circular(shape_native=(10,10), radius=3.0, pixel_scales=(1.0, 1.0))
+
+    assert mask.is_circular == True
+
+    mask = aa.Mask2D.circular(shape_native=(10,10), radius=4.0, pixel_scales=(1.0, 1.0))
+
+    assert mask.is_circular == True

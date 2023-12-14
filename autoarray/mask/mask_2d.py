@@ -1041,3 +1041,31 @@ class Mask2D(Mask):
             sub_size=self.sub_size,
             origin=self.zoom_offset_scaled,
         )
+
+    @property
+    def is_circular(self)-> bool:
+        """
+        Returns whether the mask is circular or not.
+        
+        This is performed by taking the central row and column of the mask (based on the mask centre) and counting
+        the number of unmasked pixels. If the number of unmasked pixels is the same, the mask is circular.
+
+        This function does not support rectangular masks and an exception will be raised if the pixel scales in each
+        direction are different.
+        """
+
+        if self.pixel_scales[0] != self.pixel_scales[1]:
+
+            raise exc.MaskException(
+                """
+                The is_circular function cannot be called for a mask with different pixel scales in each dimension
+                (e.g. it does not support rectangular masks.
+                """
+            )
+
+        pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(scaled_coordinates_2d=self.mask_centre)
+
+        central_row_pixels = sum(np.invert(self[pixel_coordinates_2d[0], :]))
+        central_column_pixels = sum(np.invert(self[:, pixel_coordinates_2d[1]]))
+
+        return central_row_pixels == central_column_pixels
