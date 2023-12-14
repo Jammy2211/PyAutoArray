@@ -48,5 +48,6 @@ class MockMesh(AbstractMesh):
 
         return self.image_plane_mesh_grid
 
+    @property
     def requires_image_mesh(self):
         return False
