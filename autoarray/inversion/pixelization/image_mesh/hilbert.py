@@ -82,7 +82,7 @@ def generate2d(x, y, ax, ay, bx, by):
         )
 
 
-def create_super_res_grid(img_2d, mask, mask_radius, pixel_scales, sub_scale=11):
+def super_resolution_grid_from(img_2d, mask, mask_radius, pixel_scales, sub_scale=11):
     '''
         This function will create a higher resolution grid for the img_2d. The new grid and its
         interpolated values will be used to generate a sparse image grid.
@@ -122,7 +122,7 @@ def create_super_res_grid(img_2d, mask, mask_radius, pixel_scales, sub_scale=11)
     return new_img, new_grid
 
 
-def create_grid_hb_order(length, mask_radius):
+def grid_hilbert_order_from(length, mask_radius):
     '''
         This function will create a grid in the Hilbert space-filling curve order.
 
@@ -154,7 +154,7 @@ def create_grid_hb_order(length, mask_radius):
     return x1d_hb, y1d_hb
 
 
-def create_img_and_grid_hb_order(img_2d, mask, mask_radius, pixel_scales, length_hb):
+def image_and_grid_from(image, mask, mask_radius, pixel_scales, hilbert_length):
     '''
         This code will create a grid in Hilbert space-filling curve order and an interpolated hyper
         image associated to that grid.
@@ -168,8 +168,8 @@ def create_img_and_grid_hb_order(img_2d, mask, mask_radius, pixel_scales, length
         sub_size=1
         )
 
-    x1d_hb, y1d_hb = create_grid_hb_order(
-        length=length_hb,
+    x1d_hb, y1d_hb = grid_hilbert_order_from(
+        length=hilbert_length,
         mask_radius=mask_radius
         )
 
@@ -179,7 +179,7 @@ def create_img_and_grid_hb_order(img_2d, mask, mask_radius, pixel_scales, length
 
     new_img = griddata(
         points=grid,
-        values=img_2d.ravel(),
+        values=image.ravel(),
         xi=new_grid,
         fill_value=0.0,
         method='linear'
@@ -304,12 +304,12 @@ class Hilbert(AbstractImageMesh):
 
         """
 
-        adapt_data_hb, grid_hb = create_img_and_grid_hb_order(
-            img_2d=adapt_data,
-            mask=adapt_data.mask,
-            mask_radius=adapt_data.mask.radius,
-            pixel_scales=adapt_data.mask.pixel_scales,
-            length_hb=193,
+        adapt_data_hb, grid_hb = image_and_grid_from(
+            image=adapt_data,
+            mask=grid.mask,
+            mask_radius=grid.mask.radius,
+            pixel_scales=grid.mask.pixel_scales,
+            hilbert_length=193,
         )
 
         weight_map = self.weight_map_from(adapt_data=adapt_data_hb)
@@ -320,7 +320,7 @@ class Hilbert(AbstractImageMesh):
             drawn_y,
         ) = inverse_transform_sampling_interpolated(
             probabilities=weight_map,
-            n_samples=total_pixels,
+            n_samples=self.pixels,
             gridx=grid_hb[:, 1],
             gridy=grid_hb[:, 0],
         )
