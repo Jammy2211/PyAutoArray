@@ -304,6 +304,16 @@ class Hilbert(AbstractImageMesh):
 
         """
 
+        if not grid.mask.is_circular:
+
+            raise exc.PixelizationException(
+                """
+                Hilbert image-mesh has been called but the input grid does not use a circular mask.
+                
+                Ensure that analysis is using a circular mask via the Mask2D.circular classmethod.
+                """
+            )
+
         adapt_data_hb, grid_hb = image_and_grid_from(
             image=adapt_data,
             mask=grid.mask,
