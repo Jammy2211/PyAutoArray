@@ -501,7 +501,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_upscaled_1d = grid_2d_util.grid_2d_slim_upscaled_from(
-            grid_slim=grid_sparse_uniform,
+            grid_slim=np.array(grid_sparse_uniform),
             upscale_factor=upscale_factor,
             pixel_scales=pixel_scales,
         )

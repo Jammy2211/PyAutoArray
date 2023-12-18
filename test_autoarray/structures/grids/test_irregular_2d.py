@@ -249,7 +249,9 @@ def test__uniform__from_grid_sparse_uniform_upscale():
     )
 
     grid_upscale_util = aa.util.grid_2d.grid_2d_slim_upscaled_from(
-        grid_slim=grid_sparse_uniform, upscale_factor=4, pixel_scales=(2.0, 2.0)
+        grid_slim=np.array(grid_sparse_uniform),
+        upscale_factor=4,
+        pixel_scales=(2.0, 2.0),
     )
 
     assert (grid_upscale == grid_upscale_util).all()

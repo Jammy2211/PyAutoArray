@@ -361,7 +361,8 @@ class AbstractMapper(LinearObj):
             source domain in order to compute their average values.
         """
         return mapper_util.mapped_to_source_via_mapping_matrix_from(
-            mapping_matrix=self.mapping_matrix, array_slim=array.binned.slim
+            mapping_matrix=self.mapping_matrix,
+            array_slim=np.array(array.binned.slim),
         )
 
     def extent_from(

@@ -1242,6 +1242,7 @@ class Grid2D(Structure):
 
         return Grid2DSparse(
             values=grid_2d_util.relocated_grid_via_jit_from(
-                grid=mesh_grid, border_grid=self.sub_border_grid
+                grid=np.array(mesh_grid),
+                border_grid=self.sub_border_grid,
             ),
         )

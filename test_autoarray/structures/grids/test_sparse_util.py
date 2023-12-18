@@ -18,13 +18,13 @@ def test__unmasked_sparse_for_sparse_from():
     )
 
     total_masked_pixels = aa.util.mask_2d.total_sparse_pixels_2d_from(
-        mask_2d=mask_2d,
+        mask_2d=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
     unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
         total_sparse_pixels=total_masked_pixels,
-        mask=mask_2d,
+        mask=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
@@ -35,13 +35,13 @@ def test__unmasked_sparse_for_sparse_from():
     )
 
     total_masked_pixels = aa.util.mask_2d.total_sparse_pixels_2d_from(
-        mask_2d=mask_2d,
+        mask_2d=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
     unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
         total_sparse_pixels=total_masked_pixels,
-        mask=mask_2d,
+        mask=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
@@ -60,13 +60,13 @@ def test__unmasked_sparse_for_sparse_from():
     )
 
     total_masked_pixels = aa.util.mask_2d.total_sparse_pixels_2d_from(
-        mask_2d=mask_2d,
+        mask_2d=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
     unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
         total_sparse_pixels=total_masked_pixels,
-        mask=mask_2d,
+        mask=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
@@ -89,13 +89,13 @@ def test__unmasked_sparse_for_sparse_from():
     )
 
     total_masked_pixels = aa.util.mask_2d.total_sparse_pixels_2d_from(
-        mask_2d=mask_2d,
+        mask_2d=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
     unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
         total_sparse_pixels=total_masked_pixels,
-        mask=mask_2d,
+        mask=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
     )
 
@@ -116,7 +116,7 @@ def test__sparse_for_unmasked_sparse_from():
     )
 
     sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-        mask=mask_2d,
+        mask=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         total_sparse_pixels=9,
     )
@@ -128,7 +128,7 @@ def test__sparse_for_unmasked_sparse_from():
     )
 
     sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-        mask=mask_2d,
+        mask=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         total_sparse_pixels=9,
     )
@@ -148,7 +148,7 @@ def test__sparse_for_unmasked_sparse_from():
     )
 
     sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-        mask=mask_2d,
+        mask=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         total_sparse_pixels=4,
     )
@@ -172,7 +172,7 @@ def test__sparse_for_unmasked_sparse_from():
     )
 
     sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-        mask=mask_2d,
+        mask=np.array(mask_2d),
         unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         total_sparse_pixels=5,
     )

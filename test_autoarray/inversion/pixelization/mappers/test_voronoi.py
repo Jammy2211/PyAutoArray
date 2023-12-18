@@ -24,9 +24,9 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     pix_indexes_for_sub_slim_index_util = np.array(
         [
             aa.util.mapper.pix_indexes_for_sub_slim_index_voronoi_from(
-                grid=grid_2d_7x7,
+                grid=np.array(grid_2d_7x7),
                 slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
-                mesh_grid=source_plane_mesh_grid,
+                mesh_grid=np.array(source_plane_mesh_grid),
                 neighbors=source_plane_mesh_grid.neighbors,
                 neighbors_sizes=source_plane_mesh_grid.neighbors.sizes,
             ).astype("int")
