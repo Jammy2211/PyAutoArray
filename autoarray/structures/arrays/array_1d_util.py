@@ -50,7 +50,7 @@ def convert_array_1d(
         return array_1d
     elif not store_native:
         return array_1d_slim_from(
-            array_1d_native=array_1d,
+            array_1d_native=np.array(array_1d),
             mask_1d=np.array(mask_1d),
             sub_size=mask_1d.sub_size,
         )
