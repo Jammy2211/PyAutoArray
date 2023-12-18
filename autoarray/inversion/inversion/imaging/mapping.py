@@ -130,8 +130,8 @@ class InversionImagingMapping(AbstractInversionImaging):
 
         return inversion_imaging_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=operated_mapping_matrix,
-            image=self.data,
-            noise_map=self.noise_map,
+            image=np.array(self.data),
+            noise_map=np.array(self.noise_map),
         )
 
     @property
