@@ -117,24 +117,24 @@ class Grid2DSparse(Structure):
         )
 
         total_sparse_pixels = mask_2d_util.total_sparse_pixels_2d_from(
-            mask_2d=grid.mask,
+            mask_2d=np.array(grid.mask),
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
         sparse_for_unmasked_sparse = sparse_2d_util.sparse_for_unmasked_sparse_from(
-            mask=grid.mask,
+            mask=np.array(grid.mask),
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=total_sparse_pixels,
         ).astype("int")
 
         unmasked_sparse_for_sparse = sparse_2d_util.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_sparse_pixels,
-            mask=grid.mask,
+            mask=np.array(grid.mask),
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         ).astype("int")
 
         regular_to_unmasked_sparse = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid,
+            grid_scaled_2d_slim=np.array(grid),
             shape_native=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             origin=origin,
