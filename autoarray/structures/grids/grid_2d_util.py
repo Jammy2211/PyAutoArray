@@ -722,11 +722,15 @@ def grid_2d_slim_from(
     """
 
     grid_1d_slim_y = array_2d_util.array_2d_slim_from(
-        array_2d_native=grid_2d_native[:, :, 0], mask_2d=mask, sub_size=sub_size
+        array_2d_native=grid_2d_native[:, :, 0],
+        mask_2d=np.array(mask),
+        sub_size=sub_size,
     )
 
     grid_1d_slim_x = array_2d_util.array_2d_slim_from(
-        array_2d_native=grid_2d_native[:, :, 1], mask_2d=mask, sub_size=sub_size
+        array_2d_native=grid_2d_native[:, :, 1],
+        mask_2d=np.array(mask),
+        sub_size=sub_size,
     )
 
     return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)

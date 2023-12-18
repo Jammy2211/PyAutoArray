@@ -708,10 +708,10 @@ class Grid2DIterate(Grid2D):
         threshold_mask = self.threshold_mask_via_grids_jit_from(
             fractional_accuracy_threshold=self.fractional_accuracy,
             relative_accuracy_threshold=self.relative_accuracy,
-            threshold_mask=threshold_mask,
-            grid_higher_sub_2d=grid_higher_sub_2d,
-            grid_lower_sub_2d=grid_lower_sub_2d,
-            grid_higher_mask=grid_higher_sub_2d.mask,
+            threshold_mask=np.array(threshold_mask),
+            grid_higher_sub_2d=np.array(grid_higher_sub_2d),
+            grid_lower_sub_2d=np.array(grid_lower_sub_2d),
+            grid_higher_mask=np.array(grid_higher_sub_2d.mask),
         )
 
         return Mask2D(
@@ -725,11 +725,11 @@ class Grid2DIterate(Grid2D):
     def threshold_mask_via_grids_jit_from(
         fractional_accuracy_threshold: float,
         relative_accuracy_threshold: float,
-        threshold_mask: Mask2D,
-        grid_higher_sub_2d: Grid2D,
-        grid_lower_sub_2d: Grid2D,
-        grid_higher_mask: Mask2D,
-    ) -> Mask2D:
+        threshold_mask: np.ndarray,
+        grid_higher_sub_2d: np.ndarray,
+        grid_lower_sub_2d: np.ndarray,
+        grid_higher_mask: np.ndarray,
+    ) -> np.ndarray:
         """
         Jitted function to determine the fractional mask, which is a mask where:
 
@@ -841,9 +841,9 @@ class Grid2DIterate(Grid2D):
 
             iterated_grid = self.iterated_grid_jit_from(
                 iterated_grid=iterated_grid,
-                threshold_mask_higher_sub=threshold_mask_higher_sub,
-                threshold_mask_lower_sub=threshold_mask_lower_sub,
-                grid_higher_sub_2d=grid_higher_sub,
+                threshold_mask_higher_sub=np.array(threshold_mask_higher_sub),
+                threshold_mask_lower_sub=np.array(threshold_mask_lower_sub),
+                grid_higher_sub_2d=np.array(grid_higher_sub),
             )
 
             if threshold_mask_higher_sub.is_all_true:
@@ -875,9 +875,9 @@ class Grid2DIterate(Grid2D):
     @numba_util.jit()
     def iterated_grid_jit_from(
         iterated_grid: Grid2D,
-        threshold_mask_higher_sub: Mask2D,
-        threshold_mask_lower_sub: Mask2D,
-        grid_higher_sub_2d: Grid2D,
+        threshold_mask_higher_sub: np.ndarray,
+        threshold_mask_lower_sub: np.ndarray,
+        grid_higher_sub_2d: np.ndarray,
     ) -> Grid2D:
         """
         Create the iterated grid from a result grid that is computed at a higher sub size level than the previous grid.
