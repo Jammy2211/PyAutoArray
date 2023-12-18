@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from autoarray.structures.abstract_structure import Structure
 
 from autoarray.structures.arrays import array_2d_util
+from autoconf import conf
 
 
 def to_new_array(func):
@@ -63,6 +64,12 @@ class AbstractNDArray(ABC):
             )
         )
         return values, keys
+
+    @staticmethod
+    def flip_hdu_for_ds9(values):
+        if conf.instance["general"]["fits"]["flip_for_ds9"]:
+            return np.flipud(values)
+        return values
 
     @classmethod
     def instance_unflatten(cls, aux_data, children):
