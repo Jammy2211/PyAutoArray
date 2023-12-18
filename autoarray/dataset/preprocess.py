@@ -148,7 +148,9 @@ def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_ma
     exposure_time_map
         The exposure time at every data-point of the data.
     """
-    return (data_eps * exposure_time_map) ** 0.5 / exposure_time_map
+    return data_eps.with_new_array(
+        np.abs(data_eps * exposure_time_map) ** 0.5 / exposure_time_map
+    )
 
 
 def noise_map_via_weight_map_from(weight_map):
@@ -172,7 +174,7 @@ def noise_map_via_weight_map_from(weight_map):
         The weight-value of each pixel which is converted to a variance.
     """
     np.seterr(divide="ignore")
-    noise_map = 1.0 / weight_map ** 0.5
+    noise_map = 1.0 / weight_map**0.5
     noise_map[noise_map > 1.0e8] = 1.0e8
     return noise_map
 
