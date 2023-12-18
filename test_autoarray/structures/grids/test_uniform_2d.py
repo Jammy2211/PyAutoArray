@@ -526,14 +526,14 @@ def test__blurring_grid_from():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
-        mask_2d=mask, kernel_shape_native=(3, 5)
+        mask_2d=np.array(mask), kernel_shape_native=(3, 5)
     )
 
     blurring_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
         mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
     )
 
-    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=np.array(mask), pixel_scales=(2.0, 2.0), sub_size=2)
 
     blurring_grid = aa.Grid2D.blurring_grid_from(mask=mask, kernel_shape_native=(3, 5))
 
@@ -561,7 +561,7 @@ def test__blurring_grid_via_kernel_shape_from():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
-        mask_2d=mask, kernel_shape_native=(3, 5)
+        mask_2d=np.array(mask), kernel_shape_native=(3, 5)
     )
 
     blurring_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
@@ -687,7 +687,7 @@ def test__from_mask():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
     grid_via_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
-        mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
+        mask_2d=np.array(mask), sub_size=1, pixel_scales=(2.0, 2.0)
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -697,7 +697,9 @@ def test__from_mask():
     assert grid_2d.pixel_scales == (2.0, 2.0)
 
     grid_2d_native = aa.util.grid_2d.grid_2d_native_from(
-        grid_2d_slim=grid_2d, mask_2d=mask, sub_size=mask.sub_size
+        grid_2d_slim=np.array(grid_2d),
+        mask_2d=np.array(mask),
+        sub_size=mask.sub_size,
     )
 
     assert (grid_2d_native == grid_2d.native).all()
@@ -972,7 +974,8 @@ def test__sub_border_flat_indexes():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     sub_border_flat_indexes_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
-        mask_2d=mask, sub_size=2
+        mask_2d=np.array(mask),
+        sub_size=2,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
