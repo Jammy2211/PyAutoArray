@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.spatial
-import scipy.spatial.qhull as qhull
-from typing import Optional, List, Union, Tuple
+from typing import List, Union, Tuple
 
 from autoarray.structures.abstract_structure import Structure
 from autoconf import cached_property
@@ -67,9 +66,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         if type(values) is list:
             values = np.asarray(values)
 
-        self.nearest_pixelization_index_for_slim_index = (
-            nearest_pixelization_index_for_slim_index
-        )
         self.uses_interpolation = uses_interpolation
 
         super().__init__(values)
