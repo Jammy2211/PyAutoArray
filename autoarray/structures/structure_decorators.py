@@ -577,7 +577,9 @@ def relocate_to_radial_minimum(func):
             grid_radial_scale = np.where(
                 grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
             )
-            moved_grid = np.multiply(grid, grid_radial_scale[:, None])
+            moved_grid = grid.with_new_array(
+                np.multiply(grid, grid_radial_scale[:, None])
+            )
 
         moved_grid[np.isnan(np.array(moved_grid))] = grid_radial_minimum
 
