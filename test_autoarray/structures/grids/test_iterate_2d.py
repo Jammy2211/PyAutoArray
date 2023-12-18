@@ -46,7 +46,9 @@ def test__from_mask():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     grid_via_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
-        mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
+        mask_2d=np.array(mask),
+        sub_size=1,
+        pixel_scales=(2.0, 2.0),
     )
 
     grid = aa.Grid2DIterate.from_mask(
@@ -136,7 +138,8 @@ def test__blurring_mask_2d_from():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
     blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
-        mask_2d=mask, kernel_shape_native=(3, 5)
+        mask_2d=np.array(mask),
+        kernel_shape_native=(3, 5),
     )
 
     blurring_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
@@ -171,14 +174,18 @@ def test__blurring_grid_from():
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
     blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
-        mask_2d=mask, kernel_shape_native=(3, 5)
+        mask_2d=np.array(mask),
+        kernel_shape_native=(3, 5),
     )
 
     blurring_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
         mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
     )
 
-    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
+    mask = aa.Mask2D(
+        mask=np.array(mask),
+        pixel_scales=(2.0, 2.0),
+    )
 
     blurring_grid = aa.Grid2DIterate.blurring_grid_from(
         mask=mask, kernel_shape_native=(3, 5)
