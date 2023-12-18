@@ -96,14 +96,14 @@ class TransformerDFT(PyLopsOperator):
     def visibilities_from(self, image):
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_jit_from(
-                image_1d=image.binned,
+                image_1d=np.array(image.binned),
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
             visibilities = transformer_util.visibilities_jit(
-                image_1d=image.binned,
+                image_1d=np.array(image.binned),
                 grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
