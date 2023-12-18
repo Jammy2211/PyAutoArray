@@ -127,7 +127,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         pix_indexes_for_sub_slim_index=pix_sub_weights.mappings,
         pix_size_for_sub_slim_index=pix_sub_weights.sizes,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
-        adapt_data=image_7x7,
+        adapt_data=np.array(image_7x7),
     )
 
     assert (pixel_signals == pixel_signals_util).all()
@@ -185,7 +185,8 @@ def test__mapped_to_source_from(grid_2d_7x7):
     )
 
     mapped_to_source_util = aa.util.mapper.mapped_to_source_via_mapping_matrix_from(
-        mapping_matrix=mapper.mapping_matrix, array_slim=array_slim
+        mapping_matrix=mapper.mapping_matrix,
+        array_slim=np.array(array_slim),
     )
 
     mapped_to_source_mapper = mapper.mapped_to_source_from(array=array_slim)

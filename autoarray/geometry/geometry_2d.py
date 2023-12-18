@@ -234,7 +234,7 @@ class Geometry2D(AbstractGeometry2D):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid_pixel_centres_1d = geometry_util.grid_pixel_centres_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_2d,
+            grid_scaled_2d_slim=np.array(grid_scaled_2d),
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
@@ -267,7 +267,7 @@ class Geometry2D(AbstractGeometry2D):
         from autoarray.structures.arrays.uniform_2d import Array2D
 
         grid_pixel_indexes_2d = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_2d,
+            grid_scaled_2d_slim=np.array(grid_scaled_2d),
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
@@ -293,7 +293,7 @@ class Geometry2D(AbstractGeometry2D):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid_scaled_1d = geometry_util.grid_scaled_2d_slim_from(
-            grid_pixels_2d_slim=grid_pixels_2d,
+            grid_pixels_2d_slim=np.array(grid_pixels_2d),
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
