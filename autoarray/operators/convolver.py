@@ -211,7 +211,7 @@ class Convolver:
                         image_frame_1d_kernels,
                     ) = self.frame_at_coordinates_jit(
                         coordinates=(x, y),
-                        mask=mask,
+                        mask=np.array(mask),
                         mask_index_array=self.mask_index_array,
                         kernel_2d=self.kernel.native[:, :],
                     )
@@ -227,7 +227,8 @@ class Convolver:
                     mask_1d_index += 1
 
         self.blurring_mask = mask_2d_util.blurring_mask_2d_from(
-            mask_2d=mask, kernel_shape_native=kernel.shape_native
+            mask_2d=np.array(mask),
+            kernel_shape_native=kernel.shape_native,
         )
 
         self.pixels_in_blurring_mask = int(
@@ -252,9 +253,9 @@ class Convolver:
                         image_frame_1d_kernels,
                     ) = self.frame_at_coordinates_jit(
                         coordinates=(x, y),
-                        mask=mask,
-                        mask_index_array=self.mask_index_array,
-                        kernel_2d=self.kernel.native,
+                        mask=np.array(mask),
+                        mask_index_array=np.array(self.mask_index_array),
+                        kernel_2d=np.array(self.kernel.native),
                     )
                     self.blurring_frame_1d_indexes[
                         mask_1d_index, :
