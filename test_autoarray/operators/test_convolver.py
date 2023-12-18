@@ -160,9 +160,9 @@ def test__frame_extraction__more_complicated_frames(simple_mask_2d_7x7):
 
     frame, kernel_frame = convolver.frame_at_coordinates_jit(
         coordinates=(2, 2),
-        mask=simple_mask_2d_7x7,
+        mask=np.array(simple_mask_2d_7x7),
         mask_index_array=convolver.mask_index_array,
-        kernel_2d=convolver.kernel.native,
+        kernel_2d=np.array(convolver.kernel.native),
     )
 
     assert (
@@ -200,9 +200,9 @@ def test__frame_extraction__more_complicated_frames(simple_mask_2d_7x7):
 
     frame, kernel_frame = convolver.frame_at_coordinates_jit(
         coordinates=(3, 2),
-        mask=simple_mask_2d_7x7,
+        mask=np.array(simple_mask_2d_7x7),
         mask_index_array=convolver.mask_index_array,
-        kernel_2d=convolver.kernel.native,
+        kernel_2d=np.array(convolver.kernel.native),
     )
 
     assert (
@@ -240,9 +240,9 @@ def test__frame_extraction__more_complicated_frames(simple_mask_2d_7x7):
 
     frame, kernel_frame = convolver.frame_at_coordinates_jit(
         coordinates=(3, 3),
-        mask=simple_mask_2d_7x7,
+        mask=np.array(simple_mask_2d_7x7),
         mask_index_array=convolver.mask_index_array,
-        kernel_2d=convolver.kernel.native,
+        kernel_2d=np.array(convolver.kernel.native),
     )
 
     assert (
