@@ -238,6 +238,16 @@ class AbstractNDArray(ABC):
     def reshape(self, *args, **kwargs):
         return self._array.reshape(*args, **kwargs)
 
+    def __getattr__(self, item):
+        if item != "__setstate__":
+            try:
+                return getattr(self._array, item)
+            except AttributeError:
+                pass
+        raise AttributeError(
+            f"{self.__class__.__name__} does not have attribute {item}"
+        )
+
     def __getitem__(self, item):
         result = self._array[item]
         if isinstance(item, slice):
