@@ -104,7 +104,7 @@ class TransformerDFT(PyLopsOperator):
         else:
             visibilities = transformer_util.visibilities_jit(
                 image_1d=np.array(image.binned),
-                grid_radians=self.grid,
+                grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -137,7 +137,7 @@ class TransformerDFT(PyLopsOperator):
         else:
             return transformer_util.transformed_mapping_matrix_jit(
                 mapping_matrix=mapping_matrix,
-                grid_radians=self.grid,
+                grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,
             )
 
