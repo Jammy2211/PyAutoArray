@@ -302,17 +302,18 @@ def chi_squared_with_mask_fast_from(
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
-
-    return np.sum(
-        np.square(
-            np.divide(
-                np.subtract(
-                    data,
-                    model_data,
-                ),
-                noise_map,
+    return float(
+        np.sum(
+            np.square(
+                np.divide(
+                    np.subtract(
+                        data,
+                        model_data,
+                    )[np.asarray(mask) == 0],
+                    noise_map[np.asarray(mask) == 0],
+                )
             )
-        )[np.asarray(mask) == 0]
+        )
     )
 
 

@@ -165,7 +165,7 @@ class MatPlot1D(AbstractMatPlot):
         text_manual_dict_y=None,
         bypass: bool = False,
     ):
-        if (y is None) or np.count_nonzero(y) == 0:
+        if (y is None) or np.count_nonzero(y) == 0 or np.isnan(y).all():
             return
 
         ax = None
