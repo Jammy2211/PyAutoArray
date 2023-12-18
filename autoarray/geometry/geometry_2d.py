@@ -6,6 +6,8 @@ if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
     from autoarray.structures.grids.uniform_2d import Grid2D
 
+import numpy as np
+
 from autoarray.geometry.abstract_2d import AbstractGeometry2D
 
 from autoarray import type as ty
@@ -206,7 +208,7 @@ class Geometry2D(AbstractGeometry2D):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid_pixels_2d = geometry_util.grid_pixels_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_2d,
+            grid_scaled_2d_slim=np.array(grid_scaled_2d),
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
