@@ -307,7 +307,9 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         x2d = np.real(self.xx2x(self.k2xx(self.y2k(y))))
 
         x = array_2d_util.array_2d_slim_complex_from(
-            array_2d_native=x2d[::-1, :], sub_size=1, mask=self.real_space_mask
+            array_2d_native=x2d[::-1, :],
+            sub_size=1,
+            mask=np.array(self.real_space_mask),
         )
         x = x.real  # NOTE:
 

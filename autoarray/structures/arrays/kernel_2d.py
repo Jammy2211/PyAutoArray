@@ -581,7 +581,9 @@ class Kernel2D(AbstractArray2D):
         convolved_array_2d = scipy.signal.convolve2d(array, self.native, mode="same")
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=mask, array_2d_native=convolved_array_2d, sub_size=1
+            mask_2d=np.array(mask),
+            array_2d_native=np.array(convolved_array_2d),
+            sub_size=1,
         )
 
         return Array2D(values=convolved_array_1d, mask=mask.derive_mask.sub_1)
