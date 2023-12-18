@@ -239,7 +239,10 @@ class AbstractNDArray(ABC):
         return self._array.reshape(*args, **kwargs)
 
     def __getitem__(self, item):
-        return self._array[item]
+        result = self._array[item]
+        if isinstance(item, slice):
+            return self.with_new_array(result)
+        return result
 
     def __setitem__(self, key, value):
         if isinstance(key, (np.ndarray, AbstractNDArray, Array)):
