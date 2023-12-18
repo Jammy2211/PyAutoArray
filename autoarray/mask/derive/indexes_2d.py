@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 import numpy as np
-from jax._src.tree_util import register_pytree_node_class
+from autoarray.numpy_wrapper import register_pytree_node_class
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

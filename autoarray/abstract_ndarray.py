@@ -5,10 +5,8 @@ from copy import copy
 from abc import ABC
 from abc import abstractmethod
 import numpy as np
-from jax._src.tree_util import register_pytree_node
 
-from autoarray.numpy_wrapper import numpy as npw
-from jax import Array
+from autoarray.numpy_wrapper import numpy as npw, register_pytree_node, Array
 
 from typing import TYPE_CHECKING
 

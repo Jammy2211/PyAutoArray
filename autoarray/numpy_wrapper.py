@@ -67,3 +67,18 @@ if use_jax:
         )
 else:
     numpy = Numpy(np)
+
+try:
+    from jax._src.tree_util import register_pytree_node
+    from jax._src.tree_util import register_pytree_node_class
+
+    from jax import Array
+except ImportError:
+
+    def register_pytree_node_class(cls):
+        return cls
+
+    def register_pytree_node(*_, **__):
+        pass
+
+    Array = np.ndarray
