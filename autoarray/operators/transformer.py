@@ -113,7 +113,7 @@ class TransformerDFT(PyLopsOperator):
     def image_from(self, visibilities, use_adjoint_scaling: bool = False):
         image_slim = transformer_util.image_via_jit_from(
             n_pixels=self.grid.shape[0],
-            grid_radians=self.grid,
+            grid_radians=np.array(self.grid),
             uv_wavelengths=self.uv_wavelengths,
             visibilities=visibilities.in_array,
         )
