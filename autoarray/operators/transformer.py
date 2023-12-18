@@ -70,11 +70,13 @@ class TransformerDFT(PyLopsOperator):
 
         if preload_transform:
             self.preload_real_transforms = transformer_util.preload_real_transforms(
-                grid_radians=self.grid, uv_wavelengths=self.uv_wavelengths
+                grid_radians=np.array(self.grid),
+                uv_wavelengths=self.uv_wavelengths,
             )
 
             self.preload_imag_transforms = transformer_util.preload_imag_transforms(
-                grid_radians=self.grid, uv_wavelengths=self.uv_wavelengths
+                grid_radians=np.array(self.grid),
+                uv_wavelengths=self.uv_wavelengths,
             )
 
         self.real_space_pixels = self.real_space_mask.pixels_in_mask
