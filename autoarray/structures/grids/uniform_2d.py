@@ -1216,7 +1216,8 @@ class Grid2D(Structure):
 
         return Grid2D(
             values=grid_2d_util.relocated_grid_via_jit_from(
-                grid=grid, border_grid=self.sub_border_grid
+                grid=np.array(grid),
+                border_grid=self.sub_border_grid,
             ),
             mask=grid.mask,
             sub_size=grid.mask.sub_size,
