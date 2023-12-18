@@ -45,7 +45,10 @@ class Kernel2D(AbstractArray2D):
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         super().__init__(
-            values=values, mask=mask, header=header, store_native=store_native,
+            values=values,
+            mask=mask,
+            header=header,
+            store_native=store_native,
         )
 
         if normalize:
@@ -258,7 +261,7 @@ class Kernel2D(AbstractArray2D):
 
         grid = Grid2D.uniform(shape_native=shape_native, pixel_scales=pixel_scales)
         grid_shifted = np.subtract(grid, centre)
-        grid_radius = np.sqrt(np.sum(grid_shifted ** 2.0, 1))
+        grid_radius = np.sqrt(np.sum(grid_shifted**2.0, 1))
         theta_coordinate_to_profile = np.arctan2(
             grid_shifted[:, 0], grid_shifted[:, 1]
         ) - np.radians(angle)
@@ -546,7 +549,9 @@ class Kernel2D(AbstractArray2D):
         )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=array_binned_2d.mask, array_2d_native=convolved_array_2d, sub_size=1
+            mask_2d=np.array(array_binned_2d.mask),
+            array_2d_native=convolved_array_2d,
+            sub_size=1,
         )
 
         return Array2D(values=convolved_array_1d, mask=array_binned_2d.mask)
