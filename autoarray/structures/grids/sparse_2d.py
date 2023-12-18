@@ -34,7 +34,7 @@ class Grid2DSparse(Structure):
     def native(self) -> Structure:
         raise NotImplemented()
 
-    def __init__(self, values: np.ndarray, sparse_index_for_slim_index: np.ndarray):
+    def __init__(self, values: np.ndarray):
         """
         A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such
@@ -61,8 +61,6 @@ class Grid2DSparse(Structure):
         sparse_grid or Grid2D
             The (y,x) grid of sparse coordinates.
         """
-
-        self.sparse_index_for_slim_index = sparse_index_for_slim_index
 
         super().__init__(values)
 
@@ -121,31 +119,11 @@ class Grid2DSparse(Structure):
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        sparse_for_unmasked_sparse = sparse_2d_util.sparse_for_unmasked_sparse_from(
-            mask=np.array(grid.mask),
-            unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
-            total_sparse_pixels=total_sparse_pixels,
-        ).astype("int")
-
         unmasked_sparse_for_sparse = sparse_2d_util.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_sparse_pixels,
             mask=np.array(grid.mask),
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         ).astype("int")
-
-        regular_to_unmasked_sparse = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=np.array(grid),
-            shape_native=unmasked_sparse_shape,
-            pixel_scales=pixel_scales,
-            origin=origin,
-        ).astype("int")
-
-        sparse_index_for_slim_index = (
-            sparse_2d_util.sparse_slim_index_for_mask_slim_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-            ).astype("int")
-        )
 
         sparse_grid = sparse_2d_util.sparse_grid_via_unmasked_from(
             unmasked_sparse_grid=unmasked_sparse_grid_1d,
@@ -154,7 +132,6 @@ class Grid2DSparse(Structure):
 
         return Grid2DSparse(
             values=sparse_grid,
-            sparse_index_for_slim_index=sparse_index_for_slim_index,
         )
 
     @classmethod
@@ -217,7 +194,6 @@ class Grid2DSparse(Structure):
 
         return Grid2DSparse(
             values=kmeans.cluster_centers_,
-            sparse_index_for_slim_index=kmeans.labels_,
         )
 
     @classmethod
