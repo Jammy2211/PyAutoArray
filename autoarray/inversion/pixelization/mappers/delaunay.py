@@ -131,7 +131,7 @@ class MapperDelaunay(AbstractMapper):
         pix_indexes_for_simplex_index = delaunay.simplices
 
         mappings, sizes = mapper_util.pix_indexes_for_sub_slim_index_delaunay_from(
-            source_plane_data_grid=self.source_plane_data_grid,
+            source_plane_data_grid=np.array(self.source_plane_data_grid),
             simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
             pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
             delaunay_points=delaunay.points,
@@ -141,8 +141,8 @@ class MapperDelaunay(AbstractMapper):
         sizes = sizes.astype("int")
 
         weights = mapper_util.pixel_weights_delaunay_from(
-            source_plane_data_grid=self.source_plane_data_grid,
-            source_plane_mesh_grid=self.source_plane_mesh_grid,
+            source_plane_data_grid=np.array(self.source_plane_data_grid),
+            source_plane_mesh_grid=np.array(self.source_plane_mesh_grid),
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=mappings,
         )

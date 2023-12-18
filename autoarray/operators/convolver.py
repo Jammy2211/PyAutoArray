@@ -385,12 +385,10 @@ class Convolver:
         ----------
         image
             1D array of the values which are to be blurred with the convolver's PSF.
-        blurring_image
-            1D array of the blurring values which blur into the array after PSF convolution.
         """
 
         convolved_image = self.convolve_no_blurring_jit(
-            image_1d_array=image.binned.slim,
+            image_1d_array=np.array(image.binned.slim),
             image_frame_1d_indexes=self.image_frame_1d_indexes,
             image_frame_1d_kernels=self.image_frame_1d_kernels,
             image_frame_1d_lengths=self.image_frame_1d_lengths,
@@ -405,8 +403,6 @@ class Convolver:
         ----------
         image
             1D array of the values which are to be blurred with the convolver's PSF.
-        blurring_image
-            1D array of the blurring values which blur into the array after PSF convolution.
         """
 
         convolved_image = self.convolve_no_blurring_jit(
