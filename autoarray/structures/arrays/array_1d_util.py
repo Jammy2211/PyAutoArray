@@ -138,7 +138,7 @@ def array_1d_native_from(
     ).astype("int")
 
     return array_1d_via_indexes_1d_from(
-        array_1d_slim=array_1d_slim,
+        array_1d_slim=np.array(array_1d_slim),
         sub_shape=sub_shape,
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
     )

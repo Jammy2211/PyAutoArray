@@ -600,7 +600,8 @@ def array_2d_native_from(
     sub_shape = (mask_2d.shape[0] * sub_size, mask_2d.shape[1] * sub_size)
 
     native_index_for_slim_index_2d = mask_2d_util.native_index_for_slim_index_2d_from(
-        mask_2d=mask_2d, sub_size=sub_size
+        mask_2d=np.array(mask_2d),
+        sub_size=sub_size,
     ).astype("int")
 
     return array_2d_via_indexes_from(

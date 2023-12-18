@@ -202,7 +202,9 @@ def grid_1d_slim_from(
     """
 
     return array_1d_util.array_1d_slim_from(
-        array_1d_native=grid_1d_native, mask_1d=mask_1d, sub_size=sub_size
+        array_1d_native=np.array(grid_1d_native),
+        mask_1d=mask_1d,
+        sub_size=sub_size,
     )
 
 
