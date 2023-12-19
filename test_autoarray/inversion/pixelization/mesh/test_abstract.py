@@ -2,7 +2,7 @@ import autoarray as aa
 
 
 def test__grid_is_relocated_via_border(sub_grid_2d_7x7):
-    pixelization = aa.mesh.VoronoiMagnification(shape=(3, 3))
+    mesh = aa.mesh.Voronoi()
 
     mask = aa.Mask2D.circular(
         shape_native=(60, 60),
@@ -14,13 +14,16 @@ def test__grid_is_relocated_via_border(sub_grid_2d_7x7):
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    sparse_grid = pixelization.image_plane_mesh_grid_from(image_plane_data_grid=grid)
+    image_mesh = aa.image_mesh.Overlay(
+        shape=(3, 3),
+    )
+    image_mesh = image_mesh.image_plane_mesh_grid_from(grid=grid, adapt_data=None)
 
     grid[8, 0] = 100.0
 
-    mapper_grids = pixelization.mapper_grids_from(
+    mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
-        source_plane_mesh_grid=sparse_grid,
+        source_plane_mesh_grid=image_mesh,
         settings=aa.SettingsPixelization(use_border=True),
     )
 
@@ -30,30 +33,30 @@ def test__grid_is_relocated_via_border(sub_grid_2d_7x7):
     assert mapper.source_plane_data_grid[8, 0] < 5.0
 
     grid[0, 0] = 0.0
-    sparse_grid[0, 0] = 100.0
+    image_mesh[0, 0] = 100.0
 
-    mapper_grids = pixelization.mapper_grids_from(
+    mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
-        source_plane_mesh_grid=sparse_grid,
+        source_plane_mesh_grid=image_mesh,
         settings=aa.SettingsPixelization(use_border=True),
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperVoronoiNoInterp)
-    assert sparse_grid[0, 0] != mapper.source_plane_mesh_grid[0, 0]
+    assert image_mesh[0, 0] != mapper.source_plane_mesh_grid[0, 0]
     assert mapper.source_plane_mesh_grid[0, 0] < 5.0
 
-    pixelization = aa.mesh.VoronoiNNMagnification(shape=(3, 3))
+    mesh = aa.mesh.VoronoiNN()
 
-    mapper_grids = pixelization.mapper_grids_from(
+    mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
-        source_plane_mesh_grid=sparse_grid,
+        source_plane_mesh_grid=image_mesh,
         settings=aa.SettingsPixelization(use_border=True),
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
 
     assert isinstance(mapper, aa.MapperVoronoi)
-    assert sparse_grid[0, 0] != mapper.source_plane_mesh_grid[0, 0]
+    assert image_mesh[0, 0] != mapper.source_plane_mesh_grid[0, 0]
     assert mapper.source_plane_mesh_grid[0, 0] < 5.0

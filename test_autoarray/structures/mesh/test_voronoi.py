@@ -101,7 +101,7 @@ def test__edge_pixel_list():
     assert mesh.edge_pixel_list == [0, 1, 2, 3, 5, 6, 7, 8]
 
 
-def test__from_unmasked_sparse_shape_and_grid():
+def test__from_shape_and_grid():
     mask = aa.Mask2D(
         mask=np.array(
             [[True, False, True], [False, False, False], [True, False, True]]
@@ -112,15 +112,19 @@ def test__from_unmasked_sparse_shape_and_grid():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-        unmasked_sparse_shape=(10, 10), grid=grid
+    image_mesh = aa.image_mesh.Overlay(
+        shape=(10, 10),
+    )
+
+    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+        grid=grid, adapt_data=None
     )
 
     mesh = aa.Mesh2DVoronoi(
-        values=sparse_grid,
+        values=image_plane_mesh_grid,
     )
 
-    assert (sparse_grid == mesh).all()
+    assert (image_plane_mesh_grid == mesh).all()
 
 
 def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly():

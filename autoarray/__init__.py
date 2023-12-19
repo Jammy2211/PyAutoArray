@@ -23,6 +23,7 @@ from .fit.fit_interferometer import FitInterferometer
 from .geometry.geometry_2d import Geometry2D
 from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization import mesh
+from .inversion.pixelization import image_mesh
 from .inversion import regularization as reg
 from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.abstract import AbstractInversion
@@ -42,6 +43,7 @@ from .inversion.pixelization.mappers.rectangular import MapperRectangularNoInter
 from .inversion.pixelization.mappers.delaunay import MapperDelaunay
 from .inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from .inversion.pixelization.mappers.voronoi import MapperVoronoi
+from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
 from .inversion.pixelization.settings import SettingsPixelization
 from .inversion.inversion.imaging.mapping import InversionImagingMapping
@@ -69,7 +71,6 @@ from .structures.arrays.uniform_2d import Array2D
 from .structures.arrays.irregular import ArrayIrregular
 from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
-from .structures.grids.sparse_2d import Grid2DSparse
 from .structures.grids.iterate_2d import Grid2DIterate
 from .structures.grids.irregular_2d import Grid2DIrregular
 from .structures.grids.irregular_2d import Grid2DIrregularUniform
