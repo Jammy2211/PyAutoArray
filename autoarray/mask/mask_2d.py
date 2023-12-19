@@ -1046,7 +1046,7 @@ class Mask2D(Mask):
     def is_circular(self)-> bool:
         """
         Returns whether the mask is circular or not.
-        
+
         This is performed by taking the central row and column of the mask (based on the mask centre) and counting
         the number of unmasked pixels. If the number of unmasked pixels is the same, the mask is circular.
 
