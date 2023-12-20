@@ -894,3 +894,23 @@ def test__is_circular():
     mask = aa.Mask2D.circular(shape_native=(10,10), radius=4.0, pixel_scales=(1.0, 1.0))
 
     assert mask.is_circular == True
+
+def test__circular_radius():
+
+    mask = aa.Mask2D.circular(
+         shape_native=(10, 10),
+         radius=3.0, pixel_scales=(1.0, 1.0))
+
+    assert mask.circular_radius == pytest.approx(3.0, 1e-4)
+
+    mask = aa.Mask2D.circular(
+         shape_native=(30, 30),
+         radius=5.5, pixel_scales=(0.5, 0.5))
+
+    assert mask.circular_radius == pytest.approx(5.5, 1e-4)
+
+    mask = aa.Mask2D.circular(
+         shape_native=(30, 30),
+         radius=5.75, pixel_scales=(0.5, 0.5))
+
+    assert mask.circular_radius == pytest.approx(5.5, 1e-4)
