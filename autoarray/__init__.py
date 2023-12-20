@@ -45,7 +45,6 @@ from .inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from .inversion.pixelization.mappers.voronoi import MapperVoronoi
 from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh
-from .inversion.pixelization.settings import SettingsPixelization
 from .inversion.inversion.imaging.mapping import InversionImagingMapping
 from .inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from .inversion.inversion.interferometer.w_tilde import InversionInterferometerWTilde

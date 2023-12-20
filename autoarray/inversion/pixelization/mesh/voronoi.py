@@ -1,11 +1,5 @@
-import numpy as np
-from typing import Tuple
-
-from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
-from autoarray.inversion.pixelization.settings import SettingsPixelization
 
 from autoarray.numba_util import profile_func
 
