@@ -317,7 +317,7 @@ class Hilbert(AbstractImageMesh):
         adapt_data_hb, grid_hb = image_and_grid_from(
             image=adapt_data,
             mask=grid.mask,
-            mask_radius=grid.mask.radius,
+            mask_radius=grid.mask.circular_radius,
             pixel_scales=grid.mask.pixel_scales,
             hilbert_length=193,
         )
