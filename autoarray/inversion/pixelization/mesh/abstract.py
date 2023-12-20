@@ -101,6 +101,7 @@ class AbstractMesh:
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
+        relocate_pix_border: bool = False,
         adapt_data: np.ndarray = None,
         preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
