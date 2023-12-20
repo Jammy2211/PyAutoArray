@@ -1099,8 +1099,6 @@ class Mask2D(Mask):
                 """
             )
 
-        #        print("aaa")
-
         pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(
             scaled_coordinates_2d=self.mask_centre
         )
