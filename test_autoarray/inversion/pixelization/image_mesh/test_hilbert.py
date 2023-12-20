@@ -27,9 +27,8 @@ import autoarray as aa
 
 
 def test__image_plane_mesh_grid_from():
-
     mask = aa.Mask2D.circular(
-        shape_native=(4,4),
+        shape_native=(4, 4),
         radius=2.0,
         pixel_scales=1.0,
         sub_size=1,
@@ -37,7 +36,10 @@ def test__image_plane_mesh_grid_from():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    adapt_data = np.ones(shape=mask.shape_native)
+    adapt_data = aa.Array2D.ones(
+        shape_native=mask.shape_native,
+        pixel_scales=1.0,
+    )
 
     kmeans = aa.image_mesh.Hilbert(pixels=8)
     image_mesh = kmeans.image_plane_mesh_grid_from(grid=grid, adapt_data=adapt_data)

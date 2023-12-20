@@ -1043,7 +1043,7 @@ class Mask2D(Mask):
         )
 
     @property
-    def is_circular(self)-> bool:
+    def is_circular(self) -> bool:
         """
         Returns whether the mask is circular or not.
 
@@ -1055,7 +1055,6 @@ class Mask2D(Mask):
         """
 
         if self.pixel_scales[0] != self.pixel_scales[1]:
-
             raise exc.MaskException(
                 """
                 The is_circular function cannot be called for a mask with different pixel scales in each dimension
@@ -1063,7 +1062,9 @@ class Mask2D(Mask):
                 """
             )
 
-        pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(scaled_coordinates_2d=self.mask_centre)
+        pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=self.mask_centre
+        )
 
         central_row_pixels = sum(np.invert(self[pixel_coordinates_2d[0], :]))
         central_column_pixels = sum(np.invert(self[:, pixel_coordinates_2d[1]]))
@@ -1098,7 +1099,11 @@ class Mask2D(Mask):
                 """
             )
 
-        pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(scaled_coordinates_2d=self.mask_centre)
+        #        print("aaa")
+
+        pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=self.mask_centre
+        )
 
         central_row_pixels = sum(np.invert(self[pixel_coordinates_2d[0], :]))
 

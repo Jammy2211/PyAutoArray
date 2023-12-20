@@ -83,22 +83,20 @@ def generate2d(x, y, ax, ay, bx, by):
 
 
 def super_resolution_grid_from(img_2d, mask, mask_radius, pixel_scales, sub_scale=11):
-    '''
-        This function will create a higher resolution grid for the img_2d. The new grid and its
-        interpolated values will be used to generate a sparse image grid.
+    """
+    This function will create a higher resolution grid for the img_2d. The new grid and its
+    interpolated values will be used to generate a sparse image grid.
 
-        img_2d: the hyper image in 2d (e.g. hyper_source_model_image.native)
-        mask: the mask used for the fitting.
-        mask_radius: the circular mask radius. Currently, the code only works with a circular mask.
-        sub_scale: oversampling scale for each image pixel.
-    '''
+    img_2d: the hyper image in 2d (e.g. hyper_source_model_image.native)
+    mask: the mask used for the fitting.
+    mask_radius: the circular mask radius. Currently, the code only works with a circular mask.
+    sub_scale: oversampling scale for each image pixel.
+    """
 
     shape_nnn = np.shape(mask)[0]
 
     grid = Grid2D.uniform(
-        shape_native=(shape_nnn, shape_nnn),
-        pixel_scales=pixel_scales,
-        sub_size=1
+        shape_native=(shape_nnn, shape_nnn), pixel_scales=pixel_scales, sub_size=1
     )
 
     new_mask = Mask2D.circular(
@@ -112,23 +110,19 @@ def super_resolution_grid_from(img_2d, mask, mask_radius, pixel_scales, sub_scal
     new_grid = Grid2D.from_mask(new_mask)
 
     new_img = griddata(
-        points=grid,
-        values=img_2d.ravel(),
-        xi=new_grid,
-        fill_value=0.0,
-        method='linear'
+        points=grid, values=img_2d.ravel(), xi=new_grid, fill_value=0.0, method="linear"
     )
 
     return new_img, new_grid
 
 
 def grid_hilbert_order_from(length, mask_radius):
-    '''
-        This function will create a grid in the Hilbert space-filling curve order.
+    """
+    This function will create a grid in the Hilbert space-filling curve order.
 
-        length: the size of the square grid.
-        mask_radius: the circular mask radius. This code only works with a circular mask.
-    '''
+    length: the size of the square grid.
+    mask_radius: the circular mask radius. This code only works with a circular mask.
+    """
 
     xy_generator = gilbert2d(length, length)
 
@@ -155,55 +149,52 @@ def grid_hilbert_order_from(length, mask_radius):
 
 
 def image_and_grid_from(image, mask, mask_radius, pixel_scales, hilbert_length):
-    '''
-        This code will create a grid in Hilbert space-filling curve order and an interpolated hyper
-        image associated to that grid.
-    '''
+    """
+    This code will create a grid in Hilbert space-filling curve order and an interpolated hyper
+    image associated to that grid.
+    """
 
     shape_nnn = np.shape(mask)[0]
 
     grid = Grid2D.uniform(
-        shape_native=(shape_nnn, shape_nnn),
-        pixel_scales=pixel_scales,
-        sub_size=1
-        )
+        shape_native=(shape_nnn, shape_nnn), pixel_scales=pixel_scales, sub_size=1
+    )
 
     x1d_hb, y1d_hb = grid_hilbert_order_from(
-        length=hilbert_length,
-        mask_radius=mask_radius
-        )
+        length=hilbert_length, mask_radius=mask_radius
+    )
 
     grid_hb = np.stack((y1d_hb, x1d_hb), axis=-1)
-    grid_hb_radius = np.sqrt(grid_hb[:, 0]**2.0 + grid_hb[:, 1]**2.0)
+    grid_hb_radius = np.sqrt(grid_hb[:, 0] ** 2.0 + grid_hb[:, 1] ** 2.0)
     new_grid = grid_hb[grid_hb_radius <= mask_radius]
 
     new_img = griddata(
         points=grid,
-        values=image.ravel(),
+        values=image.native.ravel(),
         xi=new_grid,
         fill_value=0.0,
-        method='linear'
-        )
+        method="linear",
+    )
 
     return new_img, new_grid
 
 
 def inverse_transform_sampling_interpolated(probabilities, n_samples, gridx, gridy):
-    '''
-        Given a 1d cumulative probability function, this code will generate points following the
-        probability distribution.
+    """
+    Given a 1d cumulative probability function, this code will generate points following the
+    probability distribution.
 
-        probabilities: 1D normalized cumulative probablity curve.
-        n_samples: the number of points to draw.
-    '''
+    probabilities: 1D normalized cumulative probablity curve.
+    n_samples: the number of points to draw.
+    """
 
     cdf = np.cumsum(probabilities)
     npixels = len(probabilities)
     id_range = np.arange(0, npixels)
     cdf[0] = 0.0
-    intp_func = interp1d(cdf, id_range, kind='linear')
-    intp_func_x = interp1d(id_range, gridx, kind='linear')
-    intp_func_y = interp1d(id_range, gridy, kind='linear')
+    intp_func = interp1d(cdf, id_range, kind="linear")
+    intp_func_x = interp1d(id_range, gridx, kind="linear")
+    intp_func_y = interp1d(id_range, gridy, kind="linear")
     linear_points = np.linspace(0, 0.99999999, n_samples)
     output_ids = intp_func(linear_points)
     output_x = intp_func_x(output_ids)
@@ -277,7 +268,7 @@ class Hilbert(AbstractImageMesh):
         #     np.max(adapt_data) - np.min(adapt_data)
         # ) + self.weight_floor * np.max(adapt_data)
 
-#        return np.power(weight_map, self.weight_power)
+        #        return np.power(weight_map, self.weight_power)
 
         weight_map = (np.abs(adapt_data) + self.weight_floor) ** self.weight_power
         weight_map /= np.sum(weight_map)
@@ -305,7 +296,6 @@ class Hilbert(AbstractImageMesh):
         """
 
         if not grid.mask.is_circular:
-
             raise exc.PixelizationException(
                 """
                 Hilbert image-mesh has been called but the input grid does not use a circular mask.
@@ -335,9 +325,7 @@ class Hilbert(AbstractImageMesh):
             gridy=grid_hb[:, 0],
         )
 
-        return Grid2DIrregular(
-            values=np.stack((drawn_y, drawn_x), axis=-1)
-        )
+        return Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
 
     @property
     def is_stochastic(self):
