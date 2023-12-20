@@ -1071,7 +1071,7 @@ class Mask2D(Mask):
 
         return central_row_pixels == central_column_pixels
 
-    @property
+    @cached_property
     def circular_radius(self) -> float:
         """
         Returns the radius in scaled units of a circular mask.
@@ -1098,8 +1098,6 @@ class Mask2D(Mask):
                 The `is_circular` property of this mask has returned False, indicating the mask is not circular.
                 """
             )
-
-        #        print("aaa")
 
         pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(
             scaled_coordinates_2d=self.mask_centre
