@@ -14,7 +14,6 @@ def make_settings_dict():
         "class_path": "autoarray.inversion.pixelization.settings.SettingsPixelization",
         "arguments": {
             "use_border": True,
-            "seed": 0,
         },
     }
 
