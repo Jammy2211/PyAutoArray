@@ -24,7 +24,7 @@ def test__grid_is_relocated_via_border(sub_grid_2d_7x7):
     mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh,
-        settings=aa.SettingsPixelization(use_border=True),
+        relocate_pix_border=True
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -38,7 +38,7 @@ def test__grid_is_relocated_via_border(sub_grid_2d_7x7):
     mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh,
-        settings=aa.SettingsPixelization(use_border=True),
+        relocate_pix_border=True,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -52,7 +52,7 @@ def test__grid_is_relocated_via_border(sub_grid_2d_7x7):
     mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh,
-        settings=aa.SettingsPixelization(use_border=True),
+        relocate_pix_border=True,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)

@@ -11,7 +11,7 @@ def test__preloads_used_for_relocated_grid(sub_grid_2d_7x7):
     mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=relocated_grid,
         source_plane_mesh_grid=None,
-        settings=aa.SettingsPixelization(use_border=True),
+        relocate_pix_border=True,
         preloads=aa.Preloads(relocated_grid=relocated_grid),
     )
 

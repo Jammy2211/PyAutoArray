@@ -1,5 +1,6 @@
 import autoarray as aa
 import numpy as np
+import pytest
 
 
 def test___preloads_used_for_relocated_grid(sub_grid_2d_7x7):
@@ -10,6 +11,8 @@ def test___preloads_used_for_relocated_grid(sub_grid_2d_7x7):
     mapper_grids = mesh.mapper_grids_from(
         source_plane_data_grid=relocated_grid,
         source_plane_mesh_grid=relocated_grid,
-        settings=aa.SettingsPixelization(use_border=True),
+        relocate_pix_border=True,
         preloads=aa.Preloads(relocated_grid=relocated_grid),
     )
+
+    assert mapper_grids.source_plane_data_grid == pytest.approx(relocated_grid, 1.0e-4)
