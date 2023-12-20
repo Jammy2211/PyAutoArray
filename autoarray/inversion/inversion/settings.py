@@ -13,7 +13,7 @@ class SettingsInversion:
         use_w_tilde: bool = True,
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
-        relocate_pix_border : bool = True,
+        relocate_pix_border : Optional[bool] = None,
         force_edge_pixels_to_zeros: bool = True,
         force_edge_image_pixels_to_zeros: bool = False,
         image_pixels_source_zero=None,
@@ -64,7 +64,7 @@ class SettingsInversion:
         self.use_w_tilde = use_w_tilde
         self._use_positive_only_solver = use_positive_only_solver
         self._positive_only_uses_p_initial = positive_only_uses_p_initial
-        self.relocate_pix_border = relocate_pix_border
+        self._relocate_pix_border = relocate_pix_border
         self.use_linear_operators = use_linear_operators
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self.force_edge_image_pixels_to_zeros = force_edge_image_pixels_to_zeros
@@ -90,6 +90,14 @@ class SettingsInversion:
             return conf.instance["general"]["inversion"]["positive_only_uses_p_initial"]
 
         return self._positive_only_uses_p_initial
+
+    @property
+    def relocate_pix_border(self):
+
+        if self._relocate_pix_border is None:
+            return conf.instance["general"]["inversion"]["relocate_pix_border"]
+
+        return self._relocate_pix_border
 
     @property
     def no_regularization_add_to_curvature_diag_value(self):
