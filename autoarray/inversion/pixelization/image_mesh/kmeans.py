@@ -42,8 +42,6 @@ class KMeans(AbstractImageMesh):
             The number of times the KMeans algorithm is repeated.
         max_iter
             The maximum number of iterations in one run of the KMeans algorithm.
-        seed
-            The random number seed, which can be used to reproduce the same image mesh via the kmeans for the same inputs.
         """
 
         super().__init__()
@@ -51,8 +49,6 @@ class KMeans(AbstractImageMesh):
         self.pixels = pixels
         self.weight_floor = weight_floor
         self.weight_power = weight_power
-
-        self.seed = 1
 
     def weight_map_from(self, adapt_data: np.ndarray):
         """
@@ -110,7 +106,7 @@ class KMeans(AbstractImageMesh):
 
         kmeans = ScipyKMeans(
             n_clusters=int(self.pixels),
-            random_state=self.seed,
+            random_state=1,
             n_init=1,
             max_iter=5,
         )

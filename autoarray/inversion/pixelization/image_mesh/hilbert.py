@@ -228,9 +228,6 @@ class Hilbert(AbstractImageMesh):
         ----------
         total_pixels
             The total number of pixels in the image mesh and drawn from the Hilbert curve.
-        seed
-            The random number seed, which can be used to reproduce the same image mesh via the Hilbert curve for the
-            same inputs.
         """
 
         super().__init__()
@@ -238,8 +235,6 @@ class Hilbert(AbstractImageMesh):
         self.pixels = pixels
         self.weight_floor = weight_floor
         self.weight_power = weight_power
-
-        self.seed = 1
 
     def weight_map_from(self, adapt_data: np.ndarray):
         """
