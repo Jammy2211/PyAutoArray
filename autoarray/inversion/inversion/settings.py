@@ -13,7 +13,7 @@ class SettingsInversion:
         use_w_tilde: bool = True,
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
-        relocate_pix_border : Optional[bool] = None,
+        relocate_pix_border: Optional[bool] = None,
         force_edge_pixels_to_zeros: bool = True,
         force_edge_image_pixels_to_zeros: bool = False,
         image_pixels_source_zero=None,
@@ -93,7 +93,6 @@ class SettingsInversion:
 
     @property
     def relocate_pix_border(self):
-
         if self._relocate_pix_border is None:
             return conf.instance["general"]["inversion"]["relocate_pix_border"]
 

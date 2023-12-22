@@ -2,6 +2,7 @@ import pytest
 
 import autoarray as aa
 
+
 def test___preloads_used_for_relocated_grid(sub_grid_2d_7x7):
     mesh = aa.mesh.Delaunay()
 

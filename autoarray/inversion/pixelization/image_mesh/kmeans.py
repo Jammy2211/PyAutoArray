@@ -121,5 +121,9 @@ class KMeans(AbstractImageMesh):
         )
 
     @property
+    def uses_adapt_images(self) -> bool:
+        return True
+
+    @property
     def is_stochastic(self):
         return True

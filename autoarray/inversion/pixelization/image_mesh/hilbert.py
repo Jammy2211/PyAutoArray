@@ -323,5 +323,9 @@ class Hilbert(AbstractImageMesh):
         return Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
 
     @property
+    def uses_adapt_images(self) -> bool:
+        return True
+
+    @property
     def is_stochastic(self):
         return True

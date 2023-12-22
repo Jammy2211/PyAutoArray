@@ -241,3 +241,7 @@ class Overlay(AbstractImageMesh):
         )
 
         return Grid2DIrregular(values=mesh_grid)
+
+    @property
+    def uses_adapt_images(self) -> bool:
+        return False

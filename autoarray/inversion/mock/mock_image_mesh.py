@@ -20,3 +20,7 @@ class MockImageMesh(AbstractImageMesh):
             return adapt_data * self.image_plane_mesh_grid
 
         return self.image_plane_mesh_grid
+
+    @property
+    def uses_adapt_images(self) -> bool:
+        return False
