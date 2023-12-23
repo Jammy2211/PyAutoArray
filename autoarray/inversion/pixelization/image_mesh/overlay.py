@@ -185,7 +185,7 @@ class Overlay(AbstractImageMesh):
         self.shape = shape
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray]
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None
     ) -> Grid2DIrregular:
         """
         Returns an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the
