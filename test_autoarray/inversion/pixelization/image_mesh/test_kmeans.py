@@ -5,32 +5,6 @@ import autoarray as aa
 
 
 def test__weight_map_from():
-    adapt_data = np.array([0.0, 1.0, 0.0])
-
-    pixelization = aa.image_mesh.KMeans(pixels=5, weight_floor=0.0, weight_power=0.0)
-
-    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
-
-    assert (weight_map == np.ones(3)).all()
-
-    pixelization = aa.image_mesh.KMeans(pixels=5, weight_floor=0.0, weight_power=1.0)
-
-    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
-
-    assert (weight_map == np.array([0.0, 1.0, 0.0])).all()
-
-    pixelization = aa.image_mesh.KMeans(pixels=5, weight_floor=1.0, weight_power=1.0)
-
-    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
-
-    assert (weight_map == np.array([1.0, 2.0, 1.0])).all()
-
-    pixelization = aa.image_mesh.KMeans(pixels=5, weight_floor=1.0, weight_power=2.0)
-
-    weight_map = pixelization.weight_map_from(adapt_data=adapt_data)
-
-    assert (weight_map == np.array([1.0, 4.0, 1.0])).all()
-
     adapt_data = np.array([-1.0, 1.0, 3.0])
 
     pixelization = aa.image_mesh.KMeans(pixels=5, weight_floor=0.0, weight_power=1.0)

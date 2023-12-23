@@ -123,13 +123,11 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     mapper_grids_0 = mesh_0.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
-        settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper_grids_1 = mesh_1.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
-        settings=aa.SettingsPixelization(use_border=False),
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
@@ -197,13 +195,11 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     mapper_grids_0 = mesh_0.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_0,
-        settings=aa.SettingsPixelization(use_border=False),
     )
 
     mapper_grids_1 = mesh_1.mapper_grids_from(
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_1,
-        settings=aa.SettingsPixelization(use_border=False),
     )
 
     reg = aa.reg.Constant(coefficient=1.0)

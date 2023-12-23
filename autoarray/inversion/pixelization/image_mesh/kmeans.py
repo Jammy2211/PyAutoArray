@@ -42,8 +42,6 @@ class KMeans(AbstractImageMesh):
             The number of times the KMeans algorithm is repeated.
         max_iter
             The maximum number of iterations in one run of the KMeans algorithm.
-        seed
-            The random number seed, which can be used to reproduce the same image mesh via the kmeans for the same inputs.
         """
 
         super().__init__()
@@ -52,13 +50,11 @@ class KMeans(AbstractImageMesh):
         self.weight_floor = weight_floor
         self.weight_power = weight_power
 
-        self.seed = 1
-
     def weight_map_from(self, adapt_data: np.ndarray):
         """
-        Returns the weight-map used by the KMeans clustering algorithm to compute the Delaunay pixel corners.
+        Returns the weight-map used by the KMeans clustering algorithm to compute the mesh pixel centres.
 
-        This is computed from an input adapt_data, which is an image representing the data which the KMeans
+        This is computed from an input adapt data, which is an image representing the data which the KMeans
         clustering algorithm is applied too. This could be the image data itself, or a model fit which
         only has certain features.
 
@@ -110,7 +106,7 @@ class KMeans(AbstractImageMesh):
 
         kmeans = ScipyKMeans(
             n_clusters=int(self.pixels),
-            random_state=self.seed,
+            random_state=1,
             n_init=1,
             max_iter=5,
         )
@@ -123,6 +119,10 @@ class KMeans(AbstractImageMesh):
         return Grid2DIrregular(
             values=kmeans.cluster_centers_,
         )
+
+    @property
+    def uses_adapt_images(self) -> bool:
+        return True
 
     @property
     def is_stochastic(self):

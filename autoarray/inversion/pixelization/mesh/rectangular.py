@@ -7,7 +7,6 @@ from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.preloads import Preloads
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
-from autoarray.inversion.pixelization.settings import SettingsPixelization
 
 from autoarray import exc
 from autoarray.numba_util import profile_func
@@ -67,51 +66,52 @@ class Rectangular(AbstractMesh):
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
         adapt_data: np.ndarray = None,
-        settings: SettingsPixelization = SettingsPixelization(),
+        relocate_pix_border: bool = False,
         preloads: Preloads = Preloads(),
         run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
         """
-        Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
-        in both the `data` and `source` frames.
+         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
+         in both the `data` and `source` frames.
 
-        This function returns a `MapperRectangularNoInterp` as follows:
+         This function returns a `MapperRectangularNoInterp` as follows:
 
-        1) If `settings.use_border=True`, the border of the input `source_plane_data_grid` is used to relocate all of the
-           grid's (y,x) coordinates beyond the border to the edge of the border.
+         1) If `relocate_pix_border=True`, the border of the input `source_plane_data_grid` is used to relocate all of the
+            grid's (y,x) coordinates beyond the border to the edge of the border.
 
-        2) Determine the (y,x) coordinates of the pixelization's rectangular pixels, by laying this rectangular grid
-           over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_plane_data_grid` if step 1
-           is bypassed).
+         2) Determine the (y,x) coordinates of the pixelization's rectangular pixels, by laying this rectangular grid
+            over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_plane_data_grid` if step 1
+            is bypassed).
 
-        3) Return the `MapperRectangularNoInterp`.
+         3) Return the `MapperRectangularNoInterp`.
 
-        Parameters
-        ----------
-        source_plane_data_grid
-            A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
-            `source` reference frame.
-        source_plane_mesh_grid
-            Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
-            by overlaying the `source_plane_data_grid` with the rectangular pixelization.
-        image_plane_mesh_grid
-            Not used for a rectangular pixelization.
-        adapt_data
-            Not used for a rectangular pixelization.
-        settings
-            Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
-        preloads
-            Object which may contain preloaded arrays of quantities computed in the pixelization, which are passed via
-            this object speed up the calculation.
-        run_time_dict
-            A dictionary which contains timing of certain functions calls which is used for profiling.
+         Parameters
+         ----------
+         source_plane_data_grid
+             A 2D grid of (y,x) coordinates associated with the unmasked 2D data after it has been transformed to the
+             `source` reference frame.
+         source_plane_mesh_grid
+             Not used for a rectangular pixelization, because the pixelization grid in the `source` frame is computed
+             by overlaying the `source_plane_data_grid` with the rectangular pixelization.
+         image_plane_mesh_grid
+             Not used for a rectangular pixelization.
+         adapt_data
+             Not used for a rectangular pixelization.
+        relocate_pix_border
+             If `True`, all coordinates of all pixelization source mesh grids have pixels outside their border
+             relocated to their edge.
+         preloads
+             Object which may contain preloaded arrays of quantities computed in the pixelization, which are passed via
+             this object speed up the calculation.
+         run_time_dict
+             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         self.run_time_dict = run_time_dict
 
         relocated_grid = self.relocated_grid_from(
             source_plane_data_grid=source_plane_data_grid,
-            settings=settings,
+            relocate_pix_border=relocate_pix_border,
             preloads=preloads,
         )
         mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid)

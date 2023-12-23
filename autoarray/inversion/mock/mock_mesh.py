@@ -2,7 +2,6 @@ import numpy as np
 from typing import Dict, Optional
 
 from autoarray.inversion.pixelization.mesh.abstract import AbstractMesh
-from autoarray.inversion.pixelization.settings import SettingsPixelization
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -22,7 +21,6 @@ class MockMesh(AbstractMesh):
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
-        settings: SettingsPixelization = SettingsPixelization(),
         preloads: Optional[Preloads] = None,
         run_time_dict: Optional[Dict] = None,
     ) -> MapperGrids:
