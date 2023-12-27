@@ -461,15 +461,10 @@ class Preloads:
             preloads=self, settings_inversion=settings_inversion
         )
 
-        print()
-        print(fit_with_preloads.adapt_images)
-
         fit_without_preloads = fit.refit_with_new_preloads(
             preloads=self.__class__(use_w_tilde=False),
             settings_inversion=settings_inversion,
         )
-
-        print(fit_without_preloads.adapt_images)
 
         if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
             return
