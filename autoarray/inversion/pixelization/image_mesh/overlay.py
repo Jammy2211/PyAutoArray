@@ -182,7 +182,7 @@ class Overlay(AbstractImageMesh):
 
         super().__init__()
 
-        self.shape = shape
+        self.shape = (int(shape[0]), int(shape[1]))
 
     def image_plane_mesh_grid_from(
         self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None
