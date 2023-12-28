@@ -5,7 +5,9 @@ from typing import Optional
 
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
+from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
+    AbstractImageMeshWeighted,
+)
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray import exc
@@ -203,7 +205,7 @@ def inverse_transform_sampling_interpolated(probabilities, n_samples, gridx, gri
     return output_ids, output_x, output_y
 
 
-class Hilbert(AbstractImageMesh):
+class Hilbert(AbstractImageMeshWeighted):
     def __init__(
         self,
         pixels=10.0,
@@ -226,49 +228,21 @@ class Hilbert(AbstractImageMesh):
 
         Parameters
         ----------
-        total_pixels
+        pixels
             The total number of pixels in the image mesh and drawn from the Hilbert curve.
+        weight_floor
+            The minimum weight value in the weight map, which allows more pixels to be drawn from the lower weight
+            regions of the adapt image.
+        weight_power
+            The power the weight values are raised too, which allows more pixels to be drawn from the higher weight
+            regions of the adapt image.
         """
 
-        super().__init__()
-
-        self.pixels = pixels
-        self.weight_floor = weight_floor
-        self.weight_power = weight_power
-
-    def weight_map_from(self, adapt_data: np.ndarray):
-        """
-        Returns the weight-map used by the Hilbert curve to compute the mesh pixel centres.
-
-        This is computed from an input adapt data, which is an image representing the data which the KMeans
-        clustering algorithm is applied too. This could be the image data itself, or a model fit which
-        only has certain features.
-
-        The ``weight_floor`` and ``weight_power`` attributes of the class are used to scale the weight map, which
-        gives the model flexibility in how it adapts the pixelization to the image data.
-
-        Parameters
-        ----------
-        adapt_data
-            A image which represents one or more components in the masked 2D data in the image-plane.
-
-        Returns
-        -------
-        The weight map which is used to adapt the Delaunay pixels in the image-plane to components in the data.
-        """
-
-        # Do tests with this weight map, but use Qiuhans first
-
-        # weight_map = (adapt_data - np.min(adapt_data)) / (
-        #     np.max(adapt_data) - np.min(adapt_data)
-        # ) + self.weight_floor * np.max(adapt_data)
-
-        #        return np.power(weight_map, self.weight_power)
-
-        weight_map = (np.abs(adapt_data) + self.weight_floor) ** self.weight_power
-        weight_map /= np.sum(weight_map)
-
-        return weight_map
+        super().__init__(
+            pixels=pixels,
+            weight_floor=weight_floor,
+            weight_power=weight_power,
+        )
 
     def image_plane_mesh_grid_from(
         self, grid: Grid2D, adapt_data: Optional[np.ndarray]
@@ -309,6 +283,8 @@ class Hilbert(AbstractImageMesh):
 
         weight_map = self.weight_map_from(adapt_data=adapt_data_hb)
 
+        weight_map /= np.sum(weight_map)
+
         (
             drawn_id,
             drawn_x,
@@ -321,11 +297,3 @@ class Hilbert(AbstractImageMesh):
         )
 
         return Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
-
-    @property
-    def uses_adapt_images(self) -> bool:
-        return True
-
-    @property
-    def is_stochastic(self):
-        return True
