@@ -26,7 +26,15 @@ class HilbertBalanced(AbstractImageMeshWeighted):
         weight_power=0.0,
     ):
         """
-        Computes an image-mesh by computing the Hilbert curve of the adapt data and drawing points from it.
+        Computes a balanced image-mesh by computing the Hilbert curve of the adapt data and drawing points from it.
+
+        The standard `Hilbert` image-mesh suffers a systematic where the vast majority of points are drawn from
+        the high weighted reigons. This often leaves few points to reconstruct the lower weight regions, leading to
+        discontinuities in the reconstruction.
+
+        This image-mesh addresses this by drawing half the points from the weight map and the other half from
+        (1 - weight map). This ensures both high and low weighted regions are sampled equally, but still has sufficient
+        flexibility to dedicate many points to the highest weighted regions.
 
         This requires an adapt-image, which is the image that the Hilbert curve algorithm adapts to in order to compute
         the image mesh. This could simply be the image itself, or a model fit to the image which removes certain
@@ -61,7 +69,7 @@ class HilbertBalanced(AbstractImageMeshWeighted):
         self, grid: Grid2D, adapt_data: Optional[np.ndarray]
     ) -> Grid2DIrregular:
         """
-        Returns an image mesh by running the Hilbert curve on the weight map.
+        Returns an image mesh by running the balanced Hilbert curve on the weight map.
 
         See the `__init__` docstring for a full description of how this is performed.
 
