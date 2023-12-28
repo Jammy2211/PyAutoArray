@@ -11,16 +11,19 @@ from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.inversion.pixelization.image_mesh.hilbert import image_and_grid_from
-from autoarray.inversion.pixelization.image_mesh.hilbert import inverse_transform_sampling_interpolated
+from autoarray.inversion.pixelization.image_mesh.hilbert import (
+    inverse_transform_sampling_interpolated,
+)
 
 from autoarray import exc
 
-class HilbertBackground(AbstractImageMeshWeighted):
+
+class HilbertBalanced(AbstractImageMeshWeighted):
     def __init__(
-            self,
-            pixels=10.0,
-            weight_floor=0.0,
-            weight_power=0.0,
+        self,
+        pixels=10.0,
+        weight_floor=0.0,
+        weight_power=0.0,
     ):
         """
         Computes an image-mesh by computing the Hilbert curve of the adapt data and drawing points from it.
@@ -55,7 +58,7 @@ class HilbertBackground(AbstractImageMeshWeighted):
         )
 
     def image_plane_mesh_grid_from(
-            self, grid: Grid2D, adapt_data: Optional[np.ndarray]
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray]
     ) -> Grid2DIrregular:
         """
         Returns an image mesh by running the Hilbert curve on the weight map.
@@ -129,4 +132,6 @@ class HilbertBackground(AbstractImageMeshWeighted):
 
         grid_background = np.stack((drawn_y, drawn_x), axis=-1)
 
-        return Grid2DIrregular(values=np.concatenate((grid, grid_background[1:, :]), axis=0))
+        return Grid2DIrregular(
+            values=np.concatenate((grid, grid_background[1:, :]), axis=0)
+        )
