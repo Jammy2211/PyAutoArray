@@ -65,7 +65,9 @@ class AbstractImageMeshWeighted(AbstractImageMesh):
         weight_map += self.weight_floor
         weight_map[weight_map > 1.0] = 1.0
 
-        return weight_map**self.weight_power
+        weight_map = weight_map ** self.weight_power
+
+        return weight_map
 
     def image_plane_mesh_grid_from(
         self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None

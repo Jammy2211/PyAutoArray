@@ -283,6 +283,8 @@ class Hilbert(AbstractImageMeshWeighted):
 
         weight_map = self.weight_map_from(adapt_data=adapt_data_hb)
 
+        weight_map /= np.sum(weight_map)
+
         (
             drawn_id,
             drawn_x,
