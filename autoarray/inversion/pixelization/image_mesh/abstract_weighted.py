@@ -2,21 +2,43 @@ from typing import Optional
 
 import numpy as np
 
+from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 
-class AbstractImageMesh:
-    def __init__(self):
+class AbstractImageMeshWeighted(AbstractImageMesh):
+    def __init__(
+        self,
+        pixels=10.0,
+        weight_floor=0.0,
+        weight_power=0.0,
+    ):
         """
-        An abstract image mesh, which is used by pixelizations to determine the (y,x) mesh coordinates from image
-        data.
+        An abstract image mesh, which is used by pixelizations to determine the (y,x) mesh coordinates from an adapt
+        image.
+
+        Parameters
+        ----------
+        pixels
+            The total number of pixels in the image mesh and drawn from the Hilbert curve.
+        weight_floor
+            The minimum weight value in the weight map, which allows more pixels to be drawn from the lower weight
+            regions of the adapt image.
+        weight_power
+            The power the weight values are raised too, which allows more pixels to be drawn from the higher weight
+            regions of the adapt image.
         """
-        pass
+
+        super().__init__()
+
+        self.pixels = pixels
+        self.weight_floor = weight_floor
+        self.weight_power = weight_power
 
     @property
     def uses_adapt_images(self) -> bool:
-        raise NotImplementedError
+        return True
 
     def weight_map_from(self, adapt_data: np.ndarray):
         """
@@ -39,10 +61,11 @@ class AbstractImageMesh:
         The weight map which is used to adapt the Delaunay pixels in the image-plane to components in the data.
         """
 
-        weight_map = (np.abs(adapt_data) + self.weight_floor) ** self.weight_power
-        weight_map /= np.sum(weight_map)
+        weight_map = np.abs(adapt_data) / np.max(adapt_data)
+        weight_map += self.weight_floor
+        weight_map[weight_map > 1.0] = 1.0
 
-        return weight_map
+        return weight_map**self.weight_power
 
     def image_plane_mesh_grid_from(
         self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None
