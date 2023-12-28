@@ -18,7 +18,7 @@ def test__image_plane_mesh_grid_from():
         pixel_scales=1.0,
     )
 
-    kmeans = aa.image_mesh.HilbertBalanced(pixels=10, pixels_background=5)
+    kmeans = aa.image_mesh.HilbertBalanced(pixels=10)
     image_mesh = kmeans.image_plane_mesh_grid_from(grid=grid, adapt_data=adapt_data)
 
     print(image_mesh)
