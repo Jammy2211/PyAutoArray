@@ -41,7 +41,7 @@ class MatPlot2D(AbstractMatPlot):
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         array_overlay: Optional[w2d.ArrayOverlay] = None,
-        contour : Optional[w2d.Contour] = None,
+        contour: Optional[w2d.Contour] = None,
         grid_scatter: Optional[w2d.GridScatter] = None,
         grid_plot: Optional[w2d.GridPlot] = None,
         grid_errorbar: Optional[w2d.GridErrorbar] = None,

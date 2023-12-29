@@ -1,5 +1,6 @@
 import autoarray.plot as aplt
 
+
 def test__set_legend_works_for_plot():
     figure = aplt.Figure(aspect="auto")
 

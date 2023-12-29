@@ -1,6 +1,7 @@
 import autoarray as aa
 import autoarray.plot as aplt
 
+
 def test__quiver_vectors():
     quiver = aplt.VectorYXQuiver(
         headlength=5,

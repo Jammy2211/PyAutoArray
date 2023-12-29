@@ -4,6 +4,7 @@ import autoarray.plot as aplt
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def test__plot_rectangular_grid_lines__draws_for_valid_extent_and_shape():
     line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 

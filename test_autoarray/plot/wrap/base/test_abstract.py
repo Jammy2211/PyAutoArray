@@ -2,7 +2,6 @@ import autoarray.plot as aplt
 
 
 def test__from_config_or_via_manual_input():
-
     # Testing for config loading, could be any matplot object but use GridScatter as example
 
     grid_scatter = aplt.GridScatter()

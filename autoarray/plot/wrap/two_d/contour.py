@@ -7,13 +7,12 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 
 
 class Contour(AbstractMatWrap2D):
-
     def __init__(
         self,
         manual_levels: Optional[List[float]] = None,
-        total_contours : Optional[int] = None,
-        use_log10 : Optional[bool] = None,
-        include_values : Optional[bool] = None,
+        total_contours: Optional[int] = None,
+        use_log10: Optional[bool] = None,
+        include_values: Optional[bool] = None,
         **kwargs,
     ):
         """
@@ -42,7 +41,9 @@ class Contour(AbstractMatWrap2D):
         self.use_log10 = use_log10 or self.config_dict.get("use_log10")
         self.include_values = include_values or self.config_dict.get("include_values")
 
-    def levels_from(self, array : Union[np.ndarray, Array2D]) -> Union[np.ndarray, List[float]]:
+    def levels_from(
+        self, array: Union[np.ndarray, Array2D]
+    ) -> Union[np.ndarray, List[float]]:
         """
         The levels at which the contours are plotted, which may be determined in the following ways:
 
@@ -54,14 +55,17 @@ class Contour(AbstractMatWrap2D):
         The levels at which the contours are plotted.
         """
         if self.manual_levels is None:
-
             if self.use_log10:
-                return np.logspace(np.log10(np.min(array)), np.log10(np.max(array)), self.total_contours)
+                return np.logspace(
+                    np.log10(np.min(array)),
+                    np.log10(np.max(array)),
+                    self.total_contours,
+                )
             return np.linspace(np.min(array), np.max(array), self.total_contours)
 
         return self.manual_levels
 
-    def set(self, array: Union[np.ndarray, Array2D], extent : List[float] = None):
+    def set(self, array: Union[np.ndarray, Array2D], extent: List[float] = None):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -82,10 +86,7 @@ class Contour(AbstractMatWrap2D):
         levels = self.levels_from(array)
 
         ax = plt.contour(
-            array.native[::-1],
-            levels=levels,
-            extent=extent,
-            **config_dict
+            array.native[::-1], levels=levels, extent=extent, **config_dict
         )
         if self.include_values:
             ax.clabel(levels=levels, inline=True, fontsize=10)

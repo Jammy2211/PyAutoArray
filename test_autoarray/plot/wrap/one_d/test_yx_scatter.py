@@ -1,5 +1,6 @@
 import autoarray.plot as aplt
 
+
 def test__scatter_y_vs_x__works_for_reasonable_values():
     yx_scatter = aplt.YXScatter(linewidth=2, linestyle="-", c="k")
 
