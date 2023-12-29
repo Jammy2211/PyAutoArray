@@ -66,6 +66,10 @@ class Contour(AbstractMatWrap2D):
         array
             The array of values the contours are plotted over.
         """
+
+        if self.kwargs.get("is_default") is True:
+            return
+
         plt.contour(
             array.native[::-1],
             levels=self.levels_from(array),
