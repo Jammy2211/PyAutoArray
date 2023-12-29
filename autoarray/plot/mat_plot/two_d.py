@@ -328,7 +328,7 @@ class MatPlot2D(AbstractMatPlot):
             pixels=array.shape_native[1],
         )
 
-        self.title.set(auto_title=auto_labels.title)
+        self.title.set(auto_title=auto_labels.title, use_log10=self.use_log10)
         self.ylabel.set()
         self.xlabel.set()
 
