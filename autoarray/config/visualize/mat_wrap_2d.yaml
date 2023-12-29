@@ -24,8 +24,12 @@ ArrayOverlay:        # wrapper for `plt.imshow()`: customize arrays overlaid.
 Contour:             # wrapper for `plt.contour()`: customize contours plotted on the figure.
   figure:
     colors: "k"
+    total_contours: 10
+    use_log10: true
   subplot:
     colors: "k"
+    total_contours: 10
+    use_log10: true
 BorderScatter:       # wrapper for `plt.scatter()`: customize the apperance of 2D borders.
   figure:
     c: r

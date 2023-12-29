@@ -11,8 +11,8 @@ class Contour(AbstractMatWrap2D):
     def __init__(
         self,
         manual_levels: Optional[List[float]] = None,
-        total_contours : int = 10,
-        use_log10 : bool = True,
+        total_contours : Optional[int] = None,
+        use_log10 : Optional[bool] = None,
         **kwargs,
     ):
         """
@@ -35,8 +35,8 @@ class Contour(AbstractMatWrap2D):
         super().__init__(**kwargs)
 
         self.manual_levels = manual_levels
-        self.total_contours = total_contours
-        self.use_log10 = use_log10
+        self.total_contours = total_contours or self.config_dict.get("total_contours")
+        self.use_log10 = use_log10 or self.config_dict.get("use_log10")
 
     def levels_from(self, array : Union[np.ndarray, Array2D]) -> Union[np.ndarray, List[float]]:
         """
@@ -70,9 +70,13 @@ class Contour(AbstractMatWrap2D):
         if self.kwargs.get("is_default") is True:
             return
 
+        config_dict = self.config_dict
+        config_dict.pop("total_contours")
+        config_dict.pop("use_log10")
+
         plt.contour(
             array.native[::-1],
             levels=self.levels_from(array),
             extent=extent,
-            **self.config_dict
+            **config_dict
         )
