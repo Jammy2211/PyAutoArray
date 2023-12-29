@@ -13,6 +13,7 @@ class Contour(AbstractMatWrap2D):
         manual_levels: Optional[List[float]] = None,
         total_contours : Optional[int] = None,
         use_log10 : Optional[bool] = None,
+        include_values : Optional[bool] = None,
         **kwargs,
     ):
         """
@@ -30,6 +31,8 @@ class Contour(AbstractMatWrap2D):
             The total number of contours plotted, which also determines the spacing between each contour.
         use_log10
             Whether the contours are plotted with a log10 spacing between each contour (alternative is linear).
+        include_values
+            Whether the values of the contours are included on the figure.
         """
 
         super().__init__(**kwargs)
@@ -37,6 +40,7 @@ class Contour(AbstractMatWrap2D):
         self.manual_levels = manual_levels
         self.total_contours = total_contours or self.config_dict.get("total_contours")
         self.use_log10 = use_log10 or self.config_dict.get("use_log10")
+        self.include_values = include_values or self.config_dict.get("include_values")
 
     def levels_from(self, array : Union[np.ndarray, Array2D]) -> Union[np.ndarray, List[float]]:
         """
@@ -73,10 +77,15 @@ class Contour(AbstractMatWrap2D):
         config_dict = self.config_dict
         config_dict.pop("total_contours")
         config_dict.pop("use_log10")
+        config_dict.pop("include_values")
 
-        plt.contour(
+        levels = self.levels_from(array)
+
+        ax = plt.contour(
             array.native[::-1],
-            levels=self.levels_from(array),
+            levels=levels,
             extent=extent,
             **config_dict
         )
+        if self.include_values:
+            ax.clabel(levels=levels, inline=True, fontsize=10)
