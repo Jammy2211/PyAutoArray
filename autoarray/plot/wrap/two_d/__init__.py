@@ -1,4 +1,5 @@
 from .array_overlay import ArrayOverlay
+from .contour import Contour
 from .grid_scatter import GridScatter
 from .grid_plot import GridPlot
 from .grid_errorbar import GridErrorbar

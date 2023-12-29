@@ -41,6 +41,7 @@ class MatPlot2D(AbstractMatPlot):
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         array_overlay: Optional[w2d.ArrayOverlay] = None,
+        contour : Optional[w2d.Contour] = None,
         grid_scatter: Optional[w2d.GridScatter] = None,
         grid_plot: Optional[w2d.GridPlot] = None,
         grid_errorbar: Optional[w2d.GridErrorbar] = None,
@@ -115,6 +116,8 @@ class MatPlot2D(AbstractMatPlot):
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
         array_overlay
             Overlays an input `Array2D` over the figure using `plt.imshow`.
+        contour
+            Overlays contours of an input `Array2D` over the figure using `plt.contour`.
         grid_scatter
             Scatters a `Grid2D` of (y,x) coordinates over the figure using `plt.scatter`.
         grid_plot
@@ -167,6 +170,8 @@ class MatPlot2D(AbstractMatPlot):
         )
 
         self.array_overlay = array_overlay or w2d.ArrayOverlay(is_default=True)
+
+        self.contour = contour or w2d.Contour(is_default=True)
 
         self.grid_scatter = grid_scatter or w2d.GridScatter(is_default=True)
         self.grid_plot = grid_plot or w2d.GridPlot(is_default=True)
@@ -337,6 +342,8 @@ class MatPlot2D(AbstractMatPlot):
                 units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit
             )
             self.colorbar_tickparams.set(cb=cb)
+
+        self.contour.set(array=array, extent=extent)
 
         grid_indexes = None
 
