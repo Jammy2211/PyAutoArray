@@ -56,7 +56,7 @@ class Cmap(AbstractMatWrap):
             return np.max(array)
         return self.config_dict["vmax"]
 
-    def norm_from(self, array: np.ndarray) -> object:
+    def norm_from(self, array: np.ndarray, use_log10 : bool = False) -> object:
         """
         Returns the `Normalization` object which scales of the colormap.
 
@@ -86,12 +86,12 @@ class Cmap(AbstractMatWrap):
         if isinstance(self.config_dict["norm"], colors.Normalize):
             return self.config_dict["norm"]
 
-        if self.config_dict["norm"] in "linear":
-            return colors.Normalize(vmin=vmin, vmax=vmax)
-        elif self.config_dict["norm"] in "log":
+        if self.config_dict["norm"] in "log" or use_log10:
             if vmin == 0.0:
                 vmin = 1.0e-4
             return colors.LogNorm(vmin=vmin, vmax=vmax)
+        elif self.config_dict["norm"] in "linear":
+            return colors.Normalize(vmin=vmin, vmax=vmax)
         elif self.config_dict["norm"] in "symmetric_log":
             return colors.SymLogNorm(
                 vmin=vmin,

@@ -65,7 +65,7 @@ class Contour(AbstractMatWrap2D):
 
         return self.manual_levels
 
-    def set(self, array: Union[np.ndarray, Array2D], extent: List[float] = None):
+    def set(self, array: Union[np.ndarray, Array2D], extent: List[float] = None, use_log10 : bool = False):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -75,8 +75,9 @@ class Contour(AbstractMatWrap2D):
             The array of values the contours are plotted over.
         """
 
-        if self.kwargs.get("is_default") is True:
-            return
+        if not use_log10:
+            if self.kwargs.get("is_default") is True:
+                return
 
         config_dict = self.config_dict
         config_dict.pop("total_contours")

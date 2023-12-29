@@ -58,6 +58,7 @@ class MatPlot2D(AbstractMatPlot):
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
+        use_log10 : bool = False
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -148,6 +149,8 @@ class MatPlot2D(AbstractMatPlot):
             Plots the serial prescan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
         serial_overscan_plot
             Plots the serial overscan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
+        use_log10
+            If True, the plot has a log10 colormap, colorbar and contours showing the values.
         """
 
         super().__init__(
@@ -206,6 +209,8 @@ class MatPlot2D(AbstractMatPlot):
         self.serial_overscan_plot = serial_overscan_plot or w2d.SerialOverscanPlot(
             is_default=True
         )
+
+        self.use_log10 = use_log10
 
         self.is_for_subplot = False
 
@@ -282,7 +287,7 @@ class MatPlot2D(AbstractMatPlot):
                 ax = self.setup_subplot()
 
         aspect = self.figure.aspect_from(shape_native=array.shape_native)
-        norm = self.cmap.norm_from(array=array)
+        norm = self.cmap.norm_from(array=array, use_log10=self.use_log10)
 
         origin = conf.instance["visualize"]["general"]["general"]["imshow_origin"]
 
@@ -339,11 +344,11 @@ class MatPlot2D(AbstractMatPlot):
 
         if self.colorbar is not False:
             cb = self.colorbar.set(
-                units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit
+                units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit, use_log10=self.use_log10
             )
             self.colorbar_tickparams.set(cb=cb)
 
-        self.contour.set(array=array, extent=extent)
+        self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
 
         grid_indexes = None
 
