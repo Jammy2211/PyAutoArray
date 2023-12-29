@@ -338,15 +338,6 @@ class MatPlot2D(AbstractMatPlot):
             )
             self.colorbar_tickparams.set(cb=cb)
 
-        # levels = np.logspace(np.log10(0.3), np.log10(20.0), 10)
-        # plt.contour(
-        #     #  array.mask.derive_grid.unmasked_sub_1,
-        #     array.native[::-1],
-        #     levels=levels,
-        #     colors="black",
-        #     extent=extent,
-        # )
-
         grid_indexes = None
 
         if visuals_2d.indexes is not None or visuals_2d.pix_indexes is not None:
