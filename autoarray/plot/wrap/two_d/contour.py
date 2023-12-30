@@ -90,4 +90,7 @@ class Contour(AbstractMatWrap2D):
             array.native[::-1], levels=levels, extent=extent, **config_dict
         )
         if self.include_values:
-            ax.clabel(levels=levels, inline=True, fontsize=10)
+            try:
+                ax.clabel(levels=levels, inline=True, fontsize=10)
+            except ValueError:
+                pass
