@@ -205,7 +205,7 @@ class InversionPlotter(Plotter):
                         filename="regularization_weights",
                     ),
                 )
-            except IndexError:
+            except (IndexError, ValueError):
                 pass
 
     def subplot_of_mapper(
