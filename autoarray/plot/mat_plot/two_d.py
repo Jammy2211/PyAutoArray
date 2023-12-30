@@ -41,6 +41,7 @@ class MatPlot2D(AbstractMatPlot):
         legend: Optional[wb.Legend] = None,
         output: Optional[wb.Output] = None,
         array_overlay: Optional[w2d.ArrayOverlay] = None,
+        contour: Optional[w2d.Contour] = None,
         grid_scatter: Optional[w2d.GridScatter] = None,
         grid_plot: Optional[w2d.GridPlot] = None,
         grid_errorbar: Optional[w2d.GridErrorbar] = None,
@@ -57,6 +58,7 @@ class MatPlot2D(AbstractMatPlot):
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
+        use_log10 : bool = False
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -115,6 +117,8 @@ class MatPlot2D(AbstractMatPlot):
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
         array_overlay
             Overlays an input `Array2D` over the figure using `plt.imshow`.
+        contour
+            Overlays contours of an input `Array2D` over the figure using `plt.contour`.
         grid_scatter
             Scatters a `Grid2D` of (y,x) coordinates over the figure using `plt.scatter`.
         grid_plot
@@ -145,6 +149,8 @@ class MatPlot2D(AbstractMatPlot):
             Plots the serial prescan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
         serial_overscan_plot
             Plots the serial overscan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
+        use_log10
+            If True, the plot has a log10 colormap, colorbar and contours showing the values.
         """
 
         super().__init__(
@@ -167,6 +173,8 @@ class MatPlot2D(AbstractMatPlot):
         )
 
         self.array_overlay = array_overlay or w2d.ArrayOverlay(is_default=True)
+
+        self.contour = contour or w2d.Contour(is_default=True)
 
         self.grid_scatter = grid_scatter or w2d.GridScatter(is_default=True)
         self.grid_plot = grid_plot or w2d.GridPlot(is_default=True)
@@ -201,6 +209,8 @@ class MatPlot2D(AbstractMatPlot):
         self.serial_overscan_plot = serial_overscan_plot or w2d.SerialOverscanPlot(
             is_default=True
         )
+
+        self.use_log10 = use_log10
 
         self.is_for_subplot = False
 
@@ -277,7 +287,7 @@ class MatPlot2D(AbstractMatPlot):
                 ax = self.setup_subplot()
 
         aspect = self.figure.aspect_from(shape_native=array.shape_native)
-        norm = self.cmap.norm_from(array=array)
+        norm = self.cmap.norm_from(array=array, use_log10=self.use_log10)
 
         origin = conf.instance["visualize"]["general"]["general"]["imshow_origin"]
 
@@ -318,7 +328,7 @@ class MatPlot2D(AbstractMatPlot):
             pixels=array.shape_native[1],
         )
 
-        self.title.set(auto_title=auto_labels.title)
+        self.title.set(auto_title=auto_labels.title, use_log10=self.use_log10)
         self.ylabel.set()
         self.xlabel.set()
 
@@ -334,18 +344,11 @@ class MatPlot2D(AbstractMatPlot):
 
         if self.colorbar is not False:
             cb = self.colorbar.set(
-                units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit
+                units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit, use_log10=self.use_log10
             )
             self.colorbar_tickparams.set(cb=cb)
 
-        # levels = np.logspace(np.log10(0.3), np.log10(20.0), 10)
-        # plt.contour(
-        #     #  array.mask.derive_grid.unmasked_sub_1,
-        #     array.native[::-1],
-        #     levels=levels,
-        #     colors="black",
-        #     extent=extent,
-        # )
+        self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
 
         grid_indexes = None
 

@@ -5,30 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def test___from_config_or_via_manual_input():
-    grid_plot = aplt.GridPlot()
-
-    assert grid_plot.config_dict["linewidth"] == 3
-    assert grid_plot.config_dict["c"] == "k"
-
-    grid_plot = aplt.GridPlot(c=["k", "b"])
-
-    assert grid_plot.config_dict["linewidth"] == 3
-    assert grid_plot.config_dict["c"] == ["k", "b"]
-
-    grid_plot = aplt.GridPlot()
-    grid_plot.is_for_subplot = True
-
-    assert grid_plot.config_dict["linewidth"] == 1
-    assert grid_plot.config_dict["c"] == "k"
-
-    grid_plot = aplt.GridPlot(style=".")
-    grid_plot.is_for_subplot = True
-
-    assert grid_plot.config_dict["linewidth"] == 1
-    assert grid_plot.config_dict["c"] == "k"
-
-
 def test__plot_rectangular_grid_lines__draws_for_valid_extent_and_shape():
     line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 

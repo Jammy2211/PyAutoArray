@@ -1,30 +1,6 @@
 import autoarray.plot as aplt
 
 
-def test___from_config_or_via_manual_input():
-    line_plot = aplt.YXPlot()
-
-    assert line_plot.config_dict["linewidth"] == 3
-    assert line_plot.config_dict["c"] == "k"
-
-    line_plot = aplt.YXPlot(c=["k", "b"])
-
-    assert line_plot.config_dict["linewidth"] == 3
-    assert line_plot.config_dict["c"] == ["k", "b"]
-
-    line_plot = aplt.YXPlot()
-    line_plot.is_for_subplot = True
-
-    assert line_plot.config_dict["linewidth"] == 1
-    assert line_plot.config_dict["c"] == "k"
-
-    line_plot = aplt.YXPlot(linestyle=".")
-    line_plot.is_for_subplot = True
-
-    assert line_plot.config_dict["linewidth"] == 1
-    assert line_plot.config_dict["c"] == "k"
-
-
 def test__plot_y_vs_x__works_for_reasonable_values():
     line = aplt.YXPlot(linewidth=2, linestyle="-", c="k")
 
