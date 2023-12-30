@@ -1,10 +1,8 @@
 from __future__ import annotations
 import numpy as np
-from scipy.interpolate import interp1d, griddata
 from typing import Optional
 
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
@@ -24,6 +22,7 @@ class HilbertBalanced(AbstractImageMeshWeighted):
         pixels=10.0,
         weight_floor=0.0,
         weight_power=0.0,
+        ratio=0.8,
     ):
         """
         Computes a balanced image-mesh by computing the Hilbert curve of the adapt data and drawing points from it.
@@ -57,6 +56,10 @@ class HilbertBalanced(AbstractImageMeshWeighted):
         weight_power
             The power the weight values are raised too, which allows more pixels to be drawn from the higher weight
             regions of the adapt image.
+        ratio
+            The ratio between the number of pixdels in the image mesh drawn from the weight map and (1 - weight map).
+            For example, if there are 1000 pixels and a ratio of 0.8, 800 pixels are drawn from the weight map
+            and therefore make up the high weighted region of the image mesh.
         """
 
         super().__init__(
@@ -64,6 +67,8 @@ class HilbertBalanced(AbstractImageMeshWeighted):
             weight_floor=weight_floor,
             weight_power=weight_power,
         )
+
+        self.ratio = ratio
 
     def image_plane_mesh_grid_from(
         self, grid: Grid2D, adapt_data: Optional[np.ndarray]
@@ -109,10 +114,7 @@ class HilbertBalanced(AbstractImageMeshWeighted):
         weight_map /= np.sum(weight_map)
         weight_map_background /= np.sum(weight_map_background)
 
-        if self.pixels % 2 == 1:
-            pixels = self.pixels + 1
-        else:
-            pixels = self.pixels
+        pixels = int(self.pixels * self.ratio)
 
         (
             drawn_id,
@@ -120,7 +122,7 @@ class HilbertBalanced(AbstractImageMeshWeighted):
             drawn_y,
         ) = inverse_transform_sampling_interpolated(
             probabilities=weight_map,
-            n_samples=pixels // 2,
+            n_samples=pixels,
             gridx=grid_hb[:, 1],
             gridy=grid_hb[:, 0],
         )
@@ -133,7 +135,7 @@ class HilbertBalanced(AbstractImageMeshWeighted):
             drawn_y,
         ) = inverse_transform_sampling_interpolated(
             probabilities=weight_map_background,
-            n_samples=(self.pixels // 2) + 1,
+            n_samples=(self.pixels  - pixels) + 1,
             gridx=grid_hb[:, 1],
             gridy=grid_hb[:, 0],
         )
