@@ -2,6 +2,7 @@ from __future__ import annotations
 import numpy as np
 from sklearn.cluster import KMeans as ScipyKMeans
 from typing import TYPE_CHECKING, Optional
+import sys
 import warnings
 
 if TYPE_CHECKING:
@@ -70,12 +71,29 @@ class KMeans(AbstractImageMeshWeighted):
 
         """
 
+        if self.pixels > grid.shape[0]:
+
+            print(
+                """
+                The number of pixels passed to the KMeans object exceeds the number of image-pixels in the mask of
+                the data being fitted. This is not allowed by the KMenas algorithm and will cause an error.
+                
+                To fix this, you should reduce the number of pixels in the KMeans object to be less than the number
+                of image-pixels in the mask of the data being fitted.
+                
+                If you are performing model-fitting, you should update the priors to have an upper limit which does
+                not exceed the number of image-pixels in the mask of the data being fitted.
+                
+                For adaptive fitting, the KMeans object has been superseeded by the Hilbert object, which does not
+                have this limitation and performs better in general. You should therefore consider using the Hilbert
+                object instead.
+                """)
+
+            sys.exit()
+
         warnings.filterwarnings("ignore")
 
         weight_map = self.weight_map_from(adapt_data=adapt_data)
-
-        if self.pixels > grid.shape[0]:
-            raise exc.GridException
 
         kmeans = ScipyKMeans(
             n_clusters=int(self.pixels),
