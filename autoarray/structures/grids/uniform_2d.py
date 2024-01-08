@@ -1239,6 +1239,6 @@ class Grid2D(Structure):
         return Grid2DIrregular(
             values=grid_2d_util.relocated_grid_via_jit_from(
                 grid=np.array(mesh_grid),
-                border_grid=self.sub_border_grid,
+                border_grid=np.array(self.sub_border_grid),
             ),
         )
