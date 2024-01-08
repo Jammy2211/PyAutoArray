@@ -359,6 +359,10 @@ class AbstractArray2D(Structure):
         self.mask = mask
         self.header = header
 
+    @property
+    def values(self):
+        return self._array
+
     def __array_finalize__(self, obj):
         if hasattr(obj, "mask"):
             self.mask = obj.mask
