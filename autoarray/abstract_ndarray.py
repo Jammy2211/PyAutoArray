@@ -82,7 +82,9 @@ class AbstractNDArray(ABC):
         return new_array
 
     def copy(self):
-        return copy(self)
+        new = copy(self)
+        new._array = self._array.copy()
+        return new
 
     def __iter__(self):
         return iter(self._array)
