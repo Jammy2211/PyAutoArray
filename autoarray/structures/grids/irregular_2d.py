@@ -41,8 +41,9 @@ class Grid2DIrregular(AbstractNDArray):
             The irregular grid of (y,x) coordinates.
         """
 
-        # if len(values) == 0:
-        #     return []
+        if len(values) == 0:
+            super().__init__(values)
+            return
 
         if type(values) is list:
             if isinstance(values[0], Grid2DIrregular):
@@ -51,6 +52,10 @@ class Grid2DIrregular(AbstractNDArray):
                 values = np.asarray(values)
 
         super().__init__(values)
+
+    @property
+    def values(self):
+        return self._array
 
     @property
     def geometry(self):
@@ -445,8 +450,9 @@ class Grid2DIrregularUniform(Grid2DIrregular):
             A collection of (y,x) coordinates that.
         """
 
-        # if len(values) == 0:
-        #     return []
+        if len(values) == 0:
+            super().__init__(values=values)
+            return
 
         if isinstance(values[0], float):
             values = [values]

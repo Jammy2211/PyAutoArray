@@ -251,7 +251,9 @@ class AbstractNDArray(ABC):
     def __getitem__(self, item):
         result = self._array[item]
         if isinstance(item, slice):
-            return self.with_new_array(result)
+            result = self.with_new_array(result)
+        if isinstance(result, np.ndarray):
+            result = self.with_new_array(result)
         return result
 
     def __setitem__(self, key, value):
