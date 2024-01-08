@@ -5,9 +5,16 @@ from autoarray.inversion.pixelization.pixelization import Pixelization
 
 class MockPixelization(Pixelization):
     def __init__(
-        self, mesh=None, regularization=None, mapper=None, image_plane_mesh_grid=None
+        self,
+        mesh=None,
+        regularization=None,
+        image_mesh=None,
+        mapper=None,
+        image_plane_mesh_grid=None,
     ):
-        super().__init__(mesh=mesh, regularization=regularization)
+        super().__init__(
+            mesh=mesh, regularization=regularization, image_mesh=image_mesh
+        )
 
         self.mapper = mapper
         self.image_plane_mesh_grid = image_plane_mesh_grid

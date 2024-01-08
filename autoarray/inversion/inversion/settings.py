@@ -13,6 +13,7 @@ class SettingsInversion:
         use_w_tilde: bool = True,
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
+        relocate_pix_border: Optional[bool] = None,
         force_edge_pixels_to_zeros: bool = True,
         force_edge_image_pixels_to_zeros: bool = False,
         image_pixels_source_zero=None,
@@ -38,6 +39,9 @@ class SettingsInversion:
             Whether to use a positive-only linear system solver, which requires that every reconstructed value is
             positive but is computationally much slower than the default solver (which allows for positive and
             negative values).
+        relocate_pix_border
+            If `True`, all coordinates of all pixelization source mesh grids have pixels outside their border
+            relocated to their edge.
         no_regularization_add_to_curvature_diag_value
             If a linear func object does not have a corresponding regularization, this value is added to its
             diagonal entries of the curvature regularization matrix to ensure the matrix is positive-definite.
@@ -60,12 +64,11 @@ class SettingsInversion:
         self.use_w_tilde = use_w_tilde
         self._use_positive_only_solver = use_positive_only_solver
         self._positive_only_uses_p_initial = positive_only_uses_p_initial
+        self._relocate_pix_border = relocate_pix_border
         self.use_linear_operators = use_linear_operators
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self.force_edge_image_pixels_to_zeros = force_edge_image_pixels_to_zeros
         self.image_pixels_source_zero = image_pixels_source_zero
-        # force_edge_image_pixels_to_zeros is to force source pixels correspoding to the edge of an image to be 0.
-        # image_pixels_source_zero is to a True/False array to identify those image pixels to which source's contribution should be 0.
         self._no_regularization_add_to_curvature_diag_value = (
             no_regularization_add_to_curvature_diag_value
         )
@@ -87,6 +90,13 @@ class SettingsInversion:
             return conf.instance["general"]["inversion"]["positive_only_uses_p_initial"]
 
         return self._positive_only_uses_p_initial
+
+    @property
+    def relocate_pix_border(self):
+        if self._relocate_pix_border is None:
+            return conf.instance["general"]["inversion"]["relocate_pix_border"]
+
+        return self._relocate_pix_border
 
     @property
     def no_regularization_add_to_curvature_diag_value(self):

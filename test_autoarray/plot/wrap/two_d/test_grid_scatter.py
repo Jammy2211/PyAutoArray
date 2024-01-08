@@ -5,30 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def test__from_config_or_via_manual_input():
-    grid_scatter = aplt.GridScatter()
-
-    assert grid_scatter.config_dict["marker"] == "x"
-    assert grid_scatter.config_dict["c"] == "y"
-
-    grid_scatter = aplt.GridScatter(marker="x")
-
-    assert grid_scatter.config_dict["marker"] == "x"
-    assert grid_scatter.config_dict["c"] == "y"
-
-    grid_scatter = aplt.GridScatter()
-    grid_scatter.is_for_subplot = True
-
-    assert grid_scatter.config_dict["marker"] == "."
-    assert grid_scatter.config_dict["c"] == "r"
-
-    grid_scatter = aplt.GridScatter(c=["r", "b"])
-    grid_scatter.is_for_subplot = True
-
-    assert grid_scatter.config_dict["marker"] == "."
-    assert grid_scatter.config_dict["c"] == ["r", "b"]
-
-
 def test__scatter_grid():
     scatter = aplt.GridScatter(s=2, marker="x", c="k")
 

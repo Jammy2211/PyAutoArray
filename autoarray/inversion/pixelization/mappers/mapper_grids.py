@@ -6,20 +6,18 @@ if TYPE_CHECKING:
     from autoarray import Preloads
 
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.sparse_2d import Grid2DSparse
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
-from autoarray.inversion.pixelization.settings import SettingsPixelization
 
 
 class MapperGrids:
     def __init__(
         self,
         source_plane_data_grid: Grid2D,
-        source_plane_mesh_grid: Abstract2DMesh = None,
-        image_plane_mesh_grid: Grid2DSparse = None,
-        adapt_data: np.ndarray = None,
-        settings: SettingsPixelization = SettingsPixelization(),
-        preloads: Preloads = None,
+        source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
+        image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
+        adapt_data: Optional[np.ndarray] = None,
+        preloads: Optional[Preloads] = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -56,8 +54,6 @@ class MapperGrids:
         adapt_data
             An image which is used to determine the `image_plane_mesh_grid` and therefore adapt the distribution of
             pixels of the Delaunay grid to the data it discretizes.
-        settings
-            Settings controlling the pixelization for example if a border is used to relocate its exterior coordinates.
         preloads
             Preloads in memory certain arrays which may be known beforehand in order to speed up the calculation,
             for example the `source_plane_mesh_grid` could be preloaded.
@@ -71,6 +67,5 @@ class MapperGrids:
         self.source_plane_mesh_grid = source_plane_mesh_grid
         self.image_plane_mesh_grid = image_plane_mesh_grid
         self.adapt_data = adapt_data
-        self.settings = settings
         self.preloads = preloads or Preloads()
         self.run_time_dict = run_time_dict

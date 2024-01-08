@@ -478,7 +478,9 @@ class AbstractArray2D(Structure):
         """
         binned_array = np.mean(self.native.array, axis=0, where=~self.mask)
 
-        # binned_array = (self.native*np.invert(self.mask)).sum(axis=0)/np.invert(self.mask).sum(axis=0)
+        # binned_array = (self.native * np.invert(self.mask)).sum(axis=0) / np.invert(
+        #     self.mask
+        # ).sum(axis=0)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     @property

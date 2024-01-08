@@ -60,7 +60,7 @@ class Colorbar(AbstractMatWrap):
             return conf.instance["visualize"]["general"]["units"]["cb_unit"]
         return self.manual_unit
 
-    def manual_tick_values_from(self, norm=None):
+    def tick_values_from(self, norm=None, use_log10 : bool = False):
         if (
             sum(
                 x is not None
@@ -75,19 +75,24 @@ class Colorbar(AbstractMatWrap):
         if self.manual_tick_values is not None:
             return self.manual_tick_values
 
-        if (
-            self.manual_tick_values is None
-            and self.manual_tick_labels is None
-            and norm is not None
-        ):
+        if norm is not None:
+
             min_value = norm.vmin
             max_value = norm.vmax
-            mid_value = (max_value + min_value) / 2.0
+
+            if use_log10:
+
+                log_mid_value = (np.log10(max_value) + np.log10(min_value)) / 2.0
+                mid_value = 10 ** log_mid_value
+
+            else:
+
+                mid_value = (max_value + min_value) / 2.0
 
             return [min_value, mid_value, max_value]
 
-    def manual_tick_labels_from(
-        self, units: Units, manual_tick_values: List[float], cb_unit=None
+    def tick_labels_from(
+        self, units: Units, manual_tick_values: List[float], cb_unit=None,
     ):
         if manual_tick_values is None:
             return None
@@ -102,12 +107,15 @@ class Colorbar(AbstractMatWrap):
             ]
 
             if self.manual_log10:
+
                 manual_tick_labels = [
                     "{:.0e}".format(label) for label in manual_tick_labels
                 ]
+
                 manual_tick_labels = [
                     label.replace("1e", "$10^{") + "}$" for label in manual_tick_labels
                 ]
+
                 manual_tick_labels = [
                     label.replace("{-0", "{-").replace("{+0", "{+").replace("+", "")
                     for label in manual_tick_labels
@@ -126,22 +134,22 @@ class Colorbar(AbstractMatWrap):
 
         return manual_tick_labels
 
-    def set(self, units: Units, ax=None, norm=None, cb_unit=None):
+    def set(self, units: Units, ax=None, norm=None, cb_unit=None, use_log10 : bool = False):
         """
         Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
         """
 
-        manual_tick_values = self.manual_tick_values_from(norm=norm)
-        manual_tick_labels = self.manual_tick_labels_from(
-            manual_tick_values=manual_tick_values, units=units, cb_unit=cb_unit
+        tick_values = self.tick_values_from(norm=norm, use_log10=use_log10)
+        tick_labels = self.tick_labels_from(
+            manual_tick_values=tick_values, units=units, cb_unit=cb_unit,
         )
 
-        if manual_tick_values is None and manual_tick_labels is None:
+        if tick_values is None and tick_labels is None:
             cb = plt.colorbar(ax=ax, **self.config_dict)
         else:
-            cb = plt.colorbar(ticks=manual_tick_values, ax=ax, **self.config_dict)
+            cb = plt.colorbar(ticks=tick_values, ax=ax, **self.config_dict)
             cb.ax.set_yticklabels(
-                labels=manual_tick_labels, va=self.manual_alignment or "center"
+                labels=tick_labels, va=self.manual_alignment or "center"
             )
 
         return cb
@@ -167,8 +175,8 @@ class Colorbar(AbstractMatWrap):
         mappable = cm.ScalarMappable(cmap=cmap)
         mappable.set_array(color_values)
 
-        manual_tick_values = self.manual_tick_values_from(norm=norm)
-        manual_tick_labels = self.manual_tick_labels_from(
+        manual_tick_values = self.tick_values_from(norm=norm)
+        manual_tick_labels = self.tick_labels_from(
             manual_tick_values=manual_tick_values, units=units
         )
 

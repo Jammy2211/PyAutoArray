@@ -108,36 +108,6 @@ def total_sub_pixels_2d_from(mask_2d: np.ndarray, sub_size: int) -> int:
 
 
 @numba_util.jit()
-def total_sparse_pixels_2d_from(
-    mask_2d: np.ndarray, unmasked_sparse_grid_pixel_centres: np.ndarray
-) -> int:
-    """Given the full (i.e. without removing pixels which are outside the mask) pixelization grid's pixel
-    center and the mask, compute the total number of pixels which are within the mask and thus used
-    by the pixelization grid.
-
-    Parameters
-    ----------
-    mask_2d
-        The mask within which pixelization pixels must be inside
-    unmasked_sparse_grid_pixel_centres
-        The centres of the unmasked pixelization grid pixels.
-    """
-
-    total_sparse_pixels = 0
-
-    for unmasked_sparse_pixel_index in range(
-        unmasked_sparse_grid_pixel_centres.shape[0]
-    ):
-        y = unmasked_sparse_grid_pixel_centres[unmasked_sparse_pixel_index, 0]
-        x = unmasked_sparse_grid_pixel_centres[unmasked_sparse_pixel_index, 1]
-
-        if not mask_2d[y, x]:
-            total_sparse_pixels += 1
-
-    return total_sparse_pixels
-
-
-@numba_util.jit()
 def mask_2d_circular_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,

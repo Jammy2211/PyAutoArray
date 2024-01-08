@@ -10,7 +10,6 @@ from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.grids.sparse_2d import Grid2DSparse
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.structures.grids import grid_2d_util
@@ -1223,13 +1222,10 @@ class Grid2D(Structure):
             sub_size=grid.mask.sub_size,
         )
 
-    def relocated_mesh_grid_from(self, mesh_grid: Grid2DSparse) -> Grid2DSparse:
+    def relocated_mesh_grid_from(self, mesh_grid: Grid2DIrregular) -> Grid2DIrregular:
         """
         Relocate the coordinates of a pixelization grid to the border of this grid. See the
         method ``relocated_grid_from()`` for a full description of how this grid relocation works.
-
-        This function operates the same as other grid relocation functions but instead returns the grid as
-        a ``Grid2DSparse``  instance, which contains information pairing the grid to a pixelization.
 
         Parameters
         ----------
@@ -1240,7 +1236,7 @@ class Grid2D(Structure):
         if len(self.sub_border_grid) == 0:
             return mesh_grid
 
-        return Grid2DSparse(
+        return Grid2DIrregular(
             values=grid_2d_util.relocated_grid_via_jit_from(
                 grid=np.array(mesh_grid),
                 border_grid=self.sub_border_grid,

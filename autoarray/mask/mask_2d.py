@@ -1049,3 +1049,68 @@ class Mask2D(Mask):
             sub_size=self.sub_size,
             origin=self.zoom_offset_scaled,
         )
+
+    @property
+    def is_circular(self) -> bool:
+        """
+        Returns whether the mask is circular or not.
+
+        This is performed by taking the central row and column of the mask (based on the mask centre) and counting
+        the number of unmasked pixels. If the number of unmasked pixels is the same, the mask is circular.
+
+        This function does not support rectangular masks and an exception will be raised if the pixel scales in each
+        direction are different.
+        """
+
+        if self.pixel_scales[0] != self.pixel_scales[1]:
+            raise exc.MaskException(
+                """
+                The is_circular function cannot be called for a mask with different pixel scales in each dimension
+                (e.g. it does not support rectangular masks.
+                """
+            )
+
+        pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=self.mask_centre
+        )
+
+        central_row_pixels = sum(np.invert(self[pixel_coordinates_2d[0], :]))
+        central_column_pixels = sum(np.invert(self[:, pixel_coordinates_2d[1]]))
+
+        return central_row_pixels == central_column_pixels
+
+    @cached_property
+    def circular_radius(self) -> float:
+        """
+        Returns the radius in scaled units of a circular mask.
+
+        This is performed by taking the central row of the mask (based on the mask centre) and counting the number of
+        unmasked pixels. The radius is then half the number of unmasked pixels times the pixel scale.
+
+        The mask is first checked that it is circular using the `is_circular` property, with an exception raised if
+        it is not.
+
+        This function does not support rectangular masks and an exception will be raised if the pixel scales in each
+        direction are different.
+
+        Returns
+        -------
+        The circular radius of the mask in scaled units.
+        """
+
+        if not self.is_circular:
+            raise exc.MaskException(
+                """
+                A circular radius can only be computed for a circular mask.
+                
+                The `is_circular` property of this mask has returned False, indicating the mask is not circular.
+                """
+            )
+
+        pixel_coordinates_2d = self.geometry.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=self.mask_centre
+        )
+
+        central_row_pixels = sum(np.invert(self[pixel_coordinates_2d[0], :]))
+
+        return central_row_pixels * self.pixel_scales[0] / 2.0
