@@ -459,7 +459,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
 
         if isinstance(values[0], tuple):
             values = [values]
-        elif isinstance(values[0], np.ndarray):
+        elif isinstance(values[0], (np.ndarray, AbstractNDArray)):
             if len(values[0].shape) == 1:
                 values = [values]
         elif isinstance(values[0], list) and isinstance(values[0][0], (float)):
