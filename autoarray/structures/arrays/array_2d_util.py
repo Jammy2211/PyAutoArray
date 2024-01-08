@@ -117,7 +117,7 @@ def convert_array_2d(
         If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
         mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
     """
-    array_2d = convert_array(array=array_2d)
+    array_2d = convert_array(array=array_2d).copy()
 
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 

@@ -50,6 +50,11 @@ class AbstractNDArray(ABC):
 
     __no_flatten__ = ()
 
+    def invert(self):
+        new = self.copy()
+        new._array = np.invert(new._array)
+        return new
+
     @classmethod
     def instance_flatten(cls, instance):
         keys, values = zip(
