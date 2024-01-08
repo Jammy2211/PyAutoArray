@@ -83,6 +83,11 @@ class AbstractNDArray(ABC):
 
     def copy(self):
         new = copy(self)
+        return new
+
+    def __copy__(self):
+        new = self.__new__(self.__class__)
+        new.__dict__.update(self.__dict__)
         new._array = self._array.copy()
         return new
 
