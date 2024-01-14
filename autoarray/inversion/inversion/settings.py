@@ -21,6 +21,8 @@ class SettingsInversion:
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
         use_linear_operators: bool = False,
+        image_mesh_min_mesh_pixels_per_pixel = None,
+        image_mesh_min_mesh_number : int = 5,
         tolerance: float = 1e-8,
         maxiter: int = 250,
     ):
@@ -72,6 +74,8 @@ class SettingsInversion:
         self._no_regularization_add_to_curvature_diag_value = (
             no_regularization_add_to_curvature_diag_value
         )
+        self.image_mesh_min_mesh_pixels_per_pixel = image_mesh_min_mesh_pixels_per_pixel
+        self.image_mesh_min_mesh_number = image_mesh_min_mesh_number
         self.tolerance = tolerance
         self.maxiter = maxiter
         self.use_w_tilde_numpy = use_w_tilde_numpy

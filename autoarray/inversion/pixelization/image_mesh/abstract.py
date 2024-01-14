@@ -8,6 +8,7 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.structures.grids import grid_2d_util
 
+from autoarray import exc
 
 class AbstractImageMesh:
     def __init__(self):
@@ -48,7 +49,7 @@ class AbstractImageMesh:
         return weight_map
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None, settings = None
     ) -> Grid2DIrregular:
         raise NotImplementedError
 
@@ -84,3 +85,52 @@ class AbstractImageMesh:
         )
 
         return Array2D(values=mesh_pixels_per_image_pixels, mask=grid.mask)
+
+    def check_mesh_pixels_per_image_pixels(self, grid, mesh_grid, settings):
+        """
+        Checks the number of mesh pixels in every image pixel and raises an `InversionException` if there are fewer
+        mesh pixels inside a certain number of image-pixels than the input settings.
+
+        This allows a user to force a model-fit to use image-mesh's which cluster a large number of mesh pixels to
+        the brightest regions of the image data (E.g. the highst weighted regions).
+
+        The check works as follows:
+
+        1) Compute the 2D array of the number of mesh pixels in every masked data image pixel.
+        2) Find the number of mesh pixels in the N data pixels with the larger number of mesh pixels, where N is
+           given by `settings.image_mesh_min_mesh_number`. For example, if `settings.image_mesh_min_mesh_number=5` then
+           the number of mesh pixels in the 5 data pixels with the most data pixels is computed.
+        3) Compare the lowest value above to the value `settings.image_mesh_min_mesh_pixels_per_pixel`. If the value is
+           below this value, raise an `InversionException`.
+           
+        Therefore, by settings `settings.image_mesh_min_mesh_pixels_per_pixel` to a value above 1 the code is forced
+        to adapt the image mesh enough to put many mesh pixels in the brightest image pixels.
+
+        Parameters
+        ----------
+        grid
+            The masked (y,x) grid of the data coordinates, corresponding to the mask applied to the data. The number of
+            mesh pixels mapped inside each of this grid's image-pixels is returned.
+        mesh_grid
+            The image mesh-grid computed by the class which adapts to the data's mask. The number of image mesh pixels
+            that fall within each of the data's mask pixels is returned.
+        settings
+            The inversion settings, which have the criteria dictating if the image-mesh has clustered enough or if
+            an exception is raised.
+        """
+
+        if settings is not None:
+            if settings.image_mesh_min_mesh_pixels_per_pixel is not None:
+
+                mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
+                    grid=grid,
+                    mesh_grid=mesh_grid
+                )
+
+                indices_of_highest_values = np.argsort(mesh_pixels_per_image_pixels)[-settings.image_mesh_min_mesh_number:]
+                lowest_mesh_pixels = np.min(mesh_pixels_per_image_pixels[indices_of_highest_values])
+
+                if lowest_mesh_pixels < settings.image_mesh_min_mesh_pixels_per_pixel:
+                    raise exc.InversionException()
+
+        return mesh_grid
