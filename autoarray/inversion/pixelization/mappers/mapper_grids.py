@@ -87,5 +87,6 @@ class MapperGrids:
         )
 
         return Array2D(
-            values=mesh_pixels_per_image_pixels, mask=self.source_plane_data_grid.mask
+            values=mesh_pixels_per_image_pixels,
+            mask=self.source_plane_data_grid.derive_mask.sub_1,
         )

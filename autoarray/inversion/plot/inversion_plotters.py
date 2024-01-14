@@ -197,18 +197,21 @@ class InversionPlotter(Plotter):
                 pass
 
         if mesh_pixels_per_image_pixels:
-            mesh_pixels_per_image_pixels = (
-                mapper_plotter.mapper.mapper_grids.mesh_pixels_per_image_pixels
-            )
+            try:
+                mesh_pixels_per_image_pixels = (
+                    mapper_plotter.mapper.mapper_grids.mesh_pixels_per_image_pixels
+                )
 
-            self.mat_plot_2d.plot_array(
-                array=mesh_pixels_per_image_pixels,
-                visuals_2d=self.get_visuals_2d_for_data(),
-                auto_labels=AutoLabels(
-                    title="Mesh Pixels Per Image Pixels",
-                    filename="mesh_pixels_per_image_pixels",
-                ),
-            )
+                self.mat_plot_2d.plot_array(
+                    array=mesh_pixels_per_image_pixels,
+                    visuals_2d=self.get_visuals_2d_for_data(),
+                    auto_labels=AutoLabels(
+                        title="Mesh Pixels Per Image Pixels",
+                        filename="mesh_pixels_per_image_pixels",
+                    ),
+                )
+            except Exception:
+                pass
 
         # TODO : NEed to understand why this raises an error in voronoi_drawer.
 
@@ -239,11 +242,27 @@ class InversionPlotter(Plotter):
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
-        self.open_subplot_figure(number_subplots=6)
+        self.open_subplot_figure(number_subplots=9)
 
+        mapper_image_plane_mesh_grid = self.include_2d._mapper_image_plane_mesh_grid
+
+        self.include_2d._mapper_image_plane_mesh_grid = False
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstructed_image=True
         )
+
+        self.include_2d._mapper_image_plane_mesh_grid = True
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_image=True
+        )
+
+        self.include_2d._mapper_image_plane_mesh_grid = False
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, mesh_pixels_per_image_pixels=True
+        )
+
+        self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
+
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstruction=True
         )
@@ -268,6 +287,16 @@ class InversionPlotter(Plotter):
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
         )
+
+        self.set_title(label="Regularization Weights (Unzoomed)")
+        try:
+            self.figures_2d_of_pixelization(
+                pixelization_index=mapper_index,
+                regularization_weights=True,
+                zoom_to_brightest=False,
+            )
+        except IndexError:
+            pass
         self.set_title(label=None)
 
         self.mat_plot_2d.output.subplot_to_figure(
