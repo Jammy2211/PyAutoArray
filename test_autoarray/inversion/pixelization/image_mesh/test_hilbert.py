@@ -25,4 +25,3 @@ def test__image_plane_mesh_grid_from():
         [-1.02590674, -1.70984456],
         1.0e-4,
     )
-
