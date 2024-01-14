@@ -296,4 +296,6 @@ class Hilbert(AbstractImageMeshWeighted):
             gridy=grid_hb[:, 0],
         )
 
-        return Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
+        mesh_grid = Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
+
+        return mesh_grid
