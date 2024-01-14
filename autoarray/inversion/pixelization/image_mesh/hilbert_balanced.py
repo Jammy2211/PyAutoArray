@@ -135,7 +135,7 @@ class HilbertBalanced(AbstractImageMeshWeighted):
             drawn_y,
         ) = inverse_transform_sampling_interpolated(
             probabilities=weight_map_background,
-            n_samples=(self.pixels  - pixels) + 1,
+            n_samples=(self.pixels - pixels) + 1,
             gridx=grid_hb[:, 1],
             gridy=grid_hb[:, 0],
         )

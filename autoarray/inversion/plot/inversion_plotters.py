@@ -107,6 +107,7 @@ class InversionPlotter(Plotter):
         reconstruction: bool = False,
         errors: bool = False,
         regularization_weights: bool = False,
+        mesh_pixels_per_image_pixels: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
     ):
@@ -126,6 +127,9 @@ class InversionPlotter(Plotter):
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
         errors
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
+        mesh_pixels_per_image_pixels
+            Whether to make a 2D plot (via `imshow`) of the number of image-mesh pixels per image pixels in the 2D
+            data's mask (only valid for pixelizations which use an `image_mesh`, e.g. Hilbert, KMeans).
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
@@ -191,6 +195,20 @@ class InversionPlotter(Plotter):
 
             except TypeError:
                 pass
+
+        if mesh_pixels_per_image_pixels:
+            mesh_pixels_per_image_pixels = (
+                mapper_plotter.mapper.mapper_grids.mesh_pixels_per_image_pixels
+            )
+
+            self.mat_plot_2d.plot_array(
+                array=mesh_pixels_per_image_pixels,
+                visuals_2d=self.get_visuals_2d_for_data(),
+                auto_labels=AutoLabels(
+                    title="Mesh Pixels Per Image Pixels",
+                    filename="mesh_pixels_per_image_pixels",
+                ),
+            )
 
         # TODO : NEed to understand why this raises an error in voronoi_drawer.
 

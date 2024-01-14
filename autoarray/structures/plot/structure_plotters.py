@@ -134,7 +134,7 @@ class YX1DPlotter(Plotter):
         should_plot_grid: bool = False,
         should_plot_zero: bool = False,
         plot_axis_type: Optional[str] = None,
-        plot_yx_dict=None
+        plot_yx_dict=None,
     ):
         """
         Plots two 1D objects using the matplotlib method `plot()` (or a similar method) and many other matplotlib

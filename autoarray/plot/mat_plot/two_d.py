@@ -58,7 +58,7 @@ class MatPlot2D(AbstractMatPlot):
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
-        use_log10 : bool = False
+        use_log10: bool = False,
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -344,7 +344,11 @@ class MatPlot2D(AbstractMatPlot):
 
         if self.colorbar is not False:
             cb = self.colorbar.set(
-                units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit, use_log10=self.use_log10
+                units=self.units,
+                ax=ax,
+                norm=norm,
+                cb_unit=auto_labels.cb_unit,
+                use_log10=self.use_log10,
             )
             self.colorbar_tickparams.set(cb=cb)
 

@@ -65,7 +65,12 @@ class Contour(AbstractMatWrap2D):
 
         return self.manual_levels
 
-    def set(self, array: Union[np.ndarray, Array2D], extent: List[float] = None, use_log10 : bool = False):
+    def set(
+        self,
+        array: Union[np.ndarray, Array2D],
+        extent: List[float] = None,
+        use_log10: bool = False,
+    ):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 

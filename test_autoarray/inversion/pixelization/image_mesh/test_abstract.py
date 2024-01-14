@@ -3,8 +3,8 @@ import pytest
 
 import autoarray as aa
 
-def test__mesh_pixels_per_image_pixels_from():
 
+def test__mesh_pixels_per_image_pixels_from():
     mask = aa.Mask2D.circular(
         shape_native=(3, 3),
         radius=2.0,
@@ -21,12 +21,9 @@ def test__mesh_pixels_per_image_pixels_from():
     image_mesh = aa.image_mesh.Hilbert(pixels=8)
 
     mesh_pixels_per_image_pixels = image_mesh.mesh_pixels_per_image_pixels_from(
-        grid=grid,
-        mesh_grid=mesh_grid
+        grid=grid, mesh_grid=mesh_grid
     )
 
-    assert mesh_pixels_per_image_pixels.native == pytest.approx(np.array(
-        [[0, 0, 0],
-        [0, 3, 0],
-        [1, 0 ,0]]
-    ), 1.0e-4)
+    assert mesh_pixels_per_image_pixels.native == pytest.approx(
+        np.array([[0, 0, 0], [0, 3, 0], [1, 0, 0]]), 1.0e-4
+    )

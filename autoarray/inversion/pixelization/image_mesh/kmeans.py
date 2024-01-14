@@ -72,7 +72,6 @@ class KMeans(AbstractImageMeshWeighted):
         """
 
         if self.pixels > grid.shape[0]:
-
             print(
                 """
                 The number of pixels passed to the KMeans object exceeds the number of image-pixels in the mask of
@@ -87,7 +86,8 @@ class KMeans(AbstractImageMeshWeighted):
                 For adaptive fitting, the KMeans object has been superseeded by the Hilbert object, which does not
                 have this limitation and performs better in general. You should therefore consider using the Hilbert
                 object instead.
-                """)
+                """
+            )
 
             sys.exit()
 

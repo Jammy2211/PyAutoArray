@@ -133,8 +133,6 @@ class LabelMaker:
 
     @property
     def labels_linear(self):
-
-
         if self.units.use_raw:
             return self.with_appended_suffix(self.tick_values_rounded)
 
@@ -441,7 +439,7 @@ class XTicks(AbstractTicks):
             yunit=xunit,
             use_integers=use_integers,
             is_for_1d_plot=is_for_1d_plot,
-            is_log10=is_log10
+            is_log10=is_log10,
         )
 
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)

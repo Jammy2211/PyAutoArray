@@ -38,12 +38,14 @@ def test__individual_attributes_are_output_for_all_mappers(
         reconstructed_image=True,
         reconstruction=True,
         errors=True,
+        mesh_pixels_per_image_pixels=True,
         regularization_weights=True,
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
     assert path.join(plot_path, "errors.png") in plot_patch.paths
+    assert path.join(plot_path, "mesh_pixels_per_image_pixels.png") in plot_patch.paths
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
 
     plot_patch.paths = []

@@ -81,6 +81,5 @@ class YXPlot(AbstractMatWrap1D):
                 "{semilogy, loglog})"
             )
 
-
         if y_extra is not None:
             plt.plot(x, y_extra, c="r")
