@@ -134,6 +134,7 @@ class YX1DPlotter(Plotter):
         should_plot_grid: bool = False,
         should_plot_zero: bool = False,
         plot_axis_type: Optional[str] = None,
+        plot_yx_dict=None,
     ):
         """
         Plots two 1D objects using the matplotlib method `plot()` (or a similar method) and many other matplotlib
@@ -176,6 +177,7 @@ class YX1DPlotter(Plotter):
         self.should_plot_grid = should_plot_grid
         self.should_plot_zero = should_plot_zero
         self.plot_axis_type = plot_axis_type
+        self.plot_yx_dict = plot_yx_dict or {}
 
     def get_visuals_1d(self) -> Visuals1D:
         return self.get_1d.via_array_1d_from(array_1d=self.x)
@@ -193,4 +195,5 @@ class YX1DPlotter(Plotter):
             should_plot_grid=self.should_plot_grid,
             should_plot_zero=self.should_plot_zero,
             plot_axis_type_override=self.plot_axis_type,
+            **self.plot_yx_dict
         )

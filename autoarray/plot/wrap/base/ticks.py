@@ -410,6 +410,7 @@ class XTicks(AbstractTicks):
         xunit=None,
         use_integers=False,
         is_for_1d_plot: bool = False,
+        is_log10: bool = False,
     ):
         """
         Set the x ticks of a figure using the shape of an input `Array2D` object and input units.
@@ -438,6 +439,7 @@ class XTicks(AbstractTicks):
             yunit=xunit,
             use_integers=use_integers,
             is_for_1d_plot=is_for_1d_plot,
+            is_log10=is_log10,
         )
 
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict)

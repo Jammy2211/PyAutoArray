@@ -51,7 +51,7 @@ class KMeans(AbstractImageMeshWeighted):
         )
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray]
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray], settings=None
     ) -> Grid2DIrregular:
         """
         Returns an image mesh by running a KMeans clustering algorithm on the weight map.
@@ -72,7 +72,6 @@ class KMeans(AbstractImageMeshWeighted):
         """
 
         if self.pixels > grid.shape[0]:
-
             print(
                 """
                 The number of pixels passed to the KMeans object exceeds the number of image-pixels in the mask of
@@ -87,7 +86,8 @@ class KMeans(AbstractImageMeshWeighted):
                 For adaptive fitting, the KMeans object has been superseeded by the Hilbert object, which does not
                 have this limitation and performs better in general. You should therefore consider using the Hilbert
                 object instead.
-                """)
+                """
+            )
 
             sys.exit()
 

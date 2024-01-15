@@ -56,7 +56,7 @@ class Cmap(AbstractMatWrap):
             return np.max(array)
         return self.config_dict["vmax"]
 
-    def norm_from(self, array: np.ndarray, use_log10 : bool = False) -> object:
+    def norm_from(self, array: np.ndarray, use_log10: bool = False) -> object:
         """
         Returns the `Normalization` object which scales of the colormap.
 
