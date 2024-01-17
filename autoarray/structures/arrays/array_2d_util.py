@@ -605,7 +605,7 @@ def array_2d_native_from(
     ).astype("int")
 
     return array_2d_via_indexes_from(
-        array_2d_slim=np.array(array_2d_slim),
+        array_2d_slim=array_2d_slim,
         sub_shape=sub_shape,
         native_index_for_slim_index_2d=native_index_for_slim_index_2d,
     )
