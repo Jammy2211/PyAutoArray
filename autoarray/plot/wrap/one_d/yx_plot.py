@@ -82,4 +82,8 @@ class YXPlot(AbstractMatWrap1D):
             )
 
         if y_extra is not None:
-            plt.plot(x, y_extra, c="r")
+            if isinstance(y_extra, list):
+                for y_extra_ in y_extra:
+                    plt.plot(x, y_extra_)
+            else:
+                plt.plot(x, y_extra, c="r")

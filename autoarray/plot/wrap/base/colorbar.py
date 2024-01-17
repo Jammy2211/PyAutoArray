@@ -80,6 +80,10 @@ class Colorbar(AbstractMatWrap):
             max_value = norm.vmax
 
             if use_log10:
+
+                if min_value < 1e-3:
+                    min_value = 1e-3
+
                 log_mid_value = (np.log10(max_value) + np.log10(min_value)) / 2.0
                 mid_value = 10**log_mid_value
 

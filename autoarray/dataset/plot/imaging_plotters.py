@@ -155,13 +155,32 @@ class ImagingPlotterMeta(Plotter):
         """
         Standard subplot of the attributes of the plotter's `Imaging` object.
         """
-        self.subplot(
-            data=True,
-            noise_map=True,
-            psf=True,
-            signal_to_noise_map=True,
-        )
+        use_log10_original = self.mat_plot_2d.use_log10
 
+        self.open_subplot_figure(number_subplots=6)
+
+        self.figures_2d(data=True)
+
+        self.mat_plot_2d.use_log10 = True
+        self.figures_2d(data=True)
+        self.mat_plot_2d.use_log10 = False
+
+        self.figures_2d(noise_map=True)
+
+        self.figures_2d(psf=True)
+
+        self.mat_plot_2d.use_log10 = True
+        self.figures_2d(psf=True)
+        self.mat_plot_2d.use_log10 = False
+
+        self.figures_2d(signal_to_noise_map=True)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_dataset"
+        )
+        self.close_subplot_figure()
+
+        self.mat_plot_2d.use_log10 = use_log10_original
 
 class ImagingPlotter(Plotter):
     def __init__(

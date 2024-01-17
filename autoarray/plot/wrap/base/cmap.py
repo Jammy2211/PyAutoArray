@@ -87,8 +87,8 @@ class Cmap(AbstractMatWrap):
             return self.config_dict["norm"]
 
         if self.config_dict["norm"] in "log" or use_log10:
-            if vmin == 0.0:
-                vmin = 1.0e-4
+            if vmin < 1.0e-3:
+                vmin = 1.0e-3
             return colors.LogNorm(vmin=vmin, vmax=vmax)
         elif self.config_dict["norm"] in "linear":
             return colors.Normalize(vmin=vmin, vmax=vmax)
