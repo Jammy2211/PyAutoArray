@@ -352,7 +352,8 @@ class MatPlot2D(AbstractMatPlot):
             )
             self.colorbar_tickparams.set(cb=cb)
 
-        self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
+        if self.contour is not False:
+            self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
 
         grid_indexes = None
 
@@ -452,7 +453,8 @@ class MatPlot2D(AbstractMatPlot):
             self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
             self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
 
-        self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
+        if self.contour is not False:
+            self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
 
         visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid)
 

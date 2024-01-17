@@ -80,7 +80,6 @@ class Colorbar(AbstractMatWrap):
             max_value = norm.vmax
 
             if use_log10:
-
                 if min_value < self.log10_min_value:
                     min_value = self.log10_min_value
 

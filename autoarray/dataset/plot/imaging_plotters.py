@@ -1,3 +1,4 @@
+import copy
 from typing import Callable, Optional
 
 from autoarray.plot.visuals.two_d import Visuals2D
@@ -161,9 +162,13 @@ class ImagingPlotterMeta(Plotter):
 
         self.figures_2d(data=True)
 
+        contour_original = copy.copy(self.mat_plot_2d.contour)
+
         self.mat_plot_2d.use_log10 = True
+        self.mat_plot_2d.contour = False
         self.figures_2d(data=True)
         self.mat_plot_2d.use_log10 = False
+        self.mat_plot_2d.contour = contour_original
 
         self.figures_2d(noise_map=True)
 
@@ -175,12 +180,11 @@ class ImagingPlotterMeta(Plotter):
 
         self.figures_2d(signal_to_noise_map=True)
 
-        self.mat_plot_2d.output.subplot_to_figure(
-            auto_filename="subplot_dataset"
-        )
+        self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_dataset")
         self.close_subplot_figure()
 
         self.mat_plot_2d.use_log10 = use_log10_original
+
 
 class ImagingPlotter(Plotter):
     def __init__(
