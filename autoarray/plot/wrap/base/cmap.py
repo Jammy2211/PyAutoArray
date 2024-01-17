@@ -4,6 +4,8 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.colors as colors
 import numpy as np
 
+from autoconf import conf
+
 from autoarray.plot.wrap.base.abstract import AbstractMatWrap
 
 from autoarray import exc
@@ -87,8 +89,8 @@ class Cmap(AbstractMatWrap):
             return self.config_dict["norm"]
 
         if self.config_dict["norm"] in "log" or use_log10:
-            if vmin < 1.0e-3:
-                vmin = 1.0e-3
+            if vmin < self.log10_min_value:
+                vmin = self.log10_min_value
             return colors.LogNorm(vmin=vmin, vmax=vmax)
         elif self.config_dict["norm"] in "linear":
             return colors.Normalize(vmin=vmin, vmax=vmax)
