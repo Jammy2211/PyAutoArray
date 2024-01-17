@@ -96,6 +96,12 @@ class AbstractNDArray(ABC):
         new._array = self._array.copy()
         return new
 
+    def __deepcopy__(self, memo):
+        new = self.__new__(self.__class__)
+        new.__dict__.update(self.__dict__)
+        new._array = self._array.copy()
+        return new
+
     def __iter__(self):
         return iter(self._array)
 
