@@ -306,7 +306,6 @@ class InversionPlotter(Plotter):
             pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
         )
 
-
         try:
             self.figures_2d_of_pixelization(
                 pixelization_index=mapper_index, regularization_weights=True

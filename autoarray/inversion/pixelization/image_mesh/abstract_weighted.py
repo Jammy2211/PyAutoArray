@@ -62,10 +62,9 @@ class AbstractImageMeshWeighted(AbstractImageMesh):
         """
 
         weight_map = np.abs(adapt_data) / np.max(adapt_data)
-        weight_map += self.weight_floor
-        weight_map[weight_map > 1.0] = 1.0
-
         weight_map = weight_map**self.weight_power
+
+        weight_map[weight_map < self.weight_floor] = self.weight_floor
 
         return weight_map
 
