@@ -242,14 +242,39 @@ class InversionPlotter(Plotter):
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
-        self.open_subplot_figure(number_subplots=9)
+        self.open_subplot_figure(number_subplots=12)
 
         mapper_image_plane_mesh_grid = self.include_2d._mapper_image_plane_mesh_grid
 
         self.include_2d._mapper_image_plane_mesh_grid = False
+
+        self.mat_plot_2d.plot_array(
+            array=self.inversion.data,
+            visuals_2d=self.get_visuals_2d_for_data(),
+            auto_labels=AutoLabels(title=f" Data"),
+        )
+
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstructed_image=True
         )
+
+        contour_original = self.mat_plot_2d.contour
+
+        self.mat_plot_2d.use_log10 = True
+        self.mat_plot_2d.contour = False
+
+        self.mat_plot_2d.plot_array(
+            array=self.inversion.data,
+            visuals_2d=self.get_visuals_2d_for_data(),
+            auto_labels=AutoLabels(title=f" Data"),
+        )
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_image=True
+        )
+
+        self.mat_plot_2d.use_log10 = False
+        self.mat_plot_2d.contour = contour_original
 
         self.include_2d._mapper_image_plane_mesh_grid = True
         self.figures_2d_of_pixelization(
@@ -266,14 +291,6 @@ class InversionPlotter(Plotter):
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstruction=True
         )
-        self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
-
-        try:
-            self.figures_2d_of_pixelization(
-                pixelization_index=mapper_index, regularization_weights=True
-            )
-        except IndexError:
-            pass
 
         self.set_title(label="Source Reconstruction (Unzoomed)")
         self.figures_2d_of_pixelization(
@@ -283,10 +300,19 @@ class InversionPlotter(Plotter):
         )
         self.set_title(label=None)
 
+        self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
         self.set_title(label="Errors (Unzoomed)")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
         )
+
+
+        try:
+            self.figures_2d_of_pixelization(
+                pixelization_index=mapper_index, regularization_weights=True
+            )
+        except IndexError:
+            pass
 
         self.set_title(label="Regularization Weights (Unzoomed)")
         try:
