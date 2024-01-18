@@ -50,12 +50,12 @@ class Cmap(AbstractMatWrap):
 
     def vmin_from(self, array: np.ndarray):
         if self.config_dict["vmin"] is None:
-            return np.min(array)
+            return np.nanmin(array)
         return self.config_dict["vmin"]
 
     def vmax_from(self, array: np.ndarray):
         if self.config_dict["vmax"] is None:
-            return np.max(array)
+            return np.nanmax(array)
         return self.config_dict["vmax"]
 
     def norm_from(self, array: np.ndarray, use_log10: bool = False) -> object:
