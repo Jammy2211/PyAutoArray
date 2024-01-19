@@ -103,6 +103,7 @@ class InversionPlotter(Plotter):
     def figures_2d_of_pixelization(
         self,
         pixelization_index: int = 0,
+        data_subtracted: bool = False,
         reconstructed_image: bool = False,
         reconstruction: bool = False,
         errors: bool = False,
@@ -142,6 +143,17 @@ class InversionPlotter(Plotter):
             return
 
         mapper_plotter = self.mapper_plotter_from(mapper_index=pixelization_index)
+
+        if data_subtracted:
+            array = self.inversion.data_subtracted_dict[mapper_plotter.mapper]
+
+            self.mat_plot_2d.plot_array(
+                array=array,
+                visuals_2d=self.get_visuals_2d_for_data(),
+                auto_labels=AutoLabels(
+                    title="Data Subtracted", filename="data_subtracted"
+                ),
+            )
 
         if reconstructed_image:
             array = self.inversion.mapped_reconstructed_image_dict[
@@ -248,10 +260,8 @@ class InversionPlotter(Plotter):
 
         self.include_2d._mapper_image_plane_mesh_grid = False
 
-        self.mat_plot_2d.plot_array(
-            array=self.inversion.data,
-            visuals_2d=self.get_visuals_2d_for_data(),
-            auto_labels=AutoLabels(title=f" Data"),
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, data_subtracted=True
         )
 
         self.figures_2d_of_pixelization(
