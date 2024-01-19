@@ -624,6 +624,7 @@ class MatPlot2D(AbstractMatPlot):
             colorbar_tickparams=self.colorbar_tickparams,
             aspect=aspect_inv,
             ax=ax,
+            use_log10=self.use_log10
         )
 
         self.title.set(auto_title=auto_labels.title)

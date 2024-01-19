@@ -161,7 +161,7 @@ class Colorbar(AbstractMatWrap):
         return cb
 
     def set_with_color_values(
-        self, units: Units, cmap: str, color_values: np.ndarray, ax=None, norm=None
+        self, units: Units, cmap: str, color_values: np.ndarray, ax=None, norm=None, use_log10: bool = False
     ):
         """
         Set the figure's colorbar using an array of already known color values.
@@ -181,12 +181,12 @@ class Colorbar(AbstractMatWrap):
         mappable = cm.ScalarMappable(cmap=cmap)
         mappable.set_array(color_values)
 
-        manual_tick_values = self.tick_values_from(norm=norm)
-        manual_tick_labels = self.tick_labels_from(
-            manual_tick_values=manual_tick_values, units=units
+        tick_values = self.tick_values_from(norm=norm, use_log10=use_log10)
+        tick_labels = self.tick_labels_from(
+            manual_tick_values=tick_values, units=units
         )
 
-        if manual_tick_values is None and manual_tick_labels is None:
+        if tick_values is None and tick_labels is None:
             cb = plt.colorbar(
                 mappable=mappable,
                 ax=ax,
@@ -196,11 +196,11 @@ class Colorbar(AbstractMatWrap):
             cb = plt.colorbar(
                 mappable=mappable,
                 ax=ax,
-                ticks=manual_tick_values,
+                ticks=tick_values,
                 **self.config_dict,
             )
             cb.ax.set_yticklabels(
-                labels=manual_tick_labels, va=self.manual_alignment or "center"
+                labels=tick_labels, va=self.manual_alignment or "center"
             )
 
         return cb

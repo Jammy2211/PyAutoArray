@@ -39,6 +39,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         colorbar_tickparams: wb.ColorbarTickParams = None,
         aspect=None,
         ax=None,
+        use_log10: bool = False
     ):
         """
         Given a `Mapper` and a corresponding array of `pixel_values` (e.g. the reconstruction values of a Delaunay
@@ -76,6 +77,10 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
         if pixel_values is None:
             return
 
+        interpolation_array = mapper.interpolated_array_from(values=pixel_values)
+
+        norm = cmap.norm_from(array=interpolation_array, use_log10=use_log10)
+
         vmin = cmap.vmin_from(array=pixel_values)
         vmax = cmap.vmax_from(array=pixel_values)
 
@@ -86,16 +91,15 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
 
         if colorbar is not None:
             colorbar = colorbar.set_with_color_values(
-                units=units, cmap=cmap, color_values=color_values, ax=ax
+                units=units, cmap=cmap, norm=norm, color_values=color_values, ax=ax, use_log10=use_log10
             )
             if colorbar is not None and colorbar_tickparams is not None:
                 colorbar_tickparams.set(cb=colorbar)
 
-        interpolation_array = mapper.interpolated_array_from(values=pixel_values)
-
         plt.imshow(
             X=interpolation_array.native,
             cmap=cmap,
+            norm=norm,
             extent=mapper.source_plane_mesh_grid.geometry.extent_square,
             aspect=aspect,
         )

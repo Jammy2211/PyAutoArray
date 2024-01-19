@@ -284,6 +284,35 @@ class InversionPlotter(Plotter):
         )
 
         self.mat_plot_2d.use_log10 = False
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstruction=True
+        )
+
+        self.set_title(label="Source Reconstruction (Unzoomed)")
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index,
+            reconstruction=True,
+            zoom_to_brightest=False,
+        )
+        self.set_title(label=None)
+
+        self.mat_plot_2d.use_log10 = True
+        self.mat_plot_2d.contour = contour_original
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstruction=True
+        )
+
+        self.set_title(label="Source Reconstruction (Unzoomed)")
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index,
+            reconstruction=True,
+            zoom_to_brightest=False,
+        )
+        self.set_title(label=None)
+
+        self.mat_plot_2d.use_log10 = False
         self.mat_plot_2d.contour = contour_original
 
         self.include_2d._mapper_image_plane_mesh_grid = True
@@ -298,30 +327,10 @@ class InversionPlotter(Plotter):
 
         self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
 
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index, reconstruction=True
-        )
-
-        self.set_title(label="Source Reconstruction (Unzoomed)")
-        self.figures_2d_of_pixelization(
-            pixelization_index=mapper_index,
-            reconstruction=True,
-            zoom_to_brightest=False,
-        )
-        self.set_title(label=None)
-
-        self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
         self.set_title(label="Errors (Unzoomed)")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
         )
-
-        try:
-            self.figures_2d_of_pixelization(
-                pixelization_index=mapper_index, regularization_weights=True
-            )
-        except IndexError:
-            pass
 
         self.set_title(label="Regularization Weights (Unzoomed)")
         try:
