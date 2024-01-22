@@ -356,7 +356,10 @@ class MatPlot2D(AbstractMatPlot):
             self.colorbar_tickparams.set(cb=cb)
 
         if self.contour is not False:
-            self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
+            try:
+                self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
+            except ValueError:
+                pass
 
         grid_indexes = None
 
