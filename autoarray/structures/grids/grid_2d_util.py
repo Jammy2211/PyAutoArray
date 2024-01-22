@@ -882,7 +882,7 @@ def grid_pixels_in_mask_pixels_from(
     An array containing the integer number of image-mesh pixels that fall without each of the data's mask.
     """
     grid_pixel_centres = geometry_util.grid_pixel_centres_2d_slim_from(
-        grid_scaled_2d_slim=grid,
+        grid_scaled_2d_slim=np.array(grid),
         shape_native=shape_native,
         pixel_scales=pixel_scales,
         origin=origin,
