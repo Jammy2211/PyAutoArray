@@ -145,15 +145,22 @@ class InversionPlotter(Plotter):
         mapper_plotter = self.mapper_plotter_from(mapper_index=pixelization_index)
 
         if data_subtracted:
-            array = self.inversion.data_subtracted_dict[mapper_plotter.mapper]
 
-            self.mat_plot_2d.plot_array(
-                array=array,
-                visuals_2d=self.get_visuals_2d_for_data(),
-                auto_labels=AutoLabels(
-                    title="Data Subtracted", filename="data_subtracted"
-                ),
-            )
+            # Attribute error is cause this raises an error for interferometer inversion, because the data is
+            # visibilities not an image. Update this to be handled better in future.
+
+            try:
+                array = self.inversion.data_subtracted_dict[mapper_plotter.mapper]
+
+                self.mat_plot_2d.plot_array(
+                    array=array,
+                    visuals_2d=self.get_visuals_2d_for_data(),
+                    auto_labels=AutoLabels(
+                        title="Data Subtracted", filename="data_subtracted"
+                    ),
+                )
+            except AttributeError:
+                pass
 
         if reconstructed_image:
             array = self.inversion.mapped_reconstructed_image_dict[
