@@ -323,7 +323,7 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-    @cached_property
+    @property
     def derive_indexes(self) -> DeriveIndexes2D:
         return DeriveIndexes2D(mask=self)
 
