@@ -298,13 +298,14 @@ class InversionPlotter(Plotter):
         self.set_title(label=None)
 
         self.mat_plot_2d.use_log10 = True
-        self.mat_plot_2d.contour = contour_original
+
+        self.set_title(label="Source Reconstruction (log10)")
 
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstruction=True
         )
 
-        self.set_title(label="Source Reconstruction (Unzoomed)")
+        self.set_title(label="Source Reconstruction (Unzoomed log10)")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index,
             reconstruction=True,

@@ -161,7 +161,13 @@ class Colorbar(AbstractMatWrap):
         return cb
 
     def set_with_color_values(
-        self, units: Units, cmap: str, color_values: np.ndarray, ax=None, norm=None, use_log10: bool = False
+        self,
+        units: Units,
+        cmap: str,
+        color_values: np.ndarray,
+        ax=None,
+        norm=None,
+        use_log10: bool = False,
     ):
         """
         Set the figure's colorbar using an array of already known color values.
@@ -178,12 +184,13 @@ class Colorbar(AbstractMatWrap):
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
 
-        mappable = cm.ScalarMappable(cmap=cmap)
+        mappable = cm.ScalarMappable(norm=norm, cmap=cmap)
         mappable.set_array(color_values)
 
         tick_values = self.tick_values_from(norm=norm, use_log10=use_log10)
         tick_labels = self.tick_labels_from(
-            manual_tick_values=tick_values, units=units
+            manual_tick_values=tick_values,
+            units=units,
         )
 
         if tick_values is None and tick_labels is None:

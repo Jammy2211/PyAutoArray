@@ -655,14 +655,13 @@ class AbstractInversion:
         data_subtracted_dict = {}
 
         for linear_obj in self.linear_obj_list:
-
             data_subtracted_dict[linear_obj] = copy.copy(self.data)
 
             for linear_obj_other in self.linear_obj_list:
-
                 if linear_obj != linear_obj_other:
-
-                    data_subtracted_dict[linear_obj] -= self.mapped_reconstructed_image_dict[linear_obj_other]
+                    data_subtracted_dict[
+                        linear_obj
+                    ] -= self.mapped_reconstructed_image_dict[linear_obj_other]
 
         return data_subtracted_dict
 

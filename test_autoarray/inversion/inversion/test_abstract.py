@@ -470,33 +470,35 @@ def test__mapped_reconstructed_image():
 
 
 def test__data_subtracted_dict():
-
     linear_obj_0 = aa.m.MockLinearObj()
 
     mapped_reconstructed_data_dict = {linear_obj_0: np.ones(3)}
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversion(
-        data=3.0*np.ones(3),
+        data=3.0 * np.ones(3),
         linear_obj_list=[linear_obj_0],
         mapped_reconstructed_data_dict=mapped_reconstructed_data_dict,
     )
 
-    assert (inversion.data_subtracted_dict[linear_obj_0] == 3.0*np.ones(3)).all()
+    assert (inversion.data_subtracted_dict[linear_obj_0] == 3.0 * np.ones(3)).all()
 
     linear_obj_1 = aa.m.MockLinearObj()
 
-    mapped_reconstructed_data_dict = {linear_obj_0: np.ones(3), linear_obj_1: 2.0*np.ones(3)}
+    mapped_reconstructed_data_dict = {
+        linear_obj_0: np.ones(3),
+        linear_obj_1: 2.0 * np.ones(3),
+    }
 
     # noinspection PyTypeChecker
     inversion = aa.m.MockInversion(
-        data=3.0*np.ones(3),
+        data=3.0 * np.ones(3),
         linear_obj_list=[linear_obj_0, linear_obj_1],
         mapped_reconstructed_data_dict=mapped_reconstructed_data_dict,
     )
 
     assert (inversion.data_subtracted_dict[linear_obj_0] == np.ones(3)).all()
-    assert (inversion.data_subtracted_dict[linear_obj_1] == 2.0*np.ones(3)).all()
+    assert (inversion.data_subtracted_dict[linear_obj_1] == 2.0 * np.ones(3)).all()
 
 
 def test__reconstruction_raises_exception_for_linalg_error():
