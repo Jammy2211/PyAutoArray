@@ -561,7 +561,7 @@ def blurring_mask_2d_from(
     return blurring_mask_2d
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def mask_2d_via_shape_native_and_native_for_slim(
     shape_native: Tuple[int, int], native_for_slim: np.ndarray
 ) -> np.ndarray:
@@ -599,9 +599,7 @@ def mask_2d_via_shape_native_and_native_for_slim(
     mask = np.ones(shape_native)
 
     for index in range(len(native_for_slim)):
-        x = native_for_slim[index, 0]
-        y = native_for_slim[index, 1]
-        mask[x, y] = False
+        mask[native_for_slim[index, 0], native_for_slim[index, 1]] = False
 
     return mask
 
