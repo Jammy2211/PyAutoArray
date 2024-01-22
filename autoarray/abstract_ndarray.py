@@ -18,13 +18,40 @@ from autoconf import conf
 
 
 def to_new_array(func):
-    def wrapper(self, *args, **kwargs):
+    """
+    Decorator for functions that returns an array. The array is wrapped in a new instance of the class.
+
+    Parameters
+    ----------
+    func
+        The function to be decorated.
+
+    Returns
+    -------
+    The decorated function.
+    """
+
+    def wrapper(self, *args, **kwargs) -> "AbstractNDArray":
         return self.with_new_array(func(self, *args, **kwargs))
 
     return wrapper
 
 
 def unwrap_array(func):
+    """
+    Decorator for functions that take an array as an argument. If the argument is an AbstractNDArray, the underlying
+    array is used instead.
+
+    Parameters
+    ----------
+    func
+        The function to be decorated.
+
+    Returns
+    -------
+    The decorated function.
+    """
+
     def wrapper(self, other):
         try:
             return func(self, other.array)
@@ -57,6 +84,9 @@ class AbstractNDArray(ABC):
 
     @classmethod
     def instance_flatten(cls, instance):
+        """
+        Flatten an instance of an autoarray class into a tuple of its attributes (i.e.. a pytree)
+        """
         keys, values = zip(
             *sorted(
                 {
@@ -76,12 +106,30 @@ class AbstractNDArray(ABC):
 
     @classmethod
     def instance_unflatten(cls, aux_data, children):
+        """
+        Unflatten a tuple of attributes (i.e. a pytree) into an instance of an autoarray class
+        """
         instance = cls.__new__(cls)
         for key, value in zip(aux_data, children[1:]):
             setattr(instance, key, value)
         return instance
 
-    def with_new_array(self, array):
+    def with_new_array(self, array: np.ndarray) -> "AbstractNDArray":
+        """
+        Copy this object but give it a new array.
+
+        This is used to ensure that when an array is modified, associated
+        attributes such as pixel size are retained.
+
+        Parameters
+        ----------
+        array
+            The new array that is given to the copied object.
+
+        Returns
+        -------
+
+        """
         new_array = self.copy()
         new_array._array = array
         return new_array
@@ -91,12 +139,18 @@ class AbstractNDArray(ABC):
         return new
 
     def __copy__(self):
+        """
+        When copying an autoarray also copy its underlying array.
+        """
         new = self.__new__(self.__class__)
         new.__dict__.update(self.__dict__)
         new._array = self._array.copy()
         return new
 
     def __deepcopy__(self, memo):
+        """
+        When copying an autoarray also copy its underlying array.
+        """
         new = self.__new__(self.__class__)
         new.__dict__.update(self.__dict__)
         new._array = self._array.copy()
