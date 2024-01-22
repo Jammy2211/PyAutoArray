@@ -638,6 +638,34 @@ class AbstractInversion:
         return sum(self.mapped_reconstructed_image_dict.values())
 
     @cached_property
+    def data_subtracted_dict(self) -> Dict[LinearObj, Array2D]:
+        """
+        Returns a dictionary of the data subtracted by the reconstructed images of combinations of all but one of the
+        linear objects the inversion.
+
+        This produces images of the data showing what each linear object is actually fitted to, after accounting for
+        the signal in the other linear objects.
+
+        Returns
+        -------
+        A dictionary of the data subtracted by the reconstructed images of combinations of all but one of the
+        linear objects the inversion.
+        """
+
+        data_subtracted_dict = {}
+
+        for linear_obj in self.linear_obj_list:
+            data_subtracted_dict[linear_obj] = copy.copy(self.data)
+
+            for linear_obj_other in self.linear_obj_list:
+                if linear_obj != linear_obj_other:
+                    data_subtracted_dict[
+                        linear_obj
+                    ] -= self.mapped_reconstructed_image_dict[linear_obj_other]
+
+        return data_subtracted_dict
+
+    @cached_property
     @profile_func
     def regularization_term(self) -> float:
         """

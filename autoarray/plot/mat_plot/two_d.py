@@ -239,6 +239,9 @@ class MatPlot2D(AbstractMatPlot):
         if array is None or np.all(array == 0):
             return
 
+        if self.use_log10 and (np.all(array == array[0]) or np.all(array < 0)):
+            return
+
         if array.pixel_scales is None and self.units.use_scaled:
             raise exc.ArrayException(
                 "You cannot plot an array using its scaled unit_label if the input array does not have "
@@ -624,6 +627,7 @@ class MatPlot2D(AbstractMatPlot):
             colorbar_tickparams=self.colorbar_tickparams,
             aspect=aspect_inv,
             ax=ax,
+            use_log10=self.use_log10,
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -690,6 +694,7 @@ class MatPlot2D(AbstractMatPlot):
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
                 ax=ax,
+                use_log10=self.use_log10,
             )
 
         else:
@@ -702,6 +707,7 @@ class MatPlot2D(AbstractMatPlot):
                 colorbar_tickparams=self.colorbar_tickparams,
                 aspect=aspect_inv,
                 ax=ax,
+                use_log10=self.use_log10,
             )
 
         self.title.set(auto_title=auto_labels.title)

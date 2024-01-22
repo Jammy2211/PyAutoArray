@@ -9,7 +9,7 @@ def test__draws_voronoi_pixels_for_sensible_input(voronoi_mapper_9_3x3):
     voronoi_drawer.draw_voronoi_pixels(
         mapper=voronoi_mapper_9_3x3,
         pixel_values=None,
-        units=None,
+        units=aplt.Units(),
         cmap=aplt.Cmap(),
         colorbar=None,
     )
@@ -20,7 +20,7 @@ def test__draws_voronoi_pixels_for_sensible_input(voronoi_mapper_9_3x3):
     voronoi_drawer.draw_voronoi_pixels(
         mapper=voronoi_mapper_9_3x3,
         pixel_values=values,
-        units=None,
+        units=aplt.Units(),
         cmap=aplt.Cmap(),
         colorbar=aplt.Colorbar(fraction=0.1, pad=0.05),
     )
