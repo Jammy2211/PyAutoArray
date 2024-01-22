@@ -239,6 +239,9 @@ class MatPlot2D(AbstractMatPlot):
         if array is None or np.all(array == 0):
             return
 
+        if self.use_log10 and (np.all(array == array[0]) or np.all(array < 0)):
+            return
+
         if array.pixel_scales is None and self.units.use_scaled:
             raise exc.ArrayException(
                 "You cannot plot an array using its scaled unit_label if the input array does not have "
