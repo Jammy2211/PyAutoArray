@@ -107,6 +107,7 @@ class InversionPlotter(Plotter):
         reconstruction: bool = False,
         errors: bool = False,
         regularization_weights: bool = False,
+        mesh_pixels_per_image_pixels: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
     ):
@@ -126,6 +127,9 @@ class InversionPlotter(Plotter):
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
         errors
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
+        mesh_pixels_per_image_pixels
+            Whether to make a 2D plot (via `imshow`) of the number of image-mesh pixels per image pixels in the 2D
+            data's mask (only valid for pixelizations which use an `image_mesh`, e.g. Hilbert, KMeans).
         zoom_to_brightest
             For images not in the image-plane (e.g. the `plane_image`), whether to automatically zoom the plot to
             the brightest regions of the galaxies being plotted as opposed to the full extent of the grid.
@@ -192,6 +196,23 @@ class InversionPlotter(Plotter):
             except TypeError:
                 pass
 
+        if mesh_pixels_per_image_pixels:
+            try:
+                mesh_pixels_per_image_pixels = (
+                    mapper_plotter.mapper.mapper_grids.mesh_pixels_per_image_pixels
+                )
+
+                self.mat_plot_2d.plot_array(
+                    array=mesh_pixels_per_image_pixels,
+                    visuals_2d=self.get_visuals_2d_for_data(),
+                    auto_labels=AutoLabels(
+                        title="Mesh Pixels Per Image Pixels",
+                        filename="mesh_pixels_per_image_pixels",
+                    ),
+                )
+            except Exception:
+                pass
+
         # TODO : NEed to understand why this raises an error in voronoi_drawer.
 
         if regularization_weights:
@@ -221,22 +242,55 @@ class InversionPlotter(Plotter):
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
-        self.open_subplot_figure(number_subplots=6)
+        self.open_subplot_figure(number_subplots=12)
+
+        mapper_image_plane_mesh_grid = self.include_2d._mapper_image_plane_mesh_grid
+
+        self.include_2d._mapper_image_plane_mesh_grid = False
+
+        self.mat_plot_2d.plot_array(
+            array=self.inversion.data,
+            visuals_2d=self.get_visuals_2d_for_data(),
+            auto_labels=AutoLabels(title=f" Data"),
+        )
 
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstructed_image=True
         )
+
+        contour_original = self.mat_plot_2d.contour
+
+        self.mat_plot_2d.use_log10 = True
+        self.mat_plot_2d.contour = False
+
+        self.mat_plot_2d.plot_array(
+            array=self.inversion.data,
+            visuals_2d=self.get_visuals_2d_for_data(),
+            auto_labels=AutoLabels(title=f" Data"),
+        )
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_image=True
+        )
+
+        self.mat_plot_2d.use_log10 = False
+        self.mat_plot_2d.contour = contour_original
+
+        self.include_2d._mapper_image_plane_mesh_grid = True
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, reconstructed_image=True
+        )
+
+        self.include_2d._mapper_image_plane_mesh_grid = False
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, mesh_pixels_per_image_pixels=True
+        )
+
+        self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
+
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstruction=True
         )
-        self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
-
-        try:
-            self.figures_2d_of_pixelization(
-                pixelization_index=mapper_index, regularization_weights=True
-            )
-        except IndexError:
-            pass
 
         self.set_title(label="Source Reconstruction (Unzoomed)")
         self.figures_2d_of_pixelization(
@@ -246,10 +300,28 @@ class InversionPlotter(Plotter):
         )
         self.set_title(label=None)
 
+        self.figures_2d_of_pixelization(pixelization_index=mapper_index, errors=True)
         self.set_title(label="Errors (Unzoomed)")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
         )
+
+        try:
+            self.figures_2d_of_pixelization(
+                pixelization_index=mapper_index, regularization_weights=True
+            )
+        except IndexError:
+            pass
+
+        self.set_title(label="Regularization Weights (Unzoomed)")
+        try:
+            self.figures_2d_of_pixelization(
+                pixelization_index=mapper_index,
+                regularization_weights=True,
+                zoom_to_brightest=False,
+            )
+        except IndexError:
+            pass
         self.set_title(label=None)
 
         self.mat_plot_2d.output.subplot_to_figure(

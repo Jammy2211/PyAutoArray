@@ -8,6 +8,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
+from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray import exc
@@ -245,7 +246,10 @@ class Hilbert(AbstractImageMeshWeighted):
         )
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray]
+        self,
+        grid: Grid2D,
+        adapt_data: Optional[np.ndarray],
+        settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
         """
         Returns an image mesh by running the Hilbert curve on the weight map.
@@ -296,4 +300,14 @@ class Hilbert(AbstractImageMeshWeighted):
             gridy=grid_hb[:, 0],
         )
 
-        return Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
+        mesh_grid = Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
+
+        self.check_mesh_pixels_per_image_pixels(
+            grid=grid, mesh_grid=mesh_grid, settings=settings
+        )
+
+        self.check_adapt_background_pixels(
+            grid=grid, mesh_grid=mesh_grid, adapt_data=adapt_data, settings=settings
+        )
+
+        return mesh_grid

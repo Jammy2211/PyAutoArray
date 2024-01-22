@@ -19,8 +19,7 @@ class Title(AbstractMatWrap):
 
         self.manual_label = self.kwargs.get("label")
 
-    def set(self, auto_title=None, use_log10 : bool = False):
-
+    def set(self, auto_title=None, use_log10: bool = False):
         config_dict = self.config_dict
 
         label = auto_title if self.manual_label is None else self.manual_label

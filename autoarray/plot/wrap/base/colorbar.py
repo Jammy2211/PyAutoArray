@@ -60,7 +60,7 @@ class Colorbar(AbstractMatWrap):
             return conf.instance["visualize"]["general"]["units"]["cb_unit"]
         return self.manual_unit
 
-    def tick_values_from(self, norm=None, use_log10 : bool = False):
+    def tick_values_from(self, norm=None, use_log10: bool = False):
         if (
             sum(
                 x is not None
@@ -76,23 +76,26 @@ class Colorbar(AbstractMatWrap):
             return self.manual_tick_values
 
         if norm is not None:
-
             min_value = norm.vmin
             max_value = norm.vmax
 
             if use_log10:
+                if min_value < self.log10_min_value:
+                    min_value = self.log10_min_value
 
                 log_mid_value = (np.log10(max_value) + np.log10(min_value)) / 2.0
-                mid_value = 10 ** log_mid_value
+                mid_value = 10**log_mid_value
 
             else:
-
                 mid_value = (max_value + min_value) / 2.0
 
             return [min_value, mid_value, max_value]
 
     def tick_labels_from(
-        self, units: Units, manual_tick_values: List[float], cb_unit=None,
+        self,
+        units: Units,
+        manual_tick_values: List[float],
+        cb_unit=None,
     ):
         if manual_tick_values is None:
             return None
@@ -107,7 +110,6 @@ class Colorbar(AbstractMatWrap):
             ]
 
             if self.manual_log10:
-
                 manual_tick_labels = [
                     "{:.0e}".format(label) for label in manual_tick_labels
                 ]
@@ -134,14 +136,18 @@ class Colorbar(AbstractMatWrap):
 
         return manual_tick_labels
 
-    def set(self, units: Units, ax=None, norm=None, cb_unit=None, use_log10 : bool = False):
+    def set(
+        self, units: Units, ax=None, norm=None, cb_unit=None, use_log10: bool = False
+    ):
         """
         Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs.
         """
 
         tick_values = self.tick_values_from(norm=norm, use_log10=use_log10)
         tick_labels = self.tick_labels_from(
-            manual_tick_values=tick_values, units=units, cb_unit=cb_unit,
+            manual_tick_values=tick_values,
+            units=units,
+            cb_unit=cb_unit,
         )
 
         if tick_values is None and tick_labels is None:
