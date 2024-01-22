@@ -50,6 +50,7 @@ except ModuleNotFoundError:
 
 def jit(nopython=nopython, cache=cache, parallel=parallel):
     def wrapper(func):
+        return func
         try:
             use_numba = conf.instance["general"]["numba"]["use_numba"]
 
