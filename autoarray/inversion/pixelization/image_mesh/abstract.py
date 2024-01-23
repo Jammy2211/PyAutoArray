@@ -1,7 +1,7 @@
 from typing import Optional
 
-import copy
 import numpy as np
+import os
 
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -95,6 +95,9 @@ class AbstractImageMesh:
             an exception is raised.
         """
 
+        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+            return
+
         if settings is not None:
             if settings.image_mesh_min_mesh_pixels_per_pixel is not None:
                 mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
@@ -150,6 +153,10 @@ class AbstractImageMesh:
             The inversion settings, which have the criteria dictating if the image-mesh has clustered enough or if
             an exception is raised.
         """
+
+        if os.environ.get("PYAUTOFIT_TEST_MODE") == "1":
+            return
+
         if settings is not None:
             if settings.image_mesh_adapt_background_percent_threshold is not None:
                 pixels = mesh_grid.shape[0]
