@@ -162,7 +162,7 @@ class AbstractRegularization:
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        Returns the regularization matrix of this regularization scheme.
+        Returns the regularization matrix with shape [pixels, pixels].
 
         Parameters
         ----------

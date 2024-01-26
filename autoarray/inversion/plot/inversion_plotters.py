@@ -145,7 +145,6 @@ class InversionPlotter(Plotter):
         mapper_plotter = self.mapper_plotter_from(mapper_index=pixelization_index)
 
         if data_subtracted:
-
             # Attribute error is cause this raises an error for interferometer inversion, because the data is
             # visibilities not an image. Update this to be handled better in future.
 
