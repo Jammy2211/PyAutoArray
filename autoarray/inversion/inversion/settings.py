@@ -21,7 +21,7 @@ class SettingsInversion:
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
         use_linear_operators: bool = False,
-        image_mesh_min_mesh_pixels_per_pixel = None,
+        image_mesh_min_mesh_pixels_per_pixel=None,
         image_mesh_min_mesh_number: int = 5,
         image_mesh_adapt_background_percent_threshold: float = None,
         image_mesh_adapt_background_percent_check: float = 0.8,

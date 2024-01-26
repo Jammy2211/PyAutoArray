@@ -16,6 +16,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class MapperPlotter(Plotter):
     def __init__(
         self,
