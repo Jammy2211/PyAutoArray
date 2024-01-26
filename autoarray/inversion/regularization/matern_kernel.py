@@ -88,6 +88,7 @@ class NumbaScipyPlaceholder:
 
 try:
     import numba_scipy
+
     numba_scipy = object
 except ModuleNotFoundError:
     numba_scipy = NumbaScipyPlaceholder()

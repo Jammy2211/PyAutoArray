@@ -13,7 +13,7 @@ from autoarray.inversion.regularization import regularization_util
 class Constant(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0):
         """
-        Regularization which uses the neighbors of the mesh (e.g. shared Voronoi vertexes) and 
+        Regularization which uses the neighbors of the mesh (e.g. shared Voronoi vertexes) and
         a single value to smooth an inversion's solution.
 
         For this regularization scheme, there is only 1 regularization coefficient that is applied to
