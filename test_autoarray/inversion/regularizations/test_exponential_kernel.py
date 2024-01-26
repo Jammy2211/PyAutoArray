@@ -7,7 +7,6 @@ np.set_printoptions(threshold=np.inf)
 
 
 def test__regularization_matrix():
-
     reg = aa.reg.ExponentialKernel(coefficient=1.0, scale=2.0)
 
     source_plane_mesh_grid = aa.Grid2D.no_mask(
@@ -20,4 +19,4 @@ def test__regularization_matrix():
 
     regularization_matrix = reg.regularization_matrix_from(linear_obj=mapper)
 
-    assert regularization_matrix[0,0] == pytest.approx(1.71521, 1.0e-4)
+    assert regularization_matrix[0, 0] == pytest.approx(1.71521, 1.0e-4)

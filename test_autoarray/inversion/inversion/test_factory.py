@@ -140,7 +140,7 @@ def test__inversion_imaging__via_regularizations(
     regularization_adaptive_brightness_split,
     regularization_gaussian_kernel,
     regularization_exponential_kernel,
-    regularization_matern_kernel
+    regularization_matern_kernel,
 ):
     mapper = copy.copy(delaunay_mapper_9_3x3)
     mapper.regularization = regularization_constant

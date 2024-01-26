@@ -355,26 +355,15 @@ def make_regularization_adaptive_brightness_split():
 
 
 def make_regularization_gaussian_kernel():
-    return aa.reg.GaussianKernel(
-        coefficient=1.0,
-        scale=0.5
-    )
+    return aa.reg.GaussianKernel(coefficient=1.0, scale=0.5)
 
 
 def make_regularization_exponential_kernel():
-    return aa.reg.ExponentialKernel(
-        coefficient=1.0,
-        scale=0.5
-    )
-
+    return aa.reg.ExponentialKernel(coefficient=1.0, scale=0.5)
 
 
 def make_regularization_matern_kernel():
-    return aa.reg.MaternKernel(
-        coefficient=1.0,
-        scale=0.5,
-        nu=0.7
-    )
+    return aa.reg.MaternKernel(coefficient=1.0, scale=0.5, nu=0.7)
 
 
 def make_rectangular_mesh_grid_3x3():
