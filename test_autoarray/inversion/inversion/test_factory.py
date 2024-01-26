@@ -139,7 +139,8 @@ def test__inversion_imaging__via_regularizations(
     regularization_adaptive_brightness,
     regularization_adaptive_brightness_split,
     regularization_gaussian_kernel,
-    regularization_exponential_kernel
+    regularization_exponential_kernel,
+    regularization_matern_kernel
 ):
     mapper = copy.copy(delaunay_mapper_9_3x3)
     mapper.regularization = regularization_constant
@@ -228,6 +229,21 @@ def test__inversion_imaging__via_regularizations(
         2.78249836090, 1.0e-4
     )
     assert inversion.mapped_reconstructed_image[0] == pytest.approx(0.39133409, 1.0e-4)
+
+    mapper = copy.copy(voronoi_mapper_9_3x3)
+    mapper.regularization = regularization_matern_kernel
+
+    inversion = aa.Inversion(
+        dataset=masked_imaging_7x7_no_blur,
+        linear_obj_list=[mapper],
+        settings=aa.SettingsInversion(use_w_tilde=True),
+    )
+
+    assert isinstance(inversion.linear_obj_list[0], aa.MapperVoronoiNoInterp)
+    assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(
+        3.1408539878, 1.0e-4
+    )
+    assert inversion.mapped_reconstructed_image[0] == pytest.approx(0.39584510, 1.0e-4)
 
     # Have to do this because NN library is optional.
 

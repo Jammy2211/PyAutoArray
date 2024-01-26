@@ -244,6 +244,11 @@ def make_regularization_exponential_kernel():
     return fixtures.make_regularization_exponential_kernel()
 
 
+@pytest.fixture(name="regularization_matern_kernel")
+def make_regularization_matern_kernel():
+    return fixtures.make_regularization_matern_kernel()
+
+
 @pytest.fixture(name="rectangular_mapper_7x7_3x3")
 def make_rectangular_mapper_7x7_3x3():
     return fixtures.make_rectangular_mapper_7x7_3x3()
