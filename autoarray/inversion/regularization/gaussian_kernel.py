@@ -57,15 +57,44 @@ def gauss_cov_matrix_from(
 
 class GaussianKernel(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0, scale: float = 1.0):
+        """
+        Regularization which uses a Gaussian smoothing kernel to regularize the solution.
+
+        For this regularization scheme, every pixel is regularized with every other pixel. This contrasts many other
+        schemes, where regularization is based on neighboring (e.g. do the pixels share a Voronoi edge?) or computing
+        derivates around the center of the pixel (where nearby pixels are regularization locally in similar ways).
+
+        This makes the regularization matrix fully dense and therefore maybe change the run times of the solution.
+        It also leads to more overall smoothing which can lead to more stable linear inversions.
+
+        This scheme is introduced by Vernardos et al. (2022): https://arxiv.org/abs/2202.09378
+
+        A full description of regularization and this matrix can be found in the parent `AbstractRegularization` class.
+
+        Parameters
+        ----------
+        coefficient
+            The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
+        scale
+            The typical scale of the exponential regularization pattern.
+        """
         self.coefficient = coefficient
         self.scale = scale
         super().__init__()
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        points: the position of mesh that is regularized
-        """
+        Returns the regularization matrix with shape [pixels, pixels].
 
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses this matrix to perform regularization.
+
+        Returns
+        -------
+        The regularization matrix.
+        """
         covariance_matrix = gauss_cov_matrix_from(
             scale=self.scale, pixel_points=linear_obj.source_plane_mesh_grid
         )

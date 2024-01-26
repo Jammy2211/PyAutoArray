@@ -105,6 +105,30 @@ def numba_scipy_exception():
 
 class MaternKernel(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0, scale: float = 1.0, nu: float = 0.5):
+        """
+        Regularization which uses a Matern smoothing kernel to regularize the solution.
+
+        For this regularization scheme, every pixel is regularized with every other pixel. This contrasts many other
+        schemes, where regularization is based on neighboring (e.g. do the pixels share a Voronoi edge?) or computing
+        derivates around the center of the pixel (where nearby pixels are regularization locally in similar ways).
+
+        This makes the regularization matrix fully dense and therefore maybe change the run times of the solution.
+        It also leads to more overall smoothing which can lead to more stable linear inversions.
+
+        This scheme is not used by Vernardos et al. (2022): https://arxiv.org/abs/2202.09378, but it follows
+        a similar approach.
+
+        A full description of regularization and this matrix can be found in the parent `AbstractRegularization` class.
+
+        Parameters
+        ----------
+        coefficient
+            The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
+        scale
+            The typical scale of the exponential regularization pattern.
+        nu
+            Controls the derivative of the regularization pattern (`nu=0.5` is a Gaussian).
+        """
 
         if isinstance(numba_scipy, NumbaScipyPlaceholder):
             numba_scipy_exception()
@@ -116,7 +140,16 @@ class MaternKernel(AbstractRegularization):
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        points: the position of mesh that is regularized
+        Returns the regularization matrix with shape [pixels, pixels].
+
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses this matrix to perform regularization.
+
+        Returns
+        -------
+        The regularization matrix.
         """
         covariance_matrix = matern_cov_matrix_from(
             scale=self.scale,

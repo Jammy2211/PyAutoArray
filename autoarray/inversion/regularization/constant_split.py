@@ -13,9 +13,8 @@ from autoarray.inversion.regularization import regularization_util
 class ConstantSplit(Constant):
     def __init__(self, coefficient: float = 1.0):
         """
-        A constant regularization scheme which splits every source pixel into a cross of four regularization points
-        (regularization is described in the `Regularization` class above) and interpolates to these points in order
-        to apply smoothing on the solution of an `Inversion`.
+        Regularization which uses the derivatives at a cross of four points around each pixel centre and a single
+        value to smooth an inversion's solution.
 
         The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
         Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
@@ -34,6 +33,8 @@ class ConstantSplit(Constant):
         A small numerical value of 1.0e-8 is added to all elements in constant regularization matrix, to ensure that
         it is positive definite.
 
+        A full description of regularization and this matrix can be found in the parent `AbstractRegularization` class.
+
         Parameters
         ----------
         coefficient
@@ -44,7 +45,7 @@ class ConstantSplit(Constant):
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        Returns the regularization matrix of this regularization scheme.
+        Returns the regularization matrix with shape [pixels, pixels].
 
         Parameters
         ----------

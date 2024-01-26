@@ -13,8 +13,8 @@ from autoarray.inversion.regularization import regularization_util
 class Zeroth(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0):
         """
-        A zeroth order regularization scheme (regularization is described in the `Regularization` class above) which
-        uses a single value to apply smoothing on the solution of an `Inversion`.
+        A zeroth order regularization scheme which zeroth order regularization to pixels with low expected
+        signal values.
 
         Zeroth order regularization assumes a prior on the solution that its values should be closer to zero,
         penalizing solutions where they deviate further from zero. This is typically applied to prevent solutions
@@ -28,6 +28,8 @@ class Zeroth(AbstractRegularization):
 
         A small numerical value of 1.0e-8 is added to all elements in constant regularization matrix, to ensure that
         it is positive definite.
+
+        A full description of regularization and this matrix can be found in the parent `AbstractRegularization` class.
 
         Parameters
         ----------
@@ -62,7 +64,7 @@ class Zeroth(AbstractRegularization):
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        Returns the regularization matrix of this regularization scheme.
+        Returns the regularization matrix with shape [pixels, pixels].
 
         Parameters
         ----------

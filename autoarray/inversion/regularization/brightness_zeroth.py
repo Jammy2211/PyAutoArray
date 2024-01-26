@@ -28,6 +28,8 @@ class BrightnessZeroth(AbstractRegularization):
         To implement this regularization, values on the diagonal of the regularization matrix are increased
         according to the regularization weight_list of each pixel.
 
+        A full description of regularization and this matrix can be found in the parent `AbstractRegularization` class.
+
         Parameters
         ----------
         coefficient
@@ -69,7 +71,7 @@ class BrightnessZeroth(AbstractRegularization):
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        Returns the regularization matrix of this regularization scheme.
+        Returns the regularization matrix with shape [pixels, pixels].
 
         Parameters
         ----------

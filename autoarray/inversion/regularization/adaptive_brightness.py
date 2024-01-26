@@ -18,7 +18,8 @@ class AdaptiveBrightness(AbstractRegularization):
         signal_scale: float = 1.0,
     ):
         """
-        An adaptive regularization scheme (regularization is described in the `Regularization` class above).
+        Regularization which uses the neighbors of the mesh (e.g. shared Voronoi vertexes) and values adaptred to the
+        data being fitted to smooth an inversion's solution.
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is
         applied when each set of pixel neighbors are regularized with one another. The motivation of this is that
@@ -50,6 +51,8 @@ class AdaptiveBrightness(AbstractRegularization):
             [0, -2, 2 ,0] # [1->2]
             [-1, 1, 0 ,0] # [0->1]
             [0, 0, -3 ,3] # [2->3] This is valid!
+
+        A full description of regularization and this matrix can be found in the parent `AbstractRegularization` class.
 
         Parameters
         ----------
@@ -96,7 +99,7 @@ class AdaptiveBrightness(AbstractRegularization):
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        Returns the regularization matrix of this regularization scheme.
+        Returns the regularization matrix with shape [pixels, pixels].
 
         Parameters
         ----------
