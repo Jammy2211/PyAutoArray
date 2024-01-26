@@ -88,6 +88,7 @@ class NumbaScipyPlaceholder:
 
 try:
     import numba_scipy
+    numba_scipy = object
 except ModuleNotFoundError:
     numba_scipy = NumbaScipyPlaceholder()
 
@@ -104,6 +105,10 @@ def numba_scipy_exception():
 
 class MaternKernel(AbstractRegularization):
     def __init__(self, coefficient: float = 1.0, scale: float = 1.0, nu: float = 0.5):
+
+        if isinstance(numba_scipy, NumbaScipyPlaceholder):
+            numba_scipy_exception()
+
         self.coefficient = coefficient
         self.scale = float(scale)
         self.nu = float(nu)
