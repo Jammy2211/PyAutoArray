@@ -13,7 +13,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray import numba_util
 
 
-@numba_util.jit()
+@numba_util.jit(cache=False)
 def matern_kernel(r: float, l: float = 1.0, v: float = 0.5):
     """
     need to `pip install numba-scipy `
@@ -35,7 +35,7 @@ def matern_kernel(r: float, l: float = 1.0, v: float = 0.5):
     return part1 * part2 * part3
 
 
-@numba_util.jit()
+@numba_util.jit(cache=False)
 def matern_cov_matrix_from(
     scale: float,
     nu: float,
