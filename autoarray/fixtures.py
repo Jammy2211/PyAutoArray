@@ -354,6 +354,13 @@ def make_regularization_adaptive_brightness_split():
     )
 
 
+def make_regularization_gaussian_kernel():
+    return aa.reg.GaussianKernel(
+        coefficient=1.0,
+        scale=0.5
+    )
+
+
 def make_regularization_exponential_kernel():
     return aa.reg.ExponentialKernel(
         coefficient=1.0,

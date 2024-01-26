@@ -1,4 +1,9 @@
+from __future__ import annotations
 import numpy as np
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from autoarray.inversion.linear_obj.linear_obj import LinearObj
 
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 
@@ -12,7 +17,7 @@ class GaussianKernel(AbstractRegularization):
         self.scale = scale
         super().__init__()
 
-    def regularization_matrix_from(self, points) -> np.ndarray:
+    def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
         points: the position of mesh that is regularized
         """
@@ -20,6 +25,6 @@ class GaussianKernel(AbstractRegularization):
             coefficient=self.coefficient,
             scale=self.scale,
             nu=None,
-            points=points,
+            points=linear_obj.source_plane_mesh_grid,
             reg_type="gauss",
         )

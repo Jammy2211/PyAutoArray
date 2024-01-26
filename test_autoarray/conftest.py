@@ -233,9 +233,16 @@ def make_regularization_adaptive_brightness():
 def make_regularization_adaptive_brightness_split():
     return fixtures.make_regularization_adaptive_brightness_split()
 
+
+@pytest.fixture(name="regularization_gaussian_kernel")
+def make_regularization_gaussian_kernel():
+    return fixtures.make_regularization_gaussian_kernel()
+
+
 @pytest.fixture(name="regularization_exponential_kernel")
 def make_regularization_exponential_kernel():
     return fixtures.make_regularization_exponential_kernel()
+
 
 @pytest.fixture(name="rectangular_mapper_7x7_3x3")
 def make_rectangular_mapper_7x7_3x3():
