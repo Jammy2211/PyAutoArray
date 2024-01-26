@@ -562,6 +562,25 @@ def matern_cov_matrix_from(
     return covariance_matrix
 
 
+class NumbaScipyPlaceholder:
+    pass
+
+try:
+    import numba-scipy
+except ModuleNotFoundError:
+    numba_scipy = NumbaScipyPlaceholder()
+
+
+def numba_scipy_exception():
+    raise ModuleNotFoundError(
+        "\n--------------------\n"
+        "You are attempting to use the MaternKernel for Regularization.\n\n"
+        "However, the optional library numba_scipy (https://pypi.org/project/numba-scipy/) is not installed.\n\n"
+        "Install it via the command `pip install numba-scipy==0.3.1`.\n\n"
+        "----------------------"
+    )
+
+
 def regularization_matrix_gp_from(
     scale: float,
     coefficient: float,
