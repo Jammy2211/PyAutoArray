@@ -24,7 +24,7 @@ class SettingsInversion:
         image_mesh_min_mesh_pixels_per_pixel=None,
         image_mesh_min_mesh_number: int = 5,
         image_mesh_adapt_background_percent_threshold: float = None,
-        image_mesh_adapt_background_percent_check: float = 0.1,
+        image_mesh_adapt_background_percent_check: float = 0.8,
         tolerance: float = 1e-8,
         maxiter: int = 250,
     ):
