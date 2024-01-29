@@ -1,9 +1,25 @@
+from functools import wraps
+
 import numpy as np
 
+from autoarray.numpy_wrapper import numpy as npw
 from autoarray.mask.abstract_mask import Mask
+from autoarray.structures.abstract_structure import Structure
 
 
-def residual_map_from(*, data: np.ndarray, model_data: np.ndarray) -> np.ndarray:
+def to_new_array(func):
+    @wraps(func)
+    def wrapper(**kwargs):
+        result = func(**kwargs)
+        try:
+            return list(kwargs.values())[0].with_new_array(result)
+        except AttributeError:
+            return result
+
+    return wrapper
+
+
+def residual_map_from(*, data: Structure, model_data: Structure) -> Structure:
     """
     Returns the residual-map of the fit of model-data to a masked dataset, where:
 
@@ -18,7 +34,7 @@ def residual_map_from(*, data: np.ndarray, model_data: np.ndarray) -> np.ndarray
     model_data
         The model data used to fit the data.
     """
-    return np.subtract(data, model_data, out=np.zeros_like(data))
+    return data - model_data
 
 
 def normalized_residual_map_from(
@@ -38,7 +54,7 @@ def normalized_residual_map_from(
     mask
         The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
-    return np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
+    return residual_map / noise_map
 
 
 def chi_squared_map_from(
@@ -56,9 +72,7 @@ def chi_squared_map_from(
     noise_map
         The noise-map of the dataset.
     """
-    return np.square(
-        np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
-    )
+    return (residual_map / noise_map) ** 2.0
 
 
 def chi_squared_from(*, chi_squared_map: np.ndarray) -> float:
@@ -70,7 +84,7 @@ def chi_squared_from(*, chi_squared_map: np.ndarray) -> float:
     chi_squared_map
         The chi-squared-map of values of the model-data fit to the dataset.
     """
-    return float(np.sum(chi_squared_map))
+    return np.sum(chi_squared_map)
 
 
 def noise_normalization_from(*, noise_map: np.ndarray) -> float:
@@ -84,7 +98,7 @@ def noise_normalization_from(*, noise_map: np.ndarray) -> float:
     noise_map
         The masked noise-map of the dataset.
     """
-    return float(np.sum(np.log(2 * np.pi * noise_map**2.0)))
+    return npw.sum(npw.log(2 * np.pi * noise_map**2.0))
 
 
 def normalized_residual_map_complex_from(
@@ -102,16 +116,11 @@ def normalized_residual_map_complex_from(
     noise_map
         The noise-map of the dataset.
     """
-    normalized_residual_map_real = np.divide(
-        residual_map.real,
-        noise_map.real,
-        out=np.zeros_like(residual_map, dtype="complex128"),
+    normalized_residual_map_real = (residual_map.real / noise_map.real).astype(
+        "complex128"
     )
-
-    normalized_residual_map_imag = np.divide(
-        residual_map.imag,
-        noise_map.imag,
-        out=np.zeros_like(residual_map, dtype="complex128"),
+    normalized_residual_map_imag = (residual_map.imag / noise_map.imag).astype(
+        "complex128"
     )
 
     return normalized_residual_map_real + 1j * normalized_residual_map_imag
@@ -132,12 +141,8 @@ def chi_squared_map_complex_from(
     noise_map
         The noise-map of the dataset.
     """
-    chi_squared_map_real = np.square(
-        np.divide(residual_map.real, noise_map.real, out=np.zeros_like(residual_map))
-    )
-    chi_squared_map_imag = np.square(
-        np.divide(residual_map.imag, noise_map.imag, out=np.zeros_like(residual_map))
-    )
+    chi_squared_map_real = (residual_map.real / noise_map.real) ** 2
+    chi_squared_map_imag = (residual_map.imag / noise_map.imag) ** 2
     return chi_squared_map_real + 1j * chi_squared_map_imag
 
 
@@ -153,8 +158,8 @@ def chi_squared_complex_from(*, chi_squared_map: np.ndarray) -> float:
     chi_squared_map
         The chi-squared-map of values of the model-data fit to the dataset.
     """
-    chi_squared_real = float(np.sum(chi_squared_map.real))
-    chi_squared_imag = float(np.sum(chi_squared_map.imag))
+    chi_squared_real = np.sum(chi_squared_map.real)
+    chi_squared_imag = np.sum(chi_squared_map.imag)
     return chi_squared_real + chi_squared_imag
 
 
@@ -169,11 +174,12 @@ def noise_normalization_complex_from(*, noise_map: np.ndarray) -> float:
     noise_map
         The masked noise-map of the dataset.
     """
-    noise_normalization_real = float(np.sum(np.log(2 * np.pi * noise_map.real**2.0)))
-    noise_normalization_imag = float(np.sum(np.log(2 * np.pi * noise_map.imag**2.0)))
+    noise_normalization_real = np.sum(np.log(2 * np.pi * noise_map.real**2.0))
+    noise_normalization_imag = np.sum(np.log(2 * np.pi * noise_map.imag**2.0))
     return noise_normalization_real + noise_normalization_imag
 
 
+@to_new_array
 def residual_map_with_mask_from(
     *, data: np.ndarray, mask: Mask, model_data: np.ndarray
 ) -> np.ndarray:
@@ -198,6 +204,7 @@ def residual_map_with_mask_from(
     )
 
 
+@to_new_array
 def normalized_residual_map_with_mask_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray, mask: Mask
 ) -> np.ndarray:
@@ -225,6 +232,7 @@ def normalized_residual_map_with_mask_from(
     )
 
 
+@to_new_array
 def chi_squared_map_with_mask_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray, mask: Mask
 ) -> np.ndarray:
@@ -268,7 +276,7 @@ def chi_squared_with_mask_from(*, chi_squared_map: np.ndarray, mask: Mask) -> fl
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
-    return float(np.sum(chi_squared_map[np.asarray(mask) == 0]))
+    return np.sum(chi_squared_map[np.asarray(mask) == 0])
 
 
 def chi_squared_with_mask_fast_from(
@@ -294,7 +302,6 @@ def chi_squared_with_mask_fast_from(
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
-
     return float(
         np.sum(
             np.square(
@@ -325,9 +332,10 @@ def noise_normalization_with_mask_from(*, noise_map: np.ndarray, mask: Mask) -> 
     mask
         The mask applied to the noise-map, where `False` entries are included in the calculation.
     """
-    return float(np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0] ** 2.0)))
+    return np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0] ** 2.0))
 
 
+@to_new_array
 def normalized_residual_map_complex_with_mask_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray, mask: Mask
 ) -> np.ndarray:
@@ -364,6 +372,7 @@ def normalized_residual_map_complex_with_mask_from(
     return normalized_residual_map_real + 1j * normalized_residual_map_imag
 
 
+@to_new_array
 def chi_squared_map_complex_with_mask_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray, mask: Mask
 ) -> np.ndarray:
@@ -419,8 +428,8 @@ def chi_squared_complex_with_mask_from(
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
-    chi_squared_real = float(np.sum(chi_squared_map[np.asarray(mask) == 0].real))
-    chi_squared_imag = float(np.sum(chi_squared_map[np.asarray(mask) == 0].imag))
+    chi_squared_real = np.sum(chi_squared_map[np.asarray(mask) == 0].real)
+    chi_squared_imag = np.sum(chi_squared_map[np.asarray(mask) == 0].imag)
     return chi_squared_real + chi_squared_imag
 
 
@@ -461,11 +470,11 @@ def noise_normalization_complex_with_mask_from(
     mask
         The mask applied to the noise-map, where `False` entries are included in the calculation.
     """
-    noise_normalization_real = float(
-        np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0].real ** 2.0))
+    noise_normalization_real = np.sum(
+        np.log(2 * np.pi * noise_map[np.asarray(mask) == 0].real ** 2.0)
     )
-    noise_normalization_imag = float(
-        np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0].imag ** 2.0))
+    noise_normalization_imag = np.sum(
+        np.log(2 * np.pi * noise_map[np.asarray(mask) == 0].imag ** 2.0)
     )
     return noise_normalization_real + noise_normalization_imag
 
@@ -483,7 +492,7 @@ def log_likelihood_from(*, chi_squared: float, noise_normalization: float) -> fl
     noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """
-    return float(-0.5 * (chi_squared + noise_normalization))
+    return -0.5 * (chi_squared + noise_normalization)
 
 
 def log_likelihood_with_regularization_from(
@@ -505,7 +514,7 @@ def log_likelihood_with_regularization_from(
     noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """
-    return float(-0.5 * (chi_squared + regularization_term + noise_normalization))
+    return -0.5 * (chi_squared + regularization_term + noise_normalization)
 
 
 def log_evidence_from(
@@ -537,15 +546,12 @@ def log_evidence_from(
     noise_normalization
         The normalization noise_map-term for the dataset's noise-map.
     """
-    return float(
-        -0.5
-        * (
-            chi_squared
-            + regularization_term
-            + log_curvature_regularization_term
-            - log_regularization_term
-            + noise_normalization
-        )
+    return -0.5 * (
+        chi_squared
+        + regularization_term
+        + log_curvature_regularization_term
+        - log_regularization_term
+        + noise_normalization
     )
 
 

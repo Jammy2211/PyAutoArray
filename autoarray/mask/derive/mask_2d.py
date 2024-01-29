@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 import copy
 import numpy as np
-from typing import TYPE_CHECKING, List, Tuple, Union
+from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
@@ -141,7 +141,7 @@ class DeriveMask2D:
         from autoarray.mask.mask_2d import Mask2D
 
         return Mask2D(
-            mask=self.mask,
+            mask=np.array(self.mask),
             sub_size=1,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
@@ -193,7 +193,8 @@ class DeriveMask2D:
         from autoarray.mask.mask_2d import Mask2D
 
         rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
-            mask_2d=self.mask, rescale_factor=rescale_factor
+            mask_2d=np.array(self.mask),
+            rescale_factor=rescale_factor,
         )
 
         return Mask2D(
@@ -258,7 +259,9 @@ class DeriveMask2D:
         mask = copy.deepcopy(self.mask)
 
         resized_mask = array_2d_util.resized_array_2d_from(
-            array_2d=mask, resized_shape=new_shape, pad_value=pad_value
+            array_2d=np.array(mask),
+            resized_shape=new_shape,
+            pad_value=pad_value,
         ).astype("bool")
 
         return Mask2D(
@@ -428,7 +431,8 @@ class DeriveMask2D:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
         blurring_mask = mask_2d_util.blurring_mask_2d_from(
-            mask_2d=self.mask, kernel_shape_native=kernel_shape_native
+            mask_2d=np.array(self.mask),
+            kernel_shape_native=kernel_shape_native,
         )
 
         return Mask2D(
@@ -549,9 +553,9 @@ class DeriveMask2D:
         """
         from autoarray.mask.mask_2d import Mask2D
 
-        edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(mask_2d=self.mask).astype(
-            "bool"
-        )
+        edge_buffed_mask = mask_2d_util.buffed_mask_2d_from(
+            mask_2d=np.array(self.mask)
+        ).astype("bool")
 
         return Mask2D(
             mask=edge_buffed_mask,

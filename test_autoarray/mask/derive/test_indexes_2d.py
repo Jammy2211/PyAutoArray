@@ -27,7 +27,7 @@ def make_indexes_2d_9x9():
 def test__native_index_for_slim_index(indexes_2d_9x9):
     sub_native_index_for_sub_slim_index_2d = (
         aa.util.mask_2d.native_index_for_slim_index_2d_from(
-            mask_2d=indexes_2d_9x9.mask, sub_size=1
+            mask_2d=np.array(indexes_2d_9x9.mask), sub_size=1
         )
     )
 
@@ -46,7 +46,9 @@ def test__sub_mask_index_for_sub_mask_1d_index():
     indexes_2d = aa.DeriveIndexes2D(mask=mask)
 
     sub_mask_index_for_sub_mask_1d_index = (
-        aa.util.mask_2d.native_index_for_slim_index_2d_from(mask_2d=mask, sub_size=2)
+        aa.util.mask_2d.native_index_for_slim_index_2d_from(
+            mask_2d=np.array(mask), sub_size=2
+        )
     )
 
     assert indexes_2d.sub_mask_native_for_sub_mask_slim == pytest.approx(
@@ -65,7 +67,7 @@ def test__slim_index_for_sub_slim_index():
 
     slim_index_for_sub_slim_index_util = (
         aa.util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=mask, sub_size=2
+            mask_2d=np.array(mask), sub_size=2
         )
     )
 
@@ -74,7 +76,7 @@ def test__slim_index_for_sub_slim_index():
 
 def test__unmasked_1d_indexes(indexes_2d_9x9):
     unmasked_pixels_util = aa.util.mask_2d.mask_slim_indexes_from(
-        mask_2d=indexes_2d_9x9.mask, return_masked_indexes=False
+        mask_2d=np.array(indexes_2d_9x9.mask), return_masked_indexes=False
     )
 
     assert indexes_2d_9x9.unmasked_slim == pytest.approx(unmasked_pixels_util, 1e-4)
@@ -82,7 +84,7 @@ def test__unmasked_1d_indexes(indexes_2d_9x9):
 
 def test__masked_1d_indexes(indexes_2d_9x9):
     masked_pixels_util = aa.util.mask_2d.mask_slim_indexes_from(
-        mask_2d=indexes_2d_9x9.mask, return_masked_indexes=True
+        mask_2d=np.array(indexes_2d_9x9.mask), return_masked_indexes=True
     )
 
     assert indexes_2d_9x9.masked_slim == pytest.approx(masked_pixels_util, 1e-4)
@@ -90,7 +92,7 @@ def test__masked_1d_indexes(indexes_2d_9x9):
 
 def test__edge_1d_indexes(indexes_2d_9x9):
     edge_1d_indexes_util = aa.util.mask_2d.edge_1d_indexes_from(
-        mask_2d=indexes_2d_9x9.mask
+        mask_2d=np.array(indexes_2d_9x9.mask)
     )
 
     assert indexes_2d_9x9.edge_slim == pytest.approx(edge_1d_indexes_util, 1e-4)
@@ -104,7 +106,7 @@ def test__edge_2d_indexes(indexes_2d_9x9):
 
 def test__border_1d_indexes(indexes_2d_9x9):
     border_pixels_util = aa.util.mask_2d.border_slim_indexes_from(
-        mask_2d=indexes_2d_9x9.mask
+        mask_2d=np.array(indexes_2d_9x9.mask)
     )
 
     assert indexes_2d_9x9.border_slim == pytest.approx(border_pixels_util, 1e-4)
@@ -134,7 +136,7 @@ def test__sub_border_flat_indexes():
     indexes_2d = aa.DeriveIndexes2D(mask=mask)
 
     sub_border_pixels_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
-        mask_2d=mask, sub_size=2
+        mask_2d=np.array(mask), sub_size=2
     )
 
     assert indexes_2d.sub_border_slim == pytest.approx(sub_border_pixels_util, 1e-4)

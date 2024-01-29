@@ -16,7 +16,7 @@ from autoarray.geometry import geometry_util
 
 
 class Grid2DIrregular(AbstractNDArray):
-    def __new__(cls, values: Union[np.ndarray, List]):
+    def __init__(self, values: Union[np.ndarray, List]):
         """
         An irregular grid of (y,x) coordinates.
 
@@ -42,17 +42,20 @@ class Grid2DIrregular(AbstractNDArray):
         """
 
         if len(values) == 0:
-            return []
+            super().__init__(values)
+            return
 
         if type(values) is list:
             if isinstance(values[0], Grid2DIrregular):
-                return values
+                values = values
+            else:
+                values = np.asarray(values)
 
-            values = np.asarray(values)
+        super().__init__(values)
 
-        obj = values.view(cls)
-
-        return obj
+    @property
+    def values(self):
+        return self._array
 
     @property
     def geometry(self):
@@ -226,7 +229,7 @@ class Grid2DIrregular(AbstractNDArray):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
 
-        if isinstance(result, np.ndarray):
+        if isinstance(result, (np.ndarray, AbstractNDArray)):
             if len(result.shape) == 1:
                 return self.values_from(array_slim=result)
             elif len(result.shape) == 2:
@@ -408,8 +411,8 @@ class Grid2DIrregularTransformed(Grid2DIrregular):
 
 
 class Grid2DIrregularUniform(Grid2DIrregular):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values: np.ndarray,
         shape_native: Optional[Tuple[float, float]] = None,
         pixel_scales: Optional[Tuple[float, float]] = None,
@@ -448,14 +451,15 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         """
 
         if len(values) == 0:
-            return []
+            super().__init__(values=values)
+            return
 
         if isinstance(values[0], float):
             values = [values]
 
         if isinstance(values[0], tuple):
             values = [values]
-        elif isinstance(values[0], np.ndarray):
+        elif isinstance(values[0], (np.ndarray, AbstractNDArray)):
             if len(values[0].shape) == 1:
                 values = [values]
         elif isinstance(values[0], list) and isinstance(values[0][0], (float)):
@@ -463,15 +467,14 @@ class Grid2DIrregularUniform(Grid2DIrregular):
 
         coordinates_arr = np.concatenate([np.array(i) for i in values])
 
-        obj = coordinates_arr.view(cls)
-        obj._internal_list = values
+        self._internal_list = values
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        obj.shape_native = shape_native
-        obj.pixel_scales = pixel_scales
+        self.shape_native = shape_native
+        self.pixel_scales = pixel_scales
 
-        return obj
+        super().__init__(coordinates_arr)
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "_internal_list"):
@@ -504,7 +507,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_upscaled_1d = grid_2d_util.grid_2d_slim_upscaled_from(
-            grid_slim=grid_sparse_uniform,
+            grid_slim=np.array(grid_sparse_uniform),
             upscale_factor=upscale_factor,
             pixel_scales=pixel_scales,
         )

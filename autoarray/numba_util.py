@@ -1,3 +1,4 @@
+import os
 from functools import wraps
 import logging
 import time
@@ -31,7 +32,10 @@ except Exception:
     parallel = False
 
 try:
-    import numba
+    if os.environ.get("USE_JAX") == "1":
+        logger.warning("JAX and numba do not work together, so JAX is being used.")
+    else:
+        import numba
 
 except ModuleNotFoundError:
     logger.warning(

@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.spatial
-import scipy.spatial.qhull as qhull
-from typing import Optional, List, Union, Tuple
+from typing import List, Union, Tuple
 
+from autoarray.structures.abstract_structure import Structure
 from autoconf import cached_property
 
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
@@ -14,12 +14,27 @@ from autoarray.structures.grids import grid_2d_util
 
 
 class Abstract2DMeshTriangulation(Abstract2DMesh):
-    def __new__(
-        cls,
+    @property
+    def slim(self) -> "Structure":
+        raise NotImplementedError()
+
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplementedError()
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplementedError()
+
+    def __init__(
+        self,
         values: Union[np.ndarray, List],
         uses_interpolation: bool = False,
-        *args,
-        **kwargs
     ):
         """
         An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.
@@ -51,10 +66,9 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         if type(values) is list:
             values = np.asarray(values)
 
-        obj = values.view(cls)
-        obj.uses_interpolation = uses_interpolation
+        self.uses_interpolation = uses_interpolation
 
-        return obj
+        super().__init__(values)
 
     def __array_finalize__(self, obj: object):
         """

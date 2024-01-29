@@ -39,7 +39,7 @@ class AbstractFitInversion(ABC):
         """
         warnings.filterwarnings("ignore")
 
-        signal_to_noise_map = np.divide(self.data, self.noise_map)
+        signal_to_noise_map = self.data / self.noise_map
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
@@ -307,7 +307,10 @@ class FitDataset(AbstractFitInversion):
         if self.inversion is not None:
             return self.log_evidence
 
-        return self.log_likelihood
+        try:
+            return self.log_likelihood.array
+        except AttributeError:
+            return self.log_likelihood
 
     @property
     def residual_flux_fraction_map(self) -> Structure:

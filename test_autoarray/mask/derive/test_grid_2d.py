@@ -237,7 +237,10 @@ def test__masked_grid():
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     masked_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
-        mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=5, origin=(3.0, -2.0)
+        mask_2d=np.array(mask),
+        pixel_scales=(1.0, 1.0),
+        sub_size=5,
+        origin=(3.0, -2.0),
     )
 
     assert (derive_grid.unmasked == masked_grid_util).all()

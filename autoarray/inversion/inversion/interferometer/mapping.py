@@ -86,8 +86,8 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
 
         return inversion_interferometer_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=self.operated_mapping_matrix,
-            visibilities=self.data,
-            noise_map=self.noise_map,
+            visibilities=np.array(self.data),
+            noise_map=np.array(self.noise_map),
         )
 
     @cached_property
@@ -147,12 +147,6 @@ class InversionInterferometerMapping(AbstractInversionInterferometer):
         To perform this mapping the `mapping_matrix` is used, which straightforwardly describes how every value of
         the `reconstruction` maps to pixels in the data-frame after the 2D non-uniform fast Fourier transformer
         operation has been performed.
-
-        Parameters
-        ----------
-        reconstruction
-            The reconstruction (in the source frame) whose values are mapped to a dictionary of values for each
-            individual mapper (in the image-plane).
         """
         mapped_reconstructed_data_dict = {}
 

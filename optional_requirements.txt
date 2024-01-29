@@ -1,3 +1,5 @@
-numba
 pylops>=1.10.0,<=1.18.3
 pynufft
+jax==0.4.3
+jaxlib==0.4.3
+#numba

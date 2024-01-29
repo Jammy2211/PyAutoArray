@@ -1,17 +1,14 @@
 import numpy as np
 from typing import Callable, Union, List, Tuple, Optional
 
-from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.grids.uniform_2d import Grid2D
-
-from autoarray.structures.arrays.uniform_2d import Array2D
-
-from autoarray.structures.arrays import array_2d_util
 from autoarray import numba_util
-from autoarray.geometry import geometry_util
-from autoarray.structures.grids import grid_2d_util
-
 from autoarray import type as ty
+from autoarray.geometry import geometry_util
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.arrays import array_2d_util
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids import grid_2d_util
+from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 def sub_steps_from(sub_steps):
@@ -21,16 +18,14 @@ def sub_steps_from(sub_steps):
 
 
 class Grid2DIterate(Grid2D):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values: np.ndarray,
         mask: Mask2D,
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
         sub_steps: List[int] = None,
         store_native: bool = False,
-        *args,
-        **kwargs
     ):
         """
         Represents a grid of coordinates as described for the ``Grid2D`` class, but using an iterative sub-grid that
@@ -79,14 +74,18 @@ class Grid2DIterate(Grid2D):
             grid_2d=values, mask_2d=mask, store_native=store_native
         )
 
-        obj = values.view(cls)
-        obj.mask = mask
-        obj.grid = Grid2D(values=np.asarray(obj), mask=mask, store_native=store_native)
-        obj.fractional_accuracy = fractional_accuracy
-        obj.relative_accuracy = relative_accuracy
-        obj.sub_steps = sub_steps
+        self.grid = Grid2D(
+            values=np.asarray(values), mask=mask, store_native=store_native
+        )
+        self.fractional_accuracy = fractional_accuracy
+        self.relative_accuracy = relative_accuracy
+        self.sub_steps = sub_steps
 
-        return obj
+        super().__init__(
+            values=values,
+            mask=mask,
+            store_native=store_native,
+        )
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
@@ -261,7 +260,10 @@ class Grid2DIterate(Grid2D):
         """
 
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=1, origin=mask.origin
+            mask_2d=np.array(mask),
+            pixel_scales=mask.pixel_scales,
+            sub_size=1,
+            origin=mask.origin,
         )
 
         return Grid2DIterate(
@@ -494,10 +496,10 @@ class Grid2DIterate(Grid2D):
         threshold_mask = self.threshold_mask_via_arrays_jit_from(
             fractional_accuracy_threshold=self.fractional_accuracy,
             relative_accuracy_threshold=self.relative_accuracy,
-            threshold_mask=threshold_mask,
-            array_higher_sub_2d=array_higher_sub_2d,
-            array_lower_sub_2d=array_lower_sub_2d,
-            array_higher_mask=array_higher_sub_2d.mask,
+            threshold_mask=np.array(threshold_mask),
+            array_higher_sub_2d=np.array(array_higher_sub_2d),
+            array_lower_sub_2d=np.array(array_lower_sub_2d),
+            array_higher_mask=np.array(array_higher_sub_2d.mask),
         )
 
         return Mask2D(
@@ -511,10 +513,10 @@ class Grid2DIterate(Grid2D):
     def threshold_mask_via_arrays_jit_from(
         fractional_accuracy_threshold: float,
         relative_accuracy_threshold: Optional[float],
-        threshold_mask: Mask2D,
-        array_higher_sub_2d: Array2D,
-        array_lower_sub_2d: Array2D,
-        array_higher_mask: Mask2D,
+        threshold_mask: np.ndarray,
+        array_higher_sub_2d: np.ndarray,
+        array_lower_sub_2d: np.ndarray,
+        array_higher_mask: np.ndarray,
     ) -> np.ndarray:
         """
         Jitted function to determine the fractional mask, which is a mask where:
@@ -607,9 +609,9 @@ class Grid2DIterate(Grid2D):
 
                 iterated_array = self.iterated_array_jit_from(
                     iterated_array=iterated_array,
-                    threshold_mask_higher_sub=threshold_mask_higher_sub,
-                    threshold_mask_lower_sub=threshold_mask_lower_sub,
-                    array_higher_sub_2d=array_higher_sub,
+                    threshold_mask_higher_sub=np.array(threshold_mask_higher_sub),
+                    threshold_mask_lower_sub=np.array(threshold_mask_lower_sub),
+                    array_higher_sub_2d=np.array(array_higher_sub),
                 )
 
             except ZeroDivisionError:
@@ -647,7 +649,9 @@ class Grid2DIterate(Grid2D):
         """
 
         iterated_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=self.mask, array_2d_native=iterated_array, sub_size=1
+            mask_2d=np.array(self.mask),
+            array_2d_native=np.array(iterated_array),
+            sub_size=1,
         )
 
         return Array2D(values=iterated_array_1d, mask=self.mask.derive_mask.sub_1)
@@ -655,11 +659,11 @@ class Grid2DIterate(Grid2D):
     @staticmethod
     @numba_util.jit()
     def iterated_array_jit_from(
-        iterated_array: Array2D,
-        threshold_mask_higher_sub: Mask2D,
-        threshold_mask_lower_sub: Mask2D,
-        array_higher_sub_2d: Array2D,
-    ) -> Array2D:
+        iterated_array: np.ndarray,
+        threshold_mask_higher_sub: np.ndarray,
+        threshold_mask_lower_sub: np.ndarray,
+        array_higher_sub_2d: np.ndarray,
+    ) -> np.ndarray:
         """
         Create the iterated array from a result array that is computed at a higher sub size leel than the previous grid.
 
@@ -706,10 +710,10 @@ class Grid2DIterate(Grid2D):
         threshold_mask = self.threshold_mask_via_grids_jit_from(
             fractional_accuracy_threshold=self.fractional_accuracy,
             relative_accuracy_threshold=self.relative_accuracy,
-            threshold_mask=threshold_mask,
-            grid_higher_sub_2d=grid_higher_sub_2d,
-            grid_lower_sub_2d=grid_lower_sub_2d,
-            grid_higher_mask=grid_higher_sub_2d.mask,
+            threshold_mask=np.array(threshold_mask),
+            grid_higher_sub_2d=np.array(grid_higher_sub_2d),
+            grid_lower_sub_2d=np.array(grid_lower_sub_2d),
+            grid_higher_mask=np.array(grid_higher_sub_2d.mask),
         )
 
         return Mask2D(
@@ -723,11 +727,11 @@ class Grid2DIterate(Grid2D):
     def threshold_mask_via_grids_jit_from(
         fractional_accuracy_threshold: float,
         relative_accuracy_threshold: float,
-        threshold_mask: Mask2D,
-        grid_higher_sub_2d: Grid2D,
-        grid_lower_sub_2d: Grid2D,
-        grid_higher_mask: Mask2D,
-    ) -> Mask2D:
+        threshold_mask: np.ndarray,
+        grid_higher_sub_2d: np.ndarray,
+        grid_lower_sub_2d: np.ndarray,
+        grid_higher_mask: np.ndarray,
+    ) -> np.ndarray:
         """
         Jitted function to determine the fractional mask, which is a mask where:
 
@@ -839,9 +843,9 @@ class Grid2DIterate(Grid2D):
 
             iterated_grid = self.iterated_grid_jit_from(
                 iterated_grid=iterated_grid,
-                threshold_mask_higher_sub=threshold_mask_higher_sub,
-                threshold_mask_lower_sub=threshold_mask_lower_sub,
-                grid_higher_sub_2d=grid_higher_sub,
+                threshold_mask_higher_sub=np.array(threshold_mask_higher_sub),
+                threshold_mask_lower_sub=np.array(threshold_mask_lower_sub),
+                grid_higher_sub_2d=np.array(grid_higher_sub),
             )
 
             if threshold_mask_higher_sub.is_all_true:
@@ -873,9 +877,9 @@ class Grid2DIterate(Grid2D):
     @numba_util.jit()
     def iterated_grid_jit_from(
         iterated_grid: Grid2D,
-        threshold_mask_higher_sub: Mask2D,
-        threshold_mask_lower_sub: Mask2D,
-        grid_higher_sub_2d: Grid2D,
+        threshold_mask_higher_sub: np.ndarray,
+        threshold_mask_lower_sub: np.ndarray,
+        grid_higher_sub_2d: np.ndarray,
     ) -> Grid2D:
         """
         Create the iterated grid from a result grid that is computed at a higher sub size level than the previous grid.

@@ -17,15 +17,17 @@ from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.layout import layout_util
+from autoarray.numpy_wrapper import numpy as npw
+
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
 class AbstractArray2D(Structure):
-    def __new__(
-        cls,
-        values: Union[np.ndarray, List],
+    def __init__(
+        self,
+        values: Union[np.ndarray, List, "AbstractArray2D"],
         mask: Mask2D,
         header: Header = None,
         store_native: bool = False,
@@ -339,6 +341,10 @@ class AbstractArray2D(Structure):
             array_2d.output_to_fits(file_path="/path/for/output")
         """
 
+        try:
+            values = values._array
+        except AttributeError:
+            pass
         if conf.instance["general"]["structures"]["native_binned_only"]:
             store_native = True
 
@@ -349,11 +355,13 @@ class AbstractArray2D(Structure):
             skip_mask=skip_mask,
         )
 
-        obj = values.view(cls)
-        obj.mask = mask
-        obj.header = header
+        super().__init__(values)
+        self.mask = mask
+        self.header = header
 
-        return obj
+    @property
+    def values(self):
+        return self._array
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "mask"):
@@ -366,9 +374,7 @@ class AbstractArray2D(Structure):
 
     @property
     def store_native(self):
-        if len(self.shape) == 1:
-            return False
-        return True
+        return len(self.shape) != 1
 
     def apply_mask(self, mask: Mask2D) -> "Array2D":
         return Array2D(values=self.native, mask=mask, header=self.header)
@@ -435,7 +441,7 @@ class AbstractArray2D(Structure):
 
         array_2d_slim = self.slim
 
-        binned_array_1d = np.multiply(
+        binned_array_1d = npw.multiply(
             self.mask.sub_fraction,
             array_2d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
@@ -459,7 +465,7 @@ class AbstractArray2D(Structure):
     @property
     def original_orientation(self) -> Union[np.ndarray, "Array2D"]:
         return layout_util.rotate_array_via_roe_corner_from(
-            array=self, roe_corner=self.header.original_roe_corner
+            array=np.array(self), roe_corner=self.header.original_roe_corner
         )
 
     @property
@@ -474,9 +480,11 @@ class AbstractArray2D(Structure):
         """
         Bins the 2D array up to a 1D array, where each value is the mean of all unmasked values in each row.
         """
-        binned_array = (self.native * np.invert(self.mask)).sum(axis=0) / np.invert(
-            self.mask
-        ).sum(axis=0)
+        binned_array = np.mean(self.native.array, axis=0, where=~self.mask)
+
+        # binned_array = (self.native * np.invert(self.mask)).sum(axis=0) / np.invert(
+        #     self.mask
+        # ).sum(axis=0)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     @property
@@ -484,9 +492,9 @@ class AbstractArray2D(Structure):
         """
         Bins the 2D array up to a 1D array, where each value is the mean of all unmasked values in each column.
         """
-        binned_array = (self.native * np.invert(self.mask)).sum(axis=1) / np.invert(
-            self.mask
-        ).sum(axis=1)
+        binned_array = np.mean(self.native.array, axis=1, where=~self.mask)
+
+        # binned_array = (self.native*np.invert(self.mask)).sum(axis=1)/np.invert(self.mask).sum(axis=1)
         return Array1D.no_mask(values=binned_array, pixel_scales=self.pixel_scale)
 
     def zoomed_around_mask(self, buffer: int = 1) -> "Array2D":
@@ -502,7 +510,7 @@ class AbstractArray2D(Structure):
         """
 
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=self.native,
+            array_2d=np.array(self.native),
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
             x0=self.mask.zoom_region[2] - buffer,
@@ -537,7 +545,7 @@ class AbstractArray2D(Structure):
             The number pixels around the extracted array used as a buffer.
         """
         extracted_array_2d = array_2d_util.extracted_array_2d_from(
-            array_2d=self.native,
+            array_2d=np.array(self.native),
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
             x0=self.mask.zoom_region[2] - buffer,
@@ -572,7 +580,7 @@ class AbstractArray2D(Structure):
         """
 
         resized_array_2d = array_2d_util.resized_array_2d_from(
-            array_2d=self.native, resized_shape=new_shape
+            array_2d=np.array(self.native), resized_shape=new_shape
         )
 
         resized_mask = self.mask.derive_mask.resized_from(
@@ -666,7 +674,7 @@ class AbstractArray2D(Structure):
         The HDU containing the data and its header which can then be written to .fits.
         """
         return array_2d_util.hdu_for_output_from(
-            array_2d=self.native, header_dict=self.pixel_scale_header
+            array_2d=np.array(self.native), header_dict=self.pixel_scale_header
         )
 
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
@@ -684,7 +692,7 @@ class AbstractArray2D(Structure):
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
         array_2d_util.numpy_array_2d_to_fits(
-            array_2d=self.native,
+            array_2d=np.array(self.native),
             file_path=file_path,
             overwrite=overwrite,
             header_dict=self.pixel_scale_header,
@@ -695,7 +703,7 @@ class Array2D(AbstractArray2D):
     @classmethod
     def no_mask(
         cls,
-        values: Union[np.ndarray, List],
+        values: Union[np.ndarray, List, AbstractArray2D],
         pixel_scales: ty.PixelScales,
         shape_native: Tuple[int, int] = None,
         sub_size: int = 1,
@@ -1167,7 +1175,7 @@ class Array2D(AbstractArray2D):
         header: Header = None,
     ) -> "Array2D":
         """
-        Returns an ``Array2D`` by by inputting the y and x pixel values where the array is filled and the values that
+        Returns an ``Array2D`` by inputting the y and x pixel values where the array is filled and the values that
         fill it.
 
         For a full description of ``Array2D`` objects, including a description of the ``slim`` and ``native`` attribute
@@ -1233,15 +1241,14 @@ class Array2D(AbstractArray2D):
         )
 
         grid_pixels = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid.slim,
+            grid_scaled_2d_slim=np.array(grid.slim),
             shape_native=shape_native,
             pixel_scales=pixel_scales,
         )
 
-        array_1d = np.zeros(shape=shape_native[0] * shape_native[1])
-
-        for i in range(grid_pixels.shape[0]):
-            array_1d[i] = values[int(grid_pixels[i])]
+        array_1d = np.array(
+            [values[int(grid_pixels[i])] for i in range(grid_pixels.shape[0])]
+        )
 
         return cls.no_mask(
             values=array_1d,

@@ -96,7 +96,7 @@ class GaussianKernel(AbstractRegularization):
         The regularization matrix.
         """
         covariance_matrix = gauss_cov_matrix_from(
-            scale=self.scale, pixel_points=linear_obj.source_plane_mesh_grid
+            scale=self.scale, pixel_points=np.array(linear_obj.source_plane_mesh_grid)
         )
 
         return self.coefficient * np.linalg.inv(covariance_matrix)

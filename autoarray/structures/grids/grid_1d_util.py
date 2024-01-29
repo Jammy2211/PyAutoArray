@@ -47,10 +47,14 @@ def convert_grid_1d(
         return grid_1d
     elif not store_native:
         return grid_1d_slim_from(
-            grid_1d_native=grid_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
+            grid_1d_native=grid_1d,
+            mask_1d=np.array(mask_1d),
+            sub_size=mask_1d.sub_size,
         )
     return grid_1d_native_from(
-        grid_1d_slim=grid_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
+        grid_1d_slim=grid_1d,
+        mask_1d=np.array(mask_1d),
+        sub_size=mask_1d.sub_size,
     )
 
 
@@ -198,7 +202,9 @@ def grid_1d_slim_from(
     """
 
     return array_1d_util.array_1d_slim_from(
-        array_1d_native=grid_1d_native, mask_1d=mask_1d, sub_size=sub_size
+        array_1d_native=np.array(grid_1d_native),
+        mask_1d=mask_1d,
+        sub_size=sub_size,
     )
 
 

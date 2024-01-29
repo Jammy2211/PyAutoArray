@@ -2,27 +2,41 @@ import numpy as np
 from scipy.interpolate import griddata
 from typing import List, Optional, Tuple
 
-from autoconf import cached_property
-
-from autoarray.inversion.linear_obj.neighbors import Neighbors
-from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
-
-from autoarray.structures.grids import grid_2d_util
-from autoarray.inversion.pixelization.mesh import mesh_util
 from autoarray import type as ty
+from autoarray.inversion.linear_obj.neighbors import Neighbors
+from autoarray.inversion.pixelization.mesh import mesh_util
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.abstract_structure import Structure
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids import grid_2d_util
+from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+from autoconf import cached_property
 
 
 class Mesh2DRectangular(Abstract2DMesh):
-    def __new__(
-        cls,
+    @property
+    def slim(self) -> "Structure":
+        raise NotImplementedError()
+
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplementedError()
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplementedError()
+
+    def __init__(
+        self,
         values: np.ndarray,
         shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
-        *args,
-        **kwargs
     ):
         """
         A grid of (y,x) coordinates which represent a uniform rectangular pixelization.
@@ -59,10 +73,9 @@ class Mesh2DRectangular(Abstract2DMesh):
             origin=origin,
         )
 
-        obj = values.view(cls)
-        obj.mask = mask
+        self.mask = mask
 
-        return obj
+        super().__init__(array=values)
 
     @classmethod
     def overlay_grid(

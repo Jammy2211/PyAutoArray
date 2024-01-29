@@ -1,21 +1,20 @@
 import copy
 import logging
 import numpy as np
-from typing import Optional, Union
 import warnings
+from typing import Optional, Union
 
-from autoconf import cached_property
-from autoconf import conf
-
-from autoarray.dataset.abstract.settings import AbstractSettingsDataset
-from autoarray.structures.abstract_structure import Structure
-from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.mask.mask_1d import Mask1D
-from autoarray.mask.mask_2d import Mask2D
 
 from autoarray import exc
+from autoarray.dataset.abstract.settings import AbstractSettingsDataset
+from autoarray.mask.mask_1d import Mask1D
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.abstract_structure import Structure
+from autoarray.structures.arrays.uniform_2d import Array2D
+from autoconf import cached_property
+
 
 logger = logging.getLogger(__name__)
 
@@ -132,12 +131,12 @@ class AbstractDataset:
         """
         The estimated signal-to-noise_maps mappers of the image.
 
-        Warnings airse when masked native noise-maps are used, whose masked entries are given values of 0.0. We
-        uses the warnings module to surpress these RunTimeWarnings.
+        Warnings arise when masked native noise-maps are used, whose masked entries are given values of 0.0. We
+        use the warnings module to suppress these RunTimeWarnings.
         """
         warnings.filterwarnings("ignore")
 
-        signal_to_noise_map = np.divide(self.data, self.noise_map)
+        signal_to_noise_map = self.data / self.noise_map
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 

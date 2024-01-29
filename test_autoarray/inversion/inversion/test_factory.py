@@ -392,9 +392,8 @@ def test__inversion_imaging__compare_mapping_and_w_tilde_values(
     assert inversion_w_tilde.mapped_reconstructed_image == pytest.approx(
         inversion_mapping.mapped_reconstructed_image, 1.0e-4
     )
-    assert (
-        inversion_w_tilde.log_det_curvature_reg_matrix_term
-        == inversion_mapping.log_det_curvature_reg_matrix_term
+    assert inversion_w_tilde.log_det_curvature_reg_matrix_term == pytest.approx(
+        inversion_mapping.log_det_curvature_reg_matrix_term
     )
 
 

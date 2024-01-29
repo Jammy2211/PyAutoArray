@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
+import numpy as np
 
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
@@ -171,7 +172,7 @@ class DeriveGrid2D:
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=self.mask,
+            mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
             origin=self.mask.origin,
@@ -225,7 +226,7 @@ class DeriveGrid2D:
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=self.mask,
+            mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
             sub_size=1,
             origin=self.mask.origin,

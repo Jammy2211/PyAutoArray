@@ -40,7 +40,7 @@ def array_eps_to_counts(array_eps, exposure_time_map):
     exposure_time_map
         The exposure time at every data-point of the array.
     """
-    return np.multiply(array_eps, exposure_time_map)
+    return array_eps * exposure_time_map
 
 
 def array_counts_to_eps(array_counts, exposure_time_map):
@@ -59,7 +59,7 @@ def array_counts_to_eps(array_counts, exposure_time_map):
     exposure_time_map
         The exposure time at every data-point of the array.
     """
-    return np.divide(array_counts, exposure_time_map)
+    return array_counts / exposure_time_map
 
 
 def array_eps_to_adus(array_eps, exposure_time_map, gain):
@@ -80,7 +80,7 @@ def array_eps_to_adus(array_eps, exposure_time_map, gain):
     gain
         The gain of the instrument used in the conversion to / from counts and ADUs.
     """
-    return np.multiply(array_eps, exposure_time_map) / gain
+    return (array_eps * exposure_time_map) / gain
 
 
 def array_adus_to_eps(array_adus, exposure_time_map, gain):
@@ -101,7 +101,7 @@ def array_adus_to_eps(array_adus, exposure_time_map, gain):
     gain
         The gain of the instrument used in the conversion to / from counts and ADUs.
     """
-    return np.divide(gain * array_adus, exposure_time_map)
+    return (gain * array_adus) / exposure_time_map
 
 
 def array_counts_to_counts_per_second(array_counts, exposure_time):
@@ -148,7 +148,9 @@ def noise_map_via_data_eps_and_exposure_time_map_from(data_eps, exposure_time_ma
     exposure_time_map
         The exposure time at every data-point of the data.
     """
-    return np.sqrt(np.abs(data_eps * exposure_time_map)) / exposure_time_map
+    return data_eps.with_new_array(
+        np.abs(data_eps * exposure_time_map) ** 0.5 / exposure_time_map
+    )
 
 
 def noise_map_via_weight_map_from(weight_map):
@@ -172,7 +174,7 @@ def noise_map_via_weight_map_from(weight_map):
         The weight-value of each pixel which is converted to a variance.
     """
     np.seterr(divide="ignore")
-    noise_map = 1.0 / np.sqrt(weight_map)
+    noise_map = 1.0 / weight_map**0.5
     noise_map[noise_map > 1.0e8] = 1.0e8
     return noise_map
 
@@ -213,14 +215,12 @@ def noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from(
         of electrons per second.
     """
     return (
-        np.sqrt(
-            (
-                np.abs(data_eps * exposure_time_map)
-                + np.square(background_noise_map * exposure_time_map)
-            )
+        (
+            abs(data_eps * exposure_time_map)
+            + (background_noise_map * exposure_time_map) ** 2
         )
-        / exposure_time_map
-    )
+        ** 0.5
+    ) / exposure_time_map
 
 
 def noise_map_via_data_eps_exposure_time_map_and_background_variances_from(
@@ -241,14 +241,9 @@ def noise_map_via_data_eps_exposure_time_map_and_background_variances_from(
         of electrons per second.
     """
     return (
-        np.sqrt(
-            (
-                np.abs(data_eps * exposure_time_map)
-                + (background_variances * exposure_time_map)
-            )
-        )
-        / exposure_time_map
-    )
+        (abs(data_eps * exposure_time_map) + (background_variances * exposure_time_map))
+        ** 0.5
+    ) / exposure_time_map
 
 
 def edges_from(image, no_edges):
@@ -371,7 +366,7 @@ def exposure_time_map_via_exposure_time_and_background_noise_map_from(
     relative_background_noise_map = inverse_background_noise_map / np.max(
         inverse_background_noise_map
     )
-    return np.abs(exposure_time * (relative_background_noise_map))
+    return abs(exposure_time * relative_background_noise_map)
 
 
 def setup_random_seed(seed):
@@ -513,7 +508,7 @@ def noise_map_with_signal_to_noise_limit_from(
 
     # TODO : Refacotr into a util
 
-    signal_to_noise_map = np.divide(data, noise_map)
+    signal_to_noise_map = data / noise_map
     signal_to_noise_map[signal_to_noise_map < 0] = 0
 
     if noise_limit_mask is None:

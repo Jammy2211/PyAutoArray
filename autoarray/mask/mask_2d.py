@@ -5,6 +5,8 @@ import numpy as np
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Tuple, Union
 
+from autoarray.structures.abstract_structure import Structure
+
 if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_2d import Array2D
 
@@ -29,9 +31,13 @@ logger = logging.getLogger(__name__)
 
 
 class Mask2D(Mask):
+    @property
+    def native(self) -> Structure:
+        return self
+
     # noinspection PyUnusedLocal
-    def __new__(
-        cls,
+    def __init__(
+        self,
         mask: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
@@ -279,6 +285,9 @@ class Mask2D(Mask):
         if type(mask) is list:
             mask = np.asarray(mask).astype("bool")
 
+        if not isinstance(mask, np.ndarray):
+            mask = mask._array
+
         if invert:
             mask = np.invert(mask)
 
@@ -287,15 +296,14 @@ class Mask2D(Mask):
         if len(mask.shape) != 2:
             raise exc.MaskException("The input mask is not a two dimensional array")
 
-        obj = Mask.__new__(
-            cls=cls,
+        super().__init__(
             mask=mask,
+            origin=origin,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
-            origin=origin,
         )
 
-        return obj
+    __no_flatten__ = ("derive_indexes",)
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj=obj)
@@ -315,7 +323,7 @@ class Mask2D(Mask):
             origin=self.origin,
         )
 
-    @cached_property
+    @property
     def derive_indexes(self) -> DeriveIndexes2D:
         return DeriveIndexes2D(mask=self)
 
@@ -941,7 +949,7 @@ class Mask2D(Mask):
     @property
     def mask_centre(self) -> Tuple[float, float]:
         return grid_2d_util.grid_2d_centre_from(
-            grid_2d_slim=self.derive_grid.unmasked_sub_1
+            grid_2d_slim=np.array(self.derive_grid.unmasked_sub_1)
         )
 
     @property

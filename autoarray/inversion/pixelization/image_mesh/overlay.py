@@ -1,6 +1,6 @@
 from __future__ import annotations
 import numpy as np
-from typing import Optional, Tuple, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
@@ -225,13 +225,13 @@ class Overlay(AbstractImageMesh):
         ).astype("int")
 
         total_pixels = total_pixels_2d_from(
-            mask_2d=grid.mask,
+            mask_2d=grid.mask.array,
             overlaid_centres=overlaid_centres,
         )
 
         overlay_for_mask = overlay_for_mask_from(
             total_pixels=total_pixels,
-            mask=grid.mask,
+            mask=grid.mask.array,
             overlaid_centres=overlaid_centres,
         ).astype("int")
 

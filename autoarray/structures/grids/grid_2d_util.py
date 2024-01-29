@@ -120,10 +120,14 @@ def convert_grid_2d(
         return grid_2d
     elif not store_native:
         return grid_2d_slim_from(
-            grid_2d_native=grid_2d, mask=mask_2d, sub_size=mask_2d.sub_size
+            grid_2d_native=np.array(grid_2d),
+            mask=np.array(mask_2d),
+            sub_size=mask_2d.sub_size,
         )
     return grid_2d_native_from(
-        grid_2d_slim=grid_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+        grid_2d_slim=np.array(grid_2d),
+        mask_2d=np.array(mask_2d),
+        sub_size=mask_2d.sub_size,
     )
 
 
@@ -722,11 +726,15 @@ def grid_2d_slim_from(
     """
 
     grid_1d_slim_y = array_2d_util.array_2d_slim_from(
-        array_2d_native=grid_2d_native[:, :, 0], mask_2d=mask, sub_size=sub_size
+        array_2d_native=np.array(grid_2d_native[:, :, 0]),
+        mask_2d=np.array(mask),
+        sub_size=sub_size,
     )
 
     grid_1d_slim_x = array_2d_util.array_2d_slim_from(
-        array_2d_native=grid_2d_native[:, :, 1], mask_2d=mask, sub_size=sub_size
+        array_2d_native=np.array(grid_2d_native[:, :, 1]),
+        mask_2d=np.array(mask),
+        sub_size=sub_size,
     )
 
     return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
@@ -874,7 +882,7 @@ def grid_pixels_in_mask_pixels_from(
     An array containing the integer number of image-mesh pixels that fall without each of the data's mask.
     """
     grid_pixel_centres = geometry_util.grid_pixel_centres_2d_slim_from(
-        grid_scaled_2d_slim=grid,
+        grid_scaled_2d_slim=np.array(grid),
         shape_native=shape_native,
         pixel_scales=pixel_scales,
         origin=origin,
