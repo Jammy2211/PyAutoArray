@@ -443,8 +443,8 @@ def pix_size_weights_voronoi_nn_from(
         bad_indexes=bad_indexes,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-        grid=grid,
-        mesh_grid=mesh_grid,
+        grid=np.array(grid),
+        mesh_grid=np.array(mesh_grid),
     )
 
     bad_indexes = np.argwhere(pix_indexes_for_sub_slim_index[:, 0] == -1)
@@ -456,8 +456,8 @@ def pix_size_weights_voronoi_nn_from(
         bad_indexes=bad_indexes,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-        grid=grid,
-        mesh_grid=mesh_grid,
+        grid=np.array(grid),
+        mesh_grid=np.array(mesh_grid),
     )
 
     pix_indexes_for_sub_slim_index_sizes = np.sum(
