@@ -1,4 +1,10 @@
-files/
+test_autoarray/dataset/imaging/files/array/
+test_autoarray/dataset/interferometer/files/array/
+test_autoarray/mask/files/mask/array_out.fits
+test_autoarray/mask/files/mask/mask_out.fits
+test_autoarray/plot/wrap/base/files/
+test_autoarray/structures/grids/files/grid_2d.fits
+
 test_autoarray/dataset/files/array/output_test/uv_wavelengths.fits
 test_autoarray/dataset/files/array/output_test/visibilities.fits
 test_autoarray/dataset/plot/files/
