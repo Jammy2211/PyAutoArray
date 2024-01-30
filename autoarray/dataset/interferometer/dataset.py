@@ -116,15 +116,15 @@ class Interferometer(AbstractDataset):
             Precomputed values used for the w tilde formalism of linear algebra calculations.
         """
 
-        from autoarray.inversion.inversion import inversion_util_secret
-
         logger.info("INTERFEROMETER - Computing W-Tilde... May take a moment.")
 
+        from autoarray.inversion.inversion import inversion_util_secret
+
         curvature_preload = inversion_util_secret.w_tilde_curvature_preload_interferometer_from(
-            noise_map_real=self.noise_map.real,
-            uv_wavelengths=self.uv_wavelengths,
-            shape_masked_pixels_2d=self.transformer.grid.mask.shape_native_masked_pixels,
-            grid_radians_2d=self.transformer.grid.mask.derive_grid.all_false_sub_1.in_radians.native,
+            noise_map_real=np.array(self.noise_map.real),
+            uv_wavelengths=np.array(self.uv_wavelengths),
+            shape_masked_pixels_2d=np.array(self.transformer.grid.mask.shape_native_masked_pixels),
+            grid_radians_2d=np.array(self.transformer.grid.mask.derive_grid.all_false_sub_1.in_radians.native),
         )
 
         w_matrix = inversion_util_secret.w_tilde_via_preload_from(
@@ -191,7 +191,9 @@ class Interferometer(AbstractDataset):
         )
         signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
 
-        return signal_to_noise_map_real + 1j * signal_to_noise_map_imag
+        return self.data.with_new_array(
+            signal_to_noise_map_real + 1j * signal_to_noise_map_imag
+        )
 
     @property
     def blurring_grid(self):

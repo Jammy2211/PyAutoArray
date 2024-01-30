@@ -117,8 +117,7 @@ def convert_array_2d(
         If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels]. This avoids
         mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
     """
-
-    array_2d = convert_array(array=array_2d)
+    array_2d = convert_array(array=array_2d).copy()
 
     check_array_2d_and_mask_2d(array_2d=array_2d, mask_2d=mask_2d)
 
@@ -131,10 +130,14 @@ def convert_array_2d(
         return array_2d
     elif not store_native:
         return array_2d_slim_from(
-            array_2d_native=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+            array_2d_native=np.array(array_2d),
+            mask_2d=np.array(mask_2d),
+            sub_size=mask_2d.sub_size,
         )
     array_2d = array_2d_native_from(
-        array_2d_slim=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+        array_2d_slim=array_2d,
+        mask_2d=np.array(mask_2d),
+        sub_size=mask_2d.sub_size,
     )
     return array_2d
 
@@ -597,7 +600,8 @@ def array_2d_native_from(
     sub_shape = (mask_2d.shape[0] * sub_size, mask_2d.shape[1] * sub_size)
 
     native_index_for_slim_index_2d = mask_2d_util.native_index_for_slim_index_2d_from(
-        mask_2d=mask_2d, sub_size=sub_size
+        mask_2d=np.array(mask_2d),
+        sub_size=sub_size,
     ).astype("int")
 
     return array_2d_via_indexes_from(

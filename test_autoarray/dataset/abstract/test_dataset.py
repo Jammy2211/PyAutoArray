@@ -2,7 +2,6 @@ import logging
 import numpy as np
 
 import autoarray as aa
-
 from autoarray.dataset.abstract import dataset as ds
 
 logger = logging.getLogger(__name__)

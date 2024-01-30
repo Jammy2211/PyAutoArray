@@ -251,6 +251,7 @@ class MatPlot1D(AbstractMatPlot):
             units=self.units,
             use_integers=use_integers,
             is_for_1d_plot=True,
+            is_log10="loglog" in plot_axis_type,
         )
 
         self.yticks.set(
@@ -260,7 +261,7 @@ class MatPlot1D(AbstractMatPlot):
             units=self.units,
             yunit=auto_labels.yunit,
             is_for_1d_plot=True,
-            is_log10="logy" in plot_axis_type,
+            is_log10="log" in plot_axis_type,
         )
 
         self.title.set(auto_title=auto_labels.title)

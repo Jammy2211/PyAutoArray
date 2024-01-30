@@ -58,7 +58,7 @@ class MatPlot2D(AbstractMatPlot):
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
         serial_overscan_plot: Optional[w2d.SerialOverscanPlot] = None,
-        use_log10 : bool = False
+        use_log10: bool = False,
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -239,6 +239,9 @@ class MatPlot2D(AbstractMatPlot):
         if array is None or np.all(array == 0):
             return
 
+        if self.use_log10 and (np.all(array == array[0]) or np.all(array < 0)):
+            return
+
         if array.pixel_scales is None and self.units.use_scaled:
             raise exc.ArrayException(
                 "You cannot plot an array using its scaled unit_label if the input array does not have "
@@ -287,12 +290,13 @@ class MatPlot2D(AbstractMatPlot):
                 ax = self.setup_subplot()
 
         aspect = self.figure.aspect_from(shape_native=array.shape_native)
+
         norm = self.cmap.norm_from(array=array, use_log10=self.use_log10)
 
         origin = conf.instance["visualize"]["general"]["general"]["imshow_origin"]
 
         plt.imshow(
-            X=array.native,
+            X=array.native.array,
             aspect=aspect,
             cmap=self.cmap.cmap,
             norm=norm,
@@ -344,11 +348,19 @@ class MatPlot2D(AbstractMatPlot):
 
         if self.colorbar is not False:
             cb = self.colorbar.set(
-                units=self.units, ax=ax, norm=norm, cb_unit=auto_labels.cb_unit, use_log10=self.use_log10
+                units=self.units,
+                ax=ax,
+                norm=norm,
+                cb_unit=auto_labels.cb_unit,
+                use_log10=self.use_log10,
             )
             self.colorbar_tickparams.set(cb=cb)
 
-        self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
+        if self.contour is not False:
+            try:
+                self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
+            except ValueError:
+                pass
 
         grid_indexes = None
 
@@ -448,7 +460,8 @@ class MatPlot2D(AbstractMatPlot):
             self.yticks.set(min_value=extent[2], max_value=extent[3], units=self.units)
             self.xticks.set(min_value=extent[0], max_value=extent[1], units=self.units)
 
-        self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
+        if self.contour is not False:
+            self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
 
         visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid)
 
@@ -618,6 +631,7 @@ class MatPlot2D(AbstractMatPlot):
             colorbar_tickparams=self.colorbar_tickparams,
             aspect=aspect_inv,
             ax=ax,
+            use_log10=self.use_log10,
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -684,6 +698,7 @@ class MatPlot2D(AbstractMatPlot):
                 colorbar=self.colorbar,
                 colorbar_tickparams=self.colorbar_tickparams,
                 ax=ax,
+                use_log10=self.use_log10,
             )
 
         else:
@@ -696,6 +711,7 @@ class MatPlot2D(AbstractMatPlot):
                 colorbar_tickparams=self.colorbar_tickparams,
                 aspect=aspect_inv,
                 ax=ax,
+                use_log10=self.use_log10,
             )
 
         self.title.set(auto_title=auto_labels.title)

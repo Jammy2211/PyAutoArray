@@ -20,9 +20,8 @@ class AdaptiveBrightnessSplitZeroth(AdaptiveBrightness):
         signal_scale: float = 1.0,
     ):
         """
-        An adaptive regularization scheme which splits every source pixel into a cross of four regularization points
-        (regularization is described in the `Regularization` class above) and interpolates to these points in order
-        to apply smoothing on the solution of an `Inversion`.
+        Regularization which uses zeroth order regularization, the derivatives at a cross of four points around each
+        pixel centre and values adapted to the data being fitted to smooth an inversion's solution.
 
         The size of this cross is determined via the size of the source-pixel, for example if the source pixel is a
         Voronoi pixel the area of the pixel is computed and the distance of each point of the cross is given by
@@ -59,6 +58,8 @@ class AdaptiveBrightnessSplitZeroth(AdaptiveBrightness):
             [-1, 1, 0 ,0] # [0->1]
             [0, 0, -3 ,3] # [2->3] This is valid!
 
+        A full description of regularization and this matrix can be found in the parent `AbstractRegularization` class.
+
         Parameters
         ----------
         coefficients
@@ -80,7 +81,7 @@ class AdaptiveBrightnessSplitZeroth(AdaptiveBrightness):
 
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
-        Returns the regularization matrix of this regularization scheme.
+        Returns the regularization matrix with shape [pixels, pixels].
 
         Parameters
         ----------

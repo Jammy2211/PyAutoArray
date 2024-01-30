@@ -26,7 +26,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         pix_indexes_for_sub_slim_index_util,
         sizes,
     ) = aa.util.mapper.pix_indexes_for_sub_slim_index_delaunay_from(
-        source_plane_data_grid=mapper.source_plane_data_grid,
+        source_plane_data_grid=np.array(mapper.source_plane_data_grid),
         simplex_index_for_sub_slim_index=simplex_index_for_sub_slim_index,
         pix_indexes_for_simplex_index=pix_indexes_for_simplex_index,
         delaunay_points=mapper.delaunay.points,

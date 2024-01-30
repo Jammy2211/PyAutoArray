@@ -68,9 +68,11 @@ def test__set_w_tilde():
         indexes,
         lengths,
     ) = aa.util.inversion_imaging.w_tilde_curvature_preload_imaging_from(
-        noise_map_native=fit_0.noise_map.native,
-        kernel_native=fit_0.dataset.psf.native,
-        native_index_for_slim_index=fit_0.dataset.mask.derive_indexes.native_for_slim,
+        noise_map_native=np.array(fit_0.noise_map.native),
+        kernel_native=np.array(fit_0.dataset.psf.native),
+        native_index_for_slim_index=np.array(
+            fit_0.dataset.mask.derive_indexes.native_for_slim
+        ),
     )
 
     assert preloads.w_tilde.curvature_preload[0] == curvature_preload[0]

@@ -405,7 +405,7 @@ def delaunay_interpolated_array_from(
 
     for slim_index in range(len(interpolation_grid_slim)):
         simplex_index = simplex_index_for_interpolate_index[slim_index]
-        interpolating_point = interpolation_grid_slim[slim_index]
+        interpolating_point = tuple(interpolation_grid_slim[slim_index])
 
         if simplex_index == -1:
             cloest_pixel_index = np.argmin(

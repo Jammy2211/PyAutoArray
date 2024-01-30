@@ -12,6 +12,10 @@ from autoarray.inversion.pixelization.mappers.rectangular import (
 )
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class MapperPlotter(Plotter):
     def __init__(
@@ -148,11 +152,16 @@ class MapperPlotter(Plotter):
         auto_labels
             The labels given to the figure.
         """
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.mapper,
-            visuals_2d=self.get_visuals_2d_for_source(),
-            auto_labels=auto_labels,
-            pixel_values=pixel_values,
-            zoom_to_brightest=zoom_to_brightest,
-            interpolate_to_uniform=interpolate_to_uniform,
-        )
+        try:
+            self.mat_plot_2d.plot_mapper(
+                mapper=self.mapper,
+                visuals_2d=self.get_visuals_2d_for_source(),
+                auto_labels=auto_labels,
+                pixel_values=pixel_values,
+                zoom_to_brightest=zoom_to_brightest,
+                interpolate_to_uniform=interpolate_to_uniform,
+            )
+        except ValueError:
+            logger.info(
+                "Could not plot the source-plane via the Mapper because of a ValueError."
+            )

@@ -1,4 +1,7 @@
+from abc import ABC
+
 from astropy.io import fits
+
 import logging
 import numpy as np
 from pathlib import Path
@@ -15,9 +18,9 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class AbstractVisibilities(Structure):
+class AbstractVisibilities(Structure, ABC):
     # noinspection PyUnusedLocal
-    def __new__(cls, visibilities: Union[np.ndarray, List[complex]], *args, **kwargs):
+    def __init__(self, visibilities: Union[np.ndarray, List[complex]]):
         """
         A collection of (real, imag) visibilities which are used to represent the data in an `Interferometer` dataset.
 
@@ -50,13 +53,11 @@ class AbstractVisibilities(Structure):
                     .ravel()
                 )
 
-        obj = visibilities.view(cls)
-
-        obj.ordered_1d = np.concatenate(
+        self.ordered_1d = np.concatenate(
             (np.real(visibilities), np.imag(visibilities)), axis=0
         )
 
-        return obj
+        super().__init__(array=visibilities)
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "ordered_1d"):
@@ -148,6 +149,19 @@ class AbstractVisibilities(Structure):
 
 
 class Visibilities(AbstractVisibilities):
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplementedError()
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplementedError()
+
     @classmethod
     def full(cls, fill_value: float, shape_slim: Tuple[int]) -> "Visibilities":
         """
@@ -226,7 +240,7 @@ class Visibilities(AbstractVisibilities):
 
 class VisibilitiesNoiseMap(Visibilities):
     # noinspection PyUnusedLocal
-    def __new__(cls, visibilities: Union[np.ndarray, List[complex]], *args, **kwargs):
+    def __init__(self, visibilities: Union[np.ndarray, List[complex]], *args, **kwargs):
         """
         A collection of (real, imag) visibilities noise-map values which are used to represent the noise-map in
         an `Interferometer` dataset.
@@ -252,21 +266,16 @@ class VisibilitiesNoiseMap(Visibilities):
                     .ravel()
                 )
 
-        obj = super(VisibilitiesNoiseMap, cls).__new__(
-            cls=cls, visibilities=visibilities
-        )
-
-        obj.ordered_1d = np.concatenate(
+        self.ordered_1d = np.concatenate(
             (np.real(visibilities), np.imag(visibilities)), axis=0
         )
+        super().__init__(visibilities=visibilities)
 
-        weight_list = 1.0 / obj.in_array**2.0
+        weight_list = 1.0 / self.in_array**2.0
 
-        obj.weight_list_ordered_1d = np.concatenate(
+        self.weight_list_ordered_1d = np.concatenate(
             (weight_list[:, 0], weight_list[:, 1]), axis=0
         )
-
-        return obj
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "ordered_1d"):

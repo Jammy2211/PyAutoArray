@@ -71,7 +71,7 @@ class HilbertBalanced(AbstractImageMeshWeighted):
         self.ratio = ratio
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray]
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray], settings=None
     ) -> Grid2DIrregular:
         """
         Returns an image mesh by running the balanced Hilbert curve on the weight map.
@@ -135,7 +135,7 @@ class HilbertBalanced(AbstractImageMeshWeighted):
             drawn_y,
         ) = inverse_transform_sampling_interpolated(
             probabilities=weight_map_background,
-            n_samples=(self.pixels  - pixels) + 1,
+            n_samples=(self.pixels - pixels) + 1,
             gridx=grid_hb[:, 1],
             gridy=grid_hb[:, 0],
         )

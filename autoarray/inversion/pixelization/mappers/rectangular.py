@@ -116,7 +116,7 @@ class MapperRectangularNoInterp(AbstractMapper):
         are equal to 1.0.
         """
         mappings = geometry_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=self.source_plane_data_grid,
+            grid_scaled_2d_slim=np.array(self.source_plane_data_grid),
             shape_native=self.source_plane_mesh_grid.shape_native,
             pixel_scales=self.source_plane_mesh_grid.pixel_scales,
             origin=self.source_plane_mesh_grid.origin,

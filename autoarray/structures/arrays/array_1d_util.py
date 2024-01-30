@@ -50,11 +50,15 @@ def convert_array_1d(
         return array_1d
     elif not store_native:
         return array_1d_slim_from(
-            array_1d_native=array_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
+            array_1d_native=np.array(array_1d),
+            mask_1d=np.array(mask_1d),
+            sub_size=mask_1d.sub_size,
         )
 
     return array_1d_native_from(
-        array_1d_slim=array_1d, mask_1d=mask_1d, sub_size=mask_1d.sub_size
+        array_1d_slim=array_1d,
+        mask_1d=np.array(mask_1d),
+        sub_size=mask_1d.sub_size,
     )
 
 
@@ -134,7 +138,7 @@ def array_1d_native_from(
     ).astype("int")
 
     return array_1d_via_indexes_1d_from(
-        array_1d_slim=array_1d_slim,
+        array_1d_slim=np.array(array_1d_slim),
         sub_shape=sub_shape,
         native_index_for_slim_index_1d=native_index_for_slim_index_1d,
     )

@@ -56,8 +56,12 @@ class Contour(AbstractMatWrap2D):
         """
         if self.manual_levels is None:
             if self.use_log10:
+                min_value = np.min(array)
+                if min_value < self.log10_min_value:
+                    min_value = self.log10_min_value
+
                 return np.logspace(
-                    np.log10(np.min(array)),
+                    np.log10(min_value),
                     np.log10(np.max(array)),
                     self.total_contours,
                 )
@@ -65,7 +69,12 @@ class Contour(AbstractMatWrap2D):
 
         return self.manual_levels
 
-    def set(self, array: Union[np.ndarray, Array2D], extent: List[float] = None, use_log10 : bool = False):
+    def set(
+        self,
+        array: Union[np.ndarray, Array2D],
+        extent: List[float] = None,
+        use_log10: bool = False,
+    ):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 

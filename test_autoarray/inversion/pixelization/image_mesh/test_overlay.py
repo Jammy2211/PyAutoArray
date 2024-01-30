@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 import autoarray as aa
 
@@ -83,13 +82,13 @@ def test__overlay_for_mask_from():
     )
 
     total_masked_pixels = overlay_util.total_pixels_2d_from(
-        mask_2d=mask_2d,
+        mask_2d=mask_2d.array,
         overlaid_centres=overlaid_centres,
     )
 
     overlay_for_mask = overlay_util.overlay_for_mask_from(
         total_pixels=total_masked_pixels,
-        mask=mask_2d,
+        mask=mask_2d.array,
         overlaid_centres=overlaid_centres,
     )
 
@@ -100,13 +99,13 @@ def test__overlay_for_mask_from():
     )
 
     total_masked_pixels = overlay_util.total_pixels_2d_from(
-        mask_2d=mask_2d,
+        mask_2d=mask_2d.array,
         overlaid_centres=overlaid_centres,
     )
 
     overlay_for_mask = overlay_util.overlay_for_mask_from(
         total_pixels=total_masked_pixels,
-        mask=mask_2d,
+        mask=mask_2d.array,
         overlaid_centres=overlaid_centres,
     )
 
@@ -125,13 +124,13 @@ def test__overlay_for_mask_from():
     )
 
     total_masked_pixels = overlay_util.total_pixels_2d_from(
-        mask_2d=mask_2d,
+        mask_2d=mask_2d.array,
         overlaid_centres=overlaid_centres,
     )
 
     overlay_for_mask = overlay_util.overlay_for_mask_from(
         total_pixels=total_masked_pixels,
-        mask=mask_2d,
+        mask=mask_2d.array,
         overlaid_centres=overlaid_centres,
     )
 
@@ -154,13 +153,13 @@ def test__overlay_for_mask_from():
     )
 
     total_masked_pixels = overlay_util.total_pixels_2d_from(
-        mask_2d=mask_2d,
+        mask_2d=mask_2d.array,
         overlaid_centres=overlaid_centres,
     )
 
     overlay_for_mask = overlay_util.overlay_for_mask_from(
         total_pixels=total_masked_pixels,
-        mask=mask_2d,
+        mask=mask_2d.array,
         overlaid_centres=overlaid_centres,
     )
 
@@ -181,7 +180,7 @@ def test__mask_for_overlay_from():
     )
 
     mask_for_overlay = overlay_util.mask_for_overlay_from(
-        mask=mask_2d,
+        mask=mask_2d.array,
         overlaid_centres=overlaid_centres,
         total_pixels=9,
     )
@@ -193,7 +192,7 @@ def test__mask_for_overlay_from():
     )
 
     mask_for_overlay = overlay_util.mask_for_overlay_from(
-        mask=mask_2d,
+        mask=mask_2d.array,
         overlaid_centres=overlaid_centres,
         total_pixels=9,
     )
@@ -211,7 +210,7 @@ def test__mask_for_overlay_from():
     overlaid_centres = np.array([[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1]])
 
     mask_for_overlay = overlay_util.mask_for_overlay_from(
-        mask=mask_2d,
+        mask=mask_2d.array,
         overlaid_centres=overlaid_centres,
         total_pixels=4,
     )
@@ -235,7 +234,7 @@ def test__mask_for_overlay_from():
     )
 
     mask_for_overlay = overlay_util.mask_for_overlay_from(
-        mask=mask_2d,
+        mask=mask_2d.array,
         overlaid_centres=overlaid_centres,
         total_pixels=5,
     )
@@ -330,13 +329,13 @@ def test__image_plane_mesh_grid_from__simple():
     ).astype("int")
 
     total_pixels = overlay_util.total_pixels_2d_from(
-        mask_2d=mask,
+        mask_2d=mask.array,
         overlaid_centres=overlaid_centres,
     )
 
     overlay_for_mask_2d_util = overlay_util.overlay_for_mask_from(
         total_pixels=total_pixels,
-        mask=mask,
+        mask=mask.array,
         overlaid_centres=overlaid_centres,
     ).astype("int")
 

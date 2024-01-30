@@ -97,7 +97,8 @@ def test__unmasked_mask(derive_mask_2d_9x9):
 
 def test__blurring_mask_from(derive_mask_2d_9x9):
     blurring_mask_via_util = aa.util.mask_2d.blurring_mask_2d_from(
-        mask_2d=derive_mask_2d_9x9.mask, kernel_shape_native=(3, 3)
+        mask_2d=np.array(derive_mask_2d_9x9.mask),
+        kernel_shape_native=(3, 3),
     )
 
     blurring_mask = derive_mask_2d_9x9.blurring_from(kernel_shape_native=(3, 3))
@@ -130,9 +131,9 @@ def test__edge_buffed_mask():
 
     derive_mask_2d = aa.DeriveMask2D(mask=mask)
 
-    edge_buffed_mask_manual = aa.util.mask_2d.buffed_mask_2d_from(mask_2d=mask).astype(
-        "bool"
-    )
+    edge_buffed_mask_manual = aa.util.mask_2d.buffed_mask_2d_from(
+        mask_2d=np.array(mask),
+    ).astype("bool")
 
     assert (derive_mask_2d.edge_buffed == edge_buffed_mask_manual).all()
 

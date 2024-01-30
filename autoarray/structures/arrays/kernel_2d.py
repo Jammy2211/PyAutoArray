@@ -17,8 +17,8 @@ from autoarray.structures.arrays import array_2d_util
 
 
 class Kernel2D(AbstractArray2D):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values,
         mask,
         header=None,
@@ -44,14 +44,15 @@ class Kernel2D(AbstractArray2D):
         normalize
             If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
-        obj = super().__new__(
-            cls=cls, values=values, mask=mask, header=header, store_native=store_native
+        super().__init__(
+            values=values,
+            mask=mask,
+            header=header,
+            store_native=store_native,
         )
 
         if normalize:
-            obj[:] = np.divide(obj, np.sum(obj))
-
-        return obj
+            self._array[:] = np.divide(self._array, np.sum(self._array))
 
     @classmethod
     def no_mask(
@@ -548,7 +549,9 @@ class Kernel2D(AbstractArray2D):
         )
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=array_binned_2d.mask, array_2d_native=convolved_array_2d, sub_size=1
+            mask_2d=np.array(array_binned_2d.mask),
+            array_2d_native=convolved_array_2d,
+            sub_size=1,
         )
 
         return Array2D(values=convolved_array_1d, mask=array_binned_2d.mask)
@@ -578,7 +581,9 @@ class Kernel2D(AbstractArray2D):
         convolved_array_2d = scipy.signal.convolve2d(array, self.native, mode="same")
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=mask, array_2d_native=convolved_array_2d, sub_size=1
+            mask_2d=np.array(mask),
+            array_2d_native=np.array(convolved_array_2d),
+            sub_size=1,
         )
 
         return Array2D(values=convolved_array_1d, mask=mask.derive_mask.sub_1)

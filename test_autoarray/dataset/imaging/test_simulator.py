@@ -38,7 +38,8 @@ def test__via_image_from__noise_off__noise_map_is_noise_value(image_central_delt
         dataset.data.native
         == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
     ).all()
-    assert (dataset.noise_map.native == 0.2 * np.ones((3, 3))).all()
+
+    assert np.allclose(dataset.noise_map.native, 0.2 * np.ones((3, 3)))
 
 
 def test__via_image_from__psf_blurs_image_with_edge_trimming(image_central_delta_3x3):

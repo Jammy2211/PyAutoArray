@@ -21,6 +21,10 @@ class SettingsInversion:
         use_w_tilde_numpy: bool = False,
         use_source_loop: bool = False,
         use_linear_operators: bool = False,
+        image_mesh_min_mesh_pixels_per_pixel=None,
+        image_mesh_min_mesh_number: int = 5,
+        image_mesh_adapt_background_percent_threshold: float = None,
+        image_mesh_adapt_background_percent_check: float = 0.8,
         tolerance: float = 1e-8,
         maxiter: int = 250,
     ):
@@ -53,6 +57,19 @@ class SettingsInversion:
         use_linear_operators
             For an interferometer inversion, whether to use the linear operator solution to solve the linear system
             or not (this input does nothing for dataset data).
+        image_mesh_min_mesh_pixels_per_pixel
+            If not None, the image-mesh must place this many mesh pixels per image pixels in the N highest weighted
+            regions of the adapt data, or an `InversionException` is raised. This can be used to force the image-mesh
+            to cluster large numbers of source pixels to the adapt-datas brightest regions.
+        image_mesh_min_mesh_number
+            The value N given above in the docstring for `image_mesh_min_mesh_pixels_per_pixel`, indicating how many
+            image pixels are checked for having a threshold number of mesh pixels.
+        image_mesh_adapt_background_percent_threshold
+            If not None, the image-mesh must place this percentage of mesh-pixels in the background regions of the
+            `adapt_data`, where the background is the `image_mesh_adapt_background_percent_check` masked data pixels
+            with the lowest values.
+        image_mesh_adapt_background_percent_check
+            The percentage of masked data pixels which are checked for the background criteria.
         tolerance
             For an interferometer inversion using the linear operators method, sets the tolerance of the solver
             (this input does nothing for dataset data and other interferometer methods).
@@ -72,6 +89,15 @@ class SettingsInversion:
         self._no_regularization_add_to_curvature_diag_value = (
             no_regularization_add_to_curvature_diag_value
         )
+        self.image_mesh_min_mesh_pixels_per_pixel = image_mesh_min_mesh_pixels_per_pixel
+        self.image_mesh_min_mesh_number = image_mesh_min_mesh_number
+        self.image_mesh_adapt_background_percent_threshold = (
+            image_mesh_adapt_background_percent_threshold
+        )
+        self.image_mesh_adapt_background_percent_check = (
+            image_mesh_adapt_background_percent_check
+        )
+
         self.tolerance = tolerance
         self.maxiter = maxiter
         self.use_w_tilde_numpy = use_w_tilde_numpy

@@ -120,10 +120,14 @@ def convert_grid_2d(
         return grid_2d
     elif not store_native:
         return grid_2d_slim_from(
-            grid_2d_native=grid_2d, mask=mask_2d, sub_size=mask_2d.sub_size
+            grid_2d_native=np.array(grid_2d),
+            mask=np.array(mask_2d),
+            sub_size=mask_2d.sub_size,
         )
     return grid_2d_native_from(
-        grid_2d_slim=grid_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+        grid_2d_slim=np.array(grid_2d),
+        mask_2d=np.array(mask_2d),
+        sub_size=mask_2d.sub_size,
     )
 
 
@@ -722,11 +726,15 @@ def grid_2d_slim_from(
     """
 
     grid_1d_slim_y = array_2d_util.array_2d_slim_from(
-        array_2d_native=grid_2d_native[:, :, 0], mask_2d=mask, sub_size=sub_size
+        array_2d_native=np.array(grid_2d_native[:, :, 0]),
+        mask_2d=np.array(mask),
+        sub_size=sub_size,
     )
 
     grid_1d_slim_x = array_2d_util.array_2d_slim_from(
-        array_2d_native=grid_2d_native[:, :, 1], mask_2d=mask, sub_size=sub_size
+        array_2d_native=np.array(grid_2d_native[:, :, 1]),
+        mask_2d=np.array(mask),
+        sub_size=sub_size,
     )
 
     return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
@@ -849,3 +857,43 @@ def compute_polygon_area(points):
     y = points[:, 0]
 
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+
+
+# @numba_util.jit()
+def grid_pixels_in_mask_pixels_from(
+    grid, shape_native, pixel_scales, origin
+) -> np.ndarray:
+    """
+    Returns an array containing the number of pixels of one grid in every pixel of another masked grid.
+
+    For example, image-mesh adaption may be performed on a 3.0" circular mask of data. The high weight pixels
+    may have 3 or more mesh pixels per image pixel, whereas low weight regions may have zero pixels. The array
+    returned by this function gives the integer number of pixels in each data pixel.
+
+    Parameters
+    ----------
+    grid_pixel_centres
+        The 2D integer index of every image pixel that each image-mesh pixel falls within.
+    shape_native
+        The 2D shape of the data's mask, which the number of image-mesh pixels that fall within eac pixel is counted.
+
+    Returns
+    -------
+    An array containing the integer number of image-mesh pixels that fall without each of the data's mask.
+    """
+    grid_pixel_centres = geometry_util.grid_pixel_centres_2d_slim_from(
+        grid_scaled_2d_slim=np.array(grid),
+        shape_native=shape_native,
+        pixel_scales=pixel_scales,
+        origin=origin,
+    ).astype("int")
+
+    mesh_pixels_per_image_pixel = np.zeros(shape=shape_native)
+
+    for i in range(grid_pixel_centres.shape[0]):
+        y = grid_pixel_centres[i, 0]
+        x = grid_pixel_centres[i, 1]
+
+        mesh_pixels_per_image_pixel[y, x] += 1
+
+    return mesh_pixels_per_image_pixel

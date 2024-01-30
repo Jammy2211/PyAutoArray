@@ -110,3 +110,7 @@ class AbstractMatWrap:
         if self.is_for_subplot:
             return "subplot"
         return "figure"
+
+    @property
+    def log10_min_value(self):
+        return conf.instance["visualize"]["general"]["general"]["log10_min_value"]

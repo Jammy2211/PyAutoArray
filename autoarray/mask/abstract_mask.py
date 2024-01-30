@@ -17,8 +17,8 @@ class Mask(AbstractNDArray, ABC):
     pixel_scales = None
 
     # noinspection PyUnusedLocal
-    def __new__(
-        cls,
+    def __init__(
+        self,
         mask: np.ndarray,
         origin: tuple,
         pixel_scales: ty.PixelScales,
@@ -50,11 +50,15 @@ class Mask(AbstractNDArray, ABC):
 
         # noinspection PyArgumentList
         mask = mask.astype("bool")
-        obj = mask.view(cls)
-        obj.sub_size = sub_size
-        obj.pixel_scales = pixel_scales
-        obj.origin = origin
-        return obj
+        super().__init__(mask)
+
+        self.sub_size = sub_size
+        self.pixel_scales = pixel_scales
+        self.origin = origin
+
+    @property
+    def mask(self):
+        return self._array
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Mask):
@@ -132,7 +136,7 @@ class Mask(AbstractNDArray, ABC):
         """
         The total number of unmasked pixels (values are `False`) in the mask.
         """
-        return int(np.size(self) - np.sum(self))
+        return int(np.size(self._array) - np.sum(self._array))
 
     @property
     def is_all_true(self) -> bool:
@@ -146,7 +150,7 @@ class Mask(AbstractNDArray, ABC):
         """
         Returns `False` if all pixels in a mask are `False`, else returns `True`.
         """
-        return self.pixels_in_mask == np.size(self)
+        return self.pixels_in_mask == np.size(self._array)
 
     @property
     def sub_pixels_in_mask(self) -> int:

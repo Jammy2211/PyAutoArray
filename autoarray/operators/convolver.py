@@ -211,9 +211,9 @@ class Convolver:
                         image_frame_1d_kernels,
                     ) = self.frame_at_coordinates_jit(
                         coordinates=(x, y),
-                        mask=mask,
+                        mask=np.array(mask),
                         mask_index_array=self.mask_index_array,
-                        kernel_2d=self.kernel.native[:, :],
+                        kernel_2d=np.array(self.kernel.native[:, :]),
                     )
                     self.image_frame_1d_indexes[
                         mask_1d_index, :
@@ -227,7 +227,8 @@ class Convolver:
                     mask_1d_index += 1
 
         self.blurring_mask = mask_2d_util.blurring_mask_2d_from(
-            mask_2d=mask, kernel_shape_native=kernel.shape_native
+            mask_2d=np.array(mask),
+            kernel_shape_native=kernel.shape_native,
         )
 
         self.pixels_in_blurring_mask = int(
@@ -252,9 +253,9 @@ class Convolver:
                         image_frame_1d_kernels,
                     ) = self.frame_at_coordinates_jit(
                         coordinates=(x, y),
-                        mask=mask,
-                        mask_index_array=self.mask_index_array,
-                        kernel_2d=self.kernel.native,
+                        mask=np.array(mask),
+                        mask_index_array=np.array(self.mask_index_array),
+                        kernel_2d=np.array(self.kernel.native),
                     )
                     self.blurring_frame_1d_indexes[
                         mask_1d_index, :
@@ -327,11 +328,11 @@ class Convolver:
             )
 
         convolved_image = self.convolve_jit(
-            image_1d_array=image.binned.slim,
+            image_1d_array=np.array(image.binned.slim),
             image_frame_1d_indexes=self.image_frame_1d_indexes,
             image_frame_1d_kernels=self.image_frame_1d_kernels,
             image_frame_1d_lengths=self.image_frame_1d_lengths,
-            blurring_1d_array=blurring_image.binned.slim,
+            blurring_1d_array=np.array(blurring_image.binned.slim),
             blurring_frame_1d_indexes=self.blurring_frame_1d_indexes,
             blurring_frame_1d_kernels=self.blurring_frame_1d_kernels,
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
@@ -384,12 +385,10 @@ class Convolver:
         ----------
         image
             1D array of the values which are to be blurred with the convolver's PSF.
-        blurring_image
-            1D array of the blurring values which blur into the array after PSF convolution.
         """
 
         convolved_image = self.convolve_no_blurring_jit(
-            image_1d_array=image.binned.slim,
+            image_1d_array=np.array(image.binned.slim),
             image_frame_1d_indexes=self.image_frame_1d_indexes,
             image_frame_1d_kernels=self.image_frame_1d_kernels,
             image_frame_1d_lengths=self.image_frame_1d_lengths,
@@ -404,8 +403,6 @@ class Convolver:
         ----------
         image
             1D array of the values which are to be blurred with the convolver's PSF.
-        blurring_image
-            1D array of the blurring values which blur into the array after PSF convolution.
         """
 
         convolved_image = self.convolve_no_blurring_jit(

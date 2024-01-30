@@ -1,6 +1,6 @@
 from __future__ import annotations
 import numpy as np
-from typing import Optional, Tuple, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_2d import Grid2D
@@ -185,7 +185,7 @@ class Overlay(AbstractImageMesh):
         self.shape = (int(shape[0]), int(shape[1]))
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None, settings=None
     ) -> Grid2DIrregular:
         """
         Returns an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the
@@ -225,13 +225,13 @@ class Overlay(AbstractImageMesh):
         ).astype("int")
 
         total_pixels = total_pixels_2d_from(
-            mask_2d=grid.mask,
+            mask_2d=grid.mask.array,
             overlaid_centres=overlaid_centres,
         )
 
         overlay_for_mask = overlay_for_mask_from(
             total_pixels=total_pixels,
-            mask=grid.mask,
+            mask=grid.mask.array,
             overlaid_centres=overlaid_centres,
         ).astype("int")
 

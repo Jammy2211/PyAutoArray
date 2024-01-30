@@ -19,13 +19,13 @@ from autoarray import type as ty
 
 
 class Grid2D(Structure):
-    def __new__(
-        cls,
+    def __init__(
+        self,
         values: Union[np.ndarray, List],
         mask: Mask2D,
         store_native: bool = False,
         *args,
-        **kwargs,
+        **kwargs
     ):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -236,17 +236,16 @@ class Grid2D(Structure):
             If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
             mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
-
         values = grid_2d_util.convert_grid_2d(
-            grid_2d=values, mask_2d=mask, store_native=store_native
+            grid_2d=values,
+            mask_2d=mask,
+            store_native=store_native,
         )
 
-        obj = values.view(cls)
-        obj.mask = mask
+        super().__init__(values)
 
-        grid_2d_util.check_grid_2d(grid_2d=obj)
-
-        return obj
+        self.mask = mask
+        grid_2d_util.check_grid_2d(grid_2d=values)
 
     @classmethod
     def no_mask(
@@ -606,7 +605,7 @@ class Grid2D(Structure):
         """
 
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=mask,
+            mask_2d=np.array(mask),
             pixel_scales=mask.pixel_scales,
             sub_size=mask.sub_size,
             origin=mask.origin,
@@ -798,7 +797,7 @@ class Grid2D(Structure):
 
         This is used to interface with Python libraries that require the grid in (x,y) format.
         """
-        return np.fliplr(self)
+        return self.with_new_array(np.fliplr(self.array))
 
     @property
     def in_radians(self) -> "Grid2D":
@@ -1216,7 +1215,8 @@ class Grid2D(Structure):
 
         return Grid2D(
             values=grid_2d_util.relocated_grid_via_jit_from(
-                grid=grid, border_grid=self.sub_border_grid
+                grid=np.array(grid),
+                border_grid=np.array(self.sub_border_grid),
             ),
             mask=grid.mask,
             sub_size=grid.mask.sub_size,
@@ -1238,6 +1238,7 @@ class Grid2D(Structure):
 
         return Grid2DIrregular(
             values=grid_2d_util.relocated_grid_via_jit_from(
-                grid=mesh_grid, border_grid=self.sub_border_grid
+                grid=np.array(mesh_grid),
+                border_grid=np.array(self.sub_border_grid),
             ),
         )

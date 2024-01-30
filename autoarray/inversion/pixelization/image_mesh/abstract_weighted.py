@@ -62,14 +62,13 @@ class AbstractImageMeshWeighted(AbstractImageMesh):
         """
 
         weight_map = np.abs(adapt_data) / np.max(adapt_data)
-        weight_map += self.weight_floor
-        weight_map[weight_map > 1.0] = 1.0
-
         weight_map = weight_map**self.weight_power
+
+        weight_map[weight_map < self.weight_floor] = self.weight_floor
 
         return weight_map
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None
+        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None, settings=None
     ) -> Grid2DIrregular:
         raise NotImplementedError

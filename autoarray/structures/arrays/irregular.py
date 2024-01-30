@@ -1,6 +1,8 @@
 from __future__ import annotations
 import json
 import logging
+from pathlib import Path
+
 import numpy as np
 import os
 from os import path
@@ -18,7 +20,20 @@ logger = logging.getLogger(__name__)
 
 
 class ArrayIrregular(Structure):
-    def __new__(cls, values: Union[List, np.ndarray]):
+    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
+        raise NotImplementedError()
+
+    def structure_2d_from(self, result: np.ndarray) -> "Structure":
+        raise NotImplementedError()
+
+    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
+        raise NotImplementedError()
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplementedError()
+
+    def __init__(self, values: Union[List, np.ndarray]):
         """
         A collection of values which are structured as follows:
 
@@ -46,18 +61,16 @@ class ArrayIrregular(Structure):
             A collection of values.
         """
 
-        if len(values) == 0:
-            return []
+        # if len(values) == 0:
+        #     return []
+
+        # if isinstance(values, ArrayIrregular):
+        #     return values
 
         if type(values) is list:
-            if isinstance(values, ArrayIrregular):
-                return values
-
             values = np.asarray(values)
 
-        obj = values.view(cls)
-
-        return obj
+        super().__init__(values)
 
     @property
     def slim(self) -> "ArrayIrregular":

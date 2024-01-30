@@ -80,16 +80,16 @@ class AbstractInversion:
 
         preloads = preloads or Preloads()
 
-        try:
-            import numba
-        except ModuleNotFoundError:
-            raise exc.InversionException(
-                "Inversion functionality (linear light profiles, pixelized reconstructions) is "
-                "disabled if numba is not installed.\n\n"
-                "This is because the run-times without numba are too slow.\n\n"
-                "Please install numba, which is described at the following web page:\n\n"
-                "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
-            )
+        # try:
+        #     import numba
+        # except ModuleNotFoundError:
+        #     raise exc.InversionException(
+        #         "Inversion functionality (linear light profiles, pixelized reconstructions) is "
+        #         "disabled if numba is not installed.\n\n"
+        #         "This is because the run-times without numba are too slow.\n\n"
+        #         "Please install numba, which is described at the following web page:\n\n"
+        #         "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
+        #     )
 
         self.data = data
         self.noise_map = noise_map
@@ -636,6 +636,34 @@ class AbstractInversion:
             The reconstructed image data which the inversion fits.
         """
         return sum(self.mapped_reconstructed_image_dict.values())
+
+    @cached_property
+    def data_subtracted_dict(self) -> Dict[LinearObj, Array2D]:
+        """
+        Returns a dictionary of the data subtracted by the reconstructed images of combinations of all but one of the
+        linear objects the inversion.
+
+        This produces images of the data showing what each linear object is actually fitted to, after accounting for
+        the signal in the other linear objects.
+
+        Returns
+        -------
+        A dictionary of the data subtracted by the reconstructed images of combinations of all but one of the
+        linear objects the inversion.
+        """
+
+        data_subtracted_dict = {}
+
+        for linear_obj in self.linear_obj_list:
+            data_subtracted_dict[linear_obj] = copy.copy(self.data)
+
+            for linear_obj_other in self.linear_obj_list:
+                if linear_obj != linear_obj_other:
+                    data_subtracted_dict[
+                        linear_obj
+                    ] -= self.mapped_reconstructed_image_dict[linear_obj_other]
+
+        return data_subtracted_dict
 
     @cached_property
     @profile_func

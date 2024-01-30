@@ -70,11 +70,13 @@ class TransformerDFT(PyLopsOperator):
 
         if preload_transform:
             self.preload_real_transforms = transformer_util.preload_real_transforms(
-                grid_radians=self.grid, uv_wavelengths=self.uv_wavelengths
+                grid_radians=np.array(self.grid),
+                uv_wavelengths=self.uv_wavelengths,
             )
 
             self.preload_imag_transforms = transformer_util.preload_imag_transforms(
-                grid_radians=self.grid, uv_wavelengths=self.uv_wavelengths
+                grid_radians=np.array(self.grid),
+                uv_wavelengths=self.uv_wavelengths,
             )
 
         self.real_space_pixels = self.real_space_mask.pixels_in_mask
@@ -94,15 +96,15 @@ class TransformerDFT(PyLopsOperator):
     def visibilities_from(self, image):
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_jit_from(
-                image_1d=image.binned,
+                image_1d=np.array(image.binned),
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
             visibilities = transformer_util.visibilities_jit(
-                image_1d=image.binned,
-                grid_radians=self.grid,
+                image_1d=np.array(image.binned),
+                grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -111,7 +113,7 @@ class TransformerDFT(PyLopsOperator):
     def image_from(self, visibilities, use_adjoint_scaling: bool = False):
         image_slim = transformer_util.image_via_jit_from(
             n_pixels=self.grid.shape[0],
-            grid_radians=self.grid,
+            grid_radians=np.array(self.grid),
             uv_wavelengths=self.uv_wavelengths,
             visibilities=visibilities.in_array,
         )
@@ -135,7 +137,7 @@ class TransformerDFT(PyLopsOperator):
         else:
             return transformer_util.transformed_mapping_matrix_jit(
                 mapping_matrix=mapping_matrix,
-                grid_radians=self.grid,
+                grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -305,7 +307,9 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         x2d = np.real(self.xx2x(self.k2xx(self.y2k(y))))
 
         x = array_2d_util.array_2d_slim_complex_from(
-            array_2d_native=x2d[::-1, :], sub_size=1, mask=self.real_space_mask
+            array_2d_native=x2d[::-1, :],
+            sub_size=1,
+            mask=np.array(self.real_space_mask),
         )
         x = x.real  # NOTE:
 

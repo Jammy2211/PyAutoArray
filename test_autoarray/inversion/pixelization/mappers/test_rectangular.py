@@ -31,7 +31,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     pix_indexes_for_sub_slim_index_util = np.array(
         [
             aa.util.geometry.grid_pixel_indexes_2d_slim_from(
-                grid_scaled_2d_slim=grid,
+                grid_scaled_2d_slim=np.array(grid),
                 shape_native=mesh_grid.shape_native,
                 pixel_scales=mesh_grid.pixel_scales,
                 origin=mesh_grid.origin,
@@ -64,7 +64,7 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
         pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
         pixel_weights=mapper.pix_weights_for_sub_slim_index,
         slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
-        adapt_data=image_7x7,
+        adapt_data=np.array(image_7x7),
     )
 
     assert (pixel_signals == pixel_signals_util).all()

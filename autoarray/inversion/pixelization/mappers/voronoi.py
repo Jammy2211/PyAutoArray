@@ -229,9 +229,9 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
         The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
         """
         mappings = mapper_util.pix_indexes_for_sub_slim_index_voronoi_from(
-            grid=self.source_plane_data_grid,
+            grid=np.array(self.source_plane_data_grid),
             slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
-            mesh_grid=self.source_plane_mesh_grid,
+            mesh_grid=np.array(self.source_plane_mesh_grid),
             neighbors=self.source_plane_mesh_grid.neighbors,
             neighbors_sizes=self.source_plane_mesh_grid.neighbors.sizes,
         ).astype("int")

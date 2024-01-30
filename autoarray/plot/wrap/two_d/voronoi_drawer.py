@@ -31,6 +31,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         colorbar: Optional[wb.Colorbar],
         colorbar_tickparams: Optional[wb.ColorbarTickParams] = None,
         ax=None,
+        use_log10: bool = False,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `mesh_grid` which contains the (y,x)
@@ -46,6 +47,12 @@ class VoronoiDrawer(AbstractMatWrap2D):
             The colormap used to plot each Voronoi cell.
         colorbar
             The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
+        colorbar_tickparams
+            The `ColorbarTickParams` object in `mat_base` used to set the tick labels of the colorbar.
+        ax
+            The matplotlib axis the Voronoi mesh is plotted on.
+        use_log10
+            If `True`, the colorbar is plotted using a log10 scale.
         """
 
         if ax is None:
@@ -54,6 +61,12 @@ class VoronoiDrawer(AbstractMatWrap2D):
         regions, vertices = mesh_util.voronoi_revised_from(voronoi=mapper.voronoi)
 
         if pixel_values is not None:
+            norm = cmap.norm_from(array=pixel_values, use_log10=use_log10)
+
+            if use_log10:
+                pixel_values[pixel_values < 1e-4] = 1e-4
+                pixel_values = np.log10(pixel_values)
+
             vmin = cmap.vmin_from(array=pixel_values)
             vmax = cmap.vmax_from(array=pixel_values)
 
@@ -69,7 +82,12 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
             if colorbar is not None:
                 cb = colorbar.set_with_color_values(
-                    units=units, cmap=cmap, color_values=color_values, ax=ax
+                    units=units,
+                    norm=norm,
+                    cmap=cmap,
+                    color_values=color_values,
+                    ax=ax,
+                    use_log10=use_log10,
                 )
 
                 if cb is not None and colorbar_tickparams is not None:
