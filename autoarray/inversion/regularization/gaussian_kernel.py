@@ -82,6 +82,27 @@ class GaussianKernel(AbstractRegularization):
         self.scale = scale
         super().__init__()
 
+    def regularization_weights_from(self, linear_obj: LinearObj) -> np.ndarray:
+        """
+        Returns the regularization weights of this regularization scheme.
+
+        The regularization weights define the level of regularization applied to each parameter in the linear object
+        (e.g. the ``pixels`` in a ``Mapper``).
+
+        For standard regularization (e.g. ``Constant``) are weights are equal, however for adaptive schemes
+        (e.g. ``AdaptiveBrightness``) they vary to adapt to the data being reconstructed.
+
+        Parameters
+        ----------
+        linear_obj
+            The linear object (e.g. a ``Mapper``) which uses these weights when performing regularization.
+
+        Returns
+        -------
+        The regularization weights.
+        """
+        return self.coefficient * np.ones(linear_obj.params)
+
     def regularization_matrix_from(self, linear_obj: LinearObj) -> np.ndarray:
         """
         Returns the regularization matrix with shape [pixels, pixels].
