@@ -175,7 +175,7 @@ class MaternKernel(AbstractRegularization):
         """
         covariance_matrix = matern_cov_matrix_from(
             scale=self.scale,
-            pixel_points=linear_obj.source_plane_mesh_grid,
+            pixel_points=np.array(linear_obj.source_plane_mesh_grid),
             nu=self.nu,
         )
 
