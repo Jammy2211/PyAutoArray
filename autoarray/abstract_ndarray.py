@@ -335,7 +335,10 @@ class AbstractNDArray(ABC):
             self._array[key] = value
 
     def __repr__(self):
-        return f"{self.__class__.__name__} {self.shape}"
+        return repr(self._array).replace(
+            "array",
+            self.__class__.__name__,
+        )
 
     def __array__(self, dtype=None):
         if dtype:
