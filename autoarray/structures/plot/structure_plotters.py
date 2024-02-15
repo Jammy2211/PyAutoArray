@@ -135,6 +135,7 @@ class YX1DPlotter(Plotter):
         should_plot_zero: bool = False,
         plot_axis_type: Optional[str] = None,
         plot_yx_dict=None,
+        auto_labels = AutoLabels(),
     ):
         """
         Plots two 1D objects using the matplotlib method `plot()` (or a similar method) and many other matplotlib
@@ -178,6 +179,7 @@ class YX1DPlotter(Plotter):
         self.should_plot_zero = should_plot_zero
         self.plot_axis_type = plot_axis_type
         self.plot_yx_dict = plot_yx_dict or {}
+        self.auto_labels = auto_labels
 
     def get_visuals_1d(self) -> Visuals1D:
         return self.get_1d.via_array_1d_from(array_1d=self.x)
@@ -191,7 +193,7 @@ class YX1DPlotter(Plotter):
             y=self.y,
             x=self.x,
             visuals_1d=self.get_visuals_1d(),
-            auto_labels=AutoLabels(),
+            auto_labels=self.auto_labels,
             should_plot_grid=self.should_plot_grid,
             should_plot_zero=self.should_plot_zero,
             plot_axis_type_override=self.plot_axis_type,
