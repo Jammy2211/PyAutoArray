@@ -76,7 +76,7 @@ class Mask(AbstractNDArray, ABC):
         single value as a float.
         """
         for pixel_scale in self.pixel_scales:
-            if pixel_scale != self.pixel_scales[0]:
+            if abs(pixel_scale - self.pixel_scales[0]) > 1.0e-8:
                 raise exc.MaskException(
                     "Cannot return a pixel_scale for a grid where each dimension has a "
                     "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1])"

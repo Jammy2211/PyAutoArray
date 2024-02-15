@@ -158,6 +158,7 @@ class MatPlot1D(AbstractMatPlot):
         y_errors=None,
         x_errors=None,
         y_extra=None,
+        y_extra_2=None,
         ls_errorbar="",
         should_plot_grid=False,
         should_plot_zero=False,
@@ -204,6 +205,7 @@ class MatPlot1D(AbstractMatPlot):
             y_errors=y_errors,
             x_errors=x_errors,
             y_extra=y_extra,
+            y_extra_2=y_extra_2,
             ls_errorbar=ls_errorbar,
         )
 

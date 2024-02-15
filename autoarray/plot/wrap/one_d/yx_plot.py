@@ -32,6 +32,7 @@ class YXPlot(AbstractMatWrap1D):
         y_errors=None,
         x_errors=None,
         y_extra=None,
+        y_extra_2=None,
         ls_errorbar="",
     ):
         """
@@ -87,3 +88,6 @@ class YXPlot(AbstractMatWrap1D):
                     plt.plot(x, y_extra_)
             else:
                 plt.plot(x, y_extra, c="r")
+
+        if y_extra_2 is not None:
+            plt.plot(x, y_extra_2, c="r")
