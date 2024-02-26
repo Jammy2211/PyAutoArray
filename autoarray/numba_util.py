@@ -44,6 +44,7 @@ except ModuleNotFoundError:
         f"or because it is not installed.\n\n. "
         f"This will lead to slow performance.\n\n. "
         f"Install numba as described at the following webpage for improved performance. \n"
+        f"https://pyautolens.readthedocs.io/en/latest/installation/numba.html \n"
         f"********************************************************************************"
     )
 

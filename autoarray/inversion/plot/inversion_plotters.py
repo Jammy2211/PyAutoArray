@@ -279,11 +279,14 @@ class InversionPlotter(Plotter):
         self.mat_plot_2d.use_log10 = True
         self.mat_plot_2d.contour = False
 
-        self.mat_plot_2d.plot_array(
-            array=self.inversion.data,
-            visuals_2d=self.get_visuals_2d_for_data(),
-            auto_labels=AutoLabels(title=f" Data"),
-        )
+        try:
+            self.mat_plot_2d.plot_array(
+                array=self.inversion.data,
+                visuals_2d=self.get_visuals_2d_for_data(),
+                auto_labels=AutoLabels(title=f" Data"),
+            )
+        except AttributeError:
+            pass
 
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, reconstructed_image=True
