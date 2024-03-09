@@ -10,7 +10,6 @@ from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
-from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.inversion.inversion.settings import SettingsInversion
