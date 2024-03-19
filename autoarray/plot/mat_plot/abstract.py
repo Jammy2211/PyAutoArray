@@ -95,7 +95,11 @@ class AbstractMatPlot:
 
         self.cmap = cmap or wb.Cmap(is_default=True)
 
-        self.colorbar = colorbar or wb.Colorbar(is_default=True)
+        if colorbar is not False:
+            self.colorbar = colorbar or wb.Colorbar(is_default=True)
+        else:
+            self.colorbar = False
+
         self.colorbar_tickparams = colorbar_tickparams or wb.ColorbarTickParams(
             is_default=True
         )

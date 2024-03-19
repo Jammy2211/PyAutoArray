@@ -53,9 +53,12 @@ class InversionPlotter(Plotter):
         self.residuals_symmetric_cmap = residuals_symmetric_cmap
 
     def get_visuals_2d_for_data(self) -> Visuals2D:
-        return self.get_2d.via_mapper_for_data_from(
-            mapper=self.inversion.cls_list_from(cls=AbstractMapper)[0]
-        )
+        try:
+            return self.get_2d.via_mapper_for_data_from(
+                mapper=self.inversion.cls_list_from(cls=AbstractMapper)[0]
+            )
+        except AttributeError:
+            return self.visuals_2d
 
     def mapper_plotter_from(self, mapper_index: int) -> MapperPlotter:
         """
