@@ -17,6 +17,7 @@ class SimulatorImaging:
         self,
         exposure_time: float,
         background_sky_level: float = 0.0,
+        subtract_background_sky: bool = True,
         psf: Kernel2D = None,
         normalize_psf: bool = True,
         add_poisson_noise: bool = True,
@@ -47,6 +48,8 @@ class SimulatorImaging:
             The exposure time of the simulated imaging.
         background_sky_level
             The level of the background sky of the simulated imaging.
+        subtract_background_sky
+            If `True`, the background sky level is subtracted from the simulated dataset, otherwise it is left in.
         psf
             An array describing the PSF kernel of the image.
         normalize_psf
@@ -69,7 +72,7 @@ class SimulatorImaging:
 
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
-
+        self.subtract_background_sky = subtract_background_sky
         self.add_poisson_noise = add_poisson_noise
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
@@ -127,7 +130,8 @@ class SimulatorImaging:
                 "background sky levels are too low, creating signal counts at or close to 0.0."
             )
 
-        image = image - background_sky_map
+        if self.subtract_background_sky:
+            image = image - background_sky_map
 
         mask = Mask2D.all_false(
             shape_native=image.shape_native, pixel_scales=image.pixel_scales

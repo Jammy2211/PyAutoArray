@@ -57,7 +57,7 @@ class InversionPlotter(Plotter):
             return self.get_2d.via_mapper_for_data_from(
                 mapper=self.inversion.cls_list_from(cls=AbstractMapper)[0]
             )
-        except AttributeError:
+        except (AttributeError, IndexError):
             return self.visuals_2d
 
     def mapper_plotter_from(self, mapper_index: int) -> MapperPlotter:
