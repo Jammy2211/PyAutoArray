@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib
 
 from autoconf import conf
@@ -114,3 +115,77 @@ class AbstractMatWrap:
     @property
     def log10_min_value(self):
         return conf.instance["visualize"]["general"]["general"]["log10_min_value"]
+
+    @property
+    def log10_max_value(self):
+        return float(conf.instance["visualize"]["general"]["general"]["log10_max_value"])
+
+    def vmin_from(self, array: np.ndarray, use_log10: bool = False) -> float:
+        """
+        The vmin of a plot, for example the minimum value of the colormap and colorbar.
+
+        If the vmin is manually input by the user, this value is used. Otherwise, the minimum value of the data being
+        plotted is used, which is computed via nanmin to ensure that NaN entries in the data are ignored.
+
+        If use_log10 is True, the minimum value of the colormap is the log10 of the minimum value of the data. To
+        ensure negative values are not plotted, which often causes matplotlib errors, the minimum value of the colormap
+        is rounded up to the log10_min_value attribute of the config file.
+
+        Parameters
+        ----------
+        array
+            The array of data which is to be plotted.
+        use_log10
+            If True, the minimum value of the colormap is the log10 of the minimum value of the data.
+
+        Returns
+        -------
+        The minimum value of the colormap.
+        """
+        if self.config_dict["norm"] in "log" :
+            use_log10 = True
+
+        if self.config_dict["vmin"] is None:
+            vmin = np.nanmin(array)
+        else:
+            vmin = self.config_dict["vmin"]
+
+        if use_log10 and (vmin < self.log10_min_value):
+            vmin = self.log10_min_value
+
+        return vmin
+
+    def vmax_from(self, array: np.ndarray, use_log10: bool = False) -> float:
+        """
+        The vmax of a plot, for example the maximum value of the colormap and colorbar.
+
+        If the vmax is manually input by the user, this value is used. Otherwise, the maximum value of the data being
+        plotted is used, which is computed via nanmax to ensure that NaN entries in the data are ignored.
+
+        If use_log10 is True, the maximum value of the colormap is the log10 of the maximum value of the data. To
+        ensure values above the log10_max_value attribute of the config file are not plotted, this value is used
+        as the maximum value of the colormap.
+
+        Parameters
+        ----------
+        array
+            The array of data which is to be plotted.
+        use_log10
+            If True, the maximum value of the colormap is the log10 of the maximum value of the data.
+
+        Returns
+        -------
+        The maximum value of the colormap.
+        """
+        if self.config_dict["norm"] in "log" :
+            use_log10 = True
+
+        if self.config_dict["vmax"] is None:
+            vmax = np.nanmax(array)
+        else:
+            vmax = self.config_dict["vmax"]
+
+        if use_log10 and (vmax > self.log10_max_value):
+            vmax = self.log10_max_value
+
+        return vmax

@@ -48,16 +48,6 @@ class Cmap(AbstractMatWrap):
 
         return cmap
 
-    def vmin_from(self, array: np.ndarray):
-        if self.config_dict["vmin"] is None:
-            return np.nanmin(array)
-        return self.config_dict["vmin"]
-
-    def vmax_from(self, array: np.ndarray):
-        if self.config_dict["vmax"] is None:
-            return np.nanmax(array)
-        return self.config_dict["vmax"]
-
     def norm_from(self, array: np.ndarray, use_log10: bool = False) -> object:
         """
         Returns the `Normalization` object which scales of the colormap.
@@ -71,8 +61,8 @@ class Cmap(AbstractMatWrap):
             The array of data which is to be plotted.
         """
 
-        vmin = self.vmin_from(array=array)
-        vmax = self.vmax_from(array=array)
+        vmin = self.vmin_from(array=array, use_log10=use_log10)
+        vmax = self.vmax_from(array=array, use_log10=use_log10)
 
         if self._symmetric:
             if vmin < 0.0 and vmax > 0.0:
@@ -89,8 +79,6 @@ class Cmap(AbstractMatWrap):
             return self.config_dict["norm"]
 
         if self.config_dict["norm"] in "log" or use_log10:
-            if vmin < self.log10_min_value:
-                vmin = self.log10_min_value
             return colors.LogNorm(vmin=vmin, vmax=vmax)
         elif self.config_dict["norm"] in "linear":
             return colors.Normalize(vmin=vmin, vmax=vmax)

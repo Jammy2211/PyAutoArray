@@ -81,8 +81,8 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
 
         norm = cmap.norm_from(array=interpolation_array, use_log10=use_log10)
 
-        vmin = cmap.vmin_from(array=pixel_values)
-        vmax = cmap.vmax_from(array=pixel_values)
+        vmin = cmap.vmin_from(array=pixel_values, use_log10=use_log10)
+        vmax = cmap.vmax_from(array=pixel_values, use_log10=use_log10)
 
         color_values = np.where(pixel_values > vmax, vmax, pixel_values)
         color_values = np.where(pixel_values < vmin, vmin, color_values)

@@ -67,8 +67,8 @@ class VoronoiDrawer(AbstractMatWrap2D):
                 pixel_values[pixel_values < 1e-4] = 1e-4
                 pixel_values = np.log10(pixel_values)
 
-            vmin = cmap.vmin_from(array=pixel_values)
-            vmax = cmap.vmax_from(array=pixel_values)
+            vmin = cmap.vmin_from(array=pixel_values, use_log10=use_log10)
+            vmax = cmap.vmax_from(array=pixel_values, use_log10=use_log10)
 
             color_values = np.where(pixel_values > vmax, vmax, pixel_values)
             color_values = np.where(pixel_values < vmin, vmin, color_values)
