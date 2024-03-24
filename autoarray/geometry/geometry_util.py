@@ -383,7 +383,7 @@ def transform_grid_2d_to_reference_frame(
         The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
     """
     shifted_grid_2d = grid_2d - centre
-    radius = np.sqrt(np.sum(shifted_grid_2d ** 2.0, 1))
+    radius = np.sqrt(np.sum(shifted_grid_2d**2.0, 1))
     theta_coordinate_to_profile = np.arctan2(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
     ) - np.radians(angle)

@@ -486,7 +486,10 @@ class VectorYX2D(AbstractVectorYX2D):
         `slim` to `native` and returned as a new `Grid2D`.
         """
         return VectorYX2D(
-            values=self, grid=self.grid.native, mask=self.mask, store_native=True,
+            values=self,
+            grid=self.grid.native,
+            mask=self.mask,
+            store_native=True,
         )
 
     @property

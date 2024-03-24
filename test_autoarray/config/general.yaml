@@ -35,7 +35,7 @@ profiling:
 structures:
   native_binned_only: false           # If True, data structures are only stored in their native and binned format. This is used to reduce memory usage in autocti.
 test:
-  check_figure_of_merit_sanity: false # If True, a sanity check is performed when a model-fit is resumed, to ensure the figure of merit of the new fit computed via the likelihood function is consistent with the previous fit.
+  check_likelihood_function: true   # if True, when a search is resumed the likelihood of a previous sample is recalculated to ensure it is consistent with the previous run.
   check_preloads: false
   exception_override: false
   preloads_check_threshold: 1.0     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit. 
