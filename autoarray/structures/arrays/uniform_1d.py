@@ -33,7 +33,9 @@ class Array1D(Structure):
         store_native: bool = False,
     ):
         values = array_1d_util.convert_array_1d(
-            array_1d=values, mask_1d=mask, store_native=store_native,
+            array_1d=values,
+            mask_1d=mask,
+            store_native=store_native,
         )
 
         self.mask = mask

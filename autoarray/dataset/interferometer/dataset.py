@@ -123,8 +123,12 @@ class Interferometer(AbstractDataset):
         curvature_preload = inversion_util_secret.w_tilde_curvature_preload_interferometer_from(
             noise_map_real=np.array(self.noise_map.real),
             uv_wavelengths=np.array(self.uv_wavelengths),
-            shape_masked_pixels_2d=np.array(self.transformer.grid.mask.shape_native_masked_pixels),
-            grid_radians_2d=np.array(self.transformer.grid.mask.derive_grid.all_false_sub_1.in_radians.native),
+            shape_masked_pixels_2d=np.array(
+                self.transformer.grid.mask.shape_native_masked_pixels
+            ),
+            grid_radians_2d=np.array(
+                self.transformer.grid.mask.derive_grid.all_false_sub_1.in_radians.native
+            ),
         )
 
         w_matrix = inversion_util_secret.w_tilde_via_preload_from(

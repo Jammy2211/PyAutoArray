@@ -118,7 +118,9 @@ class AbstractMatWrap:
 
     @property
     def log10_max_value(self):
-        return float(conf.instance["visualize"]["general"]["general"]["log10_max_value"])
+        return float(
+            conf.instance["visualize"]["general"]["general"]["log10_max_value"]
+        )
 
     def vmin_from(self, array: np.ndarray, use_log10: bool = False) -> float:
         """
@@ -142,7 +144,7 @@ class AbstractMatWrap:
         -------
         The minimum value of the colormap.
         """
-        if self.config_dict["norm"] in "log" :
+        if self.config_dict["norm"] in "log":
             use_log10 = True
 
         if self.config_dict["vmin"] is None:
@@ -177,7 +179,7 @@ class AbstractMatWrap:
         -------
         The maximum value of the colormap.
         """
-        if self.config_dict["norm"] in "log" :
+        if self.config_dict["norm"] in "log":
             use_log10 = True
 
         if self.config_dict["vmax"] is None:

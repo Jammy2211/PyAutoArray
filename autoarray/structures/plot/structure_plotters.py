@@ -135,7 +135,7 @@ class YX1DPlotter(Plotter):
         should_plot_zero: bool = False,
         plot_axis_type: Optional[str] = None,
         plot_yx_dict=None,
-        auto_labels = AutoLabels(),
+        auto_labels=AutoLabels(),
     ):
         """
         Plots two 1D objects using the matplotlib method `plot()` (or a similar method) and many other matplotlib

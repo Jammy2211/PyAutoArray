@@ -7,7 +7,6 @@ np.set_printoptions(threshold=np.inf)
 
 
 def test__regularization_matrix():
-
     pass
 
     # reg = aa.reg.MaternKernel(coefficient=1.0, scale=2.0, nu=2.0)
