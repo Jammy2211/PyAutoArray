@@ -238,7 +238,10 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         )
 
     def image_from(self, visibilities, use_adjoint_scaling: bool = False):
-        image = np.real(self.adjoint(visibilities))[::-1, :]
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            image = np.real(self.adjoint(visibilities))[::-1, :]
 
         if use_adjoint_scaling:
             image *= self.adjoint_scaling
