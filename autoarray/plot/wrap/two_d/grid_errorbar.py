@@ -26,7 +26,6 @@ class GridErrorbar(AbstractMatWrap2D):
     """
 
     def config_dict_remove_marker(self, config_dict):
-
         if config_dict.get("fmt") and config_dict.get("marker"):
             config_dict.pop("marker")
 
