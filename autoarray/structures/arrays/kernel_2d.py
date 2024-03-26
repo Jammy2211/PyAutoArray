@@ -458,7 +458,7 @@ class Kernel2D(AbstractArray2D):
                 rescale_factor,
                 anti_aliasing=False,
                 mode="constant",
-                multichannel=False,
+                channel_axis=None,
             )
         except TypeError:
             kernel_rescaled = rescale(
@@ -466,7 +466,6 @@ class Kernel2D(AbstractArray2D):
                 rescale_factor,
                 anti_aliasing=False,
                 mode="constant",
-                #   multichannel=False,
             )
 
         if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
