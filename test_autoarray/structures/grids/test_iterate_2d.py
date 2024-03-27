@@ -29,12 +29,7 @@ def test__threshold_mask_via_arrays_from():
         mask=mask,
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask)
-
-    iterator = aa.Iterator(
-        grid=grid,
-        fractional_accuracy = 0.9999
-    )
+    iterator = aa.Iterator(fractional_accuracy = 0.9999)
 
     threshold_mask = iterator.threshold_mask_via_arrays_from(
         array_lower_sub_2d=arr.binned.native, array_higher_sub_2d=arr.binned.native
@@ -73,7 +68,6 @@ def test__threshold_mask_via_arrays_from():
     )
 
     iterator = aa.Iterator(
-        grid=grid,
         fractional_accuracy=0.5
     )
 
@@ -131,7 +125,6 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
     grid = aa.Grid2D.from_mask(mask=mask)
     
     iterator = aa.Iterator(
-        grid=grid,
         fractional_accuracy = 1.0,
         sub_steps = [2, 3]
     )
@@ -167,7 +160,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
     assert (values == values_sub_3.binned).all()
 
     iterator = aa.Iterator(
-        grid=grid,fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+        fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
     )
 
     values = iterator.iterated_array_from(
@@ -201,8 +194,7 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
         mask=mask, 
     )
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=0.5, sub_steps=[2, 4]
+    iterator = aa.Iterator(fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
     sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
@@ -250,8 +242,7 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, 
     )
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=1.0, sub_steps=[2, 3]
+    iterator = aa.Iterator(fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
     arr = aa.Array2D(values=np.zeros(9), mask=mask)
@@ -278,8 +269,7 @@ def test__threshold_mask_via_grids_from():
         mask=mask, 
     )
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=0.9999, 
+    iterator = aa.Iterator(fractional_accuracy=0.9999, 
     )
 
     grid = aa.Grid2D(
@@ -312,8 +302,7 @@ def test__threshold_mask_via_grids_from():
         mask=mask,
     )
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=0.5,
+    iterator = aa.Iterator(fractional_accuracy=0.5,
     )
 
     grid_lower_sub = aa.Grid2D(
@@ -377,8 +366,7 @@ def test__threshold_mask_via_grids_from():
         mask=mask_lower_sub,
     )
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=0.9999,
+    iterator = aa.Iterator(fractional_accuracy=0.9999,
     )
 
     grid_lower_sub = aa.Grid2D(
@@ -436,8 +424,7 @@ def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_s
         mask=mask,
     )
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=1.0, sub_steps=[2, 3]
+    iterator = aa.Iterator(fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
     sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
@@ -460,8 +447,7 @@ def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_s
     # but 3 does) that the sub_size of 3 is used. There was a bug where the mask was not updated correctly and the
     # iterated grid double counted the values.
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=0.99, sub_steps=[2, 3]
+    iterator = aa.Iterator(fractional_accuracy=0.99, sub_steps=[2, 3]
     )
 
     values = iterator.iterated_grid_from(
@@ -470,8 +456,7 @@ def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_s
 
     assert (values == values_sub_3.binned).all()
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+    iterator = aa.Iterator(fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
     )
 
 
@@ -502,8 +487,7 @@ def test__iterated_grid_from__check_values_computed_to_fractional_accuracy():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=0.5, sub_steps=[2, 4]
+    iterator = aa.Iterator(fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
     sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
@@ -553,8 +537,7 @@ def test__iterated_grid_from__func_returns_all_zeros__iteration_terminated():
 
     grid = aa.Grid2D.from_mask(mask=mask)
 
-    iterator = aa.Iterator(
-        grid=grid, fractional_accuracy=1.0, sub_steps=[2, 3]
+    iterator = aa.Iterator(fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
     grid_lower = aa.Grid2D(values=np.zeros((9, 2)), mask=mask)

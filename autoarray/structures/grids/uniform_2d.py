@@ -1,6 +1,10 @@
+from __future__ import annotations
 import numpy as np
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+
+if TYPE_CHECKING:
+    from autoarray.structures.grids.iterate_2d import Iterator
 
 from autoconf import conf
 from autoconf import cached_property
@@ -24,6 +28,7 @@ class Grid2D(Structure):
         values: Union[np.ndarray, List],
         mask: Mask2D,
         store_native: bool = False,
+        iterator: Optional[Iterator] = None,
         *args,
         **kwargs
     ):

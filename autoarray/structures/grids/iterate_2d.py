@@ -187,7 +187,6 @@ def iterated_grid_jit_from(
 class Iterator:
     def __init__(
         self,
-        grid : Grid2D,
         fractional_accuracy: float = 0.9999,
         relative_accuracy: Optional[float] = None,
         sub_steps: List[int] = None,
@@ -235,18 +234,9 @@ class Iterator:
 
         sub_steps = sub_steps_from(sub_steps=sub_steps)
 
-        self.grid = grid
         self.fractional_accuracy = fractional_accuracy
         self.relative_accuracy = relative_accuracy
         self.sub_steps = sub_steps
-
-    @property
-    def shape_native(self):
-        return self.grid.shape_native
-
-    @property
-    def mask(self):
-        return self.grid.mask
 
     @staticmethod
     def array_at_sub_size_from(func: Callable, cls, mask: Mask2D, sub_size) -> Array2D:
@@ -340,9 +330,12 @@ class Iterator:
         if not np.any(array_lower_sub_2d):
             return array_lower_sub_2d.slim
 
-        iterated_array = np.zeros(shape=self.shape_native)
+        shape_native = array_lower_sub_2d.shape_native
+        mask = array_lower_sub_2d.mask
 
-        threshold_mask_lower_sub = self.mask
+        iterated_array = np.zeros(shape=shape_native)
+
+        threshold_mask_lower_sub = mask
 
         for sub_size in self.sub_steps[:-1]:
             array_higher_sub = self.array_at_sub_size_from(
@@ -363,10 +356,10 @@ class Iterator:
                 )
 
             except ZeroDivisionError:
-                return self.return_iterated_array_result(iterated_array=iterated_array)
+                return self.return_iterated_array_result(iterated_array=iterated_array, mask=mask)
 
             if threshold_mask_higher_sub.is_all_true:
-                return self.return_iterated_array_result(iterated_array=iterated_array)
+                return self.return_iterated_array_result(iterated_array=iterated_array, mask=mask)
 
             array_lower_sub_2d = array_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
@@ -380,9 +373,9 @@ class Iterator:
 
         iterated_array_2d = iterated_array + array_higher_sub.binned.native
 
-        return self.return_iterated_array_result(iterated_array=iterated_array_2d)
+        return self.return_iterated_array_result(iterated_array=iterated_array_2d, mask=mask)
 
-    def return_iterated_array_result(self, iterated_array: Array2D) -> Array2D:
+    def return_iterated_array_result(self, iterated_array: Array2D, mask : Mask2D) -> Array2D:
         """
         Returns the resulting iterated array, by mapping it to 1D and then passing it back as an ``Array2D`` structure.
 
@@ -397,12 +390,12 @@ class Iterator:
         """
 
         iterated_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(self.mask),
+            mask_2d=np.array(mask),
             array_2d_native=np.array(iterated_array),
             sub_size=1,
         )
 
-        return Array2D(values=iterated_array_1d, mask=self.mask.derive_mask.sub_1)
+        return Array2D(values=iterated_array_1d, mask=mask.derive_mask.sub_1)
 
     def threshold_mask_via_grids_from(
         self, grid_lower_sub_2d: Grid2D, grid_higher_sub_2d: Grid2D
@@ -480,9 +473,12 @@ class Iterator:
         if not np.any(grid_lower_sub_2d):
             return grid_lower_sub_2d.slim
 
-        iterated_grid = np.zeros(shape=(self.shape_native[0], self.shape_native[1], 2))
+        shape_native = grid_lower_sub_2d.shape_native
+        mask = grid_lower_sub_2d.mask
 
-        threshold_mask_lower_sub = self.mask
+        iterated_grid = np.zeros(shape=(shape_native[0], shape_native[1], 2))
+
+        threshold_mask_lower_sub = mask
 
         for sub_size in self.sub_steps[:-1]:
             grid_higher_sub = self.grid_at_sub_size_from(
@@ -502,10 +498,10 @@ class Iterator:
 
             if threshold_mask_higher_sub.is_all_true:
                 iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
-                    mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
+                    mask=mask, grid_2d_native=iterated_grid, sub_size=1
                 )
 
-                return Grid2D(values=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
+                return Grid2D(values=iterated_grid_1d, mask=mask.derive_mask.sub_1)
 
             grid_lower_sub_2d = grid_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
@@ -520,10 +516,10 @@ class Iterator:
         iterated_grid_2d = iterated_grid + grid_higher_sub.binned.native
 
         iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
-            mask=self.mask, grid_2d_native=iterated_grid_2d, sub_size=1
+            mask=mask, grid_2d_native=iterated_grid_2d, sub_size=1
         )
 
-        return Grid2D(values=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
+        return Grid2D(values=iterated_grid_1d, mask=mask.derive_mask.sub_1)
 
     def iterated_result_from(
         self, func: Callable, cls: object
