@@ -240,6 +240,14 @@ class Iterator:
         self.relative_accuracy = relative_accuracy
         self.sub_steps = sub_steps
 
+    @property
+    def shape_native(self):
+        return self.grid.shape_native
+
+    @property
+    def mask(self):
+        return self.grid.mask
+
     @staticmethod
     def array_at_sub_size_from(func: Callable, cls, mask: Mask2D, sub_size) -> Array2D:
         mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
@@ -347,7 +355,7 @@ class Iterator:
                     array_higher_sub_2d=array_higher_sub,
                 )
 
-                iterated_array = self.iterated_array_jit_from(
+                iterated_array = iterated_array_jit_from(
                     iterated_array=iterated_array,
                     threshold_mask_higher_sub=np.array(threshold_mask_higher_sub),
                     threshold_mask_lower_sub=np.array(threshold_mask_lower_sub),
@@ -423,7 +431,7 @@ class Iterator:
             invert=True,
         )
 
-        threshold_mask = self.threshold_mask_via_grids_jit_from(
+        threshold_mask = threshold_mask_via_grids_jit_from(
             fractional_accuracy_threshold=self.fractional_accuracy,
             relative_accuracy_threshold=self.relative_accuracy,
             threshold_mask=np.array(threshold_mask),
@@ -485,7 +493,7 @@ class Iterator:
                 grid_lower_sub_2d=grid_lower_sub_2d, grid_higher_sub_2d=grid_higher_sub
             )
 
-            iterated_grid = self.iterated_grid_jit_from(
+            iterated_grid = iterated_grid_jit_from(
                 iterated_grid=iterated_grid,
                 threshold_mask_higher_sub=np.array(threshold_mask_higher_sub),
                 threshold_mask_lower_sub=np.array(threshold_mask_lower_sub),
