@@ -15,6 +15,175 @@ def sub_steps_from(sub_steps):
     return sub_steps
 
 
+@numba_util.jit()
+def threshold_mask_via_arrays_jit_from(
+    fractional_accuracy_threshold: float,
+    relative_accuracy_threshold: Optional[float],
+    threshold_mask: np.ndarray,
+    array_higher_sub_2d: np.ndarray,
+    array_lower_sub_2d: np.ndarray,
+    array_higher_mask: np.ndarray,
+) -> np.ndarray:
+    """
+    Jitted function to determine the fractional mask, which is a mask where:
+
+    - ``True`` entries signify the function has been evaluated in that pixel to desired accuracy and
+      therefore does not need to be iteratively computed at higher levels of sub-gridding.
+
+    - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+      therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
+    """
+
+    if fractional_accuracy_threshold is not None:
+        for y in range(threshold_mask.shape[0]):
+            for x in range(threshold_mask.shape[1]):
+                if not array_higher_mask[y, x]:
+                    if array_lower_sub_2d[y, x] > 0:
+                        fractional_accuracy = (
+                            array_lower_sub_2d[y, x] / array_higher_sub_2d[y, x]
+                        )
+
+                        if fractional_accuracy > 1.0:
+                            fractional_accuracy = 1.0 / fractional_accuracy
+
+                    else:
+                        fractional_accuracy = 0.0
+
+                    if fractional_accuracy < fractional_accuracy_threshold:
+                        threshold_mask[y, x] = False
+
+    if relative_accuracy_threshold is not None:
+        for y in range(threshold_mask.shape[0]):
+            for x in range(threshold_mask.shape[1]):
+                if not array_higher_mask[y, x]:
+                    if (
+                        abs(array_lower_sub_2d[y, x] - array_higher_sub_2d[y, x])
+                        > relative_accuracy_threshold
+                    ):
+                        threshold_mask[y, x] = False
+
+    return threshold_mask
+
+
+@numba_util.jit()
+def iterated_array_jit_from(
+    iterated_array: np.ndarray,
+    threshold_mask_higher_sub: np.ndarray,
+    threshold_mask_lower_sub: np.ndarray,
+    array_higher_sub_2d: np.ndarray,
+) -> np.ndarray:
+    """
+    Create the iterated array from a result array that is computed at a higher sub size leel than the previous grid.
+
+    The iterated array is only updated for pixels where the fractional accuracy is met.
+    """
+
+    for y in range(iterated_array.shape[0]):
+        for x in range(iterated_array.shape[1]):
+            if (
+                threshold_mask_higher_sub[y, x]
+                and not threshold_mask_lower_sub[y, x]
+            ):
+                iterated_array[y, x] = array_higher_sub_2d[y, x]
+
+    return iterated_array
+
+@numba_util.jit()
+def threshold_mask_via_grids_jit_from(
+    fractional_accuracy_threshold: float,
+    relative_accuracy_threshold: float,
+    threshold_mask: np.ndarray,
+    grid_higher_sub_2d: np.ndarray,
+    grid_lower_sub_2d: np.ndarray,
+    grid_higher_mask: np.ndarray,
+) -> np.ndarray:
+    """
+    Jitted function to determine the fractional mask, which is a mask where:
+
+    - ``True`` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
+      therefore does not need to be iteratively computed at higher levels of sub-gridding.
+
+    - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+      therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
+    """
+
+    for y in range(threshold_mask.shape[0]):
+        for x in range(threshold_mask.shape[1]):
+            if not grid_higher_mask[y, x]:
+                if abs(grid_higher_sub_2d[y, x, 0]) > 0:
+                    fractional_accuracy_y = (
+                        grid_lower_sub_2d[y, x, 0] / grid_higher_sub_2d[y, x, 0]
+                    )
+
+                else:
+                    fractional_accuracy_y = 1.0
+
+                if abs(grid_higher_sub_2d[y, x, 1]) > 0:
+                    fractional_accuracy_x = (
+                        grid_lower_sub_2d[y, x, 1] / grid_higher_sub_2d[y, x, 1]
+                    )
+
+                else:
+                    fractional_accuracy_x = 1.0
+
+                if fractional_accuracy_y > 1.0:
+                    fractional_accuracy_y = 1.0 / fractional_accuracy_y
+
+                if fractional_accuracy_x > 1.0:
+                    fractional_accuracy_x = 1.0 / fractional_accuracy_x
+
+                fractional_accuracy = min(
+                    fractional_accuracy_y, fractional_accuracy_x
+                )
+
+                if fractional_accuracy < fractional_accuracy_threshold:
+                    threshold_mask[y, x] = False
+
+    if relative_accuracy_threshold is not None:
+        for y in range(threshold_mask.shape[0]):
+            for x in range(threshold_mask.shape[1]):
+                if not grid_higher_mask[y, x]:
+                    relative_accuracy_y = abs(
+                        grid_lower_sub_2d[y, x, 0] - grid_higher_sub_2d[y, x, 0]
+                    )
+                    relative_accuracy_x = abs(
+                        grid_lower_sub_2d[y, x, 1] - grid_higher_sub_2d[y, x, 1]
+                    )
+
+                    relative_accuracy = max(
+                        relative_accuracy_y, relative_accuracy_x
+                    )
+
+                    if relative_accuracy > relative_accuracy_threshold:
+                        threshold_mask[y, x] = False
+
+    return threshold_mask
+
+
+@numba_util.jit()
+def iterated_grid_jit_from(
+    iterated_grid: Grid2D,
+    threshold_mask_higher_sub: np.ndarray,
+    threshold_mask_lower_sub: np.ndarray,
+    grid_higher_sub_2d: np.ndarray,
+) -> Grid2D:
+    """
+    Create the iterated grid from a result grid that is computed at a higher sub size level than the previous grid.
+
+    The iterated grid is only updated for pixels where the fractional accuracy is met in both the (y,x) coodinates.
+    """
+
+    for y in range(iterated_grid.shape[0]):
+        for x in range(iterated_grid.shape[1]):
+            if (
+                threshold_mask_higher_sub[y, x]
+                and not threshold_mask_lower_sub[y, x]
+            ):
+                iterated_grid[y, x, :] = grid_higher_sub_2d[y, x, :]
+
+    return iterated_grid
+
+
 class Iterator:
     def __init__(
         self,
@@ -129,56 +298,6 @@ class Iterator:
             origin=array_higher_sub_2d.origin,
         )
 
-    @staticmethod
-    @numba_util.jit()
-    def threshold_mask_via_arrays_jit_from(
-        fractional_accuracy_threshold: float,
-        relative_accuracy_threshold: Optional[float],
-        threshold_mask: np.ndarray,
-        array_higher_sub_2d: np.ndarray,
-        array_lower_sub_2d: np.ndarray,
-        array_higher_mask: np.ndarray,
-    ) -> np.ndarray:
-        """
-        Jitted function to determine the fractional mask, which is a mask where:
-
-        - ``True`` entries signify the function has been evaluated in that pixel to desired accuracy and
-          therefore does not need to be iteratively computed at higher levels of sub-gridding.
-
-        - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
-          therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
-        """
-
-        if fractional_accuracy_threshold is not None:
-            for y in range(threshold_mask.shape[0]):
-                for x in range(threshold_mask.shape[1]):
-                    if not array_higher_mask[y, x]:
-                        if array_lower_sub_2d[y, x] > 0:
-                            fractional_accuracy = (
-                                array_lower_sub_2d[y, x] / array_higher_sub_2d[y, x]
-                            )
-
-                            if fractional_accuracy > 1.0:
-                                fractional_accuracy = 1.0 / fractional_accuracy
-
-                        else:
-                            fractional_accuracy = 0.0
-
-                        if fractional_accuracy < fractional_accuracy_threshold:
-                            threshold_mask[y, x] = False
-
-        if relative_accuracy_threshold is not None:
-            for y in range(threshold_mask.shape[0]):
-                for x in range(threshold_mask.shape[1]):
-                    if not array_higher_mask[y, x]:
-                        if (
-                            abs(array_lower_sub_2d[y, x] - array_higher_sub_2d[y, x])
-                            > relative_accuracy_threshold
-                        ):
-                            threshold_mask[y, x] = False
-
-        return threshold_mask
-
     def iterated_array_from(
         self, func: Callable, cls: object, array_lower_sub_2d: Array2D
     ) -> Array2D:
@@ -277,30 +396,6 @@ class Iterator:
 
         return Array2D(values=iterated_array_1d, mask=self.mask.derive_mask.sub_1)
 
-    @staticmethod
-    @numba_util.jit()
-    def iterated_array_jit_from(
-        iterated_array: np.ndarray,
-        threshold_mask_higher_sub: np.ndarray,
-        threshold_mask_lower_sub: np.ndarray,
-        array_higher_sub_2d: np.ndarray,
-    ) -> np.ndarray:
-        """
-        Create the iterated array from a result array that is computed at a higher sub size leel than the previous grid.
-
-        The iterated array is only updated for pixels where the fractional accuracy is met.
-        """
-
-        for y in range(iterated_array.shape[0]):
-            for x in range(iterated_array.shape[1]):
-                if (
-                    threshold_mask_higher_sub[y, x]
-                    and not threshold_mask_lower_sub[y, x]
-                ):
-                    iterated_array[y, x] = array_higher_sub_2d[y, x]
-
-        return iterated_array
-
     def threshold_mask_via_grids_from(
         self, grid_lower_sub_2d: Grid2D, grid_higher_sub_2d: Grid2D
     ) -> Mask2D:
@@ -342,78 +437,6 @@ class Iterator:
             pixel_scales=grid_higher_sub_2d.pixel_scales,
             origin=grid_higher_sub_2d.origin,
         )
-
-    @staticmethod
-    @numba_util.jit()
-    def threshold_mask_via_grids_jit_from(
-        fractional_accuracy_threshold: float,
-        relative_accuracy_threshold: float,
-        threshold_mask: np.ndarray,
-        grid_higher_sub_2d: np.ndarray,
-        grid_lower_sub_2d: np.ndarray,
-        grid_higher_mask: np.ndarray,
-    ) -> np.ndarray:
-        """
-        Jitted function to determine the fractional mask, which is a mask where:
-
-        - ``True`` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
-          therefore does not need to be iteratively computed at higher levels of sub-gridding.
-
-        - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
-          therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
-        """
-
-        for y in range(threshold_mask.shape[0]):
-            for x in range(threshold_mask.shape[1]):
-                if not grid_higher_mask[y, x]:
-                    if abs(grid_higher_sub_2d[y, x, 0]) > 0:
-                        fractional_accuracy_y = (
-                            grid_lower_sub_2d[y, x, 0] / grid_higher_sub_2d[y, x, 0]
-                        )
-
-                    else:
-                        fractional_accuracy_y = 1.0
-
-                    if abs(grid_higher_sub_2d[y, x, 1]) > 0:
-                        fractional_accuracy_x = (
-                            grid_lower_sub_2d[y, x, 1] / grid_higher_sub_2d[y, x, 1]
-                        )
-
-                    else:
-                        fractional_accuracy_x = 1.0
-
-                    if fractional_accuracy_y > 1.0:
-                        fractional_accuracy_y = 1.0 / fractional_accuracy_y
-
-                    if fractional_accuracy_x > 1.0:
-                        fractional_accuracy_x = 1.0 / fractional_accuracy_x
-
-                    fractional_accuracy = min(
-                        fractional_accuracy_y, fractional_accuracy_x
-                    )
-
-                    if fractional_accuracy < fractional_accuracy_threshold:
-                        threshold_mask[y, x] = False
-
-        if relative_accuracy_threshold is not None:
-            for y in range(threshold_mask.shape[0]):
-                for x in range(threshold_mask.shape[1]):
-                    if not grid_higher_mask[y, x]:
-                        relative_accuracy_y = abs(
-                            grid_lower_sub_2d[y, x, 0] - grid_higher_sub_2d[y, x, 0]
-                        )
-                        relative_accuracy_x = abs(
-                            grid_lower_sub_2d[y, x, 1] - grid_higher_sub_2d[y, x, 1]
-                        )
-
-                        relative_accuracy = max(
-                            relative_accuracy_y, relative_accuracy_x
-                        )
-
-                        if relative_accuracy > relative_accuracy_threshold:
-                            threshold_mask[y, x] = False
-
-        return threshold_mask
 
     def iterated_grid_from(
         self, func: Callable, cls: object, grid_lower_sub_2d: Grid2D
@@ -493,30 +516,6 @@ class Iterator:
         )
 
         return Grid2D(values=iterated_grid_1d, mask=self.mask.derive_mask.sub_1)
-
-    @staticmethod
-    @numba_util.jit()
-    def iterated_grid_jit_from(
-        iterated_grid: Grid2D,
-        threshold_mask_higher_sub: np.ndarray,
-        threshold_mask_lower_sub: np.ndarray,
-        grid_higher_sub_2d: np.ndarray,
-    ) -> Grid2D:
-        """
-        Create the iterated grid from a result grid that is computed at a higher sub size level than the previous grid.
-
-        The iterated grid is only updated for pixels where the fractional accuracy is met in both the (y,x) coodinates.
-        """
-
-        for y in range(iterated_grid.shape[0]):
-            for x in range(iterated_grid.shape[1]):
-                if (
-                    threshold_mask_higher_sub[y, x]
-                    and not threshold_mask_lower_sub[y, x]
-                ):
-                    iterated_grid[y, x, :] = grid_higher_sub_2d[y, x, :]
-
-        return iterated_grid
 
     def iterated_result_from(
         self, func: Callable, cls: object
