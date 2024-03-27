@@ -28,18 +28,18 @@ class SettingsInterferometer(AbstractSettingsDataset):
           ----------
         grid_class : ag.Grid2D
             The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
-            and `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
+            and `Iterator` (see the `Grid2D` documentation for a description of these options).
         grid_pixelization_class : ag.Grid2D
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D` and `Grid2DIterate` (see the `Grid2D` documentation for a
+            The options are `Grid2D` and `Iterator` (see the `Grid2D` documentation for a
             description of these options).
         sub_size
             If the grid and / or grid_pixelization use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the fractional accuracy it
+            If the grid and / or grid_pixelization use a `Iterator`, this sets the fractional accuracy it
             uses when evaluating functions.
         sub_steps : [int]
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
+            If the grid and / or grid_pixelization use a `Iterator`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
         """
 

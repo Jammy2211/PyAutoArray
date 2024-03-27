@@ -85,10 +85,10 @@ def test__grid__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(grid_class=aa.Grid2DIterate),
+        settings=ds.AbstractSettingsDataset(grid_class=aa.Iterator),
     )
 
-    assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
+    assert isinstance(masked_imaging_7x7.grid, aa.Iterator)
     assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
 
 

@@ -200,12 +200,12 @@ def test__apply_mask__apply_settings__grids(
 
     masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
     masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-        settings=aa.SettingsImaging(grid_class=aa.Grid2DIterate)
+        settings=aa.SettingsImaging(grid_class=aa.Iterator)
     )
 
-    assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
+    assert isinstance(masked_imaging_7x7.grid, aa.Iterator)
     assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
-    assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DIterate)
+    assert isinstance(masked_imaging_7x7.blurring_grid, aa.Iterator)
     assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_2d_7x7).all()
 
 

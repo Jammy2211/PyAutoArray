@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Type, Union
 
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.iterate_2d import Grid2DIterate
+from autoarray.structures.grids.iterate_2d import Iterator
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 
@@ -14,7 +14,7 @@ def grid_via_grid_class_from(
     fractional_accuracy: float,
     relative_accuracy: Optional[float],
     sub_steps: List[int],
-) -> Optional[Union[Grid1D, Grid2D, Grid2DIterate]]:
+) -> Optional[Union[Grid1D, Grid2D, Iterator]]:
     if mask.pixel_scales is None:
         return None
 
@@ -30,8 +30,8 @@ def grid_via_grid_class_from(
     if grid_class is Grid2D:
         return Grid2D.from_mask(mask=mask)
 
-    elif grid_class is Grid2DIterate:
-        return Grid2DIterate.from_mask(
+    elif grid_class is Iterator:
+        return Iterator.from_mask(
             mask=mask,
             fractional_accuracy=fractional_accuracy,
             relative_accuracy=relative_accuracy,
@@ -61,23 +61,23 @@ class AbstractSettingsDataset:
         ----------
         grid_class
             The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D` and
-            `Grid2DIterate` (see the `Grid2D` documentation for a description of these options).
+            `Iterator` (see the `Grid2D` documentation for a description of these options).
         grid_pixelization_class
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D` and `Grid2DIterate` (see the `Grid2D` documentation for a
+            The options are `Grid2D` and `Iterator` (see the `Grid2D` documentation for a
             description of these options).
         sub_size
             If the grid and / or grid_pixelization use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the fractional accuracy it
+            If the grid and / or grid_pixelization use a `Iterator`, this sets the fractional accuracy it
             uses when evaluating functions, where the fraction accuracy is the ratio of the values computed using
             two grids at a higher and lower sub-grid size.
         relative_accuracy
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the relative accuracy it
+            If the grid and / or grid_pixelization use a `Iterator`, this sets the relative accuracy it
             uses when evaluating functions, where the relative accuracy is the absolute difference of the values
             computed using two grids at a higher and lower sub-grid size.
         sub_steps : [int]
-            If the grid and / or grid_pixelization use a `Grid2DIterate`, this sets the steps the sub-size is increased by
+            If the grid and / or grid_pixelization use a `Iterator`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
         """
 
