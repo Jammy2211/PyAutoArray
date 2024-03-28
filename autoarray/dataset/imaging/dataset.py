@@ -356,7 +356,8 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
-            settings=self.settings,
+            iterator=self.iterator,
+            iterator_pixelization=self.iterator_pixelization,
             pad_for_convolver=True,
         )
 
