@@ -227,7 +227,8 @@ def grid_2d_to_structure(func):
         if hasattr(grid, "iterator"):
             if isinstance(grid.iterator, Iterator):
                 return grid.iterator.iterated_result_from(func=func, cls=obj, grid=grid)
-        elif isinstance(grid, Grid2DIrregular):
+
+        if isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid2D):
@@ -237,7 +238,6 @@ def grid_2d_to_structure(func):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result = func(obj, grid_2d_radial, *args, **kwargs)
             return grid.structure_2d_from(result=result)
-
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)
 
@@ -296,7 +296,8 @@ def grid_2d_to_structure_list(func):
                 ]
                 result_list = [result.binned for result in result_list]
                 return grid.structure_2d_list_from(result_list=result_list)
-        elif isinstance(grid, Grid2DIrregular):
+
+        if isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
         elif isinstance(grid, Grid2D):
