@@ -30,8 +30,8 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         sub_size: int = 4,  # Temporary before refactor
         sub_size_pixelization: int = 1,  # Temporary before refactor
-        iterator: Optional[OverSampleIterate] = None,
-        iterator_pixelization: Optional[OverSampleIterate] = None,
+        over_sample: Optional[OverSampleIterate] = None,
+        over_sample_pixelization: Optional[OverSampleIterate] = None,
         pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
@@ -62,7 +62,7 @@ class Imaging(AbstractDataset):
         is specifically used for pixelizations computed via the `invserion` module, which often use different
         oversampling and sub-size values to the grid above.
 
-        The `iterator` and `iterator_pixelization` define how over sampling is performed for these grids.
+        The `over_sample` and `over_sample_pixelization` define how over sampling is performed for these grids.
 
         This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
         It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
@@ -81,10 +81,10 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
-        iterator
+        over_sample
             How over sampling is performed for the grid which performs calculations not associated with a pixelization.
             In PyAutoGalaxy and PyAutoLens this is light profile calculations.
-        iterator_pixelization
+        over_sample_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
         pad_for_convolver
@@ -130,8 +130,8 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=noise_covariance_matrix,
             sub_size=sub_size,
             sub_size_pixelization=sub_size_pixelization,
-            iterator=iterator,
-            iterator_pixelization=iterator_pixelization,
+            over_sample=over_sample,
+            over_sample_pixelization=over_sample_pixelization,
         )
 
         self.use_normalized_psf = use_normalized_psf
@@ -245,8 +245,8 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        iterator: Optional[OverSampleIterate] = None,
-        iterator_pixelization: Optional[OverSampleIterate] = None,
+        over_sample: Optional[OverSampleIterate] = None,
+        over_sample_pixelization: Optional[OverSampleIterate] = None,
     ) -> "Imaging":
         """
         Load an imaging dataset from multiple .fits file.
@@ -309,8 +309,8 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
-            iterator=iterator,
-            iterator_pixelization=iterator_pixelization,
+            over_sample=over_sample,
+            over_sample_pixelization=over_sample_pixelization,
         )
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
@@ -356,8 +356,8 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
-            iterator=self.iterator,
-            iterator_pixelization=self.iterator_pixelization,
+            over_sample=self.over_sample,
+            over_sample_pixelization=self.over_sample_pixelization,
             pad_for_convolver=True,
         )
 

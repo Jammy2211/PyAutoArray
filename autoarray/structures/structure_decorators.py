@@ -225,9 +225,9 @@ def grid_2d_to_structure(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if hasattr(grid, "iterator"):
-            if isinstance(grid.iterator, OverSampleIterate):
-                return grid.iterator.iterated_result_from(func=func, cls=obj, grid=grid)
+        if hasattr(grid, "over_sample"):
+            if isinstance(grid.over_sample, OverSampleIterate):
+                return grid.over_sample.iterated_result_from(func=func, cls=obj, grid=grid)
 
         if isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
@@ -285,10 +285,10 @@ def grid_2d_to_structure_list(func):
             of NumPy arrays.
         """
 
-        if hasattr(grid, "iterator"):
-            if isinstance(grid.iterator, OverSampleIterate):
+        if hasattr(grid, "over_sample"):
+            if isinstance(grid.over_sample, OverSampleIterate):
                 mask = grid.mask.mask_new_sub_size_from(
-                    mask=grid.mask, sub_size=max(grid.iterator.sub_steps)
+                    mask=grid.mask, sub_size=max(grid.over_sample.sub_steps)
                 )
                 grid_compute = Grid2D.from_mask(mask=mask)
                 result_list = func(obj, grid_compute, *args, **kwargs)
