@@ -55,7 +55,6 @@ def test__grid__uses_mask_and_settings(
     grid_2d_7x7,
     sub_grid_2d_7x7,
 ):
-
     masked_image_7x7 = aa.Array2D(
         values=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
@@ -87,7 +86,6 @@ def test__grid__uses_mask_and_settings(
 def test__grid_pixelization__uses_mask_and_settings(
     image_7x7, noise_map_7x7, sub_mask_2d_7x7, grid_2d_7x7, sub_grid_2d_7x7
 ):
-
     masked_image_7x7 = aa.Array2D(
         values=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
@@ -119,12 +117,8 @@ def test__grid_pixelization__uses_mask_and_settings(
 
 
 def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
-
     dataset_7x7 = ds.AbstractDataset(
-        data=image_7x7,
-        noise_map=noise_map_7x7,
-        sub_size=2,
-        sub_size_pixelization=2
+        data=image_7x7, noise_map=noise_map_7x7, sub_size=2, sub_size_pixelization=2
     )
 
     assert dataset_7x7.grid.mask.sub_size == 2

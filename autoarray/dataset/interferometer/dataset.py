@@ -89,7 +89,12 @@ class Interferometer(AbstractDataset):
         """
         self.real_space_mask = real_space_mask
 
-        super().__init__(data=data, noise_map=noise_map, iterator=iterator, iterator_pixelization=iterator_pixelization)
+        super().__init__(
+            data=data,
+            noise_map=noise_map,
+            iterator=iterator,
+            iterator_pixelization=iterator_pixelization,
+        )
 
         self.uv_wavelengths = uv_wavelengths
 
@@ -136,7 +141,7 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=uv_wavelengths,
             transformer_class=transformer_class,
             iterator=iterator,
-            iterator_pixelization=iterator_pixelization
+            iterator_pixelization=iterator_pixelization,
         )
 
     @cached_property

@@ -150,7 +150,9 @@ class AbstractDataset:
         """
         # TODO : Use oversampling API will remove this hack
 
-        mask = self.mask.mask_new_sub_size_from(mask=self.mask, sub_size=self.sub_size_pixelization)
+        mask = self.mask.mask_new_sub_size_from(
+            mask=self.mask, sub_size=self.sub_size_pixelization
+        )
 
         return Grid2D.from_mask(
             mask=mask,

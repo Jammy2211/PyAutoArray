@@ -239,9 +239,7 @@ def make_interferometer_7():
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_sub_mask_2d_7x7(),
-        settings=aa.SettingsInterferometer(
-            grid_class=aa.Grid2D, sub_size=1, transformer_class=aa.TransformerDFT
-        ),
+        transformer_class=aa.TransformerDFT,
     )
 
 
@@ -251,9 +249,7 @@ def make_interferometer_7_no_fft():
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2_no_fft(),
         real_space_mask=make_sub_mask_2d_7x7(),
-        settings=aa.SettingsInterferometer(
-            grid_class=aa.Grid2D, sub_size=1, transformer_class=aa.TransformerDFT
-        ),
+        transformer_class=aa.TransformerDFT,
     )
 
 
@@ -263,9 +259,7 @@ def make_interferometer_7_grid():
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_sub_mask_2d_7x7(),
-        settings=aa.SettingsInterferometer(
-            sub_size=1, transformer_class=aa.TransformerDFT
-        ),
+        transformer_class=aa.TransformerDFT,
     )
 
 
@@ -275,9 +269,7 @@ def make_interferometer_7_lop():
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
-        settings=aa.SettingsInterferometer(
-            sub_size_pixelization=1, transformer_class=aa.TransformerNUFFT
-        ),
+        transformer_class=aa.TransformerNUFFT,
     )
 
 

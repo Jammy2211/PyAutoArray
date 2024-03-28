@@ -30,7 +30,7 @@ class Grid2D(Structure):
         store_native: bool = False,
         iterator: Optional[Iterator] = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -388,7 +388,7 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            iterator=iterator
+            iterator=iterator,
         )
 
     @classmethod
@@ -447,7 +447,7 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            iterator=iterator
+            iterator=iterator,
         )
 
     @classmethod
@@ -506,7 +506,9 @@ class Grid2D(Structure):
             abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
         )
 
-        return Grid2D.no_mask(values=grid_2d, pixel_scales=pixel_scales, iterator=iterator)
+        return Grid2D.no_mask(
+            values=grid_2d, pixel_scales=pixel_scales, iterator=iterator
+        )
 
     @classmethod
     def uniform(
@@ -548,7 +550,7 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            iterator=iterator
+            iterator=iterator,
         )
 
     @classmethod
@@ -604,7 +606,7 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            iterator=iterator
+            iterator=iterator,
         )
 
     @classmethod
@@ -667,7 +669,10 @@ class Grid2D(Structure):
 
     @classmethod
     def blurring_grid_from(
-        cls, mask: Mask2D, kernel_shape_native: Tuple[int, int], iterator: Optional[Iterator] = None,
+        cls,
+        mask: Mask2D,
+        kernel_shape_native: Tuple[int, int],
+        iterator: Optional[Iterator] = None,
     ) -> "Grid2D":
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
@@ -777,7 +782,9 @@ class Grid2D(Structure):
 
         This method is used in the child `Grid2D` classes to create their `native` properties.
         """
-        return Grid2D(values=self, mask=self.mask, iterator=self.iterator, store_native=True)
+        return Grid2D(
+            values=self, mask=self.mask, iterator=self.iterator, store_native=True
+        )
 
     @property
     def binned(self) -> "Grid2D":
@@ -808,7 +815,11 @@ class Grid2D(Structure):
             (grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1
         )
 
-        return Grid2D(values=grid_2d_binned, mask=self.mask.derive_mask.sub_1, iterator=self.iterator)
+        return Grid2D(
+            values=grid_2d_binned,
+            mask=self.mask.derive_mask.sub_1,
+            iterator=self.iterator,
+        )
 
     @property
     def flipped(self) -> "Grid2D":
@@ -841,7 +852,9 @@ class Grid2D(Structure):
         deflection_grid
             The grid of (y,x) coordinates which is subtracted from this grid.
         """
-        return Grid2D(values=self - deflection_grid, mask=self.mask, iterator=self.iterator)
+        return Grid2D(
+            values=self - deflection_grid, mask=self.mask, iterator=self.iterator
+        )
 
     def blurring_grid_via_kernel_shape_from(
         self, kernel_shape_native: Tuple[int, int]
@@ -858,7 +871,9 @@ class Grid2D(Structure):
         """
 
         return Grid2D.blurring_grid_from(
-            mask=self.mask, kernel_shape_native=kernel_shape_native, iterator=self.iterator
+            mask=self.mask,
+            kernel_shape_native=kernel_shape_native,
+            iterator=self.iterator,
         )
 
     def grid_with_coordinates_within_distance_removed_from(
@@ -1241,7 +1256,7 @@ class Grid2D(Structure):
             ),
             mask=grid.mask,
             sub_size=grid.mask.sub_size,
-            iterator=self.iterator
+            iterator=self.iterator,
         )
 
     def relocated_mesh_grid_from(self, mesh_grid: Grid2DIrregular) -> Grid2DIrregular:

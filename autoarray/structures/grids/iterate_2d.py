@@ -80,13 +80,11 @@ def iterated_array_jit_from(
 
     for y in range(iterated_array.shape[0]):
         for x in range(iterated_array.shape[1]):
-            if (
-                threshold_mask_higher_sub[y, x]
-                and not threshold_mask_lower_sub[y, x]
-            ):
+            if threshold_mask_higher_sub[y, x] and not threshold_mask_lower_sub[y, x]:
                 iterated_array[y, x] = array_higher_sub_2d[y, x]
 
     return iterated_array
+
 
 @numba_util.jit()
 def threshold_mask_via_grids_jit_from(
@@ -132,9 +130,7 @@ def threshold_mask_via_grids_jit_from(
                 if fractional_accuracy_x > 1.0:
                     fractional_accuracy_x = 1.0 / fractional_accuracy_x
 
-                fractional_accuracy = min(
-                    fractional_accuracy_y, fractional_accuracy_x
-                )
+                fractional_accuracy = min(fractional_accuracy_y, fractional_accuracy_x)
 
                 if fractional_accuracy < fractional_accuracy_threshold:
                     threshold_mask[y, x] = False
@@ -150,9 +146,7 @@ def threshold_mask_via_grids_jit_from(
                         grid_lower_sub_2d[y, x, 1] - grid_higher_sub_2d[y, x, 1]
                     )
 
-                    relative_accuracy = max(
-                        relative_accuracy_y, relative_accuracy_x
-                    )
+                    relative_accuracy = max(relative_accuracy_y, relative_accuracy_x)
 
                     if relative_accuracy > relative_accuracy_threshold:
                         threshold_mask[y, x] = False
@@ -175,10 +169,7 @@ def iterated_grid_jit_from(
 
     for y in range(iterated_grid.shape[0]):
         for x in range(iterated_grid.shape[1]):
-            if (
-                threshold_mask_higher_sub[y, x]
-                and not threshold_mask_lower_sub[y, x]
-            ):
+            if threshold_mask_higher_sub[y, x] and not threshold_mask_lower_sub[y, x]:
                 iterated_grid[y, x, :] = grid_higher_sub_2d[y, x, :]
 
     return iterated_grid
@@ -356,10 +347,14 @@ class Iterator:
                 )
 
             except ZeroDivisionError:
-                return self.return_iterated_array_result(iterated_array=iterated_array, mask=mask)
+                return self.return_iterated_array_result(
+                    iterated_array=iterated_array, mask=mask
+                )
 
             if threshold_mask_higher_sub.is_all_true:
-                return self.return_iterated_array_result(iterated_array=iterated_array, mask=mask)
+                return self.return_iterated_array_result(
+                    iterated_array=iterated_array, mask=mask
+                )
 
             array_lower_sub_2d = array_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
@@ -373,9 +368,13 @@ class Iterator:
 
         iterated_array_2d = iterated_array + array_higher_sub.binned.native
 
-        return self.return_iterated_array_result(iterated_array=iterated_array_2d, mask=mask)
+        return self.return_iterated_array_result(
+            iterated_array=iterated_array_2d, mask=mask
+        )
 
-    def return_iterated_array_result(self, iterated_array: Array2D, mask : Mask2D) -> Array2D:
+    def return_iterated_array_result(
+        self, iterated_array: Array2D, mask: Mask2D
+    ) -> Array2D:
         """
         Returns the resulting iterated array, by mapping it to 1D and then passing it back as an ``Array2D`` structure.
 
@@ -522,7 +521,7 @@ class Iterator:
         return Grid2D(values=iterated_grid_1d, mask=mask.derive_mask.sub_1)
 
     def iterated_result_from(
-        self, func: Callable, cls: object, grid : Grid2D
+        self, func: Callable, cls: object, grid: Grid2D
     ) -> Union[Array2D, Grid2D]:
         """
         Iterate over a function that returns an array or grid of values until the it meets a specified fractional
@@ -543,9 +542,7 @@ class Iterator:
             The 2D grid whose values input into the function are iterated over.
         """
         result_sub_1_1d = func(cls, grid)
-        result_sub_1_2d = grid.structure_2d_from(
-            result=result_sub_1_1d
-        ).binned.native
+        result_sub_1_2d = grid.structure_2d_from(result=result_sub_1_1d).binned.native
 
         if len(result_sub_1_2d.shape) == 2:
             return self.iterated_array_from(

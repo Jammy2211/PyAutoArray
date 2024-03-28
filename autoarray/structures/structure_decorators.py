@@ -292,7 +292,8 @@ def grid_2d_to_structure_list(func):
                 grid_compute = Grid2D.from_mask(mask=mask)
                 result_list = func(obj, grid_compute, *args, **kwargs)
                 result_list = [
-                    grid_compute.structure_2d_from(result=result) for result in result_list
+                    grid_compute.structure_2d_from(result=result)
+                    for result in result_list
                 ]
                 result_list = [result.binned for result in result_list]
                 return grid.structure_2d_list_from(result_list=result_list)

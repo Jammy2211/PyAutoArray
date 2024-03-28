@@ -112,7 +112,7 @@ def test__transformer(
         noise_map=visibilities_noise_map_7,
         uv_wavelengths=uv_wavelengths_7x2,
         real_space_mask=sub_mask_2d_7x7,
-        transformer_class=transformer.TransformerDFT
+        transformer_class=transformer.TransformerDFT,
     )
 
     assert type(interferometer_7.transformer) == transformer.TransformerDFT
@@ -122,7 +122,7 @@ def test__transformer(
         noise_map=visibilities_noise_map_7,
         uv_wavelengths=uv_wavelengths_7x2,
         real_space_mask=sub_mask_2d_7x7,
-        transformer_class=transformer.TransformerNUFFT
+        transformer_class=transformer.TransformerNUFFT,
     )
 
     assert type(interferometer_7.transformer) == transformer.TransformerNUFFT

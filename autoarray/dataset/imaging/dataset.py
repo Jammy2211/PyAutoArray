@@ -28,7 +28,7 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        sub_size : int = 4, # Temporary before refactor
+        sub_size: int = 4,  # Temporary before refactor
         sub_size_pixelization: int = 1,  # Temporary before refactor
         iterator: Optional[Iterator] = None,
         iterator_pixelization: Optional[Iterator] = None,
@@ -310,7 +310,7 @@ class Imaging(AbstractDataset):
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
             iterator=iterator,
-            iterator_pixelization=iterator_pixelization
+            iterator_pixelization=iterator_pixelization,
         )
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
