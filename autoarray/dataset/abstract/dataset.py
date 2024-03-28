@@ -25,8 +25,8 @@ class AbstractDataset:
         data: Structure,
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        sub_size: int = 4,  # Temporary before refactor
-        sub_size_pixelization: int = 1,  # Temporary before refactor
+        sub_size: int = 1,  # Temporary before refactor
+        sub_size_pixelization: int = 4,  # Temporary before refactor
         over_sample: Optional[OverSampleIterate] = None,
         over_sample_pixelization: Optional[OverSampleIterate] = None,
     ):

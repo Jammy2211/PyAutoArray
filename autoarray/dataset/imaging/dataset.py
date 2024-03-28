@@ -28,8 +28,8 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        sub_size: int = 4,  # Temporary before refactor
-        sub_size_pixelization: int = 1,  # Temporary before refactor
+        sub_size: int = 1,  # Temporary before refactor
+        sub_size_pixelization: int = 4,  # Temporary before refactor
         over_sample: Optional[OverSampleIterate] = None,
         over_sample_pixelization: Optional[OverSampleIterate] = None,
         pad_for_convolver: bool = False,
