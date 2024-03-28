@@ -356,6 +356,8 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
+            sub_size=self.sub_size,
+            sub_size_pixelization=self.sub_size_pixelization,
             over_sample=self.over_sample,
             over_sample_pixelization=self.over_sample_pixelization,
             pad_for_convolver=True,
