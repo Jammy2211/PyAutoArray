@@ -95,7 +95,7 @@ class Grid2D(Structure):
              x x x x x x x x x x      grid[9] = [-0.5,  1.5]
 
 
-        **Case 2 (sub-size>1, slim)**
+        **Case 1 (sub-size>1, slim)**
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (y,x)
         coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid2D is therefore stored as an ndarray

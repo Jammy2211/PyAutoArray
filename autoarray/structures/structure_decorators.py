@@ -189,14 +189,15 @@ def grid_2d_to_structure(func):
         **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
-        This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`,
-        `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
-        interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
-        coordinates of the grid using specific functionality of the input grid.
+        This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIrregular` or `Grid1D`)
+        into a function.
+
+        It allows these classes to be interchangeably input into a function, such that the grid is used to evaluate
+        the function at every (y,x) coordinates of the grid using specific functionality of the input grid.
 
         The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
-        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If an `OverSampleIterate` is
-        input, the function is evaluated using the appropriate `iterated_from` function.
+        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  For a `Grid2D`, the
+        function is evaluated using its `OverSample` object.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
         `ArrayIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
@@ -338,14 +339,15 @@ def grid_2d_to_vector_yx(func):
         **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
-        This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`,
-        `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
-        interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
-        coordinates of the grid using specific functionality of the input grid.
+        This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`, `Grid2DIrregular` or `Grid1D`)
+        into a function.
+
+        It allows these classes to be interchangeably input into a function, such that the grid is used to evaluate
+        the function at every (y,x) coordinates of the grid using specific functionality of the input grid.
 
         The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
-        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `OverSampleIterate` is
-        input, the function is evaluated using the appropriate `iterated_from` function.
+        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  For a `Grid2D`, the
+        function is evaluated using its `OverSample` object.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
         `ArrayIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:

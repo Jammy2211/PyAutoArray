@@ -183,30 +183,24 @@ class OverSampleIterate:
         sub_steps: List[int] = None,
     ):
         """
-        Represents a grid of coordinates as described for the ``Grid2D`` class, but using an iterative sub-grid that
-        adapts its resolution when it is input into a function that performs an analytic calculation.
+        Over samples grid calculations using an iterative sub-grid that increases the sampling until a threshold
+        accuracy is met.
 
-        A ``Grid2D`` represents (y,x) coordinates using a sub-grid, where functions are evaluated once at every coordinate
-        on the sub-grid and averaged to give a more precise evaluation an analytic function. A ``OverSampleIterate`` does not
-        have a specified sub-grid size, but instead iteratively recomputes the analytic function at increasing sub-grid
-        sizes until an input fractional accuracy is reached.
+        When a 2D grid of (y,x) coordinates is input into a function, the result is evaluated at every coordinate
+        on the grid. When the grid is paired to a 2D image (e.g. an `Array2D`) the solution needs to approximate
+        the 2D integral of that function in each pixel. Over sample objects define how this over-sampling is performed.
 
-        Iteration is performed on a per (y,x) coordinate basis, such that the sub-grid size will adopt low values
-        wherever doing so can meet the fractional accuracy and high values only where it is required to meet the
-        fractional accuracy. For functions where a wide range of sub-grid sizes allow fractional accuracy to be met
-        this ensures the function can be evaluated accurate in a computaionally efficient manner.
+        This object iteratively recomputes the analytic function at increasing sub-grid resolutions until an input
+        fractional accuracy is reached. The sub-grid is increase in each pixel, therefore it will gradually better
+        approximate the 2D integral after each iteration.
 
-        This overcomes a limitation of the ``Grid2D`` class whereby if a small subset of pixels require high levels of
-        sub-gridding to be evaluated accuracy, the entire grid would require this sub-grid size thus leading to
-        unecessary expensive function evaluations.
+        Iteration is performed on a per pixel basis, such that the sub-grid size will stop at lower values
+        in pixels where the fractional accuracy is met quickly. It will only go to high values where high sampling is
+        required to meet the accuracy. This ensures the function is evaluated accurately in a computationally
+        efficient manner.
 
         Parameters
         ----------
-        values
-            The (y,x) coordinates of the grid.
-        mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
         fractional_accuracy
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
             of the value at a higher sub size to the value computed using the previous sub_size. The fractional
@@ -218,9 +212,6 @@ class OverSampleIterate:
         sub_steps
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
-        store_native
-            If True, the ndarray is stored in its native format [total_y_pixels, total_x_pixels, 2]. This avoids
-            mapping large data arrays to and from the slim / native formats, which can be a computational bottleneck.
         """
 
         sub_steps = sub_steps_from(sub_steps=sub_steps)
