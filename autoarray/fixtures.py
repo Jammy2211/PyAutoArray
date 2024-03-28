@@ -119,12 +119,6 @@ def make_sub_grid_2d_7x7():
     return aa.Grid2D.from_mask(mask=make_sub_mask_2d_7x7())
 
 
-def make_grid_2d_iterate_7x7():
-    return aa.Iterator.from_mask(
-        mask=make_mask_2d_7x7(), fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-    )
-
-
 def make_sub_grid_2d_7x7_simple():
     sub_grid_2d_7x7 = make_sub_grid_2d_7x7()
     sub_grid_2d_7x7[0] = np.array([1.0, 1.0])

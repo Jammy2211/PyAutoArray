@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
-    from autoarray.structures.grids.iterate_2d import Iterator
+    from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 
 from autoconf import conf
 from autoconf import cached_property
@@ -28,7 +28,7 @@ class Grid2D(Structure):
         values: Union[np.ndarray, List],
         mask: Mask2D,
         store_native: bool = False,
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
         *args,
         **kwargs,
     ):
@@ -262,7 +262,7 @@ class Grid2D(Structure):
         shape_native: Tuple[int, int] = None,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D or 2D, automatically
@@ -321,7 +321,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values.
@@ -399,7 +399,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values.
@@ -456,7 +456,7 @@ class Grid2D(Structure):
         extent: Tuple[float, float, float, float],
         shape_native: Tuple[int, int],
         sub_size: int = 1,
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the extent of the (y,x) grid coordinates as an input
@@ -517,7 +517,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a `Grid2D` (see *Grid2D.__new__*) as a uniform grid of (y,x) values given an input `shape_native` and
@@ -560,7 +560,7 @@ class Grid2D(Structure):
         shape_native: Tuple[int, int],
         sub_size: int = 1,
         buffer_around_corners: bool = False,
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from an input bounding box with coordinates [y_min, y_max, x_min, x_max],
@@ -610,7 +610,7 @@ class Grid2D(Structure):
         )
 
     @classmethod
-    def from_mask(cls, mask: Mask2D, iterator: Optional[Iterator] = None) -> "Grid2D":
+    def from_mask(cls, mask: Mask2D, iterator: Optional[OverSampleIterate] = None) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
         grid is represented in its native 2D masked values are (0.0, 0.0)).
@@ -622,8 +622,6 @@ class Grid2D(Structure):
         mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
-
-        print(mask)
 
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=np.array(mask),
@@ -641,7 +639,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
@@ -672,7 +670,7 @@ class Grid2D(Structure):
         cls,
         mask: Mask2D,
         kernel_shape_native: Tuple[int, int],
-        iterator: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and

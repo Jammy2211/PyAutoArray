@@ -12,7 +12,7 @@ from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.iterate_2d import Iterator
+from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 from autoconf import cached_property
 
 
@@ -27,8 +27,8 @@ class AbstractDataset:
         noise_covariance_matrix: Optional[np.ndarray] = None,
         sub_size: int = 4,  # Temporary before refactor
         sub_size_pixelization: int = 1,  # Temporary before refactor
-        iterator: Optional[Iterator] = None,
-        iterator_pixelization: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
+        iterator_pixelization: Optional[OverSampleIterate] = None,
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations

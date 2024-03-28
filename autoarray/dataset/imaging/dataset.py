@@ -10,7 +10,7 @@ from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.iterate_2d import Iterator
+from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
@@ -30,8 +30,8 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix: Optional[np.ndarray] = None,
         sub_size: int = 4,  # Temporary before refactor
         sub_size_pixelization: int = 1,  # Temporary before refactor
-        iterator: Optional[Iterator] = None,
-        iterator_pixelization: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
+        iterator_pixelization: Optional[OverSampleIterate] = None,
         pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
@@ -245,8 +245,8 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        iterator: Optional[Iterator] = None,
-        iterator_pixelization: Optional[Iterator] = None,
+        iterator: Optional[OverSampleIterate] = None,
+        iterator_pixelization: Optional[OverSampleIterate] = None,
     ) -> "Imaging":
         """
         Load an imaging dataset from multiple .fits file.

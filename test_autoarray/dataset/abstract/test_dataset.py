@@ -76,10 +76,10 @@ def test__grid__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        iterator=aa.Iterator(),
+        iterator=aa.OverSampleIterate(),
     )
 
-    assert isinstance(masked_imaging_7x7.grid.iterator, aa.Iterator)
+    assert isinstance(masked_imaging_7x7.grid.iterator, aa.OverSampleIterate)
     assert (masked_imaging_7x7.grid.binned == sub_grid_2d_7x7.binned).all()
 
 
@@ -98,7 +98,7 @@ def test__grid_pixelization__uses_mask_and_settings(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
         sub_size_pixelization=2,
-        iterator_pixelization=aa.Iterator(),
+        iterator_pixelization=aa.OverSampleIterate(),
     )
 
     assert masked_imaging_7x7.grid_pixelization.sub_size == 2

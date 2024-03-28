@@ -175,7 +175,7 @@ def iterated_grid_jit_from(
     return iterated_grid
 
 
-class Iterator:
+class OverSampleIterate:
     def __init__(
         self,
         fractional_accuracy: float = 0.9999,
@@ -187,7 +187,7 @@ class Iterator:
         adapts its resolution when it is input into a function that performs an analytic calculation.
 
         A ``Grid2D`` represents (y,x) coordinates using a sub-grid, where functions are evaluated once at every coordinate
-        on the sub-grid and averaged to give a more precise evaluation an analytic function. A ``Iterator`` does not
+        on the sub-grid and averaged to give a more precise evaluation an analytic function. A ``OverSampleIterate`` does not
         have a specified sub-grid size, but instead iteratively recomputes the analytic function at increasing sub-grid
         sizes until an input fractional accuracy is reached.
 
@@ -250,7 +250,7 @@ class Iterator:
     ) -> Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
-        value in the result array is within the ``Iterator``'s specified fractional accuracy. The fractional mask thus
+        value in the result array is within the ``OverSampleIterate``'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
         specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
 
@@ -401,7 +401,7 @@ class Iterator:
     ) -> Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
-        value in the result array is within the ``Iterator``'s specified fractional accuracy. The fractional mask thus
+        value in the result array is within the ``OverSampleIterate``'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
         specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
 

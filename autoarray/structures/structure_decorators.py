@@ -11,7 +11,7 @@ from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
-from autoarray.structures.grids.iterate_2d import Iterator
+from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 from autoarray.structures.grids.transformed_2d import Grid2DTransformed
 from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
 from autoarray.structures.grids.uniform_1d import Grid1D
@@ -195,7 +195,7 @@ def grid_2d_to_structure(func):
         coordinates of the grid using specific functionality of the input grid.
 
         The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
-        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If an `Iterator` is
+        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If an `OverSampleIterate` is
         input, the function is evaluated using the appropriate `iterated_from` function.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
@@ -225,7 +225,7 @@ def grid_2d_to_structure(func):
         """
 
         if hasattr(grid, "iterator"):
-            if isinstance(grid.iterator, Iterator):
+            if isinstance(grid.iterator, OverSampleIterate):
                 return grid.iterator.iterated_result_from(func=func, cls=obj, grid=grid)
 
         if isinstance(grid, Grid2DIrregular):
@@ -285,7 +285,7 @@ def grid_2d_to_structure_list(func):
         """
 
         if hasattr(grid, "iterator"):
-            if isinstance(grid.iterator, Iterator):
+            if isinstance(grid.iterator, OverSampleIterate):
                 mask = grid.mask.mask_new_sub_size_from(
                     mask=grid.mask, sub_size=max(grid.iterator.sub_steps)
                 )
@@ -344,7 +344,7 @@ def grid_2d_to_vector_yx(func):
         coordinates of the grid using specific functionality of the input grid.
 
         The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
-        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `Iterator` is
+        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `OverSampleIterate` is
         input, the function is evaluated using the appropriate `iterated_from` function.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
