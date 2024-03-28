@@ -185,7 +185,6 @@ def test__apply_mask__apply_settings__grids(
     grid_2d_7x7,
     sub_grid_2d_7x7,
     blurring_grid_2d_7x7,
-    grid_2d_iterate_7x7,
 ):
     masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
     masked_imaging_7x7 = masked_imaging_7x7.apply_settings(

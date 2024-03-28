@@ -6,11 +6,11 @@ from typing import Optional, Union
 from autoconf import cached_property
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
-from autoarray.dataset.imaging.settings import SettingsImaging
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.iterate_2d import Iterator
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
@@ -28,8 +28,12 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        settings: SettingsImaging = SettingsImaging(),
+        sub_size : int = 4, # Temporary before refactor
+        sub_size_pixelization: int = 1,  # Temporary before refactor
+        iterator: Optional[Iterator] = None,
+        iterator_pixelization: Optional[Iterator] = None,
         pad_for_convolver: bool = False,
+        use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
     ):
         """
@@ -49,12 +53,16 @@ class Imaging(AbstractDataset):
         - `psf`: The Point Spread Function of the data, used to perform 2D convolution on images to produce a model
         image which is compared to the data.
 
-        The imaging dataset also contains a settings object, which includes the following attributes:
+        Datasets also contains following properties:
 
-        - `grid`: Grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
-        the centre of an image pixel. These may be used for certain calculations in an analysis. There are separate
-        grids for a pixelization and other calculations, as a pixelization grid often uses different over sampling
-        settings to other calculations.
+        - `grid`: A grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
+        the centre of an image pixel. This may be used in fits to calculate the model image of the imaging data.
+
+        - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
+        is specifically used for pixelizations computed via the `invserion` module, which often use different
+        oversampling and sub-size values to the grid above.
+
+        The `iterator` and `iterator_pixelization` define how over sampling is performed for these grids.
 
         This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
         It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
@@ -73,13 +81,19 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
-        settings
-            Controls various aspects of the dataset and how fits are performed using it, for example the grids
-            used for calculations.
+        iterator
+            How over sampling is performed for the grid which performs calculations not associated with a pixelization.
+            In PyAutoGalaxy and PyAutoLens this is light profile calculations.
+        iterator_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
         pad_for_convolver
             The PSF convolution may extend beyond the edges of the image mask, which can lead to edge effects in the
             convolved image. If `True`, the image and noise-map are padded to ensure the PSF convolution does not
             extend beyond the edge of the image.
+        use_normalized_psf
+            If `True`, the PSF kernel values are rescaled such that they sum to 1.0. This can be important for ensuring
+            the PSF kernel does not change the overall normalization of the image when it is convolved with it.
         check_noise_map
             If True, the noise-map is checked to ensure all values are above zero.
         """
@@ -114,8 +128,13 @@ class Imaging(AbstractDataset):
             data=data,
             noise_map=noise_map,
             noise_covariance_matrix=noise_covariance_matrix,
-            settings=settings,
+            sub_size=sub_size,
+            sub_size_pixelization=sub_size_pixelization,
+            iterator=iterator,
+            iterator_pixelization=iterator_pixelization,
         )
+
+        self.use_normalized_psf = use_normalized_psf
 
         if self.noise_map.native is not None and check_noise_map:
             if ((self.noise_map.native <= 0.0) * np.invert(self.noise_map.mask)).any():
@@ -131,7 +150,7 @@ class Imaging(AbstractDataset):
                     """
                 )
 
-        if psf is not None and settings.use_normalized_psf:
+        if psf is not None and use_normalized_psf:
             psf = Kernel2D.no_mask(
                 values=psf.native, pixel_scales=psf.pixel_scales, normalize=True
             )
@@ -226,6 +245,8 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
+        iterator: Optional[Iterator] = None,
+        iterator_pixelization: Optional[Iterator] = None,
     ) -> "Imaging":
         """
         Load an imaging dataset from multiple .fits file.
@@ -288,6 +309,8 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
+            iterator=iterator,
+            iterator_pixelization=iterator_pixelization
         )
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
@@ -344,27 +367,6 @@ class Imaging(AbstractDataset):
         )
 
         return dataset
-
-    def apply_settings(self, settings: SettingsImaging) -> "Imaging":
-        """
-        Returns a new instance of the imaging with the input `SettingsImaging` applied to them.
-
-        This can be used to update settings like the types of grids associated with the dataset that are used
-        to perform calculations or putting a limit of the dataset's signal-to-noise.
-
-        Parameters
-        ----------
-        settings
-            The settings for the imaging data that control things like the grids used for calculations.
-        """
-        return Imaging(
-            data=self.data,
-            noise_map=self.noise_map,
-            psf=self.psf,
-            noise_covariance_matrix=self.noise_covariance_matrix,
-            settings=settings,
-            pad_for_convolver=self.pad_for_convolver,
-        )
 
     def output_to_fits(
         self,

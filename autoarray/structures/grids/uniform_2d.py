@@ -621,6 +621,8 @@ class Grid2D(Structure):
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
 
+        print(mask)
+
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=np.array(mask),
             pixel_scales=mask.pixel_scales,
