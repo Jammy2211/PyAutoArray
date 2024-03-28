@@ -522,7 +522,7 @@ class Iterator:
         return Grid2D(values=iterated_grid_1d, mask=mask.derive_mask.sub_1)
 
     def iterated_result_from(
-        self, func: Callable, cls: object
+        self, func: Callable, cls: object, grid : Grid2D
     ) -> Union[Array2D, Grid2D]:
         """
         Iterate over a function that returns an array or grid of values until the it meets a specified fractional
@@ -539,9 +539,11 @@ class Iterator:
             The function which is iterated over to compute a more precise evaluation.
         cls
             The class the function belongs to.
+        grid
+            The 2D grid whose values input into the function are iterated over.
         """
-        result_sub_1_1d = func(cls, self.grid)
-        result_sub_1_2d = self.grid.structure_2d_from(
+        result_sub_1_1d = func(cls, grid)
+        result_sub_1_2d = grid.structure_2d_from(
             result=result_sub_1_1d
         ).binned.native
 

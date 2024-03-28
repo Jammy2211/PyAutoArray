@@ -39,13 +39,13 @@ def grid_1d_to_structure(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: Union[Grid1D, Grid2D, Iterator, Grid2DIrregular],
+        grid: Union[Grid1D, Grid2D, Grid2DIrregular],
         *args,
         **kwargs,
     ) -> Union[Array1D, ArrayIrregular]:
         """
-        This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Iterator`,
-        `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
+        This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIrregular` or `Grid1D`)
+        into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
@@ -88,7 +88,7 @@ def grid_1d_to_structure(func):
             if obj.angle is not None:
                 angle = obj.angle + 90.0
 
-        if isinstance(grid, Grid2D) or isinstance(grid, Iterator):
+        if isinstance(grid, Grid2D):
             grid_2d_projected = grid.grid_2d_radial_projected_from(
                 centre=centre, angle=angle
             )
@@ -128,14 +128,14 @@ def grid_1d_output_structure(func):
     @wraps(func)
     def wrapper(
         obj,
-        grid: Union[Grid1D, Grid2D, Iterator, Grid2DIrregular],
+        grid: Union[Grid1D, Grid2D, Grid2DIrregular],
         *args,
         **kwargs,
     ) -> Union[Array1D, ArrayIrregular]:
         """
         This decorator homogenizes the output of functions which compute a 1D result, by inspecting the output
         and converting the result to an `Array1D` object if it is uniformly spaced and a `ArrayIrregular` object if
-        it is irregular. "grid_like" 2D structure (`Grid2D`, `Iterator`,
+        it is irregular. "grid_like" 2D structure (`Grid2D`),
 
         Parameters
         ----------
@@ -151,7 +151,7 @@ def grid_1d_output_structure(func):
 
         result = func(obj, grid, *args, **kwargs)
 
-        if isinstance(grid, Grid2D) or isinstance(grid, Iterator):
+        if isinstance(grid, Grid2D):
             return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 
         elif isinstance(grid, Grid2DIrregular):
@@ -184,18 +184,18 @@ def grid_2d_to_structure(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: Union[np.ndarray, Grid2D, Iterator, Grid2DIrregular, Grid1D],
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
         *args,
         **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
-        This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Iterator`,
+        This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`,
         `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
 
         The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
-        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If a `Iterator` is
+        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  If an `Iterator` is
         input, the function is evaluated using the appropriate `iterated_from` function.
 
         The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
@@ -224,8 +224,9 @@ def grid_2d_to_structure(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if isinstance(grid, Iterator):
-            return grid.iterated_result_from(func=func, cls=obj)
+        if hasattr(grid, "iterator"):
+            if isinstance(grid.iterator, Iterator):
+                return grid.iterator.iterated_result_from(func=func, cls=obj, grid=grid)
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
@@ -261,7 +262,7 @@ def grid_2d_to_structure_list(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: Union[np.ndarray, Grid2D, Iterator, Grid2DIrregular, Grid1D],
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
         *args,
         **kwargs,
     ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
@@ -283,17 +284,18 @@ def grid_2d_to_structure_list(func):
             of NumPy arrays.
         """
 
-        if isinstance(grid, Iterator):
-            mask = grid.mask.mask_new_sub_size_from(
-                mask=grid.mask, sub_size=max(grid.sub_steps)
-            )
-            grid_compute = Grid2D.from_mask(mask=mask)
-            result_list = func(obj, grid_compute, *args, **kwargs)
-            result_list = [
-                grid_compute.structure_2d_from(result=result) for result in result_list
-            ]
-            result_list = [result.binned for result in result_list]
-            return grid.grid.structure_2d_list_from(result_list=result_list)
+        if hasattr(grid, "iterator"):
+            if isinstance(grid.iterator, Iterator):
+                mask = grid.mask.mask_new_sub_size_from(
+                    mask=grid.mask, sub_size=max(grid.iterator.sub_steps)
+                )
+                grid_compute = Grid2D.from_mask(mask=mask)
+                result_list = func(obj, grid_compute, *args, **kwargs)
+                result_list = [
+                    grid_compute.structure_2d_from(result=result) for result in result_list
+                ]
+                result_list = [result.binned for result in result_list]
+                return grid.structure_2d_list_from(result_list=result_list)
         elif isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
@@ -329,12 +331,12 @@ def grid_2d_to_vector_yx(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: Union[np.ndarray, Grid2D, Iterator, Grid2DIrregular, Grid1D],
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
         *args,
         **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
         """
-        This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`, `Iterator`,
+        This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`,
         `Grid2DIrregular` or `Grid1D`) into a function. It allows these classes to be
         interchangeably input into a function, such that the grid is used to evaluate the function at every (y,x)
         coordinates of the grid using specific functionality of the input grid.
@@ -373,6 +375,7 @@ def grid_2d_to_vector_yx(func):
 
         if isinstance(grid, Grid2DIrregular):
             return VectorYX2DIrregular(values=vector_yx_2d, grid=grid)
+
         try:
             return VectorYX2D(values=vector_yx_2d, grid=grid, mask=grid.mask)
         except AttributeError:
@@ -399,7 +402,7 @@ def grid_2d_to_vector_yx_list(func):
     @wraps(func)
     def wrapper(
         obj: object,
-        grid: Union[np.ndarray, Grid2D, Iterator, Grid2DIrregular, Grid1D],
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
         *args,
         **kwargs,
     ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
@@ -459,7 +462,6 @@ def transform(func):
             np.ndarray,
             Grid2D,
             Grid2DIrregular,
-            Iterator,
             Grid2DTransformed,
             Grid2DTransformedNumpy,
             Grid2DIrregularTransformed,
@@ -470,7 +472,6 @@ def transform(func):
         np.ndarray,
         Grid2D,
         Grid2DIrregular,
-        Iterator,
         Grid2DTransformed,
         Grid2DTransformedNumpy,
         Grid2DIrregularTransformed,
@@ -526,10 +527,10 @@ def relocate_to_radial_minimum(func):
     @wraps(func)
     def wrapper(
         cls,
-        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Iterator],
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
         *args,
         **kwargs,
-    ) -> Union[np.ndarray, Grid2D, Grid2DIrregular, Iterator]:
+    ) -> Union[np.ndarray, Grid2D, Grid2DIrregular]:
         """
 
         Parameters
