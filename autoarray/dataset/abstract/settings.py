@@ -1,108 +1,40 @@
-from typing import List, Optional, Tuple, Type, Union
+from typing import Optional
 
-
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.iterate_2d import Iterator
-from autoarray.mask.mask_1d import Mask1D
-from autoarray.mask.mask_2d import Mask2D
-
-
-def grid_via_grid_class_from(
-    mask: Union[Mask1D, Mask2D],
-    grid_class: Union[Type[Grid1D], Type[Grid2D]],
-    fractional_accuracy: float,
-    relative_accuracy: Optional[float],
-    sub_steps: List[int],
-) -> Optional[Union[Grid1D, Grid2D, Iterator]]:
-    if mask.pixel_scales is None:
-        return None
-
-    if grid_class is None:
-        if isinstance(mask, Mask1D):
-            grid_class = Grid1D
-        elif isinstance(mask, Mask2D):
-            grid_class = Grid2D
-
-    if grid_class is Grid1D:
-        return Grid1D.from_mask(mask=mask)
-
-    if grid_class is Grid2D:
-        return Grid2D.from_mask(mask=mask)
-
-    elif grid_class is Iterator:
-        return Iterator.from_mask(
-            mask=mask,
-            fractional_accuracy=fractional_accuracy,
-            relative_accuracy=relative_accuracy,
-            sub_steps=sub_steps,
-        )
 
 
 class AbstractSettingsDataset:
     def __init__(
         self,
-        grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
-        grid_pixelization_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
-        sub_size: int = 1,
-        sub_size_pixelization: int = 4,
-        fractional_accuracy: float = 0.9999,
-        relative_accuracy: Optional[float] = None,
-        sub_steps: Tuple[int] = (2, 4, 8, 16),
+        grid: Optional[Grid2D] = None,
+        grid_pixelization: Optional[Grid2D] = None,
     ):
         """
-        A dataset is a collection of data structures (e.g. the data, noise-map, PSF), a mask, grid, convolver
-        and other utilities that are used for modeling and fitting an image of a strong lens.
+        An abstract dataset's settings, wcontaining quantities used for fitting the dataset like the grids of (y,x)
+        coordinates.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lens calculations.
+        The dataset ettings control the following:
+
+        - `grid`: A grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
+        the centre of an image pixel. This may be used in fits to calculate the model image of the imaging data.
+
+        - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
+        is specifically used for pixelizations computed via the `invserion` module, which often use different
+        oversampling and sub-size values to the grid above.
+
+        In the project PyAutoGalaxy the imaging data grids are used to compute the images of galaxies via their light
+        profiles. In PyAutoLens, the grids are used for ray tracing lensing calculations associated with a mass profile.
 
         Parameters
         ----------
-        grid_class
-            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D` and
-            `Iterator` (see the `Grid2D` documentation for a description of these options).
-        grid_pixelization_class
-            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D` and `Iterator` (see the `Grid2D` documentation for a
-            description of these options).
-        sub_size
-            If the grid and / or grid_pixelization use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
-        fractional_accuracy
-            If the grid and / or grid_pixelization use a `Iterator`, this sets the fractional accuracy it
-            uses when evaluating functions, where the fraction accuracy is the ratio of the values computed using
-            two grids at a higher and lower sub-grid size.
-        relative_accuracy
-            If the grid and / or grid_pixelization use a `Iterator`, this sets the relative accuracy it
-            uses when evaluating functions, where the relative accuracy is the absolute difference of the values
-            computed using two grids at a higher and lower sub-grid size.
-        sub_steps : [int]
-            If the grid and / or grid_pixelization use a `Iterator`, this sets the steps the sub-size is increased by
-            to meet the fractional accuracy when evaluating functions.
+        grid
+            The grid used to perform calculations not associated with a pixelization. In PyAutoGalaxy and
+            PyAutoLens this is light profile calculations.
+        grid_pixelization
+            The grid used to perform calculations associated with a pixelization, which is therefore passed into
+            the calculations performed in the `inversion` module.
         """
 
-        self.grid_class = grid_class
-        self.grid_pixelization_class = grid_pixelization_class
-        self.sub_size = sub_size
-        self.sub_size_pixelization = sub_size_pixelization
-        self.fractional_accuracy = fractional_accuracy
-        self.relative_accuracy = relative_accuracy
-        self.sub_steps = sub_steps
+        self.grid = grid
+        self.grid_pixelization = grid_pixelization
 
-    def grid_from(self, mask) -> Union[Grid1D, Grid2D]:
-        return grid_via_grid_class_from(
-            mask=mask,
-            grid_class=self.grid_class,
-            fractional_accuracy=self.fractional_accuracy,
-            relative_accuracy=self.relative_accuracy,
-            sub_steps=self.sub_steps,
-        )
-
-    def grid_pixelization_from(self, mask) -> Union[Grid1D, Grid2D]:
-        return grid_via_grid_class_from(
-            mask=mask,
-            grid_class=self.grid_pixelization_class,
-            fractional_accuracy=self.fractional_accuracy,
-            relative_accuracy=self.relative_accuracy,
-            sub_steps=self.sub_steps,
-        )

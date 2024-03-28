@@ -24,22 +24,54 @@ class Interferometer(AbstractDataset):
         settings: SettingsInterferometer = SettingsInterferometer(),
     ):
         """
-        A class containing an interferometer dataset, including the visibilities data, noise-map and the
-        uv-plane baseline wavelengths.
+        An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
+        associated quantities for calculations like the grid.
+
+        This object is the input to the `FitInterferometer` object, which fits the dataset with model visibilities
+        and quantifies the goodness-of-fit via a residual map, likelihood, chi-squared and other quantities.
+
+        The following quantities of the interferometer data are available and used for the following tasks:
+
+        - `data`: The visibilities data, which shows the signal that is analysed and fitted with model visibilities.
+
+        - `noise_map`: The RMS standard deviation error in every visibility, which is used to compute the chi-squared
+        value and likelihood of a fit.
+
+        - `uv_wavelengths`: The baselines of the interferometer which are used to Fourier transform a real space
+        image to the uv-plane.
+
+        `real_space_mask`: Defines in real space where the signal is present. This mask is used to transform images to
+        Fourier space via the Fourier transform. The grids contained in the settings are aligned with this mask.
+
+        The imaging dataset also contains a settings object, which includes the following attributes:
+
+        - `grid`: Grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
+        the centre of an image pixel. These may be used for certain calculations in an analysis. There are separate
+        grids for a pixelization and other calculations, as a pixelization grid often uses different over sampling
+        settings to other calculations.
+
+        This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
+        It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
 
         Parameters
         ----------
         data
-            The array of the visibilities data, containing by real and complex values.
+            The array of the visibilities data containing the signal that is fitted.
         noise_map
-            An array describing the RMS standard deviation error in each visibility.
+            An array describing the RMS standard deviation error in each visibility used for computing quantities like the
+            chi-squared in a fit.
         uv_wavelengths
-            The uv-plane baseline wavelengths.
+            The baselines of the interferometer which are used to Fourier transform a real space
+            image to the uv-plane.
         real_space_mask
-            A 2D mask in real-space (e.g. not Fourier space like the visibilities) which defines in real space
-            how calculations are performed.
+            Defines in real space where the signal is present. This mask is used to transform images to
+            Fourier space via the Fourier transform. The grids contained in the settings are aligned with this mask.
+        noise_covariance_matrix
+            A noise-map covariance matrix representing the covariance between noise in every `data` value, which
+            can be used via a bespoke fit to account for correlated noise in the data.
         settings
-            Controls settings of how the dataset is set up (e.g. the types of grids used to perform calculations).
+            Controls various aspects of the dataset and how fits are performed using it, for example the grids
+            used for calculations.
         """
         self.real_space_mask = real_space_mask
 

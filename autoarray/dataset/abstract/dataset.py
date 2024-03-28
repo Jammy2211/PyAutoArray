@@ -28,15 +28,43 @@ class AbstractDataset:
         settings: AbstractSettingsDataset = AbstractSettingsDataset(),
     ):
         """
-        A collection of abstract data structures for different types of data (an image, pixel-scale, noise-map, etc.)
+        An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
+        like the grid.
+
+        This object is extended with specific dataset types, such as an `Imaging` or `Interferometer` dataset,
+        and can be used for fitting data with model data and quantifying the goodness-of-fit.
+
+        The following quantities are abstract and used by any dataset type:
+
+        - `data`: The image data, which shows the signal that is analysed and fitted with a model image.
+
+        - `noise_map`: The RMS standard deviation error in every pixel, which is used to compute the chi-squared value
+        and likelihood of a fit.
+
+        Datasets also contains a settings object, which includes the following attributes:
+
+        - `grid`: Grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
+        the centre of an image pixel. These may be used for certain calculations in an analysis. There are separate
+        grids for a pixelization and other calculations, as a pixelization grid often uses different over sampling
+        settings to other calculations.
+
+        This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
+        It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
 
         Parameters
         ----------
-        dataucture
-            The array of the image data, in units of electrons per second.
-        noise_mapucture
-            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
-            second.
+        data
+            The array of the image data containing the signal that is fitted (in PyAutoGalaxy and PyAutoLens the
+            recommended units are electrons per second).
+        noise_map
+            An array describing the RMS standard deviation error in each pixel used for computing quantities like the
+            chi-squared in a fit (in PyAutoGalaxy and PyAutoLens the recommended units are electrons per second).
+        noise_covariance_matrix
+            A noise-map covariance matrix representing the covariance between noise in every `data` value, which
+            can be used via a bespoke fit to account for correlated noise in the data.
+        settings
+            Controls various aspects of the dataset and how fits are performed using it, for example the grids
+            used for calculations.
         """
 
         self.data = data

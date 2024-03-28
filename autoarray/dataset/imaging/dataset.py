@@ -33,20 +33,53 @@ class Imaging(AbstractDataset):
         check_noise_map: bool = True,
     ):
         """
-        A class containing an imaging dataset, including the image data, noise-map and a point spread function (PSF).
+        An imaging dataset, containing the image data, noise-map, PSF and associated quantities
+        for calculations like the grid.
+
+        This object is the input to the `FitImaging` object, which fits the dataset with a model image and quantifies
+        the goodness-of-fit via a residual map, likelihood, chi-squared and other quantities.
+
+        The following quantities of the imaging data are available and used for the following tasks:
+
+        - `data`: The image data, which shows the signal that is analysed and fitted with a model image.
+
+        - `noise_map`: The RMS standard deviation error in every pixel, which is used to compute the chi-squared value
+        and likelihood of a fit.
+
+        - `psf`: The Point Spread Function of the data, used to perform 2D convolution on images to produce a model
+        image which is compared to the data.
+
+        The imaging dataset also contains a settings object, which includes the following attributes:
+
+        - `grid`: Grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
+        the centre of an image pixel. These may be used for certain calculations in an analysis. There are separate
+        grids for a pixelization and other calculations, as a pixelization grid often uses different over sampling
+        settings to other calculations.
+
+        This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
+        It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
 
         Parameters
         ----------
         data
-            The array of the image data, for example in units of electrons per second.
+            The array of the image data containing the signal that is fitted (in PyAutoGalaxy and PyAutoLens the
+            recommended units are electrons per second).
         noise_map
-            An array describing the RMS standard deviation error in each pixel, for example in units of electrons per
-            second.
+            An array describing the RMS standard deviation error in each pixel used for computing quantities like the
+            chi-squared in a fit (in PyAutoGalaxy and PyAutoLens the recommended units are electrons per second).
         psf
-            An array describing the Point Spread Function kernel of the image which accounts for diffraction due to the
-            telescope optics via 2D convolution.
+            The Point Spread Function kernel of the image which accounts for diffraction due to the telescope optics
+            via 2D convolution.
+        noise_covariance_matrix
+            A noise-map covariance matrix representing the covariance between noise in every `data` value, which
+            can be used via a bespoke fit to account for correlated noise in the data.
         settings
-            Controls settings of how the dataset is set up (e.g. the types of grids used to perform calculations).
+            Controls various aspects of the dataset and how fits are performed using it, for example the grids
+            used for calculations.
+        pad_for_convolver
+            The PSF convolution may extend beyond the edges of the image mask, which can lead to edge effects in the
+            convolved image. If `True`, the image and noise-map are padded to ensure the PSF convolution does not
+            extend beyond the edge of the image.
         check_noise_map
             If True, the noise-map is checked to ensure all values are above zero.
         """

@@ -1,7 +1,6 @@
-from typing import List, Optional, Type, Union
+from typing import Optional
 
 from autoarray.dataset.abstract.settings import AbstractSettingsDataset
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.operators.transformer import TransformerNUFFT
 
@@ -9,47 +8,52 @@ from autoarray.operators.transformer import TransformerNUFFT
 class SettingsInterferometer(AbstractSettingsDataset):
     def __init__(
         self,
-        grid_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
-        grid_pixelization_class: Optional[Union[Type[Grid1D], Type[Grid2D]]] = None,
-        sub_size: int = 1,
-        sub_size_pixelization=1,
-        fractional_accuracy: float = 0.9999,
-        sub_steps: List[int] = None,
+        grid: Optional[Grid2D] = None,
+        grid_pixelization: Optional[Grid2D] = None,
         transformer_class=TransformerNUFFT,
     ):
         """
-          The lens dataset is the collection of data_type (image, noise-map), a mask, grid, convolver \
-          and other utilities that are used for modeling and fitting an image of a strong lens.
+        An interferometer dataset's settings, containing quantities used for fitting the dataset like the grids
+        of (y,x) coordinates.
 
-          Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-          for lens calculations.
+        The interferometer dataset is described in the `Interferometer` class, but in brief it is a dataset which
+        contains the visibilities data, noise-map, Fourier transformer, etc.
 
-          Parameters
-          ----------
-        grid_class : ag.Grid2D
-            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
-            and `Iterator` (see the `Grid2D` documentation for a description of these options).
-        grid_pixelization_class : ag.Grid2D
-            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D` and `Iterator` (see the `Grid2D` documentation for a
-            description of these options).
-        sub_size
-            If the grid and / or grid_pixelization use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
-        fractional_accuracy
-            If the grid and / or grid_pixelization use a `Iterator`, this sets the fractional accuracy it
-            uses when evaluating functions.
-        sub_steps : [int]
-            If the grid and / or grid_pixelization use a `Iterator`, this sets the steps the sub-size is increased by
-            to meet the fractional accuracy when evaluating functions.
+        It also contains the `uv_wavelengths` and `real_space_mask` which define how a real space image is Fourier
+        transformed to the uv-plane. The grids contained in the settings are aligned with this mask.
+
+        The interferometer settings control the following:
+
+        - `grid`: A grids of (y,x) coordinates which align with the real-space mask's pixels, whereby each coordinate
+        corresponds to the centre of an image pixel. This may be used in fits to calculate the model image of the
+        interferometer data.
+
+        - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
+        is specifically used for pixelizations computed via the `invserion` module, which often use different
+        oversampling and sub-size values to the grid above.
+
+        - `transformer_class`: The class of the Fourier Transform which maps images from real space to Fourier space
+        visibilities and the uv-plane.
+
+        In the project PyAutoGalaxy the interferometer data grids are used to compute the images of galaxies via their light
+        profiles. In PyAutoLens, the grids are used for ray tracing lensing calculations associated with a mass profile.
+
+        Parameters
+        ----------
+        grid
+            The grid used to perform calculations not associated with a pixelization. In PyAutoGalaxy and
+            PyAutoLens this is light profile calculations.
+        grid_pixelization
+            The grid used to perform calculations associated with a pixelization, which is therefore passed into
+            the calculations performed in the `inversion` module.
+        transformer_class
+            The class of the Fourier Transform which maps images from real space to Fourier space visibilities and
+            the uv-plane.
         """
 
         super().__init__(
-            grid_class=grid_class,
-            grid_pixelization_class=grid_pixelization_class,
-            sub_size=sub_size,
-            sub_size_pixelization=sub_size_pixelization,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
+            grid=grid,
+            grid_pixelization=grid_pixelization,
         )
 
         self.transformer_class = transformer_class
