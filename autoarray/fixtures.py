@@ -182,7 +182,7 @@ def make_imaging_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        sub_size=1
+        sub_size=1,
     )
 
 
@@ -191,7 +191,7 @@ def make_imaging_covariance_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_covariance_matrix=make_noise_covariance_matrix_7x7(),
-        sub_size=1
+        sub_size=1,
     )
 
 
@@ -200,7 +200,7 @@ def make_imaging_7x7_no_blur():
         data=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        sub_size=1
+        sub_size=1,
     )
 
 

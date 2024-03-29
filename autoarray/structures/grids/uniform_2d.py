@@ -610,7 +610,9 @@ class Grid2D(Structure):
         )
 
     @classmethod
-    def from_mask(cls, mask: Mask2D, over_sample: Optional[OverSampleIterate] = None) -> "Grid2D":
+    def from_mask(
+        cls, mask: Mask2D, over_sample: Optional[OverSampleIterate] = None
+    ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
         grid is represented in its native 2D masked values are (0.0, 0.0)).
@@ -932,7 +934,9 @@ class Grid2D(Structure):
             return Array2D(values=result, mask=self.mask)
         else:
             if isinstance(result, Grid2DTransformedNumpy):
-                return Grid2DTransformed(values=result, mask=self.mask)
+                return Grid2DTransformed(
+                    values=result, mask=self.mask, over_sample=self.over_sample
+                )
             return Grid2D(values=result, mask=self.mask, over_sample=self.over_sample)
 
     def structure_2d_list_from(

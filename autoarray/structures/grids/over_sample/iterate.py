@@ -468,7 +468,9 @@ class OverSampleIterate:
 
         iterated_grid = np.zeros(shape=(shape_native[0], shape_native[1], 2))
 
-        threshold_mask_lower_sub = mask
+        import copy
+
+        threshold_mask_lower_sub = copy.copy(mask)
 
         for sub_size in self.sub_steps[:-1]:
             grid_higher_sub = self.grid_at_sub_size_from(
@@ -532,7 +534,10 @@ class OverSampleIterate:
         grid
             The 2D grid whose values input into the function are iterated over.
         """
-        result_sub_1_1d = func(cls, grid)
+
+        # Convert to numpy array so grid does not do iteration.
+
+        result_sub_1_1d = func(cls, np.asarray(grid))
         result_sub_1_2d = grid.structure_2d_from(result=result_sub_1_1d).binned.native
 
         if len(result_sub_1_2d.shape) == 2:

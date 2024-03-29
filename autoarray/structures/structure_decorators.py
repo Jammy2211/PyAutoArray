@@ -227,7 +227,9 @@ def grid_2d_to_structure(func):
 
         if hasattr(grid, "over_sample"):
             if isinstance(grid.over_sample, OverSampleIterate):
-                return grid.over_sample.iterated_result_from(func=func, cls=obj, grid=grid)
+                return grid.over_sample.iterated_result_from(
+                    func=func, cls=obj, grid=grid
+                )
 
         if isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)

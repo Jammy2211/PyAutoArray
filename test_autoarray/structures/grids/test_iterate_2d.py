@@ -154,7 +154,9 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
 
     assert (values == values_sub_3.binned).all()
 
-    over_sample = aa.OverSampleIterate(fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32])
+    over_sample = aa.OverSampleIterate(
+        fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+    )
 
     values = over_sample.iterated_array_from(
         func=ndarray_1d_from,
@@ -448,7 +450,9 @@ def test__iterated_grid_from__extreme_fractional_accuracies_uses_last_or_first_s
 
     assert (values == values_sub_3.binned).all()
 
-    over_sample = aa.OverSampleIterate(fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32])
+    over_sample = aa.OverSampleIterate(
+        fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+    )
 
     values = over_sample.iterated_grid_from(
         func=ndarray_2d_from, cls=None, grid_lower_sub_2d=values_sub_1.binned.native
