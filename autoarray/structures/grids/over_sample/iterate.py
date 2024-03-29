@@ -3,11 +3,12 @@ from typing import Callable, Union, List, Optional
 
 from autoarray import numba_util
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.arrays import array_2d_util
+from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids import grid_2d_util
 from autoarray.structures.grids.uniform_2d import Grid2D
 
+from autoarray.structures.arrays import array_2d_util
 
 def sub_steps_from(sub_steps):
     if sub_steps is None:
@@ -175,7 +176,7 @@ def iterated_grid_jit_from(
     return iterated_grid
 
 
-class OverSampleIterate:
+class OverSampleIterate(AbstractOverSample):
     def __init__(
         self,
         fractional_accuracy: float = 0.9999,

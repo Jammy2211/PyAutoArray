@@ -2,10 +2,11 @@ import numpy as np
 from typing import List, Union
 
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
-class OverSampleUniform:
+class OverSampleUniform(AbstractOverSample):
     def __init__(
         self,
         sub_size : int = 1

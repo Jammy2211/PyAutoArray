@@ -7,7 +7,7 @@ from autoconf import cached_property
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
+from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
@@ -25,8 +25,8 @@ class Interferometer(AbstractDataset):
         real_space_mask,
         transformer_class=TransformerNUFFT,
         sub_size_pixelization : int = 4,
-        over_sample: Optional[OverSampleIterate] = None,
-        over_sample_pixelization: Optional[OverSampleIterate] = None,
+        over_sample: Optional[AbstractOverSample] = None,
+        over_sample_pixelization: Optional[AbstractOverSample] = None,
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
@@ -115,8 +115,8 @@ class Interferometer(AbstractDataset):
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
         transformer_class=TransformerNUFFT,
-        over_sample: Optional[OverSampleIterate] = None,
-        over_sample_pixelization: Optional[OverSampleIterate] = None,
+        over_sample: Optional[AbstractOverSample] = None,
+        over_sample_pixelization: Optional[AbstractOverSample] = None,
     ):
         """
         Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
