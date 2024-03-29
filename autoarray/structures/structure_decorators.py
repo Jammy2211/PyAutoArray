@@ -11,6 +11,7 @@ from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
+from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
 from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 from autoarray.structures.grids.transformed_2d import Grid2DTransformed
 from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
@@ -226,15 +227,19 @@ def grid_2d_to_structure(func):
         """
 
         if hasattr(grid, "over_sample"):
+
+            if isinstance(grid.over_sample, OverSampleUniform):
+                result = func(obj, grid, *args, **kwargs)
+                return grid.over_sample.structure_2d_from(
+                    result=result,
+                )
+
             if isinstance(grid.over_sample, OverSampleIterate):
                 return grid.over_sample.iterated_result_from(
                     func=func, cls=obj, grid=grid
                 )
 
         if isinstance(grid, Grid2DIrregular):
-            result = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_from(result=result)
-        elif isinstance(grid, Grid2D):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid1D):
@@ -288,6 +293,11 @@ def grid_2d_to_structure_list(func):
         """
 
         if hasattr(grid, "over_sample"):
+
+            if isinstance(grid.over_sample, OverSampleUniform):
+                result_list = func(obj, grid, *args, **kwargs)
+                return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
+
             if isinstance(grid.over_sample, OverSampleIterate):
                 mask = grid.mask.mask_new_sub_size_from(
                     mask=grid.mask, sub_size=max(grid.over_sample.sub_steps)
@@ -302,9 +312,6 @@ def grid_2d_to_structure_list(func):
                 return grid.structure_2d_list_from(result_list=result_list)
 
         if isinstance(grid, Grid2DIrregular):
-            result_list = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_list_from(result_list=result_list)
-        elif isinstance(grid, Grid2D):
             result_list = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
         elif isinstance(grid, Grid1D):
