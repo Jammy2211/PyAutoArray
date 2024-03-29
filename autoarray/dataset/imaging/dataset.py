@@ -245,6 +245,7 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
+        sub_size : int = 4,
         over_sample: Optional[OverSampleIterate] = None,
         over_sample_pixelization: Optional[OverSampleIterate] = None,
     ) -> "Imaging":
@@ -309,6 +310,7 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
+            sub_size=sub_size,
             over_sample=over_sample,
             over_sample_pixelization=over_sample_pixelization,
         )
