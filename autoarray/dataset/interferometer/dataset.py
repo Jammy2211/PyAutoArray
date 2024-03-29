@@ -24,6 +24,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask,
         transformer_class=TransformerNUFFT,
+        sub_size_pixelization : int = 4,
         over_sample: Optional[OverSampleIterate] = None,
         over_sample_pixelization: Optional[OverSampleIterate] = None,
     ):
@@ -92,6 +93,7 @@ class Interferometer(AbstractDataset):
         super().__init__(
             data=data,
             noise_map=noise_map,
+            sub_size_pixelization=sub_size_pixelization,
             over_sample=over_sample,
             over_sample_pixelization=over_sample_pixelization,
         )
