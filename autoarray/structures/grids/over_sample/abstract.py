@@ -1,5 +1,7 @@
 import numpy as np
-from typing import List, Tuple, Union
+from typing import List, Union
+
+from autoconf import conf
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -7,6 +9,7 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.structures.grids import grid_2d_util
 from autoarray.mask.mask_2d import mask_2d_util
+from autoarray.numpy_wrapper import numpy as npw
 
 class AbstractOverSample:
 
@@ -57,9 +60,7 @@ class AbstractOverSample:
 
         return Grid2D(values=sub_grid_1d, mask=mask, over_sample=self)
 
-
-    @property
-    def binned(self) -> "Array2D":
+    def binned_array_2d_from(self, array : Array2D, sub_size : int) -> "Array2D":
         """
         Convenience method to access the binned-up array in its 1D representation, which is a Grid2D stored as an
         ``ndarray`` of shape [total_unmasked_pixels, 2].
@@ -77,17 +78,20 @@ class AbstractOverSample:
         if conf.instance["general"]["structures"]["native_binned_only"]:
             return self
 
-        array_2d_slim = self.slim
+        sub_length = self.sub_length_from(mask=array.mask, sub_size=sub_size)
+        sub_fraction = self.sub_fraction_from(mask=array.mask, sub_size=sub_size)
+
+        array_2d_slim = array.slim
 
         binned_array_1d = npw.multiply(
-            self.mask.sub_fraction,
-            array_2d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
+            sub_fraction,
+            array_2d_slim.reshape(-1, sub_length).sum(axis=1),
         )
 
         return Array2D(
             values=binned_array_1d,
-            mask=self.mask,
-            header=self.header,
+            mask=array.mask[::sub_size, ::sub_size],
+            header=array.header,
         )
 
     def binned_grid_2d_from(self, grid : Grid2D, sub_size : int) -> "Grid2D":

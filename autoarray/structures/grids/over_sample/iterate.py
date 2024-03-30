@@ -229,7 +229,8 @@ class OverSampleIterate(AbstractOverSample):
         )
 
         array_higher_sub = func(cls, grid_compute)
-        return grid_compute.over_sample.structure_2d_from(result=array_higher_sub).binned.native
+        array = grid_compute.over_sample.structure_2d_from(result=array_higher_sub, mask=grid_compute.mask)
+        return self.binned_array_2d_from(array=array, sub_size=sub_size).native
 
     def grid_at_sub_size_from(self, func: Callable, cls, mask: Mask2D, sub_size) -> Grid2D:
 
@@ -279,8 +280,8 @@ class OverSampleIterate(AbstractOverSample):
 
         return Mask2D(
             mask=threshold_mask,
-            pixel_scales=array_higher_sub_2d.pixel_scales,
-            origin=array_higher_sub_2d.origin,
+            pixel_scales=array_lower_sub_2d.pixel_scales,
+            origin=array_lower_sub_2d.origin,
         )
 
     def iterated_array_from(
@@ -362,7 +363,7 @@ class OverSampleIterate(AbstractOverSample):
             sub_size=self.sub_steps[-1],
         )
 
-        iterated_array_2d = iterated_array + array_higher_sub.binned.native
+        iterated_array_2d = iterated_array + array_higher_sub
 
         return self.return_iterated_array_result(
             iterated_array=iterated_array_2d, mask=mask
