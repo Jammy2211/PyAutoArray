@@ -164,9 +164,19 @@ class Grid2D(Structure):
         super().__init__(values)
 
         self.mask = mask
+
         grid_2d_util.check_grid_2d(grid_2d=values)
 
-        self.over_sample = over_sample
+        self._over_sample = over_sample
+
+    @property
+    def over_sample(self):
+
+        if self._over_sample is None:
+            from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
+            return OverSampleUniform(sub_size=1)
+
+        return self._over_sample
 
     @classmethod
     def no_mask(

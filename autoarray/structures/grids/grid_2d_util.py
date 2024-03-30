@@ -510,7 +510,7 @@ def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
     pixel_scales: ty.PixelScales,
-    sub_size: int,
+    sub_size: int = 1,
     shape_slim: Optional[int] = 0,
 ) -> np.ndarray:
     """

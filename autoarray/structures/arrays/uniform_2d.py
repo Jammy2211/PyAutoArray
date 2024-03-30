@@ -17,7 +17,6 @@ from autoarray import type as ty
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.layout import layout_util
-from autoarray.numpy_wrapper import numpy as npw
 
 
 logging.basicConfig()
@@ -238,6 +237,7 @@ class AbstractArray2D(Structure):
             values = values._array
         except AttributeError:
             pass
+
         if conf.instance["general"]["structures"]["native_binned_only"]:
             store_native = True
 

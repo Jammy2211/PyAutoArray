@@ -231,7 +231,7 @@ def grid_2d_to_structure(func):
             if isinstance(grid.over_sample, OverSampleUniform):
                 result = func(obj, grid, *args, **kwargs)
                 return grid.over_sample.structure_2d_from(
-                    result=result,
+                    result=result, mask=grid.mask
                 )
 
             if isinstance(grid.over_sample, OverSampleIterate):
