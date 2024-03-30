@@ -56,12 +56,12 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
         if grid_2d.shape[0] != mask_2d.pixels_in_mask:
             raise exc.GridException(
                 f"""
-                The input 2D grid does not have the same number of values as sub-pixels in
+                The input 2D grid does not have the same number of values as pixels in
                 the mask.
                 
                 The shape of the input grid_2d is {grid_2d.shape}.
                 The mask shape_native is {mask_2d.shape_native}.
-                The mask number of sub-pixels is {mask_2d.pixels_in_mask}. 
+                The mask number of pixels is {mask_2d.pixels_in_mask}. 
                 """
             )
 

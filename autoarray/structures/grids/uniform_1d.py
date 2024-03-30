@@ -337,10 +337,8 @@ class Grid1D(Structure):
             The projected and rotated 2D grid of (y,x) coordinates.
         """
 
-        # TODO : Be wary of switch to native here,
-
-        grid = np.zeros((self.shape_native[0], 2))
-        grid[:, 1] = self.native
+        grid = np.zeros((self.mask.pixels_in_mask, 2))
+        grid[:, 1] = self.slim
 
         grid = geometry_util.transform_grid_2d_to_reference_frame(
             grid_2d=grid, centre=(0.0, 0.0), angle=angle
