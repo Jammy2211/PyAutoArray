@@ -44,7 +44,7 @@ def convert_array_1d(
 
     array_1d = array_2d_util.convert_array(array=array_1d)
 
-    is_native = array_1d.shape[0] == mask_1d.sub_shape_native[0]
+    is_native = array_1d.shape[0] == mask_1d.shape_native[0]
 
     if is_native == store_native:
         return array_1d
@@ -52,19 +52,17 @@ def convert_array_1d(
         return array_1d_slim_from(
             array_1d_native=np.array(array_1d),
             mask_1d=np.array(mask_1d),
-            sub_size=mask_1d.sub_size,
         )
 
     return array_1d_native_from(
         array_1d_slim=array_1d,
         mask_1d=np.array(mask_1d),
-        sub_size=mask_1d.sub_size,
     )
 
 
 @numba_util.jit()
 def array_1d_slim_from(
-    array_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int
+    array_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
     """
     For a 1D array and mask, map the values of all unmasked pixels to its slimmed 1D array.
@@ -129,7 +127,7 @@ def array_1d_slim_from(
 
 
 def array_1d_native_from(
-    array_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int
+    array_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
     sub_shape = mask_1d.shape[0] * sub_size
 
