@@ -94,6 +94,13 @@ class AbstractOverSample:
             header=array.header,
         )
 
+    def evaluated_func_from(self, func, mask, sub_size):
+
+        grid = self.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=sub_size)
+        values = func(grid=grid, profile=None)
+        values = grid.over_sample.structure_2d_from(result=values, mask=grid.mask)
+        return self.binned_array_2d_from(array=values, sub_size=sub_size)
+
     def structure_2d_from(self, result: np.ndarray, mask : Mask2D) -> Union[Array2D, "Grid2D"]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on

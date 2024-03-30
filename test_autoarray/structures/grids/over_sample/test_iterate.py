@@ -122,9 +122,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
 
     over_sample = aa.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2, 3])
 
-    grid_sub_1 = aa.Grid2D.from_mask(mask=mask)
-    values_sub_1 = ndarray_1d_from(grid=grid_sub_1, profile=None)
-    values_sub_1 = grid_sub_1.over_sample.structure_2d_from(result=values_sub_1, mask=mask)
+    values_sub_1 = over_sample.evaluated_func_from(func=ndarray_1d_from, mask=mask, sub_size=1)
 
     values = over_sample.iterated_array_from(
         func=ndarray_1d_from,
@@ -132,10 +130,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
         array_lower_sub_2d=values_sub_1.native,
     )
 
-    grid_sub_3 = over_sample.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=3)
-    values_sub_3 = ndarray_1d_from(grid=grid_sub_3, profile=None)
-    values_sub_3 = grid_sub_3.over_sample.structure_2d_from(result=values_sub_3, mask=grid_sub_3.mask)
-    values_sub_3 = over_sample.binned_array_2d_from(array=values_sub_3, sub_size=3)
+    values_sub_3 = over_sample.evaluated_func_from(func=ndarray_1d_from, mask=mask, sub_size=3)
 
     assert (values == values_sub_3).all()
 
