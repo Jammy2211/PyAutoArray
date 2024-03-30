@@ -45,21 +45,6 @@ def test__constructor():
     assert array_2d.pixel_scales == (1.0, 1.0)
     assert array_2d.origin == (0.0, 1.0)
 
-    mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
-    array_2d = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
-
-    assert type(array_2d) == aa.Array2D
-    assert (array_2d == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (
-        array_2d.native == np.array([[1.0, 2.0], [3.0, 4.0], [0.0, 0.0], [0.0, 0.0]])
-    ).all()
-    assert (array_2d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (array_2d.binned.native == np.array([[2.5], [0.0]])).all()
-    assert (array_2d.binned.slim == np.array([2.5])).all()
-    assert array_2d.pixel_scales == (2.0, 2.0)
-    assert array_2d.origin == (0.0, 0.0)
-    assert array_2d.mask.sub_size == 2
-
     mask = aa.Mask2D(
         mask=[[False, False], [True, False]],
         pixel_scales=1.0,
@@ -72,7 +57,7 @@ def test__constructor():
 
 def test__no_mask():
     array_2d = aa.Array2D.no_mask(
-        values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
+        values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0,
     )
 
     assert type(array_2d) == aa.Array2D
@@ -81,61 +66,11 @@ def test__no_mask():
     assert (array_2d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
     assert array_2d.pixel_scales == (1.0, 1.0)
     assert array_2d.origin == (0.0, 0.0)
-    assert array_2d.mask.sub_size == 1
-
-    array_2d = aa.Array2D.no_mask(
-        values=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]]),
-        pixel_scales=(0.1, 0.1),
-        sub_size=2,
-        origin=(1.0, 1.0),
-    )
-
-    assert (array_2d == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
-    assert array_2d.shape_native == (2, 1)
-    assert array_2d.sub_shape_native == (4, 2)
-    assert (array_2d.slim == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
-    assert (
-        array_2d.native == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-    ).all()
-    assert array_2d.binned.native.shape == (2, 1)
-    assert (array_2d.binned == np.array([2.5, 6.5])).all()
-    assert (array_2d.binned.native == np.array([[2.5], [6.5]])).all()
-    assert (array_2d.binned == np.array([2.5, 6.5])).all()
-    assert array_2d.pixel_scales == (0.1, 0.1)
-    assert array_2d.geometry.central_pixel_coordinates == (0.5, 0.0)
-    assert array_2d.geometry.shape_native_scaled == pytest.approx((0.2, 0.1))
-    assert array_2d.geometry.scaled_maxima == pytest.approx((1.1, 1.05), 1e-4)
-    assert array_2d.geometry.scaled_minima == pytest.approx((0.9, 0.95), 1e-4)
-
-    array_2d = aa.Array2D.no_mask(
-        values=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]]),
-        pixel_scales=(0.1, 0.1),
-        sub_size=2,
-        origin=(1.0, 1.0),
-    )
-
-    assert (array_2d == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
-    assert array_2d.shape_native == (2, 1)
-    assert array_2d.sub_shape_native == (4, 2)
-    assert (array_2d.slim == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
-    assert (
-        array_2d.native == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-    ).all()
-    assert array_2d.binned.native.shape == (2, 1)
-    assert (array_2d.binned == np.array([2.5, 6.5])).all()
-    assert (array_2d.binned.native == np.array([[2.5], [6.5]])).all()
-    assert (array_2d.binned == np.array([2.5, 6.5])).all()
-    assert array_2d.pixel_scales == (0.1, 0.1)
-    assert array_2d.geometry.central_pixel_coordinates == (0.5, 0.0)
-    assert array_2d.geometry.shape_native_scaled == pytest.approx((0.2, 0.1))
-    assert array_2d.geometry.scaled_maxima == pytest.approx((1.1, 1.05), 1e-4)
-    assert array_2d.geometry.scaled_minima == pytest.approx((0.9, 0.95), 1e-4)
 
     array_2d = aa.Array2D.no_mask(
         values=np.ones((9,)),
         shape_native=(3, 3),
         pixel_scales=(2.0, 1.0),
-        sub_size=1,
         origin=(-1.0, -2.0),
     )
 
@@ -153,7 +88,6 @@ def test__no_mask():
         values=np.ones((9,)),
         shape_native=(3, 3),
         pixel_scales=(2.0, 1.0),
-        sub_size=1,
         origin=(-1.0, -2.0),
     )
 
@@ -169,12 +103,11 @@ def test__no_mask():
 
 
 def test__apply_mask():
-    mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
+    mask = aa.Mask2D(mask=[[False, False], [False, False], [True, True], [True, True]], pixel_scales=2.0)
     array_2d = aa.Array2D.no_mask(
         values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0],
-        shape_native=(2, 1),
+        shape_native=(4, 2),
         pixel_scales=2.0,
-        sub_size=2,
     )
     array_2d = array_2d.apply_mask(mask=mask)
 
@@ -194,21 +127,6 @@ def test__full():
     assert array_2d.pixel_scales == (1.0, 1.0)
     assert array_2d.origin == (0.0, 1.0)
 
-    array_2d = aa.Array2D.full(
-        fill_value=2.0,
-        shape_native=(1, 1),
-        pixel_scales=1.0,
-        sub_size=2,
-        origin=(0.0, 1.0),
-    )
-
-    assert type(array_2d) == aa.Array2D
-    assert (array_2d.native == np.array([[2.0, 2.0], [2.0, 2.0]])).all()
-    assert (array_2d.slim == np.array([2.0, 2.0, 2.0, 2.0])).all()
-    assert array_2d.pixel_scales == (1.0, 1.0)
-    assert array_2d.origin == (0.0, 1.0)
-    assert array_2d.mask.sub_size == 2
-
 
 def test__ones():
     array_2d = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
@@ -219,35 +137,12 @@ def test__ones():
     assert array_2d.pixel_scales == (1.0, 1.0)
     assert array_2d.origin == (0.0, 0.0)
 
-    array_2d = aa.Array2D.ones(
-        shape_native=(1, 1), pixel_scales=1.0, sub_size=2, origin=(0.0, 1.0)
-    )
-
-    assert type(array_2d) == aa.Array2D
-    assert (array_2d.native == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
-    assert (array_2d.slim == np.array([1.0, 1.0, 1.0, 1.0])).all()
-    assert array_2d.pixel_scales == (1.0, 1.0)
-    assert array_2d.origin == (0.0, 1.0)
-    assert array_2d.mask.sub_size == 2
-
-
 def test__zeros():
     array_2d = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0)
 
     assert type(array_2d) == aa.Array2D
     assert (array_2d.native == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
     assert (array_2d.slim == np.array([0.0, 0.0, 0.0, 0.0])).all()
-
-    array_2d = aa.Array2D.zeros(
-        shape_native=(1, 1), pixel_scales=1.0, sub_size=2, origin=(0.0, 1.0)
-    )
-
-    assert type(array_2d) == aa.Array2D
-    assert (array_2d.native == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
-    assert (array_2d.slim == np.array([0.0, 0.0, 0.0, 0.0])).all()
-    assert array_2d.pixel_scales == (1.0, 1.0)
-    assert array_2d.origin == (0.0, 1.0)
-    assert array_2d.mask.sub_size == 2
 
 
 def test__from_fits():
@@ -353,49 +248,29 @@ def test__output_to_fits():
 
 def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask():
     with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
+        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
         aa.Array2D(values=[[1.0], [3.0]], mask=mask)
-
-    with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
-        aa.Array2D(values=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
-
-    with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
-        aa.Array2D(values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], mask=mask)
 
 
 def test__manual_mask__exception_raised_if_input_array_is_1d_and_not_number_of_masked_sub_pixels():
     with pytest.raises(aa.exc.ArrayException):
         mask = aa.Mask2D(
-            mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
+            mask=[[False, False], [True, False]], pixel_scales=1.0,
         )
         aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     with pytest.raises(aa.exc.ArrayException):
         mask = aa.Mask2D(
-            mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
+            mask=[[False, False], [True, False]], pixel_scales=1.0,
         )
         aa.Array2D(values=[1.0, 2.0], mask=mask)
-
-    with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D(
-            mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
-        )
-        aa.Array2D(values=[1.0, 2.0, 4.0], mask=mask)
-
-    with pytest.raises(aa.exc.ArrayException):
-        mask = aa.Mask2D(
-            mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
-        )
-        aa.Array2D(values=[1.0, 2.0, 3.0, 4.0, 5.0], mask=mask)
 
 
 def test__resized_from():
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 
-    array_2d = aa.Array2D.no_mask(values=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+    array_2d = aa.Array2D.no_mask(values=array_2d, pixel_scales=(1.0, 1.0))
 
     array_2d = array_2d.resized_from(new_shape=(7, 7))
 
@@ -418,7 +293,7 @@ def test__resized_from():
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 
-    array_2d = aa.Array2D.no_mask(values=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+    array_2d = aa.Array2D.no_mask(values=array_2d, pixel_scales=(1.0, 1.0))
 
     array_2d = array_2d.resized_from(new_shape=(3, 3))
 
@@ -433,7 +308,7 @@ def test__padded_before_convolution_from():
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 
-    array_2d = aa.Array2D.no_mask(values=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+    array_2d = aa.Array2D.no_mask(values=array_2d, pixel_scales=(1.0, 1.0))
 
     new_arr = array_2d.padded_before_convolution_from(kernel_shape=(3, 3))
 
@@ -452,7 +327,7 @@ def test__padded_before_convolution_from():
     array_2d = np.ones((9, 9))
     array_2d[4, 4] = 2.0
 
-    array_2d = aa.Array2D.no_mask(values=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+    array_2d = aa.Array2D.no_mask(values=array_2d, pixel_scales=(1.0, 1.0))
 
     new_arr = array_2d.padded_before_convolution_from(kernel_shape=(7, 7))
 
@@ -466,7 +341,7 @@ def test__trimmed_after_convolution_from():
     array_2d = np.ones((5, 5))
     array_2d[2, 2] = 2.0
 
-    array_2d = aa.Array2D.no_mask(values=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+    array_2d = aa.Array2D.no_mask(values=array_2d, pixel_scales=(1.0, 1.0))
 
     new_arr = array_2d.trimmed_after_convolution_from(kernel_shape=(3, 3))
 
@@ -485,7 +360,7 @@ def test__trimmed_after_convolution_from():
     array_2d = np.ones((9, 9))
     array_2d[4, 4] = 2.0
 
-    array_2d = aa.Array2D.no_mask(values=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+    array_2d = aa.Array2D.no_mask(values=array_2d, pixel_scales=(1.0, 1.0))
 
     new_arr = array_2d.trimmed_after_convolution_from(kernel_shape=(7, 7))
 
@@ -512,7 +387,6 @@ def test__zoomed_around_mask():
             [True, True, True, True],
         ],
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     arr_masked = aa.Array2D(values=array_2d, mask=mask)
@@ -531,7 +405,6 @@ def test__zoomed_around_mask():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     arr_masked = aa.Array2D(values=array_2d, mask=mask)
@@ -549,7 +422,6 @@ def test__zoomed_around_mask():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     arr_masked = aa.Array2D(values=array_2d, mask=mask)
@@ -570,7 +442,6 @@ def test__zoomed_around_mask__origin_updated():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     arr_masked = aa.Array2D(values=array_2d, mask=mask)
@@ -593,7 +464,6 @@ def test__zoomed_around_mask__origin_updated():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     arr_masked = aa.Array2D(values=array_2d, mask=mask)
@@ -621,7 +491,6 @@ def test__extent_of_zoomed_array():
             ]
         ),
         pixel_scales=(1.0, 2.0),
-        sub_size=1,
     )
 
     arr_masked = aa.Array2D(values=array_2d, mask=mask)
@@ -699,7 +568,7 @@ def test__header__modified_julian_date():
 
 def test__array_2d__recursive_shape_storage():
     array_2d = aa.Array2D.no_mask(
-        values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
+        values=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0,
     )
 
     assert (array_2d.native.slim.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
