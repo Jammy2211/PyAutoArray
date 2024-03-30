@@ -229,9 +229,11 @@ def grid_2d_to_structure(func):
         if hasattr(grid, "over_sample"):
             if isinstance(grid.over_sample, OverSampleUniform):
                 result = grid.over_sample.evaluated_func_obj_from(
-                    func=func, cls=obj, mask=grid.mask, sub_size=grid.over_sample.sub_size
+                    func=func,
+                    cls=obj,
+                    mask=grid.mask,
+                    sub_size=grid.over_sample.sub_size,
                 )
-          #      result = func(obj, grid, *args, **kwargs)
                 return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
 
             if isinstance(grid.over_sample, OverSampleIterate):
@@ -294,7 +296,13 @@ def grid_2d_to_structure_list(func):
 
         if hasattr(grid, "over_sample"):
             if isinstance(grid.over_sample, OverSampleUniform):
-                result_list = func(obj, grid, *args, **kwargs)
+                result_list = grid.over_sample.evaluated_func_obj_from(
+                    func=func,
+                    cls=obj,
+                    mask=grid.mask,
+                    sub_size=grid.over_sample.sub_size,
+                )
+
                 return grid.over_sample.structure_2d_list_from(
                     result_list=result_list, mask=grid.mask
                 )
