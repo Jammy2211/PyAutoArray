@@ -5,15 +5,9 @@ from autoarray import numba_util
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids import grid_2d_util
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.structures.arrays import array_2d_util
-
-def sub_steps_from(sub_steps):
-    if sub_steps is None:
-        return [2, 4, 8, 16]
-    return sub_steps
 
 
 @numba_util.jit()
@@ -87,95 +81,6 @@ def iterated_array_jit_from(
     return iterated_array
 
 
-@numba_util.jit()
-def threshold_mask_via_grids_jit_from(
-    fractional_accuracy_threshold: float,
-    relative_accuracy_threshold: float,
-    threshold_mask: np.ndarray,
-    grid_higher_sub_2d: np.ndarray,
-    grid_lower_sub_2d: np.ndarray,
-    grid_higher_mask: np.ndarray,
-) -> np.ndarray:
-    """
-    Jitted function to determine the fractional mask, which is a mask where:
-
-    - ``True`` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
-      therefore does not need to be iteratively computed at higher levels of sub-gridding.
-
-    - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
-      therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
-    """
-
-    for y in range(threshold_mask.shape[0]):
-        for x in range(threshold_mask.shape[1]):
-            if not grid_higher_mask[y, x]:
-                if abs(grid_higher_sub_2d[y, x, 0]) > 0:
-                    fractional_accuracy_y = (
-                        grid_lower_sub_2d[y, x, 0] / grid_higher_sub_2d[y, x, 0]
-                    )
-
-                else:
-                    fractional_accuracy_y = 1.0
-
-                if abs(grid_higher_sub_2d[y, x, 1]) > 0:
-                    fractional_accuracy_x = (
-                        grid_lower_sub_2d[y, x, 1] / grid_higher_sub_2d[y, x, 1]
-                    )
-
-                else:
-                    fractional_accuracy_x = 1.0
-
-                if fractional_accuracy_y > 1.0:
-                    fractional_accuracy_y = 1.0 / fractional_accuracy_y
-
-                if fractional_accuracy_x > 1.0:
-                    fractional_accuracy_x = 1.0 / fractional_accuracy_x
-
-                fractional_accuracy = min(fractional_accuracy_y, fractional_accuracy_x)
-
-                if fractional_accuracy < fractional_accuracy_threshold:
-                    threshold_mask[y, x] = False
-
-    if relative_accuracy_threshold is not None:
-        for y in range(threshold_mask.shape[0]):
-            for x in range(threshold_mask.shape[1]):
-                if not grid_higher_mask[y, x]:
-                    relative_accuracy_y = abs(
-                        grid_lower_sub_2d[y, x, 0] - grid_higher_sub_2d[y, x, 0]
-                    )
-                    relative_accuracy_x = abs(
-                        grid_lower_sub_2d[y, x, 1] - grid_higher_sub_2d[y, x, 1]
-                    )
-
-                    relative_accuracy = max(relative_accuracy_y, relative_accuracy_x)
-
-                    if relative_accuracy > relative_accuracy_threshold:
-                        threshold_mask[y, x] = False
-
-    return threshold_mask
-
-
-@numba_util.jit()
-def iterated_grid_jit_from(
-    iterated_grid: Grid2D,
-    threshold_mask_higher_sub: np.ndarray,
-    threshold_mask_lower_sub: np.ndarray,
-    grid_higher_sub_2d: np.ndarray,
-) -> Grid2D:
-    """
-    Create the iterated grid from a result grid that is computed at a higher sub size level than the previous grid.
-
-    The iterated grid is only updated for pixels where the fractional accuracy is met in both the (y,x) coodinates.
-    """
-
-    for y in range(iterated_grid.shape[0]):
-        for x in range(iterated_grid.shape[1]):
-            if threshold_mask_higher_sub[y, x] and not threshold_mask_lower_sub[y, x]:
-                iterated_grid[y, x, :] = grid_higher_sub_2d[y, x, :]
-
-    return iterated_grid
-
-
 class OverSampleIterate(AbstractOverSample):
     def __init__(
         self,
@@ -215,7 +120,8 @@ class OverSampleIterate(AbstractOverSample):
             they are setup as the default values [2, 4, 8, 16].
         """
 
-        sub_steps = sub_steps_from(sub_steps=sub_steps)
+        if sub_steps is None:
+            sub_steps = [2, 4, 8, 16]
 
         self.fractional_accuracy = fractional_accuracy
         self.relative_accuracy = relative_accuracy
@@ -232,17 +138,7 @@ class OverSampleIterate(AbstractOverSample):
         array = grid_compute.over_sample.structure_2d_from(result=array_higher_sub, mask=grid_compute.mask)
         return self.binned_array_2d_from(array=array, sub_size=sub_size).native
 
-    def grid_at_sub_size_from(self, func: Callable, cls, mask: Mask2D, sub_size) -> Grid2D:
-
-        grid_compute = self.oversampled_grid_2d_via_mask_from(
-            mask=mask,
-            sub_size=sub_size
-        )
-        grid_higher_sub = func(cls, grid_compute)
-        grid = grid_compute.over_sample.structure_2d_from(result=grid_higher_sub, mask=grid_compute.mask)
-        return self.binned_grid_2d_from(grid=grid, sub_size=sub_size).native
-
-    def threshold_mask_via_arrays_from(
+    def threshold_mask_from(
         self, array_lower_sub_2d: Array2D, array_higher_sub_2d: Array2D
     ) -> Mask2D:
         """
@@ -331,7 +227,7 @@ class OverSampleIterate(AbstractOverSample):
             )
 
             try:
-                threshold_mask_higher_sub = self.threshold_mask_via_arrays_from(
+                threshold_mask_higher_sub = self.threshold_mask_from(
                     array_lower_sub_2d=array_lower_sub_2d,
                     array_higher_sub_2d=array_higher_sub,
                 )
@@ -393,134 +289,6 @@ class OverSampleIterate(AbstractOverSample):
 
         return Array2D(values=iterated_array_1d, mask=mask)
 
-    def threshold_mask_via_grids_from(
-        self, grid_lower_sub_2d: Grid2D, grid_higher_sub_2d: Grid2D
-    ) -> Mask2D:
-        """
-        Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
-        value in the result array is within the ``OverSampleIterate``'s specified fractional accuracy. The fractional mask thus
-        determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
-
-        The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
-        at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
-        is evaluated at the specified fractional accuracy.
-
-        Parameters
-        ----------
-        grid_lower_sub_2d
-            The results computed by a function using a lower sub-grid size
-        grid_higher_sub_2d : grids.Array2D
-            The results computed by a function using a higher sub-grid size.
-        """
-
-        threshold_mask = Mask2D.all_false(
-            shape_native=grid_lower_sub_2d.shape_native,
-            pixel_scales=grid_lower_sub_2d.pixel_scales,
-            invert=True,
-        )
-
-        threshold_mask = threshold_mask_via_grids_jit_from(
-            fractional_accuracy_threshold=self.fractional_accuracy,
-            relative_accuracy_threshold=self.relative_accuracy,
-            threshold_mask=np.array(threshold_mask),
-            grid_higher_sub_2d=np.array(grid_higher_sub_2d),
-            grid_lower_sub_2d=np.array(grid_lower_sub_2d),
-            grid_higher_mask=np.array(grid_higher_sub_2d.mask),
-        )
-
-        return Mask2D(
-            mask=threshold_mask,
-            pixel_scales=grid_lower_sub_2d.pixel_scales,
-            origin=grid_lower_sub_2d.origin,
-        )
-
-    def iterated_grid_from(
-        self, func: Callable, cls: object, grid_lower_sub_2d: Grid2D
-    ) -> Grid2D:
-        """
-        Iterate over a function that returns a grid of values until the it meets a specified fractional accuracy.
-        The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
-        sub-grid followed by binning lead to a more precise evaluation of the function. For the fractional accuracy of
-        the grid to be met, both the y and x values must meet it.
-
-        The function is first called for a sub-grid size of 1 and a higher resolution grid. The ratio of values give
-        the fractional accuracy of each function evaluation. Pixels which do not meet the fractional accuracy are
-        iteratively revaulated on higher resolution sub-grids. This is repeated until all pixels meet the fractional
-        accuracy or the highest sub-size specified in the *sub_steps* attribute is computed.
-
-        If the function return all zeros, the iteration is terminated early given that all levels of sub-gridding will
-        return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
-
-        An example use case of this function is when a "deflections_yx_2d_from" methods in **PyAutoLens**'s ``MassProfile``
-        module is computed, which by evaluating the function on a higher resolution sub-grid samples the analytic
-        mass profile at more points and thus more precisely.
-
-        Parameters
-        ----------
-        func
-            The function which is iterated over to compute a more precise evaluation.
-        cls
-            The class the function belongs to.
-        grid_lower_sub_2d
-            The results computed by the function using a lower sub-grid size
-        """
-
-        if not np.any(grid_lower_sub_2d):
-            return grid_lower_sub_2d.slim
-
-        shape_native = grid_lower_sub_2d.shape_native
-        mask = grid_lower_sub_2d.mask
-
-        iterated_grid = np.zeros(shape=(shape_native[0], shape_native[1], 2))
-
-        threshold_mask_lower_sub = mask
-
-        for sub_size in self.sub_steps[:-1]:
-
-            grid_higher_sub = self.grid_at_sub_size_from(
-                func=func, cls=cls, mask=threshold_mask_lower_sub, sub_size=sub_size
-            )
-            threshold_mask_higher_sub = self.threshold_mask_via_grids_from(
-                grid_lower_sub_2d=grid_lower_sub_2d, grid_higher_sub_2d=grid_higher_sub
-            )
-
-            iterated_grid = iterated_grid_jit_from(
-                iterated_grid=iterated_grid,
-                threshold_mask_higher_sub=np.array(threshold_mask_higher_sub),
-                threshold_mask_lower_sub=np.array(threshold_mask_lower_sub),
-                grid_higher_sub_2d=np.array(grid_higher_sub),
-            )
-
-
-            if threshold_mask_higher_sub.is_all_true:
-                iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
-                    mask=mask, grid_2d_native=iterated_grid, sub_size=1
-                )
-
-                return Grid2D(values=iterated_grid_1d, mask=mask)
-
-            grid_lower_sub_2d = grid_higher_sub
-            threshold_mask_lower_sub = threshold_mask_higher_sub
-
-        threshold_mask_lower_sub.pixel_scales = (1.0, 1.0)
-
-
-        grid_higher_sub = self.grid_at_sub_size_from(
-            func=func,
-            cls=cls,
-            mask=threshold_mask_lower_sub,
-            sub_size=self.sub_steps[-1],
-        )
-
-        iterated_grid_2d = iterated_grid + grid_higher_sub.native
-
-        iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
-            mask=mask, grid_2d_native=iterated_grid_2d, sub_size=1
-        )
-
-        return Grid2D(values=iterated_grid_1d, mask=mask)
-
     def iterated_result_from(
         self, func: Callable, cls: object, grid: Grid2D
     ) -> Union[Array2D, Grid2D]:
@@ -551,8 +319,4 @@ class OverSampleIterate(AbstractOverSample):
         if len(result_sub_1_2d.shape) == 2:
             return self.iterated_array_from(
                 func=func, cls=cls, array_lower_sub_2d=result_sub_1_2d
-            )
-        elif len(result_sub_1_2d.shape) == 3:
-            return self.iterated_grid_from(
-                func=func, cls=cls, grid_lower_sub_2d=result_sub_1_2d
             )

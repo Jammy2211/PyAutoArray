@@ -313,7 +313,7 @@ def grid_2d_to_structure_list(func):
                     grid_compute.over_sample.structure_2d_from(result=result, mask=grid_compute.mask)
                     for result in result_list
                 ]
-                result_list = [result.over_sample.binned_grid_2d_from(grid=grid_compute, sub_size=max(grid.over_sample.sub_steps)) for result in result_list]
+                result_list = [result.over_sample.binned_array_2d_from(array=grid_compute, sub_size=max(grid.over_sample.sub_steps)) for result in result_list]
                 return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
 
         if isinstance(grid, Grid2DIrregular):

@@ -94,42 +94,6 @@ class AbstractOverSample:
             header=array.header,
         )
 
-    def binned_grid_2d_from(self, grid : Grid2D, sub_size : int) -> "Grid2D":
-        """
-        Return a `Grid2D` of the binned-up grid in its 1D representation, which is stored with
-        shape [total_unmasked_pixels, 2].
-
-        The binning up process converts a grid from (y,x) values where each value is a coordinate on the sub-grid to
-        (y,x) values where each coordinate is at the centre of its mask (e.g. a grid with a sub_size of 1). This is
-        performed by taking the mean of all (y,x) values in each sub pixel.
-
-        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
-        """
-        sub_length = self.sub_length_from(mask=grid.mask, sub_size=sub_size)
-        sub_fraction = self.sub_fraction_from(mask=grid.mask, sub_size=sub_size)
-
-        grid_2d_slim = grid.slim
-
-        grid_2d_slim_binned_y = np.multiply(
-            sub_fraction,
-            grid_2d_slim[:, 0].reshape(-1, sub_length).sum(axis=1),
-        )
-
-        grid_2d_slim_binned_x = np.multiply(
-            sub_fraction,
-            grid_2d_slim[:, 1].reshape(-1, sub_length).sum(axis=1),
-        )
-
-        grid_2d_binned = np.stack(
-            (grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1
-        )
-
-        return Grid2D(
-            values=grid_2d_binned,
-            mask=grid.mask[::sub_size, ::sub_size],
-            over_sample=self
-        )
-
     def structure_2d_from(self, result: np.ndarray, mask : Mask2D) -> Union[Array2D, "Grid2D"]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
