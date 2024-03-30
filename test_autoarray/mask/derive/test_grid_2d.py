@@ -4,7 +4,7 @@ import pytest
 import autoarray as aa
 
 
-def test__all_false_sub_1():
+def test__all_false():
     grid_2d_util = aa.util.grid_2d.grid_2d_via_shape_native_from(
         shape_native=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
     )
@@ -18,10 +18,10 @@ def test__all_false_sub_1():
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
-    assert derive_grid.all_false_sub_1.slim == pytest.approx(grid_1d_util, 1e-4)
-    assert derive_grid.all_false_sub_1.native == pytest.approx(grid_2d_util, 1e-4)
+    assert derive_grid.all_false.slim == pytest.approx(grid_1d_util, 1e-4)
+    assert derive_grid.all_false.native == pytest.approx(grid_2d_util, 1e-4)
     assert (
-        derive_grid.all_false_sub_1.mask == np.full(fill_value=False, shape=(4, 7))
+        derive_grid.all_false.mask == np.full(fill_value=False, shape=(4, 7))
     ).all()
 
     mask = aa.Mask2D.all_false(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
@@ -29,7 +29,7 @@ def test__all_false_sub_1():
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     assert (
-        derive_grid.all_false_sub_1.native
+        derive_grid.all_false.native
         == np.array(
             [
                 [[1.0, -1.0], [1.0, 0.0], [1.0, 1.0]],
@@ -51,15 +51,15 @@ def test__all_false_sub_1():
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
-    assert derive_grid.all_false_sub_1.slim == pytest.approx(grid_1d_util, 1e-4)
-    assert derive_grid.all_false_sub_1.native == pytest.approx(grid_2d_util, 1e-4)
+    assert derive_grid.all_false.slim == pytest.approx(grid_1d_util, 1e-4)
+    assert derive_grid.all_false.native == pytest.approx(grid_2d_util, 1e-4)
 
     mask = aa.Mask2D.all_false(shape_native=(3, 3), pixel_scales=(1.0, 2.0))
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     assert (
-        derive_grid.all_false_sub_1.native
+        derive_grid.all_false.native
         == np.array(
             [
                 [[1.0, -2.0], [1.0, 0.0], [1.0, 2.0]],
@@ -70,13 +70,13 @@ def test__all_false_sub_1():
     ).all()
 
 
-def test__unmasked_sub_1():
+def test__unmasked():
     mask = aa.Mask2D.all_false(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     assert (
-        derive_grid.unmasked_sub_1.slim
+        derive_grid.unmasked.slim
         == np.array(
             [
                 [1.0, -1.0],
@@ -98,7 +98,7 @@ def test__unmasked_sub_1():
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     assert (
-        derive_grid.unmasked_sub_1.slim
+        derive_grid.unmasked.slim
         == np.array(
             [
                 [1.0, -1.0],
@@ -122,12 +122,12 @@ def test__unmasked_sub_1():
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     assert (
-        derive_grid.unmasked_sub_1.slim
+        derive_grid.unmasked.slim
         == np.array([[4.0, -2.5], [3.0, -1.5], [2.0, -1.5]])
     ).all()
 
 
-def test__edge_sub_1():
+def test__edge():
     mask = np.array(
         [
             [True, True, True, True, True, True, True, True, True],
@@ -146,7 +146,7 @@ def test__edge_sub_1():
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
-    assert derive_grid.edge_sub_1.slim[0:11] == pytest.approx(
+    assert derive_grid.edge.slim[0:11] == pytest.approx(
         np.array(
             [
                 [3.0, -3.0],
@@ -185,7 +185,7 @@ def test__border_sub_1():
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
-    assert derive_grid.border_sub_1.slim[0:11] == pytest.approx(
+    assert derive_grid.border.slim[0:11] == pytest.approx(
         np.array(
             [
                 [3.0, -3.0],

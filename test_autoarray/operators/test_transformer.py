@@ -8,7 +8,7 @@ class MockDeriveMask2D:
     def __init__(self, grid):
         self.mask = grid.derive_mask.all_false
         self.grid = grid
-        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
+        self.unmasked = MockMaskedGrid(grid=grid)
 
     @property
     def sub_1(self):
@@ -16,7 +16,7 @@ class MockDeriveMask2D:
 
     @property
     def pixels_in_mask(self):
-        return self.unmasked_sub_1.binned.slim.in_radians.shape[0]
+        return self.unmasked.binned.slim.in_radians.shape[0]
 
     @property
     def derive_grid(self):
@@ -27,7 +27,7 @@ class MockDeriveMask2D:
 
 class MockDeriveGrid2D:
     def __init__(self, grid):
-        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
+        self.unmasked = MockMaskedGrid(grid=grid)
 
 
 class MockRealSpaceMask:

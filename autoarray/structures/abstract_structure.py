@@ -93,7 +93,7 @@ class Structure(AbstractNDArray, ABC):
 
     @property
     def unmasked_grid(self) -> Union[Grid1D, Grid2D]:
-        return self.mask.derive_grid.all_false_sub_1
+        return self.mask.derive_grid.all_false
 
     @property
     def total_pixels(self) -> int:

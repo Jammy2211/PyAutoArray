@@ -61,7 +61,7 @@ class DeriveGrid1D:
         self.mask = mask
 
     @property
-    def all_false_sub_1(self) -> Grid1D:
+    def all_false(self) -> Grid1D:
         """
         Returns a non-subgridded ``Grid1D`` which uses the ``Mask1D``
         geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and every pixel in the ``Mask2D``
@@ -75,7 +75,7 @@ class DeriveGrid1D:
                 pixel_scales=1.0,
             )
 
-        The ``all_false_sub_1`` ``Grid1D`` (given via ``mask_1d.derive_grid.all_false_sub_1``) is:
+        The ``all_false`` ``Grid1D`` (given via ``mask_1d.derive_grid.all_false``) is:
 
         ::
             [-2.0, -1.0, 1.0, 2.0]
@@ -94,7 +94,7 @@ class DeriveGrid1D:
 
             derive_grid_1d = aa.DeriveGrid1D(mask=mask_1d)
 
-            print(derive_grid_1d.all_false_sub_1)
+            print(derive_grid_1d.all_false)
         """
         from autoarray.structures.grids.uniform_1d import Grid1D
 

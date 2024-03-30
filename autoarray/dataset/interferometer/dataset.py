@@ -175,7 +175,7 @@ class Interferometer(AbstractDataset):
                 self.transformer.grid.mask.shape_native_masked_pixels
             ),
             grid_radians_2d=np.array(
-                self.transformer.grid.mask.derive_grid.all_false_sub_1.in_radians.native
+                self.transformer.grid.mask.derive_grid.all_false.in_radians.native
             ),
         )
 
