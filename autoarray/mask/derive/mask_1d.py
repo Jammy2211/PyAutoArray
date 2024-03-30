@@ -53,7 +53,7 @@ class DeriveMask1D:
     def all_false(self) -> Mask1D:
         """
         Returns a ``Mask1D`` which has the same
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) as this ``Mask1D`` but all
+        geometry (``shape_native`` / ``pixel_scales`` / ``origin``) as this ``Mask1D`` but all
         entries are unmasked (given by``False``).
 
         For example, for the following ``Mask1D``:
@@ -76,7 +76,6 @@ class DeriveMask1D:
             mask_1d = aa.Mask1D(
                 mask[True, False, False, False, True],
                 pixel_scales=1.0,
-                sub_size=2,
             )
 
             derive_mask_1d = aa.DeriveMask1D(mask=mask_1d)
@@ -87,7 +86,6 @@ class DeriveMask1D:
 
         return Mask1D.all_false(
             shape_slim=self.mask.shape_slim,
-            sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
@@ -120,7 +118,6 @@ class DeriveMask1D:
             mask_1d = aa.Mask1D(
                 mask[True, False, False, False, True],
                 pixel_scales=1.0,
-                sub_size=2,
             )
 
             derive_mask_1d = aa.DeriveMask1D(mask=mask_1d)
@@ -133,6 +130,5 @@ class DeriveMask1D:
         return Mask2D(
             [self.mask],
             pixel_scales=(self.mask.pixel_scale, self.mask.pixel_scale),
-            sub_size=self.mask.sub_size,
             origin=(0.0, 0.0),
         )
