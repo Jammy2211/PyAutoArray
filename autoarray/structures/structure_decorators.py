@@ -301,19 +301,31 @@ def grid_2d_to_structure_over_sample(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if isinstance(grid.over_sample, OverSampleUniform):
-            result = grid.over_sample.evaluated_func_obj_from(
-                func=func,
-                cls=obj,
-                mask=grid.mask,
-                sub_size=grid.over_sample.sub_size,
-            )
-            return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
+        if hasattr(grid, "over_sample"):
+            if isinstance(grid.over_sample, OverSampleUniform):
+                result = grid.over_sample.evaluated_func_obj_from(
+                    func=func,
+                    cls=obj,
+                    mask=grid.mask,
+                    sub_size=grid.over_sample.sub_size,
+                )
+                return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
 
-        elif isinstance(grid.over_sample, OverSampleIterate):
-            return grid.over_sample.iterated_result_from(
-                func=func, cls=obj, grid=grid
-            )
+            elif isinstance(grid.over_sample, OverSampleIterate):
+                return grid.over_sample.iterated_result_from(
+                    func=func, cls=obj, grid=grid
+                )
+
+        if isinstance(grid, Grid2DIrregular):
+            result = func(obj, grid, *args, **kwargs)
+            return grid.structure_2d_from(result=result)
+        if isinstance(grid, Grid1D):
+            grid_2d_radial = grid.grid_2d_radial_projected_from()
+            result = func(obj, grid_2d_radial, *args, **kwargs)
+            return grid.structure_2d_from(result=result)
+
+        if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
+            return func(obj, grid, *args, **kwargs)
 
     return wrapper
 
@@ -415,20 +427,32 @@ def grid_2d_to_structure_over_sample_list(func):
             of NumPy arrays.
         """
 
-        if isinstance(grid.over_sample, OverSampleUniform):
-            result_list = grid.over_sample.evaluated_func_obj_from(
-                func=func,
-                cls=obj,
-                mask=grid.mask,
-                sub_size=grid.over_sample.sub_size,
-            )
+        if hasattr(grid, "over_sample"):
+            if isinstance(grid.over_sample, OverSampleUniform):
+                result_list = grid.over_sample.evaluated_func_obj_from(
+                    func=func,
+                    cls=obj,
+                    mask=grid.mask,
+                    sub_size=grid.over_sample.sub_size,
+                )
 
-            return grid.over_sample.structure_2d_list_from(
-                result_list=result_list, mask=grid.mask
-            )
+                return grid.over_sample.structure_2d_list_from(
+                    result_list=result_list, mask=grid.mask
+                )
 
-        if isinstance(grid.over_sample, OverSampleIterate):
-            raise Exception
+            if isinstance(grid.over_sample, OverSampleIterate):
+                raise Exception
+
+        if isinstance(grid, Grid2DIrregular):
+            result_list = func(obj, grid, *args, **kwargs)
+            return grid.structure_2d_list_from(result_list=result_list)
+        elif isinstance(grid, Grid1D):
+            grid_2d_radial = grid.grid_2d_radial_projected_from()
+            result_list = func(obj, grid_2d_radial, *args, **kwargs)
+            return grid.structure_2d_list_from(result_list=result_list)
+
+        if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
+            return func(obj, grid, *args, **kwargs)
 
     return wrapper
 
