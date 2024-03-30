@@ -432,7 +432,7 @@ def _radial_projected_shape_slim_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
     pixel_scales: ty.PixelScales,
-    sub_size: int,
+    sub_size: int = 1,
 ) -> int:
     """
     The function `grid_scaled_2d_slim_radial_projected_from()` determines a projected radial grid of points from a 2D
