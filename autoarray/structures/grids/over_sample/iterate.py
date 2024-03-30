@@ -130,6 +130,7 @@ class OverSampleIterate(AbstractOverSample):
     def array_at_sub_size_from(
         self, func: Callable, cls, mask: Mask2D, sub_size
     ) -> Array2D:
+
         grid_compute = self.oversampled_grid_2d_via_mask_from(
             mask=mask, sub_size=sub_size
         )
@@ -218,6 +219,7 @@ class OverSampleIterate(AbstractOverSample):
 
         shape_native = array_lower_sub_2d.shape_native
         mask = array_lower_sub_2d.mask
+        pixel_scales = array_lower_sub_2d.pixel_scales
 
         iterated_array = np.zeros(shape=shape_native)
 
@@ -253,6 +255,7 @@ class OverSampleIterate(AbstractOverSample):
 
             array_lower_sub_2d = array_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
+            threshold_mask_higher_sub.pixel_scales = pixel_scales
 
         array_higher_sub = self.array_at_sub_size_from(
             func=func,

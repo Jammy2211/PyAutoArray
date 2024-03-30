@@ -4,7 +4,6 @@ from typing import Tuple
 from autoconf import cached_property
 
 from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
-from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.mask.mask_2d import mask_2d_util
 

@@ -25,7 +25,7 @@ def convert_array_1d(
     This function performs the following and checks and conversions on the input:
 
     1) If the input is a list, convert it to an ndarray.
-    2) Check that the number of sub-pixels in the array is identical to that of the mask.
+    2) Check that the number of pixels in the array is identical to that of the mask.
     3) Map the input ndarray to its `slim` representation.
 
     For an Array2D, `slim` refers to a 1D NumPy array of shape [total_values] and `native` a 2D NumPy array of shape

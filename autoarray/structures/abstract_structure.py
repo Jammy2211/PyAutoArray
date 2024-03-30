@@ -49,16 +49,8 @@ class Structure(AbstractNDArray, ABC):
         return self.mask.shape_slim
 
     @property
-    def sub_shape_slim(self) -> int:
-        return self.mask.sub_shape_slim
-
-    @property
     def shape_native(self) -> Tuple[int, ...]:
         return self.mask.shape
-
-    @property
-    def sub_shape_native(self) -> Tuple[int, ...]:
-        return self.mask.sub_shape_native
 
     @property
     def pixel_scales(self) -> Tuple[float, ...]:
@@ -86,10 +78,6 @@ class Structure(AbstractNDArray, ABC):
     @property
     def origin(self) -> Tuple[int, ...]:
         return self.mask.origin
-
-    @property
-    def sub_size(self) -> int:
-        return self.mask.sub_size
 
     @property
     def unmasked_grid(self) -> Union[Grid1D, Grid2D]:

@@ -27,8 +27,8 @@ class Grid1D(Structure):
         store_native: bool = False,
     ):
         """
-        A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
-        on the grid corresponds to the (x) coordinates at the centre of a sub-pixel of an unmasked pixel.
+        A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels. Each entry
+        on the grid corresponds to the (x) coordinates at the centre of a pixel of an unmasked pixel.
 
         A `Grid1D` is ordered such that pixels begin from the left (e.g. index [0]) of the corresponding mask
         and go right. The positive x-axis is to the right.
@@ -197,16 +197,16 @@ class Grid1D(Structure):
         Parameters
         ----------
         mask
-            The mask whose masked pixels are used to setup the sub-pixel grid.
+            The mask whose masked pixels are used to setup the pixel grid.
         """
 
-        sub_grid_1d = grid_1d_util.grid_1d_slim_via_mask_from(
+        grid_1d = grid_1d_util.grid_1d_slim_via_mask_from(
             mask_1d=np.array(mask),
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
         )
 
-        return Grid1D(values=sub_grid_1d, mask=mask)
+        return Grid1D(values=grid_1d, mask=mask)
 
     @classmethod
     def uniform(
@@ -295,28 +295,6 @@ class Grid1D(Structure):
         `slim` to `native` and returned as a new `Grid1D`.
         """
         return Grid1D(values=self, mask=self.mask, store_native=True)
-
-    @property
-    def binned(self) -> "Grid1D":
-        """
-        Convenience method to access the binned-up grid in its 1D representation, which is a Grid2D stored as an
-        ndarray of shape [total_unmasked_pixels, 2].
-
-        The binning up process converts a grid from (y,x) values where each value is a coordinate on the sub-grid to
-        (y,x) values where each coordinate is at the centre of its mask (e.g. a grid with a sub_size of 1). This is
-        performed by taking the mean of all (y,x) values in each sub pixel.
-
-        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
-        """
-
-        grid_1d_slim = self.slim
-
-        binned_grid_1d_slim = np.multiply(
-            self.mask.sub_fraction,
-            grid_1d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
-        return Grid1D(values=binned_grid_1d_slim, mask=self.mask)
 
     def grid_2d_radial_projected_from(self, angle: float = 0.0) -> Grid2DIrregular:
         """

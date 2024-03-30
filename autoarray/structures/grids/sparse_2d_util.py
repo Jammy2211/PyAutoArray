@@ -51,7 +51,7 @@ def create_img_and_grid_hb_order(img_2d, mask, mask_radius, pixel_scales, length
     shape_nnn = np.shape(mask)[0]
 
     grid = Grid2D.uniform(
-        shape_native=(shape_nnn, shape_nnn), pixel_scales=pixel_scales, sub_size=1
+        shape_native=(shape_nnn, shape_nnn), pixel_scales=pixel_scales,
     )
 
     x1d_hb, y1d_hb = create_grid_hb_order(length=length_hb, mask_radius=mask_radius)

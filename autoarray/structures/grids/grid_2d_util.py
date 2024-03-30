@@ -147,7 +147,7 @@ def convert_grid_2d_to_slim(
     if len(grid_2d.shape) == 2:
         return grid_2d
     return grid_2d_slim_from(
-        grid_2d_native=grid_2d, mask=mask_2d, sub_size=mask_2d.sub_size
+        grid_2d_native=grid_2d, mask=mask_2d,
     )
 
 
@@ -171,7 +171,7 @@ def convert_grid_2d_to_native(
     if len(grid_2d.shape) == 3:
         return grid_2d
     return grid_2d_native_from(
-        grid_2d_slim=grid_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+        grid_2d_slim=grid_2d, mask_2d=mask_2d,
     )
 
 

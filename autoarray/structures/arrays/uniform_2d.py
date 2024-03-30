@@ -35,7 +35,7 @@ class AbstractArray2D(Structure):
         **kwargs,
     ):
         """
-        A uniform 2D array of values, which are paired with a 2D mask of pixels which may be split into sub-pixels.
+        A uniform 2D array of values, which are paired with a 2D mask of pixels.
 
         The ``Array2D`, like all data structures (e.g. ``Grid2D``, ``VectorYX2D``) has in-built functionality which:
 
@@ -47,16 +47,16 @@ class AbstractArray2D(Structure):
         - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
           a (y,x) grid of all unmasked pixels).
 
-        - Associates sub-grids with the data structure, which perform calculations higher resolutions which are then
+        - Associates grids with the data structure, which perform calculations higher resolutions which are then
           binned up.
 
-        Each entry of an ``Array2D`` corresponds to a value at the centre of a sub-pixel in its
+        Each entry of an ``Array2D`` corresponds to a value at the centre of a pixel in its
         corresponding ``Mask2D``.  It is ordered such that pixels begin from the top-row of the corresponding mask
         and go right and down. The positive y-axis is upwards and positive x-axis to the right.
 
         A detailed description of the data structure API is provided below.
 
-        **SLIM DATA REPRESENTATION (sub-size=1)**
+        __slim__
 
         Below is a visual illustration of an ``Array2D``'s 2D mask, where a total of 10 pixels are unmasked and are
         included in the array.

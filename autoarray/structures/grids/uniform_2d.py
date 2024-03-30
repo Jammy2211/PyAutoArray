@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
 
 from autoconf import conf
-from autoconf import cached_property
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
@@ -33,8 +32,8 @@ class Grid2D(Structure):
         **kwargs,
     ):
         """
-        A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
-        on the grid corresponds to the (y,x) coordinates at the centre of a sub-pixel of an unmasked pixel.
+        A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels. Each entry
+        on the grid corresponds to the (y,x) coordinates at the centre of a pixel of an unmasked pixel.
 
         A `Grid2D` is ordered such that pixels begin from the top-row (e.g. index [0, 0]) of the corresponding mask
         and go right and down. The positive y-axis is upwards and positive x-axis to the right.
@@ -46,7 +45,7 @@ class Grid2D(Structure):
           shape [total_y_coordinates, total_x_coordinates, 2].
 
 
-        **Case 1 (sub-size=1, slim)**
+        __Slim__
 
         The Grid2D is an ndarray of shape [total_unmasked_coordinates, 2], therefore when `slim` the shape of
         the grid is 2, not 1.
@@ -94,7 +93,7 @@ class Grid2D(Structure):
              x x x x x x x x x x \/   grid[8] = [-0.5,  0.5]
              x x x x x x x x x x      grid[9] = [-0.5,  1.5]
 
-        **Case 2 (sub_size=1, native)**
+        __native__
 
         The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape
         [total_y_coordinates, total_x_coordinates, 2]. Therefore when `native` the shape of the
@@ -132,7 +131,7 @@ class Grid2D(Structure):
 
         **Grid2D Mapping:**
 
-        Every set of (y,x) coordinates in a pixel of the sub-grid maps to an unmasked pixel in the mask. For a uniform
+        Every set of (y,x) coordinates in a pixel of the grid maps to an unmasked pixel in the mask. For a uniform
         grid, every (y,x) coordinate directly corresponds to the location of its paired unmasked pixel.
 
         It is not a requirement that grid is uniform and that their coordinates align with the mask. The input grid
@@ -522,13 +521,13 @@ class Grid2D(Structure):
             The mask whose masked pixels are used to setup the grid.
         """
 
-        sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
+        grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=np.array(mask),
             pixel_scales=mask.pixel_scales,
             origin=mask.origin,
         )
 
-        return Grid2D(values=sub_grid_1d, mask=mask, over_sample=over_sample)
+        return Grid2D(values=grid_1d, mask=mask, over_sample=over_sample)
 
     @classmethod
     def from_fits(
@@ -550,12 +549,12 @@ class Grid2D(Structure):
             The mask whose masked pixels are used to setup the grid.
         """
 
-        sub_grid_2d = array_2d_util.numpy_array_2d_via_fits_from(
+        grid_2d = array_2d_util.numpy_array_2d_via_fits_from(
             file_path=file_path, hdu=0
         )
 
         return Grid2D.no_mask(
-            values=sub_grid_2d,
+            values=grid_2d,
             pixel_scales=pixel_scales,
             origin=origin,
             over_sample=over_sample,
@@ -991,16 +990,6 @@ class Grid2D(Structure):
             self.scaled_maxima[0] + buffer,
         ]
 
-    @cached_property
-    def sub_border_grid(self) -> np.ndarray:
-        """
-        The (y,x) grid of all sub-pixels which are at the border of the mask.
-
-        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border.
-        """
-        return self[self.mask.derive_indexes.sub_border_slim]
-
     def padded_grid_from(self, kernel_shape_native: Tuple[int, int]) -> "Grid2D":
         """
         When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will
@@ -1029,59 +1018,4 @@ class Grid2D(Structure):
 
         return Grid2D.from_mask(mask=padded_mask, over_sample=self.over_sample)
 
-    def relocated_grid_from(self, grid: "Grid2D") -> "Grid2D":
-        """
-        Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
-        border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
 
-        This is performed as follows:
-
-        1: Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
-        2: Compute the radial distance of every grid coordinate from the origin.
-        3: For every coordinate, find its nearest pixel in the border.
-        4: Determine if it is outside the border, by comparing its radial distance from the origin to its paired
-        border pixel's radial distance.
-        5: If its radial distance is larger, use the ratio of radial distances to move the coordinate to the
-        border (if its inside the border, do nothing).
-
-        The method can be used on uniform or irregular grids, however for irregular grids the border of the
-        'image-plane' mask is used to define border pixels.
-
-        Parameters
-        ----------
-        grid : Grid2D
-            The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
-        """
-
-        if len(self.sub_border_grid) == 0:
-            return grid
-
-        return Grid2D(
-            values=grid_2d_util.relocated_grid_via_jit_from(
-                grid=np.array(grid),
-                border_grid=np.array(self.sub_border_grid),
-            ),
-            mask=grid.mask,
-            over_sample=self.over_sample,
-        )
-
-    def relocated_mesh_grid_from(self, mesh_grid: Grid2DIrregular) -> Grid2DIrregular:
-        """
-        Relocate the coordinates of a pixelization grid to the border of this grid. See the
-        method ``relocated_grid_from()`` for a full description of how this grid relocation works.
-
-        Parameters
-        ----------
-        grid
-            The pixelization grid whose pixels are relocated to the border edge if outside it.
-        """
-
-        if len(self.sub_border_grid) == 0:
-            return mesh_grid
-
-        return Grid2DIrregular(
-            values=grid_2d_util.relocated_grid_via_jit_from(
-                grid=np.array(mesh_grid),
-                border_grid=np.array(self.sub_border_grid),
-            ),
-        )
