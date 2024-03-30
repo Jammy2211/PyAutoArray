@@ -142,6 +142,10 @@ class OverSampleUniform(AbstractOverSample):
         return (self.shape[0] * self.sub_size,)
 
     @property
+    def sub_shape_native_2d(self) -> Tuple[int, int]:
+        return (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
+
+    @property
     def sub_shape_slim(self) -> int:
         """
         The 1D shape of the mask's sub-grid, which is equivalent to the total number of unmasked pixels in the mask.
