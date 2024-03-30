@@ -55,7 +55,7 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
         The mask of the output Array2D.
     """
     if len(array_2d.shape) == 1:
-        if array_2d.shape[0] != mask_2d.sub_pixels_in_mask:
+        if array_2d.shape[0] != mask_2d.pixels_in_mask:
             raise exc.ArrayException(
                 f"""
                 The input array is a slim 1D array, but it does not have the same number of entries as sub-pixels in
@@ -67,7 +67,7 @@ def check_array_2d_and_mask_2d(array_2d: np.ndarray, mask_2d: Mask2D):
                 The shapes of the two arrays (which this exception is raised because they are different) are as follows:
 
                 Input array_2d_slim.shape = {array_2d.shape[0]}
-                Input mask_2d.sub_pixels_in_mask = {mask_2d.sub_pixels_in_mask}
+                Input mask_2d.pixels_in_mask = {mask_2d.pixels_in_mask}
                 Input mask_2d.shape_native = {mask_2d.shape_native}
                 """
             )
@@ -197,7 +197,7 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
 
         return array_2d_native
 
-    if array_2d.shape[0] != mask_2d.sub_pixels_in_mask:
+    if array_2d.shape[0] != mask_2d.pixels_in_mask:
         raise exc.ArrayException(
             "The input 1D array does not have the same number of entries as sub-pixels in"
             "the mask."
