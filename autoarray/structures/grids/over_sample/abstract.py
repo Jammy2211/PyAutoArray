@@ -38,6 +38,14 @@ class AbstractOverSample:
         return sub_size**mask.dimensions * mask.pixels_in_mask
 
     def oversampled_grid_2d_via_mask_from(self, mask: Mask2D, sub_size: int) -> Grid2D:
+
+        sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=np.array(mask),
+            pixel_scales=mask.pixel_scales,
+            sub_size=sub_size,
+            origin=mask.origin,
+        )
+
         over_sample_mask = mask_2d_util.oversample_mask_2d_from(
             mask=np.array(mask), sub_size=sub_size
         )
@@ -45,12 +53,6 @@ class AbstractOverSample:
         pixel_scales = (
             mask.pixel_scales[0] / sub_size,
             mask.pixel_scales[1] / sub_size,
-        )
-
-        sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=over_sample_mask,
-            pixel_scales=pixel_scales,
-            origin=mask.origin,
         )
 
         mask = Mask2D(
@@ -95,7 +97,10 @@ class AbstractOverSample:
 
     def evaluated_func_obj_from(self, func, cls, mask, sub_size):
         grid = self.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=sub_size)
+        print(grid)
+        print(mask)
         values = func(cls, np.asarray(grid))
+        print(values)
 
         if not isinstance(values, list):
             values = grid.over_sample.structure_2d_from(result=values, mask=grid.mask)
