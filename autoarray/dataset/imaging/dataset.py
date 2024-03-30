@@ -334,10 +334,10 @@ class Imaging(AbstractDataset):
         else:
             unmasked_dataset = self.unmasked
 
-        data = Array2D(values=unmasked_dataset.data.native, mask=mask.derive_mask.sub_1)
+        data = Array2D(values=unmasked_dataset.data.native, mask=mask)
 
         noise_map = Array2D(
-            values=unmasked_dataset.noise_map.native, mask=mask.derive_mask.sub_1
+            values=unmasked_dataset.noise_map.native, mask=mask
         )
 
         if unmasked_dataset.noise_covariance_matrix is not None:

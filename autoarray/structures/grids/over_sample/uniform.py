@@ -183,7 +183,7 @@ class OverSampleUniform(AbstractOverSample):
 
         return Grid2D(
             values=grid_2d_binned,
-            mask=self.mask.derive_mask.sub_1,
+            mask=self.mask,
             over_sample=self.over_sample,
         )
 

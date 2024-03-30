@@ -448,7 +448,7 @@ class AbstractArray2D(Structure):
 
         return Array2D(
             values=binned_array_1d,
-            mask=self.mask.derive_mask.sub_1,
+            mask=self.mask,
             header=self.header,
         )
 

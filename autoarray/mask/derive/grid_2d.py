@@ -116,7 +116,7 @@ class DeriveGrid2D:
 
         return Grid2D(
             values=grid_slim,
-            mask=self.mask.derive_mask.all_false.derive_mask.sub_1,
+            mask=self.mask.derive_mask.all_false
         )
 
     @property
@@ -231,7 +231,7 @@ class DeriveGrid2D:
             sub_size=1,
             origin=self.mask.origin,
         )
-        return Grid2D(values=grid_slim, mask=self.mask.derive_mask.sub_1)
+        return Grid2D(values=grid_slim, mask=self.mask)
 
     @property
     def edge_sub_1(self) -> Grid2D:
@@ -289,7 +289,7 @@ class DeriveGrid2D:
         edge_grid_1d = self.unmasked_sub_1[self.mask.derive_indexes.edge_slim]
         return Grid2D(
             values=edge_grid_1d,
-            mask=self.mask.derive_mask.edge.derive_mask.sub_1,
+            mask=self.mask.derive_mask.edge,
         )
 
     @property
@@ -426,5 +426,5 @@ class DeriveGrid2D:
         border = self.unmasked_sub_1[self.mask.derive_indexes.border_slim]
         return Grid2D(
             values=border,
-            mask=self.mask.derive_mask.border.derive_mask.sub_1,
+            mask=self.mask.derive_mask.border,
         )

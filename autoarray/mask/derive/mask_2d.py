@@ -94,59 +94,6 @@ class DeriveMask2D:
         """
         return self.mask.derive_indexes
 
-    @property
-    def sub_1(self) -> Mask2D:
-        """
-        Returns the same ``Mask2D`` but with its geometry and (y,x) Cartesian coordinates reduced to a `sub_size=1`.
-
-        For example, for the following ``Mask2D``:
-
-        ::
-           [[ True,  True],
-            [False, False]]
-
-        The ``sub_1``` mask (given via ``mask_2d.derive_mask.sub_1``) returns the same mask but its ``sub_size``
-        parameter will be reduced to 1 if it was above 1 before.
-
-        ::
-           [[ True,  True],
-            [False, False]]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[
-                     [ True,  True],
-                     [False, False]
-                ],
-                pixel_scales=1.0,
-                sub_size=2,
-            )
-
-            derive_mask_2d = aa.DeriveMask2D(mask=mask_2d)
-
-            mask_sub_1 = derive_mask_2d.sub_1
-
-            print(mask_sub_1)
-
-            # The sub_size of the mask is 1.
-            print(mask_sub_1.sub_size)
-        """
-
-        from autoarray.mask.mask_2d import Mask2D
-
-        return Mask2D(
-            mask=np.array(self.mask),
-            sub_size=1,
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.mask.origin,
-        )
-
     def rescaled_from(self, rescale_factor) -> Mask2D:
         """
         Returns the ``Mask2D`` rescaled to a bigger or small shape via input ``rescale_factor``.

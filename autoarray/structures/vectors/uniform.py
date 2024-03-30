@@ -519,7 +519,7 @@ class VectorYX2D(AbstractVectorYX2D):
                 (vector_2d_slim_binned_y, vector_2d_slim_binned_x), axis=-1
             ),
             grid=self.grid.binned,
-            mask=self.mask.derive_mask.sub_1,
+            mask=self.mask,
         )
 
     def apply_mask(self, mask: Mask2D) -> "VectorYX2D":

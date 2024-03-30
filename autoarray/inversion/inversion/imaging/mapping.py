@@ -263,7 +263,7 @@ class InversionImagingMapping(AbstractInversionImaging):
 
             mapped_reconstructed_image = Array2D(
                 values=mapped_reconstructed_image,
-                mask=self.mask.derive_mask.sub_1,
+                mask=self.mask
             )
 
             mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image

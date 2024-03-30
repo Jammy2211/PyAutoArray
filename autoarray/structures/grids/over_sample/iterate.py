@@ -386,7 +386,7 @@ class OverSampleIterate(AbstractOverSample):
             sub_size=1,
         )
 
-        return Array2D(values=iterated_array_1d, mask=mask.derive_mask.sub_1)
+        return Array2D(values=iterated_array_1d, mask=mask)
 
     def threshold_mask_via_grids_from(
         self, grid_lower_sub_2d: Grid2D, grid_higher_sub_2d: Grid2D
@@ -494,7 +494,7 @@ class OverSampleIterate(AbstractOverSample):
                     mask=mask, grid_2d_native=iterated_grid, sub_size=1
                 )
 
-                return Grid2D(values=iterated_grid_1d, mask=mask.derive_mask.sub_1)
+                return Grid2D(values=iterated_grid_1d, mask=mask)
 
             grid_lower_sub_2d = grid_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
@@ -512,7 +512,7 @@ class OverSampleIterate(AbstractOverSample):
             mask=mask, grid_2d_native=iterated_grid_2d, sub_size=1
         )
 
-        return Grid2D(values=iterated_grid_1d, mask=mask.derive_mask.sub_1)
+        return Grid2D(values=iterated_grid_1d, mask=mask)
 
     def iterated_result_from(
         self, func: Callable, cls: object, grid: Grid2D

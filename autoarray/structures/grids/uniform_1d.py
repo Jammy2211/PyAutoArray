@@ -390,7 +390,7 @@ class Grid1D(Structure):
             grid_1d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        return Grid1D(values=binned_grid_1d_slim, mask=self.mask.derive_mask.sub_1)
+        return Grid1D(values=binned_grid_1d_slim, mask=self.mask)
 
     def grid_2d_radial_projected_from(self, angle: float = 0.0) -> Grid2DIrregular:
         """
