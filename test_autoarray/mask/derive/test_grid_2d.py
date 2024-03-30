@@ -20,9 +20,7 @@ def test__all_false():
 
     assert derive_grid.all_false.slim == pytest.approx(grid_1d_util, 1e-4)
     assert derive_grid.all_false.native == pytest.approx(grid_2d_util, 1e-4)
-    assert (
-        derive_grid.all_false.mask == np.full(fill_value=False, shape=(4, 7))
-    ).all()
+    assert (derive_grid.all_false.mask == np.full(fill_value=False, shape=(4, 7))).all()
 
     mask = aa.Mask2D.all_false(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
 
@@ -122,8 +120,7 @@ def test__unmasked():
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     assert (
-        derive_grid.unmasked.slim
-        == np.array([[4.0, -2.5], [3.0, -1.5], [2.0, -1.5]])
+        derive_grid.unmasked.slim == np.array([[4.0, -2.5], [3.0, -1.5], [2.0, -1.5]])
     ).all()
 
 

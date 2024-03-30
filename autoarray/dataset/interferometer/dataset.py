@@ -24,7 +24,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask,
         transformer_class=TransformerNUFFT,
-        sub_size_pixelization : int = 4,
+        sub_size_pixelization: int = 4,
         over_sample: Optional[AbstractOverSample] = None,
         over_sample_pixelization: Optional[AbstractOverSample] = None,
     ):
@@ -168,15 +168,17 @@ class Interferometer(AbstractDataset):
 
         from autoarray.inversion.inversion import inversion_util_secret
 
-        curvature_preload = inversion_util_secret.w_tilde_curvature_preload_interferometer_from(
-            noise_map_real=np.array(self.noise_map.real),
-            uv_wavelengths=np.array(self.uv_wavelengths),
-            shape_masked_pixels_2d=np.array(
-                self.transformer.grid.mask.shape_native_masked_pixels
-            ),
-            grid_radians_2d=np.array(
-                self.transformer.grid.mask.derive_grid.all_false.in_radians.native
-            ),
+        curvature_preload = (
+            inversion_util_secret.w_tilde_curvature_preload_interferometer_from(
+                noise_map_real=np.array(self.noise_map.real),
+                uv_wavelengths=np.array(self.uv_wavelengths),
+                shape_masked_pixels_2d=np.array(
+                    self.transformer.grid.mask.shape_native_masked_pixels
+                ),
+                grid_radians_2d=np.array(
+                    self.transformer.grid.mask.derive_grid.all_false.in_radians.native
+                ),
+            )
         )
 
         w_matrix = inversion_util_secret.w_tilde_via_preload_from(

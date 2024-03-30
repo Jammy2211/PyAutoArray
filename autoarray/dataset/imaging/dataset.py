@@ -245,7 +245,7 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        sub_size : int = 4,
+        sub_size: int = 4,
         over_sample: Optional[AbstractOverSample] = None,
         over_sample_pixelization: Optional[AbstractOverSample] = None,
     ) -> "Imaging":
@@ -336,9 +336,7 @@ class Imaging(AbstractDataset):
 
         data = Array2D(values=unmasked_dataset.data.native, mask=mask)
 
-        noise_map = Array2D(
-            values=unmasked_dataset.noise_map.native, mask=mask
-        )
+        noise_map = Array2D(values=unmasked_dataset.noise_map.native, mask=mask)
 
         if unmasked_dataset.noise_covariance_matrix is not None:
             noise_covariance_matrix = unmasked_dataset.noise_covariance_matrix

@@ -497,9 +497,8 @@ def mask_2d_elliptical_annular_from(
     return mask_2d
 
 
-
 @numba_util.jit()
-def oversample_mask_2d_from(mask : np.ndarray, sub_size : int) -> np.ndarray:
+def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     """
     Returns a new mask of shape (mask.shape[0] * sub_size, mask.shape[1] * sub_size) where all boolean values are
     expanded according to the `sub_size`.
@@ -536,14 +535,15 @@ def oversample_mask_2d_from(mask : np.ndarray, sub_size : int) -> np.ndarray:
     -------
     The mask oversampled by the input sub_size.
     """
-    oversample_mask = np.full((mask.shape[0] * sub_size, mask.shape[1] * sub_size), True)
+    oversample_mask = np.full(
+        (mask.shape[0] * sub_size, mask.shape[1] * sub_size), True
+    )
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
                 oversample_mask[
-                    y * sub_size : (y + 1) * sub_size,
-                    x * sub_size : (x + 1) * sub_size
+                    y * sub_size : (y + 1) * sub_size, x * sub_size : (x + 1) * sub_size
                 ] = False
 
     return oversample_mask
@@ -898,6 +898,7 @@ def check_if_border_pixel(
     else:
         return False
 
+
 @numba_util.jit()
 def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
     """
@@ -1069,6 +1070,7 @@ def sub_border_pixel_slim_indexes_from(
         )
 
     return sub_border_pixels
+
 
 @numba_util.jit()
 def buffed_mask_2d_from(mask_2d: np.ndarray, buffer: int = 1) -> np.ndarray:

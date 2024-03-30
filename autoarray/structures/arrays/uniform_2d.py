@@ -951,7 +951,10 @@ class Array2D(AbstractArray2D):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid = Grid2D.from_yx_1d(
-            y=y, x=x, shape_native=shape_native, pixel_scales=pixel_scales,
+            y=y,
+            x=x,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
         )
 
         grid_pixels = geometry_util.grid_pixel_indexes_2d_slim_from(

@@ -93,5 +93,5 @@ class SimulatorInterferometer:
             noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
             real_space_mask=image.mask,
-            transformer_class=self.transformer_class
+            transformer_class=self.transformer_class,
         )

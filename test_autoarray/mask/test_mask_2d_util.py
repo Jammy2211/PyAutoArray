@@ -743,30 +743,32 @@ def test__mask_2d_elliptical_annular_from__include_centre():
 
 
 def test__oversample_mask_from():
-
-    mask = np.array([
-        [True, True, True, True],
-        [True, False, False, True],
-        [True, False, False, True],
-        [True, True, True, True]
-    ])
-
-    oversample_mask = util.mask_2d.oversample_mask_2d_from(
-        mask=mask,
-        sub_size=2
+    mask = np.array(
+        [
+            [True, True, True, True],
+            [True, False, False, True],
+            [True, False, False, True],
+            [True, True, True, True],
+        ]
     )
 
-    assert (oversample_mask == np.array([
-        [True, True, True, True, True, True, True, True],
-        [True, True, True, True, True, True, True, True],
-        [True, True, False, False, False, False, True, True],
-        [True, True, False, False, False, False, True, True],
-        [True, True, False, False, False, False, True, True],
-        [True, True, False, False, False, False, True, True],
-        [True, True, True, True, True, True, True, True],
-        [True, True, True, True, True, True, True, True]
-    ])).all()
+    oversample_mask = util.mask_2d.oversample_mask_2d_from(mask=mask, sub_size=2)
 
+    assert (
+        oversample_mask
+        == np.array(
+            [
+                [True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True],
+                [True, True, False, False, False, False, True, True],
+                [True, True, False, False, False, False, True, True],
+                [True, True, False, False, False, False, True, True],
+                [True, True, False, False, False, False, True, True],
+                [True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True],
+            ]
+        )
+    ).all()
 
 
 def test__mask_2d_via_pixel_coordinates_from():

@@ -171,9 +171,9 @@ class Grid2D(Structure):
 
     @property
     def over_sample(self):
-
         if self._over_sample is None:
             from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
+
             return OverSampleUniform(sub_size=1)
 
         return self._over_sample
@@ -405,9 +405,7 @@ class Grid2D(Structure):
 
         grid_2d = np.vstack((ys_grid_1d, xs_grid_1d)).T
 
-        grid_2d = grid_2d.reshape(
-            (shape_native[0], shape_native[1], 2)
-        )
+        grid_2d = grid_2d.reshape((shape_native[0], shape_native[1], 2))
 
         pixel_scales = (
             abs(grid_2d[0, 0, 0] - grid_2d[1, 0, 0]),

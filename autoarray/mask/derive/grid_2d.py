@@ -112,10 +112,7 @@ class DeriveGrid2D:
             origin=self.mask.origin,
         )
 
-        return Grid2D(
-            values=grid_slim,
-            mask=self.mask.derive_mask.all_false
-        )
+        return Grid2D(values=grid_slim, mask=self.mask.derive_mask.all_false)
 
     @property
     def unmasked(self) -> Grid2D:

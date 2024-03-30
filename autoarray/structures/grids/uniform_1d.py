@@ -263,13 +263,15 @@ class Grid1D(Structure):
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
         grid_slim = grid_1d_util.grid_1d_slim_via_shape_slim_from(
-            shape_slim=shape_native, pixel_scales=pixel_scales,
+            shape_slim=shape_native,
+            pixel_scales=pixel_scales,
         )
 
         grid_slim -= np.min(grid_slim)
 
         return cls.no_mask(
-            values=grid_slim, pixel_scales=pixel_scales,
+            values=grid_slim,
+            pixel_scales=pixel_scales,
         )
 
     @property

@@ -104,7 +104,4 @@ class DeriveGrid1D:
             origin=self.mask.origin,
         )
 
-        return Grid1D(
-            values=grid_slim,
-            mask=self.mask.derive_mask.all_false
-        )
+        return Grid1D(values=grid_slim, mask=self.mask.derive_mask.all_false)

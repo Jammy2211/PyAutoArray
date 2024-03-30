@@ -163,7 +163,8 @@ def convert_array_2d_to_slim(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndarra
         return array_2d_slim
 
     return array_2d_slim_from(
-        array_2d_native=array_2d, mask_2d=mask_2d,
+        array_2d_native=array_2d,
+        mask_2d=mask_2d,
     )
 
 
@@ -202,7 +203,8 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
         )
 
     return array_2d_native_from(
-        array_2d_slim=array_2d, mask_2d=mask_2d,
+        array_2d_slim=array_2d,
+        mask_2d=mask_2d,
     )
 
 

@@ -127,15 +127,17 @@ class OverSampleIterate(AbstractOverSample):
         self.relative_accuracy = relative_accuracy
         self.sub_steps = sub_steps
 
-    def array_at_sub_size_from(self, func: Callable, cls, mask: Mask2D, sub_size) -> Array2D:
-
+    def array_at_sub_size_from(
+        self, func: Callable, cls, mask: Mask2D, sub_size
+    ) -> Array2D:
         grid_compute = self.oversampled_grid_2d_via_mask_from(
-            mask=mask,
-            sub_size=sub_size
+            mask=mask, sub_size=sub_size
         )
 
         array_higher_sub = func(cls, grid_compute)
-        array = grid_compute.over_sample.structure_2d_from(result=array_higher_sub, mask=grid_compute.mask)
+        array = grid_compute.over_sample.structure_2d_from(
+            result=array_higher_sub, mask=grid_compute.mask
+        )
         return self.binned_array_2d_from(array=array, sub_size=sub_size).native
 
     def threshold_mask_from(
@@ -314,7 +316,9 @@ class OverSampleIterate(AbstractOverSample):
         # Convert to numpy array so grid does not do iteration.
 
         result_sub_1_1d = func(cls, np.asarray(grid))
-        result_sub_1_2d = self.structure_2d_from(result=result_sub_1_1d, mask=grid.mask).native
+        result_sub_1_2d = self.structure_2d_from(
+            result=result_sub_1_1d, mask=grid.mask
+        ).native
 
         if len(result_sub_1_2d.shape) == 2:
             return self.iterated_array_from(

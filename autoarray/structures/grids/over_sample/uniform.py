@@ -8,11 +8,9 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.mask.mask_2d import mask_2d_util
 
+
 class OverSampleUniform(AbstractOverSample):
-    def __init__(
-        self,
-        sub_size : int = 1
-    ):
+    def __init__(self, sub_size: int = 1):
         """
         Over samples grid calculations using a uniform sub-grid that is the same size in every pixel.
 
@@ -350,5 +348,3 @@ class OverSampleUniform(AbstractOverSample):
             shape_native=sub_shape,
             native_for_slim=self.derive_indexes.sub_mask_native_for_sub_mask_slim,
         ).astype("bool")
-
-

@@ -227,12 +227,9 @@ def grid_2d_to_structure(func):
         """
 
         if hasattr(grid, "over_sample"):
-
             if isinstance(grid.over_sample, OverSampleUniform):
                 result = func(obj, grid, *args, **kwargs)
-                return grid.over_sample.structure_2d_from(
-                    result=result, mask=grid.mask
-                )
+                return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
 
             if isinstance(grid.over_sample, OverSampleIterate):
                 return grid.over_sample.iterated_result_from(
@@ -293,28 +290,36 @@ def grid_2d_to_structure_list(func):
         """
 
         if hasattr(grid, "over_sample"):
-
             if isinstance(grid.over_sample, OverSampleUniform):
                 result_list = func(obj, grid, *args, **kwargs)
-                return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
+                return grid.over_sample.structure_2d_list_from(
+                    result_list=result_list, mask=grid.mask
+                )
 
             # TODO : Think this is broken and wrong?
 
             if isinstance(grid.over_sample, OverSampleIterate):
-
                 grid_compute = grid.over_sample.oversampled_grid_2d_via_mask_from(
-                    mask=grid.mask,
-                    sub_size=max(grid.over_sample.sub_steps)
+                    mask=grid.mask, sub_size=max(grid.over_sample.sub_steps)
                 )
 
                 result_list = func(obj, grid_compute, *args, **kwargs)
 
                 result_list = [
-                    grid_compute.over_sample.structure_2d_from(result=result, mask=grid_compute.mask)
+                    grid_compute.over_sample.structure_2d_from(
+                        result=result, mask=grid_compute.mask
+                    )
                     for result in result_list
                 ]
-                result_list = [result.over_sample.binned_array_2d_from(array=grid_compute, sub_size=max(grid.over_sample.sub_steps)) for result in result_list]
-                return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
+                result_list = [
+                    result.over_sample.binned_array_2d_from(
+                        array=grid_compute, sub_size=max(grid.over_sample.sub_steps)
+                    )
+                    for result in result_list
+                ]
+                return grid.over_sample.structure_2d_list_from(
+                    result_list=result_list, mask=grid.mask
+                )
 
         if isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
