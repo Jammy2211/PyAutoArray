@@ -147,7 +147,6 @@ class DeriveMask2D:
         return Mask2D(
             mask=rescaled_mask,
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
             origin=self.mask.origin,
         )
 
@@ -214,64 +213,14 @@ class DeriveMask2D:
         return Mask2D(
             mask=resized_mask,
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
             origin=self.mask.origin,
         )
-
-    @property
-    def sub(self) -> np.ndarray:
-        """
-        Returns the sub-mask of the ``Mask2D``, which is the mask on the sub-grid which has ``False``  / ``True``
-        entries where the original mask is ``False`` / ``True``.
-
-        For example, for the following ``Mask2D``:
-
-        ::
-           [[ True,  True],
-            [False, False]]
-
-        The sub-mask (given via ``mask_2d.derive_mask.sub``) for a ``sub_size=2`` is:
-
-        ::
-            [[True,   True,  True,  True],
-             [True,   True,  True,  True],
-             [False, False, False, False],
-             [False, False, False, False]]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[
-                     [ True,  True],
-                     [False, False]
-                ],
-                pixel_scales=1.0,
-            )
-
-            derive_mask_2d = aa.DeriveMask2D(mask=mask_2d)
-
-            print(derive_mask_2d.sub)
-        """
-        sub_shape = (
-            self.mask.shape[0] * self.mask.sub_size,
-            self.mask.shape[1] * self.mask.sub_size,
-        )
-
-        return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
-            shape_native=sub_shape,
-            native_for_slim=self.derive_indexes.sub_mask_native_for_sub_mask_slim,
-        ).astype("bool")
 
     @property
     def all_false(self) -> Mask2D:
         """
         Returns a ``Mask2D`` which has the same
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) as this ``Mask2D`` but all
+        geometry (``shape_native`` / ``pixel_scales`` / ``origin``) as this ``Mask2D`` but all
         entries are unmasked (given by``False``).
 
         For example, for the following ``Mask2D``:
@@ -310,7 +259,6 @@ class DeriveMask2D:
 
         return Mask2D.all_false(
             shape_native=self.mask.shape_native,
-            sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
@@ -384,7 +332,6 @@ class DeriveMask2D:
 
         return Mask2D(
             mask=blurring_mask,
-            sub_size=1,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
@@ -445,7 +392,6 @@ class DeriveMask2D:
         ] = False
         return Mask2D(
             mask=mask,
-            sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
@@ -507,7 +453,6 @@ class DeriveMask2D:
         return Mask2D(
             mask=edge_buffed_mask,
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
             origin=self.mask.origin,
         )
 
@@ -582,7 +527,6 @@ class DeriveMask2D:
         ] = False
         return Mask2D(
             mask=mask,
-            sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
