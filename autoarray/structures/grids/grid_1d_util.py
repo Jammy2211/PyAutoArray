@@ -41,7 +41,7 @@ def convert_grid_1d(
 
     grid_1d = grid_2d_util.convert_grid(grid=grid_1d)
 
-    is_native = grid_1d.shape[0] == mask_1d.sub_shape_native[0]
+    is_native = grid_1d.shape[0] == mask_1d.shape_native[0]
 
     if is_native == store_native:
         return grid_1d
@@ -49,12 +49,10 @@ def convert_grid_1d(
         return grid_1d_slim_from(
             grid_1d_native=grid_1d,
             mask_1d=np.array(mask_1d),
-            sub_size=mask_1d.sub_size,
         )
     return grid_1d_native_from(
         grid_1d_slim=grid_1d,
         mask_1d=np.array(mask_1d),
-        sub_size=mask_1d.sub_size,
     )
 
 
@@ -108,7 +106,7 @@ def grid_1d_slim_via_shape_slim_from(
 def grid_1d_slim_via_mask_from(
     mask_1d: np.ndarray,
     pixel_scales: ty.PixelScales,
-    sub_size: int,
+    sub_size: int = 1,
     origin: Tuple[float] = (0.0,),
 ) -> np.ndarray:
     """
@@ -173,7 +171,7 @@ def grid_1d_slim_via_mask_from(
 
 
 def grid_1d_slim_from(
-    grid_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int
+    grid_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
     """
     For a native 1D grid and mask of shape [total_pixels], map the values of all unmasked pixels to a slimmed grid of
@@ -209,7 +207,7 @@ def grid_1d_slim_from(
 
 
 def grid_1d_native_from(
-    grid_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int
+    grid_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
     """
     For a slimmed 1D grid of shape [total_unmasked_pixels*sub_size], that was computed by extracting the unmasked values
