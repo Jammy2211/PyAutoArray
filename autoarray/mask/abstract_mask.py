@@ -22,7 +22,6 @@ class Mask(AbstractNDArray, ABC):
         mask: np.ndarray,
         origin: tuple,
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         *args,
         **kwargs
     ):
@@ -52,7 +51,6 @@ class Mask(AbstractNDArray, ABC):
         mask = mask.astype("bool")
         super().__init__(mask)
 
-        self.sub_size = sub_size
         self.pixel_scales = pixel_scales
         self.origin = origin
 
@@ -62,11 +60,9 @@ class Mask(AbstractNDArray, ABC):
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Mask):
-            self.sub_size = obj.sub_size
             self.pixel_scales = obj.pixel_scales
             self.origin = obj.origin
         else:
-            self.sub_size = 1
             self.pixel_scales = None
 
     @property
@@ -109,15 +105,6 @@ class Mask(AbstractNDArray, ABC):
         return len(self.shape)
 
     @property
-    def sub_length(self) -> int:
-        """
-        The total number of sub-pixels in a give pixel,
-
-        For example, a sub-size of 3x3 means every pixel has 9 sub-pixels.
-        """
-        return int(self.sub_size**self.dimensions)
-
-    @property
     def sub_fraction(self) -> float:
         """
         The fraction of the area of a pixel every sub-pixel contains.
@@ -153,33 +140,8 @@ class Mask(AbstractNDArray, ABC):
         return self.pixels_in_mask == np.size(self._array)
 
     @property
-    def sub_pixels_in_mask(self) -> int:
-        """
-        The total number of unmasked sub-pixels (values are `False`) in the mask.
-        """
-        return self.sub_size**self.dimensions * self.pixels_in_mask
-
-    @property
     def shape_slim(self) -> int:
         """
         The 1D shape of the mask, which is equivalent to the total number of unmasked pixels in the mask.
         """
         return self.pixels_in_mask
-
-    @property
-    def sub_shape_slim(self) -> int:
-        """
-        The 1D shape of the mask's sub-grid, which is equivalent to the total number of unmasked pixels in the mask.
-        """
-        return int(self.pixels_in_mask * self.sub_size**self.dimensions)
-
-    def mask_new_sub_size_from(self, mask, sub_size=1) -> "Mask":
-        """
-        Returns the mask on the same scaled coordinate system but with a sub-grid of an inputsub_size.
-        """
-        return self.__class__(
-            mask=mask,
-            sub_size=sub_size,
-            pixel_scales=self.pixel_scales,
-            origin=self.origin,
-        )
