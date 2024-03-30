@@ -226,22 +226,10 @@ def grid_2d_to_structure(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if hasattr(grid, "over_sample"):
-            if isinstance(grid.over_sample, OverSampleUniform):
-                result = grid.over_sample.evaluated_func_obj_from(
-                    func=func,
-                    cls=obj,
-                    mask=grid.mask,
-                    sub_size=grid.over_sample.sub_size,
-                )
-                return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
-
-            if isinstance(grid.over_sample, OverSampleIterate):
-                return grid.over_sample.iterated_result_from(
-                    func=func, cls=obj, grid=grid
-                )
-
-        if isinstance(grid, Grid2DIrregular):
+        if isinstance(grid, Grid2D):
+            result = func(obj, grid, *args, **kwargs)
+            return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
+        elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid1D):
@@ -250,6 +238,82 @@ def grid_2d_to_structure(func):
             return grid.structure_2d_from(result=result)
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)
+
+    return wrapper
+
+
+def grid_2d_to_structure_over_sample(func):
+    """
+    Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates that return the results
+    as a NumPy array.
+
+    Parameters
+    ----------
+    func
+        A function which computes a set of values from a 2D grid of (y,x) coordinates.
+
+    Returns
+    -------
+        A function that can accept cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(
+        obj: object,
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        *args,
+        **kwargs,
+    ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
+        """
+        This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIrregular` or `Grid1D`)
+        into a function.
+
+        It allows these classes to be interchangeably input into a function, such that the grid is used to evaluate
+        the function at every (y,x) coordinates of the grid using specific functionality of the input grid.
+
+        The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
+        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  For a `Grid2D`, the
+        function is evaluated using its `OverSample` object.
+
+        The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
+        `ArrayIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
+
+        - If the function returns (y,x) coordinates at every input point, the returned results are a `Grid2D`
+        or `Grid2DIrregular` structure, the same structure as the input.
+
+        - If the function returns scalar values at every input point and a `Grid2D` is input, the returned results are
+        an `Array2D` structure which uses the same dimensions and mask as the `Grid2D`.
+
+        - If the function returns scalar values at every input point and `Grid2DIrregular` are input, the returned
+        results are a `ArrayIrregular` object with structure resembling that of the `Grid2DIrregular`.
+
+        If the input array is not a `Grid2D` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
+
+        Parameters
+        ----------
+        obj
+            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid : Grid2D or Grid2DIrregular
+            A grid_like object of (y,x) coordinates on which the function values are evaluated.
+
+        Returns
+        -------
+            The function values evaluated on the grid with the same structure as the input grid_like object.
+        """
+
+        if isinstance(grid.over_sample, OverSampleUniform):
+            result = grid.over_sample.evaluated_func_obj_from(
+                func=func,
+                cls=obj,
+                mask=grid.mask,
+                sub_size=grid.over_sample.sub_size,
+            )
+            return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
+
+        elif isinstance(grid.over_sample, OverSampleIterate):
+            return grid.over_sample.iterated_result_from(
+                func=func, cls=obj, grid=grid
+            )
 
     return wrapper
 
@@ -294,45 +358,10 @@ def grid_2d_to_structure_list(func):
             of NumPy arrays.
         """
 
-        if hasattr(grid, "over_sample"):
-            if isinstance(grid.over_sample, OverSampleUniform):
-                result_list = grid.over_sample.evaluated_func_obj_from(
-                    func=func,
-                    cls=obj,
-                    mask=grid.mask,
-                    sub_size=grid.over_sample.sub_size,
-                )
-
-                return grid.over_sample.structure_2d_list_from(
-                    result_list=result_list, mask=grid.mask
-                )
-
-            # TODO : Think this is broken and wrong?
-
-            if isinstance(grid.over_sample, OverSampleIterate):
-                grid_compute = grid.over_sample.oversampled_grid_2d_via_mask_from(
-                    mask=grid.mask, sub_size=max(grid.over_sample.sub_steps)
-                )
-
-                result_list = func(obj, grid_compute, *args, **kwargs)
-
-                result_list = [
-                    grid_compute.over_sample.structure_2d_from(
-                        result=result, mask=grid_compute.mask
-                    )
-                    for result in result_list
-                ]
-                result_list = [
-                    result.over_sample.binned_array_2d_from(
-                        array=grid_compute, sub_size=max(grid.over_sample.sub_steps)
-                    )
-                    for result in result_list
-                ]
-                return grid.over_sample.structure_2d_list_from(
-                    result_list=result_list, mask=grid.mask
-                )
-
-        if isinstance(grid, Grid2DIrregular):
+        if isinstance(grid, Grid2D):
+            result_list = func(obj, grid, *args, **kwargs)
+            return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
+        elif isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
         elif isinstance(grid, Grid1D):
@@ -344,6 +373,65 @@ def grid_2d_to_structure_list(func):
             return func(obj, grid, *args, **kwargs)
 
     return wrapper
+
+
+def grid_2d_to_structure_over_sample_list(func):
+    """
+    Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates and return the results as
+    a list of NumPy arrays.
+
+    Parameters
+    ----------
+    func
+        A function which computes a set of values from a 2D grid of (y,x) coordinates.
+
+    Returns
+    -------
+        A function that can accept cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(
+        obj: object,
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        *args,
+        **kwargs,
+    ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
+        """
+        This decorator serves the same purpose as the `grid_2d_to_structure` decorator, but it deals with functions
+        whose output is a list of results as opposed to a single NumPy array. It simply iterates over these lists to
+        perform the same conversions as `grid_2d_to_structure`.
+
+        Parameters
+        ----------
+        obj
+            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid : Grid2D or Grid2DIrregular
+            A grid_like object of (y,x) coordinates on which the function values are evaluated.
+
+        Returns
+        -------
+            The function values evaluated on the grid with the same structure as the input grid_like object in a list
+            of NumPy arrays.
+        """
+
+        if isinstance(grid.over_sample, OverSampleUniform):
+            result_list = grid.over_sample.evaluated_func_obj_from(
+                func=func,
+                cls=obj,
+                mask=grid.mask,
+                sub_size=grid.over_sample.sub_size,
+            )
+
+            return grid.over_sample.structure_2d_list_from(
+                result_list=result_list, mask=grid.mask
+            )
+
+        if isinstance(grid.over_sample, OverSampleIterate):
+            raise Exception
+
+    return wrapper
+
 
 
 def grid_2d_to_vector_yx(func):

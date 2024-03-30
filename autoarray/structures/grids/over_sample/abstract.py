@@ -94,8 +94,11 @@ class AbstractOverSample:
         )
 
     def evaluated_func_obj_from(self, func, cls, mask, sub_size):
+
+
         grid = self.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=sub_size)
         values = func(cls, np.asarray(grid))
+
         if not isinstance(values, list):
             values = grid.over_sample.structure_2d_from(result=values, mask=grid.mask)
             return self.binned_array_2d_from(array=values, sub_size=sub_size)
