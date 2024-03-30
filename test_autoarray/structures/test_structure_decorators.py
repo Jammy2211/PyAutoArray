@@ -495,69 +495,69 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d_list():
     assert isinstance(ndarray_1d[0], aa.Array2D)
     assert (ndarray_1d[0] == ndarray_1d_via_grid).all()
 
-#
-# def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration():
-#     mask = aa.Mask2D(
-#         mask=[
-#             [True, True, True, True, True],
-#             [True, False, False, False, True],
-#             [True, False, False, False, True],
-#             [True, False, False, False, True],
-#             [True, True, True, True, True],
-#         ],
-#         pixel_scales=(1.0, 1.0),
-#         origin=(0.001, 0.001),
-#     )
-#
-#     over_sample = aa.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2, 3])
-#
-#     grid_2d = aa.Grid2D.from_mask(mask=mask, over_sample=over_sample)
-#
-#     obj = aa.m.MockGridLikeIteratorObj()
-#
-#     ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
-#
-#     values_sub_3 = over_sample.evaluated_func_from(
-#         func=ndarray_1d_over_sample_from, mask=mask, sub_size=3
-#     )
-#
-#     assert ndarray_1d == pytest.approx(values_sub_3, 1.0e-4)
-#
-#     grid_2d = aa.Grid2D.from_mask(
-#         mask=mask,
-#         over_sample=aa.OverSampleIterate(
-#             fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
-#         ),
-#     )
-#
-#     obj = aa.m.MockGridLikeIteratorObj()
-#
-#     ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
-#
-#     values_sub_2 = over_sample.evaluated_func_from(
-#         func=ndarray_1d_over_sample_from, mask=mask, sub_size=2
-#     )
-#
-#     assert ndarray_1d == pytest.approx(values_sub_2, 1.0e-4)
-#
-#     grid_2d = aa.Grid2D.from_mask(
-#         mask=mask,
-#         over_sample=aa.OverSampleIterate(fractional_accuracy=0.5, sub_steps=[2, 4]),
-#     )
-#
-#     iterate_obj = aa.m.MockGridLikeIteratorObj()
-#
-#     ndarray_1d = iterate_obj.ndarray_1d_over_sample_from(grid=grid_2d)
-#
-#     values_sub_2 = over_sample.evaluated_func_from(
-#         func=ndarray_1d_over_sample_from, mask=mask, sub_size=2
-#     )
-#     values_sub_4 = over_sample.evaluated_func_from(
-#         func=ndarray_1d_over_sample_from, mask=mask, sub_size=4
-#     )
-#
-#     assert ndarray_1d.native[1, 1] == values_sub_2.native[1, 1]
-#     assert ndarray_1d.native[2, 2] != values_sub_2.native[2, 2]
-#
-#     assert ndarray_1d.native[1, 1] != values_sub_4.native[1, 1]
-#     assert ndarray_1d.native[2, 2] == values_sub_4.native[2, 2]
+
+def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration():
+    mask = aa.Mask2D(
+        mask=[
+            [True, True, True, True, True],
+            [True, False, False, False, True],
+            [True, False, False, False, True],
+            [True, False, False, False, True],
+            [True, True, True, True, True],
+        ],
+        pixel_scales=(1.0, 1.0),
+        origin=(0.001, 0.001),
+    )
+
+    over_sample = aa.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2, 3])
+
+    grid_2d = aa.Grid2D.from_mask(mask=mask, over_sample=over_sample)
+
+    obj = aa.m.MockGridLikeIteratorObj()
+
+    ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
+
+    values_sub_3 = over_sample.evaluated_func_from(
+        func=ndarray_1d_from, mask=mask, sub_size=3
+    )
+
+    assert ndarray_1d == pytest.approx(values_sub_3, 1.0e-4)
+
+    grid_2d = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(
+            fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+        ),
+    )
+
+    obj = aa.m.MockGridLikeIteratorObj()
+
+    ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
+
+    values_sub_2 = over_sample.evaluated_func_from(
+        func=ndarray_1d_from, mask=mask, sub_size=2
+    )
+
+    assert ndarray_1d == pytest.approx(values_sub_2, 1.0e-4)
+
+    grid_2d = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=0.5, sub_steps=[2, 4]),
+    )
+
+    iterate_obj = aa.m.MockGridLikeIteratorObj()
+
+    ndarray_1d = iterate_obj.ndarray_1d_over_sample_from(grid=grid_2d)
+
+    values_sub_2 = over_sample.evaluated_func_from(
+        func=ndarray_1d_from, mask=mask, sub_size=2
+    )
+    values_sub_4 = over_sample.evaluated_func_from(
+        func=ndarray_1d_from, mask=mask, sub_size=4
+    )
+
+    assert ndarray_1d.native[1, 1] == values_sub_2.native[1, 1]
+    assert ndarray_1d.native[2, 2] != values_sub_2.native[2, 2]
+
+    assert ndarray_1d.native[1, 1] != values_sub_4.native[1, 1]
+    assert ndarray_1d.native[2, 2] == values_sub_4.native[2, 2]

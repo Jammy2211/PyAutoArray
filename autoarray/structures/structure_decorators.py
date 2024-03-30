@@ -372,7 +372,9 @@ def grid_2d_to_structure_list(func):
 
         if isinstance(grid, Grid2D):
             result_list = func(obj, grid, *args, **kwargs)
-            return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
+            return grid.over_sample.structure_2d_list_from(
+                result_list=result_list, mask=grid.mask
+            )
         elif isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_list_from(result_list=result_list)
@@ -455,7 +457,6 @@ def grid_2d_to_structure_over_sample_list(func):
             return func(obj, grid, *args, **kwargs)
 
     return wrapper
-
 
 
 def grid_2d_to_vector_yx(func):
