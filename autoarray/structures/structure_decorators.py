@@ -300,8 +300,8 @@ def grid_2d_to_structure_list(func):
 
             if isinstance(grid.over_sample, OverSampleIterate):
 
-                grid_compute = grid.oversample.oversampled_grid_2d_via_mask_from(
-                    mask=grid.mask,
+                grid_compute = grid.over_sample.oversampled_grid_2d_via_mask_from(
+                    mask=np.array(grid.mask),
                     sub_size=max(grid.over_sample.sub_steps)
                 )
 
