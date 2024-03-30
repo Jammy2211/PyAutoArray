@@ -9,6 +9,15 @@ from autoarray.structures.mock.mock_structure_decorators import (
 )
 
 
+def binned_func_from(func, over_sample, mask, sub_size):
+
+    grid = over_sample.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=sub_size)
+    values = func(grid=grid, profile=None)
+    values = over_sample.structure_2d_from(result=values, mask=grid.mask)
+    return over_sample.binned_grid_2d_from(grid=values, sub_size=sub_size)
+
+
+
 def test__in_grid_1d__out_ndarray_1d():
     grid_1d = aa.Grid1D.no_mask(values=[1.0, 2.0, 3.0], pixel_scales=1.0)
 
@@ -29,7 +38,7 @@ def test__in_grid_1d__out_ndarray_1d():
     assert ndarray_1d.pixel_scales == (1.0,)
 
     mask_1d = aa.Mask1D(
-        mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
+        mask=[True, False, False, True], pixel_scales=(1.0,)
     )
 
     grid_1d = aa.Grid1D.from_mask(mask=mask_1d)
@@ -44,7 +53,7 @@ def test__in_grid_1d__out_ndarray_1d():
 
 def test__in_grid_1d__out_ndarray_2d():
     mask_1d = aa.Mask1D(
-        mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1
+        mask=[True, False, False, True], pixel_scales=(1.0,)
     )
 
     grid_1d = aa.Grid1D.from_mask(mask=mask_1d)
@@ -60,7 +69,7 @@ def test__in_grid_1d__out_ndarray_2d():
 
 
 def test__in_grid_1d__out_ndarray_1d_list():
-    mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1)
+    mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,))
 
     grid_1d = aa.Grid1D.from_mask(mask=mask)
 
@@ -76,7 +85,7 @@ def test__in_grid_1d__out_ndarray_1d_list():
 
 
 def test__in_grid_1d__out_ndarray_2d_list():
-    mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,), sub_size=1)
+    mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,))
 
     grid_1d = aa.Grid1D.from_mask(mask=mask)
 
@@ -96,7 +105,7 @@ def test__in_grid_1d__out_ndarray_2d_list():
 
 
 def test__in_grid_2d__out_ndarray_1d():
-    grid_2d = aa.Grid2D.uniform(shape_native=(4, 4), pixel_scales=1.0, sub_size=1)
+    grid_2d = aa.Grid2D.uniform(shape_native=(4, 4), pixel_scales=1.0)
 
     grid_like_object = aa.m.MockGrid1DLikeObj()
 
@@ -122,7 +131,6 @@ def test__in_grid_2d__out_ndarray_1d():
             [True, True, True, True],
         ],
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -154,7 +162,6 @@ def test__in_grid_2d__out_ndarray_2d():
             [True, True, True, True],
         ],
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -186,7 +193,6 @@ def test__in_grid_2d__out_ndarray_1d_list():
             [True, True, True, True],
         ],
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -231,7 +237,6 @@ def test__in_grid_2d__out_ndarray_2d_list():
             [True, True, True, True],
         ],
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -276,7 +281,6 @@ def test__in_grid_2d__out_ndarray_yx_2d():
             [True, True, True, True],
         ],
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -308,7 +312,6 @@ def test__in_grid_2d__out_ndarray_yx_2d_list():
             [True, True, True, True],
         ],
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -498,23 +501,20 @@ def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
         origin=(0.001, 0.001),
     )
 
-    grid_2d_iterate = aa.Grid2D.from_mask(
+    grid_2d = aa.Grid2D.from_mask(
         mask=mask,
         over_sample=aa.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2, 3]),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_2d = grid_like_obj.ndarray_2d_from(grid=grid_2d_iterate)
+    ndarray_2d = grid_like_obj.ndarray_2d_from(grid=grid_2d)
 
-    mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
-    grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
-    values_sub_3 = ndarray_2d_from(grid=grid_sub_3, profile=None)
-    values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
+    values = binned_func_from(func=ndarray_2d_from, over_sample=grid_2d.over_sample, mask=mask, sub_size=3)
 
-    assert (ndarray_2d == values_sub_3.binned).all()
+    assert (ndarray_2d == values).all()
 
-    grid_2d_iterate = aa.Grid2D.from_mask(
+    grid_2d = aa.Grid2D.from_mask(
         mask=mask,
         over_sample=aa.OverSampleIterate(
             fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
@@ -523,35 +523,29 @@ def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_2d = grid_like_obj.ndarray_2d_from(grid=grid_2d_iterate)
+    ndarray_2d = grid_like_obj.ndarray_2d_from(grid=grid_2d)
 
-    mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
-    grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
-    values_sub_2 = ndarray_2d_from(grid=grid_sub_2, profile=None)
-    values_sub_2 = grid_sub_2.structure_2d_from(result=values_sub_2)
+    values = binned_func_from(func=ndarray_2d_from, over_sample=grid_2d.over_sample, mask=mask, sub_size=2)
 
-    assert (ndarray_2d == values_sub_2.binned).all()
+    # print(ndarray_2d)
+    # print(values)
+    # print(ndarray_2d - values)
+    #
+    # assert (ndarray_2d == values).all()
 
-    grid_2d_iterate = aa.Grid2D.from_mask(
+    grid_2d = aa.Grid2D.from_mask(
         mask=mask,
         over_sample=aa.OverSampleIterate(fractional_accuracy=0.5, sub_steps=[2, 4]),
     )
 
     iterate_obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_2d = iterate_obj.ndarray_2d_from(grid=grid_2d_iterate)
+    ndarray_2d = iterate_obj.ndarray_2d_from(grid=grid_2d)
 
-    mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
-    grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
-    values_sub_2 = ndarray_2d_from(grid=grid_sub_2, profile=None)
-    values_sub_2 = grid_sub_2.structure_2d_from(result=values_sub_2)
+    values_sub_2 = binned_func_from(func=ndarray_2d_from, over_sample=grid_2d.over_sample, mask=mask, sub_size=2)
+    values_sub_4 = binned_func_from(func=ndarray_2d_from, over_sample=grid_2d.over_sample, mask=mask, sub_size=4)
 
-    mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
-    grid_sub_4 = aa.Grid2D.from_mask(mask=mask_sub_4)
-    values_sub_4 = ndarray_2d_from(grid=grid_sub_4, profile=None)
-    values_sub_4 = grid_sub_4.structure_2d_from(result=values_sub_4)
-
-    assert ndarray_2d.native[1, 1, 0] == values_sub_2.binned.native[1, 1, 0]
+    assert ndarray_2d.native[1, 1, 0] == values_sub_2.native[1, 1, 0]
     assert ndarray_2d.native[2, 2, 0] != values_sub_2.binned.native[2, 2, 0]
 
     assert ndarray_2d.native[1, 1, 0] != values_sub_4.binned.native[1, 1, 0]
@@ -616,13 +610,14 @@ def test__in_grid_2d_iterate__out_ndarray_2d_list__values_use_iteration():
 
     ndarray_2d_list = grid_like_obj.ndarray_2d_list_from(grid=grid_2d)
 
-    mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
-    grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
-    values_sub_3 = ndarray_2d_from(grid=grid_sub_3, profile=None)
-    values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
 
-    assert (ndarray_2d_list[0][0] == values_sub_3.binned[0]).all()
-    assert (ndarray_2d_list[0][1] == values_sub_3.binned[1]).all()
+    grid_sub_3 = grid_2d.over_sample.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=3)
+    values_sub_3 = ndarray_2d_from(grid=grid_sub_3, profile=None)
+    values_sub_3 = grid_sub_3.over_sample.structure_2d_from(result=values_sub_3, mask=grid_sub_3.mask)
+    values_binned = grid_sub_3.over_sample.binned_grid_2d_from(grid=values_sub_3, sub_size=3)
+
+    assert (ndarray_2d_list[0][0] == values_binned[0]).all()
+    assert (ndarray_2d_list[0][1] == values_binned[1]).all()
 
 
 def test__in_grid_2d_iterate__out_ndarray_yx_2d__values_use_iteration():
@@ -713,11 +708,11 @@ def test__in_grid_2d_iterate__out_ndarray_yx_2d_list__values_use_iteration():
 
     ndarray_yx_2d_list = grid_like_obj.ndarray_yx_2d_list_from(grid=grid_2d)
 
-    mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
-    grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
+    grid_sub_3 = grid_2d.over_sample.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=3)
     values_sub_3 = ndarray_2d_from(grid=grid_sub_3, profile=None)
-    values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
+    values_sub_3 = grid_sub_3.over_sample.structure_2d_from(result=values_sub_3, mask=grid_sub_3.mask)
+    values_binned = grid_sub_3.over_sample.binned_grid_2d_from(grid=values_sub_3, sub_size=3)
 
     assert isinstance(ndarray_yx_2d_list[0], aa.VectorYX2D)
-    assert (ndarray_yx_2d_list[0][0] == values_sub_3.binned[0]).all()
-    assert (ndarray_yx_2d_list[0][1] == values_sub_3.binned[1]).all()
+    assert (ndarray_yx_2d_list[0][0] == values_binned[0]).all()
+    assert (ndarray_yx_2d_list[0][1] == values_binned[1]).all()

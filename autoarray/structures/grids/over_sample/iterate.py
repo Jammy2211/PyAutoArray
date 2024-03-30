@@ -229,7 +229,7 @@ class OverSampleIterate(AbstractOverSample):
         )
 
         array_higher_sub = func(cls, grid_compute)
-        return grid_compute.structure_2d_from(result=array_higher_sub).binned.native
+        return grid_compute.over_sample.structure_2d_from(result=array_higher_sub).binned.native
 
     def grid_at_sub_size_from(self, func: Callable, cls, mask: Mask2D, sub_size) -> Grid2D:
 
@@ -238,7 +238,8 @@ class OverSampleIterate(AbstractOverSample):
             sub_size=sub_size
         )
         grid_higher_sub = func(cls, grid_compute)
-        return grid_compute.structure_2d_from(result=grid_higher_sub).binned.native
+        grid = grid_compute.over_sample.structure_2d_from(result=grid_higher_sub, mask=grid_compute.mask)
+        return self.binned_grid_2d_from(grid=grid, sub_size=sub_size).native
 
     def threshold_mask_via_arrays_from(
         self, array_lower_sub_2d: Array2D, array_higher_sub_2d: Array2D
@@ -429,8 +430,8 @@ class OverSampleIterate(AbstractOverSample):
 
         return Mask2D(
             mask=threshold_mask,
-            pixel_scales=grid_higher_sub_2d.pixel_scales,
-            origin=grid_higher_sub_2d.origin,
+            pixel_scales=grid_lower_sub_2d.pixel_scales,
+            origin=grid_lower_sub_2d.origin,
         )
 
     def iterated_grid_from(
@@ -472,15 +473,13 @@ class OverSampleIterate(AbstractOverSample):
 
         iterated_grid = np.zeros(shape=(shape_native[0], shape_native[1], 2))
 
-        import copy
-
-        threshold_mask_lower_sub = copy.copy(mask)
+        threshold_mask_lower_sub = mask
 
         for sub_size in self.sub_steps[:-1]:
+
             grid_higher_sub = self.grid_at_sub_size_from(
                 func=func, cls=cls, mask=threshold_mask_lower_sub, sub_size=sub_size
             )
-
             threshold_mask_higher_sub = self.threshold_mask_via_grids_from(
                 grid_lower_sub_2d=grid_lower_sub_2d, grid_higher_sub_2d=grid_higher_sub
             )
@@ -492,6 +491,7 @@ class OverSampleIterate(AbstractOverSample):
                 grid_higher_sub_2d=np.array(grid_higher_sub),
             )
 
+
             if threshold_mask_higher_sub.is_all_true:
                 iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
                     mask=mask, grid_2d_native=iterated_grid, sub_size=1
@@ -502,6 +502,9 @@ class OverSampleIterate(AbstractOverSample):
             grid_lower_sub_2d = grid_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
 
+        threshold_mask_lower_sub.pixel_scales = (1.0, 1.0)
+
+
         grid_higher_sub = self.grid_at_sub_size_from(
             func=func,
             cls=cls,
@@ -509,7 +512,7 @@ class OverSampleIterate(AbstractOverSample):
             sub_size=self.sub_steps[-1],
         )
 
-        iterated_grid_2d = iterated_grid + grid_higher_sub.binned.native
+        iterated_grid_2d = iterated_grid + grid_higher_sub.native
 
         iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
             mask=mask, grid_2d_native=iterated_grid_2d, sub_size=1
@@ -542,7 +545,7 @@ class OverSampleIterate(AbstractOverSample):
         # Convert to numpy array so grid does not do iteration.
 
         result_sub_1_1d = func(cls, np.asarray(grid))
-        result_sub_1_2d = grid.structure_2d_from(result=result_sub_1_1d).binned.native
+        result_sub_1_2d = self.structure_2d_from(result=result_sub_1_1d, mask=grid.mask).native
 
         if len(result_sub_1_2d.shape) == 2:
             return self.iterated_array_from(

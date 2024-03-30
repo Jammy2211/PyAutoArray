@@ -104,15 +104,6 @@ class Mask(AbstractNDArray, ABC):
     def dimensions(self) -> int:
         return len(self.shape)
 
-    @property
-    def sub_fraction(self) -> float:
-        """
-        The fraction of the area of a pixel every sub-pixel contains.
-
-        For example, a sub-size of 3x3 mean every pixel contains 1/9 the area.
-        """
-        return 1.0 / self.sub_length
-
     def output_to_fits(self, file_path: Union[Path, str], overwrite: bool = False):
         """
         Overwrite with method to output the mask to a `.fits` file.

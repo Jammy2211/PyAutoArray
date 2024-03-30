@@ -62,20 +62,18 @@ def check_grid_2d_and_mask_2d(grid_2d: np.ndarray, mask_2d: Mask2D):
                 The shape of the input grid_2d is {grid_2d.shape}.
                 The mask shape_native is {mask_2d.shape_native}.
                 The mask number of sub-pixels is {mask_2d.pixels_in_mask}. 
-                The mask sub size is {mask_2d.sub_size}).
                 """
             )
 
     elif len(grid_2d.shape) == 3:
-        if (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.sub_shape_native:
+        if (grid_2d.shape[0], grid_2d.shape[1]) != mask_2d.shape_native:
             raise exc.GridException(
                 f"""
-                The input 2D grid is not the same dimensions as the sub-mask
-                (e.g. the mask 2D shape multipled by its sub size.)
+                The input 2D grid is not the same dimensions as the mask
+                (e.g. the mask 2D shape.)
 
                 The shape of the input grid_2d is {grid_2d.shape}.
-                The sub_shape_native of the mask is {mask_2d.sub_shape_native} (the 
-                mask sub size is {mask_2d.sub_size}).
+                The mask shape_native is {mask_2d.shape_native}.
                 """
             )
 
@@ -89,7 +87,7 @@ def convert_grid_2d(
     This function performs the following and checks and conversions on the input:
 
     1: If the input is a list, convert it to an ndarray.
-    2: Check that the number of sub-pixels in the array is identical to that of the mask.
+    2: Check that the number of coordinates in the grid is identical to that of the mask.
     3) Map the input ndarray to its `slim` representation.
 
     For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2] and `native` a 3D NumPy array of
@@ -98,7 +96,7 @@ def convert_grid_2d(
     Parameters
     ----------
     grid_2d
-        The input (y,x) grid of coordinates which is converted to an ndarray if it is a list.
+        The input (y,x) grid of coordinates which is converted to a ndarray if it is a list.
     mask_2d
         The mask of the output Array2D.
     store_native
@@ -113,8 +111,8 @@ def convert_grid_2d(
     is_native = len(grid_2d.shape) == 3
 
     if is_native:
-        grid_2d[:, :, 0] *= np.invert(mask_2d.derive_mask.sub)
-        grid_2d[:, :, 1] *= np.invert(mask_2d.derive_mask.sub)
+        grid_2d[:, :, 0] *= np.invert(mask_2d)
+        grid_2d[:, :, 1] *= np.invert(mask_2d)
 
     if is_native == store_native:
         return grid_2d
@@ -122,12 +120,10 @@ def convert_grid_2d(
         return grid_2d_slim_from(
             grid_2d_native=np.array(grid_2d),
             mask=np.array(mask_2d),
-            sub_size=mask_2d.sub_size,
         )
     return grid_2d_native_from(
         grid_2d_slim=np.array(grid_2d),
         mask_2d=np.array(mask_2d),
-        sub_size=mask_2d.sub_size,
     )
 
 
@@ -697,7 +693,7 @@ def furthest_grid_2d_slim_index_from(
 
 
 def grid_2d_slim_from(
-    grid_2d_native: np.ndarray, mask: np.ndarray, sub_size: int
+    grid_2d_native: np.ndarray, mask: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
     """
     For a native 2D grid and mask of shape [total_y_pixels, total_x_pixels, 2], map the values of all unmasked
@@ -741,7 +737,7 @@ def grid_2d_slim_from(
 
 
 def grid_2d_native_from(
-    grid_2d_slim: np.ndarray, mask_2d: np.ndarray, sub_size: int
+    grid_2d_slim: np.ndarray, mask_2d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
     """
     For a slimmed 2D grid of shape [total_unmasked_pixels, 2], that was computed by extracting the unmasked values

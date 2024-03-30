@@ -298,20 +298,23 @@ def grid_2d_to_structure_list(func):
                 result_list = func(obj, grid, *args, **kwargs)
                 return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
 
+            # TODO : Think this is broken and wrong?
+
             if isinstance(grid.over_sample, OverSampleIterate):
 
                 grid_compute = grid.over_sample.oversampled_grid_2d_via_mask_from(
-                    mask=np.array(grid.mask),
+                    mask=grid.mask,
                     sub_size=max(grid.over_sample.sub_steps)
                 )
 
                 result_list = func(obj, grid_compute, *args, **kwargs)
+
                 result_list = [
-                    grid_compute.structure_2d_from(result=result)
+                    grid_compute.over_sample.structure_2d_from(result=result, mask=grid_compute.mask)
                     for result in result_list
                 ]
-                result_list = [result.binned for result in result_list]
-                return grid.structure_2d_list_from(result_list=result_list)
+                result_list = [result.over_sample.binned_grid_2d_from(grid=grid_compute, sub_size=max(grid.over_sample.sub_steps)) for result in result_list]
+                return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
 
         if isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
