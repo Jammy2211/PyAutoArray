@@ -57,6 +57,39 @@ class AbstractOverSample:
 
         return Grid2D(values=sub_grid_1d, mask=mask, over_sample=self)
 
+
+    @property
+    def binned(self) -> "Array2D":
+        """
+        Convenience method to access the binned-up array in its 1D representation, which is a Grid2D stored as an
+        ``ndarray`` of shape [total_unmasked_pixels, 2].
+
+        The binning up process converts a array from (y,x) values where each value is a coordinate on the sub-array to
+        (y,x) values where each coordinate is at the centre of its mask (e.g. a array with a sub_size of 1). This is
+        performed by taking the mean of all (y,x) values in each sub pixel.
+
+        If the array is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+
+        In **PyAutoCTI** all `Array2D` objects are used in their `native` representation without sub-gridding.
+        Significant memory can be saved by only store this format, thus the `native_binned_only` config override
+        can force this behaviour. It is recommended users do not use this option to avoid unexpected behaviour.
+        """
+        if conf.instance["general"]["structures"]["native_binned_only"]:
+            return self
+
+        array_2d_slim = self.slim
+
+        binned_array_1d = npw.multiply(
+            self.mask.sub_fraction,
+            array_2d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        return Array2D(
+            values=binned_array_1d,
+            mask=self.mask,
+            header=self.header,
+        )
+
     def binned_grid_2d_from(self, grid : Grid2D, sub_size : int) -> "Grid2D":
         """
         Return a `Grid2D` of the binned-up grid in its 1D representation, which is stored with
