@@ -336,7 +336,7 @@ class Grid1D(Structure):
         Grid2DIrregular
             The projected and rotated 2D grid of (y,x) coordinates.
         """
-        grid = np.zeros((self.shape_slim, 2))
+        grid = np.zeros((self.shape_slim[0], 2))
 
         grid[:, 1] = self.slim
 

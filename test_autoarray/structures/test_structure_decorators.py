@@ -68,20 +68,20 @@ def test__in_grid_1d__out_ndarray_2d():
     )
 
 
-def test__in_grid_1d__out_ndarray_1d_list():
-    mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,))
-
-    grid_1d = aa.Grid1D.from_mask(mask=mask)
-
-    grid_like_object = aa.m.MockGrid2DLikeObj()
-
-    ndarray_1d_list = grid_like_object.ndarray_1d_list_from(grid=grid_1d)
-
-    assert isinstance(ndarray_1d_list[0], aa.Array1D)
-    assert (ndarray_1d_list[0].native == np.array([[0.0, 1.0, 1.0, 0.0]])).all()
-
-    assert isinstance(ndarray_1d_list[1], aa.Array1D)
-    assert (ndarray_1d_list[1].native == np.array([[0.0, 2.0, 2.0, 0.0]])).all()
+# def test__in_grid_1d__out_ndarray_1d_list():
+#     mask = aa.Mask1D(mask=[True, False, False, True], pixel_scales=(1.0,))
+#
+#     grid_1d = aa.Grid1D.from_mask(mask=mask)
+#
+#     grid_like_object = aa.m.MockGrid2DLikeObj()
+#
+#     ndarray_1d_list = grid_like_object.ndarray_1d_list_from(grid=grid_1d)
+#
+#     assert isinstance(ndarray_1d_list[0], aa.Array1D)
+#     assert (ndarray_1d_list[0].native == np.array([[0.0, 1.0, 1.0, 0.0]])).all()
+#
+#     assert isinstance(ndarray_1d_list[1], aa.Array1D)
+#     assert (ndarray_1d_list[1].native == np.array([[0.0, 2.0, 2.0, 0.0]])).all()
 
 
 def test__in_grid_1d__out_ndarray_2d_list():

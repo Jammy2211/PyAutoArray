@@ -48,7 +48,6 @@ class Array1D(Structure):
         cls,
         values: Union[np.ndarray, Tuple[float], List[float]],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
     ) -> "Array1D":
@@ -58,11 +57,9 @@ class Array1D(Structure):
         Parameters
         ----------
         values
-            The values of the array input as an ndarray of shape [total_unmasked_pixels*sub_size] or a list.
+            The values of the array input as an ndarray of shape [total_unmasked_pixels] or a list.
         pixel_scales
             The scaled units to pixel units conversion factor of the array data coordinates (e.g. the x-axis).
-        sub_size
-            The size of each unmasked pixels sub-grid.
         origin
             The origin of the 1D array's mask.
 
@@ -93,9 +90,8 @@ class Array1D(Structure):
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
         mask = Mask1D.all_false(
-            shape_slim=values.shape[0] // sub_size,
+            shape_slim=values.shape[0],
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
         )
 
@@ -107,7 +103,6 @@ class Array1D(Structure):
         fill_value: float,
         shape_native: Union[int, Tuple[int]],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
     ) -> "Array1D":
@@ -127,20 +122,14 @@ class Array1D(Structure):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float,) structure.
-        sub_size
-            The size (sub_size) of each unmasked pixels sub-array.
         origin : (float,)
             The (x) scaled units origin of the mask's coordinate system.
         """
         shape_native = geometry_util.convert_shape_native_1d(shape_native=shape_native)
 
-        if sub_size is not None:
-            shape_native = (shape_native[0] * sub_size,)
-
         return cls.no_mask(
             values=np.full(fill_value=fill_value, shape=shape_native[0]),
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             header=header,
         )
@@ -150,7 +139,6 @@ class Array1D(Structure):
         cls,
         shape_native: Union[int, Tuple[int]],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
     ) -> "Array1D":
@@ -168,8 +156,6 @@ class Array1D(Structure):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float,) structure.
-        sub_size
-            The size (sub_size) of each unmasked pixels sub-array.
         origin : (float,)
             The (x) scaled units origin of the mask's coordinate system.
         """
@@ -177,7 +163,6 @@ class Array1D(Structure):
             fill_value=0.0,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             header=header,
         )
@@ -187,7 +172,6 @@ class Array1D(Structure):
         cls,
         shape_native: Union[int, Tuple[int]],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         header: Optional[Header] = None,
     ) -> "Array1D":
@@ -205,8 +189,6 @@ class Array1D(Structure):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float,) structure.
-        sub_size
-            The size (sub_size) of each unmasked pixels sub-array.
         origin : (float,)
             The (x) scaled units origin of the mask's coordinate system.
         """
@@ -214,7 +196,6 @@ class Array1D(Structure):
             fill_value=1.0,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             header=header,
         )
@@ -225,7 +206,6 @@ class Array1D(Structure):
         file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         hdu: int = 0,
-        sub_size: int = 1,
         origin: Tuple[float] = (0.0, 0.0),
     ) -> "Array1D":
         """
@@ -241,8 +221,6 @@ class Array1D(Structure):
         pixel_scales
             The (x,) scaled units to pixel units conversion factors of every pixel. If this is input as a float,
             it is converted to a (float,) structure.
-        sub_size
-            The sub-size of each unmasked pixels sub-array.
         origin
             The (x,) scaled units origin of the coordinate system.
         """
@@ -258,7 +236,6 @@ class Array1D(Structure):
                 "float64"
             ),  # Have to do this due to typing issues in 1D with astorpy fits.
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             header=Header(header_sci_obj=header_sci_obj, header_hdu_obj=header_hdu_obj),
         )
@@ -267,7 +244,6 @@ class Array1D(Structure):
     def from_primary_hdu(
         cls,
         primary_hdu: fits.PrimaryHDU,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Array1D":
         """
@@ -285,8 +261,6 @@ class Array1D(Structure):
         primary_hdu
             The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
             the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the coordinate system.
 
@@ -298,34 +272,15 @@ class Array1D(Structure):
             from astropy.io import fits
             import autoarray as aa
 
-            # Make Array1D with sub_size 1.
-
             primary_hdu = fits.open("path/to/file.fits")
 
             array_1d = aa.Array1D.from_primary_hdu(
                 primary_hdu=primary_hdu,
-                sub_size=1
-            )
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Array1D with sub_size 2.
-            # (It is uncommon that a sub-gridded array would be loaded from
-            # a .fits, but the API support its).
-
-             primary_hdu = fits.open("path/to/file.fits")
-
-            array_1d = aa.Array1D.from_primary_hdu(
-                primary_hdu=primary_hdu,
-                sub_size=2
             )
         """
         return cls.no_mask(
             values=primary_hdu.data.astype("float"),
             pixel_scales=primary_hdu.header["PIXSCALE"],
-            sub_size=sub_size,
             origin=origin,
             header=Header(header_sci_obj=primary_hdu.header),
         )
@@ -334,7 +289,7 @@ class Array1D(Structure):
     def slim(self) -> "Array1D":
         """
         Return an `Array1D` where the data is stored its `slim` representation, which is an ndarray of shape
-        [total_unmasked_pixels * sub_size].
+        [total_unmasked_pixels].
 
         If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
         `native` to `slim` and returned as a new `Array1D`.
@@ -345,7 +300,7 @@ class Array1D(Structure):
     def native(self) -> "Array1D":
         """
         Return an `Array1D` where the data is stored in its `native` representation, which is an ndarray of shape
-        [total_pixels * sub_size].
+        [total_pixels].
 
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Array1D`.
@@ -364,7 +319,6 @@ class Array1D(Structure):
         return Grid1D.uniform_from_zero(
             shape_native=self.shape_native,
             pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
         )
 
     @property
