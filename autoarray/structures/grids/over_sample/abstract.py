@@ -38,7 +38,6 @@ class AbstractOverSample:
         return sub_size**mask.dimensions * mask.pixels_in_mask
 
     def oversampled_grid_2d_via_mask_from(self, mask: Mask2D, sub_size: int) -> Grid2D:
-
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=np.array(mask),
             pixel_scales=mask.pixel_scales,

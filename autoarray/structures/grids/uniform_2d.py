@@ -549,9 +549,7 @@ class Grid2D(Structure):
             The mask whose masked pixels are used to setup the grid.
         """
 
-        grid_2d = array_2d_util.numpy_array_2d_via_fits_from(
-            file_path=file_path, hdu=0
-        )
+        grid_2d = array_2d_util.numpy_array_2d_via_fits_from(file_path=file_path, hdu=0)
 
         return Grid2D.no_mask(
             values=grid_2d,
@@ -1017,5 +1015,3 @@ class Grid2D(Structure):
         )
 
         return Grid2D.from_mask(mask=padded_mask, over_sample=self.over_sample)
-
-

@@ -70,7 +70,6 @@ def test__sub_border_grid():
     ).all()
 
 
-
 def test__relocated_grid_from__inside_border_no_relocations():
     mask = aa.Mask2D.circular(
         shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1)

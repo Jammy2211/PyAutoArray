@@ -6,6 +6,7 @@ from autoconf import conf
 import autoarray as aa
 from autoarray import exc
 
+
 def test__structure_2d_from():
     mask = np.array(
         [
@@ -20,7 +21,9 @@ def test__structure_2d_from():
 
     over_sample = aa.OverSampleUniform()
 
-    result = over_sample.structure_2d_from(result=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+    result = over_sample.structure_2d_from(
+        result=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
+    )
 
     assert isinstance(result, aa.Array2D)
     assert (
@@ -85,7 +88,8 @@ def test__structure_2d_list_from():
     ).all()
 
     result = over_sample.structure_2d_list_from(
-        result_list=[np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])], mask=mask
+        result_list=[np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])],
+        mask=mask,
     )
 
     assert isinstance(result[0], aa.Grid2D)

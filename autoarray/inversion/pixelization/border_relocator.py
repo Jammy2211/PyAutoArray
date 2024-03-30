@@ -11,9 +11,7 @@ from autoarray.structures.grids import grid_2d_util
 
 
 class BorderRelocator:
-
     def __init__(self, grid, sub_size):
-
         self.grid = grid
         self.sub_size = sub_size
 

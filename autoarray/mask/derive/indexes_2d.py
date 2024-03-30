@@ -363,4 +363,3 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.border_native)
         """
         return self.native_for_slim[self.border_slim].astype("int")
-

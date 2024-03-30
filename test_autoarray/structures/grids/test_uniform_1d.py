@@ -30,7 +30,8 @@ def test__constructor():
 
 def test__no_mask():
     grid_1d = aa.Grid1D.no_mask(
-        values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0,
+        values=[1.0, 2.0, 3.0, 4.0],
+        pixel_scales=1.0,
     )
 
     assert type(grid_1d) == aa.Grid1D
@@ -71,9 +72,7 @@ def test__from_mask():
 
 
 def test__uniform():
-    grid_1d = aa.Grid1D.uniform(
-        shape_native=(2,), pixel_scales=1.0, origin=(0.0,)
-    )
+    grid_1d = aa.Grid1D.uniform(shape_native=(2,), pixel_scales=1.0, origin=(0.0,))
 
     assert type(grid_1d) == aa.Grid1D
     assert (grid_1d.native == np.array([-0.5, 0.5])).all()
@@ -81,9 +80,7 @@ def test__uniform():
     assert grid_1d.pixel_scales == (1.0,)
     assert grid_1d.origin == (0.0,)
 
-    grid_1d = aa.Grid1D.uniform(
-        shape_native=(2,), pixel_scales=1.0, origin=(1.0,)
-    )
+    grid_1d = aa.Grid1D.uniform(shape_native=(2,), pixel_scales=1.0, origin=(1.0,))
 
     assert type(grid_1d) == aa.Grid1D
     assert (grid_1d.native == np.array([0.5, 1.5])).all()
@@ -94,7 +91,8 @@ def test__uniform():
 
 def test__uniform_from_zero():
     grid_1d = aa.Grid1D.uniform_from_zero(
-        shape_native=(2,), pixel_scales=1.0,
+        shape_native=(2,),
+        pixel_scales=1.0,
     )
 
     assert type(grid_1d) == aa.Grid1D
@@ -104,7 +102,8 @@ def test__uniform_from_zero():
     assert grid_1d.origin == (0.0,)
 
     grid_1d = aa.Grid1D.uniform_from_zero(
-        shape_native=(3,), pixel_scales=1.5,
+        shape_native=(3,),
+        pixel_scales=1.5,
     )
 
     assert type(grid_1d) == aa.Grid1D
@@ -114,10 +113,10 @@ def test__uniform_from_zero():
     assert grid_1d.origin == (0.0,)
 
 
-
 def test__grid_2d_radial_projected_from():
     grid_1d = aa.Grid1D.no_mask(
-        values=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0,
+        values=[1.0, 2.0, 3.0, 4.0],
+        pixel_scales=1.0,
     )
 
     grid_2d = grid_1d.grid_2d_radial_projected_from(angle=0.0)

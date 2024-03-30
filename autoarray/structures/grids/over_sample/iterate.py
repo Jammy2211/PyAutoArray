@@ -130,7 +130,6 @@ class OverSampleIterate(AbstractOverSample):
     def array_at_sub_size_from(
         self, func: Callable, cls, mask: Mask2D, sub_size
     ) -> Array2D:
-
         grid_compute = self.oversampled_grid_2d_via_mask_from(
             mask=mask, sub_size=sub_size
         )

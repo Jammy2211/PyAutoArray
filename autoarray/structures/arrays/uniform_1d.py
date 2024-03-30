@@ -16,7 +16,6 @@ from autoarray import type as ty
 
 
 class Array1D(Structure):
-
     def __init__(
         self,
         values: Union[np.ndarray, List],
