@@ -1,17 +1,13 @@
-from os import path
 import numpy as np
 import pytest
 
-from autoconf import conf
 import autoarray as aa
-from autoarray import exc
 
 
 def test__no_mask():
     vectors = aa.VectorYX2D.no_mask(
         values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
-        sub_size=1,
     )
 
     assert type(vectors) == aa.VectorYX2D
@@ -23,25 +19,16 @@ def test__no_mask():
         vectors.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
     ).all()
     assert (
-        vectors.binned.native
-        == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-    ).all()
-    assert (
-        vectors.binned == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-    ).all()
-    assert (
         vectors.grid.native
         == np.array([[[0.5, -0.5], [0.5, 0.5]], [[-0.5, -0.5], [-0.5, 0.5]]])
     ).all()
     assert vectors.pixel_scales == (1.0, 1.0)
     assert vectors.origin == (0.0, 0.0)
-    assert vectors.sub_size == 1
 
     vectors = aa.VectorYX2D.no_mask(
-        values=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-        shape_native=(1, 1),
-        pixel_scales=1.0,
-        sub_size=2,
+        values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+        shape_native=(4, 2),
+        pixel_scales=0.5,
         origin=(0.0, 1.0),
     )
 
@@ -53,16 +40,12 @@ def test__no_mask():
     assert (
         vectors.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
     ).all()
-
-    assert (vectors.binned.native == np.array([[[4.0, 5.0]]])).all()
-    assert (vectors.binned.slim == np.array([[4.0, 5.0]])).all()
     assert (
         vectors.grid.native
         == np.array([[[0.25, 0.75], [0.25, 1.25]], [[-0.25, 0.75], [-0.25, 1.25]]])
     ).all()
-    assert vectors.pixel_scales == (1.0, 1.0)
+    assert vectors.pixel_scales == (0.5, 0.5)
     assert vectors.origin == (0.0, 1.0)
-    assert vectors.sub_size == 2
 
 
 def test__from_mask():
@@ -111,7 +94,7 @@ def test__from_mask():
     assert vectors.pixel_scales == (1.0, 1.0)
     assert vectors.origin == (0.0, 1.0)
 
-    mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
+    mask = aa.Mask2D(mask=[[False, False], [False, False], [True, True], [True, True]], pixel_scales=2.0)
 
     vectors = aa.VectorYX2D.from_mask(
         values=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
@@ -133,15 +116,12 @@ def test__from_mask():
     assert (
         vectors.slim == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
     ).all()
-    assert (vectors.binned.native == np.array([[[2.5, 2.5]], [[0.0, 0.0]]])).all()
-    assert (vectors.binned.slim == np.array([2.5])).all()
     assert vectors.pixel_scales == (2.0, 2.0)
     assert vectors.origin == (0.0, 0.0)
-    assert vectors.mask.sub_size == 2
 
 
 def test__ones():
-    vectors = aa.VectorYX2D.ones(shape_native=(2, 2), pixel_scales=1.0, sub_size=1)
+    vectors = aa.VectorYX2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
     assert type(vectors) == aa.VectorYX2D
     assert (vectors == np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])).all()
@@ -152,24 +132,16 @@ def test__ones():
         vectors.slim == np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
     ).all()
     assert (
-        vectors.binned.native
-        == np.array([[[1.0, 1.0], [1.0, 1.0]], [[1.0, 1.0], [1.0, 1.0]]])
-    ).all()
-    assert (
-        vectors.binned == np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
-    ).all()
-    assert (
         vectors.grid.native
         == np.array([[[0.5, -0.5], [0.5, 0.5]], [[-0.5, -0.5], [-0.5, 0.5]]])
     ).all()
     assert vectors.pixel_scales == (1.0, 1.0)
     assert vectors.origin == (0.0, 0.0)
-    assert vectors.sub_size == 1
 
 
 def test__zeros():
     vectors = aa.VectorYX2D.zeros(
-        shape_native=(1, 1), pixel_scales=1.0, sub_size=2, origin=(0.0, 1.0)
+        shape_native=(2, 2), pixel_scales=0.5, origin=(0.0, 1.0)
     )
 
     assert type(vectors) == aa.VectorYX2D
@@ -180,23 +152,18 @@ def test__zeros():
     assert (
         vectors.slim == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
     ).all()
-
-    assert (vectors.binned.native == np.array([[[0.0, 0.0]]])).all()
-    assert (vectors.binned.slim == np.array([[0.0, 0.0]])).all()
     assert (
         vectors.grid.native
         == np.array([[[0.25, 0.75], [0.25, 1.25]], [[-0.25, 0.75], [-0.25, 1.25]]])
     ).all()
-    assert vectors.pixel_scales == (1.0, 1.0)
+    assert vectors.pixel_scales == (0.5, 0.5)
     assert vectors.origin == (0.0, 1.0)
-    assert vectors.sub_size == 2
 
 
 def test__y_x():
     vectors = aa.VectorYX2D.no_mask(
         values=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
         pixel_scales=1.0,
-        sub_size=1,
     )
 
     assert isinstance(vectors.y, aa.Array2D)
@@ -207,7 +174,7 @@ def test__y_x():
 
 
 def test__apply_mask():
-    mask = aa.Mask2D(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
+    mask = aa.Mask2D(mask=[[False, False], [False, False], [True, True], [True, True]], pixel_scales=2.0)
     vectors = aa.VectorYX2D.no_mask(
         values=[
             [1.0, 1.0],
@@ -219,9 +186,8 @@ def test__apply_mask():
             [7.0, 7.0],
             [8.0, 8.0],
         ],
-        shape_native=(2, 1),
+        shape_native=(4, 2),
         pixel_scales=2.0,
-        sub_size=2,
     )
     vectors = vectors.apply_mask(mask=mask)
 
@@ -242,7 +208,6 @@ def test__magnitudes():
     vectors = aa.VectorYX2D.no_mask(
         values=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]],
         pixel_scales=1.0,
-        sub_size=1,
     )
 
     assert isinstance(vectors.magnitudes, aa.Array2D)
