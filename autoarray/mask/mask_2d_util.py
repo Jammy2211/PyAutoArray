@@ -497,6 +497,58 @@ def mask_2d_elliptical_annular_from(
     return mask_2d
 
 
+
+@numba_util.jit()
+def oversample_mask_2d_from(mask : np.ndarray, sub_size : int) -> np.ndarray:
+    """
+    Returns a new mask of shape (mask.shape[0] * sub_size, mask.shape[1] * sub_size) where all boolean values are
+    expanded according to the `sub_size`.
+
+    For example, if the input mask is:
+
+    mask = np.array([
+        [True, True, True],
+        [True, False, True],
+        [True, True, True]
+    ])
+
+    and the sub_size is 2, the output mask would be:
+
+    expanded_mask = np.array([
+        [True, True, True, True, True, True],
+        [True, True, True, True, True, True],
+        [True, True, False, False, True, True],
+        [True, True, False, False, True, True],
+        [True, True, True, True, True, True],
+        [True, True, True, True, True, True]
+    ])
+
+    This is used throughout the code to handle uniform oversampling calculations.
+
+    Parameters
+    ----------
+    mask
+        The mask from which the over sample mask is computed.
+    sub_size
+        The factor by which the mask is oversampled.
+
+    Returns
+    -------
+    The mask oversampled by the input sub_size.
+    """
+    oversample_mask = np.full((mask.shape[0] * sub_size, mask.shape[1] * sub_size), True)
+
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                oversample_mask[
+                    y * sub_size : (y + 1) * sub_size,
+                    x * sub_size : (x + 1) * sub_size
+                ] = False
+
+    return oversample_mask
+
+
 @numba_util.jit()
 def blurring_mask_2d_from(
     mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
@@ -846,7 +898,6 @@ def check_if_border_pixel(
     else:
         return False
 
-
 @numba_util.jit()
 def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
     """
@@ -1018,7 +1069,6 @@ def sub_border_pixel_slim_indexes_from(
         )
 
     return sub_border_pixels
-
 
 @numba_util.jit()
 def buffed_mask_2d_from(mask_2d: np.ndarray, buffer: int = 1) -> np.ndarray:

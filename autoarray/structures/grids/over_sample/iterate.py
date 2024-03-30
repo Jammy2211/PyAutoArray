@@ -221,19 +221,22 @@ class OverSampleIterate(AbstractOverSample):
         self.relative_accuracy = relative_accuracy
         self.sub_steps = sub_steps
 
-    @staticmethod
-    def array_at_sub_size_from(func: Callable, cls, mask: Mask2D, sub_size) -> Array2D:
-        mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
+    def array_at_sub_size_from(self, func: Callable, cls, mask: Mask2D, sub_size) -> Array2D:
 
-        grid_compute = Grid2D.from_mask(mask=mask_higher_sub)
+        grid_compute = self.oversampled_grid_2d_via_mask_from(
+            mask=mask,
+            sub_size=sub_size
+        )
+
         array_higher_sub = func(cls, grid_compute)
         return grid_compute.structure_2d_from(result=array_higher_sub).binned.native
 
-    @staticmethod
-    def grid_at_sub_size_from(func: Callable, cls, mask: Mask2D, sub_size) -> Grid2D:
-        mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
+    def grid_at_sub_size_from(self, func: Callable, cls, mask: Mask2D, sub_size) -> Grid2D:
 
-        grid_compute = Grid2D.from_mask(mask=mask_higher_sub)
+        grid_compute = self.oversampled_grid_2d_via_mask_from(
+            mask=mask,
+            sub_size=sub_size
+        )
         grid_higher_sub = func(cls, grid_compute)
         return grid_compute.structure_2d_from(result=grid_higher_sub).binned.native
 

@@ -123,12 +123,8 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure.
         """
-        # TODO : Use oversampling API will remove this hack
-
-        mask = self.mask.mask_new_sub_size_from(mask=self.mask, sub_size=self.sub_size)
-
         return Grid2D.from_mask(
-            mask=mask,
+            mask=self.mask,
             over_sample=self.over_sample,
         )
 
@@ -148,14 +144,8 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
         """
-        # TODO : Use oversampling API will remove this hack
-
-        mask = self.mask.mask_new_sub_size_from(
-            mask=self.mask, sub_size=self.sub_size_pixelization
-        )
-
         return Grid2D.from_mask(
-            mask=mask,
+            mask=self.mask,
             over_sample=self.over_sample,
         )
 

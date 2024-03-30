@@ -742,6 +742,33 @@ def test__mask_2d_elliptical_annular_from__include_centre():
     ).all()
 
 
+def test__oversample_mask_from():
+
+    mask = np.array([
+        [True, True, True, True],
+        [True, False, False, True],
+        [True, False, False, True],
+        [True, True, True, True]
+    ])
+
+    oversample_mask = util.mask_2d.oversample_mask_2d_from(
+        mask=mask,
+        sub_size=2
+    )
+
+    assert (oversample_mask == np.array([
+        [True, True, True, True, True, True, True, True],
+        [True, True, True, True, True, True, True, True],
+        [True, True, False, False, False, False, True, True],
+        [True, True, False, False, False, False, True, True],
+        [True, True, False, False, False, False, True, True],
+        [True, True, False, False, False, False, True, True],
+        [True, True, True, True, True, True, True, True],
+        [True, True, True, True, True, True, True, True]
+    ])).all()
+
+
+
 def test__mask_2d_via_pixel_coordinates_from():
     mask = util.mask_2d.mask_2d_via_pixel_coordinates_from(
         shape_native=(2, 3), pixel_coordinates=[[0, 1], [1, 1], [1, 2]]

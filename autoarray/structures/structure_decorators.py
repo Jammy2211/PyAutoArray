@@ -299,10 +299,12 @@ def grid_2d_to_structure_list(func):
                 return grid.over_sample.structure_2d_list_from(result_list=result_list, mask=grid.mask)
 
             if isinstance(grid.over_sample, OverSampleIterate):
-                mask = grid.mask.mask_new_sub_size_from(
-                    mask=grid.mask, sub_size=max(grid.over_sample.sub_steps)
+
+                grid_compute = grid.oversample.oversampled_grid_2d_via_mask_from(
+                    mask=grid.mask,
+                    sub_size=max(grid.over_sample.sub_steps)
                 )
-                grid_compute = Grid2D.from_mask(mask=mask)
+
                 result_list = func(obj, grid_compute, *args, **kwargs)
                 result_list = [
                     grid_compute.structure_2d_from(result=result)
