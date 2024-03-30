@@ -316,6 +316,7 @@ class OverSampleIterate(AbstractOverSample):
         # Convert to numpy array so grid does not do iteration.
 
         result_sub_1_1d = func(cls, np.asarray(grid))
+
         result_sub_1_2d = self.structure_2d_from(
             result=result_sub_1_1d, mask=grid.mask
         ).native
