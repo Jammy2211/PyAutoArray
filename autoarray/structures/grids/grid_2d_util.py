@@ -203,7 +203,7 @@ def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
 def grid_2d_slim_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
-    sub_size: int,
+    sub_size: int = 1,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
