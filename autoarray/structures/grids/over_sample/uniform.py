@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Union
+from typing import List, Tuple, Union
 
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
@@ -136,6 +136,10 @@ class OverSampleUniform(AbstractOverSample):
         The total number of unmasked sub-pixels (values are `False`) in the mask.
         """
         return self.sub_size**self.dimensions * self.pixels_in_mask
+
+    @property
+    def sub_shape_native_1d(self) -> Tuple[int]:
+        return (self.shape[0] * self.sub_size,)
 
     @property
     def sub_shape_slim(self) -> int:
