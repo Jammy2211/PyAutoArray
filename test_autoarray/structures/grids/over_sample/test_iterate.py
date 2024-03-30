@@ -32,7 +32,7 @@ def test__threshold_mask_from():
     over_sample = aa.OverSampleIterate(fractional_accuracy=0.9999)
 
     threshold_mask = over_sample.threshold_mask_from(
-        array_lower_sub_2d=arr.binned.native, array_higher_sub_2d=arr.binned.native
+        array_lower_sub_2d=arr.native, array_higher_sub_2d=arr.native
     )
 
     assert (
@@ -90,8 +90,8 @@ def test__threshold_mask_from():
     )
 
     threshold_mask = over_sample.threshold_mask_from(
-        array_lower_sub_2d=array_lower_sub.binned.native,
-        array_higher_sub_2d=array_higher_sub.binned.native,
+        array_lower_sub_2d=array_lower_sub.native,
+        array_higher_sub_2d=array_higher_sub.native,
     )
 
     assert (
@@ -120,27 +120,26 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
         origin=(0.001, 0.001),
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask)
-
     over_sample = aa.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2, 3])
 
-    sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
-    grid_sub_1 = aa.Grid2D.from_mask(mask=sub_1)
+    grid_sub_1 = aa.Grid2D.from_mask(mask=mask)
     values_sub_1 = ndarray_1d_from(grid=grid_sub_1, profile=None)
-    values_sub_1 = grid_sub_1.structure_2d_from(result=values_sub_1)
+    values_sub_1 = grid_sub_1.over_sample.structure_2d_from(result=values_sub_1, mask=mask)
 
     values = over_sample.iterated_array_from(
         func=ndarray_1d_from,
         cls=None,
-        array_lower_sub_2d=values_sub_1.binned.native,
+        array_lower_sub_2d=values_sub_1.native,
     )
 
-    mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
-    grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
+    grid_sub_3 = over_sample.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=3)
     values_sub_3 = ndarray_1d_from(grid=grid_sub_3, profile=None)
-    values_sub_3 = grid_sub_3.structure_2d_from(result=values_sub_3)
+    values_sub_3 = grid_sub_3.over_sample.structure_2d_from(result=values_sub_3, mask=grid_sub_3.mask)
+    values_sub_3 = over_sample.binned_array_2d_from(array=values_sub_3, sub_size=3)
 
-    assert (values == values_sub_3.binned).all()
+    assert (values == values_sub_3).all()
+
+    ddd
 
     # This test ensures that if the fractional accuracy is met on the last sub_size jump (e.g. 2 doesnt meet it,
     # but 3 does) that the sub_size of 3 is used. There was a bug where the mask was not updated correctly and the

@@ -14,10 +14,7 @@ def binned_func_from(func, over_sample, mask, sub_size):
     grid = over_sample.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=sub_size)
     values = func(grid=grid, profile=None)
     values = over_sample.structure_2d_from(result=values, mask=grid.mask)
-    if len(values.shape) == 1:
-        return over_sample.binned_array_2d_from(array=values, sub_size=sub_size)
-    else:
-        return over_sample.binned_grid_2d_from(grid=values, sub_size=sub_size)
+    return over_sample.binned_array_2d_from(array=values, sub_size=sub_size)
 
 
 
