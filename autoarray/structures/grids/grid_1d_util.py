@@ -59,7 +59,7 @@ def convert_grid_1d(
 def grid_1d_slim_via_shape_slim_from(
     shape_slim: Tuple[int],
     pixel_scales: ty.PixelScales,
-    sub_size: int,
+    sub_size: int = 1,
     origin: Tuple[float] = (0.0,),
 ) -> np.ndarray:
     """

@@ -41,7 +41,7 @@ def clean_fits(fits_path):
 
 def test__constructor():
     mask = aa.Mask1D(
-        mask=[True, False, False, True, False, False], pixel_scales=1.0, sub_size=1
+        mask=[True, False, False, True, False, False], pixel_scales=1.0,
     )
 
     array_1d = aa.Array1D(values=[100.0, 1.0, 2.0, 100.0, 3.0, 4.0], mask=mask)
@@ -67,35 +67,24 @@ def test__no_mask():
 
 
 def test__full():
-    array_1d = aa.Array1D.full(fill_value=1.0, shape_native=4, pixel_scales=1.0)
+    array_1d = aa.Array1D.full(fill_value=1.0, shape_native=4, pixel_scales=1.0, origin=(4.0,))
 
     assert type(array_1d) == aa.Array1D
     assert (array_1d.native == np.array([1.0, 1.0, 1.0, 1.0])).all()
     assert (array_1d.slim == np.array([1.0, 1.0, 1.0, 1.0])).all()
     assert array_1d.pixel_scale == 1.0
     assert array_1d.pixel_scales == (1.0,)
-    assert array_1d.origin == (0.0,)
-
-    array_1d = aa.Array1D.full(
-        fill_value=2.0, shape_native=3, pixel_scales=3.0, sub_size=2, origin=(4.0,)
-    )
-
-    assert type(array_1d) == aa.Array1D
-    assert (array_1d.native == np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0])).all()
-    assert (array_1d.slim == np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0])).all()
-    assert array_1d.pixel_scale == 3.0
-    assert array_1d.pixel_scales == (3.0,)
     assert array_1d.origin == (4.0,)
 
 
 def test__ones():
     array_1d = aa.Array1D.ones(
-        shape_native=3, pixel_scales=3.0, sub_size=2, origin=(4.0,)
+        shape_native=3, pixel_scales=3.0,  origin=(4.0,)
     )
 
     assert type(array_1d) == aa.Array1D
-    assert (array_1d.native == np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])).all()
-    assert (array_1d.slim == np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])).all()
+    assert (array_1d.native == np.array([1.0, 1.0, 1.0])).all()
+    assert (array_1d.slim == np.array([1.0, 1.0, 1.0])).all()
     assert array_1d.pixel_scale == 3.0
     assert array_1d.pixel_scales == (3.0,)
     assert array_1d.origin == (4.0,)
@@ -103,12 +92,12 @@ def test__ones():
 
 def test__zeros():
     array_1d = aa.Array1D.zeros(
-        shape_native=3, pixel_scales=3.0, sub_size=2, origin=(4.0,)
+        shape_native=3, pixel_scales=3.0, origin=(4.0,)
     )
 
     assert type(array_1d) == aa.Array1D
-    assert (array_1d.native == np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])).all()
-    assert (array_1d.slim == np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])).all()
+    assert (array_1d.native == np.array([0.0, 0.0, 0.0])).all()
+    assert (array_1d.slim == np.array([0.0, 0.0, 0.0])).all()
     assert array_1d.pixel_scale == 3.0
     assert array_1d.pixel_scales == (3.0,)
     assert array_1d.origin == (4.0,)
@@ -210,7 +199,7 @@ def test__recursive_shape_storage():
     assert (array_1d.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
 
     mask = aa.Mask1D(
-        mask=[True, False, False, True, False, False], pixel_scales=1.0, sub_size=1
+        mask=[True, False, False, True, False, False], pixel_scales=1.0,
     )
 
     array_1d = aa.Array1D(values=[100.0, 1.0, 2.0, 100.0, 3.0, 4.0], mask=mask)
