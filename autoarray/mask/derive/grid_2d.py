@@ -65,7 +65,7 @@ class DeriveGrid2D:
     def all_false_sub_1(self) -> Grid2D:
         """
         Returns a non-subgridded ``Grid2D`` which uses the ``Mask2D``
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) and every pixel in the ``Mask2D``
+        geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and every pixel in the ``Mask2D``
         irrespective of whether pixels are masked or unmasked (given by ``True`` or``False``).
 
         For example, for the following ``Mask2D``:
@@ -98,7 +98,6 @@ class DeriveGrid2D:
                      [ True,  True]
                 ],
                 pixel_scales=1.0,
-                sub_size=2
             )
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
@@ -110,7 +109,6 @@ class DeriveGrid2D:
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
             shape_native=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
-            sub_size=1,
             origin=self.mask.origin,
         )
 
@@ -123,7 +121,7 @@ class DeriveGrid2D:
     def unmasked(self) -> Grid2D:
         """
         Returns a subgridded ``Grid2D`` which uses the ``Mask2D``
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) and every unmasked
+        geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and every unmasked
         pixel (given by ``False``), such that all masked entries (given by ``True``) are removed.
 
         For example, for the following ``Mask2D``:
@@ -135,19 +133,12 @@ class DeriveGrid2D:
                      [ True,  True]
                 ],
                 pixel_scales=1.0,
-                sub_size=1
             )
 
         The ``masked`` ``Grid2D`` (given via ``mask_2d.derive_grid.unmasked``) is:
 
         ::
             [[0.5, -0.5], [0.5, 0.5]]
-
-        If the ``Mask2D`` has a ``sub_size=2`` then the ``unmasked`` ``Grid2D``  is:
-
-        ::
-            [[ 0.75, -0.75], [ 0.75, -0.25], [ 0.25, -0.75], [ 0.25, -0.25],
-             [ 0.75,  0.25], [ 0.75,  0.75], [ 0.25,  0.25], [ 0.25,  0.75]]
 
         Examples
         --------
@@ -162,7 +153,6 @@ class DeriveGrid2D:
                      [ True,  True]
                 ],
                 pixel_scales=1.0,
-                sub_size=2
             )
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
@@ -174,7 +164,6 @@ class DeriveGrid2D:
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
             origin=self.mask.origin,
         )
         return Grid2D(values=sub_grid_1d, mask=self.mask)
@@ -183,7 +172,7 @@ class DeriveGrid2D:
     def unmasked_sub_1(self) -> Grid2D:
         """
         Returns a non-subgridded ``Grid2D`` which uses the ``Mask2D``
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) and every unmasked (y,x)
+        geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and every unmasked (y,x)
         coordinate (given by ``False``), where all masked entries (given by ``True``) are removed.
 
         For example, for the following ``Mask2D``:
@@ -195,7 +184,6 @@ class DeriveGrid2D:
                      [ True,  True]
                 ],
                 pixel_scales=1.0,
-                sub_size=2
             )
 
         The ``unmasked_sub_1`` ``Grid2D`` (given via ``mask_2d.derive_grid.unmasked_sub_1``) is:
@@ -216,7 +204,6 @@ class DeriveGrid2D:
                      [ True,  True]
                 ],
                 pixel_scales=1.0,
-                sub_size=2
             )
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
@@ -228,7 +215,6 @@ class DeriveGrid2D:
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=1,
             origin=self.mask.origin,
         )
         return Grid2D(values=grid_slim, mask=self.mask)
@@ -249,7 +235,6 @@ class DeriveGrid2D:
                       [True, False, False, False, True],
                       [True,  True,  True,  True, True]]
                 pixel_scales=1.0,
-                sub_size=2
             )
 
         The ``edge_sub_1`` grid (given via ``mask_2d.derive_grid.edge_sub_1``) is given by:
@@ -276,7 +261,6 @@ class DeriveGrid2D:
                       [True, False, False, False, True],
                       [True,  True,  True,  True, True]],
                 pixel_scales=1.0,
-                sub_size=2
             )
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
@@ -312,7 +296,6 @@ class DeriveGrid2D:
                       [True, False, False, False, False, False, False, False, True],
                       [True,  True,  True,  True,  True,  True,  True,  True, True]]
                 pixel_scales=1.0,
-                sub_size=1
             )
 
         The ``edge_sub_1`` grid (given via ``mask_2d.derive_grid.edge_sub_1``) is given by:
@@ -328,9 +311,6 @@ class DeriveGrid2D:
 
         The central group of pixels, which neighbor ``True`` values, are omitted because they are not at an extreme
         edge of the mask.
-
-        The example above assumes ``sub_size=1`` for clairty, but this function generalizes to cases with higher
-        ``sub_size`` values.
 
         Examples
         --------
@@ -350,7 +330,6 @@ class DeriveGrid2D:
                       [True, False, False, False, False, False, False, False, True],
                       [True,  True,  True,  True,  True,  True,  True,  True, True]],
                 pixel_scales=1.0,
-                sub_size=2
             )
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
@@ -379,7 +358,6 @@ class DeriveGrid2D:
                       [True, False, False, False, False, False, False, False, True],
                       [True,  True,  True,  True,  True,  True,  True,  True, True]]
                 pixel_scales=1.0,
-                sub_size=2
             )
 
         The ``edge_sub_1`` grid (given via ``mask_2d.derive_grid.edge_sub_1``) is given by:
@@ -414,7 +392,6 @@ class DeriveGrid2D:
                       [True, False, False, False, False, False, False, False, True],
                       [True,  True,  True,  True,  True,  True,  True,  True, True]],
                 pixel_scales=1.0,
-                sub_size=2
             )
 
             derive_grid_2d = aa.DeriveGrid2D(mask=mask_2d)
