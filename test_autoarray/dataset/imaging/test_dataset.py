@@ -190,7 +190,7 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
         ),
     )
     mask = aa.Mask2D.all_false(
-        shape_native=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
+        shape_native=(19, 19), pixel_scales=1.0, invert=True,
     )
     mask[9, 9] = False
 

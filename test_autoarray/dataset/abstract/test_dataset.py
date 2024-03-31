@@ -82,7 +82,7 @@ def test__grid__uses_mask_and_settings(
 
 
 def test__grid_pixelization__uses_mask_and_settings(
-    image_7x7, noise_map_7x7, mask_2d_7x7, grid_2d_7x7, grid_2d_7x7
+    image_7x7, noise_map_7x7, mask_2d_7x7, grid_2d_7x7,
 ):
     masked_image_7x7 = aa.Array2D(values=image_7x7.native, mask=mask_2d_7x7)
 

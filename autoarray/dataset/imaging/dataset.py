@@ -28,8 +28,6 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        sub_size: int = 1,  # Temporary before refactor
-        sub_size_pixelization: int = 4,  # Temporary before refactor
         over_sample: Optional[AbstractOverSample] = None,
         over_sample_pixelization: Optional[AbstractOverSample] = None,
         pad_for_convolver: bool = False,
@@ -128,8 +126,6 @@ class Imaging(AbstractDataset):
             data=data,
             noise_map=noise_map,
             noise_covariance_matrix=noise_covariance_matrix,
-            sub_size=sub_size,
-            sub_size_pixelization=sub_size_pixelization,
             over_sample=over_sample,
             over_sample_pixelization=over_sample_pixelization,
         )
@@ -245,7 +241,6 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        sub_size: int = 4,
         over_sample: Optional[AbstractOverSample] = None,
         over_sample_pixelization: Optional[AbstractOverSample] = None,
     ) -> "Imaging":
@@ -310,7 +305,6 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
-            sub_size=sub_size,
             over_sample=over_sample,
             over_sample_pixelization=over_sample_pixelization,
         )
@@ -356,8 +350,6 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
-            sub_size=self.sub_size,
-            sub_size_pixelization=self.sub_size_pixelization,
             over_sample=self.over_sample,
             over_sample_pixelization=self.over_sample_pixelization,
             pad_for_convolver=True,
