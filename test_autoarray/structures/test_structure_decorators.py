@@ -433,16 +433,19 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
 
     ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
-    grid_2d = over_sample.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=2)
-    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(np.array(grid_2d))
+    over_sample_uniform = aa.OverSampleUniformFunc(
+        mask=mask, sub_size=2
+    )
+
+    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(np.array(over_sample_uniform.oversampled_grid))
 
     mask_sub_2 = aa.util.mask_2d.oversample_mask_2d_from(
         mask=np.array(mask), sub_size=2
     )
     mask_sub_2 = aa.Mask2D(mask=mask_sub_2, pixel_scales=(0.5, 0.5))
     ndarray_1d_via_grid = aa.Array2D(values=ndarray_1d_via_grid, mask=mask_sub_2)
-    ndarray_1d_via_grid = over_sample.binned_array_2d_from(
-        array=ndarray_1d_via_grid, sub_size=2
+    ndarray_1d_via_grid = over_sample_uniform.binned_array_2d_from(
+        array=ndarray_1d_via_grid,
     )
 
     assert isinstance(ndarray_1d, aa.Array2D)
@@ -480,16 +483,18 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d_list():
 
     ndarray_1d = obj.ndarray_1d_over_sample_list_from(grid=grid_2d)
 
-    grid_2d = over_sample.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=2)
-    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(np.array(grid_2d))
+    over_sample_uniform = aa.OverSampleUniformFunc(
+        mask=mask, sub_size=2
+    )
+    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(np.array(over_sample_uniform.oversampled_grid))
 
     mask_sub_2 = aa.util.mask_2d.oversample_mask_2d_from(
         mask=np.array(mask), sub_size=2
     )
     mask_sub_2 = aa.Mask2D(mask=mask_sub_2, pixel_scales=(0.5, 0.5))
     ndarray_1d_via_grid = aa.Array2D(values=ndarray_1d_via_grid, mask=mask_sub_2)
-    ndarray_1d_via_grid = over_sample.binned_array_2d_from(
-        array=ndarray_1d_via_grid, sub_size=2
+    ndarray_1d_via_grid = over_sample_uniform.binned_array_2d_from(
+        array=ndarray_1d_via_grid,
     )
 
     assert isinstance(ndarray_1d[0], aa.Array2D)
@@ -517,8 +522,12 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
-    values_sub_3 = over_sample.evaluated_func_from(
-        func=ndarray_1d_from, mask=mask, sub_size=3
+    over_sample_uniform = aa.OverSampleUniformFunc(
+        mask=mask, sub_size=3
+    )
+
+    values_sub_3 = over_sample_uniform.evaluated_func_from(
+        func=ndarray_1d_from,
     )
 
     assert ndarray_1d == pytest.approx(values_sub_3, 1.0e-4)
@@ -534,8 +543,12 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
-    values_sub_2 = over_sample.evaluated_func_from(
-        func=ndarray_1d_from, mask=mask, sub_size=2
+    over_sample_uniform = aa.OverSampleUniformFunc(
+        mask=mask, sub_size=2
+    )
+
+    values_sub_2 = over_sample_uniform.evaluated_func_from(
+        func=ndarray_1d_from,
     )
 
     assert ndarray_1d == pytest.approx(values_sub_2, 1.0e-4)
@@ -549,11 +562,17 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     ndarray_1d = iterate_obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
-    values_sub_2 = over_sample.evaluated_func_from(
-        func=ndarray_1d_from, mask=mask, sub_size=2
+    over_sample_uniform = aa.OverSampleUniformFunc(
+        mask=mask, sub_size=2
     )
-    values_sub_4 = over_sample.evaluated_func_from(
-        func=ndarray_1d_from, mask=mask, sub_size=4
+    values_sub_2 = over_sample_uniform.evaluated_func_from(
+        func=ndarray_1d_from,
+    )
+    over_sample_uniform = aa.OverSampleUniformFunc(
+        mask=mask, sub_size=4
+    )
+    values_sub_4 = over_sample_uniform.evaluated_func_from(
+        func=ndarray_1d_from,
     )
 
     assert ndarray_1d.native[1, 1] == values_sub_2.native[1, 1]

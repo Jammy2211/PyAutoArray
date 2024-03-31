@@ -228,7 +228,7 @@ def grid_2d_to_structure(func):
 
         if isinstance(grid, Grid2D):
             result = func(obj, grid, *args, **kwargs)
-            return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
+            return grid.over_sample_func.structure_2d_from(result=result)
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
@@ -303,16 +303,14 @@ def grid_2d_to_structure_over_sample(func):
 
         if hasattr(grid, "over_sample"):
             if isinstance(grid.over_sample, OverSampleUniform):
-                result = grid.over_sample.evaluated_func_obj_from(
+                result = grid.over_sample_func.evaluated_func_obj_from(
                     func=func,
                     cls=obj,
-                    mask=grid.mask,
-                    sub_size=grid.over_sample.sub_size,
                 )
-                return grid.over_sample.structure_2d_from(result=result, mask=grid.mask)
+                return grid.over_sample_func.structure_2d_from(result=result)
 
             elif isinstance(grid.over_sample, OverSampleIterate):
-                return grid.over_sample.iterated_result_from(
+                return grid.over_sample_func.iterated_result_from(
                     func=func, cls=obj, grid=grid
                 )
 
@@ -372,8 +370,8 @@ def grid_2d_to_structure_list(func):
 
         if isinstance(grid, Grid2D):
             result_list = func(obj, grid, *args, **kwargs)
-            return grid.over_sample.structure_2d_list_from(
-                result_list=result_list, mask=grid.mask
+            return grid.over_sample_func.structure_2d_list_from(
+                result_list=result_list,
             )
         elif isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
@@ -431,15 +429,13 @@ def grid_2d_to_structure_over_sample_list(func):
 
         if hasattr(grid, "over_sample"):
             if isinstance(grid.over_sample, OverSampleUniform):
-                result_list = grid.over_sample.evaluated_func_obj_from(
+                result_list = grid.over_sample_func.evaluated_func_obj_from(
                     func=func,
                     cls=obj,
-                    mask=grid.mask,
-                    sub_size=grid.over_sample.sub_size,
                 )
 
-                return grid.over_sample.structure_2d_list_from(
-                    result_list=result_list, mask=grid.mask
+                return grid.over_sample_func.structure_2d_list_from(
+                    result_list=result_list,
                 )
 
             if isinstance(grid.over_sample, OverSampleIterate):

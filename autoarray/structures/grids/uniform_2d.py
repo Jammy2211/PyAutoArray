@@ -166,16 +166,30 @@ class Grid2D(Structure):
 
         grid_2d_util.check_grid_2d(grid_2d=values)
 
-        self._over_sample = over_sample
+        from autoarray.structures.over_sample.uniform import OverSampleUniform
+
+        if over_sample is None:
+            over_sample = OverSampleUniform(sub_size=1)
+
+        self.over_sample = over_sample
 
     @property
-    def over_sample(self):
-        if self._over_sample is None:
-            from autoarray.structures.over_sample.uniform import OverSampleUniform
+    def over_sample_func(self):
 
-            return OverSampleUniform(sub_size=1)
+        from autoarray.structures.over_sample.uniform import OverSampleUniform
+        from autoarray.structures.over_sample.iterate import OverSampleIterate
+        from autoarray.structures.over_sample.uniform import OverSampleUniformFunc
+        from autoarray.structures.over_sample.iterate import OverSampleIterateFunc
 
-        return self._over_sample
+        if isinstance(self.over_sample, OverSampleUniform):
+            return OverSampleUniformFunc(mask=self.mask, sub_size=self.over_sample.sub_size)
+        else:
+            return OverSampleIterateFunc(
+                mask=self.mask,
+                sub_steps=self.over_sample.sub_steps,
+                fractional_accuracy=self.over_sample.fractional_accuracy,
+                relative_accuracy=self.over_sample.relative_accuracy,
+            )
 
     @classmethod
     def no_mask(
