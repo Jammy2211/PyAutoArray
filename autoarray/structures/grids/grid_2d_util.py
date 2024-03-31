@@ -385,7 +385,7 @@ def grid_2d_slim_via_shape_native_from(
 def grid_2d_via_shape_native_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
-    sub_size: int,
+    sub_size: int = 1,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """

@@ -18,6 +18,9 @@ from autoarray.mask.abstract_mask import Mask
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.geometry.geometry_2d import Geometry2D
+from autoarray.mask.derive.mask_2d import DeriveMask2D
+from autoarray.mask.derive.grid_2d import DeriveGrid2D
+from autoarray.mask.derive.indexes_2d import DeriveIndexes2D
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
@@ -230,6 +233,18 @@ class Mask2D(Mask):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
+
+    @property
+    def derive_indexes(self) -> DeriveIndexes2D:
+        return DeriveIndexes2D(mask=self)
+
+    @property
+    def derive_mask(self) -> DeriveMask2D:
+        return DeriveMask2D(mask=self)
+
+    @property
+    def derive_grid(self) -> DeriveGrid2D:
+        return DeriveGrid2D(mask=self)
 
     @classmethod
     def all_false(

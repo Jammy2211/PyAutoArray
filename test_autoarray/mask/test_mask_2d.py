@@ -545,6 +545,46 @@ def test__shape_native_masked_pixels():
     assert mask.shape_native_masked_pixels == (8, 7)
 
 
+
+
+def test__rescaled_from():
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
+    mask[2, 2] = True
+
+    mask_rescaled = mask.rescaled_from(rescale_factor=2.0)
+
+    mask_rescaled_manual = np.full(fill_value=False, shape=(3, 3))
+    mask_rescaled_manual[1, 1] = True
+
+    mask_rescaled_manual = aa.util.mask_2d.rescaled_mask_2d_from(
+        mask_2d=mask, rescale_factor=2.0
+    )
+
+    assert (mask_rescaled == mask_rescaled_manual).all()
+
+
+def test__resized_from():
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
+    mask[2, 2] = True
+
+    mask_resized = mask.resized_from(new_shape=(7, 7))
+
+    mask_resized_manual = np.full(fill_value=False, shape=(7, 7))
+    mask_resized_manual[3, 3] = True
+
+    assert (mask_resized == mask_resized_manual).all()
+
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
+    mask[2, 2] = True
+
+    mask_resized = mask.resized_from(new_shape=(3, 3))
+
+    mask_resized_manual = np.full(fill_value=False, shape=(3, 3))
+    mask_resized_manual[1, 1] = True
+
+    assert (mask_resized == mask_resized_manual).all()
+
+
 def test__zoom_quantities():
     mask = aa.Mask2D.all_false(shape_native=(3, 5), pixel_scales=(1.0, 1.0))
     assert mask.zoom_centre == (1.0, 2.0)

@@ -6,11 +6,11 @@ import autoarray as aa
 
 def test__all_false():
     grid_2d_util = aa.util.grid_2d.grid_2d_via_shape_native_from(
-        shape_native=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
+        shape_native=(4, 7), pixel_scales=(0.56, 0.56),
     )
 
     grid_1d_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
-        shape_native=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
+        shape_native=(4, 7), pixel_scales=(0.56, 0.56),
     )
 
     mask = aa.Mask2D.all_false(shape_native=(4, 7), pixel_scales=(0.56, 0.56))
@@ -38,11 +38,11 @@ def test__all_false():
     ).all()
 
     grid_2d_util = aa.util.grid_2d.grid_2d_via_shape_native_from(
-        shape_native=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
+        shape_native=(4, 7), pixel_scales=(0.8, 0.56),
     )
 
     grid_1d_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
-        shape_native=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
+        shape_native=(4, 7), pixel_scales=(0.8, 0.56),
     )
 
     mask = aa.Mask2D.all_false(shape_native=(4, 7), pixel_scales=(0.8, 0.56))
@@ -203,7 +203,7 @@ def test__border_sub_1():
 
 
 def test__masked_grid():
-    mask = aa.Mask2D.all_false(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask2D.all_false(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
     mask[1, 1] = True
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
@@ -227,7 +227,6 @@ def test__masked_grid():
     mask = aa.Mask2D(
         mask=np.array([[False, True], [True, False], [True, False]]),
         pixel_scales=(1.0, 1.0),
-        sub_size=5,
         origin=(3.0, -2.0),
     )
 
@@ -236,7 +235,6 @@ def test__masked_grid():
     masked_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
         mask_2d=np.array(mask),
         pixel_scales=(1.0, 1.0),
-        sub_size=5,
         origin=(3.0, -2.0),
     )
 
@@ -256,12 +254,12 @@ def test__border_1d_grid():
         ]
     )
 
-    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     assert (
-        derive_grid.border == np.array([[1.25, -2.25], [1.25, -1.25], [-0.25, 1.25]])
+        derive_grid.border == np.array([[1., -2.], [1., -1.], [-0., 1.]])
     ).all()
 
     mask = np.array(
@@ -276,22 +274,24 @@ def test__border_1d_grid():
         ]
     )
 
-    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
+
+    print(derive_grid.border)
 
     assert (
         derive_grid.border
         == np.array(
             [
-                [1.25, -1.25],
-                [1.25, 0.25],
-                [1.25, 1.25],
-                [-0.25, -1.25],
-                [-0.25, 1.25],
-                [-1.25, -1.25],
-                [-1.25, 0.25],
-                [-1.25, 1.25],
+                [1., -1.],
+                [1., 0.],
+                [1., 1.],
+                [0., -1.],
+                [0., 1.],
+                [-1., -1.],
+                [-1., 0.],
+                [-1., 1.],
             ]
         )
     ).all()
