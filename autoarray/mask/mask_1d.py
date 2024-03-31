@@ -23,9 +23,6 @@ logger = logging.getLogger(__name__)
 
 
 class Mask1D(Mask):
-    @property
-    def native(self) -> Structure:
-        raise NotImplemented()
 
     def __init__(
         self,
@@ -81,6 +78,10 @@ class Mask1D(Mask):
             pass
         else:
             self.origin = (0.0,)
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplemented()
 
     @property
     def geometry(self) -> Geometry1D:

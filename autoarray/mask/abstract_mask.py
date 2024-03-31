@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC
 import logging
 import numpy as np

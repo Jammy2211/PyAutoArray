@@ -1,8 +1,7 @@
 from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
-import numpy as np
-from typing import TYPE_CHECKING, Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, Tuple, Union
 
 if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_1d import Grid1D
