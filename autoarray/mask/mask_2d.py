@@ -867,14 +867,14 @@ class Mask2D(Mask):
         from autoarray.mask.mask_2d import Mask2D
 
         rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
-            mask_2d=np.array(self.mask),
+            mask_2d=np.array(self),
             rescale_factor=rescale_factor,
         )
 
         return Mask2D(
             mask=rescaled_mask,
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.mask.origin,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
 
     def resized_from(self, new_shape, pad_value: int = 0.0) -> Mask2D:
@@ -925,20 +925,16 @@ class Mask2D(Mask):
             print(mask_2d.resized_from(new_shape=(4,4))
         """
 
-        from autoarray.mask.mask_2d import Mask2D
-
-        mask = copy.deepcopy(self.mask)
-
         resized_mask = array_2d_util.resized_array_2d_from(
-            array_2d=np.array(mask),
+            array_2d=np.array(self),
             resized_shape=new_shape,
             pad_value=pad_value,
         ).astype("bool")
 
         return Mask2D(
             mask=resized_mask,
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.mask.origin,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
 
     @property

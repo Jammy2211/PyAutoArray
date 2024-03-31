@@ -13,6 +13,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
+from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
 from autoconf import cached_property
 
 
@@ -25,10 +26,8 @@ class AbstractDataset:
         data: Structure,
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        sub_size: int = 1,  # Temporary before refactor
-        sub_size_pixelization: int = 4,  # Temporary before refactor
-        over_sample: Optional[AbstractOverSample] = None,
-        over_sample_pixelization: Optional[AbstractOverSample] = None,
+        over_sample: Optional[AbstractOverSample] = OverSampleUniform(sub_size=1),
+        over_sample_pixelization: Optional[AbstractOverSample] = OverSampleUniform(sub_size=4),
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
@@ -78,8 +77,6 @@ class AbstractDataset:
         """
 
         self.data = data
-        self.sub_size = sub_size
-        self.sub_size_pixelization = sub_size_pixelization
         self.over_sample = over_sample
         self.over_sample_pixelization = over_sample_pixelization
 
@@ -146,7 +143,7 @@ class AbstractDataset:
         """
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sample=self.over_sample,
+            over_sample=self.over_sample_pixelization,
         )
 
     @property
