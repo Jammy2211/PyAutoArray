@@ -9,10 +9,12 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
 from autoarray.inversion.linear_obj.neighbors import Neighbors
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.pixelization.mappers.tools import MapperTools
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+
 
 from autoarray.numba_util import profile_func
 from autoarray.inversion.pixelization.mappers import mapper_util
@@ -23,6 +25,7 @@ class AbstractMapper(LinearObj):
         self,
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
+        mapper_tools: Optional[MapperTools] = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -83,6 +86,7 @@ class AbstractMapper(LinearObj):
 
         super().__init__(regularization=regularization, run_time_dict=run_time_dict)
 
+        self.mapper_tools = mapper_tools
         self.mapper_grids = mapper_grids
 
     @property
@@ -176,7 +180,7 @@ class AbstractMapper(LinearObj):
         The mappings between every sub-pixel data point on the sub-gridded data and each data point for a grid which
         does not use sub gridding (e.g. `sub_size=1`).
         """
-        return self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim
+        return self.mapper_tools.indexes.slim_for_sub_slim
 
     @property
     def sub_slim_indexes_for_pix_index(self) -> List[List]:
@@ -301,7 +305,7 @@ class AbstractMapper(LinearObj):
             pixel_weights=self.pix_weights_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
-            slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
+            slim_index_for_sub_slim_index=self.mapper_tools.indexes.slim_for_sub_slim,
             adapt_data=np.array(self.adapt_data),
         )
 

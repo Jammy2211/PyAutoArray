@@ -11,8 +11,8 @@ from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
-from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
-from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
+from autoarray.structures.over_sample.uniform import OverSampleUniform
+from autoarray.structures.over_sample.iterate import OverSampleIterate
 from autoarray.structures.grids.transformed_2d import Grid2DTransformed
 from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
 from autoarray.structures.grids.uniform_1d import Grid1D

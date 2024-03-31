@@ -12,8 +12,11 @@ from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
-from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
+from autoarray.structures.over_sample.abstract import AbstractOverSample
+from autoarray.structures.over_sample.uniform import OverSampleUniform
+from autoarray.structures.over_sample.uniform import OverSampleUniformFunc
+from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.pixelization.mappers.tools import MapperTools
 from autoconf import cached_property
 
 
@@ -27,7 +30,7 @@ class AbstractDataset:
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample: Optional[AbstractOverSample] = OverSampleUniform(sub_size=1),
-        over_sample_pixelization: Optional[AbstractOverSample] = OverSampleUniform(sub_size=4),
+        over_sample_pixelization: Optional[OverSampleUniform] = OverSampleUniform(sub_size=4),
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
@@ -144,6 +147,14 @@ class AbstractDataset:
         return Grid2D.from_mask(
             mask=self.mask,
             over_sample=self.over_sample_pixelization,
+        )
+
+    @cached_property
+    def mapper_tools(self):
+
+        return MapperTools(
+            indexes=OverSampleUniformFunc(mask=self.mask, sub_size=self.over_sample_pixelization.sub_size),
+            border_relocator=BorderRelocator(grid=self.grid, sub_size=self.over_sample_pixelization.sub_size),
         )
 
     @property

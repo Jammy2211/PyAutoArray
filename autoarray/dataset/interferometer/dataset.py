@@ -7,8 +7,8 @@ from autoconf import cached_property
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
-from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
+from autoarray.structures.over_sample.abstract import AbstractOverSample
+from autoarray.structures.over_sample.uniform import OverSampleUniform
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
@@ -26,7 +26,7 @@ class Interferometer(AbstractDataset):
         real_space_mask,
         transformer_class=TransformerNUFFT,
         over_sample: Optional[AbstractOverSample] = OverSampleUniform(sub_size=1),
-        over_sample_pixelization: Optional[AbstractOverSample] = OverSampleUniform(sub_size=4),
+        over_sample_pixelization: Optional[OverSampleUniform] = OverSampleUniform(sub_size=4),
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and

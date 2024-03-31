@@ -3,12 +3,59 @@ from typing import Callable, Union, List, Optional
 
 from autoarray import numba_util
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
+from autoarray.structures.over_sample.abstract import AbstractOverSample
+from autoarray.structures.over_sample.abstract import AbstractOverSampleFunc
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.structures.arrays import array_2d_util
 
+
+class OverSampleIterate(AbstractOverSample):
+    def __init__(
+        self,
+        fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
+        sub_steps: List[int] = None,
+    ):
+        """
+        Over samples grid calculations using an iterative sub-grid that increases the sampling until a threshold
+        accuracy is met.
+
+        When a 2D grid of (y,x) coordinates is input into a function, the result is evaluated at every coordinate
+        on the grid. When the grid is paired to a 2D image (e.g. an `Array2D`) the solution needs to approximate
+        the 2D integral of that function in each pixel. Over sample objects define how this over-sampling is performed.
+
+        This object iteratively recomputes the analytic function at increasing sub-grid resolutions until an input
+        fractional accuracy is reached. The sub-grid is increase in each pixel, therefore it will gradually better
+        approximate the 2D integral after each iteration.
+
+        Iteration is performed on a per pixel basis, such that the sub-grid size will stop at lower values
+        in pixels where the fractional accuracy is met quickly. It will only go to high values where high sampling is
+        required to meet the accuracy. This ensures the function is evaluated accurately in a computationally
+        efficient manner.
+
+        Parameters
+        ----------
+        fractional_accuracy
+            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
+            of the value at a higher sub size to the value computed using the previous sub_size. The fractional
+            accuracy does not depend on the units or magnitude of the function being evaluated.
+        relative_accuracy
+            The relative accuracy the function evaluted must meet to be accepted, where this value is the absolute
+            difference of the values computed using the higher sub size and lower sub size grids. The relative
+            accuracy depends on the units / magnitude of the function being evaluated.
+        sub_steps
+            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
+            they are setup as the default values [2, 4, 8, 16].
+        """
+
+        if sub_steps is None:
+            sub_steps = [2, 4, 8, 16]
+
+        self.fractional_accuracy = fractional_accuracy
+        self.relative_accuracy = relative_accuracy
+        self.sub_steps = sub_steps
 
 @numba_util.jit()
 def threshold_mask_via_arrays_jit_from(
@@ -80,52 +127,15 @@ def iterated_array_jit_from(
 
     return iterated_array
 
+class OverSampleIterateFunc(AbstractOverSampleFunc):
 
-class OverSampleIterate(AbstractOverSample):
-    def __init__(
-        self,
-        fractional_accuracy: float = 0.9999,
-        relative_accuracy: Optional[float] = None,
-        sub_steps: List[int] = None,
-    ):
-        """
-        Over samples grid calculations using an iterative sub-grid that increases the sampling until a threshold
-        accuracy is met.
+    def __init__(self, mask: Mask2D, sub_size: int):
+        self.mask = mask
+        self.sub_size = sub_size
 
-        When a 2D grid of (y,x) coordinates is input into a function, the result is evaluated at every coordinate
-        on the grid. When the grid is paired to a 2D image (e.g. an `Array2D`) the solution needs to approximate
-        the 2D integral of that function in each pixel. Over sample objects define how this over-sampling is performed.
-
-        This object iteratively recomputes the analytic function at increasing sub-grid resolutions until an input
-        fractional accuracy is reached. The sub-grid is increase in each pixel, therefore it will gradually better
-        approximate the 2D integral after each iteration.
-
-        Iteration is performed on a per pixel basis, such that the sub-grid size will stop at lower values
-        in pixels where the fractional accuracy is met quickly. It will only go to high values where high sampling is
-        required to meet the accuracy. This ensures the function is evaluated accurately in a computationally
-        efficient manner.
-
-        Parameters
-        ----------
-        fractional_accuracy
-            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
-            of the value at a higher sub size to the value computed using the previous sub_size. The fractional
-            accuracy does not depend on the units or magnitude of the function being evaluated.
-        relative_accuracy
-            The relative accuracy the function evaluted must meet to be accepted, where this value is the absolute
-            difference of the values computed using the higher sub size and lower sub size grids. The relative
-            accuracy depends on the units / magnitude of the function being evaluated.
-        sub_steps
-            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
-            they are setup as the default values [2, 4, 8, 16].
-        """
-
-        if sub_steps is None:
-            sub_steps = [2, 4, 8, 16]
-
-        self.fractional_accuracy = fractional_accuracy
-        self.relative_accuracy = relative_accuracy
-        self.sub_steps = sub_steps
+    @property
+    def over_sample(self):
+        return OverSampleIterate()
 
     def array_at_sub_size_from(
         self, func: Callable, cls, mask: Mask2D, sub_size

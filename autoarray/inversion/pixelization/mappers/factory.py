@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
+from autoarray.inversion.pixelization.mappers.tools import MapperTools
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay
@@ -10,6 +11,7 @@ from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 def mapper_from(
     mapper_grids: MapperGrids,
     regularization: Optional[AbstractRegularization],
+    mapper_tools: Optional[MapperTools] = None,
     run_time_dict: Optional[Dict] = None,
 ):
     """
@@ -47,12 +49,14 @@ def mapper_from(
     if isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
         return MapperRectangularNoInterp(
             mapper_grids=mapper_grids,
+            mapper_tools=mapper_tools,
             regularization=regularization,
             run_time_dict=run_time_dict,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DDelaunay):
         return MapperDelaunay(
             mapper_grids=mapper_grids,
+            mapper_tools=mapper_tools,
             regularization=regularization,
             run_time_dict=run_time_dict,
         )
@@ -60,12 +64,14 @@ def mapper_from(
         if mapper_grids.source_plane_mesh_grid.uses_interpolation:
             return MapperVoronoi(
                 mapper_grids=mapper_grids,
+            mapper_tools=mapper_tools,
                 regularization=regularization,
                 run_time_dict=run_time_dict,
             )
 
         return MapperVoronoiNoInterp(
             mapper_grids=mapper_grids,
+            mapper_tools=mapper_tools,
             regularization=regularization,
             run_time_dict=run_time_dict,
         )

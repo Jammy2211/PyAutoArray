@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
-    from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
+    from autoarray.structures.over_sample.abstract import AbstractOverSample
 
 from autoconf import conf
 
@@ -171,7 +171,7 @@ class Grid2D(Structure):
     @property
     def over_sample(self):
         if self._over_sample is None:
-            from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
+            from autoarray.structures.over_sample.uniform import OverSampleUniform
 
             return OverSampleUniform(sub_size=1)
 
