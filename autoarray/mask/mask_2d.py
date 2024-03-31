@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 
 
 class Mask2D(Mask):
-
     # noinspection PyUnusedLocal
     def __init__(
         self,

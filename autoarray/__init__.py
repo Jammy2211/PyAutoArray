@@ -32,6 +32,7 @@ from .inversion.inversion.factory import (
 from .inversion.inversion.factory import (
     inversion_interferometer_unpacked_from as InversionInterferometer,
 )
+from .inversion.pixelization.border_relocator import BorderRelocator
 from .inversion.pixelization.pixelization import Pixelization
 from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization.mappers.mapper_grids import MapperGrids

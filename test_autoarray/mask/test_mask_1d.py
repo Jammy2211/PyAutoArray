@@ -30,9 +30,7 @@ def test__constructor():
     assert mask.origin == (1.0,)
     assert (mask.geometry.extent == np.array([-3.5, 5.5])).all()
 
-    mask = aa.Mask1D(
-        mask=[False, False, True, True], pixel_scales=3.0, origin=(1.0,)
-    )
+    mask = aa.Mask1D(mask=[False, False, True, True], pixel_scales=3.0, origin=(1.0,))
 
     assert type(mask) == aa.Mask1D
     assert (mask == np.array([False, False, True, True])).all()

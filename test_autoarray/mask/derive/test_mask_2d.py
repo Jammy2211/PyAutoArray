@@ -24,8 +24,6 @@ def make_derive_mask_2d_9x9():
     return aa.DeriveMask2D(mask=mask_2d)
 
 
-
-
 def test__unmasked_mask(derive_mask_2d_9x9):
     assert (
         derive_mask_2d_9x9.all_false == np.full(fill_value=False, shape=(9, 9))

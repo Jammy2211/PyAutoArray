@@ -512,8 +512,6 @@ def test__shape_native_masked_pixels():
     assert mask.shape_native_masked_pixels == (8, 7)
 
 
-
-
 def test__rescaled_from():
     mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
     mask[2, 2] = True

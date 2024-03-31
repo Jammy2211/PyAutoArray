@@ -25,7 +25,6 @@ def make_indexes_2d_9x9():
 
 
 def test__native_index_for_slim_index(indexes_2d_9x9):
-
     sub_native_index_for_sub_slim_index_2d = (
         aa.util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=np.array(indexes_2d_9x9.mask), sub_size=1
@@ -44,10 +43,7 @@ def test__sub_mask_index_for_sub_mask_1d_index():
         sub_size=2,
     )
 
-    over_sample = aa.OverSampleIndexes(
-        mask=mask,
-        sub_size=2
-    )
+    over_sample = aa.OverSampleIndexes(mask=mask, sub_size=2)
 
     sub_mask_index_for_sub_mask_1d_index = (
         aa.util.mask_2d.native_index_for_slim_index_2d_from(
@@ -67,10 +63,7 @@ def test__slim_index_for_sub_slim_index():
         sub_size=2,
     )
 
-    over_sample = aa.OverSampleIndexes(
-        mask=mask,
-        sub_size=2
-    )
+    over_sample = aa.OverSampleIndexes(mask=mask, sub_size=2)
 
     slim_index_for_sub_slim_index_util = (
         aa.util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
@@ -123,49 +116,3 @@ def test__border_1d_indexes(indexes_2d_9x9):
 def test__border_2d_indexes(indexes_2d_9x9):
     assert indexes_2d_9x9.border_native[0] == pytest.approx(np.array([1, 1]), 1e-4)
     assert indexes_2d_9x9.border_native[10] == pytest.approx(np.array([3, 7]), 1e-4)
-
-
-def test__sub_border_flat_indexes():
-    mask = aa.Mask2D(
-        mask=[
-            [False, False, False, False, False, False, False, True],
-            [False, True, True, True, True, True, False, True],
-            [False, True, False, False, False, True, False, True],
-            [False, True, False, True, False, True, False, True],
-            [False, True, False, False, False, True, False, True],
-            [False, True, True, True, True, True, False, True],
-            [False, False, False, False, False, False, False, True],
-        ],
-        pixel_scales=1.0,
-    )
-
-    over_sample = aa.OverSampleIndexes(
-        mask=mask,
-        sub_size=2
-    )
-
-    sub_border_pixels_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
-        mask_2d=np.array(mask), sub_size=2
-    )
-
-    assert over_sample.sub_border_slim == pytest.approx(sub_border_pixels_util, 1e-4)
-
-    mask = aa.Mask2D(
-        mask=[
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-        ],
-        pixel_scales=1.0,
-    )
-
-    over_sample = aa.OverSampleIndexes(
-        mask=mask,
-        sub_size=2
-    )
-
-    assert (over_sample.sub_border_slim == np.array([0, 5, 9, 14, 23, 26, 31, 35])).all()

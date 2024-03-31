@@ -55,6 +55,15 @@ class BorderRelocator:
             mask_2d=np.array(self.grid.mask), sub_size=self.sub_size
         ).astype("int")
 
+    @property
+    def sub_grid(self):
+        return grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=np.array(self.grid.mask),
+            pixel_scales=self.grid.pixel_scales,
+            sub_size=self.sub_size,
+            origin=self.grid.origin,
+        )
+
     @cached_property
     def sub_border_grid(self) -> np.ndarray:
         """
@@ -63,7 +72,7 @@ class BorderRelocator:
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border.
         """
-        return self.grid[self.sub_border_slim]
+        return self.sub_grid[self.sub_border_slim]
 
     def relocated_grid_from(self, grid: "Grid2D") -> "Grid2D":
         """

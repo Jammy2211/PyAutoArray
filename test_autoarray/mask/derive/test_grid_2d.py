@@ -6,11 +6,13 @@ import autoarray as aa
 
 def test__all_false():
     grid_2d_util = aa.util.grid_2d.grid_2d_via_shape_native_from(
-        shape_native=(4, 7), pixel_scales=(0.56, 0.56),
+        shape_native=(4, 7),
+        pixel_scales=(0.56, 0.56),
     )
 
     grid_1d_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
-        shape_native=(4, 7), pixel_scales=(0.56, 0.56),
+        shape_native=(4, 7),
+        pixel_scales=(0.56, 0.56),
     )
 
     mask = aa.Mask2D.all_false(shape_native=(4, 7), pixel_scales=(0.56, 0.56))
@@ -38,11 +40,13 @@ def test__all_false():
     ).all()
 
     grid_2d_util = aa.util.grid_2d.grid_2d_via_shape_native_from(
-        shape_native=(4, 7), pixel_scales=(0.8, 0.56),
+        shape_native=(4, 7),
+        pixel_scales=(0.8, 0.56),
     )
 
     grid_1d_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
-        shape_native=(4, 7), pixel_scales=(0.8, 0.56),
+        shape_native=(4, 7),
+        pixel_scales=(0.8, 0.56),
     )
 
     mask = aa.Mask2D.all_false(shape_native=(4, 7), pixel_scales=(0.8, 0.56))
@@ -259,7 +263,7 @@ def test__border_1d_grid():
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
     assert (
-        derive_grid.border == np.array([[1., -2.], [1., -1.], [-0., 1.]])
+        derive_grid.border == np.array([[1.0, -2.0], [1.0, -1.0], [-0.0, 1.0]])
     ).all()
 
     mask = np.array(
@@ -284,14 +288,14 @@ def test__border_1d_grid():
         derive_grid.border
         == np.array(
             [
-                [1., -1.],
-                [1., 0.],
-                [1., 1.],
-                [0., -1.],
-                [0., 1.],
-                [-1., -1.],
-                [-1., 0.],
-                [-1., 1.],
+                [1.0, -1.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [0.0, -1.0],
+                [0.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, 0.0],
+                [-1.0, 1.0],
             ]
         )
     ).all()

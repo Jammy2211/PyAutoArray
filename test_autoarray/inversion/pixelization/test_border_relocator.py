@@ -7,7 +7,7 @@ import autoarray as aa
 from autoarray import exc
 
 
-def test__sub_border_flat_indexes():
+def test__sub_border_slim():
     mask = np.array(
         [
             [False, False, False, False, False, False, False, True],
@@ -20,7 +20,7 @@ def test__sub_border_flat_indexes():
         ]
     )
 
-    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
     sub_border_flat_indexes_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
         mask_2d=np.array(mask),
@@ -29,7 +29,9 @@ def test__sub_border_flat_indexes():
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
-    assert grid_2d.mask.derive_indexes.sub_border_slim == pytest.approx(
+    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
+
+    assert border_relocator.sub_border_slim == pytest.approx(
         sub_border_flat_indexes_util, 1e-4
     )
 
@@ -47,12 +49,14 @@ def test__sub_border_grid():
         ]
     )
 
-    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
 
+    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
+
     assert (
-        grid_2d.sub_border_grid
+        border_relocator.sub_border_grid
         == np.array(
             [
                 [6.5, -7.5],
@@ -82,12 +86,16 @@ def test__relocated_grid_from__inside_border_no_relocations():
         pixel_scales=mask.pixel_scales,
     )
 
-    relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
+    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
+
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid_to_relocate)
 
     assert (relocated_grid == np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]])).all()
 
     mask = aa.Mask2D.circular(
-        shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=2
+        shape_native=(30, 30),
+        radius=1.0,
+        pixel_scales=(0.1, 0.1),
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -97,7 +105,9 @@ def test__relocated_grid_from__inside_border_no_relocations():
         pixel_scales=mask.pixel_scales,
     )
 
-    relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
+    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
+
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid_to_relocate)
 
     assert (relocated_grid == np.array([[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]])).all()
 
@@ -114,14 +124,18 @@ def test__relocated_grid_from__outside_border_includes_relocations():
         pixel_scales=mask.pixel_scales,
     )
 
-    relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
+    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
+
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid_to_relocate)
 
     assert relocated_grid == pytest.approx(
         np.array([[0.95, 0.0], [0.0, 0.95], [-0.7017, -0.7017]]), 0.1
     )
 
     mask = aa.Mask2D.circular(
-        shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=2
+        shape_native=(30, 30),
+        radius=1.0,
+        pixel_scales=(0.1, 0.1),
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -131,7 +145,9 @@ def test__relocated_grid_from__outside_border_includes_relocations():
         pixel_scales=mask.pixel_scales,
     )
 
-    relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
+    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
+
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid_to_relocate)
 
     assert relocated_grid == pytest.approx(
         np.array([[0.9778, 0.0], [0.0, 0.97788], [-0.7267, -0.7267]]), 0.1
@@ -144,7 +160,6 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
         radius=1.0,
         pixel_scales=(0.1, 0.1),
         centre=(1.0, 1.0),
-        sub_size=1,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -154,7 +169,9 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
         pixel_scales=mask.pixel_scales,
     )
 
-    relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
+    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=1)
+
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid_to_relocate)
 
     assert relocated_grid == pytest.approx(
         np.array(
@@ -168,7 +185,6 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
         radius=1.0,
         pixel_scales=(0.1, 0.1),
         centre=(1.0, 1.0),
-        sub_size=2,
     )
 
     grid_2d = aa.Grid2D.from_mask(mask=mask)
@@ -178,7 +194,9 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
         pixel_scales=mask.pixel_scales,
     )
 
-    relocated_grid = grid_2d.relocated_grid_from(grid=grid_to_relocate)
+    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
+
+    relocated_grid = border_relocator.relocated_grid_from(grid=grid_to_relocate)
 
     assert relocated_grid == pytest.approx(
         np.array(
