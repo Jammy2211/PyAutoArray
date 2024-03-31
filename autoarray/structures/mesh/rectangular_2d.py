@@ -18,12 +18,6 @@ class Mesh2DRectangular(Abstract2DMesh):
     def slim(self) -> "Structure":
         raise NotImplementedError()
 
-    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
-        raise NotImplementedError()
-
-    def structure_2d_from(self, result: np.ndarray) -> "Structure":
-        raise NotImplementedError()
-
     def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
         raise NotImplementedError()
 
@@ -69,7 +63,6 @@ class Mesh2DRectangular(Abstract2DMesh):
         mask = Mask2D.all_false(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
-            sub_size=1,
             origin=origin,
         )
 
@@ -117,7 +110,6 @@ class Mesh2DRectangular(Abstract2DMesh):
         grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
-            sub_size=1,
             origin=origin,
         )
 
