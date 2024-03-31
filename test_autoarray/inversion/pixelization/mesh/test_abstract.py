@@ -1,7 +1,7 @@
 import autoarray as aa
 
 
-def test__grid_is_relocated_via_border(sub_grid_2d_7x7):
+def test__grid_is_relocated_via_border(grid_2d_7x7):
     mesh = aa.mesh.Voronoi()
 
     mask = aa.Mask2D.circular(

@@ -712,7 +712,7 @@ def test__noise_map_with_signal_to_noise_limit_from():
 
 
 def test__visibilities_noise_map_with_signal_to_noise_limit(
-    sub_mask_2d_7x7, uv_wavelengths_7x2
+    mask_2d_7x7, uv_wavelengths_7x2
 ):
     data = aa.Visibilities(visibilities=np.array([1 + 1j, 1 + 1j]))
     noise_map = aa.VisibilitiesNoiseMap(visibilities=np.array([1 + 0.25j, 1 + 0.25j]))

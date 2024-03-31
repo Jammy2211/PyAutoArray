@@ -28,23 +28,7 @@ def make_mask_2d_7x7():
         ]
     )
 
-    return aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
-
-
-def make_sub_mask_2d_7x7():
-    mask = np.array(
-        [
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, False, False, False, True, True],
-            [True, True, True, True, True, True, True],
-            [True, True, True, True, True, True, True],
-        ]
-    )
-
-    return aa.Mask2D(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D(mask=mask, pixel_scales=(1.0, 1.0))
 
 
 def make_mask_2d_7x7_1_pix():
@@ -115,17 +99,13 @@ def make_grid_2d_7x7():
     return aa.Grid2D.from_mask(mask=make_mask_2d_7x7())
 
 
-def make_sub_grid_2d_7x7():
-    return aa.Grid2D.from_mask(mask=make_sub_mask_2d_7x7())
-
-
-def make_sub_grid_2d_7x7_simple():
-    sub_grid_2d_7x7 = make_sub_grid_2d_7x7()
-    sub_grid_2d_7x7[0] = np.array([1.0, 1.0])
-    sub_grid_2d_7x7[1] = np.array([1.0, 0.0])
-    sub_grid_2d_7x7[2] = np.array([1.0, 1.0])
-    sub_grid_2d_7x7[3] = np.array([1.0, 0.0])
-    return sub_grid_2d_7x7
+def make_grid_2d_7x7_simple():
+    grid_2d_7x7 = make_grid_2d_7x7()
+    grid_2d_7x7[0] = np.array([1.0, 1.0])
+    grid_2d_7x7[1] = np.array([1.0, 0.0])
+    grid_2d_7x7[2] = np.array([1.0, 1.0])
+    grid_2d_7x7[3] = np.array([1.0, 0.0])
+    return grid_2d_7x7
 
 
 def make_blurring_grid_2d_7x7():
@@ -235,7 +215,7 @@ def make_interferometer_7():
         data=make_visibilities_7(),
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
-        real_space_mask=make_sub_mask_2d_7x7(),
+        real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
         sub_size_pixelization=1,
     )
@@ -246,7 +226,7 @@ def make_interferometer_7_no_fft():
         data=make_visibilities_7(),
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2_no_fft(),
-        real_space_mask=make_sub_mask_2d_7x7(),
+        real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
     )
 
@@ -256,7 +236,7 @@ def make_interferometer_7_grid():
         data=make_visibilities_7(),
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
-        real_space_mask=make_sub_mask_2d_7x7(),
+        real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
         sub_size_pixelization=1,
     )
@@ -359,7 +339,7 @@ def make_regularization_matern_kernel():
 
 def make_rectangular_mesh_grid_3x3():
     return aa.Mesh2DRectangular.overlay_grid(
-        grid=make_sub_grid_2d_7x7(), shape_native=(3, 3)
+        grid=make_grid_2d_7x7(), shape_native=(3, 3)
     )
 
 
@@ -407,7 +387,7 @@ def make_voronoi_mesh_grid_9():
 
 def make_rectangular_mapper_7x7_3x3():
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=make_sub_grid_2d_7x7(),
+        source_plane_data_grid=make_grid_2d_7x7(),
         source_plane_mesh_grid=make_rectangular_mesh_grid_3x3(),
         image_plane_mesh_grid=None,
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
@@ -420,7 +400,7 @@ def make_rectangular_mapper_7x7_3x3():
 
 def make_delaunay_mapper_9_3x3():
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=make_sub_grid_2d_7x7(),
+        source_plane_data_grid=make_grid_2d_7x7(),
         source_plane_mesh_grid=make_delaunay_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
@@ -433,7 +413,7 @@ def make_delaunay_mapper_9_3x3():
 
 def make_voronoi_mapper_9_3x3():
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=make_sub_grid_2d_7x7(),
+        source_plane_data_grid=make_grid_2d_7x7(),
         source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
@@ -446,7 +426,7 @@ def make_voronoi_mapper_9_3x3():
 
 def make_voronoi_mapper_nn_9_3x3():
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=make_sub_grid_2d_7x7(),
+        source_plane_data_grid=make_grid_2d_7x7(),
         source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
