@@ -14,19 +14,17 @@ test_data_path = path.join(
 
 
 def test__constructor():
-    mask = aa.Mask2D(mask=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1)
+    mask = aa.Mask2D(mask=[[False, False], [True, True]], pixel_scales=1.0)
 
     assert type(mask) == aa.Mask2D
     assert (mask == np.array([[False, False], [True, True]])).all()
     assert mask.pixel_scales == (1.0, 1.0)
     assert mask.origin == (0.0, 0.0)
-    assert mask.sub_size == 1
     assert (mask.geometry.extent == np.array([-1.0, 1.0, -1.0, 1.0])).all()
 
     mask = aa.Mask2D(
         mask=[[False, False], [True, True]],
         pixel_scales=(2.0, 3.0),
-        sub_size=2,
         origin=(0.0, 1.0),
     )
 
@@ -34,7 +32,6 @@ def test__constructor():
     assert (mask == np.array([[False, False], [True, True]])).all()
     assert mask.pixel_scales == (2.0, 3.0)
     assert mask.origin == (0.0, 1.0)
-    assert mask.sub_size == 2
 
 
 def test__constructor__invert_is_true():
@@ -69,7 +66,6 @@ def test__all_false():
         shape_native=(3, 3),
         pixel_scales=(2.0, 2.5),
         invert=True,
-        sub_size=4,
         origin=(1.0, 2.0),
     )
 
@@ -78,7 +74,6 @@ def test__all_false():
         mask == np.array([[True, True, True], [True, True, True], [True, True, True]])
     ).all()
 
-    assert mask.sub_size == 4
     assert mask.pixel_scales == (2.0, 2.5)
     assert mask.origin == (1.0, 2.0)
 
@@ -91,7 +86,6 @@ def test__circular():
     mask = aa.Mask2D.circular(
         shape_native=(5, 4),
         pixel_scales=(2.7, 2.7),
-        sub_size=1,
         radius=3.5,
         centre=(0.0, 0.0),
     )
@@ -103,7 +97,6 @@ def test__circular():
     mask = aa.Mask2D.circular(
         shape_native=(5, 4),
         pixel_scales=(2.7, 2.7),
-        sub_size=1,
         radius=3.5,
         centre=(0.0, 0.0),
         invert=True,
@@ -126,7 +119,6 @@ def test__circular_annular():
     mask = aa.Mask2D.circular_annular(
         shape_native=(5, 4),
         pixel_scales=(2.7, 2.7),
-        sub_size=1,
         inner_radius=0.8,
         outer_radius=3.5,
         centre=(0.0, 0.0),
@@ -139,7 +131,6 @@ def test__circular_annular():
     mask = aa.Mask2D.circular_annular(
         shape_native=(5, 4),
         pixel_scales=(2.7, 2.7),
-        sub_size=1,
         inner_radius=0.8,
         outer_radius=3.5,
         centre=(0.0, 0.0),
@@ -164,7 +155,6 @@ def test__circular_anti_annular():
     mask = aa.Mask2D.circular_anti_annular(
         shape_native=(9, 9),
         pixel_scales=(1.2, 1.2),
-        sub_size=1,
         inner_radius=0.8,
         outer_radius=2.2,
         outer_radius_2=3.0,
@@ -178,7 +168,6 @@ def test__circular_anti_annular():
     mask = aa.Mask2D.circular_anti_annular(
         shape_native=(9, 9),
         pixel_scales=(1.2, 1.2),
-        sub_size=1,
         inner_radius=0.8,
         outer_radius=2.2,
         outer_radius_2=3.0,
@@ -204,7 +193,6 @@ def test__elliptical():
     mask = aa.Mask2D.elliptical(
         shape_native=(8, 5),
         pixel_scales=(2.7, 2.7),
-        sub_size=1,
         major_axis_radius=5.7,
         axis_ratio=0.4,
         angle=40.0,
@@ -218,7 +206,6 @@ def test__elliptical():
     mask = aa.Mask2D.elliptical(
         shape_native=(8, 5),
         pixel_scales=(2.7, 2.7),
-        sub_size=1,
         major_axis_radius=5.7,
         axis_ratio=0.4,
         angle=40.0,
@@ -247,7 +234,6 @@ def test__elliptical_annular():
     mask = aa.Mask2D.elliptical_annular(
         shape_native=(8, 5),
         pixel_scales=(2.7, 2.7),
-        sub_size=1,
         inner_major_axis_radius=2.1,
         inner_axis_ratio=0.6,
         inner_phi=20.0,
@@ -264,7 +250,6 @@ def test__elliptical_annular():
     mask = aa.Mask2D.elliptical_annular(
         shape_native=(8, 5),
         pixel_scales=(2.7, 2.7),
-        sub_size=1,
         inner_major_axis_radius=2.1,
         inner_axis_ratio=0.6,
         inner_phi=20.0,
@@ -346,7 +331,6 @@ def test__from_fits__output_to_fits():
     mask = aa.Mask2D.from_fits(
         file_path=path.join(test_data_path, "3x3_ones.fits"),
         hdu=0,
-        sub_size=1,
         pixel_scales=(1.0, 1.0),
     )
 
@@ -367,7 +351,6 @@ def test__from_fits__output_to_fits():
     mask = aa.Mask2D.from_fits(
         file_path=path.join(test_data_path, "mask.fits"),
         hdu=0,
-        sub_size=1,
         pixel_scales=(1.0, 1.0),
         origin=(2.0, 2.0),
     )
@@ -387,7 +370,6 @@ def test__from_fits__with_resized_mask_shape():
     mask = aa.Mask2D.from_fits(
         file_path=path.join(test_data_path, "3x3_ones.fits"),
         hdu=0,
-        sub_size=1,
         pixel_scales=(1.0, 1.0),
         resized_mask_shape=(1, 1),
     )
@@ -397,7 +379,6 @@ def test__from_fits__with_resized_mask_shape():
     mask = aa.Mask2D.from_fits(
         file_path=path.join(test_data_path, "3x3_ones.fits"),
         hdu=0,
-        sub_size=1,
         pixel_scales=(1.0, 1.0),
         resized_mask_shape=(5, 5),
     )
@@ -436,10 +417,10 @@ def test__mask__input_is_1d_mask__no_shape_native__raises_exception():
         aa.Mask2D(mask=[False, False, True], pixel_scales=False)
 
     with pytest.raises(exc.MaskException):
-        aa.Mask2D(mask=[False, False, True], pixel_scales=1.0, sub_size=1)
+        aa.Mask2D(mask=[False, False, True], pixel_scales=1.0)
 
     with pytest.raises(exc.MaskException):
-        aa.Mask2D(mask=[False, False, True], pixel_scales=False, sub_size=1)
+        aa.Mask2D(mask=[False, False, True], pixel_scales=False)
 
 
 def test__is_all_true():
@@ -476,20 +457,6 @@ def test__is_all_false():
     mask = aa.Mask2D(mask=[[True, True], [False, False]], pixel_scales=1.0)
 
     assert mask.is_all_false is False
-
-
-def test__sub_shape_native():
-    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0, sub_size=1)
-
-    assert mask.sub_shape_native == (5, 5)
-
-    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0, sub_size=2)
-
-    assert mask.sub_shape_native == (10, 10)
-
-    mask = aa.Mask2D.all_false(shape_native=(10, 5), pixel_scales=1.0, sub_size=3)
-
-    assert mask.sub_shape_native == (30, 15)
 
 
 def test__shape_native_masked_pixels():

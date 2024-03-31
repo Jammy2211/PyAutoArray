@@ -32,9 +32,6 @@ logger = logging.getLogger(__name__)
 
 
 class Mask2D(Mask):
-    @property
-    def native(self) -> Structure:
-        return self
 
     # noinspection PyUnusedLocal
     def __init__(
@@ -67,7 +64,7 @@ class Mask2D(Mask):
 
         A detailed description of the 2D mask API is provided below.
 
-        **SLIM DATA REPRESENTATION (sub-size=1)**
+        __Slim__
 
         Below is a visual illustration of a ``Mask2D``, where a total of 10 pixels are unmasked (values are ``False``):
 
@@ -116,7 +113,7 @@ class Mask2D(Mask):
         by:
 
 
-        **NATIVE DATA REPRESENTATION**
+        __native__
 
         Masked data represented as an an ``ndarray`` of shape [total_y_values, total_x_values], where all masked
         entries have values of 0.0.
@@ -216,11 +213,17 @@ class Mask2D(Mask):
             pixel_scales=pixel_scales,
         )
 
+    __no_flatten__ = ("derive_indexes",)
+
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj=obj)
 
         if not isinstance(obj, Mask2D):
             self.origin = (0.0, 0.0)
+
+    @property
+    def native(self) -> Structure:
+        return self
 
     @property
     def geometry(self) -> Geometry2D:
