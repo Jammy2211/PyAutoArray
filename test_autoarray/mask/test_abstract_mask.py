@@ -3,18 +3,7 @@ import numpy as np
 import autoarray as aa
 
 
-def test__sub_pixels_in_mask():
-    mask = aa.Mask2D.all_false(shape_native=(5, 5), sub_size=1, pixel_scales=1.0)
 
-    assert mask.sub_pixels_in_mask == 25
-
-    mask = aa.Mask2D.all_false(shape_native=(5, 5), sub_size=2, pixel_scales=1.0)
-
-    assert mask.sub_pixels_in_mask == 100
-
-    mask = aa.Mask2D.all_false(shape_native=(10, 10), sub_size=3, pixel_scales=1.0)
-
-    assert mask.sub_pixels_in_mask == 900
 
 
 def test__mask_new_sub_size_from():

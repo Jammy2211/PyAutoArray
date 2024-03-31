@@ -800,9 +800,9 @@ class Mask2D(Mask):
     @property
     def mask_centre(self) -> Tuple[float, float]:
         grid = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=np.array(self.mask),
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.mask.origin,
+            mask_2d=np.array(self),
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
 
         return grid_2d_util.grid_2d_centre_from(grid_2d_slim=grid)
@@ -942,12 +942,12 @@ class Mask2D(Mask):
         from autoarray.structures.grids.uniform_2d import Grid2D
 
         grid = grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=np.array(self.mask),
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.mask.origin,
+            mask_2d=np.array(self),
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
 
-        grid = Grid2D(values=grid, mask=self.mask)
+        grid = Grid2D(values=grid, mask=self)
 
         extraction_grid_1d = self.geometry.grid_pixels_2d_from(grid_scaled_2d=grid)
         y_pixels_max = np.max(extraction_grid_1d[:, 0])

@@ -121,7 +121,6 @@ class TransformerDFT(PyLopsOperator):
         image_native = array_2d_util.array_2d_native_from(
             array_2d_slim=image_slim,
             mask_2d=self.real_space_mask,
-            sub_size=self.real_space_mask.sub_size,
         )
 
         return Array2D(values=image_native, mask=self.real_space_mask)

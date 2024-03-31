@@ -11,6 +11,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.over_sample.abstract import AbstractOverSample
+from autoarray.structures.grids.over_sample.uniform import OverSampleUniform
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
@@ -28,8 +29,8 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sample: Optional[AbstractOverSample] = None,
-        over_sample_pixelization: Optional[AbstractOverSample] = None,
+        over_sample: Optional[AbstractOverSample] = OverSampleUniform(sub_size=1),
+        over_sample_pixelization: Optional[AbstractOverSample] = OverSampleUniform(sub_size=4),
         pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
