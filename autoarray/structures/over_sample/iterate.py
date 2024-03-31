@@ -5,6 +5,7 @@ from autoarray import numba_util
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.over_sample.abstract import AbstractOverSample
 from autoarray.structures.over_sample.abstract import AbstractOverSampleFunc
+from autoarray.structures.over_sample.uniform import OverSampleUniformFunc
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -129,9 +130,15 @@ def iterated_array_jit_from(
 
 class OverSampleIterateFunc(AbstractOverSampleFunc):
 
-    def __init__(self, mask: Mask2D, sub_size: int):
+    def __init__(self, mask: Mask2D,
+                 fractional_accuracy: float = 0.9999,
+                 relative_accuracy: Optional[float] = None,
+                 sub_steps: List[int] = None,
+                 ):
         self.mask = mask
-        self.sub_size = sub_size
+        self.fractional_accuracy = fractional_accuracy
+        self.relative_accuracy = relative_accuracy
+        self.sub_steps = sub_steps
 
     @property
     def over_sample(self):
@@ -140,15 +147,16 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
     def array_at_sub_size_from(
         self, func: Callable, cls, mask: Mask2D, sub_size
     ) -> Array2D:
-        grid_compute = self.oversampled_grid_2d_via_mask_from(
-            mask=mask, sub_size=sub_size
-        )
 
-        array_higher_sub = func(cls, grid_compute)
-        array = grid_compute.over_sample.structure_2d_from(
-            result=array_higher_sub, mask=grid_compute.mask
-        )
-        return self.binned_array_2d_from(array=array, sub_size=sub_size).native
+        over_sample_uniform = OverSampleUniformFunc(mask=mask, sub_size=sub_size)
+
+        oversampled_grid = over_sample_uniform.oversampled_grid
+
+        array_higher_sub = func(cls, oversampled_grid)
+        # array = self.structure_2d_from(
+        #     result=array_higher_sub,
+        # )
+        return over_sample_uniform.binned_array_2d_from(array=array_higher_sub).native
 
     def threshold_mask_from(
         self, array_lower_sub_2d: Array2D, array_higher_sub_2d: Array2D
@@ -226,13 +234,10 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         if not np.any(array_lower_sub_2d):
             return array_lower_sub_2d.slim
 
-        shape_native = array_lower_sub_2d.shape_native
-        mask = array_lower_sub_2d.mask
-        pixel_scales = array_lower_sub_2d.pixel_scales
 
-        iterated_array = np.zeros(shape=shape_native)
+        iterated_array = np.zeros(shape=self.mask.shape_native)
 
-        threshold_mask_lower_sub = mask
+        threshold_mask_lower_sub = self.mask
 
         for sub_size in self.sub_steps[:-1]:
             array_higher_sub = self.array_at_sub_size_from(
@@ -254,17 +259,17 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
 
             except ZeroDivisionError:
                 return self.return_iterated_array_result(
-                    iterated_array=iterated_array, mask=mask
+                    iterated_array=iterated_array,
                 )
 
             if threshold_mask_higher_sub.is_all_true:
                 return self.return_iterated_array_result(
-                    iterated_array=iterated_array, mask=mask
+                    iterated_array=iterated_array,
                 )
 
             array_lower_sub_2d = array_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
-            threshold_mask_higher_sub.pixel_scales = pixel_scales
+            threshold_mask_higher_sub.pixel_scales = self.mask.pixel_scales
 
         array_higher_sub = self.array_at_sub_size_from(
             func=func,
@@ -276,11 +281,11 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         iterated_array_2d = iterated_array + array_higher_sub
 
         return self.return_iterated_array_result(
-            iterated_array=iterated_array_2d, mask=mask
+            iterated_array=iterated_array_2d,
         )
 
     def return_iterated_array_result(
-        self, iterated_array: Array2D, mask: Mask2D
+        self, iterated_array: Array2D,
     ) -> Array2D:
         """
         Returns the resulting iterated array, by mapping it to 1D and then passing it back as an ``Array2D`` structure.
@@ -296,12 +301,12 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         """
 
         iterated_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(mask),
+            mask_2d=np.array(self.mask),
             array_2d_native=np.array(iterated_array),
             sub_size=1,
         )
 
-        return Array2D(values=iterated_array_1d, mask=mask)
+        return Array2D(values=iterated_array_1d, mask=self.mask)
 
     def iterated_result_from(
         self, func: Callable, cls: object, grid: Grid2D
@@ -330,7 +335,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         result_sub_1_1d = func(cls, np.asarray(grid))
 
         result_sub_1_2d = self.structure_2d_from(
-            result=result_sub_1_1d, mask=grid.mask
+            result=result_sub_1_1d,
         ).native
 
         if len(result_sub_1_2d.shape) == 2:

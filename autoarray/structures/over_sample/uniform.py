@@ -1,6 +1,4 @@
-from __future__ import annotations
 import numpy as np
-from typing import TYPE_CHECKING
 
 from autoconf import conf
 from autoconf import cached_property
@@ -12,8 +10,7 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.structures.grids import grid_2d_util
 
-if TYPE_CHECKING:
-    from autoarray.mask.mask_2d import Mask2D
+from autoarray.mask.mask_2d import Mask2D
 
 from autoarray.mask import mask_2d_util
 
@@ -213,40 +210,38 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
         if conf.instance["general"]["structures"]["native_binned_only"]:
             return self
 
-        array_2d_slim = array.slim
+        try:
+            array = array.slim
+        except AttributeError:
+            pass
 
         binned_array_1d = npw.multiply(
             self.sub_fraction,
-            array_2d_slim.reshape(-1, self.sub_length).sum(axis=1),
+            array.reshape(-1, self.sub_length).sum(axis=1),
         )
 
         return Array2D(
             values=binned_array_1d,
-            mask=array.mask[::self.sub_size, ::self.sub_size],
-            header=array.header,
+            mask=self.mask,
         )
 
     def evaluated_func_obj_from(self, func, cls):
 
-        values = func(cls, np.asarray(self.oversampled_grid))
+        values = func(cls, np.asarray(self.oversampled_grid.slim))
 
         if not isinstance(values, list):
-            values = self.structure_2d_from(result=values)
             return self.binned_array_2d_from(array=values)
         else:
             values_list = []
             for value in values:
-                value = self.structure_2d_from(result=value)
                 values_list.append(
                     self.binned_array_2d_from(array=value)
                 )
             return values_list
 
-    def evaluated_func_from(self, func, mask, sub_size):
-        grid = self.oversampled_grid_2d_via_mask_from(mask=mask, sub_size=sub_size)
-        values = func(grid=grid, profile=None)
-        values = grid.over_sample.structure_2d_from(result=values, mask=grid.mask)
-        return self.binned_array_2d_from(array=values, sub_size=sub_size)
+    def evaluated_func_from(self, func):
+        values = func(grid=self.oversampled_grid.slim, profile=None)
+        return self.binned_array_2d_from(array=values)
 
     @cached_property
     def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:
