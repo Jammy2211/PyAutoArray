@@ -362,7 +362,7 @@ class AbstractMapper(LinearObj):
         """
         return mapper_util.mapped_to_source_via_mapping_matrix_from(
             mapping_matrix=self.mapping_matrix,
-            array_slim=np.array(array.binned.slim),
+            array_slim=np.array(array.slim),
         )
 
     def extent_from(

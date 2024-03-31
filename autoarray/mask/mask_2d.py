@@ -717,7 +717,7 @@ class Mask2D(Mask):
 
         pad_size_0 = self.shape[0] - image_shape[0]
         pad_size_1 = self.shape[1] - image_shape[1]
-        trimmed_array = padded_array.binned.native[
+        trimmed_array = padded_array.native[
             pad_size_0 // 2 : self.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.shape[1] - pad_size_1 // 2,
         ]

@@ -52,7 +52,7 @@ class Visuals2D(AbstractVisuals):
             )
 
         if self.mask is not None:
-            plotter.mask_scatter.scatter_grid(grid=self.mask.derive_grid.edge.binned)
+            plotter.mask_scatter.scatter_grid(grid=self.mask.derive_grid.edge)
 
         if self.border is not None:
             plotter.border_scatter.scatter_grid(grid=self.border)

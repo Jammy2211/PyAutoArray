@@ -61,7 +61,7 @@ class TransformerDFT(PyLopsOperator):
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask
-        self.grid = self.real_space_mask.derive_grid.unmasked.binned.in_radians
+        self.grid = self.real_space_mask.derive_grid.unmasked.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask
@@ -96,14 +96,14 @@ class TransformerDFT(PyLopsOperator):
     def visibilities_from(self, image):
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_jit_from(
-                image_1d=np.array(image.binned),
+                image_1d=np.array(image),
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
             visibilities = transformer_util.visibilities_jit(
-                image_1d=np.array(image.binned),
+                image_1d=np.array(image),
                 grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,
             )
@@ -233,7 +233,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
 
         return Visibilities(
             visibilities=self.forward(
-                image.binned.native[::-1, :]
+                image.native[::-1, :]
             )  # flip due to PyNUFFT internal flip
         )
 

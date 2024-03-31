@@ -248,8 +248,6 @@ class MatPlot2D(AbstractMatPlot):
                 "a pixel scales attribute."
             )
 
-        array = array.binned
-
         # Hack being used for BELLSABSORB with Tania, remove later and code up automatic method to make it
         # so that if a mask is irregular and zooming in creates white edges, that instead it doesnt have the eddge.
         # This could just be a matplotlib settings to change the edge color?

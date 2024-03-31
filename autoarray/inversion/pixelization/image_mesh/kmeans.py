@@ -103,7 +103,7 @@ class KMeans(AbstractImageMeshWeighted):
         )
 
         try:
-            kmeans = kmeans.fit(X=grid.binned, sample_weight=weight_map)
+            kmeans = kmeans.fit(X=grid, sample_weight=weight_map)
         except ValueError or OverflowError:
             raise exc.InversionException()
 
