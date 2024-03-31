@@ -1,10 +1,22 @@
-from os import path
 import numpy as np
-import pytest
-
-from autoconf import conf
 import autoarray as aa
-from autoarray import exc
+
+
+def test__sub_pixels_in_mask():
+
+    over_sample = aa.OverSampleUniform()
+
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
+
+    assert over_sample.sub_pixels_in_mask_from(mask=mask, sub_size=1) == 25
+
+    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
+
+    assert over_sample.sub_pixels_in_mask_from(mask=mask, sub_size=2) == 100
+
+    mask = aa.Mask2D.all_false(shape_native=(10, 10), pixel_scales=1.0)
+
+    assert over_sample.sub_pixels_in_mask_from(mask=mask, sub_size=3) == 900
 
 
 def test__structure_2d_from():
