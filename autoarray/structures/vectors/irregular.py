@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class VectorYX2DIrregular(AbstractVectorYX2D):
-
     def __init__(
         self,
         values: Union[

@@ -1312,7 +1312,7 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
 
 @numba_util.jit()
 def native_index_for_slim_index_2d_from(
-    mask_2d: np.ndarray, sub_size: int
+    mask_2d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
     """
     Returns an array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its

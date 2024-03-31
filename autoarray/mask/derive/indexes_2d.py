@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
 
-from autoconf import cached_property
-
 from autoarray.mask import mask_2d_util
 
 logging.basicConfig()
@@ -17,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @register_pytree_node_class
 class DeriveIndexes2D:
-    def __init__(self, mask: Mask2D):
+    def __init__(self, mask: Mask2D, sub_size: int = 1):
         """
         Derives 1D and 2D indexes of significance from a ``Mask2D``.
 
@@ -64,6 +62,7 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.edge_native)
         """
         self.mask = mask
+        self.sub_size = sub_size
 
     def tree_flatten(self):
         return (self.mask,), ()
@@ -363,3 +362,54 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.border_native)
         """
         return self.native_for_slim[self.border_slim].astype("int")
+
+    @property
+    def native_for_slim(self) -> np.ndarray:
+        """
+        Derives a 1D ``ndarray`` which maps every non-subgridded 1D ``slim`` index of the ``Mask2D`` to its
+        non-subgridded 2D ``native`` index.
+
+        For example, for the following ``Mask2D``:
+
+        ::
+            [[True,  True,  True, True]
+             [True, False, False, True],
+             [True, False,  True, True],
+             [True,  True,  True, True]]
+
+        This has three unmasked (``False`` values) which have the ``slim`` indexes:
+
+        ::
+            [0, 1, 2]
+
+        The array ``native_for_slim`` is therefore:
+
+        ::
+            [[1,1], [1,2], [2,1]]
+
+        For `sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2.
+        However, this method ignores sub-gridding and therefore will still produce the same arrays above, as if
+        ``sub_size=1``.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            mask_2d = aa.Mask2D(
+                mask=[[True,  True,  True, True]
+                      [True, False, False, True],
+                      [True, False,  True, True],
+                      [True,  True,  True, True]]
+                pixel_scales=1.0,
+            )
+
+            derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
+
+            print(derive_indexes_2d.native_for_slim)
+        """
+        return mask_2d_util.native_index_for_slim_index_2d_from(
+            mask_2d=np.array(self.mask), sub_size=1
+        ).astype("int")

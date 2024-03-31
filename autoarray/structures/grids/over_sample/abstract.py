@@ -1,6 +1,7 @@
 import numpy as np
 from typing import List, Union
 
+
 from autoconf import conf
 
 from autoarray.mask.mask_2d import Mask2D

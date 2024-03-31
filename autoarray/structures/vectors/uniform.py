@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 class VectorYX2D(AbstractVectorYX2D):
-
     def __init__(
         self,
         values: Union[np.ndarray, List[Tuple[float, float]]],

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from astropy.io import fits
+import copy
 import logging
 import numpy as np
 from pathlib import Path
@@ -17,9 +18,6 @@ from autoarray.mask.abstract_mask import Mask
 from autoarray import exc
 from autoarray import type as ty
 from autoarray.geometry.geometry_2d import Geometry2D
-from autoarray.mask.derive.mask_2d import DeriveMask2D
-from autoarray.mask.derive.grid_2d import DeriveGrid2D
-from autoarray.mask.derive.indexes_2d import DeriveIndexes2D
 
 from autoarray.structures.arrays import array_2d_util
 from autoarray.geometry import geometry_util
@@ -60,7 +58,7 @@ class Mask2D(Mask):
           which defines how coordinates are converted from pixel units to scaled units.
 
         - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
-          a (y,x) grid of all unmasked pixels) via the ``DeriveGrid2D`` object.
+          a (y,x) grid of all unmasked pixels).
 
         - This includes sub-grids, which perform calculations higher resolutions which are then binned up.
 
@@ -112,7 +110,7 @@ class Mask2D(Mask):
             mask[6] = the 7th unmasked pixel's value.
 
         A Cartesian grid of (y,x) coordinates, corresponding to all ``slim`` values (e.g. unmasked pixels) is given
-        by ``mask.derive_grid.masked.slim``.
+        by:
 
 
         **NATIVE DATA REPRESENTATION**
@@ -168,7 +166,7 @@ class Mask2D(Mask):
 
         The ``Mask2D`` has functionality which maps data between the ``slim`` and ``native`` data representations.
 
-        For the example mask above, the 1D ``ndarray`` given by ``mask.derive_indexes.slim_to_native`` is:
+        For the example mask above, the 1D ``ndarray`` given by ``derive_indexes.slim_to_native`` is:
 
         ::
 
@@ -215,8 +213,6 @@ class Mask2D(Mask):
             pixel_scales=pixel_scales,
         )
 
-    __no_flatten__ = ("derive_indexes",)
-
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj=obj)
 
@@ -234,18 +230,6 @@ class Mask2D(Mask):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-
-    @property
-    def derive_indexes(self) -> DeriveIndexes2D:
-        return DeriveIndexes2D(mask=self)
-
-    @property
-    def derive_mask(self) -> DeriveMask2D:
-        return DeriveMask2D(mask=self)
-
-    @property
-    def derive_grid(self) -> DeriveGrid2D:
-        return DeriveGrid2D(mask=self)
 
     @classmethod
     def all_false(
@@ -649,7 +633,7 @@ class Mask2D(Mask):
         )
 
         if resized_mask_shape is not None:
-            mask = mask.derive_mask.resized_from(new_shape=resized_mask_shape)
+            mask = mask.resized_from(new_shape=resized_mask_shape)
 
         return mask
 
@@ -798,9 +782,13 @@ class Mask2D(Mask):
 
     @property
     def mask_centre(self) -> Tuple[float, float]:
-        return grid_2d_util.grid_2d_centre_from(
-            grid_2d_slim=np.array(self.derive_grid.unmasked)
+        grid = grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=np.array(self.mask),
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
         )
+
+        return grid_2d_util.grid_2d_centre_from(grid_2d_slim=grid)
 
     @property
     def shape_native_masked_pixels(self) -> Tuple[int, int]:
@@ -818,11 +806,137 @@ class Mask2D(Mask):
 
         return (y1 - y0 + 1, x1 - x0 + 1)
 
+    def rescaled_from(self, rescale_factor) -> Mask2D:
+        """
+        Returns the ``Mask2D`` rescaled to a bigger or small shape via input ``rescale_factor``.
+
+        For example, for a ``rescale_factor=2.0`` the following mask:
+
+        ::
+           [[ True,  True],
+            [False, False]]
+
+        Will double in size and become:
+
+        ::
+            [[True,   True,  True,  True],
+             [True,   True,  True,  True],
+             [False, False, False, False],
+             [False, False, False, False]]
+
+        Parameters
+        ----------
+        rescale_factor
+            The factor by which the ``Mask2D`` is rescaled (less than 1.0 produces a smaller mask, greater than 1.0
+            produces a bigger mask).
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            mask_2d = aa.Mask2D(
+                mask=[
+                     [ True,  True],
+                     [False, False]
+                ],
+                pixel_scales=1.0,
+            )
+
+            print(mask_2d.rescaled_from(rescale_factor=2.0)
+        """
+        from autoarray.mask.mask_2d import Mask2D
+
+        rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
+            mask_2d=np.array(self.mask),
+            rescale_factor=rescale_factor,
+        )
+
+        return Mask2D(
+            mask=rescaled_mask,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
+    def resized_from(self, new_shape, pad_value: int = 0.0) -> Mask2D:
+        """
+        Returns the ``Mask2D`` resized to a small or bigger ``ndarraay``, but with the same distribution of
+         ``False`` and ``True`` entries.
+
+        Resizing which increases the ``Mask2D`` shape pads it with values on its edge.
+
+        Resizing which reduces the ``Mask2D`` shape removes entries on its edge.
+
+        For example, for a ``new_shape=(4,4)`` the following mask:
+
+        ::
+           [[ True,  True],
+            [False, False]]
+
+        Will be padded with zeros (``False`` values) and become:
+
+        ::
+          [[True,  True,  True, True]
+           [True,  True,  True, True],
+           [True, False, False, True],
+           [True,  True,  True, True]]
+
+        Parameters
+        ----------
+        new_shape
+            The new two-dimensional shape of the resized ``Mask2D``.
+        pad_value
+            The value new values are padded using if the resized ``Mask2D`` is bigger.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            mask_2d = aa.Mask2D(
+                mask=[
+                     [ True,  True],
+                     [False, False]
+                ],
+                pixel_scales=1.0,
+            )
+
+            print(mask_2d.resized_from(new_shape=(4,4))
+        """
+
+        from autoarray.mask.mask_2d import Mask2D
+
+        mask = copy.deepcopy(self.mask)
+
+        resized_mask = array_2d_util.resized_array_2d_from(
+            array_2d=np.array(mask),
+            resized_shape=new_shape,
+            pad_value=pad_value,
+        ).astype("bool")
+
+        return Mask2D(
+            mask=resized_mask,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
     @property
     def zoom_centre(self) -> Tuple[float, float]:
-        extraction_grid_1d = self.geometry.grid_pixels_2d_from(
-            grid_scaled_2d=self.derive_grid.unmasked.slim
+        from autoarray.structures.grids.uniform_2d import Grid2D
+
+        grid = grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=np.array(self.mask),
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
         )
+
+        grid = Grid2D(values=grid, mask=self.mask)
+
+        extraction_grid_1d = self.geometry.grid_pixels_2d_from(grid_scaled_2d=grid)
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])
         x_pixels_max = np.max(extraction_grid_1d[:, 1])

@@ -94,7 +94,10 @@ def test__from_mask():
     assert vectors.pixel_scales == (1.0, 1.0)
     assert vectors.origin == (0.0, 1.0)
 
-    mask = aa.Mask2D(mask=[[False, False], [False, False], [True, True], [True, True]], pixel_scales=2.0)
+    mask = aa.Mask2D(
+        mask=[[False, False], [False, False], [True, True], [True, True]],
+        pixel_scales=2.0,
+    )
 
     vectors = aa.VectorYX2D.from_mask(
         values=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
@@ -174,7 +177,10 @@ def test__y_x():
 
 
 def test__apply_mask():
-    mask = aa.Mask2D(mask=[[False, False], [False, False], [True, True], [True, True]], pixel_scales=2.0)
+    mask = aa.Mask2D(
+        mask=[[False, False], [False, False], [True, True], [True, True]],
+        pixel_scales=2.0,
+    )
     vectors = aa.VectorYX2D.no_mask(
         values=[
             [1.0, 1.0],
