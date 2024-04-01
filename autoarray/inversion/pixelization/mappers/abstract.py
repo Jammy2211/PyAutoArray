@@ -276,12 +276,13 @@ class AbstractMapper(LinearObj):
         It is described in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf and in more
         detail in the function  `mapper_util.mapping_matrix_from()`.
         """
+
         return mapper_util.mapping_matrix_from(
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pixels=self.pixels,
-            total_mask_pixels=self.source_plane_data_grid.mask.pixels_in_mask,
+            total_mask_pixels=self.mapper_tools.over_sample.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
             sub_fraction=self.mapper_tools.over_sample.sub_fraction,
         )

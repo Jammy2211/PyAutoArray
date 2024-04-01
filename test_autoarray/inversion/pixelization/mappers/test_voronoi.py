@@ -19,13 +19,17 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         source_plane_mesh_grid=source_plane_mesh_grid,
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+    mapper_tools = aa.MapperTools(
+        over_sample=aa.OverSampleUniformFunc(mask=grid_2d_7x7.mask, sub_size=1),
+    )
+
+    mapper = aa.Mapper(mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None)
 
     pix_indexes_for_sub_slim_index_util = np.array(
         [
             aa.util.mapper.pix_indexes_for_sub_slim_index_voronoi_from(
                 grid=np.array(grid_2d_7x7),
-                slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
+                slim_index_for_sub_slim_index=mapper_tools.over_sample.slim_for_sub_slim,
                 mesh_grid=np.array(source_plane_mesh_grid),
                 neighbors=source_plane_mesh_grid.neighbors,
                 neighbors_sizes=source_plane_mesh_grid.neighbors.sizes,
