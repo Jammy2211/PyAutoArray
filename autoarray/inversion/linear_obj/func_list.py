@@ -96,7 +96,7 @@ class AbstractLinearObjFuncList(LinearObj):
         For a `LinearObjFuncList` every data pixel's group of sub-pixels maps directly to the linear function.
         """
 
-        sub_size = self.grid.sub_size
+        sub_size = self.grid.over_sample.sub_size
 
         # TODO : This shape slim is prob unreliable and needs to be divided by sub_size**2
 
