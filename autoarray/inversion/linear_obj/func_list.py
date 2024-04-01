@@ -97,6 +97,9 @@ class AbstractLinearObjFuncList(LinearObj):
         """
 
         sub_size = self.grid.sub_size
+
+        # TODO : This shape slim is prob unreliable and needs to be divided by sub_size**2
+
         shape_slim = self.grid.mask.shape_slim
 
         data_to_pix_unique = -1.0 * np.ones(shape=(shape_slim, sub_size**2)).astype(

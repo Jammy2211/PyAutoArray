@@ -248,7 +248,7 @@ class AbstractMapper(LinearObj):
             data_weights,
             pix_lengths,
         ) = mapper_util.data_slim_to_pixelization_unique_from(
-            data_pixels=self.source_plane_data_grid.shape_slim,
+            data_pixels=self.mapper_tools.over_sample.mask.pixels_in_mask,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
@@ -276,7 +276,6 @@ class AbstractMapper(LinearObj):
         It is described in the following paper as matrix `f` https://arxiv.org/pdf/astro-ph/0302587.pdf and in more
         detail in the function  `mapper_util.mapping_matrix_from()`.
         """
-
         return mapper_util.mapping_matrix_from(
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
