@@ -339,8 +339,11 @@ def make_regularization_matern_kernel():
 
 
 def make_rectangular_mesh_grid_3x3():
+
+    mapper_tools = make_mapper_tools()
+
     return aa.Mesh2DRectangular.overlay_grid(
-        grid=make_grid_2d_7x7(), shape_native=(3, 3)
+        grid=mapper_tools.over_sample.oversampled_grid, shape_native=(3, 3)
     )
 
 

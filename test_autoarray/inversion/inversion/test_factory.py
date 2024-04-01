@@ -68,13 +68,6 @@ def test__inversion_imaging__via_mapper(
         settings=aa.SettingsInversion(use_w_tilde=False),
     )
 
-    print(rectangular_mapper_7x7_3x3.mapper_grids.source_plane_data_grid)
-
-    print(rectangular_mapper_7x7_3x3.mapper_grids.source_plane_mesh_grid)
-    print(rectangular_mapper_7x7_3x3.mapper_grids.source_plane_mesh_grid.pixel_scales)
-    print(rectangular_mapper_7x7_3x3.mapper_grids.source_plane_mesh_grid.origin)
-    ddd
-
     assert isinstance(inversion.linear_obj_list[0], aa.MapperRectangularNoInterp)
     assert isinstance(inversion, aa.InversionImagingMapping)
     assert inversion.log_det_curvature_reg_matrix_term == pytest.approx(6.9546, 1.0e-4)
