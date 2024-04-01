@@ -7,8 +7,8 @@ from autoconf import cached_property
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.over_sample.abstract import AbstractOverSample
-from autoarray.structures.over_sample.uniform import OverSampleUniform
+from autoarray.operators.over_sample.abstract import AbstractOverSample
+from autoarray.operators.over_sample.uniform import OverSampleUniform
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 

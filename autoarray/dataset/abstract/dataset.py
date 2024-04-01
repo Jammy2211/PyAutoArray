@@ -12,9 +12,9 @@ from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.over_sample.abstract import AbstractOverSample
-from autoarray.structures.over_sample.uniform import OverSampleUniform
-from autoarray.structures.over_sample.uniform import OverSampleUniformFunc
+from autoarray.operators.over_sample.abstract import AbstractOverSample
+from autoarray.operators.over_sample.uniform import OverSampleUniform
+from autoarray.operators.over_sample.uniform import OverSampleUniformFunc
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mappers.tools import MapperTools
 from autoconf import cached_property

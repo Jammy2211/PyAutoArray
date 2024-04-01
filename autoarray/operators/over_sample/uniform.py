@@ -3,8 +3,8 @@ import numpy as np
 from autoconf import conf
 from autoconf import cached_property
 
-from autoarray.structures.over_sample.abstract import AbstractOverSample
-from autoarray.structures.over_sample.abstract import AbstractOverSampleFunc
+from autoarray.operators.over_sample.abstract import AbstractOverSample
+from autoarray.operators.over_sample.abstract import AbstractOverSampleFunc
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 

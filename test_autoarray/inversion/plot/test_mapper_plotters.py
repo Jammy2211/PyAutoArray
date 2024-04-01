@@ -71,7 +71,7 @@ def test__get_2d__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
     assert (get_2d.mesh_grid == rectangular_mapper_7x7_3x3.source_plane_mesh_grid).all()
     assert (
         get_2d.border
-        == rectangular_mapper_7x7_3x3.source_plane_data_grid.border_grid
+        == rectangular_mapper_7x7_3x3.mapper_tools.border_relocator.sub_border_grid
     ).all()
 
     include = aplt.Include2D(

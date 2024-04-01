@@ -55,7 +55,7 @@ def convert_pixel_scales_1d(pixel_scales: ty.PixelScales) -> Tuple[float]:
     return pixel_scales
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def central_pixel_coordinates_1d_from(
     shape_slim: Tuple[int],
 ) -> Union[Tuple[float], Tuple[float]]:
@@ -83,7 +83,7 @@ def central_pixel_coordinates_1d_from(
     return (float(shape_slim[0] - 1) / 2,)
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def central_scaled_coordinate_1d_from(
     shape_slim: Tuple[float],
     pixel_scales: ty.PixelScales,
@@ -119,7 +119,7 @@ def central_scaled_coordinate_1d_from(
     return (x_pixel,)
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def pixel_coordinates_1d_from(
     scaled_coordinates_1d: Tuple[float],
     shape_slim: Tuple[int],
@@ -137,7 +137,7 @@ def pixel_coordinates_1d_from(
     return (x_pixel,)
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def scaled_coordinates_1d_from(
     pixel_coordinates_1d: Tuple[float],
     shape_slim: Tuple[int],
@@ -180,7 +180,7 @@ def convert_pixel_scales_2d(pixel_scales: ty.PixelScales) -> Tuple[float, float]
     return pixel_scales
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def central_pixel_coordinates_2d_from(
     shape_native: Tuple[int, int]
 ) -> Tuple[float, float]:
@@ -205,7 +205,7 @@ def central_pixel_coordinates_2d_from(
     return (float(shape_native[0] - 1) / 2, float(shape_native[1] - 1) / 2)
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def central_scaled_coordinate_2d_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -244,7 +244,7 @@ def central_scaled_coordinate_2d_from(
     return (y_pixel, x_pixel)
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def pixel_coordinates_2d_from(
     scaled_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],
@@ -308,7 +308,7 @@ def pixel_coordinates_2d_from(
     return (y_pixel, x_pixel)
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def scaled_coordinates_2d_from(
     pixel_coordinates_2d: Tuple[float, float],
     shape_native: Tuple[int, int],
@@ -430,7 +430,7 @@ def transform_grid_2d_from_reference_frame(
     return np.vstack((y, x)).T
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def grid_pixels_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -493,7 +493,7 @@ def grid_pixels_2d_slim_from(
     return grid_pixels_2d_slim
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def grid_pixel_centres_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -555,7 +555,7 @@ def grid_pixel_centres_2d_slim_from(
     return grid_pixels_2d_slim
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def grid_pixel_indexes_2d_slim_from(
     grid_scaled_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -619,7 +619,7 @@ def grid_pixel_indexes_2d_slim_from(
     return grid_pixel_indexes_2d_slim
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def grid_scaled_2d_slim_from(
     grid_pixels_2d_slim: np.ndarray,
     shape_native: Tuple[int, int],
@@ -677,7 +677,7 @@ def grid_scaled_2d_slim_from(
     return grid_scaled_2d_slim
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def grid_pixel_centres_2d_from(
     grid_scaled_2d: np.ndarray,
     shape_native: Tuple[int, int],

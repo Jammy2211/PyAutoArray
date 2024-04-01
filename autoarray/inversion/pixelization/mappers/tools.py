@@ -1,4 +1,4 @@
-from autoarray.structures.over_sample.uniform import OverSampleUniformFunc
+from autoarray.operators.over_sample.uniform import OverSampleUniformFunc
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
 

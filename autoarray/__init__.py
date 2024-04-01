@@ -69,10 +69,10 @@ from .structures.arrays.uniform_2d import Array2D
 from .structures.arrays.irregular import ArrayIrregular
 from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
-from .structures.over_sample.uniform import OverSampleUniform
-from .structures.over_sample.iterate import OverSampleIterate
-from .structures.over_sample.uniform import OverSampleUniformFunc
-from .structures.over_sample.iterate import OverSampleIterateFunc
+from .operators.over_sample.uniform import OverSampleUniform
+from .operators.over_sample.iterate import OverSampleIterate
+from .operators.over_sample.uniform import OverSampleUniformFunc
+from .operators.over_sample.iterate import OverSampleIterateFunc
 from .structures.grids.irregular_2d import Grid2DIrregular
 from .structures.grids.irregular_2d import Grid2DIrregularUniform
 from .structures.mesh.rectangular_2d import Mesh2DRectangular

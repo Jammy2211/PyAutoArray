@@ -10,8 +10,8 @@ from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.over_sample.abstract import AbstractOverSample
-from autoarray.structures.over_sample.uniform import OverSampleUniform
+from autoarray.operators.over_sample.abstract import AbstractOverSample
+from autoarray.operators.over_sample.uniform import OverSampleUniform
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty

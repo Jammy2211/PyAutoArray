@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
-    from autoarray.structures.over_sample.abstract import AbstractOverSample
+    from autoarray.operators.over_sample.abstract import AbstractOverSample
 
 from autoconf import conf
 
@@ -166,7 +166,7 @@ class Grid2D(Structure):
 
         grid_2d_util.check_grid_2d(grid_2d=values)
 
-        from autoarray.structures.over_sample.uniform import OverSampleUniform
+        from autoarray.operators.over_sample.uniform import OverSampleUniform
 
         if over_sample is None:
             over_sample = OverSampleUniform(sub_size=1)
@@ -175,10 +175,10 @@ class Grid2D(Structure):
 
     @property
     def over_sample_func(self):
-        from autoarray.structures.over_sample.uniform import OverSampleUniform
-        from autoarray.structures.over_sample.iterate import OverSampleIterate
-        from autoarray.structures.over_sample.uniform import OverSampleUniformFunc
-        from autoarray.structures.over_sample.iterate import OverSampleIterateFunc
+        from autoarray.operators.over_sample.uniform import OverSampleUniform
+        from autoarray.operators.over_sample.iterate import OverSampleIterate
+        from autoarray.operators.over_sample.uniform import OverSampleUniformFunc
+        from autoarray.operators.over_sample.iterate import OverSampleIterateFunc
 
         if isinstance(self.over_sample, OverSampleUniform):
             return OverSampleUniformFunc(

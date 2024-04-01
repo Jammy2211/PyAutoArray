@@ -339,7 +339,6 @@ def make_regularization_matern_kernel():
 
 
 def make_rectangular_mesh_grid_3x3():
-
     mapper_tools = make_mapper_tools()
 
     return aa.Mesh2DRectangular.overlay_grid(
@@ -399,7 +398,6 @@ def make_mapper_tools():
 
 
 def make_rectangular_mapper_7x7_3x3():
-
     mapper_tools = make_mapper_tools()
 
     mapper_grids = aa.MapperGrids(
@@ -417,7 +415,6 @@ def make_rectangular_mapper_7x7_3x3():
 
 
 def make_delaunay_mapper_9_3x3():
-
     mapper_tools = make_mapper_tools()
 
     mapper_grids = aa.MapperGrids(
@@ -435,7 +432,6 @@ def make_delaunay_mapper_9_3x3():
 
 
 def make_voronoi_mapper_9_3x3():
-
     mapper_tools = make_mapper_tools()
 
     mapper_grids = aa.MapperGrids(
@@ -453,7 +449,6 @@ def make_voronoi_mapper_9_3x3():
 
 
 def make_voronoi_mapper_nn_9_3x3():
-
     mapper_tools = make_mapper_tools()
 
     mapper_grids = aa.MapperGrids(
