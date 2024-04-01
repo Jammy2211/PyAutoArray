@@ -491,7 +491,7 @@ def voronoi_neighbors_from(
     return neighbors, neighbors_sizes
 
 
-# #@numba_util.jit()
+# @numba_util.jit()
 def voronoi_edge_pixels_from(regions: np.ndarray, point_region: np.ndarray) -> List:
     """
     Returns the edge pixels of a Voronoi mesh, where the edge pixels are defined as those pixels which are on the

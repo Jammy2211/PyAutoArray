@@ -857,7 +857,7 @@ def compute_polygon_area(points):
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 
-# #@numba_util.jit()
+# @numba_util.jit()
 def grid_pixels_in_mask_pixels_from(
     grid, shape_native, pixel_scales, origin
 ) -> np.ndarray:
