@@ -121,19 +121,28 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     mesh_1 = aa.mesh.Rectangular(shape=(4, 4))
 
     mapper_grids_0 = mesh_0.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
     mapper_grids_1 = mesh_1.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
-    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
+    over_sample = aa.OverSampleUniformFunc(
+        mask=mask,
+        sub_size=1
+    )
+
+    mapper_tools = aa.MapperTools(over_sample=over_sample)
+
+    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, mapper_tools=mapper_tools, regularization=reg)
+    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, mapper_tools=mapper_tools, regularization=reg)
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
@@ -193,19 +202,28 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     )
 
     mapper_grids_0 = mesh_0.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_0,
     )
 
     mapper_grids_1 = mesh_1.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_1,
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
-    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
+    over_sample = aa.OverSampleUniformFunc(
+        mask=mask,
+        sub_size=1
+    )
+
+    mapper_tools = aa.MapperTools(over_sample=over_sample)
+
+    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, mapper_tools=mapper_tools, regularization=reg)
+    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, mapper_tools=mapper_tools, regularization=reg)
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
