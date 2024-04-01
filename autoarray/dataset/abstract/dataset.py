@@ -153,7 +153,7 @@ class AbstractDataset:
     def mapper_tools(self):
 
         return MapperTools(
-            indexes=OverSampleUniformFunc(mask=self.mask, sub_size=self.over_sample_pixelization.sub_size),
+            over_sample=OverSampleUniformFunc(mask=self.mask, sub_size=self.over_sample_pixelization.sub_size),
             border_relocator=BorderRelocator(grid=self.grid, sub_size=self.over_sample_pixelization.sub_size),
         )
 

@@ -145,7 +145,7 @@ def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
     assert type(masked_imaging_7x7.psf) == aa.Kernel2D
     assert type(masked_imaging_7x7.convolver) == aa.Convolver
     assert masked_imaging_7x7.w_tilde.curvature_preload.shape == (35,)
-    assert masked_imaging_7x7.w_tilde.indexes.shape == (35,)
+    assert masked_imaging_7x7.w_tilde.over_sample.shape == (35,)
     assert masked_imaging_7x7.w_tilde.lengths.shape == (9,)
 
 

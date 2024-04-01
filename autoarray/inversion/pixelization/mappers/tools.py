@@ -2,7 +2,7 @@
 
 class MapperTools:
 
-    def __init__(self, indexes = None, border_relocator = None):
+    def __init__(self, over_sample = None, border_relocator = None):
 
-        self.indexes = indexes
+        self.over_sample = over_sample
         self.border_relocator = border_relocator

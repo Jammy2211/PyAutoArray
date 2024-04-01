@@ -64,7 +64,7 @@ def mapper_from(
         if mapper_grids.source_plane_mesh_grid.uses_interpolation:
             return MapperVoronoi(
                 mapper_grids=mapper_grids,
-            mapper_tools=mapper_tools,
+                mapper_tools=mapper_tools,
                 regularization=regularization,
                 run_time_dict=run_time_dict,
             )

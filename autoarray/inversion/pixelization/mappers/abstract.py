@@ -180,7 +180,7 @@ class AbstractMapper(LinearObj):
         The mappings between every sub-pixel data point on the sub-gridded data and each data point for a grid which
         does not use sub gridding (e.g. `sub_size=1`).
         """
-        return self.mapper_tools.indexes.slim_for_sub_slim
+        return self.mapper_tools.over_sample.slim_for_sub_slim
 
     @property
     def sub_slim_indexes_for_pix_index(self) -> List[List]:
@@ -283,7 +283,7 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
             total_mask_pixels=self.source_plane_data_grid.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            sub_fraction=self.source_plane_data_grid.mask.sub_fraction,
+            sub_fraction=self.mapper_tools.over_sample.sub_fraction,
         )
 
     def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
@@ -305,7 +305,7 @@ class AbstractMapper(LinearObj):
             pixel_weights=self.pix_weights_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
-            slim_index_for_sub_slim_index=self.mapper_tools.indexes.slim_for_sub_slim,
+            slim_index_for_sub_slim_index=self.mapper_tools.over_sample.slim_for_sub_slim,
             adapt_data=np.array(self.adapt_data),
         )
 

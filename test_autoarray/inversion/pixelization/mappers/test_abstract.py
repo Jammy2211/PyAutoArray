@@ -111,8 +111,13 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     )
     pix_weights_for_sub_slim_index = np.ones((9, 1), dtype="int")
 
+    mapper_tools = aa.MapperTools(
+        over_sample=aa.OverSampleUniformFunc(mask=grid_2d_7x7.mask, sub_size=1),
+    )
+
     mapper = aa.m.MockMapper(
         source_plane_data_grid=grid_2d_7x7,
+        mapper_tools=mapper_tools,
         pix_sub_weights=pix_sub_weights,
         adapt_data=image_7x7,
         parameters=pixels,
@@ -126,7 +131,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         signal_scale=signal_scale,
         pix_indexes_for_sub_slim_index=pix_sub_weights.mappings,
         pix_size_for_sub_slim_index=pix_sub_weights.sizes,
-        slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
+        slim_index_for_sub_slim_index=mapper_tools.over_sample.slim_for_sub_slim,
         adapt_data=np.array(image_7x7),
     )
 
@@ -177,7 +182,7 @@ def test__mapped_to_source_from(grid_2d_7x7):
     )
 
     mapper_tools = aa.MapperTools(
-        indexes=aa.OverSampleIndexes(mask=grid_2d_7x7.mask, sub_size=1),
+        over_sample=aa.OverSampleUniformFunc(mask=grid_2d_7x7.mask, sub_size=1),
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None)

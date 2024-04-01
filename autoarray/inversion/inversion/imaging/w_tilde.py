@@ -311,7 +311,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
             diag = inversion_imaging_util.curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
                 curvature_preload=self.w_tilde.curvature_preload,
-                curvature_indexes=self.w_tilde.indexes,
+                curvature_indexes=self.w_tilde.over_sample,
                 curvature_lengths=self.w_tilde.lengths,
                 data_to_pix_unique=mapper_i.unique_mappings.data_to_pix_unique,
                 data_weights=mapper_i.unique_mappings.data_weights,
@@ -345,7 +345,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         curvature_matrix_off_diag_0 = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
-            curvature_indexes=self.w_tilde.indexes,
+            curvature_indexes=self.w_tilde.over_sample,
             curvature_lengths=self.w_tilde.lengths,
             data_to_pix_unique_0=mapper_0.unique_mappings.data_to_pix_unique,
             data_weights_0=mapper_0.unique_mappings.data_weights,
@@ -359,7 +359,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         curvature_matrix_off_diag_1 = inversion_imaging_util.curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
             curvature_preload=self.w_tilde.curvature_preload,
-            curvature_indexes=self.w_tilde.indexes,
+            curvature_indexes=self.w_tilde.over_sample,
             curvature_lengths=self.w_tilde.lengths,
             data_to_pix_unique_0=mapper_1.unique_mappings.data_to_pix_unique,
             data_weights_0=mapper_1.unique_mappings.data_weights,
