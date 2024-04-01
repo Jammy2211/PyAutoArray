@@ -133,9 +133,7 @@ class OverSampleUniform(AbstractOverSample):
 
 
 class OverSampleUniformFunc(AbstractOverSampleFunc):
-
     def __init__(self, mask: Mask2D, sub_size: int):
-
         self.mask = mask
         self.sub_size = sub_size
 
@@ -226,7 +224,6 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
         )
 
     def evaluated_func_obj_from(self, func, cls):
-
         values = func(cls, np.asarray(self.oversampled_grid.slim))
 
         if not isinstance(values, list):
@@ -234,9 +231,7 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
         else:
             values_list = []
             for value in values:
-                values_list.append(
-                    self.binned_array_2d_from(array=value)
-                )
+                values_list.append(self.binned_array_2d_from(array=value))
             return values_list
 
     def evaluated_func_from(self, func):

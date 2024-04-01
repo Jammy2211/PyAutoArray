@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 
 class Mask1D(Mask):
-
     def __init__(
         self,
         mask: Union[np.ndarray, List],

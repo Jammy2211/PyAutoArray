@@ -387,7 +387,6 @@ def make_voronoi_mesh_grid_9():
 
 
 def make_mapper_tools():
-
     grid = make_grid_2d_7x7()
 
     return aa.MapperTools(
@@ -405,7 +404,9 @@ def make_rectangular_mapper_7x7_3x3():
     )
 
     return aa.MapperRectangularNoInterp(
-        mapper_grids=mapper_grids, mapper_tools=make_mapper_tools(), regularization=make_regularization_constant()
+        mapper_grids=mapper_grids,
+        mapper_tools=make_mapper_tools(),
+        regularization=make_regularization_constant(),
     )
 
 
@@ -418,7 +419,9 @@ def make_delaunay_mapper_9_3x3():
     )
 
     return aa.MapperDelaunay(
-        mapper_grids=mapper_grids, mapper_tools=make_mapper_tools(), regularization=make_regularization_constant()
+        mapper_grids=mapper_grids,
+        mapper_tools=make_mapper_tools(),
+        regularization=make_regularization_constant(),
     )
 
 
@@ -431,7 +434,9 @@ def make_voronoi_mapper_9_3x3():
     )
 
     return aa.MapperVoronoiNoInterp(
-        mapper_grids=mapper_grids, mapper_tools=make_mapper_tools(), regularization=make_regularization_constant()
+        mapper_grids=mapper_grids,
+        mapper_tools=make_mapper_tools(),
+        regularization=make_regularization_constant(),
     )
 
 
@@ -443,7 +448,9 @@ def make_voronoi_mapper_nn_9_3x3():
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
-    return aa.MapperVoronoi(mapper_grids=mapper_grids, mapper_tools=make_mapper_tools(), regularization=None)
+    return aa.MapperVoronoi(
+        mapper_grids=mapper_grids, mapper_tools=make_mapper_tools(), regularization=None
+    )
 
 
 def make_rectangular_inversion_7x7_3x3():

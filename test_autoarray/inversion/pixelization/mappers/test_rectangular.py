@@ -30,7 +30,9 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
         over_sample=aa.OverSampleUniformFunc(mask=grid.mask, sub_size=1),
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None)
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+    )
 
     pix_indexes_for_sub_slim_index_util = np.array(
         [
@@ -61,7 +63,9 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
         adapt_data=image_7x7,
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None)
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+    )
 
     pixel_signals = mapper.pixel_signals_from(signal_scale=2.0)
 

@@ -16,7 +16,7 @@ def test__rectangular_mapper():
             [True, True, True, True, True, True, True],
         ],
         pixel_scales=2.0,
-        origin=(0.5, 0.5)
+        origin=(0.5, 0.5),
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
@@ -33,11 +33,11 @@ def test__rectangular_mapper():
         source_plane_mesh_grid=None,
     )
 
-    mapper_tools = aa.MapperTools(
-        over_sample=over_sample
-    )
+    mapper_tools = aa.MapperTools(over_sample=over_sample)
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None)
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+    )
 
     assert isinstance(mapper, aa.MapperRectangularNoInterp)
     assert mapper.image_plane_mesh_grid == None
@@ -92,11 +92,11 @@ def test__delaunay_mapper():
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
 
-    mapper_tools = aa.MapperTools(
-        over_sample=over_sample
-    )
+    mapper_tools = aa.MapperTools(over_sample=over_sample)
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None)
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+    )
 
     assert isinstance(mapper, aa.MapperDelaunay)
     assert mapper.source_plane_data_grid.shape_native_scaled_interior == pytest.approx(
@@ -108,11 +108,11 @@ def test__delaunay_mapper():
     assert mapper.mapping_matrix == pytest.approx(
         np.array(
             [
-                [0.55,  0.05, 0.1,     0.3, 0.],
-                [0.05, 0.8,  0.1,     0.,     0.05],
+                [0.55, 0.05, 0.1, 0.3, 0.0],
+                [0.05, 0.8, 0.1, 0.0, 0.05],
                 [0.1, 0.1, 0.6, 0.1, 0.1],
-                [0.05, 0.,     0.1,     0.8,  0.05],
-                [0., 0.05, 0.1, 0.05, 0.8],
+                [0.05, 0.0, 0.1, 0.8, 0.05],
+                [0.0, 0.05, 0.1, 0.05, 0.8],
             ]
         ),
         1.0e-2,
@@ -150,11 +150,11 @@ def test__voronoi_mapper():
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
 
-    mapper_tools = aa.MapperTools(
-        over_sample=over_sample
-    )
+    mapper_tools = aa.MapperTools(over_sample=over_sample)
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, mapper_tools=mapper_tools,  regularization=None)
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+    )
 
     assert isinstance(mapper, aa.MapperVoronoiNoInterp)
     assert mapper.source_plane_data_grid.shape_native_scaled_interior == pytest.approx(

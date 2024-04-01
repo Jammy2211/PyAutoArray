@@ -100,7 +100,8 @@ def super_resolution_grid_from(img_2d, mask, mask_radius, pixel_scales, sub_scal
     shape_nnn = np.shape(mask)[0]
 
     grid = Grid2D.uniform(
-        shape_native=(shape_nnn, shape_nnn), pixel_scales=pixel_scales,
+        shape_native=(shape_nnn, shape_nnn),
+        pixel_scales=pixel_scales,
     )
 
     new_mask = Mask2D.circular(
@@ -162,7 +163,8 @@ def image_and_grid_from(image, mask, mask_radius, pixel_scales, hilbert_length):
     shape_nnn = np.shape(mask)[0]
 
     grid = Grid2D.uniform(
-        shape_native=(shape_nnn, shape_nnn), pixel_scales=pixel_scales,
+        shape_native=(shape_nnn, shape_nnn),
+        pixel_scales=pixel_scales,
     )
 
     x1d_hb, y1d_hb = grid_hilbert_order_from(

@@ -433,11 +433,11 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
 
     ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
-    over_sample_uniform = aa.OverSampleUniformFunc(
-        mask=mask, sub_size=2
-    )
+    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
 
-    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(np.array(over_sample_uniform.oversampled_grid))
+    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(
+        np.array(over_sample_uniform.oversampled_grid)
+    )
 
     mask_sub_2 = aa.util.mask_2d.oversample_mask_2d_from(
         mask=np.array(mask), sub_size=2
@@ -483,10 +483,10 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d_list():
 
     ndarray_1d = obj.ndarray_1d_over_sample_list_from(grid=grid_2d)
 
-    over_sample_uniform = aa.OverSampleUniformFunc(
-        mask=mask, sub_size=2
+    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(
+        np.array(over_sample_uniform.oversampled_grid)
     )
-    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(np.array(over_sample_uniform.oversampled_grid))
 
     mask_sub_2 = aa.util.mask_2d.oversample_mask_2d_from(
         mask=np.array(mask), sub_size=2
@@ -522,9 +522,7 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
-    over_sample_uniform = aa.OverSampleUniformFunc(
-        mask=mask, sub_size=3
-    )
+    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
 
     values_sub_3 = over_sample_uniform.evaluated_func_from(
         func=ndarray_1d_from,
@@ -543,9 +541,7 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
-    over_sample_uniform = aa.OverSampleUniformFunc(
-        mask=mask, sub_size=2
-    )
+    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
 
     values_sub_2 = over_sample_uniform.evaluated_func_from(
         func=ndarray_1d_from,
@@ -562,15 +558,11 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     ndarray_1d = iterate_obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
-    over_sample_uniform = aa.OverSampleUniformFunc(
-        mask=mask, sub_size=2
-    )
+    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
     values_sub_2 = over_sample_uniform.evaluated_func_from(
         func=ndarray_1d_from,
     )
-    over_sample_uniform = aa.OverSampleUniformFunc(
-        mask=mask, sub_size=4
-    )
+    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=4)
     values_sub_4 = over_sample_uniform.evaluated_func_from(
         func=ndarray_1d_from,
     )

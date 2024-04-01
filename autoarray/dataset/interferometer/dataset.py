@@ -26,7 +26,9 @@ class Interferometer(AbstractDataset):
         real_space_mask,
         transformer_class=TransformerNUFFT,
         over_sample: Optional[AbstractOverSample] = OverSampleUniform(sub_size=1),
-        over_sample_pixelization: Optional[OverSampleUniform] = OverSampleUniform(sub_size=4),
+        over_sample_pixelization: Optional[OverSampleUniform] = OverSampleUniform(
+            sub_size=4
+        ),
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and

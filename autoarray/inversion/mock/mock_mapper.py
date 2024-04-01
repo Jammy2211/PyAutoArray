@@ -27,7 +27,11 @@ class MockMapper(AbstractMapper):
             adapt_data=adapt_data,
         )
 
-        super().__init__(mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=regularization)
+        super().__init__(
+            mapper_grids=mapper_grids,
+            mapper_tools=mapper_tools,
+            regularization=regularization,
+        )
 
         self._edge_pixel_list = edge_pixel_list
         self._pix_sub_weights = pix_sub_weights

@@ -9,7 +9,6 @@ class MockDeriveMask2D:
         self.mask = grid.derive_mask.all_false
         self.grid = grid
 
-
     @property
     def sub_1(self):
         return self
@@ -58,10 +57,8 @@ class MockRealSpaceMask:
 
 class MockMaskedGrid:
     def __init__(self, grid):
-
         self.in_radians = grid
         self.slim = grid
-
 
 
 def test__dft__visibilities_from():

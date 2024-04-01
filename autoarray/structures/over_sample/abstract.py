@@ -9,15 +9,12 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.numpy_wrapper import register_pytree_node_class
 
 
-
 class AbstractOverSample:
-
     pass
 
 
 @register_pytree_node_class
 class AbstractOverSampleFunc:
-
     def tree_flatten(self):
         return (self.mask,), ()
 
@@ -26,7 +23,8 @@ class AbstractOverSampleFunc:
         return cls(mask=children[0])
 
     def structure_2d_from(
-        self, result: np.ndarray,
+        self,
+        result: np.ndarray,
     ) -> Union[Array2D, "Grid2D"]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
@@ -50,11 +48,14 @@ class AbstractOverSampleFunc:
             return Array2D(values=result, mask=self.mask)
         else:
             if isinstance(result, Grid2DTransformedNumpy):
-                return Grid2DTransformed(values=result, mask=self.mask, over_sample=self.over_sample)
+                return Grid2DTransformed(
+                    values=result, mask=self.mask, over_sample=self.over_sample
+                )
             return Grid2D(values=result, mask=self.mask, over_sample=self.over_sample)
 
     def structure_2d_list_from(
-        self, result_list: List,
+        self,
+        result_list: List,
     ) -> List[Union[Array2D, "Grid2D"]]:
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
@@ -71,7 +72,4 @@ class AbstractOverSampleFunc:
         result_list or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        return [
-            self.structure_2d_from(result=result) for result in result_list
-        ]
-
+        return [self.structure_2d_from(result=result) for result in result_list]

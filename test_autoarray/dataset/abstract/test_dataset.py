@@ -64,7 +64,7 @@ def test__grid__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        over_sample=aa.OverSampleUniform(sub_size=2)
+        over_sample=aa.OverSampleUniform(sub_size=2),
     )
 
     assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
@@ -82,7 +82,10 @@ def test__grid__uses_mask_and_settings(
 
 
 def test__grid_pixelization__uses_mask_and_settings(
-    image_7x7, noise_map_7x7, mask_2d_7x7, grid_2d_7x7,
+    image_7x7,
+    noise_map_7x7,
+    mask_2d_7x7,
+    grid_2d_7x7,
 ):
     masked_image_7x7 = aa.Array2D(values=image_7x7.native, mask=mask_2d_7x7)
 
@@ -91,7 +94,7 @@ def test__grid_pixelization__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        over_sample_pixelization=aa.OverSampleIterate(sub_steps=[2, 4])
+        over_sample_pixelization=aa.OverSampleIterate(sub_steps=[2, 4]),
     )
 
     assert masked_imaging_7x7.grid_pixelization.over_sample.sub_steps == [2, 4]
@@ -102,7 +105,7 @@ def test__grid_pixelization__uses_mask_and_settings(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
         over_sample=aa.OverSampleUniform(sub_size=2),
-        over_sample_pixelization=aa.OverSampleUniform(sub_size=4)
+        over_sample_pixelization=aa.OverSampleUniform(sub_size=4),
     )
 
     assert isinstance(masked_imaging_7x7.grid_pixelization, aa.Grid2D)
@@ -111,9 +114,10 @@ def test__grid_pixelization__uses_mask_and_settings(
 
 def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
     dataset_7x7 = ds.AbstractDataset(
-        data=image_7x7, noise_map=noise_map_7x7,
+        data=image_7x7,
+        noise_map=noise_map_7x7,
         over_sample=aa.OverSampleUniform(sub_size=2),
-        over_sample_pixelization=aa.OverSampleUniform(sub_size=4)
+        over_sample_pixelization=aa.OverSampleUniform(sub_size=4),
     )
 
     assert dataset_7x7.grid.over_sample.sub_size == 2

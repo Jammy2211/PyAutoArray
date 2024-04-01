@@ -175,14 +175,15 @@ class Grid2D(Structure):
 
     @property
     def over_sample_func(self):
-
         from autoarray.structures.over_sample.uniform import OverSampleUniform
         from autoarray.structures.over_sample.iterate import OverSampleIterate
         from autoarray.structures.over_sample.uniform import OverSampleUniformFunc
         from autoarray.structures.over_sample.iterate import OverSampleIterateFunc
 
         if isinstance(self.over_sample, OverSampleUniform):
-            return OverSampleUniformFunc(mask=self.mask, sub_size=self.over_sample.sub_size)
+            return OverSampleUniformFunc(
+                mask=self.mask, sub_size=self.over_sample.sub_size
+            )
         else:
             return OverSampleIterateFunc(
                 mask=self.mask,

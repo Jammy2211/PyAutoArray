@@ -25,7 +25,6 @@ def make_indexes_2d_9x9():
 
 
 def test__sub_pixels_in_mask():
-
     mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
 
     over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=1)
@@ -81,5 +80,3 @@ def test__slim_index_for_sub_slim_index():
     )
 
     assert (over_sample.slim_for_sub_slim == slim_index_for_sub_slim_index_util).all()
-
-

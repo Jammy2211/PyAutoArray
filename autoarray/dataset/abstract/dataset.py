@@ -30,7 +30,9 @@ class AbstractDataset:
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sample: Optional[AbstractOverSample] = OverSampleUniform(sub_size=1),
-        over_sample_pixelization: Optional[OverSampleUniform] = OverSampleUniform(sub_size=4),
+        over_sample_pixelization: Optional[OverSampleUniform] = OverSampleUniform(
+            sub_size=4
+        ),
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
@@ -151,10 +153,13 @@ class AbstractDataset:
 
     @cached_property
     def mapper_tools(self):
-
         return MapperTools(
-            over_sample=OverSampleUniformFunc(mask=self.mask, sub_size=self.over_sample_pixelization.sub_size),
-            border_relocator=BorderRelocator(grid=self.grid, sub_size=self.over_sample_pixelization.sub_size),
+            over_sample=OverSampleUniformFunc(
+                mask=self.mask, sub_size=self.over_sample_pixelization.sub_size
+            ),
+            border_relocator=BorderRelocator(
+                grid=self.grid, sub_size=self.over_sample_pixelization.sub_size
+            ),
         )
 
     @property

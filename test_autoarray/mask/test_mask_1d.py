@@ -107,4 +107,3 @@ def test__from_primary_hdu():
     assert type(mask_via_hdu) == aa.Mask1D
     assert (mask_via_hdu == mask).all()
     assert mask_via_hdu.pixel_scales == (0.1,)
-

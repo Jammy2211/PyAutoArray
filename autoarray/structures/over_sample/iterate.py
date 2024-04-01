@@ -58,6 +58,7 @@ class OverSampleIterate(AbstractOverSample):
         self.relative_accuracy = relative_accuracy
         self.sub_steps = sub_steps
 
+
 @numba_util.jit()
 def threshold_mask_via_arrays_jit_from(
     fractional_accuracy_threshold: float,
@@ -128,13 +129,15 @@ def iterated_array_jit_from(
 
     return iterated_array
 
-class OverSampleIterateFunc(AbstractOverSampleFunc):
 
-    def __init__(self, mask: Mask2D,
-                 fractional_accuracy: float = 0.9999,
-                 relative_accuracy: Optional[float] = None,
-                 sub_steps: List[int] = None,
-                 ):
+class OverSampleIterateFunc(AbstractOverSampleFunc):
+    def __init__(
+        self,
+        mask: Mask2D,
+        fractional_accuracy: float = 0.9999,
+        relative_accuracy: Optional[float] = None,
+        sub_steps: List[int] = None,
+    ):
         self.mask = mask
         self.fractional_accuracy = fractional_accuracy
         self.relative_accuracy = relative_accuracy
@@ -147,7 +150,6 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
     def array_at_sub_size_from(
         self, func: Callable, cls, mask: Mask2D, sub_size
     ) -> Array2D:
-
         over_sample_uniform = OverSampleUniformFunc(mask=mask, sub_size=sub_size)
 
         oversampled_grid = over_sample_uniform.oversampled_grid
@@ -234,7 +236,6 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         if not np.any(array_lower_sub_2d):
             return array_lower_sub_2d.slim
 
-
         iterated_array = np.zeros(shape=self.mask.shape_native)
 
         threshold_mask_lower_sub = self.mask
@@ -285,7 +286,8 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         )
 
     def return_iterated_array_result(
-        self, iterated_array: Array2D,
+        self,
+        iterated_array: Array2D,
     ) -> Array2D:
         """
         Returns the resulting iterated array, by mapping it to 1D and then passing it back as an ``Array2D`` structure.

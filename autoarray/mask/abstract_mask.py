@@ -25,7 +25,7 @@ class Mask(AbstractNDArray, ABC):
         origin: tuple,
         pixel_scales: ty.PixelScales,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         An abstract class for a mask that represents data structure that can be in 1D, 2D or other shapes.

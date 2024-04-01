@@ -120,7 +120,9 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSampleIterateFunc(mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3])
+    over_sample = aa.OverSampleIterateFunc(
+        mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
+    )
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=1)
 
@@ -133,7 +135,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
         cls=None,
         array_lower_sub_2d=values_sub_1.native,
     )
-    
+
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
 
     values_sub_3 = over_sample_uniform.evaluated_func_from(
@@ -163,11 +165,11 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
         cls=None,
         array_lower_sub_2d=values_sub_1.native,
     )
-    
+
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
 
     values_sub_2 = over_sample_uniform.evaluated_func_from(
-        func=ndarray_1d_from, 
+        func=ndarray_1d_from,
     )
 
     assert (values == values_sub_2).all()
@@ -186,7 +188,9 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSampleIterateFunc(mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4])
+    over_sample = aa.OverSampleIterateFunc(
+        mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
+    )
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=1)
 
@@ -206,7 +210,7 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
     )
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=4)
     values_sub_4 = over_sample_uniform.evaluated_func_from(
-        func=ndarray_1d_from, 
+        func=ndarray_1d_from,
     )
 
     assert values.native[1, 1] == values_sub_2.native[1, 1]
@@ -229,7 +233,9 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSampleIterateFunc(mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3])
+    over_sample = aa.OverSampleIterateFunc(
+        mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
+    )
 
     arr = aa.Array2D(values=np.zeros(9), mask=mask)
 

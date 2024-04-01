@@ -102,7 +102,6 @@ class TransformerDFT(PyLopsOperator):
             )
 
         else:
-
             visibilities = transformer_util.visibilities_jit(
                 image_1d=np.array(image.slim),
                 grid_radians=np.array(self.grid),
