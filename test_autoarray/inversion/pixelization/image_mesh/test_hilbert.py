@@ -8,7 +8,6 @@ def test__image_plane_mesh_grid_from():
         shape_native=(4, 4),
         radius=2.0,
         pixel_scales=1.0,
-        sub_size=1,
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
