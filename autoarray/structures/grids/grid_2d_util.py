@@ -177,7 +177,7 @@ def convert_grid_2d_to_native(
     )
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
     """
     Returns the centre of a grid from a 1D grid.
@@ -197,7 +197,7 @@ def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
     return centre_y, centre_x
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def grid_2d_slim_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
@@ -429,7 +429,7 @@ def grid_2d_via_shape_native_from(
     )
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def _radial_projected_shape_slim_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
@@ -507,7 +507,7 @@ def _radial_projected_shape_slim_from(
     return sub_size * int((scaled_distance / pixel_scale)) + 1
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
@@ -608,7 +608,7 @@ def grid_scaled_2d_slim_radial_projected_from(
     return grid_scaled_2d_slim_radii
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def relocated_grid_via_jit_from(grid, border_grid):
     """
     Relocate the coordinates of a grid to its border if they are outside the border, where the border is
@@ -676,7 +676,7 @@ def relocated_grid_via_jit_from(grid, border_grid):
     return grid_relocated
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def furthest_grid_2d_slim_index_from(
     grid_2d_slim: np.ndarray, slim_indexes: np.ndarray, coordinate: Tuple[float, float]
 ) -> int:
@@ -780,7 +780,7 @@ def grid_2d_native_from(
     return np.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def grid_2d_slim_upscaled_from(
     grid_slim: np.ndarray, upscale_factor: int, pixel_scales: ty.PixelScales
 ) -> np.ndarray:
@@ -857,7 +857,7 @@ def compute_polygon_area(points):
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 
-# @numba_util.jit()
+# #@numba_util.jit()
 def grid_pixels_in_mask_pixels_from(
     grid, shape_native, pixel_scales, origin
 ) -> np.ndarray:

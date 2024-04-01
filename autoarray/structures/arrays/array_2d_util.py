@@ -208,7 +208,7 @@ def convert_array_2d_to_native(array_2d: np.ndarray, mask_2d: Mask2D) -> np.ndar
     )
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def extracted_array_2d_from(
     array_2d: np.ndarray, y0: int, y1: int, x0: int, x1: int
 ) -> np.ndarray:
@@ -264,7 +264,7 @@ def extracted_array_2d_from(
     return resized_array
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def resized_array_2d_from(
     array_2d: np.ndarray,
     resized_shape: Tuple[int, int],
@@ -358,7 +358,7 @@ def resized_array_2d_from(
     return resized_array
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def replace_noise_map_2d_values_where_image_2d_values_are_negative(
     image_2d: np.ndarray, noise_map_2d: np.ndarray, target_signal_to_noise: float = 2.0
 ) -> np.ndarray:
@@ -403,7 +403,7 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(
     return noise_map_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the slimmed 1D pixel
@@ -445,7 +445,7 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.n
     return index_2d_for_index_slim
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 2D pixel indexes to
@@ -488,7 +488,7 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
     return index_slim_for_index_native_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def array_2d_slim_from(
     array_2d_native: np.ndarray, mask_2d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
@@ -611,7 +611,7 @@ def array_2d_native_from(
     )
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def array_2d_via_indexes_from(
     array_2d_slim: np.ndarray,
     sub_shape: Tuple[int, int],
@@ -660,7 +660,7 @@ def array_2d_via_indexes_from(
     return sub_array_native_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def array_2d_slim_complex_from(
     array_2d_native: np.ndarray, mask: np.ndarray, sub_size: int
 ) -> np.ndarray:
@@ -730,7 +730,7 @@ def array_2d_slim_complex_from(
     return sub_array_1d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def array_2d_native_complex_via_indexes_from(
     array_2d_slim: np.ndarray,
     sub_shape_native: Tuple[int, int],
