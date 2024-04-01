@@ -589,7 +589,7 @@ def adaptive_pixel_signals_from(
     return pixel_signals**signal_scale
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mapping_matrix_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,

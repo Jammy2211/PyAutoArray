@@ -253,7 +253,7 @@ class AbstractMapper(LinearObj):
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pix_pixels=self.params,
-            sub_size=self.source_plane_data_grid.sub_size,
+            sub_size=self.mapper_tools.over_sample.sub_size,
         )
 
         return UniqueMappings(
