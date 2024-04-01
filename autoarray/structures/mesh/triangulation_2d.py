@@ -213,16 +213,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         return region_areas
 
     @property
-    def sub_border_grid(self) -> np.ndarray:
-        """
-        The (y,x) grid of all sub-pixels which are at the border of the mask.
-
-        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border.
-        """
-        return self[self.mask.derive_indexes.sub_border_slim]
-
-    @property
     def origin(self) -> Tuple[float, float]:
         """
         The (y,x) origin of the Voronoi grid, which is fixed to (0.0, 0.0) for simplicity.

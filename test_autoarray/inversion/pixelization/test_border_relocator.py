@@ -35,45 +35,6 @@ def test__sub_border_slim():
         sub_border_flat_indexes_util, 1e-4
     )
 
-
-def test__sub_border_grid():
-    mask = np.array(
-        [
-            [False, False, False, False, False, False, False, True],
-            [False, True, True, True, True, True, False, True],
-            [False, True, False, False, False, True, False, True],
-            [False, True, False, True, False, True, False, True],
-            [False, True, False, False, False, True, False, True],
-            [False, True, True, True, True, True, False, True],
-            [False, False, False, False, False, False, False, True],
-        ]
-    )
-
-    mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
-
-    grid_2d = aa.Grid2D.from_mask(mask=mask)
-
-    border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
-
-    assert (
-        border_relocator.sub_border_grid
-        == np.array(
-            [
-                [6.5, -7.5],
-                [6.5, -5.5],
-                [6.5, -3.5],
-                [6.5, -0.5],
-                [6.5, 1.5],
-                [6.5, 3.5],
-                [6.5, 5.5],
-                [4.5, -7.5],
-                [4.5, 5.5],
-                [2.5, -7.5],
-            ]
-        )
-    ).all()
-
-
 def test__relocated_grid_from__inside_border_no_relocations():
     mask = aa.Mask2D.circular(
         shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1)

@@ -65,6 +65,16 @@ class BorderRelocator:
         )
 
     @cached_property
+    def border_grid(self) -> np.ndarray:
+        """
+        The (y,x) grid of all sub-pixels which are at the border of the mask.
+
+        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
+        within these border pixels which are at the extreme edge of the border.
+        """
+        return self.grid.mask.derive_grid.border
+
+    @cached_property
     def sub_border_grid(self) -> np.ndarray:
         """
         The (y,x) grid of all sub-pixels which are at the border of the mask.
@@ -72,7 +82,7 @@ class BorderRelocator:
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border.
         """
-        return self.sub_grid[self.sub_border_slim]
+        return selfgrid[self.mask.derive_indexes.sub_border_slim]
 
     def relocated_grid_from(self, grid: "Grid2D") -> "Grid2D":
         """

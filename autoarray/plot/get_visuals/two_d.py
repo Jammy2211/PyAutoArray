@@ -191,7 +191,7 @@ class GetVisuals2D(AbstractGetVisuals):
             "grid", mapper.source_plane_data_grid, "mapper_source_plane_data_grid"
         )
 
-        border = self.get("border", mapper.source_plane_data_grid.sub_border_grid)
+        border = self.get("border", mapper.mapper_tools.border_relocator.border_grid)
 
         mesh_grid = self.get(
             "mesh_grid", mapper.source_plane_mesh_grid, "mapper_source_plane_mesh_grid"
