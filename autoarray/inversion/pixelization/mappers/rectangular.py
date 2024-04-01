@@ -56,9 +56,6 @@ class MapperRectangularNoInterp(AbstractMapper):
      regularization
          The regularization scheme which may be applied to this linear object in order to smooth its solution,
          which for a mapper smooths neighboring pixels on the mesh.
-    relocate_pix_border
-         If `True`, all coordinates of all pixelization source mesh grids have pixels outside their border
-         relocated to their edge.
      run_time_dict
          A dictionary which contains timing of certain functions calls which is used for profiling.
     """

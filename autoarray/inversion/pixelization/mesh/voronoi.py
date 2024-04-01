@@ -1,5 +1,6 @@
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
+from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
 from autoarray.numba_util import profile_func
 

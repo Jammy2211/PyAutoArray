@@ -9,7 +9,6 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
         radius=1.0,
         pixel_scales=(0.1, 0.1),
         centre=(1.0, 1.0),
-        sub_size=1,
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -21,10 +20,12 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
 
     grid[8, 0] = 100.0
 
+    border_relocator = aa.BorderRelocator(grid=grid, sub_size=1)
+
     mapper_grids = mesh.mapper_grids_from(
+        border_relocator=border_relocator,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh,
-        relocate_pix_border=True,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -35,10 +36,12 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
     grid[0, 0] = 0.0
     image_mesh[0, 0] = 100.0
 
+    border_relocator = aa.BorderRelocator(grid=grid, sub_size=1)
+
     mapper_grids = mesh.mapper_grids_from(
+        border_relocator=border_relocator,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh,
-        relocate_pix_border=True,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -49,10 +52,12 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
 
     mesh = aa.mesh.VoronoiNN()
 
+    border_relocator = aa.BorderRelocator(grid=grid, sub_size=1)
+
     mapper_grids = mesh.mapper_grids_from(
+        border_relocator=border_relocator,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh,
-        relocate_pix_border=True,
     )
 
     mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)

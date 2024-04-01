@@ -28,6 +28,7 @@ def test__rectangular_mapper():
     mesh = aa.mesh.Rectangular(shape=(3, 3))
 
     mapper_grids = mesh.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=oversampled_grid,
         source_plane_mesh_grid=None,
     )
@@ -86,6 +87,7 @@ def test__delaunay_mapper():
     )
 
     mapper_grids = mesh.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=oversampled_grid,
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
@@ -143,6 +145,7 @@ def test__voronoi_mapper():
     )
 
     mapper_grids = mesh.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=oversampled_grid,
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
