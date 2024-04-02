@@ -419,8 +419,8 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
 
     obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
-    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(np.array(grid_2d))
+    ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
+    ndarray_1d_via_grid = obj.ndarray_1d_from(np.array(grid_2d))
 
     assert isinstance(ndarray_1d, aa.Array2D)
     assert (ndarray_1d == ndarray_1d_via_grid).all()
@@ -431,11 +431,11 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
 
     obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
+    ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
 
-    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(
+    ndarray_1d_via_grid = obj.ndarray_1d_from(
         np.array(over_sample_uniform.oversampled_grid)
     )
 
@@ -469,8 +469,8 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d_list():
 
     obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_1d = obj.ndarray_1d_over_sample_list_from(grid=grid_2d)
-    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_list_from(np.array(grid_2d))
+    ndarray_1d = obj.ndarray_1d_list_from(grid=grid_2d)
+    ndarray_1d_via_grid = obj.ndarray_1d_list_from(np.array(grid_2d))
 
     assert isinstance(ndarray_1d[0], aa.Array2D)
     assert (ndarray_1d[0] == ndarray_1d_via_grid[0]).all()
@@ -481,10 +481,10 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d_list():
 
     obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_1d = obj.ndarray_1d_over_sample_list_from(grid=grid_2d)
+    ndarray_1d = obj.ndarray_1d_list_from(grid=grid_2d)
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
-    ndarray_1d_via_grid = obj.ndarray_1d_over_sample_from(
+    ndarray_1d_via_grid = obj.ndarray_1d_from(
         np.array(over_sample_uniform.oversampled_grid)
     )
 
@@ -520,7 +520,7 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
+    ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
 
@@ -539,7 +539,7 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_1d = obj.ndarray_1d_over_sample_from(grid=grid_2d)
+    ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
 
@@ -556,7 +556,7 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     iterate_obj = aa.m.MockGridLikeIteratorObj()
 
-    ndarray_1d = iterate_obj.ndarray_1d_over_sample_from(grid=grid_2d)
+    ndarray_1d = iterate_obj.ndarray_1d_from(grid=grid_2d)
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
     values_sub_2 = over_sample_uniform.array_via_func_from(

@@ -212,41 +212,6 @@ class MockGridLikeIteratorObj:
             )
         ]
 
-    @decorators.grid_2d_to_structure
-    def ndarray_1d_over_sample_from(self, grid) -> np.ndarray:
-        """
-        Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a 1D ndarray
-        of shape [total_masked_grid_pixels].
-
-        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
-        """
-        grid_radii = self.radial_grid_from(grid=grid)
-        return np.exp(
-            np.multiply(
-                -self.sersic_constant,
-                np.add(np.power(np.divide(grid_radii, 0.2), 1.0 / 2.0), -1),
-            )
-        )
-
-    @decorators.grid_2d_to_structure
-    def ndarray_1d_over_sample_list_from(self, grid):
-        """
-        Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a list of 1D
-        ndarrays of shape [total_masked_grid_pixels].
-
-        Such functions are common in **PyAutoGalaxy** for light and mass profile objects.
-        """
-        grid_radii = self.radial_grid_from(grid=grid)
-        return [
-            np.exp(
-                np.multiply(
-                    -self.sersic_constant,
-                    np.add(np.power(np.divide(grid_radii, 0.2), 1.0 / 2.0), -1),
-                )
-            )
-        ]
-
-
 class MockGrid1DLikeObj:
     def __init__(self, centre=(0.0, 0.0), angle=0.0):
         self.centre = centre
