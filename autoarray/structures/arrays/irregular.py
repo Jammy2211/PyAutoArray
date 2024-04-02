@@ -77,19 +77,6 @@ class ArrayIrregular(Structure):
         """
         return [value for value in self]
 
-    def values_from(self, array_slim: np.ndarray) -> "ArrayIrregular":
-        """
-        Create a `ArrayIrregular` object from a 1D ndarray of values of shape [total_values].
-
-        The returned values have an identical structure to this `ArrayIrregular` instance.
-
-        Parameters
-        ----------
-        array_slim
-            The 1D ndarray with (hape [total_values] whose values are mapped to a `ArrayIrregular` object.
-        """
-        return ArrayIrregular(values=array_slim)
-
     def grid_from(self, grid_slim: np.ndarray) -> Grid2DIrregular:
         """
         Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].

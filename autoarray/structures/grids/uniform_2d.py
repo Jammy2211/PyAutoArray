@@ -781,13 +781,6 @@ class Grid2D(Structure):
 
         return Grid2D.from_mask(mask=mask, over_sample=self.over_sample)
 
-    def values_from(self, array_slim: np.ndarray) -> ArrayIrregular:
-        """
-        Create a *ArrayIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
-        *ArrayIrregular* are structured following this `Grid2DIrregular` instance.
-        """
-        return ArrayIrregular(values=array_slim)
-
     def squared_distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
     ) -> Array2D:
