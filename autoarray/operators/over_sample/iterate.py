@@ -340,7 +340,6 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
             result=result_sub_1_1d,
         ).native
 
-        if len(result_sub_1_2d.shape) == 2:
-            return self.iterated_array_from(
-                func=func, cls=cls, array_lower_sub_2d=result_sub_1_2d
-            )
+        return self.iterated_array_from(
+            func=func, cls=cls, array_lower_sub_2d=result_sub_1_2d
+        )

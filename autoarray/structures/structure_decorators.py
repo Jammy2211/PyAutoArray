@@ -154,7 +154,6 @@ def grid_1d_output_structure(func):
 
         if isinstance(grid, Grid2D):
             return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
-
         elif isinstance(grid, Grid2DIrregular):
             return grid.structure_2d_from(result=result)
         elif isinstance(grid, Grid1D):
@@ -303,7 +302,7 @@ def grid_2d_to_structure_over_sample(func):
 
         if hasattr(grid, "over_sample"):
             if isinstance(grid.over_sample, OverSampleUniform):
-                result = grid.over_sample_func.evaluated_func_obj_from(
+                result = grid.over_sample_func.array_via_func_from(
                     func=func,
                     cls=obj,
                 )
@@ -313,6 +312,7 @@ def grid_2d_to_structure_over_sample(func):
                 return grid.over_sample_func.iterated_result_from(
                     func=func, cls=obj, grid=grid
                 )
+            #return grid.over_sample_func.structure_2d_from(result=result)
 
         if isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
@@ -429,7 +429,7 @@ def grid_2d_to_structure_over_sample_list(func):
 
         if hasattr(grid, "over_sample"):
             if isinstance(grid.over_sample, OverSampleUniform):
-                result_list = grid.over_sample_func.evaluated_func_obj_from(
+                result_list = grid.over_sample_func.array_via_func_from(
                     func=func,
                     cls=obj,
                 )

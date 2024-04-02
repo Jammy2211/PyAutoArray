@@ -223,8 +223,11 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
             mask=self.mask,
         )
 
-    def evaluated_func_obj_from(self, func, cls):
-        values = func(cls, np.asarray(self.oversampled_grid.slim))
+    def array_via_func_from(self, func, cls):
+        if cls is not None:
+            values = func(cls, np.asarray(self.oversampled_grid.slim))
+        else:
+            values = func(np.asarray(self.oversampled_grid.slim))
 
         if not isinstance(values, list):
             return self.binned_array_2d_from(array=values)
@@ -234,9 +237,6 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
                 values_list.append(self.binned_array_2d_from(array=value))
             return values_list
 
-    def evaluated_func_from(self, func):
-        values = func(grid=self.oversampled_grid.slim, profile=None)
-        return self.binned_array_2d_from(array=values)
 
     @cached_property
     def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:

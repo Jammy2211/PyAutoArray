@@ -524,8 +524,8 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
 
-    values_sub_3 = over_sample_uniform.evaluated_func_from(
-        func=ndarray_1d_from,
+    values_sub_3 = over_sample_uniform.array_via_func_from(
+        func=ndarray_1d_from, cls=object
     )
 
     assert ndarray_1d == pytest.approx(values_sub_3, 1.0e-4)
@@ -543,8 +543,8 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
 
-    values_sub_2 = over_sample_uniform.evaluated_func_from(
-        func=ndarray_1d_from,
+    values_sub_2 = over_sample_uniform.array_via_func_from(
+        func=ndarray_1d_from, cls=object
     )
 
     assert ndarray_1d == pytest.approx(values_sub_2, 1.0e-4)
@@ -559,12 +559,12 @@ def test__in_grid_2d_over_sample_iterate__out_ndarray_1d__values_use_iteration()
     ndarray_1d = iterate_obj.ndarray_1d_over_sample_from(grid=grid_2d)
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
-    values_sub_2 = over_sample_uniform.evaluated_func_from(
-        func=ndarray_1d_from,
+    values_sub_2 = over_sample_uniform.array_via_func_from(
+        func=ndarray_1d_from, cls=object
     )
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=4)
-    values_sub_4 = over_sample_uniform.evaluated_func_from(
-        func=ndarray_1d_from,
+    values_sub_4 = over_sample_uniform.array_via_func_from(
+        func=ndarray_1d_from, cls=object
     )
 
     assert ndarray_1d.native[1, 1] == values_sub_2.native[1, 1]
