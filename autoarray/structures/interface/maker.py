@@ -136,8 +136,7 @@ class StructureMaker:
         result_list = []
 
         for result in result:
-            maker = StructureMaker(grid=self.grid, result=result)
-            result_list.append(maker.via_grid_2d)
+            result_list.append(self.via_grid_2d(result=result))
 
         return result_list
 
@@ -263,7 +262,6 @@ class StructureMaker:
         result_list = []
 
         for result in result:
-            maker = StructureMaker(grid=self.grid, result=result)
-            result_list.append(maker.via_grid_1d)
+            result_list.append(self.via_grid_1dgit a(result=result))
 
         return result_list
