@@ -202,7 +202,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
             origin=array_lower_sub_2d.origin,
         )
 
-    def iterated_array_from(
+    def array_via_func_from(
         self, func: Callable, cls: object,
     ) -> Array2D:
         """
@@ -227,7 +227,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         accuracy. The function returns a result on a pixel-grid where evaluating it on more points on a higher
         resolution sub-grid followed by binning lead to a more precise evaluation of the function.
 
-        A full description of the iteration method can be found in the functions *iterated_array_from* and
+        A full description of the iteration method can be found in the functions *array_via_func_from* and
         *iterated_grid_from*. This function computes the result on a grid with a sub-size of 1, and uses its
         shape to call the correct function.
 
@@ -271,14 +271,10 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
                 )
 
             except ZeroDivisionError:
-                return self.return_iterated_array_result(
-                    iterated_array=iterated_array,
-                )
+                return Array2D(values=iterated_array, mask=self.mask)
 
             if threshold_mask_higher_sub.is_all_true:
-                return self.return_iterated_array_result(
-                    iterated_array=iterated_array,
-                )
+                return Array2D(values=iterated_array, mask=self.mask)
 
             array_sub_1 = array_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
@@ -293,32 +289,5 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
 
         iterated_array_2d = iterated_array + array_higher_sub
 
-        return self.return_iterated_array_result(
-            iterated_array=iterated_array_2d,
-        )
-
-    def return_iterated_array_result(
-        self,
-        iterated_array: Array2D,
-    ) -> Array2D:
-        """
-        Returns the resulting iterated array, by mapping it to 1D and then passing it back as an ``Array2D`` structure.
-
-        Parameters
-        ----------
-        iterated_array
-
-        Returns
-        -------
-        iterated_array
-            The resulting array computed via iteration.
-        """
-
-        iterated_array_1d = array_2d_util.array_2d_slim_from(
-            mask_2d=np.array(self.mask),
-            array_2d_native=np.array(iterated_array),
-            sub_size=1,
-        )
-
-        return Array2D(values=iterated_array_1d, mask=self.mask)
+        return Array2D(values=iterated_array_2d, mask=self.mask)
 

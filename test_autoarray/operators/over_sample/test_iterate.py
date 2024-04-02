@@ -108,7 +108,7 @@ def test__threshold_mask_from():
     ).all()
 
 
-def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_sub():
+def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_sub():
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -125,16 +125,9 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=1)
-
-    values_sub_1 = over_sample_uniform.array_via_func_from(
-        func=ndarray_1d_from, cls=object
-    )
-
-    values = over_sample.iterated_array_from(
+    values = over_sample.array_via_func_from(
         func=ndarray_1d_from,
         cls=None,
-        array_sub_1=values_sub_1.native,
     )
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
@@ -149,10 +142,9 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
     # but 3 does) that the sub_size of 3 is used. There was a bug where the mask was not updated correctly and the
     # iterated array double counted the values.
 
-    values = over_sample.iterated_array_from(
+    values = over_sample.array_via_func_from(
         func=ndarray_1d_from,
         cls=None,
-        array_sub_1=values_sub_1.native,
     )
 
     assert (values == values_sub_3).all()
@@ -161,10 +153,9 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
         mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
     )
 
-    values = over_sample.iterated_array_from(
+    values = over_sample.array_via_func_from(
         func=ndarray_1d_from,
         cls=None,
-        array_sub_1=values_sub_1.native,
     )
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
@@ -176,7 +167,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
     assert (values == values_sub_2).all()
 
 
-def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
+def test__array_via_func_from__check_values_computed_to_fractional_accuracy():
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -193,16 +184,9 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
-    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=1)
-
-    values_sub_1 = over_sample_uniform.array_via_func_from(
-        func=ndarray_1d_from, cls=object
-    )
-
-    values = over_sample.iterated_array_from(
+    values = over_sample.array_via_func_from(
         func=ndarray_1d_from,
         cls=None,
-        array_sub_1=values_sub_1.native,
     )
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
@@ -221,7 +205,7 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
     assert values.native[2, 2] == values_sub_4.native[2, 2]
 
 
-def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
+def test__array_via_func_from__func_returns_all_zeros__iteration_terminated():
     mask = aa.Mask2D(
         mask=[
             [True, True, True, True, True],
@@ -238,7 +222,7 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    values = over_sample.iterated_array_from(
+    values = over_sample.array_via_func_from(
         func=ndarray_1d_zeros_from, cls=None,
     )
 
