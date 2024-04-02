@@ -6,6 +6,7 @@ from typing import List, Union
 from autoconf.exc import ConfigException
 
 from autoarray import exc
+from autoarray.structures.interface.maker import StructureMaker
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -227,7 +228,8 @@ def grid_2d_to_structure(func):
 
         if isinstance(grid, Grid2D):
             result = func(obj, grid, *args, **kwargs)
-            return grid.over_sample_func.structure_2d_from(result=result)
+            maker = StructureMaker(grid=grid, result=result)
+            return maker.structure
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)
@@ -235,6 +237,7 @@ def grid_2d_to_structure(func):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result = func(obj, grid_2d_radial, *args, **kwargs)
             return grid.structure_2d_from(result=result)
+
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)
 
@@ -306,7 +309,8 @@ def grid_2d_to_structure_over_sample(func):
                     func=func,
                     cls=obj,
                 )
-                return grid.over_sample_func.structure_2d_from(result=result)
+                maker = StructureMaker(grid=grid, result=result)
+                return maker.structure
 
             elif isinstance(grid.over_sample, OverSampleIterate):
                 return grid.over_sample_func.array_via_func_from(
