@@ -229,7 +229,6 @@ def grid_2d_to_structure(func):
         -------
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
-
         return StructureMaker(func=func, obj=obj, grid=grid, *args, **kwargs).structure
 
     return wrapper
