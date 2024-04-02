@@ -161,15 +161,8 @@ class Grid2DIrregular(AbstractNDArray):
             self.scaled_maxima[0] + buffer,
         ]
 
-    def values_from(self, array_slim: np.ndarray) -> ArrayIrregular:
-        """
-        Create a *ArrayIrregular* object from a 1D NumPy array of values of shape [total_coordinates], which
-        are structured following this `Grid2DIrregular` instance.
-        """
-        return ArrayIrregular(values=array_slim)
-
     def values_via_value_from(self, value: float) -> ArrayIrregular:
-        return self.values_from(
+        return ArrayIrregular(
             array_slim=np.full(fill_value=value, shape=self.shape[0])
         )
 
@@ -219,7 +212,7 @@ class Grid2DIrregular(AbstractNDArray):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return self.values_from(array_slim=squared_distances)
+        return ArrayIrregular(values=squared_distances)
 
     def distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
@@ -235,7 +228,7 @@ class Grid2DIrregular(AbstractNDArray):
         distances = np.sqrt(
             self.squared_distances_to_coordinate_from(coordinate=coordinate)
         )
-        return self.values_from(array_slim=distances)
+        return ArrayIrregular(values=distances)
 
     @property
     def furthest_distances_to_other_coordinates(self) -> ArrayIrregular:
@@ -269,7 +262,7 @@ class Grid2DIrregular(AbstractNDArray):
 
             radial_distances_max[i] = np.sqrt(np.max(np.add(x_distances, y_distances)))
 
-        return self.values_from(array_slim=radial_distances_max)
+        return ArrayIrregular(values=radial_distances_max)
 
     def grid_of_closest_from(self, grid_pair: "Grid2DIrregular") -> "Grid2DIrregular":
         """
@@ -322,12 +315,12 @@ class Grid2DIrregular(AbstractNDArray):
 
         if isinstance(result, (np.ndarray, AbstractNDArray)):
             if len(result.shape) == 1:
-                return self.values_from(array_slim=result)
+                return ArrayIrregular(values=result)
             elif len(result.shape) == 2:
                 return self.grid_from(grid_slim=result)
         elif isinstance(result, list):
             if len(result[0].shape) == 1:
-                return [self.values_from(array_slim=value) for value in result]
+                return [ArrayIrregular(values=value) for value in result]
             elif len(result[0].shape) == 2:
                 return [self.grid_from(grid_slim=value) for value in result]
 
@@ -352,9 +345,10 @@ class Grid2DIrregular(AbstractNDArray):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result_list[0].shape) == 1:
-            return [self.values_from(array_slim=value) for value in result_list]
+            return [ArrayIrregular(values=value) for value in result_list]
         elif len(result_list[0].shape) == 2:
             return [self.grid_from(grid_slim=value) for value in result_list]
+
 
 class Grid2DIrregularTransformed(Grid2DIrregular):
     pass
