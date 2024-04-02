@@ -38,7 +38,7 @@ class StructureMaker:
     @property
     def result_basic(self):
 
-        grid = np.array([[1.0, 1.0]]
+        grid = np.array([[1.0, 1.0]])
 
         return self.func(self.obj, grid, *self.args, **self.kwargs)
 

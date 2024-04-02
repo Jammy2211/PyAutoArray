@@ -214,46 +214,6 @@ def grid_2d_to_structure(func):
 
         If the input array is not a `Grid2D` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
-        Parameters
-        ----------
-        obj
-            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
-        grid : Grid2D or Grid2DIrregular
-            A grid_like object of (y,x) coordinates on which the function values are evaluated.
-
-        Returns
-        -------
-            The function values evaluated on the grid with the same structure as the input grid_like object.
-        """
-
-        return StructureMaker(func=func, obj=obj, grid=grid, *args, **kwargs).structure
-
-    return wrapper
-
-
-def grid_2d_to_structure_list(func):
-    """
-    Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates and return the results as
-    a list of NumPy arrays.
-
-    Parameters
-    ----------
-    func
-        A function which computes a set of values from a 2D grid of (y,x) coordinates.
-
-    Returns
-    -------
-        A function that can accept cartesian or transformed coordinates
-    """
-
-    @wraps(func)
-    def wrapper(
-        obj: object,
-        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
-        *args,
-        **kwargs,
-    ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
-        """
         This decorator serves the same purpose as the `grid_2d_to_structure` decorator, but it deals with functions
         whose output is a list of results as opposed to a single NumPy array. It simply iterates over these lists to
         perform the same conversions as `grid_2d_to_structure`.
@@ -267,29 +227,10 @@ def grid_2d_to_structure_list(func):
 
         Returns
         -------
-            The function values evaluated on the grid with the same structure as the input grid_like object in a list
-            of NumPy arrays.
+            The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        maker = StructureMaker(func=func, obj=obj, grid=grid, *args, **kwargs)
-        return maker.structure
-
-        if isinstance(grid, Grid2D):
-            result_list = func(obj, grid, *args, **kwargs)
-            maker = StructureMaker(grid=grid, result=result_list)
-            return maker.structure
-        elif isinstance(grid, Grid2DIrregular):
-            result_list = func(obj, grid, *args, **kwargs)
-            maker = StructureMaker(grid=grid, result=result_list)
-            return maker.structure
-        elif isinstance(grid, Grid1D):
-            grid_2d_radial = grid.grid_2d_radial_projected_from()
-            result_list = func(obj, grid_2d_radial, *args, **kwargs)
-            maker = StructureMaker(grid=grid, result=result_list)
-            return maker.structure
-
-        if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
-            return func(obj, grid, *args, **kwargs)
+        return StructureMaker(func=func, obj=obj, grid=grid, *args, **kwargs).structure
 
     return wrapper
 
