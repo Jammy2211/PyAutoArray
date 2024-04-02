@@ -155,9 +155,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         oversampled_grid = over_sample_uniform.oversampled_grid
 
         array_higher_sub = func(cls, np.array(oversampled_grid), *args, **kwargs)
-        # array = self.structure_2d_from(
-        #     result=array_higher_sub,
-        # )
+
         return over_sample_uniform.binned_array_2d_from(array=array_higher_sub).native
 
     def threshold_mask_from(
@@ -244,7 +242,9 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         grid_lower_sub_2d
             The results computed by the function using a lower sub-grid size
         """
-        array_sub_1 = func(cls, np.array(self.mask.derive_grid.unmasked), *args, **kwargs)
+        unmasked_grid = self.mask.derive_grid.unmasked
+
+        array_sub_1 = func(cls, np.array(unmasked_grid), *args, **kwargs)
 
         array_sub_1 = Array2D(values=array_sub_1, mask=self.mask).native
 

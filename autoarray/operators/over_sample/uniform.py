@@ -224,18 +224,17 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
         )
 
     def array_via_func_from(self, func, cls, *args, **kwargs):
-        if cls is not None:
-            values = func(cls, np.asarray(self.oversampled_grid.slim), *args, **kwargs)
-        else:
-            values = func(np.asarray(self.oversampled_grid.slim), *args, **kwargs)
 
-        if not isinstance(values, list):
-            return self.binned_array_2d_from(array=values)
+        oversampled_grid = self.oversampled_grid
+
+        if cls is not None:
+            values = func(cls, np.asarray(oversampled_grid.slim), *args, **kwargs)
         else:
-            values_list = []
-            for value in values:
-                values_list.append(self.binned_array_2d_from(array=value))
-            return values_list
+            values = func(np.asarray(oversampled_grid.slim), *args, **kwargs)
+
+        values = Array2D(values=values, mask=oversampled_grid.mask, store_native=True)
+
+        return self.binned_array_2d_from(array=values)
 
     @cached_property
     def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:
