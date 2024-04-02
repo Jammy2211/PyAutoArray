@@ -29,10 +29,8 @@ class AbstractDataset:
         data: Structure,
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sample: Optional[AbstractOverSample] = OverSampleUniform(sub_size=1),
-        over_sample_pixelization: Optional[OverSampleUniform] = OverSampleUniform(
-            sub_size=4
-        ),
+        over_sample: Optional[AbstractOverSample] = None,
+        over_sample_pixelization: Optional[AbstractOverSample] = None,
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
@@ -125,6 +123,7 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure.
         """
+
         return Grid2D.from_mask(
             mask=self.mask,
             over_sample=self.over_sample,
@@ -146,19 +145,25 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
         """
+
+        over_sample = self.over_sample_pixelization
+
+        if over_sample is None:
+            over_sample = OverSampleUniform(sub_size=4)
+
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sample=self.over_sample_pixelization,
+            over_sample=over_sample,
         )
 
     @cached_property
     def mapper_tools(self):
         return MapperTools(
             over_sample=OverSampleUniformFunc(
-                mask=self.mask, sub_size=self.over_sample_pixelization.sub_size
+                mask=self.mask, sub_size=self.grid_pixelization.over_sample.sub_size
             ),
             border_relocator=BorderRelocator(
-                grid=self.grid_pixelization, sub_size=self.over_sample_pixelization.sub_size
+                grid=self.grid_pixelization, sub_size=self.grid_pixelization.over_sample.sub_size
             ),
         )
 

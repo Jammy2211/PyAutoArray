@@ -29,10 +29,8 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sample: Optional[AbstractOverSample] = OverSampleUniform(sub_size=1),
-        over_sample_pixelization: Optional[OverSampleUniform] = OverSampleUniform(
-            sub_size=4
-        ),
+        over_sample: Optional[AbstractOverSample] = None,
+        over_sample_pixelization: Optional[AbstractOverSample] = None,
         pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
