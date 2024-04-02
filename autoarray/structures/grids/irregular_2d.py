@@ -49,6 +49,31 @@ class Grid2DIrregular(AbstractNDArray):
 
         super().__init__(values)
 
+    @classmethod
+    def from_yx_1d(cls, y: np.ndarray, x: np.ndarray) -> "Grid2DIrregular":
+        """
+        Create `Grid2DIrregular` from a list of y and x values.
+        """
+        return Grid2DIrregular(values=np.stack((y, x), axis=-1))
+
+    @classmethod
+    def from_pixels_and_mask(
+        cls, pixels: Union[np.ndarray, List], mask: Mask2D
+    ) -> "Grid2DIrregular":
+        """
+        Create `Grid2DIrregular` from a list of coordinates in pixel units and a mask which allows these
+        coordinates to be converted to scaled units.
+        """
+
+        coorindates = [
+            mask.geometry.scaled_coordinates_2d_from(
+                pixel_coordinates_2d=pixel_coordinates_2d
+            )
+            for pixel_coordinates_2d in pixels
+        ]
+
+        return Grid2DIrregular(values=coorindates)
+
     @property
     def values(self):
         return self._array
@@ -87,31 +112,6 @@ class Grid2DIrregular(AbstractNDArray):
     @property
     def native(self) -> "Grid2DIrregular":
         return self
-
-    @classmethod
-    def from_yx_1d(cls, y: np.ndarray, x: np.ndarray) -> "Grid2DIrregular":
-        """
-        Create `Grid2DIrregular` from a list of y and x values.
-        """
-        return Grid2DIrregular(values=np.stack((y, x), axis=-1))
-
-    @classmethod
-    def from_pixels_and_mask(
-        cls, pixels: Union[np.ndarray, List], mask: Mask2D
-    ) -> "Grid2DIrregular":
-        """
-        Create `Grid2DIrregular` from a list of coordinates in pixel units and a mask which allows these
-        coordinates to be converted to scaled units.
-        """
-
-        coorindates = [
-            mask.geometry.scaled_coordinates_2d_from(
-                pixel_coordinates_2d=pixel_coordinates_2d
-            )
-            for pixel_coordinates_2d in pixels
-        ]
-
-        return Grid2DIrregular(values=coorindates)
 
     @property
     def in_list(self) -> List:

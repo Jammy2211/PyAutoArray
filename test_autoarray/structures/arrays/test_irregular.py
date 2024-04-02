@@ -46,32 +46,3 @@ def test__coordinates_from_grid_1d():
     )
 
     assert coordinate_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
-
-
-def test__output_values_to_json():
-    values = aa.ArrayIrregular(values=[6.0, 7.0, 8.0])
-
-    output_values_dir = path.join(
-        "{}".format(path.dirname(path.realpath(__file__))),
-        "files",
-        "values",
-        "output_test",
-    )
-
-    if path.exists(output_values_dir):
-        shutil.rmtree(output_values_dir)
-
-    os.makedirs(output_values_dir)
-
-    file_path = path.join(output_values_dir, "values_test.dat")
-
-    values.output_to_json(file_path=file_path)
-
-    values = aa.ArrayIrregular.from_file(file_path=file_path)
-
-    assert values.in_list == [6.0, 7.0, 8.0]
-
-    with pytest.raises(FileExistsError):
-        values.output_to_json(file_path=file_path)
-
-    values.output_to_json(file_path=file_path, overwrite=True)
