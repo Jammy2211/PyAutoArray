@@ -212,7 +212,7 @@ class MockGridLikeIteratorObj:
             )
         ]
 
-    @decorators.grid_2d_to_structure_over_sample
+    @decorators.grid_2d_to_structure
     def ndarray_1d_over_sample_from(self, grid) -> np.ndarray:
         """
         Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a 1D ndarray
@@ -228,7 +228,7 @@ class MockGridLikeIteratorObj:
             )
         )
 
-    @decorators.grid_2d_to_structure_over_sample_list
+    @decorators.grid_2d_to_structure_list
     def ndarray_1d_over_sample_list_from(self, grid):
         """
         Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a list of 1D

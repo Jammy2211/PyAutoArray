@@ -60,7 +60,14 @@ class StructureMaker:
 
         result = None
 
-        if isinstance(self.grid, Grid2D) or isinstance(self.grid, Grid2DIrregular):
+        if isinstance(self.grid, Grid2D):
+            if self.result_type == "array":
+                grid = self.grid
+                result = grid.over_sample_func.array_via_func_from(func=self.func, cls=self.obj)
+            else:
+                grid = self.grid
+                result = self.func(self.obj, grid, *self.args, **self.kwargs)
+        elif isinstance(self.grid, Grid2DIrregular):
             grid = self.grid
             result = self.func(self.obj, grid, *self.args, **self.kwargs)
         elif isinstance(self.grid, Grid1D):
@@ -262,6 +269,6 @@ class StructureMaker:
         result_list = []
 
         for result in result:
-            result_list.append(self.via_grid_1dgit a(result=result))
+            result_list.append(self.via_grid_1d(result=result))
 
         return result_list
