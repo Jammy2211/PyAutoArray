@@ -156,36 +156,6 @@ def test__grid_of_closest_from():
     ).all()
 
 
-def test__structure_2d_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, -1.0), (1.0, 1.0)])
-
-    result = grid.structure_2d_from(result=np.array([1.0, 2.0]))
-
-    assert isinstance(result, aa.ArrayIrregular)
-    assert result.in_list == [1.0, 2.0]
-
-    result = grid.structure_2d_from(result=np.array([[1.0, 1.0], [2.0, 2.0]]))
-
-    assert isinstance(result, aa.Grid2DIrregular)
-    assert result.in_list == [(1.0, 1.0), (2.0, 2.0)]
-
-
-def test__structure_2d_list_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, -1.0), (1.0, 1.0)])
-
-    result = grid.structure_2d_list_from(result_list=[np.array([1.0, 2.0])])
-
-    assert isinstance(result[0], aa.ArrayIrregular)
-    assert result[0].in_list == [1.0, 2.0]
-
-    result = grid.structure_2d_list_from(
-        result_list=[np.array([[1.0, 1.0], [2.0, 2.0]])]
-    )
-
-    assert isinstance(result[0], aa.Grid2DIrregular)
-    assert result[0].in_list == [(1.0, 1.0), (2.0, 2.0)]
-
-
 def test__uniform__from_grid_sparse_uniform_upscale():
     grid_sparse_uniform = aa.Grid2DIrregularUniform(
         values=[[(1.0, 1.0), (1.0, 3.0)]], pixel_scales=2.0
