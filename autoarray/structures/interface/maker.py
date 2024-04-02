@@ -38,7 +38,7 @@ class StructureMaker:
     @property
     def result_basic(self):
 
-        grid = Grid2D(values=[[1.0, 1.0]], mask=Mask2D(mask=[[False]], pixel_scales=1.0))
+        grid = np.array([[1.0, 1.0]]
 
         return self.func(self.obj, grid, *self.args, **self.kwargs)
 
@@ -60,15 +60,14 @@ class StructureMaker:
 
         result = None
 
+        grid = self.grid
+
         if isinstance(self.grid, Grid2D):
             if self.result_type == "array":
-                grid = self.grid
                 result = grid.over_sample_func.array_via_func_from(func=self.func, cls=self.obj)
             else:
-                grid = self.grid
                 result = self.func(self.obj, grid, *self.args, **self.kwargs)
         elif isinstance(self.grid, Grid2DIrregular):
-            grid = self.grid
             result = self.func(self.obj, grid, *self.args, **self.kwargs)
         elif isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
