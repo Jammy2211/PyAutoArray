@@ -149,11 +149,6 @@ class AbstractVisibilities(Structure, ABC):
 
 
 class Visibilities(AbstractVisibilities):
-    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
-        raise NotImplementedError()
-
-    def structure_2d_from(self, result: np.ndarray) -> "Structure":
-        raise NotImplementedError()
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
         raise NotImplementedError()
