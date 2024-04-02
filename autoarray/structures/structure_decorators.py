@@ -309,10 +309,11 @@ def grid_2d_to_structure_over_sample(func):
                 return grid.over_sample_func.structure_2d_from(result=result)
 
             elif isinstance(grid.over_sample, OverSampleIterate):
-                return grid.over_sample_func.iterated_result_from(
-                    func=func, cls=obj, grid=grid
+                return grid.over_sample_func.array_via_func_from(
+                    func=func, cls=obj,
                 )
-            #return grid.over_sample_func.structure_2d_from(result=result)
+
+        #return grid.over_sample_func.structure_2d_from(result=result)
 
         if isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)

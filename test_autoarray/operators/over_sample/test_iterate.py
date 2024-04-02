@@ -4,6 +4,7 @@ import autoarray as aa
 
 from autoarray.structures.mock.mock_structure_decorators import (
     ndarray_1d_from,
+    ndarray_1d_zeros_from,
     ndarray_2d_from,
 )
 
@@ -133,7 +134,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
     values = over_sample.iterated_array_from(
         func=ndarray_1d_from,
         cls=None,
-        array_lower_sub_2d=values_sub_1.native,
+        array_sub_1=values_sub_1.native,
     )
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
@@ -151,7 +152,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
     values = over_sample.iterated_array_from(
         func=ndarray_1d_from,
         cls=None,
-        array_lower_sub_2d=values_sub_1.native,
+        array_sub_1=values_sub_1.native,
     )
 
     assert (values == values_sub_3).all()
@@ -163,7 +164,7 @@ def test__iterated_array_from__extreme_fractional_accuracies_uses_last_or_first_
     values = over_sample.iterated_array_from(
         func=ndarray_1d_from,
         cls=None,
-        array_lower_sub_2d=values_sub_1.native,
+        array_sub_1=values_sub_1.native,
     )
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
@@ -201,7 +202,7 @@ def test__iterated_array_from__check_values_computed_to_fractional_accuracy():
     values = over_sample.iterated_array_from(
         func=ndarray_1d_from,
         cls=None,
-        array_lower_sub_2d=values_sub_1.native,
+        array_sub_1=values_sub_1.native,
     )
 
     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
@@ -237,10 +238,8 @@ def test__iterated_array_from__func_returns_all_zeros__iteration_terminated():
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    arr = aa.Array2D(values=np.zeros(9), mask=mask)
-
     values = over_sample.iterated_array_from(
-        func=ndarray_1d_from, cls=None, array_lower_sub_2d=arr
+        func=ndarray_1d_zeros_from, cls=None,
     )
 
     assert (values == np.zeros((9,))).all()

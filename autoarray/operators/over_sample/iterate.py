@@ -203,7 +203,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         )
 
     def iterated_array_from(
-        self, func: Callable, cls: object, array_lower_sub_2d: Array2D
+        self, func: Callable, cls: object,
     ) -> Array2D:
         """
         Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
@@ -223,6 +223,14 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         ``LightProfile`` module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
         the analytic light profile at more points and thus more precisely.
 
+        Iterate over a function that returns an array or grid of values until the it meets a specified fractional
+        accuracy. The function returns a result on a pixel-grid where evaluating it on more points on a higher
+        resolution sub-grid followed by binning lead to a more precise evaluation of the function.
+
+        A full description of the iteration method can be found in the functions *iterated_array_from* and
+        *iterated_grid_from*. This function computes the result on a grid with a sub-size of 1, and uses its
+        shape to call the correct function.
+
         Parameters
         ----------
         func : func
@@ -233,8 +241,12 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
             The results computed by the function using a lower sub-grid size
         """
 
-        if not np.any(array_lower_sub_2d):
-            return array_lower_sub_2d.slim
+        array_sub_1 = func(cls, np.array(self.mask.derive_grid.unmasked))
+
+        array_sub_1 = Array2D(values=array_sub_1, mask=self.mask).native
+
+        if not np.any(array_sub_1):
+            return array_sub_1.slim
 
         iterated_array = np.zeros(shape=self.mask.shape_native)
 
@@ -247,7 +259,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
 
             try:
                 threshold_mask_higher_sub = self.threshold_mask_from(
-                    array_lower_sub_2d=array_lower_sub_2d,
+                    array_lower_sub_2d=array_sub_1,
                     array_higher_sub_2d=array_higher_sub,
                 )
 
@@ -268,7 +280,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
                     iterated_array=iterated_array,
                 )
 
-            array_lower_sub_2d = array_higher_sub
+            array_sub_1 = array_higher_sub
             threshold_mask_lower_sub = threshold_mask_higher_sub
             threshold_mask_higher_sub.pixel_scales = self.mask.pixel_scales
 
@@ -310,36 +322,3 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
 
         return Array2D(values=iterated_array_1d, mask=self.mask)
 
-    def iterated_result_from(
-        self, func: Callable, cls: object, grid: Grid2D
-    ) -> Union[Array2D, Grid2D]:
-        """
-        Iterate over a function that returns an array or grid of values until the it meets a specified fractional
-        accuracy. The function returns a result on a pixel-grid where evaluating it on more points on a higher
-        resolution sub-grid followed by binning lead to a more precise evaluation of the function.
-
-        A full description of the iteration method can be found in the functions *iterated_array_from* and
-        *iterated_grid_from*. This function computes the result on a grid with a sub-size of 1, and uses its
-        shape to call the correct function.
-
-        Parameters
-        ----------
-        func
-            The function which is iterated over to compute a more precise evaluation.
-        cls
-            The class the function belongs to.
-        grid
-            The 2D grid whose values input into the function are iterated over.
-        """
-
-        # Convert to numpy array so grid does not do iteration.
-
-        result_sub_1_1d = func(cls, np.asarray(grid))
-
-        result_sub_1_2d = self.structure_2d_from(
-            result=result_sub_1_1d,
-        ).native
-
-        return self.iterated_array_from(
-            func=func, cls=cls, array_lower_sub_2d=result_sub_1_2d
-        )

@@ -30,6 +30,10 @@ def ndarray_1d_from(profile, grid):
     )
 
 
+def ndarray_1d_zeros_from(profile, grid):
+    return np.zeros(shape=(5,5))
+
+
 def angle_to_profile_grid_from(grid_angles):
     """The angle between each (y,x) coordinate on the grid and the profile, in radians.
 
