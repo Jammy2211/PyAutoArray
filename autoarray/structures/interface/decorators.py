@@ -8,6 +8,7 @@ from autoconf.exc import ConfigException
 from autoarray import exc
 from autoarray.structures.interface.maker import ArrayMaker
 from autoarray.structures.interface.maker import GridMaker
+from autoarray.structures.interface.maker import VectorYXMaker
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -311,6 +312,7 @@ def grid_2d_to_grid(func):
 
     return wrapper
 
+
 def grid_2d_to_vector_yx(func):
     """
     Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates that return the results
@@ -333,111 +335,10 @@ def grid_2d_to_vector_yx(func):
         *args,
         **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
-        """
-        This decorator homogenizes the input of a "grid_like" 2D vector_yx (`Grid2D`, `Grid2DIrregular` or `Grid1D`)
-        into a function.
 
-        It allows these classes to be interchangeably input into a function, such that the grid is used to evaluate
-        the function at every (y,x) coordinates of the grid using specific functionality of the input grid.
-
-        The grid_like objects `Grid2D` and `Grid2DIrregular` are input into the function as a slimmed 2D NumPy array
-        of shape [total_coordinates, 2] where the second dimension stores the (y,x)  For a `Grid2D`, the
-        function is evaluated using its `OverSample` object.
-
-        The outputs of the function are converted from a 1D or 2D NumPy Array2D to an `Array2D`, `Grid2D`,
-        `ArrayIrregular` or `Grid2DIrregular` objects, whichever is applicable as follows:
-
-        - If the function returns (y,x) coordinates at every input point, the returned results are a `Grid2D`
-        or `Grid2DIrregular` vector_yx, the same vector_yx as the input.
-
-        - If the function returns scalar values at every input point and a `Grid2D` is input, the returned results are
-        an `Array2D` vector_yx which uses the same dimensions and mask as the `Grid2D`.
-
-        - If the function returns scalar values at every input point and `Grid2DIrregular` are input, the returned
-        results are a `ArrayIrregular` object with vector_yx resembling that of the `Grid2DIrregular`.
-
-        If the input array is not a `Grid2D` vector_yx (e.g. it is a 2D NumPy array) the output is a NumPy array.
-
-        Parameters
-        ----------
-        obj
-            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
-        grid : Grid2D or Grid2DIrregular
-            A grid_like object of (y,x) coordinates on which the function values are evaluated.
-
-        Returns
-        -------
-            The function values evaluated on the grid with the same vector_yx as the input grid_like object.
-        """
-
-        vector_yx_2d = func(obj, grid, *args, **kwargs)
-
-        if isinstance(grid, Grid2DIrregular):
-            return VectorYX2DIrregular(values=vector_yx_2d, grid=grid)
-
-        try:
-            return VectorYX2D(values=vector_yx_2d, grid=grid, mask=grid.mask)
-        except AttributeError:
-            return vector_yx_2d
+        return VectorYXMaker(func=func, obj=obj, grid=grid, *args, **kwargs).structure
 
     return wrapper
-
-
-def grid_2d_to_vector_yx_list(func):
-    """
-    Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates and return the results as
-    a list of NumPy arrays.
-
-    Parameters
-    ----------
-    func
-        A function which computes a set of values from a 2D grid of (y,x) coordinates.
-
-    Returns
-    -------
-        A function that can accept cartesian or transformed coordinates
-    """
-
-    @wraps(func)
-    def wrapper(
-        obj: object,
-        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
-        *args,
-        **kwargs,
-    ) -> List[Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]]:
-        """
-        This decorator serves the same purpose as the `grid_2d_to_vector_yx` decorator, but it deals with functions
-        whose output is a list of results as opposed to a single NumPy array. It simply iterates over these lists to
-        perform the same conversions as `grid_2d_to_vector_yx`.
-
-        Parameters
-        ----------
-        obj
-            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
-        grid : Grid2D or Grid2DIrregular
-            A grid_like object of (y,x) coordinates on which the function values are evaluated.
-
-        Returns
-        -------
-            The function values evaluated on the grid with the same vector_yx as the input grid_like object in a list
-            of NumPy arrays.
-        """
-
-        vector_yx_2d_list = func(obj, grid, *args, **kwargs)
-
-        if isinstance(grid, Grid2DIrregular):
-            return [
-                VectorYX2DIrregular(values=vectors, grid=grid)
-                for vectors in vector_yx_2d_list
-            ]
-        else:
-            return [
-                VectorYX2D(values=vectors, grid=grid, mask=grid.mask)
-                for vectors in vector_yx_2d_list
-            ]
-
-    return wrapper
-
 
 def transform(func):
     """

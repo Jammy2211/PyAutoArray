@@ -153,7 +153,6 @@ class MockGridLikeIteratorObj:
         )
 
     @decorators.grid_2d_to_vector_yx
-    @decorators.grid_2d_to_grid
     def ndarray_yx_2d_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
@@ -197,8 +196,7 @@ class MockGridLikeIteratorObj:
             )
         ]
 
-    @decorators.grid_2d_to_vector_yx_list
-    @decorators.grid_2d_to_grid
+    @decorators.grid_2d_to_vector_yx
     def ndarray_yx_2d_list_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a list of 2D
@@ -220,19 +218,6 @@ class MockGrid1DLikeObj:
     @decorators.grid_1d_to_structure
     def ndarray_1d_from(self, grid, *args, **kwargs):
         return np.ones(shape=grid.shape[0])
-
-    # @decorators.grid_1d_to_structure
-    # def ndarray_2d_from(self, grid):
-    #     return np.multiply(2.0, grid)
-
-    # @decorators.grid_1d_to_structure_list
-    # def ndarray_1d_list_from(self, grid):
-    #     return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
-    #
-    # @decorators.grid_1d_to_structure_list
-    # def ndarray_2d_list_from(self, grid):
-    #     return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
-
 
 class MockGrid2DLikeObj:
     def __init__(self):
@@ -259,7 +244,6 @@ class MockGrid2DLikeObj:
         return np.multiply(2.0, grid)
 
     @decorators.grid_2d_to_vector_yx
-    @decorators.grid_2d_to_grid
     def ndarray_yx_2d_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
@@ -289,8 +273,7 @@ class MockGrid2DLikeObj:
         """
         return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
-    @decorators.grid_2d_to_vector_yx_list
-    @decorators.grid_2d_to_grid
+    @decorators.grid_2d_to_vector_yx
     def ndarray_yx_2d_list_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a list of 2D
