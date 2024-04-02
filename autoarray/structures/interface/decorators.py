@@ -313,8 +313,6 @@ def grid_2d_to_structure_over_sample(func):
                     func=func, cls=obj,
                 )
 
-        #return grid.over_sample_func.structure_2d_from(result=result)
-
         if isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
             return grid.structure_2d_from(result=result)

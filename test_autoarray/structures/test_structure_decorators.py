@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 
 import autoarray as aa
-from autoarray.structures.mock.mock_structure_decorators import (
+from autoarray.structures.mock.mock_decorators import (
     ndarray_1d_from,
     ndarray_2d_from,
 )

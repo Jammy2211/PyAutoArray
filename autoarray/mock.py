@@ -18,7 +18,7 @@ from autoarray.mask.mock.mock_mask import MockMask
 from autoarray.operators.mock.mock_convolver import MockConvolver
 from autoarray.structures.mock.mock_grid import MockGrid2DMesh
 from autoarray.structures.mock.mock_grid import MockMeshGrid
-from autoarray.structures.mock.mock_structure_decorators import MockGridRadialMinimum
-from autoarray.structures.mock.mock_structure_decorators import MockGrid1DLikeObj
-from autoarray.structures.mock.mock_structure_decorators import MockGrid2DLikeObj
-from autoarray.structures.mock.mock_structure_decorators import MockGridLikeIteratorObj
+from autoarray.structures.mock.mock_decorators import MockGridRadialMinimum
+from autoarray.structures.mock.mock_decorators import MockGrid1DLikeObj
+from autoarray.structures.mock.mock_decorators import MockGrid2DLikeObj
+from autoarray.structures.mock.mock_decorators import MockGridLikeIteratorObj
