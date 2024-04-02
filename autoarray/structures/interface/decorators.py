@@ -241,7 +241,6 @@ def grid_2d_to_array(func):
         -------
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
-        print(grid)
         return ArrayMaker(func=func, obj=obj, grid=grid, *args, **kwargs).structure
 
     return wrapper
@@ -475,11 +474,7 @@ def relocate_to_radial_minimum(func):
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
 
-            print(grid)
-
             grid_radii = cls.radial_grid_from(grid=grid)
-
-            print(grid_radii)
 
             grid_radial_scale = np.where(
                 grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0

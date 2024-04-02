@@ -6,13 +6,7 @@ import autoarray as aa
 def make_mask_1d_7():
     mask = np.array([True, True, False, False, False, True, True])
 
-    return aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=1)
-
-
-def make_sub_mask_1d_7():
-    mask = np.array([True, True, False, False, False, True, True])
-
-    return aa.Mask1D(mask=mask, pixel_scales=(1.0,), sub_size=2)
+    return aa.Mask1D(mask=mask, pixel_scales=(1.0,))
 
 
 def make_mask_2d_7x7():
@@ -91,10 +85,6 @@ def make_grid_1d_7():
     return aa.Grid1D.from_mask(mask=make_mask_1d_7())
 
 
-def make_sub_grid_1d_7():
-    return aa.Grid1D.from_mask(mask=make_sub_mask_1d_7())
-
-
 def make_grid_2d_7x7():
     return aa.Grid2D.from_mask(mask=make_mask_2d_7x7())
 
@@ -163,6 +153,7 @@ def make_imaging_7x7():
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
         over_sample=aa.OverSampleUniform(sub_size=1),
+        over_sample_pixelization=aa.OverSampleUniform(sub_size=1),
     )
 
 
@@ -172,6 +163,7 @@ def make_imaging_covariance_7x7():
         psf=make_psf_3x3(),
         noise_covariance_matrix=make_noise_covariance_matrix_7x7(),
         over_sample=aa.OverSampleUniform(sub_size=1),
+        over_sample_pixelization=aa.OverSampleUniform(sub_size=1),
     )
 
 
@@ -181,6 +173,7 @@ def make_imaging_7x7_no_blur():
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
         over_sample=aa.OverSampleUniform(sub_size=1),
+        over_sample_pixelization=aa.OverSampleUniform(sub_size=1),
     )
 
 
