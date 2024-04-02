@@ -161,11 +161,6 @@ class Grid2DIrregular(AbstractNDArray):
             self.scaled_maxima[0] + buffer,
         ]
 
-    def values_via_value_from(self, value: float) -> ArrayIrregular:
-        return ArrayIrregular(
-            array_slim=np.full(fill_value=value, shape=self.shape[0])
-        )
-
     def grid_from(
         self, grid_slim: np.ndarray
     ) -> Union["Grid2DIrregular", "Grid2DIrregularTransformed"]:

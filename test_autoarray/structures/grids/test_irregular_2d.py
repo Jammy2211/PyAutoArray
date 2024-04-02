@@ -64,14 +64,6 @@ def test__from_pixels_and_mask():
     assert grid.in_list == [(1.0, -1.0), (1.0, 1.0)]
 
 
-def test__values_via_value_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
-
-    values_via_value_from = grid.values_via_value_from(value=1.0)
-
-    assert values_via_value_from.in_list == [1.0, 1.0]
-
-
 def test__grid_from():
     grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
 
