@@ -21,5 +21,3 @@ class AbstractOverSampleFunc:
     @classmethod
     def tree_unflatten(cls, aux_data, children):
         return cls(mask=children[0])
-
-

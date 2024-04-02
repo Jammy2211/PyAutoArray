@@ -223,7 +223,8 @@ def test__array_via_func_from__func_returns_all_zeros__iteration_terminated():
     )
 
     values = over_sample.array_via_func_from(
-        func=ndarray_1d_zeros_from, cls=None,
+        func=ndarray_1d_zeros_from,
+        cls=None,
     )
 
     assert (values == np.zeros((9,))).all()

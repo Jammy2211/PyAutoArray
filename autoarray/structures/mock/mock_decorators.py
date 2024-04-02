@@ -31,7 +31,7 @@ def ndarray_1d_from(profile, grid):
 
 
 def ndarray_1d_zeros_from(profile, grid):
-    return np.zeros(shape=(5,5))
+    return np.zeros(shape=(5, 5))
 
 
 def angle_to_profile_grid_from(grid_angles):

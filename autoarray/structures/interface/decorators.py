@@ -232,7 +232,8 @@ def grid_2d_to_structure(func):
             return maker.structure
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_from(result=result)
+            maker = StructureMaker(grid=grid, result=result)
+            return maker.structure
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result = func(obj, grid_2d_radial, *args, **kwargs)
@@ -314,12 +315,14 @@ def grid_2d_to_structure_over_sample(func):
 
             elif isinstance(grid.over_sample, OverSampleIterate):
                 return grid.over_sample_func.array_via_func_from(
-                    func=func, cls=obj,
+                    func=func,
+                    cls=obj,
                 )
 
         if isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_from(result=result)
+            maker = StructureMaker(grid=grid, result=result)
+            return maker.structure
         if isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result = func(obj, grid_2d_radial, *args, **kwargs)
@@ -377,7 +380,8 @@ def grid_2d_to_structure_list(func):
             return maker.structure
         elif isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_list_from(result_list=result_list)
+            maker = StructureMaker(grid=grid, result=result_list)
+            return maker.structure
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result_list = func(obj, grid_2d_radial, *args, **kwargs)
@@ -444,7 +448,8 @@ def grid_2d_to_structure_over_sample_list(func):
 
         if isinstance(grid, Grid2DIrregular):
             result_list = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_list_from(result_list=result_list)
+            maker = StructureMaker(grid=grid, result=result_list)
+            return maker.structure
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result_list = func(obj, grid_2d_radial, *args, **kwargs)

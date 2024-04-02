@@ -203,7 +203,9 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         )
 
     def array_via_func_from(
-        self, func: Callable, cls: object,
+        self,
+        func: Callable,
+        cls: object,
     ) -> Array2D:
         """
         Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
@@ -290,4 +292,3 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         iterated_array_2d = iterated_array + array_higher_sub
 
         return Array2D(values=iterated_array_2d, mask=self.mask)
-

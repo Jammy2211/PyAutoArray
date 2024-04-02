@@ -237,7 +237,6 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
                 values_list.append(self.binned_array_2d_from(array=value))
             return values_list
 
-
     @cached_property
     def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:
         """
