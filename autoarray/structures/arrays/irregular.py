@@ -76,19 +76,3 @@ class ArrayIrregular(Structure):
         Return the values in a list.
         """
         return [value for value in self]
-
-    def grid_from(self, grid_slim: np.ndarray) -> Grid2DIrregular:
-        """
-        Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
-
-        The returned grid are structured following this `ArrayIrregular` instance.
-
-        Parameters
-        ----------
-        grid_slim
-            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregular`
-            object.
-        """
-        from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-
-        return Grid2DIrregular(values=grid_slim)
