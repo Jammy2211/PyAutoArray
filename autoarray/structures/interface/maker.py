@@ -1,22 +1,16 @@
 import numpy as np
-from functools import wraps
 
 from typing import List, Union
 
-from autoconf.exc import ConfigException
-
-from autoarray import exc
 from autoarray.abstract_ndarray import AbstractNDArray
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
-from autoarray.operators.over_sample.uniform import OverSampleUniform
-from autoarray.operators.over_sample.iterate import OverSampleIterate
 from autoarray.structures.grids.transformed_2d import Grid2DTransformed
 from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
-from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.vectors.uniform import VectorYX2D
@@ -43,12 +37,15 @@ class StructureMaker:
                 return self.via_grid_2d
             elif isinstance(self.grid, Grid2DIrregular):
                 return self.via_grid_2d_irr
-
+            elif isinstance(self.grid, Grid1D):
+                return self.via_grid_1d
         else:
             if isinstance(self.grid, Grid2D):
                 return self.via_grid_2d_list
             elif isinstance(self.grid, Grid2DIrregular):
                 return self.via_grid_2d_irr_list
+            elif isinstance(self.grid, Grid1D):
+                return self.via_grid_1d_list
 
     @property
     def via_grid_2d(
@@ -182,3 +179,61 @@ class StructureMaker:
             return [ArrayIrregular(values=value) for value in self.result]
         elif len(self.result[0].shape) == 2:
             return [self.grid_irr_from(grid_slim=value) for value in self.result]
+
+    @property
+    def via_grid_1d(
+        self, 
+    ) -> Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]:
+        """
+        Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
+        type(result) as follows:
+
+        .. code-block:: bash
+
+            - 1D np.ndarray   -> aa.Array2D
+            - 2D np.ndarray   -> aa.Grid2D
+
+        This function is used by the grid_2d_to_structure decorator to convert the output result of a function
+        to an autoarray structure when a `Grid2D` instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+
+        if len(self.result.shape) == 1:
+            return Array1D(values=self.result, mask=self.mask)
+
+        if isinstance(self.result, Grid2DTransformedNumpy):
+            return Grid2DTransformed(values=self.result, mask=self.mask)
+        return Grid2D(values=self.result, mask=self.mask.derive_mask.to_mask_2d)
+
+    @property
+    def via_grid_1d_list(
+        self, 
+    ) -> List[Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]]:
+        """
+        Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
+        depends on type(result) as follows:
+
+        .. code-block:: bash
+
+            - [1D np.ndarray] -> [aa.Array2D]
+            - [2D np.ndarray] -> [aa.Grid2D]
+
+        This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
+        function to a list of autoarray structure when a `Grid2D` instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result_list
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        result_list = []
+
+        for result in self.result:
+            maker = StructureMaker(grid=self.grid, result=result)
+            result_list.append(maker.via_grid_1d)
+
+        return result_list

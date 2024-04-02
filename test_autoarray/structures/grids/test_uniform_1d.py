@@ -146,49 +146,6 @@ def test__grid_2d_radial_projected_from():
         1.0e-4,
     )
 
-
-def test__structure_2d_from():
-    mask = np.array([True, False, False, True])
-
-    mask = aa.Mask1D(mask=mask, pixel_scales=(1.0,))
-
-    grid_1d = aa.Grid1D.from_mask(mask=mask)
-
-    result = grid_1d.structure_2d_from(result=np.array([1.0, 2.0]))
-
-    assert isinstance(result, aa.Array1D)
-    assert (result.native == np.array([0.0, 1.0, 2.0, 0.0])).all()
-
-    result = grid_1d.structure_2d_from(result=np.array([[1.0, 1.0], [2.0, 2.0]]))
-
-    assert isinstance(result, aa.Grid2D)
-    assert (
-        result.native == np.array([[[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]]])
-    ).all()
-
-
-def test__structure_2d_list_from():
-    mask = np.array([True, False, False, True])
-
-    mask = aa.Mask1D(mask=mask, pixel_scales=(1.0,))
-
-    grid_1d = aa.Grid1D.from_mask(mask=mask)
-
-    result = grid_1d.structure_2d_list_from(result_list=[np.array([1.0, 2.0])])
-
-    assert isinstance(result[0], aa.Array1D)
-    assert (result[0].native == np.array([0.0, 1.0, 2.0, 0.0])).all()
-
-    result = grid_1d.structure_2d_list_from(
-        result_list=[np.array([[1.0, 1.0], [2.0, 2.0]])]
-    )
-
-    assert isinstance(result[0], aa.Grid2D)
-    assert (
-        result[0].native == np.array([[[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]]])
-    ).all()
-
-
 def test__recursive_shape_storage():
     mask = aa.Mask1D.all_false(shape_slim=(4,), pixel_scales=1.0)
     grid = aa.Grid1D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)

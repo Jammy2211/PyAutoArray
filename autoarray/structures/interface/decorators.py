@@ -237,7 +237,8 @@ def grid_2d_to_structure(func):
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result = func(obj, grid_2d_radial, *args, **kwargs)
-            return grid.structure_2d_from(result=result)
+            maker = StructureMaker(grid=grid, result=result)
+            return maker.structure
 
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)
@@ -326,7 +327,8 @@ def grid_2d_to_structure_over_sample(func):
         if isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result = func(obj, grid_2d_radial, *args, **kwargs)
-            return grid.structure_2d_from(result=result)
+            maker = StructureMaker(grid=grid, result=result)
+            return maker.structure
 
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)
@@ -385,7 +387,8 @@ def grid_2d_to_structure_list(func):
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result_list = func(obj, grid_2d_radial, *args, **kwargs)
-            return grid.structure_2d_list_from(result_list=result_list)
+            maker = StructureMaker(grid=grid, result=result_list)
+            return maker.structure
 
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)
@@ -453,7 +456,8 @@ def grid_2d_to_structure_over_sample_list(func):
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result_list = func(obj, grid_2d_radial, *args, **kwargs)
-            return grid.structure_2d_list_from(result_list=result_list)
+            maker = StructureMaker(grid=grid, result=result_list)
+            return maker.structure
 
         if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
             return func(obj, grid, *args, **kwargs)
