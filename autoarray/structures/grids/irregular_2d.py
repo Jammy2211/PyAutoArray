@@ -161,20 +161,6 @@ class Grid2DIrregular(AbstractNDArray):
             self.scaled_maxima[0] + buffer,
         ]
 
-    def grid_from(
-        self, grid_slim: np.ndarray
-    ) -> Union["Grid2DIrregular", "Grid2DIrregularTransformed"]:
-        """
-        Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2],
-        which are structured following this *Grid2DIrregular* instance.
-        """
-
-        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
-
-        if isinstance(grid_slim, Grid2DTransformedNumpy):
-            return Grid2DIrregularTransformed(values=grid_slim)
-        return Grid2DIrregular(values=grid_slim)
-
     def grid_2d_via_deflection_grid_from(
         self, deflection_grid: np.ndarray
     ) -> "Grid2DIrregular":
@@ -287,6 +273,20 @@ class Grid2DIrregular(AbstractNDArray):
 
         return Grid2DIrregular(values=grid_of_closest)
 
+    def grid_irr_from(
+        self, grid_slim: np.ndarray
+    ) -> Union["Grid2DIrregular", "Grid2DIrregularTransformed"]:
+        """
+        Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2],
+        which are structured following this *Grid2DIrregular* instance.
+        """
+
+        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
+
+        if isinstance(grid_slim, Grid2DTransformedNumpy):
+            return Grid2DIrregularTransformed(values=grid_slim)
+        return Grid2DIrregular(values=grid_slim)
+
     def structure_2d_from(
         self, result: Union[np.ndarray, List]
     ) -> Union[ArrayIrregular, "Grid2DIrregular", "Grid2DIrregularTransformed", List]:
@@ -312,12 +312,12 @@ class Grid2DIrregular(AbstractNDArray):
             if len(result.shape) == 1:
                 return ArrayIrregular(values=result)
             elif len(result.shape) == 2:
-                return self.grid_from(grid_slim=result)
+                return self.grid_irr_from(grid_slim=result)
         elif isinstance(result, list):
             if len(result[0].shape) == 1:
                 return [ArrayIrregular(values=value) for value in result]
             elif len(result[0].shape) == 2:
-                return [self.grid_from(grid_slim=value) for value in result]
+                return [self.grid_irr_from(grid_slim=value) for value in result]
 
     def structure_2d_list_from(
         self, result_list: List
@@ -342,7 +342,7 @@ class Grid2DIrregular(AbstractNDArray):
         if len(result_list[0].shape) == 1:
             return [ArrayIrregular(values=value) for value in result_list]
         elif len(result_list[0].shape) == 2:
-            return [self.grid_from(grid_slim=value) for value in result_list]
+            return [self.grid_irr_from(grid_slim=value) for value in result_list]
 
 
 class Grid2DIrregularTransformed(Grid2DIrregular):

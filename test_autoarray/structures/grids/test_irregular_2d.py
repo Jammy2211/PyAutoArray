@@ -64,24 +64,6 @@ def test__from_pixels_and_mask():
     assert grid.in_list == [(1.0, -1.0), (1.0, 1.0)]
 
 
-def test__grid_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
-
-    grid_from_1d = grid.grid_from(grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]]))
-
-    assert type(grid_from_1d) == aa.Grid2DIrregular
-    assert grid_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0)]
-
-    grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
-
-    grid_from_1d = grid.grid_from(
-        grid_slim=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
-    )
-
-    assert type(grid_from_1d) == aa.Grid2DIrregular
-    assert grid_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
-
-
 def test__grid_2d_via_deflection_grid_from():
     grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
 
