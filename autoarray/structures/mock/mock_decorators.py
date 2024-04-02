@@ -6,11 +6,11 @@ from autoarray.structures.interface import decorators
 ### Grids ###
 
 
-def radial_grid_from(grid):
+def radial_grid_from(grid, *args, **kwargs):
     return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
 
-def ndarray_1d_from(profile, grid):
+def ndarray_1d_from(profile, grid, *args, **kwargs):
     sersic_constant = (
         (2 * 2.0)
         - (1.0 / 3.0)
@@ -30,15 +30,15 @@ def ndarray_1d_from(profile, grid):
     )
 
 
-def ndarray_1d_zeros_from(profile, grid):
+def ndarray_1d_zeros_from(profile, grid, *args, **kwargs):
     return np.zeros(shape=(5, 5))
 
 
-def ndarray_1d_list_from(profile, grid):
+def ndarray_1d_list_from(profile, grid, *args, **kwargs):
     return [ndarray_1d_from(profile, grid)]
 
 
-def angle_to_profile_grid_from(grid_angles):
+def angle_to_profile_grid_from(grid_angles, *args, **kwargs):
     """The angle between each (y,x) coordinate on the grid and the profile, in radians.
 
     Parameters
@@ -49,7 +49,7 @@ def angle_to_profile_grid_from(grid_angles):
     return np.cos(grid_angles), np.sin(grid_angles)
 
 
-def _cartesian_grid_via_radial_from(grid, radius):
+def _cartesian_grid_via_radial_from(grid, radius, *args, **kwargs):
     """
     Convert a grid of (y,x) coordinates with their specified circular radii to their original (y,x) Cartesian
     coordinates.
@@ -66,17 +66,17 @@ def _cartesian_grid_via_radial_from(grid, radius):
     return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
 
-def ndarray_2d_from(profile, grid):
+def ndarray_2d_from(profile, grid, *args, **kwargs):
     return _cartesian_grid_via_radial_from(
         grid=grid, radius=np.full(grid.shape[0], 2.0)
     )
 
 
-def ndarray_2d_list_from(profile, grid):
+def ndarray_2d_list_from(profile, grid, *args, **kwargs):
     return [ndarray_2d_from(profile, grid)]
 
 
-def ndarray_2d_yx_from(profile, grid):
+def ndarray_2d_yx_from(profile, grid, *args, **kwargs):
     return 2.0 * grid
 
 
@@ -124,8 +124,8 @@ class MockGridLikeIteratorObj:
         cos_theta, sin_theta = self.angle_to_profile_grid_from(grid_angles=grid_angles)
         return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
-    @decorators.grid_2d_to_structure
-    def ndarray_1d_from(self, grid) -> np.ndarray:
+    @decorators.grid_2d_to_array
+    def ndarray_1d_from(self, grid, *args, **kwargs) -> np.ndarray:
         """
         Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a 1D ndarray
         of shape [total_masked_grid_pixels].
@@ -140,8 +140,8 @@ class MockGridLikeIteratorObj:
             )
         )
 
-    @decorators.grid_2d_to_structure
-    def ndarray_2d_from(self, grid):
+    @decorators.grid_2d_to_grid
+    def ndarray_2d_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
         of shape [total_masked_grid_pixels, 2].
@@ -153,8 +153,8 @@ class MockGridLikeIteratorObj:
         )
 
     @decorators.grid_2d_to_vector_yx
-    @decorators.grid_2d_to_structure
-    def ndarray_yx_2d_from(self, grid):
+    @decorators.grid_2d_to_grid
+    def ndarray_yx_2d_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
         of shape [total_masked_grid_pixels] which represents a vector field.
@@ -165,8 +165,8 @@ class MockGridLikeIteratorObj:
             grid=grid, radius=np.full(grid.shape[0], 2.0)
         )
 
-    @decorators.grid_2d_to_structure
-    def ndarray_1d_list_from(self, grid):
+    @decorators.grid_2d_to_array
+    def ndarray_1d_list_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a list of 1D
         ndarrays of shape [total_masked_grid_pixels].
@@ -183,8 +183,8 @@ class MockGridLikeIteratorObj:
             )
         ]
 
-    @decorators.grid_2d_to_structure
-    def ndarray_2d_list_from(self, grid):
+    @decorators.grid_2d_to_grid
+    def ndarray_2d_list_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D list of
         ndarrays of shape [total_masked_grid_pixels, 2].
@@ -198,8 +198,8 @@ class MockGridLikeIteratorObj:
         ]
 
     @decorators.grid_2d_to_vector_yx_list
-    @decorators.grid_2d_to_structure
-    def ndarray_yx_2d_list_from(self, grid):
+    @decorators.grid_2d_to_grid
+    def ndarray_yx_2d_list_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a list of 2D
         ndarrays of shape [total_masked_grid_pixels] which represents a vector field.
@@ -218,7 +218,7 @@ class MockGrid1DLikeObj:
         self.angle = angle
 
     @decorators.grid_1d_to_structure
-    def ndarray_1d_from(self, grid):
+    def ndarray_1d_from(self, grid, *args, **kwargs):
         return np.ones(shape=grid.shape[0])
 
     # @decorators.grid_1d_to_structure
@@ -238,8 +238,8 @@ class MockGrid2DLikeObj:
     def __init__(self):
         pass
 
-    @decorators.grid_2d_to_structure
-    def ndarray_1d_from(self, grid):
+    @decorators.grid_2d_to_array
+    def ndarray_1d_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a 1D ndarray
         of shape [total_masked_grid_pixels].
@@ -248,8 +248,8 @@ class MockGrid2DLikeObj:
         """
         return np.ones(shape=grid.shape[0])
 
-    @decorators.grid_2d_to_structure
-    def ndarray_2d_from(self, grid):
+    @decorators.grid_2d_to_grid
+    def ndarray_2d_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
         of shape [total_masked_grid_pixels, 2].
@@ -259,8 +259,8 @@ class MockGrid2DLikeObj:
         return np.multiply(2.0, grid)
 
     @decorators.grid_2d_to_vector_yx
-    @decorators.grid_2d_to_structure
-    def ndarray_yx_2d_from(self, grid):
+    @decorators.grid_2d_to_grid
+    def ndarray_yx_2d_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D ndarray
         of shape [total_masked_grid_pixels] which represents a vector field.
@@ -269,8 +269,8 @@ class MockGrid2DLikeObj:
         """
         return 2.0 * grid
 
-    @decorators.grid_2d_to_structure
-    def ndarray_1d_list_from(self, grid):
+    @decorators.grid_2d_to_array
+    def ndarray_1d_list_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input 1D grid, returns a list of 1D
         ndarrays of shape [total_masked_grid_pixels].
@@ -279,8 +279,8 @@ class MockGrid2DLikeObj:
         """
         return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
 
-    @decorators.grid_2d_to_structure
-    def ndarray_2d_list_from(self, grid):
+    @decorators.grid_2d_to_grid
+    def ndarray_2d_list_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a 2D list of
         ndarrays of shape [total_masked_grid_pixels, 2].
@@ -290,8 +290,8 @@ class MockGrid2DLikeObj:
         return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
     @decorators.grid_2d_to_vector_yx_list
-    @decorators.grid_2d_to_structure
-    def ndarray_yx_2d_list_from(self, grid):
+    @decorators.grid_2d_to_grid
+    def ndarray_yx_2d_list_from(self, grid, *args, **kwargs):
         """
         Mock function mimicking the behaviour of a class function which given an input grid, returns a list of 2D
         ndarrays of shape [total_masked_grid_pixels] which represents a vector field.
