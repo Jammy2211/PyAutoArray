@@ -226,22 +226,18 @@ def grid_2d_to_structure(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if isinstance(grid, Grid2D):
+        result = None
+
+        if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
-            maker = StructureMaker(grid=grid, result=result)
-            return maker.structure
-        elif isinstance(grid, Grid2DIrregular):
-            result = func(obj, grid, *args, **kwargs)
-            maker = StructureMaker(grid=grid, result=result)
-            return maker.structure
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from()
             result = func(obj, grid_2d_radial, *args, **kwargs)
-            maker = StructureMaker(grid=grid, result=result)
-            return maker.structure
 
-        if not isinstance(grid, Grid2DIrregular) and not isinstance(grid, Grid2D):
-            return func(obj, grid, *args, **kwargs)
+        if result is not None:
+            return StructureMaker(grid=grid, result=result).structure
+
+        return func(obj, grid, *args, **kwargs)
 
     return wrapper
 
