@@ -39,8 +39,15 @@ class StructureMaker:
     @property
     def structure(self):
 
-        if isinstance(self.grid, Grid2D):
-            return self.via_grid_2d
+        if not isinstance(self.result, list):
+
+            if isinstance(self.grid, Grid2D):
+                return self.via_grid_2d
+
+        else:
+
+            if isinstance(self.grid, Grid2D):
+                return self.via_grid_2d_list
 
     @property
     def via_grid_2d(
@@ -72,4 +79,31 @@ class StructureMaker:
                     values=self.result, mask=self.mask, over_sample=self.over_sample
                 )
             return Grid2D(values=self.result, mask=self.mask, over_sample=self.over_sample)
-        
+
+    @property
+    def via_grid_2d_list(
+        self,
+    ) -> List[Union[Array2D, "Grid2D"]]:
+        """
+        Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
+        depends on type(result) as follows:
+
+        - [1D np.ndarray] -> [aa.Array2D]
+        - [2D np.ndarray] -> [aa.Grid2D]
+
+        This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
+        function to a list of autoarray structure when a `Grid2D` instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result_list or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        result_list = []
+
+        for result in self.result:
+
+            maker = StructureMaker(grid=self.grid, result=result)
+            result_list.append(maker.via_grid_2d)
+
+        return result_list
