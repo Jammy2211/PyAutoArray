@@ -94,7 +94,16 @@ class ArrayMaker(StructureMaker):
         grid = self.grid
 
         if isinstance(self.grid, Grid2D):
-            result = grid.over_sample_func.array_via_func_from(func=self.func, cls=self.obj, *self.args, **self.kwargs)
+
+            if grid.over_sample is None:
+                result = self.func(self.obj, grid, *self.args, **self.kwargs)
+            else:
+                result = grid.over_sample_func.array_via_func_from(
+                    func=self.func,
+                    cls=self.obj,
+                    *self.args,
+                    **self.kwargs
+                )
         elif isinstance(self.grid, Grid2DIrregular):
             result = self.func(self.obj, grid, *self.args, **self.kwargs)
         elif isinstance(self.grid, Grid1D):

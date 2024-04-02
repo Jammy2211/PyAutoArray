@@ -166,11 +166,6 @@ class Grid2D(Structure):
 
         grid_2d_util.check_grid_2d(grid_2d=values)
 
-        from autoarray.operators.over_sample.uniform import OverSampleUniform
-
-        if over_sample is None:
-            over_sample = OverSampleUniform(sub_size=1)
-
         self.over_sample = over_sample
 
     @property
