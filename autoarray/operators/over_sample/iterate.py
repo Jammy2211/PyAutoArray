@@ -148,13 +148,13 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         return OverSampleIterate()
 
     def array_at_sub_size_from(
-        self, func: Callable, cls, mask: Mask2D, sub_size
+        self, func: Callable, cls, mask: Mask2D, sub_size, *args, **kwargs
     ) -> Array2D:
         over_sample_uniform = OverSampleUniformFunc(mask=mask, sub_size=sub_size)
 
         oversampled_grid = over_sample_uniform.oversampled_grid
 
-        array_higher_sub = func(cls, np.array(oversampled_grid))
+        array_higher_sub = func(cls, np.array(oversampled_grid), *args, **kwargs)
         # array = self.structure_2d_from(
         #     result=array_higher_sub,
         # )
@@ -206,6 +206,8 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         self,
         func: Callable,
         cls: object,
+        *args,
+        **kwargs
     ) -> Array2D:
         """
         Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
@@ -242,7 +244,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         grid_lower_sub_2d
             The results computed by the function using a lower sub-grid size
         """
-        array_sub_1 = func(cls, np.array(self.mask.derive_grid.unmasked))
+        array_sub_1 = func(cls, np.array(self.mask.derive_grid.unmasked), *args, **kwargs)
 
         array_sub_1 = Array2D(values=array_sub_1, mask=self.mask).native
 
@@ -286,6 +288,8 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
             cls=cls,
             mask=threshold_mask_lower_sub,
             sub_size=self.sub_steps[-1],
+            *args,
+            **kwargs
         )
 
         iterated_array_2d = iterated_array + array_higher_sub

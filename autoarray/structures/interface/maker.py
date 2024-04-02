@@ -47,7 +47,6 @@ class StructureMaker:
     def result_type(self):
 
         result_basic = self.result_basic
-
         if isinstance(result_basic, list):
             result_basic = result_basic[0]
 
@@ -65,7 +64,7 @@ class StructureMaker:
 
         if isinstance(self.grid, Grid2D):
             if self.result_type == "array":
-                result = grid.over_sample_func.array_via_func_from(func=self.func, cls=self.obj)
+                result = grid.over_sample_func.array_via_func_from(func=self.func, cls=self.obj, *self.args, **self.kwargs)
             else:
                 result = self.func(self.obj, grid, *self.args, **self.kwargs)
         elif isinstance(self.grid, Grid2DIrregular):

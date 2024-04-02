@@ -223,11 +223,11 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
             mask=self.mask,
         )
 
-    def array_via_func_from(self, func, cls):
+    def array_via_func_from(self, func, cls, *args, **kwargs):
         if cls is not None:
-            values = func(cls, np.asarray(self.oversampled_grid.slim))
+            values = func(cls, np.asarray(self.oversampled_grid.slim), *args, **kwargs)
         else:
-            values = func(np.asarray(self.oversampled_grid.slim))
+            values = func(np.asarray(self.oversampled_grid.slim), *args, **kwargs)
 
         if not isinstance(values, list):
             return self.binned_array_2d_from(array=values)
