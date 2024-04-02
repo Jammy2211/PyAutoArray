@@ -226,18 +226,7 @@ def grid_2d_to_structure(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        result = None
-
-        if isinstance(grid, Grid2D) or isinstance(grid, Grid2DIrregular):
-            result = func(obj, grid, *args, **kwargs)
-        elif isinstance(grid, Grid1D):
-            grid_2d_radial = grid.grid_2d_radial_projected_from()
-            result = func(obj, grid_2d_radial, *args, **kwargs)
-
-        if result is not None:
-            return StructureMaker(grid=grid, result=result).structure
-
-        return func(obj, grid, *args, **kwargs)
+        return StructureMaker(func=func, obj=obj, grid=grid, *args, **kwargs).structure
 
     return wrapper
 
@@ -371,6 +360,9 @@ def grid_2d_to_structure_list(func):
             The function values evaluated on the grid with the same structure as the input grid_like object in a list
             of NumPy arrays.
         """
+
+        maker = StructureMaker(func=func, obj=obj, grid=grid, *args, **kwargs)
+        return maker.structure
 
         if isinstance(grid, Grid2D):
             result_list = func(obj, grid, *args, **kwargs)

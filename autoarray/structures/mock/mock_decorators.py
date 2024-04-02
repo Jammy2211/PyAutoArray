@@ -34,6 +34,10 @@ def ndarray_1d_zeros_from(profile, grid):
     return np.zeros(shape=(5, 5))
 
 
+def ndarray_1d_list_from(profile, grid):
+    return [ndarray_1d_from(profile, grid)]
+
+
 def angle_to_profile_grid_from(grid_angles):
     """The angle between each (y,x) coordinate on the grid and the profile, in radians.
 
@@ -66,6 +70,14 @@ def ndarray_2d_from(profile, grid):
     return _cartesian_grid_via_radial_from(
         grid=grid, radius=np.full(grid.shape[0], 2.0)
     )
+
+
+def ndarray_2d_list_from(profile, grid):
+    return [ndarray_2d_from(profile, grid)]
+
+
+def ndarray_2d_yx_from(profile, grid):
+    return 2.0 * grid
 
 
 class MockGridLikeIteratorObj:
