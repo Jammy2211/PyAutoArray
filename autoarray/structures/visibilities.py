@@ -68,6 +68,10 @@ class AbstractVisibilities(Structure, ABC):
         return self
 
     @property
+    def native(self) -> Structure:
+        return self
+
+    @property
     def in_array(self) -> np.ndarray:
         """
         Returns the 1D complex NumPy array of values with shape [total_visibilities] as a NumPy float array of
@@ -149,14 +153,6 @@ class AbstractVisibilities(Structure, ABC):
 
 
 class Visibilities(AbstractVisibilities):
-
-    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
-        raise NotImplementedError()
-
-    @property
-    def native(self) -> Structure:
-        raise NotImplementedError()
-
     @classmethod
     def full(cls, fill_value: float, shape_slim: Tuple[int]) -> "Visibilities":
         """

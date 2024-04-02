@@ -20,14 +20,6 @@ logger = logging.getLogger(__name__)
 
 
 class ArrayIrregular(Structure):
-
-    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
-        raise NotImplementedError()
-
-    @property
-    def native(self) -> Structure:
-        raise NotImplementedError()
-
     def __init__(self, values: Union[List, np.ndarray]):
         """
         A collection of values which are structured as follows:
@@ -72,6 +64,10 @@ class ArrayIrregular(Structure):
         """
         The ArrayIrregular in their `slim` representation, a 1D ndarray of shape [total_values].
         """
+        return self
+
+    @property
+    def native(self) -> Structure:
         return self
 
     @property

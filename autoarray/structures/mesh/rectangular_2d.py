@@ -18,9 +18,6 @@ class Mesh2DRectangular(Abstract2DMesh):
     def slim(self) -> "Structure":
         raise NotImplementedError()
 
-    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
-        raise NotImplementedError()
-
     @property
     def native(self) -> Structure:
         raise NotImplementedError()
