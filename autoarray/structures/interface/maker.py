@@ -118,31 +118,6 @@ class StructureMaker:
                 values=result, mask=self.mask, over_sample=self.over_sample
             )
 
-    def via_grid_2d_list(
-        self, result
-    ) -> List[Union[Array2D, "Grid2D"]]:
-        """
-        Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
-        depends on type(result) as follows:
-
-        - [1D np.ndarray] -> [aa.Array2D]
-        - [2D np.ndarray] -> [aa.Grid2D]
-
-        This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
-        function to a list of autoarray structure when a `Grid2D` instance is passed to the decorated function.
-
-        Parameters
-        ----------
-        result_list or [np.ndarray]
-            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
-        """
-        result_list = []
-
-        for result in result:
-            result_list.append(self.via_grid_2d(result=result))
-
-        return result_list
-
     def grid_irr_from(
         self, grid_slim: np.ndarray
     ) -> Union["Grid2DIrregular", "Grid2DIrregularTransformed"]:
@@ -156,63 +131,6 @@ class StructureMaker:
         if isinstance(grid_slim, Grid2DTransformedNumpy):
             return Grid2DIrregularTransformed(values=grid_slim)
         return Grid2DIrregular(values=grid_slim)
-
-    def via_grid_2d_irr(
-        self, result
-    ) -> Union[ArrayIrregular, Grid2DIrregular, Grid2DIrregularTransformed, List]:
-        """
-        Convert a result from a non autoarray structure to an aa.ArrayIrregular or aa.Grid2DIrregular structure, where
-        the conversion depends on type(result) as follows:
-
-        - 1D np.ndarray   -> aa.ArrayIrregular
-        - 2D np.ndarray   -> aa.Grid2DIrregular
-        - [1D np.ndarray] -> [aa.ArrayIrregular]
-        - [2D np.ndarray] -> [aa.Grid2DIrregular]
-
-        This function is used by the grid_2d_to_structure decorator to convert the output result of a function
-        to an autoarray structure when a `Grid2DIrregular` instance is passed to the decorated function.
-
-        Parameters
-        ----------
-        result
-            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
-        """
-
-        if isinstance(result, (np.ndarray, AbstractNDArray)):
-            if len(result.shape) == 1:
-                return ArrayIrregular(values=result)
-            elif len(result.shape) == 2:
-                return self.grid_irr_from(grid_slim=result)
-        elif isinstance(result, list):
-            if len(result[0].shape) == 1:
-                return [ArrayIrregular(values=value) for value in result]
-            elif len(result[0].shape) == 2:
-                return [self.grid_irr_from(grid_slim=value) for value in result]
-
-    def via_grid_2d_irr_list(
-        self, result
-    ) -> List[Union[ArrayIrregular, Grid2DIrregular, Grid2DIrregularTransformed]]:
-        """
-        Convert a result from a list of non autoarray structures to a list of aa.ArrayIrregular or aa.Grid2DIrregular
-        structures, where the conversion depends on type(result) as follows:
-
-        ::
-
-            - [1D np.ndarray] -> [aa.ArrayIrregular]
-            - [2D np.ndarray] -> [aa.Grid2DIrregular]
-
-        This function is used by the grid_like_list_to_structure_list decorator to convert the output result of a
-        function to a list of autoarray structure when a `Grid2DIrregular` instance is passed to the decorated function.
-
-        Parameters
-        ----------
-        result_list
-            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
-        """
-        if len(result[0].shape) == 1:
-            return [ArrayIrregular(values=value) for value in result]
-        elif len(result[0].shape) == 2:
-            return [self.grid_irr_from(grid_slim=value) for value in result]
 
     def via_grid_1d(
         self, result
