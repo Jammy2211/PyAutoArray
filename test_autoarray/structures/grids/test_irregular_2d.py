@@ -186,35 +186,6 @@ def test__structure_2d_list_from():
     assert result[0].in_list == [(1.0, 1.0), (2.0, 2.0)]
 
 
-def test__from_and_to_file_json():
-    grid = aa.Grid2DIrregular(values=[(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)])
-
-    output_grid_dir = path.join(
-        "{}".format(os.path.dirname(os.path.realpath(__file__))),
-        "files",
-        "grid",
-        "output_test",
-    )
-
-    file_path = path.join(output_grid_dir, "grid_test.json")
-
-    if os.path.exists(output_grid_dir):
-        shutil.rmtree(output_grid_dir)
-
-    os.makedirs(output_grid_dir)
-
-    grid.output_to_json(file_path=file_path)
-
-    grid = aa.Grid2DIrregular.from_json(file_path=file_path)
-
-    assert grid.in_list == [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]
-
-    with pytest.raises(FileExistsError):
-        grid.output_to_json(file_path=file_path)
-
-    grid.output_to_json(file_path=file_path, overwrite=True)
-
-
 def test__uniform__from_grid_sparse_uniform_upscale():
     grid_sparse_uniform = aa.Grid2DIrregularUniform(
         values=[[(1.0, 1.0), (1.0, 3.0)]], pixel_scales=2.0

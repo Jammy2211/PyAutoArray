@@ -299,51 +299,6 @@ class Grid2DIrregular(AbstractNDArray):
 
         return Grid2DIrregular(values=grid_of_closest)
 
-    @classmethod
-    def from_json(cls, file_path: Union[Path, str]) -> "Grid2DIrregular":
-        """
-        Returns a `Grid2DIrregular` object from a .json file, which stores the coordinates as a list of list of tuples.
-
-        Parameters
-        ----------
-        file_path
-            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        """
-
-        with open(file_path) as infile:
-            grid = json.load(infile)
-
-        return Grid2DIrregular(values=grid)
-
-    def output_to_json(self, file_path: Union[Path, str], overwrite: bool = False):
-        """
-        Output this instance of the `Grid2DIrregular` object to a .json file as a list of list of tuples.
-
-        Parameters
-        ----------
-        file_path
-            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        overwrite
-            If there is as exsiting file it will be overwritten if this is `True`.
-        """
-
-        file_dir = os.path.split(file_path)[0]
-
-        if not path.exists(file_dir):
-            os.makedirs(file_dir)
-
-        if overwrite and path.exists(file_path):
-            os.remove(file_path)
-        elif not overwrite and path.exists(file_path):
-            raise FileExistsError(
-                "The file ",
-                file_path,
-                " already exists. Set overwrite=True to overwrite this" "file",
-            )
-
-        with open(file_path, "w+") as f:
-            json.dump(self.in_list, f)
-
     def structure_2d_from(
         self, result: Union[np.ndarray, List]
     ) -> Union[ArrayIrregular, "Grid2DIrregular", "Grid2DIrregularTransformed", List]:
