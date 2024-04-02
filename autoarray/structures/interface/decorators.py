@@ -99,7 +99,12 @@ def grid_1d_to_structure(func):
 
         elif isinstance(grid, Grid2DIrregular):
             result = func(obj, grid, *args, **kwargs)
-            return grid.structure_2d_from(result=result)
+            if len(result.shape) == 1:
+                return ArrayIrregular(values=result)
+            elif len(result.shape) == 2:
+                if isinstance(result, Grid2DTransformedNumpy):
+                    return Grid2DIrregularTransformed(values=result)
+                return Grid2DIrregular(values=result)
         elif isinstance(grid, Grid1D):
             grid_2d_radial = grid.grid_2d_radial_projected_from(angle=angle)
             result = func(obj, grid_2d_radial, *args, **kwargs)
@@ -156,7 +161,12 @@ def grid_1d_output_structure(func):
         if isinstance(grid, Grid2D):
             return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
         elif isinstance(grid, Grid2DIrregular):
-            return grid.structure_2d_from(result=result)
+            if len(result.shape) == 1:
+                return ArrayIrregular(values=result)
+            elif len(result.shape) == 2:
+                if isinstance(result, Grid2DTransformedNumpy):
+                    return Grid2DIrregularTransformed(values=result)
+                return Grid2DIrregular(values=result)
         elif isinstance(grid, Grid1D):
             return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
 

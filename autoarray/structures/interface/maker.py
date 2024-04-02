@@ -118,20 +118,6 @@ class StructureMaker:
                 values=result, mask=self.mask, over_sample=self.over_sample
             )
 
-    def grid_irr_from(
-        self, grid_slim: np.ndarray
-    ) -> Union["Grid2DIrregular", "Grid2DIrregularTransformed"]:
-        """
-        Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2],
-        which are structured following this *Grid2DIrregular* instance.
-        """
-
-        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
-
-        if isinstance(grid_slim, Grid2DTransformedNumpy):
-            return Grid2DIrregularTransformed(values=grid_slim)
-        return Grid2DIrregular(values=grid_slim)
-
     def via_grid_2d_irr(
         self, result
     ) -> Union[ArrayIrregular, Grid2DIrregular, Grid2DIrregularTransformed, List]:
@@ -152,17 +138,12 @@ class StructureMaker:
         result
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-
-        if isinstance(result, (np.ndarray, AbstractNDArray)):
-            if len(result.shape) == 1:
-                return ArrayIrregular(values=result)
-            elif len(result.shape) == 2:
-                return self.grid_irr_from(grid_slim=result)
-        elif isinstance(result, list):
-            if len(result[0].shape) == 1:
-                return [ArrayIrregular(values=value) for value in result]
-            elif len(result[0].shape) == 2:
-                return [self.grid_irr_from(grid_slim=value) for value in result]
+        if len(result.shape) == 1:
+            return ArrayIrregular(values=result)
+        elif len(result.shape) == 2:
+            if isinstance(result, Grid2DTransformedNumpy):
+                return Grid2DIrregularTransformed(values=result)
+            return Grid2DIrregular(values=result)
 
     def via_grid_1d(
         self, result
