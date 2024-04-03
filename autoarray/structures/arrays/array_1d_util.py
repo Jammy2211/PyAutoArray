@@ -60,7 +60,7 @@ def convert_array_1d(
     )
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def array_1d_slim_from(
     array_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
@@ -142,7 +142,7 @@ def array_1d_native_from(
     )
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def array_1d_via_indexes_1d_from(
     array_1d_slim: np.ndarray,
     sub_shape: int,

@@ -8,7 +8,7 @@ from autoarray import numba_util
 from autoarray import exc
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def w_tilde_data_imaging_from(
     image_native: np.ndarray,
     noise_map_native: np.ndarray,
@@ -76,7 +76,7 @@ def w_tilde_data_imaging_from(
     return w_tilde_data
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def w_tilde_curvature_imaging_from(
     noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index
 ) -> np.ndarray:
@@ -133,7 +133,7 @@ def w_tilde_curvature_imaging_from(
     return w_tilde_curvature
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def w_tilde_curvature_preload_imaging_from(
     noise_map_native: np.ndarray, kernel_native: np.ndarray, native_index_for_slim_index
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -244,7 +244,7 @@ def w_tilde_curvature_preload_imaging_from(
     return (curvature_preload, curvature_indexes, curvature_lengths)
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def w_tilde_curvature_value_from(
     value_native: np.ndarray,
     kernel_native: np.ndarray,
@@ -343,7 +343,7 @@ def w_tilde_curvature_value_from(
     return curvature_value
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def data_vector_via_w_tilde_data_imaging_from(
     w_tilde_data: np.ndarray,
     data_to_pix_unique: np.ndarray,
@@ -391,7 +391,7 @@ def data_vector_via_w_tilde_data_imaging_from(
     return data_vector
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
@@ -424,7 +424,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     return data_vector
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     curvature_preload: np.ndarray,
     curvature_indexes: np.ndarray,
@@ -516,7 +516,7 @@ def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     return curvature_matrix
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
     curvature_preload: np.ndarray,
     curvature_indexes: np.ndarray,
@@ -606,7 +606,7 @@ def curvature_matrix_off_diags_via_w_tilde_curvature_preload_imaging_from(
     return curvature_matrix
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def data_linear_func_matrix_from(
     curvature_weights_matrix: np.ndarray,
     image_frame_1d_lengths: np.ndarray,
@@ -671,7 +671,7 @@ def data_linear_func_matrix_from(
     return data_linear_func_matrix_dict
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
     data_linear_func_matrix: np.ndarray,
     data_to_pix_unique: np.ndarray,
@@ -727,7 +727,7 @@ def curvature_matrix_off_diags_via_data_linear_func_matrix_from(
     return off_diag
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def curvature_matrix_off_diags_via_mapper_and_linear_func_curvature_vector_from(
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
