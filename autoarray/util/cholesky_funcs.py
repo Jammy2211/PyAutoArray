@@ -5,7 +5,7 @@ import time
 from autoarray import numba_util
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def _choldowndate(U, x):
     n = x.size
     for k in range(n - 1):
@@ -23,7 +23,7 @@ def _choldowndate(U, x):
     return U
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def _cholupdate(U, x):
     n = x.size
     for k in range(n - 1):

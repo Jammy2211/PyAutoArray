@@ -8,7 +8,7 @@ from autoarray.structures.grids import grid_2d_util
 from autoarray import type as ty
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_2d_centres_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -43,7 +43,7 @@ def mask_2d_centres_from(
     return (y_centre_scaled, x_centre_scaled)
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def total_pixels_2d_from(mask_2d: np.ndarray) -> int:
     """
     Returns the total number of unmasked pixels in a mask.
@@ -78,7 +78,7 @@ def total_pixels_2d_from(mask_2d: np.ndarray) -> int:
     return total_regular_pixels
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def total_sub_pixels_2d_from(mask_2d: np.ndarray, sub_size: int) -> int:
     """
     Returns the total number of sub-pixels in unmasked pixels in a mask.
@@ -107,7 +107,7 @@ def total_sub_pixels_2d_from(mask_2d: np.ndarray, sub_size: int) -> int:
     return total_pixels_2d_from(mask_2d) * sub_size**2
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_2d_circular_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -160,7 +160,7 @@ def mask_2d_circular_from(
     return mask_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_2d_circular_annular_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -216,7 +216,7 @@ def mask_2d_circular_annular_from(
     return mask_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_2d_circular_anti_annular_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -312,7 +312,7 @@ def mask_2d_via_pixel_coordinates_from(
         return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def elliptical_radius_from(
     y_scaled: float, x_scaled: float, angle: float, axis_ratio: float
 ) -> float:
@@ -351,7 +351,7 @@ def elliptical_radius_from(
     )
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_2d_elliptical_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -414,7 +414,7 @@ def mask_2d_elliptical_from(
     return mask_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_2d_elliptical_annular_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
@@ -497,7 +497,7 @@ def mask_2d_elliptical_annular_from(
     return mask_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     """
     Returns a new mask of shape (mask.shape[0] * sub_size, mask.shape[1] * sub_size) where all boolean values are
@@ -549,7 +549,7 @@ def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     return oversample_mask
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def blurring_mask_2d_from(
     mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
 ) -> np.ndarray:
@@ -613,7 +613,7 @@ def blurring_mask_2d_from(
     return blurring_mask_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_2d_via_shape_native_and_native_for_slim(
     shape_native: Tuple[int, int], native_for_slim: np.ndarray
 ) -> np.ndarray:
@@ -656,7 +656,7 @@ def mask_2d_via_shape_native_and_native_for_slim(
     return mask
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_slim_indexes_from(
     mask_2d: np.ndarray, return_masked_indexes: bool = True
 ) -> np.ndarray:
@@ -720,7 +720,7 @@ def mask_slim_indexes_from(
     return mask_pixels
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def check_if_edge_pixel(mask_2d: np.ndarray, y: int, x: int) -> bool:
     """
     Checks if an input [y,x] pixel on the input `mask` is an edge-pixel.
@@ -758,7 +758,7 @@ def check_if_edge_pixel(mask_2d: np.ndarray, y: int, x: int) -> bool:
         return False
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def total_edge_pixels_from(mask_2d: np.ndarray) -> int:
     """
     Returns the total number of edge-pixels in a mask.
@@ -788,7 +788,7 @@ def total_edge_pixels_from(mask_2d: np.ndarray) -> int:
     return edge_pixel_total
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
     Returns a 1D array listing all edge pixel indexes in the mask.
@@ -852,7 +852,7 @@ def edge_1d_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     return edge_pixels
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def check_if_border_pixel(
     mask_2d: np.ndarray, edge_pixel_slim: int, native_to_slim: np.ndarray
 ) -> bool:
@@ -899,7 +899,7 @@ def check_if_border_pixel(
         return False
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
     """
     Returns the total number of border-pixels in a mask.
@@ -938,7 +938,7 @@ def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
     return border_pixel_total
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
     Returns a slim array of shape [total_unmasked_border_pixels] listing all borders pixel indexes in the mask.
@@ -1072,7 +1072,7 @@ def sub_border_pixel_slim_indexes_from(
     return sub_border_pixels
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def buffed_mask_2d_from(mask_2d: np.ndarray, buffer: int = 1) -> np.ndarray:
     """
     Returns a buffed mask from an input mask, where the buffed mask is the input mask but all `False` entries in the
@@ -1161,7 +1161,7 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
     return np.isclose(rescaled_mask_2d, 1)
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def slim_index_for_sub_slim_index_via_mask_2d_from(
     mask_2d: np.ndarray, sub_size: int
 ) -> np.ndarray:
@@ -1259,7 +1259,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
     return sub_slim_indexes_for_slim_index
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     """
     Returns a 2D array which maps every `False` entry of a 2D mask to its sub slim mask array. Every
@@ -1310,7 +1310,7 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     return sub_slim_index_for_sub_native_index
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def native_index_for_slim_index_2d_from(
     mask_2d: np.ndarray, sub_size: int = 1
 ) -> np.ndarray:
@@ -1387,7 +1387,7 @@ def native_index_for_slim_index_2d_from(
     return sub_native_index_for_sub_slim_index_2d
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_2d_neighbors_from(mask_2d: np.ndarray) -> np.ndarray:
     """
     Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to the slim index of a

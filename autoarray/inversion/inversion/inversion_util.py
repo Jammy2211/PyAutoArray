@@ -39,7 +39,7 @@ def curvature_matrix_via_w_tilde_from(
     return np.dot(mapping_matrix.T, np.dot(w_tilde, mapping_matrix))
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def curvature_matrix_with_added_to_diag_from(
     curvature_matrix: np.ndarray,
     value: float,
@@ -66,7 +66,7 @@ def curvature_matrix_with_added_to_diag_from(
     return curvature_matrix
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def curvature_matrix_mirrored_from(
     curvature_matrix: np.ndarray,
 ) -> np.ndarray:
@@ -118,7 +118,7 @@ def curvature_matrix_via_mapping_matrix_from(
     return curvature_matrix
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mapped_reconstructed_data_via_image_to_pix_unique_from(
     data_to_pix_unique: np.ndarray,
     data_weights: np.ndarray,
@@ -150,7 +150,7 @@ def mapped_reconstructed_data_via_image_to_pix_unique_from(
     return mapped_reconstructed_data
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mapped_reconstructed_data_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
