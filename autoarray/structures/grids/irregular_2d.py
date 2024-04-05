@@ -270,10 +270,6 @@ class Grid2DIrregular(AbstractNDArray):
         return Grid2DIrregular(values=grid_of_closest)
 
 
-class Grid2DIrregularTransformed(Grid2DIrregular):
-    pass
-
-
 class Grid2DIrregularUniform(Grid2DIrregular):
     def __init__(
         self,

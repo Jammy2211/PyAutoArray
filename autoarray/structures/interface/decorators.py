@@ -13,15 +13,8 @@ from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
-from autoarray.operators.over_sample.uniform import OverSampleUniform
-from autoarray.operators.over_sample.iterate import OverSampleIterate
-from autoarray.structures.grids.transformed_2d import Grid2DTransformed
-from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.vectors.irregular import VectorYX2DIrregular
-from autoarray.structures.vectors.uniform import VectorYX2D
 from autoconf import conf
 
 
@@ -164,8 +157,6 @@ def grid_1d_output_structure(func):
             if len(result.shape) == 1:
                 return ArrayIrregular(values=result)
             elif len(result.shape) == 2:
-                # if isinstance(result, Grid2DTransformedNumpy):
-                #     return Grid2DIrregularTransformed(values=result)
                 return Grid2DIrregular(values=result)
         elif isinstance(grid, Grid1D):
             return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
@@ -361,20 +352,10 @@ def transform(func):
             np.ndarray,
             Grid2D,
             Grid2DIrregular,
-            Grid2DTransformed,
-            Grid2DTransformedNumpy,
-            Grid2DIrregularTransformed,
         ],
         *args,
         **kwargs,
-    ) -> Union[
-        np.ndarray,
-        Grid2D,
-        Grid2DIrregular,
-        Grid2DTransformed,
-        Grid2DTransformedNumpy,
-        Grid2DIrregularTransformed,
-    ]:
+    ) -> Union[np.ndarray, Grid2D, Grid2DIrregular,]:
         """
 
         Parameters

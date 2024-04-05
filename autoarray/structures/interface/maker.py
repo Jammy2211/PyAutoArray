@@ -2,22 +2,14 @@ import numpy as np
 
 from typing import List, Union
 
-from autoarray.abstract_ndarray import AbstractNDArray
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-from autoarray.structures.grids.irregular_2d import Grid2DIrregularTransformed
-from autoarray.structures.grids.transformed_2d import Grid2DTransformed
-from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.vectors.uniform import VectorYX2D
-from autoconf import conf
-
-from autoarray import exc
 
 
 class StructureMaker:
@@ -54,9 +46,7 @@ class StructureMaker:
         """
         raise NotImplementedError
 
-    def via_grid_2d_irr(
-        self, result
-    ) -> Union[ArrayIrregular, Grid2DIrregular, Grid2DIrregularTransformed, List]:
+    def via_grid_2d_irr(self, result) -> Union[ArrayIrregular, Grid2DIrregular, List]:
         """
         Convert a result from a non autoarray structure to an aa.ArrayIrregular or aa.Grid2DIrregular structure, where
         the conversion depends on type(result) as follows:
@@ -76,9 +66,7 @@ class StructureMaker:
         """
         raise NotImplementedError
 
-    def via_grid_1d(
-        self, result
-    ) -> Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]:
+    def via_grid_1d(self, result) -> Union[Array1D, Grid2D]:
         raise NotImplementedError
 
 
@@ -129,9 +117,7 @@ class ArrayMaker(StructureMaker):
         """
         return Array2D(values=result, mask=self.mask)
 
-    def via_grid_2d_irr(
-        self, result
-    ) -> Union[ArrayIrregular, Grid2DIrregular, Grid2DIrregularTransformed, List]:
+    def via_grid_2d_irr(self, result) -> Union[ArrayIrregular, Grid2DIrregular, List]:
         """
         Convert a result from a non autoarray structure to an aa.ArrayIrregular or aa.Grid2DIrregular structure, where
         the conversion depends on type(result) as follows:
@@ -151,9 +137,7 @@ class ArrayMaker(StructureMaker):
         """
         return ArrayIrregular(values=result)
 
-    def via_grid_1d(
-        self, result
-    ) -> Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]:
+    def via_grid_1d(self, result) -> Union[Array1D, Grid2D]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
@@ -221,9 +205,7 @@ class GridMaker(StructureMaker):
         """
         return Grid2D(values=result, mask=self.mask, over_sample=self.over_sample)
 
-    def via_grid_2d_irr(
-        self, result
-    ) -> Union[ArrayIrregular, Grid2DIrregular, Grid2DIrregularTransformed, List]:
+    def via_grid_2d_irr(self, result) -> Union[ArrayIrregular, Grid2DIrregular, List]:
         """
         Convert a result from a non autoarray structure to an aa.ArrayIrregular or aa.Grid2DIrregular structure, where
         the conversion depends on type(result) as follows:
@@ -243,9 +225,7 @@ class GridMaker(StructureMaker):
         """
         return Grid2DIrregular(values=result)
 
-    def via_grid_1d(
-        self, result
-    ) -> Union[Array1D, Grid2D, Grid2DTransformed, Grid2DTransformedNumpy]:
+    def via_grid_1d(self, result) -> Union[Array1D, Grid2D]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
@@ -349,9 +329,7 @@ class VectorYXMaker(StructureMaker):
         """
         return VectorYX2D(values=result, grid=self.grid, mask=self.grid.mask)
 
-    def via_grid_2d_irr(
-        self, result
-    ) -> Union[ArrayIrregular, Grid2DIrregular, Grid2DIrregularTransformed, List]:
+    def via_grid_2d_irr(self, result) -> Union[ArrayIrregular, Grid2DIrregular, List]:
         """
         Convert a result from a non autoarray structure to an aa.ArrayIrregular or aa.Grid2DIrregular structure, where
         the conversion depends on type(result) as follows:

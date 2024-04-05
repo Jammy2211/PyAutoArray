@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING, List, Union, Tuple
 if TYPE_CHECKING:
     from autoarray.structures.arrays.uniform_1d import Array1D
     from autoarray.structures.grids.uniform_2d import Grid2D
-    from autoarray.structures.grids.transformed_2d import Grid2DTransformed
-    from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
 
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
