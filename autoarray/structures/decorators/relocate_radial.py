@@ -11,36 +11,45 @@ from autoconf import conf
 
 
 def relocate_to_radial_minimum(func):
-    """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
-    the evaluation of a function (e.g. numerical integration reaching a singularity at (0.0, 0.0)). If any coordinates
-    are radially within the radial minimum threshold, their (y,x) coordinates are shifted to that value to ensure
-    they are evaluated at that coordinate.
+    """
+    Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in
+    the evaluation of a function (e.g. numerical integration reaching a singularity at (0.0, 0.0)).
 
-    The value the (y,x) coordinates are rounded to is set in the 'radial_min.ini' config.
+    If any coordinates are radially within the radial minimum threshold, their (y,x) coordinates are shifted to that
+    value to ensure they are evaluated at that coordinate.
+
+    The value the (y,x) coordinates are rounded to is set in the 'radial_minimum.yaml' config.
 
     Parameters
     ----------
-    func : (profile, *args, **kwargs) -> Object
+    func
         A function that takes a grid of coordinates which may have a singularity as (0.0, 0.0)
 
     Returns
     -------
-        A function that can accept cartesian or transformed coordinates
+        A function that has an input grid whose radial coordinates are relocated to the radial minimum.
     """
 
     @wraps(func)
     def wrapper(
-        cls,
+        obj: object,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
         *args,
         **kwargs,
     ) -> Union[np.ndarray, Grid2D, Grid2DIrregular]:
         """
+        Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in
+        the evaluation of a function (e.g. numerical integration reaching a singularity at (0.0, 0.0)).
+
+        If any coordinates are radially within the radial minimum threshold, their (y,x) coordinates are shifted to that
+        value to ensure they are evaluated at that coordinate.
+
+        The value the (y,x) coordinates are rounded to is set in the 'radial_minimum.yaml' config.
 
         Parameters
         ----------
-        cls : Profile
-            The class that owns the function.
+        obj
+            An object whose function uses grid_like inputs to compute quantities at every coordinate on the grid.
         grid
             The (y, x) coordinates which are to be radially moved from (0.0, 0.0).
 
@@ -52,11 +61,11 @@ def relocate_to_radial_minimum(func):
         try:
             grid_radial_minimum = conf.instance["grids"]["radial_minimum"][
                 "radial_minimum"
-            ][cls.__class__.__name__]
+            ][obj.__class__.__name__]
         except KeyError as e:
             raise ConfigException(
                 rf"""
-                The {cls.__class__.__name__} profile you are using does not have a corresponding
+                The {obj.__class__.__name__} profile you are using does not have a corresponding
                 entry in the `config/grid.yaml` config file.
 
                 When a profile is evaluated at (0.0, 0.0), they commonly break due to numericalinstabilities (e.g. 
@@ -77,7 +86,7 @@ def relocate_to_radial_minimum(func):
             )
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
-            grid_radii = cls.radial_grid_from(grid=grid)
+            grid_radii = obj.radial_grid_from(grid=grid)
 
             grid_radial_scale = np.where(
                 grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
@@ -89,6 +98,6 @@ def relocate_to_radial_minimum(func):
 
         moved_grid[np.isnan(np.array(moved_grid))] = grid_radial_minimum
 
-        return func(cls, moved_grid, *args, **kwargs)
+        return func(obj, moved_grid, *args, **kwargs)
 
     return wrapper
