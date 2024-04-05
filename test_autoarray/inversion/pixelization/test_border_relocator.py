@@ -1,10 +1,7 @@
-from os import path
 import numpy as np
 import pytest
 
-from autoconf import conf
 import autoarray as aa
-from autoarray import exc
 
 
 def test__sub_border_slim():
@@ -47,6 +44,12 @@ def test__relocated_grid_from__inside_border_no_relocations():
         values=np.array([[[0.1, 0.1], [0.3, 0.3], [-0.1, -0.2]]]),
         pixel_scales=mask.pixel_scales,
     )
+
+    over_sample = aa.OverSampleUniformFunc(
+        mask=mask, sub_size=2
+    )
+
+    grid_to_relocate = over_sample
 
     border_relocator = aa.BorderRelocator(grid=grid_2d, sub_size=2)
 

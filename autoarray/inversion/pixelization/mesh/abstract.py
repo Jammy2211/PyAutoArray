@@ -91,6 +91,7 @@ class AbstractMesh:
         """
         if border_relocator is not None:
             return border_relocator.relocated_mesh_grid_from(
+                grid=source_plane_data_grid,
                 mesh_grid=source_plane_mesh_grid
             )
         return source_plane_mesh_grid

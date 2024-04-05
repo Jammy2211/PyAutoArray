@@ -17,6 +17,8 @@ from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.vectors.uniform import VectorYX2D
 from autoconf import conf
 
+from autoarray import exc
+
 
 class StructureMaker:
     def __init__(self, func, obj, grid, *args, **kwargs):
@@ -89,41 +91,43 @@ class ArrayMaker(StructureMaker):
     @property
     def structure(self):
 
-        result = None
-
         grid = self.grid
 
         if isinstance(self.grid, Grid2D):
 
-            if grid.over_sample is None:
-                result = self.func(self.obj, grid, *self.args, **self.kwargs)
-            else:
-                result = grid.over_sample_func.array_via_func_from(
-                    func=self.func,
-                    cls=self.obj,
-                    *self.args,
-                    **self.kwargs
-                )
+            result = self.func(self.obj, grid, *self.args, **self.kwargs)
+
+            # if grid.over_sample is None:
+            #
+            # else:
+            #     result = grid.over_sample_func.array_via_func_from(
+            #         func=self.func,
+            #         cls=self.obj,
+            #         *self.args,
+            #         **self.kwargs
+            #     )
         elif isinstance(self.grid, Grid2DIrregular):
             result = self.func(self.obj, grid, *self.args, **self.kwargs)
         elif isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
             result = self.func(self.obj, grid, *self.args, **self.kwargs)
+        else:
+            result = self.func(self.obj, grid, *self.args, **self.kwargs)
 
-        if result is not None:
+        return self.result_from(result=result)
 
-            if isinstance(self.grid, Grid2D):
-                result_func = self.via_grid_2d
-            elif isinstance(self.grid, Grid2DIrregular):
-                result_func = self.via_grid_2d_irr
-            elif isinstance(self.grid, Grid1D):
-                result_func = self.via_grid_1d
+    def result_from(self, result):
 
-            if not isinstance(result, list):
-                return result_func(result)
-            return [result_func(res) for res in result]
+        if isinstance(self.grid, Grid2D):
+            result_func = self.via_grid_2d
+        elif isinstance(self.grid, Grid2DIrregular):
+            result_func = self.via_grid_2d_irr
+        elif isinstance(self.grid, Grid1D):
+            result_func = self.via_grid_1d
 
-        return self.func(self.obj, self.grid, *self.args, **self.kwargs)
+        if not isinstance(result, list):
+            return result_func(result)
+        return [result_func(res) for res in result]
 
     def via_grid_2d(
         self, result
@@ -195,8 +199,6 @@ class GridMaker(StructureMaker):
     @property
     def structure(self):
 
-        result = None
-
         grid = self.grid
 
         if isinstance(self.grid, Grid2D):
@@ -206,21 +208,22 @@ class GridMaker(StructureMaker):
         elif isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
             result = self.func(self.obj, grid, *self.args, **self.kwargs)
+        else:
+            result = self.func(self.obj, grid, *self.args, **self.kwargs)
+          #  raise exc.GridException("Invalid type")
 
-        if result is not None:
+        if isinstance(self.grid, Grid2D):
+            result_func = self.via_grid_2d
+        elif isinstance(self.grid, Grid2DIrregular):
+            result_func = self.via_grid_2d_irr
+        elif isinstance(self.grid, Grid1D):
+            result_func = self.via_grid_1d
+        else:
+            return result
 
-            if isinstance(self.grid, Grid2D):
-                result_func = self.via_grid_2d
-            elif isinstance(self.grid, Grid2DIrregular):
-                result_func = self.via_grid_2d_irr
-            elif isinstance(self.grid, Grid1D):
-                result_func = self.via_grid_1d
-
-            if not isinstance(result, list):
-                return result_func(result)
-            return [result_func(res) for res in result]
-
-        return self.func(self.obj, self.grid, *self.args, **self.kwargs)
+        if not isinstance(result, list):
+            return result_func(result)
+        return [result_func(res) for res in result]
 
     def via_grid_2d(
         self, result
@@ -240,10 +243,6 @@ class GridMaker(StructureMaker):
         result or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        if isinstance(result, Grid2DTransformedNumpy):
-            return Grid2DTransformed(
-                values=result, mask=self.mask, over_sample=self.over_sample
-            )
         return Grid2D(
             values=result, mask=self.mask, over_sample=self.over_sample
         )
@@ -268,8 +267,6 @@ class GridMaker(StructureMaker):
         result
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        if isinstance(result, Grid2DTransformedNumpy):
-            return Grid2DIrregularTransformed(values=result)
         return Grid2DIrregular(values=result)
 
     def via_grid_1d(
@@ -292,8 +289,6 @@ class GridMaker(StructureMaker):
         result
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        if isinstance(result, Grid2DTransformedNumpy):
-            return Grid2DTransformed(values=result, mask=self.mask)
         return Grid2D(values=result, mask=self.mask.derive_mask.to_mask_2d)
 
 
@@ -337,8 +332,6 @@ class VectorYXMaker(StructureMaker):
     @property
     def structure(self):
 
-        result = None
-
         grid = self.grid
 
         if isinstance(self.grid, Grid2D):
@@ -348,6 +341,9 @@ class VectorYXMaker(StructureMaker):
         elif isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
             result = self.func(self.obj, grid, *self.args, **self.kwargs)
+        else:
+            result = self.func(self.obj, grid, *self.args, **self.kwargs)
+           # raise exc.GridException("Invalid type")
 
         if result is not None:
 
@@ -361,8 +357,6 @@ class VectorYXMaker(StructureMaker):
             if not isinstance(result, list):
                 return result_func(result)
             return [result_func(res) for res in result]
-
-        return self.func(self.obj, self.grid, *self.args, **self.kwargs)
 
     def via_grid_2d(
         self, result

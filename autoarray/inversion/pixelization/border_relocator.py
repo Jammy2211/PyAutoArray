@@ -114,13 +114,13 @@ class BorderRelocator:
         return Grid2D(
             values=grid_2d_util.relocated_grid_via_jit_from(
                 grid=np.array(grid),
-                border_grid=np.array(self.sub_border_grid),
+                border_grid=np.array(grid[self.sub_border_slim]),
             ),
             mask=grid.mask,
             over_sample=self.grid.over_sample,
         )
 
-    def relocated_mesh_grid_from(self, mesh_grid: Grid2DIrregular) -> Grid2DIrregular:
+    def relocated_mesh_grid_from(self, grid, mesh_grid: Grid2DIrregular) -> Grid2DIrregular:
         """
         Relocate the coordinates of a pixelization grid to the border of this grid. See the
         method ``relocated_grid_from()`` for a full description of how this grid relocation works.
@@ -137,6 +137,6 @@ class BorderRelocator:
         return Grid2DIrregular(
             values=grid_2d_util.relocated_grid_via_jit_from(
                 grid=np.array(mesh_grid),
-                border_grid=np.array(self.sub_border_grid),
+                border_grid=np.array(grid[self.sub_border_slim]),
             ),
         )

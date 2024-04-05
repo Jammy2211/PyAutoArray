@@ -166,8 +166,8 @@ def grid_1d_output_structure(func):
             if len(result.shape) == 1:
                 return ArrayIrregular(values=result)
             elif len(result.shape) == 2:
-                if isinstance(result, Grid2DTransformedNumpy):
-                    return Grid2DIrregularTransformed(values=result)
+                # if isinstance(result, Grid2DTransformedNumpy):
+                #     return Grid2DIrregularTransformed(values=result)
                 return Grid2DIrregular(values=result)
         elif isinstance(grid, Grid1D):
             return Array1D.no_mask(values=result, pixel_scales=grid.pixel_scale)
@@ -308,6 +308,7 @@ def grid_2d_to_grid(func):
         -------
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
+
         return GridMaker(func=func, obj=obj, grid=grid, *args, **kwargs).structure
 
     return wrapper
@@ -390,18 +391,21 @@ def transform(func):
             A grid_like object whose coordinates may be transformed.
         """
 
-        if not isinstance(
-            grid,
-            (Grid2DTransformed, Grid2DTransformedNumpy, Grid2DIrregularTransformed),
-        ):
+        if not kwargs.get("is_transformed"):
+
+            kwargs = {"is_transformed": True}
+
+            transformed_grid = cls.transformed_to_reference_frame_grid_from(grid, **kwargs)
+
             result = func(
-                cls, cls.transformed_to_reference_frame_grid_from(grid), *args, **kwargs
+                cls, transformed_grid, *args, **kwargs
             )
 
-            return result
-
         else:
-            return func(cls, grid, *args, **kwargs)
+
+            result = func(cls, grid, *args, **kwargs)
+
+        return result
 
     return wrapper
 
