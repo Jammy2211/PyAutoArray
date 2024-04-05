@@ -8,7 +8,7 @@ def test___preloads_used_for_relocated_grid(mask_2d_7x7):
 
     relocated_grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
 
-    border_relocator = aa.BorderRelocator(grid=mask_2d_7x7, sub_size=1)
+    border_relocator = aa.BorderRelocator(mask=mask_2d_7x7, sub_size=1)
 
     mapper_grids = mesh.mapper_grids_from(
         border_relocator=border_relocator,
