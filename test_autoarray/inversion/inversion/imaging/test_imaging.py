@@ -84,11 +84,15 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
         regularization=None,
     )
 
-    inversion = aa.InversionImagingMapping(
+    dataset = aa.DatasetInterface(
         data=np.ones(2),
-        linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         noise_map=noise_map,
         convolver=convolver,
+    )
+
+    inversion = aa.InversionImagingMapping(
+        dataset=dataset,
+        linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
         settings=aa.SettingsInversion(
             no_regularization_add_to_curvature_diag_value=False
         ),
@@ -102,10 +106,8 @@ def test__curvature_matrix(rectangular_mapper_7x7_3x3):
     assert inversion.curvature_matrix[3, 3] - 2.0 < 1.0e-12
 
     inversion = aa.InversionImagingMapping(
-        data=np.ones(2),
+        dataset=dataset,
         linear_obj_list=[linear_obj, rectangular_mapper_7x7_3x3],
-        noise_map=noise_map,
-        convolver=convolver,
         settings=aa.SettingsInversion(
             no_regularization_add_to_curvature_diag_value=True
         ),
@@ -131,11 +133,15 @@ def test__w_tilde_checks_noise_map_and_raises_exception_if_preloads_dont_match_n
     )
 
     with pytest.raises(exc.InversionException):
-        # noinspection PyTypeChecker
-        InversionImagingWTilde(
+        dataset = aa.DatasetInterface(
             data=np.ones(9),
             noise_map=np.ones(9),
             convolver=aa.m.MockConvolver(matrix_shape),
+        )
+
+        # noinspection PyTypeChecker
+        InversionImagingWTilde(
+            dataset=dataset,
             w_tilde=w_tilde,
             linear_obj_list=[
                 aa.m.MockMapper(

@@ -1,8 +1,10 @@
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
 
+from autoarray.dataset.interferometer.dataset import Interferometer
+from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.interferometer.abstract import (
     AbstractInversionInterferometer,
 )
@@ -11,9 +13,7 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.preloads import Preloads
-from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.visibilities import Visibilities
-from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.inversion import inversion_util
 
@@ -23,9 +23,7 @@ from autoarray.numba_util import profile_func
 class InversionInterferometerWTilde(AbstractInversionInterferometer):
     def __init__(
         self,
-        data: Visibilities,
-        noise_map: VisibilitiesNoiseMap,
-        transformer: TransformerNUFFT,
+        dataset: Union[Interferometer, DatasetInterface],
         w_tilde: WTildeInterferometer,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
@@ -62,12 +60,10 @@ class InversionInterferometerWTilde(AbstractInversionInterferometer):
         """
 
         self.w_tilde = w_tilde
-        self.w_tilde.check_noise_map(noise_map=noise_map)
+        self.w_tilde.check_noise_map(noise_map=dataset.noise_map)
 
         super().__init__(
-            data=data,
-            noise_map=noise_map,
-            transformer=transformer,
+            dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
