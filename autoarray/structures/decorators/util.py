@@ -12,8 +12,8 @@ from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.vectors.uniform import VectorYX2D
 from autoarray.structures.decorators import util
 
-def result_via_func_from(grid, func, obj, *args, **kwargs):
 
+def result_via_func_from(grid, func, obj, *args, **kwargs):
     if isinstance(grid, Grid1D):
         grid = grid.grid_2d_radial_projected_from()
         return func(obj, grid, *args, **kwargs)
@@ -22,7 +22,6 @@ def result_via_func_from(grid, func, obj, *args, **kwargs):
 
 
 def result_via_maker_from(grid, maker):
-
     if isinstance(grid, Grid2D):
         return maker.via_grid_2d
     elif isinstance(grid, Grid2DIrregular):

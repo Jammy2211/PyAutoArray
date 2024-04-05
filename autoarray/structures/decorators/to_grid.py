@@ -16,7 +16,6 @@ from autoarray.structures.decorators import util
 
 
 class GridMaker(AbstractMaker):
-
     def via_grid_2d(self, result) -> Union[Grid2D, List[Grid2D]]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
@@ -35,7 +34,10 @@ class GridMaker(AbstractMaker):
         """
         if not isinstance(result, list):
             return Grid2D(values=result, mask=self.mask, over_sample=self.over_sample)
-        return [Grid2D(values=res, mask=self.mask, over_sample=self.over_sample) for res in result]
+        return [
+            Grid2D(values=res, mask=self.mask, over_sample=self.over_sample)
+            for res in result
+        ]
 
     def via_grid_2d_irr(self, result) -> Union[Grid2DIrregular, List[Grid2DIrregular]]:
         """
@@ -79,10 +81,12 @@ class GridMaker(AbstractMaker):
         """
         if not isinstance(result, list):
             return Grid2D(values=result, mask=self.mask.derive_mask.to_mask_2d)
-        return [Grid2D(values=res, mask=self.mask.derive_mask.to_mask_2d) for res in result]
+        return [
+            Grid2D(values=res, mask=self.mask.derive_mask.to_mask_2d) for res in result
+        ]
 
 
-def grid_2d_to_grid(func):
+def to_grid(func):
     """
     Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates that return the results
     as a NumPy array.
@@ -99,11 +103,11 @@ def grid_2d_to_grid(func):
 
     @wraps(func)
     def wrapper(
-            obj: object,
-            grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
-            *args,
-            **kwargs,
-    ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
+        obj: object,
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        *args,
+        **kwargs,
+    ) -> Union[np.ndarray, Grid2D, Grid2DIrregular, List]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIrregular` or `Grid1D`)
         into a function.

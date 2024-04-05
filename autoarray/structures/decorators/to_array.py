@@ -11,13 +11,9 @@ from autoarray.structures.decorators.abstract import AbstractMaker
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.vectors.irregular import VectorYX2DIrregular
-from autoarray.structures.vectors.uniform import VectorYX2D
-from autoarray.structures.decorators import util
 
 
 class ArrayMaker(AbstractMaker):
-
     def via_grid_2d(self, result) -> Union[Array2D, List[Array2D]]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
@@ -34,7 +30,7 @@ class ArrayMaker(AbstractMaker):
         result or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        
+
         if not isinstance(result, list):
             return Array2D(values=result, mask=self.mask)
         return [Array2D(values=res, mask=self.mask) for res in result]
@@ -84,7 +80,7 @@ class ArrayMaker(AbstractMaker):
         return [Array1D(values=res, mask=self.mask) for res in result]
 
 
-def grid_2d_to_array(func):
+def to_array(func):
     """
     Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates that return the results
     as a NumPy array.
@@ -105,7 +101,7 @@ def grid_2d_to_array(func):
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
         *args,
         **kwargs,
-    ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
+    ) -> Union[np.ndarray, Array1D, Array2D, ArrayIrregular, List]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIrregular` or `Grid1D`)
         into a function.
@@ -146,7 +142,6 @@ def grid_2d_to_array(func):
         -------
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
-        
         return ArrayMaker(func=func, obj=obj, grid=grid, *args, **kwargs).result
 
     return wrapper

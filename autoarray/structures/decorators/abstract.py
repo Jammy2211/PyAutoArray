@@ -1,5 +1,3 @@
-import numpy as np
-
 from typing import List, Union
 
 from autoarray.structures.arrays.irregular import ArrayIrregular
@@ -8,15 +6,10 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.vectors.irregular import VectorYX2DIrregular
-from autoarray.structures.vectors.uniform import VectorYX2D
-
 
 
 class AbstractMaker:
-
     def __init__(self, func, obj, grid, *args, **kwargs):
-
         self.func = func
         self.obj = obj
         self.grid = grid
@@ -42,7 +35,6 @@ class AbstractMaker:
 
     @property
     def evaluate_func(self):
-
         if isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
             return self.func(self.obj, grid, *self.args, **self.kwargs)
@@ -51,7 +43,6 @@ class AbstractMaker:
 
     @property
     def result(self):
-
         if isinstance(self.grid, Grid2D):
             return self.via_grid_2d(self.evaluate_func)
         elif isinstance(self.grid, Grid2DIrregular):

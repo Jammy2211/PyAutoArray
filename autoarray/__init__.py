@@ -82,7 +82,6 @@ from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular
 from .structures import decorators as grid_dec
-from .structures.decorators.maker import StructureMaker
 from .structures.header import Header
 from .layout.region import Region1D
 from .layout.region import Region2D

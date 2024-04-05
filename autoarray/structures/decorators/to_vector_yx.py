@@ -3,20 +3,15 @@ from functools import wraps
 
 from typing import List, Union
 
-from autoarray.structures.arrays.irregular import ArrayIrregular
-from autoarray.structures.arrays.uniform_1d import Array1D
-from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.decorators.abstract import AbstractMaker
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.vectors.irregular import VectorYX2DIrregular
 from autoarray.structures.vectors.uniform import VectorYX2D
-from autoarray.structures.decorators import util
 
 
 class VectorYXMaker(AbstractMaker):
-
     def via_grid_2d(self, result) -> Union[VectorYX2D, List[VectorYX2D]]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
@@ -35,9 +30,14 @@ class VectorYXMaker(AbstractMaker):
         """
         if not isinstance(result, list):
             return VectorYX2D(values=result, grid=self.grid, mask=self.grid.mask)
-        return [VectorYX2D(values=res, grid=self.grid, mask=self.grid.mask) for res in result]
+        return [
+            VectorYX2D(values=res, grid=self.grid, mask=self.grid.mask)
+            for res in result
+        ]
 
-    def via_grid_2d_irr(self, result) -> Union[VectorYX2DIrregular, List[VectorYX2DIrregular]]:
+    def via_grid_2d_irr(
+        self, result
+    ) -> Union[VectorYX2DIrregular, List[VectorYX2DIrregular]]:
         """
         Convert a result from a non autoarray structure to an aa.ArrayIrregular or aa.Grid2DIrregular structure, where
         the conversion depends on type(result) as follows:
@@ -60,7 +60,7 @@ class VectorYXMaker(AbstractMaker):
         return [VectorYX2DIrregular(values=res, grid=self.grid) for res in result]
 
 
-def grid_2d_to_vector_yx(func):
+def to_vector_yx(func):
     """
     Homogenize the inputs and outputs of functions that take 2D grids of (y,x) coordinates that return the results
     as a NumPy array.
@@ -77,11 +77,11 @@ def grid_2d_to_vector_yx(func):
 
     @wraps(func)
     def wrapper(
-            obj: object,
-            grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
-            *args,
-            **kwargs,
-    ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
+        obj: object,
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular, Grid1D],
+        *args,
+        **kwargs,
+    ) -> Union[np.ndarray, VectorYX2D, VectorYX2DIrregular, List]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIrregular` or `Grid1D`)
         into a function.
