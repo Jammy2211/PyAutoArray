@@ -210,6 +210,7 @@ class MockGridLikeIteratorObj:
             )
         ]
 
+
 class MockGrid1DLikeObj:
     def __init__(self, centre=(0.0, 0.0), angle=0.0):
         self.centre = centre
@@ -218,6 +219,7 @@ class MockGrid1DLikeObj:
     @decorators.grid_1d_to_structure
     def ndarray_1d_from(self, grid, *args, **kwargs):
         return np.ones(shape=grid.shape[0])
+
 
 class MockGrid2DLikeObj:
     def __init__(self):

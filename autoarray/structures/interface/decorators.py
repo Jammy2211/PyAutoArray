@@ -336,10 +336,10 @@ def grid_2d_to_vector_yx(func):
         *args,
         **kwargs,
     ) -> Union[np.ndarray, Array2D, ArrayIrregular, Grid2D, Grid2DIrregular]:
-
         return VectorYXMaker(func=func, obj=obj, grid=grid, *args, **kwargs).structure
 
     return wrapper
+
 
 def transform(func):
     """
@@ -392,17 +392,15 @@ def transform(func):
         """
 
         if not kwargs.get("is_transformed"):
-
             kwargs = {"is_transformed": True}
 
-            transformed_grid = cls.transformed_to_reference_frame_grid_from(grid, **kwargs)
-
-            result = func(
-                cls, transformed_grid, *args, **kwargs
+            transformed_grid = cls.transformed_to_reference_frame_grid_from(
+                grid, **kwargs
             )
 
-        else:
+            result = func(cls, transformed_grid, *args, **kwargs)
 
+        else:
             result = func(cls, grid, *args, **kwargs)
 
         return result
@@ -477,7 +475,6 @@ def relocate_to_radial_minimum(func):
             )
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
-
             grid_radii = cls.radial_grid_from(grid=grid)
 
             grid_radial_scale = np.where(

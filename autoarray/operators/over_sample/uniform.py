@@ -224,7 +224,6 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
         )
 
     def array_via_func_from(self, func, cls, *args, **kwargs):
-
         oversampled_grid = self.oversampled_grid
 
         if cls is not None:

@@ -146,6 +146,7 @@ def test__grid_2d_radial_projected_from():
         1.0e-4,
     )
 
+
 def test__recursive_shape_storage():
     mask = aa.Mask1D.all_false(shape_slim=(4,), pixel_scales=1.0)
     grid = aa.Grid1D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)

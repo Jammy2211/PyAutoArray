@@ -163,7 +163,7 @@ class AbstractDataset:
                 mask=self.mask, sub_size=self.grid_pixelization.over_sample.sub_size
             ),
             border_relocator=BorderRelocator(
-                grid=self.grid_pixelization, sub_size=self.grid_pixelization.over_sample.sub_size
+                mask=self.mask, sub_size=self.grid_pixelization.over_sample.sub_size
             ),
         )
 

@@ -59,7 +59,7 @@ class OverSampleIterate(AbstractOverSample):
         self.sub_steps = sub_steps
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def threshold_mask_via_arrays_jit_from(
     fractional_accuracy_threshold: float,
     relative_accuracy_threshold: Optional[float],
@@ -109,7 +109,7 @@ def threshold_mask_via_arrays_jit_from(
     return threshold_mask
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def iterated_array_jit_from(
     iterated_array: np.ndarray,
     threshold_mask_higher_sub: np.ndarray,
@@ -201,11 +201,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
         )
 
     def array_via_func_from(
-        self,
-        func: Callable,
-        cls: object,
-        *args,
-        **kwargs
+        self, func: Callable, cls: object, *args, **kwargs
     ) -> Array2D:
         """
         Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.

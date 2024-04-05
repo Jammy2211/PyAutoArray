@@ -3,6 +3,7 @@ import numpy as np
 
 from autoconf import cached_property
 
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -11,8 +12,8 @@ from autoarray.structures.grids import grid_2d_util
 
 
 class BorderRelocator:
-    def __init__(self, grid, sub_size):
-        self.grid = grid
+    def __init__(self, mask: Mask2D, sub_size: int):
+        self.mask = mask
         self.sub_size = sub_size
 
     @cached_property
@@ -52,16 +53,16 @@ class BorderRelocator:
             print(derive_indexes_2d.sub_border_slim)
         """
         return mask_2d_util.sub_border_pixel_slim_indexes_from(
-            mask_2d=np.array(self.grid.mask), sub_size=self.sub_size
+            mask_2d=np.array(self.mask), sub_size=self.sub_size
         ).astype("int")
 
     @property
     def sub_grid(self):
         return grid_2d_util.grid_2d_slim_via_mask_from(
-            mask_2d=np.array(self.grid.mask),
-            pixel_scales=self.grid.pixel_scales,
+            mask_2d=np.array(self.mask),
+            pixel_scales=self.mask.pixel_scales,
             sub_size=self.sub_size,
-            origin=self.grid.origin,
+            origin=self.mask.origin,
         )
 
     @cached_property
@@ -72,7 +73,7 @@ class BorderRelocator:
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border.
         """
-        return self.grid.mask.derive_grid.border
+        return self.mask.derive_grid.border
 
     @cached_property
     def sub_border_grid(self) -> np.ndarray:
@@ -117,10 +118,12 @@ class BorderRelocator:
                 border_grid=np.array(grid[self.sub_border_slim]),
             ),
             mask=grid.mask,
-            over_sample=self.grid.over_sample,
+            over_sample=grid.over_sample,
         )
 
-    def relocated_mesh_grid_from(self, grid, mesh_grid: Grid2DIrregular) -> Grid2DIrregular:
+    def relocated_mesh_grid_from(
+        self, grid, mesh_grid: Grid2DIrregular
+    ) -> Grid2DIrregular:
         """
         Relocate the coordinates of a pixelization grid to the border of this grid. See the
         method ``relocated_grid_from()`` for a full description of how this grid relocation works.

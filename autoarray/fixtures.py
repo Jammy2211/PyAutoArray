@@ -383,7 +383,7 @@ def make_mapper_tools():
 
     return aa.MapperTools(
         over_sample=aa.OverSampleUniformFunc(mask=grid.mask, sub_size=2),
-        border_relocator=aa.BorderRelocator(grid=grid, sub_size=1),
+        border_relocator=aa.BorderRelocator(mask=grid.mask, sub_size=1),
     )
 
 
