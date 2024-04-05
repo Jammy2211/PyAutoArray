@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.structures.interface import decorators
+from autoarray.structures import decorators
 
 
 ### Grids ###

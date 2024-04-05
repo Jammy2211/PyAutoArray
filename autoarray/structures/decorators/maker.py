@@ -28,6 +28,28 @@ class StructureMaker:
     def over_sample(self):
         return self.grid.over_sample
 
+
+
+    @property
+    def result_func(self):
+
+        if isinstance(self.grid, Grid2D):
+            return self.via_grid_2d
+        elif isinstance(self.grid, Grid2DIrregular):
+            return self.via_grid_2d_irr
+        elif isinstance(self.grid, Grid1D):
+            return self.via_grid_1d
+
+    @property
+    def structure(self):
+
+        if self.result_func is None:
+            return self.result
+
+        if not isinstance(self.result, list):
+            return self.result_func(self.result)
+        return [self.result_func(res) for res in self.result]
+
     def via_grid_2d(self, result) -> Union[Array2D, "Grid2D"]:
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
@@ -71,33 +93,6 @@ class StructureMaker:
 
 
 class ArrayMaker(StructureMaker):
-    @property
-    def structure(self):
-        grid = self.grid
-
-        if isinstance(self.grid, Grid2D):
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        elif isinstance(self.grid, Grid2DIrregular):
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        elif isinstance(self.grid, Grid1D):
-            grid = self.grid.grid_2d_radial_projected_from()
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        else:
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-
-        return self.result_from(result=result)
-
-    def result_from(self, result):
-        if isinstance(self.grid, Grid2D):
-            result_func = self.via_grid_2d
-        elif isinstance(self.grid, Grid2DIrregular):
-            result_func = self.via_grid_2d_irr
-        elif isinstance(self.grid, Grid1D):
-            result_func = self.via_grid_1d
-
-        if not isinstance(result, list):
-            return result_func(result)
-        return [result_func(res) for res in result]
 
     def via_grid_2d(self, result) -> Union[Array2D, "Grid2D"]:
         """
@@ -159,33 +154,6 @@ class ArrayMaker(StructureMaker):
 
 
 class GridMaker(StructureMaker):
-    @property
-    def structure(self):
-        grid = self.grid
-
-        if isinstance(self.grid, Grid2D):
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        elif isinstance(self.grid, Grid2DIrregular):
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        elif isinstance(self.grid, Grid1D):
-            grid = self.grid.grid_2d_radial_projected_from()
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        else:
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        #  raise exc.GridException("Invalid type")
-
-        if isinstance(self.grid, Grid2D):
-            result_func = self.via_grid_2d
-        elif isinstance(self.grid, Grid2DIrregular):
-            result_func = self.via_grid_2d_irr
-        elif isinstance(self.grid, Grid1D):
-            result_func = self.via_grid_1d
-        else:
-            return result
-
-        if not isinstance(result, list):
-            return result_func(result)
-        return [result_func(res) for res in result]
 
     def via_grid_2d(self, result) -> Union[Array2D, "Grid2D"]:
         """
@@ -283,33 +251,6 @@ class VectorYXMaker(StructureMaker):
     -------
         The function values evaluated on the grid with the same vector_yx as the input grid_like object.
     """
-
-    @property
-    def structure(self):
-        grid = self.grid
-
-        if isinstance(self.grid, Grid2D):
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        elif isinstance(self.grid, Grid2DIrregular):
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        elif isinstance(self.grid, Grid1D):
-            grid = self.grid.grid_2d_radial_projected_from()
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        else:
-            result = self.func(self.obj, grid, *self.args, **self.kwargs)
-        # raise exc.GridException("Invalid type")
-
-        if result is not None:
-            if isinstance(self.grid, Grid2D):
-                result_func = self.via_grid_2d
-            elif isinstance(self.grid, Grid2DIrregular):
-                result_func = self.via_grid_2d_irr
-            elif isinstance(self.grid, Grid1D):
-                result_func = self.via_grid_1d
-
-            if not isinstance(result, list):
-                return result_func(result)
-            return [result_func(res) for res in result]
 
     def via_grid_2d(self, result) -> Union[Array2D, "Grid2D"]:
         """
