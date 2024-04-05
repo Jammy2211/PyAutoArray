@@ -112,6 +112,19 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
+        print(grid[2])
+
+        print(
+            Grid2D(
+                values=grid_2d_util.relocated_grid_via_jit_from(
+                    grid=np.array(grid),
+                    border_grid=np.array(grid[self.sub_border_slim]),
+                ),
+                mask=grid.mask,
+                over_sample=grid.over_sample,
+            )[2]
+        )
+
         return Grid2D(
             values=grid_2d_util.relocated_grid_via_jit_from(
                 grid=np.array(grid),

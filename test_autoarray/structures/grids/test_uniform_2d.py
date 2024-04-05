@@ -593,11 +593,11 @@ def test__grid_2d_radial_projected_shape_slim_from():
     assert (grid_radii == grid_radii_util_angle).all()
     assert grid_radial_shape_slim == grid_radii_util.shape[0]
 
-    conf.instance["general"]["grid"]["remove_projected_centre"] = True
-
-    grid_radii = grid_2d.grid_2d_radial_projected_from(centre=(0.0, 0.0))
+    grid_radii = grid_2d.grid_2d_radial_projected_from(
+        centre=(0.0, 0.0), remove_projected_centre=True
+    )
     grid_radial_shape_slim = grid_2d.grid_2d_radial_projected_shape_slim_from(
-        centre=(0.0, 0.0)
+        centre=(0.0, 0.0),
     )
 
     grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(

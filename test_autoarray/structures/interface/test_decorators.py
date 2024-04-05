@@ -106,6 +106,8 @@ def test__in_grid_2d_out_ndarray_1d():
 
     ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
 
+    print(ndarray_1d)
+
     assert isinstance(ndarray_1d, aa.Array1D)
     assert (ndarray_1d.native == np.array([1.0, 1.0, 1.0, 1.0])).all()
     assert ndarray_1d.pixel_scales == (1.0,)
