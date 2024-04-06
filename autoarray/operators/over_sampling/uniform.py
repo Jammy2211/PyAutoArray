@@ -229,15 +229,15 @@ class OverSamplerUniform(AbstractOverSampler):
             mask=self.mask,
         )
 
-    def array_via_func_from(self, func, cls, *args, **kwargs):
+    def array_via_func_from(self, func, obj, *args, **kwargs):
         oversampled_grid = self.oversampled_grid
 
-        if cls is not None:
-            values = func(cls, np.asarray(oversampled_grid.slim), *args, **kwargs)
+        if obj is not None:
+            values = func(obj, oversampled_grid, *args, **kwargs)
         else:
-            values = func(np.asarray(oversampled_grid.slim), *args, **kwargs)
+            values = func(oversampled_grid, *args, **kwargs)
 
-        values = Array2D(values=values, mask=oversampled_grid.mask, store_native=True)
+#        values = Array2D(values=values, mask=oversampled_grid.mask, store_native=True)
 
         return self.binned_array_2d_from(array=values)
 

@@ -127,13 +127,13 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
 
     values = over_sampling.array_via_func_from(
         func=ndarray_1d_from,
-        cls=None,
+        obj=None,
     )
 
     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=3)
 
     values_sub_3 = over_sample_uniform.array_via_func_from(
-        func=ndarray_1d_from, cls=object
+        func=ndarray_1d_from, obj=object
     )
 
     assert (values == values_sub_3).all()
@@ -144,7 +144,7 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
 
     values = over_sampling.array_via_func_from(
         func=ndarray_1d_from,
-        cls=None,
+        obj=None,
     )
 
     assert (values == values_sub_3).all()
@@ -155,13 +155,13 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
 
     values = over_sampling.array_via_func_from(
         func=ndarray_1d_from,
-        cls=None,
+        obj=None,
     )
 
     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
     values_sub_2 = over_sample_uniform.array_via_func_from(
-        func=ndarray_1d_from, cls=object
+        func=ndarray_1d_from, obj=object
     )
 
     assert (values == values_sub_2).all()
@@ -186,16 +186,16 @@ def test__array_via_func_from__check_values_computed_to_fractional_accuracy():
 
     values = over_sampling.array_via_func_from(
         func=ndarray_1d_from,
-        cls=None,
+        obj=None,
     )
 
     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
     values_sub_2 = over_sample_uniform.array_via_func_from(
-        func=ndarray_1d_from, cls=object
+        func=ndarray_1d_from, obj=object
     )
     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=4)
     values_sub_4 = over_sample_uniform.array_via_func_from(
-        func=ndarray_1d_from, cls=object
+        func=ndarray_1d_from, obj=object
     )
 
     assert values.native[1, 1] == values_sub_2.native[1, 1]
@@ -224,7 +224,7 @@ def test__array_via_func_from__func_returns_all_zeros__iteration_terminated():
 
     values = over_sampling.array_via_func_from(
         func=ndarray_1d_zeros_from,
-        cls=None,
+        obj=None,
     )
 
     assert (values == np.zeros((9,))).all()

@@ -76,13 +76,6 @@ def over_sample(func):
 
         kwargs["over_sampling_being_performed"] = True
 
-        oversampled_grid = grid.over_sampler.oversampled_grid
-
-        print(oversampled_grid)
-
-        result = func(obj=obj, grid=oversampled_grid, *args, **kwargs)
-
-        return grid.over_sampler.binned_array_2d_from(array=result)
-
+        return grid.over_sampler.array_via_func_from(func=func, obj=obj, *args, **kwargs)
 
     return wrapper

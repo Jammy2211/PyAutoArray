@@ -159,7 +159,7 @@ class OverSamplerIterate(AbstractOverSampler):
 
         oversampled_grid = over_sample_uniform.oversampled_grid
 
-        array_higher_sub = func(cls, np.array(oversampled_grid), *args, **kwargs)
+        array_higher_sub = func(cls, oversampled_grid, *args, **kwargs)
 
         return over_sample_uniform.binned_array_2d_from(array=array_higher_sub).native
 
@@ -206,7 +206,7 @@ class OverSamplerIterate(AbstractOverSampler):
         )
 
     def array_via_func_from(
-        self, func: Callable, cls: object, *args, **kwargs
+        self, func: Callable, obj: object, *args, **kwargs
     ) -> Array2D:
         """
         Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
@@ -238,14 +238,15 @@ class OverSamplerIterate(AbstractOverSampler):
         ----------
         func : func
             The function which is iterated over to compute a more precise evaluation.
-        cls : cls
+        obj : cls
             The class the function belongs to.
         grid_lower_sub_2d
             The results computed by the function using a lower sub-grid size
         """
+
         unmasked_grid = self.mask.derive_grid.unmasked
 
-        array_sub_1 = func(cls, np.array(unmasked_grid), *args, **kwargs)
+        array_sub_1 = func(obj, unmasked_grid, *args, **kwargs)
 
         array_sub_1 = Array2D(values=array_sub_1, mask=self.mask).native
 
@@ -258,7 +259,7 @@ class OverSamplerIterate(AbstractOverSampler):
 
         for sub_size in self.sub_steps[:-1]:
             array_higher_sub = self.array_at_sub_size_from(
-                func=func, cls=cls, mask=threshold_mask_lower_sub, sub_size=sub_size
+                func=func, cls=obj, mask=threshold_mask_lower_sub, sub_size=sub_size
             )
 
             try:
@@ -286,7 +287,7 @@ class OverSamplerIterate(AbstractOverSampler):
 
         array_higher_sub = self.array_at_sub_size_from(
             func=func,
-            cls=cls,
+            cls=obj,
             mask=threshold_mask_lower_sub,
             sub_size=self.sub_steps[-1],
             *args,
