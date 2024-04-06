@@ -10,15 +10,13 @@ def test__image_plane_mesh_grid_from():
         pixel_scales=1.0,
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask)
-
     adapt_data = aa.Array2D.ones(
         shape_native=mask.shape_native,
         pixel_scales=1.0,
     )
 
     kmeans = aa.image_mesh.Hilbert(pixels=8)
-    image_mesh = kmeans.image_plane_mesh_grid_from(grid=grid, adapt_data=adapt_data)
+    image_mesh = kmeans.image_plane_mesh_grid_from(mask=mask, adapt_data=adapt_data)
 
     assert image_mesh[0, :] == pytest.approx(
         [-1.02590674, -1.70984456],

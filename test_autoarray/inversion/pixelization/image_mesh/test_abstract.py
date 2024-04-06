@@ -4,15 +4,13 @@ import pytest
 import autoarray as aa
 
 
-@pytest.fixture(name="grid")
-def make_grid():
-    mask = aa.Mask2D.circular(
+@pytest.fixture(name="mask")
+def make_mask():
+    return aa.Mask2D.circular(
         shape_native=(3, 3),
         radius=2.0,
         pixel_scales=1.0,
     )
-
-    return aa.Grid2D.from_mask(mask=mask)
 
 
 @pytest.fixture(name="mesh_grid")
@@ -34,9 +32,9 @@ def make_image_mesh():
     return aa.image_mesh.Hilbert(pixels=8)
 
 
-def test__mesh_pixels_per_image_pixels_from(grid, mesh_grid, image_mesh):
+def test__mesh_pixels_per_image_pixels_from(mask, mesh_grid, image_mesh):
     mesh_pixels_per_image_pixels = image_mesh.mesh_pixels_per_image_pixels_from(
-        grid=grid, mesh_grid=mesh_grid
+        mask=mask, mesh_grid=mesh_grid
     )
 
     assert mesh_pixels_per_image_pixels.native == pytest.approx(
@@ -44,13 +42,13 @@ def test__mesh_pixels_per_image_pixels_from(grid, mesh_grid, image_mesh):
     )
 
 
-def test__check_mesh_pixels_per_image_pixels(grid, mesh_grid, image_mesh):
+def test__check_mesh_pixels_per_image_pixels(mask, mesh_grid, image_mesh):
     image_mesh.check_mesh_pixels_per_image_pixels(
-        grid=grid, mesh_grid=mesh_grid, settings=None
+        mask=mask, mesh_grid=mesh_grid, settings=None
     )
 
     image_mesh.check_mesh_pixels_per_image_pixels(
-        grid=grid,
+        mask=mask,
         mesh_grid=mesh_grid,
         settings=aa.SettingsInversion(
             image_mesh_min_mesh_pixels_per_pixel=3, image_mesh_min_mesh_number=1
@@ -59,7 +57,7 @@ def test__check_mesh_pixels_per_image_pixels(grid, mesh_grid, image_mesh):
 
     with pytest.raises(aa.exc.InversionException):
         image_mesh.check_mesh_pixels_per_image_pixels(
-            grid=grid,
+            mask=mask,
             mesh_grid=mesh_grid,
             settings=aa.SettingsInversion(
                 image_mesh_min_mesh_pixels_per_pixel=5, image_mesh_min_mesh_number=1
@@ -68,7 +66,7 @@ def test__check_mesh_pixels_per_image_pixels(grid, mesh_grid, image_mesh):
 
     with pytest.raises(aa.exc.InversionException):
         image_mesh.check_mesh_pixels_per_image_pixels(
-            grid=grid,
+            mask=mask,
             mesh_grid=mesh_grid,
             settings=aa.SettingsInversion(
                 image_mesh_min_mesh_pixels_per_pixel=3, image_mesh_min_mesh_number=2
@@ -76,18 +74,18 @@ def test__check_mesh_pixels_per_image_pixels(grid, mesh_grid, image_mesh):
         )
 
 
-def test__check_adapt_background_pixels(grid, mesh_grid, image_mesh):
+def test__check_adapt_background_pixels(mask, mesh_grid, image_mesh):
     adapt_data = aa.Array2D.no_mask(
         values=[[0.05, 0.05, 0.05], [0.05, 0.6, 0.05], [0.05, 0.05, 0.05]],
         pixel_scales=(1.0, 1.0),
     )
 
     image_mesh.check_adapt_background_pixels(
-        grid=grid, mesh_grid=mesh_grid, adapt_data=adapt_data, settings=None
+        mask=mask, mesh_grid=mesh_grid, adapt_data=adapt_data, settings=None
     )
 
     image_mesh.check_adapt_background_pixels(
-        grid=grid,
+        mask=mask,
         mesh_grid=mesh_grid,
         adapt_data=adapt_data,
         settings=aa.SettingsInversion(
@@ -98,7 +96,7 @@ def test__check_adapt_background_pixels(grid, mesh_grid, image_mesh):
 
     with pytest.raises(aa.exc.InversionException):
         image_mesh.check_adapt_background_pixels(
-            grid=grid,
+            mask=mask,
             mesh_grid=mesh_grid,
             adapt_data=adapt_data,
             settings=aa.SettingsInversion(

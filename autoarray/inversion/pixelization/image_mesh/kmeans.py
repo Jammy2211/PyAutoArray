@@ -1,17 +1,16 @@
-from __future__ import annotations
 import numpy as np
 from sklearn.cluster import KMeans as ScipyKMeans
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 import sys
 import warnings
 
-if TYPE_CHECKING:
-    from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.mask.mask_2d import Mask2D
 
 from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray import exc
 
@@ -51,7 +50,7 @@ class KMeans(AbstractImageMeshWeighted):
         )
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray], settings=None
+        self, mask: Mask2D, adapt_data: Optional[np.ndarray], settings : SettingsInversion = None
     ) -> Grid2DIrregular:
         """
         Returns an image mesh by running a KMeans clustering algorithm on the weight map.
@@ -71,7 +70,7 @@ class KMeans(AbstractImageMeshWeighted):
 
         """
 
-        if self.pixels > grid.shape[0]:
+        if self.pixels > mask.shape_slim:
             print(
                 """
                 The number of pixels passed to the KMeans object exceeds the number of image-pixels in the mask of
@@ -101,6 +100,8 @@ class KMeans(AbstractImageMeshWeighted):
             n_init=1,
             max_iter=5,
         )
+
+        grid = mask.derive_grid.unmasked
 
         try:
             kmeans = kmeans.fit(X=grid, sample_weight=weight_map)

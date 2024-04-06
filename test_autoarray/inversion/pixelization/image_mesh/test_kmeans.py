@@ -18,12 +18,10 @@ def test__image_plane_mesh_grid_from():
         sub_size=1,
     )
 
-    grid = aa.Grid2D.from_mask(mask=mask)
-
     weight_map = np.ones(mask.pixels_in_mask)
 
     kmeans = aa.image_mesh.KMeans(pixels=8)
-    image_mesh = kmeans.image_plane_mesh_grid_from(grid=grid, adapt_data=weight_map)
+    image_mesh = kmeans.image_plane_mesh_grid_from(mask=mask, adapt_data=weight_map)
 
     assert image_mesh[0, :] == pytest.approx(
         [0.25, -0.5],

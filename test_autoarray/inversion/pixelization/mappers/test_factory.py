@@ -83,7 +83,7 @@ def test__delaunay_mapper():
     mesh = aa.mesh.Delaunay()
     image_mesh = aa.image_mesh.Overlay(shape=(3, 3))
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-        grid=oversampled_grid, adapt_data=None
+        mask=mask, adapt_data=None
     )
 
     mapper_grids = mesh.mapper_grids_from(
@@ -108,11 +108,11 @@ def test__delaunay_mapper():
     assert mapper.mapping_matrix == pytest.approx(
         np.array(
             [
-                [0.55, 0.05, 0.1, 0.3, 0.0],
-                [0.05, 0.8, 0.1, 0.0, 0.05],
-                [0.1, 0.1, 0.6, 0.1, 0.1],
-                [0.05, 0.0, 0.1, 0.8, 0.05],
-                [0.0, 0.05, 0.1, 0.05, 0.8],
+                [0.625, 0.0625, 0., 0.3125, 0.0],
+                [0.0625, 0.875, 0.0, 0.0, 0.0625],
+                [0.125, 0.125, 0.5, 0.125, 0.125],
+                [0.0625, 0., 0., 0.875, 0.0625],
+                [0.0, 0.0625, 0.0, 0.0625, 0.875],
             ]
         ),
         1.0e-2,
@@ -141,7 +141,7 @@ def test__voronoi_mapper():
     mesh = aa.mesh.Voronoi()
     image_mesh = aa.image_mesh.Overlay(shape=(3, 3))
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-        grid=oversampled_grid, adapt_data=None
+        mask=mask, adapt_data=None
     )
 
     mapper_grids = mesh.mapper_grids_from(

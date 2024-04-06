@@ -1,11 +1,6 @@
-from typing import Optional
-
 import numpy as np
 
 from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
-from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-
 
 class AbstractImageMeshWeighted(AbstractImageMesh):
     def __init__(
@@ -67,8 +62,3 @@ class AbstractImageMeshWeighted(AbstractImageMesh):
         weight_map[weight_map < self.weight_floor] = self.weight_floor
 
         return weight_map
-
-    def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None, settings=None
-    ) -> Grid2DIrregular:
-        raise NotImplementedError

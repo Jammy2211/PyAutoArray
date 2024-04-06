@@ -74,3 +74,7 @@ class DatasetInterface:
         self.grid_pixelization = grid_pixelization
         self.blurring_grid = blurring_grid
         self.noise_covariance_matrix = noise_covariance_matrix
+
+    @property
+    def mask(self):
+        return self.grid.mask
