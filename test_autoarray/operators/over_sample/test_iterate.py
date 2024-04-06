@@ -30,9 +30,9 @@ def test__threshold_mask_from():
         mask=mask,
     )
 
-    over_sample = aa.OverSamplerIterate(mask=mask, fractional_accuracy=0.9999)
+    over_sampling = aa.OverSamplerIterate(mask=mask, fractional_accuracy=0.9999)
 
-    threshold_mask = over_sample.threshold_mask_from(
+    threshold_mask = over_sampling.threshold_mask_from(
         array_lower_sub_2d=arr.native, array_higher_sub_2d=arr.native
     )
 
@@ -68,7 +68,7 @@ def test__threshold_mask_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    over_sample = aa.OverSamplerIterate(mask=mask, fractional_accuracy=0.5)
+    over_sampling = aa.OverSamplerIterate(mask=mask, fractional_accuracy=0.5)
 
     array_lower_sub = aa.Array2D(
         [
@@ -90,7 +90,7 @@ def test__threshold_mask_from():
         mask=mask_higher_sub,
     )
 
-    threshold_mask = over_sample.threshold_mask_from(
+    threshold_mask = over_sampling.threshold_mask_from(
         array_lower_sub_2d=array_lower_sub.native,
         array_higher_sub_2d=array_higher_sub.native,
     )
@@ -121,11 +121,11 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSamplerIterate(
+    over_sampling = aa.OverSamplerIterate(
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    values = over_sample.array_via_func_from(
+    values = over_sampling.array_via_func_from(
         func=ndarray_1d_from,
         cls=None,
     )
@@ -142,18 +142,18 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
     # but 3 does) that the sub_size of 3 is used. There was a bug where the mask was not updated correctly and the
     # iterated array double counted the values.
 
-    values = over_sample.array_via_func_from(
+    values = over_sampling.array_via_func_from(
         func=ndarray_1d_from,
         cls=None,
     )
 
     assert (values == values_sub_3).all()
 
-    over_sample = aa.OverSamplerIterate(
+    over_sampling = aa.OverSamplerIterate(
         mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
     )
 
-    values = over_sample.array_via_func_from(
+    values = over_sampling.array_via_func_from(
         func=ndarray_1d_from,
         cls=None,
     )
@@ -180,11 +180,11 @@ def test__array_via_func_from__check_values_computed_to_fractional_accuracy():
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSamplerIterate(
+    over_sampling = aa.OverSamplerIterate(
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
-    values = over_sample.array_via_func_from(
+    values = over_sampling.array_via_func_from(
         func=ndarray_1d_from,
         cls=None,
     )
@@ -218,11 +218,11 @@ def test__array_via_func_from__func_returns_all_zeros__iteration_terminated():
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSamplerIterate(
+    over_sampling = aa.OverSamplerIterate(
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    values = over_sample.array_via_func_from(
+    values = over_sampling.array_via_func_from(
         func=ndarray_1d_zeros_from,
         cls=None,
     )

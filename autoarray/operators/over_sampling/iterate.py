@@ -3,9 +3,9 @@ from typing import Callable, List, Optional
 
 from autoarray import numba_util
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.operators.over_sample.abstract import AbstractOverSampling
-from autoarray.operators.over_sample.abstract import AbstractOverSampler
-from autoarray.operators.over_sample.uniform import OverSamplerUniform
+from autoarray.operators.over_sampling.abstract import AbstractOverSampling
+from autoarray.operators.over_sampling.abstract import AbstractOverSampler
+from autoarray.operators.over_sampling.uniform import OverSamplerUniform
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 
@@ -149,7 +149,7 @@ class OverSamplerIterate(AbstractOverSampler):
         self.sub_steps = sub_steps
 
     @property
-    def over_sample(self):
+    def over_sampling(self):
         return OverSamplingIterate()
 
     def array_at_sub_size_from(

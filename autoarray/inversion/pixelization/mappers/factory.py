@@ -2,7 +2,7 @@ from typing import Dict, Optional
 
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
-from autoarray.operators.over_sample.abstract import AbstractOverSampler
+from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.mesh.rectangular_2d import Mesh2DRectangular
 from autoarray.structures.mesh.delaunay_2d import Mesh2DDelaunay

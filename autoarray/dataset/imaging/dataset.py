@@ -10,8 +10,8 @@ from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
-from autoarray.operators.over_sample.abstract import AbstractOverSampling
-from autoarray.operators.over_sample.uniform import OverSamplingUniform
+from autoarray.operators.over_sampling.abstract import AbstractOverSampling
+from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
@@ -29,8 +29,8 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sample: Optional[AbstractOverSampling] = None,
-        over_sample_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
         pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
@@ -61,7 +61,7 @@ class Imaging(AbstractDataset):
         is specifically used for pixelizations computed via the `invserion` module, which often use different
         oversampling and sub-size values to the grid above.
 
-        The `over_sample` and `over_sample_pixelization` define how over sampling is performed for these grids.
+        The `over_sampling` and `over_sampling_pixelization` define how over sampling is performed for these grids.
 
         This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
         It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
@@ -80,10 +80,10 @@ class Imaging(AbstractDataset):
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
-        over_sample
+        over_sampling
             How over sampling is performed for the grid which performs calculations not associated with a pixelization.
             In PyAutoGalaxy and PyAutoLens this is light profile calculations.
-        over_sample_pixelization
+        over_sampling_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
         pad_for_convolver
@@ -127,8 +127,8 @@ class Imaging(AbstractDataset):
             data=data,
             noise_map=noise_map,
             noise_covariance_matrix=noise_covariance_matrix,
-            over_sample=over_sample,
-            over_sample_pixelization=over_sample_pixelization,
+            over_sampling=over_sampling,
+            over_sampling_pixelization=over_sampling_pixelization,
         )
 
         self.use_normalized_psf = use_normalized_psf
@@ -242,8 +242,8 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sample: Optional[AbstractOverSampling] = None,
-        over_sample_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
     ) -> "Imaging":
         """
         Load an imaging dataset from multiple .fits file.
@@ -306,8 +306,8 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
-            over_sample=over_sample,
-            over_sample_pixelization=over_sample_pixelization,
+            over_sampling=over_sampling,
+            over_sampling_pixelization=over_sampling_pixelization,
         )
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
@@ -351,8 +351,8 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
-            over_sample=self.over_sample,
-            over_sample_pixelization=self.over_sample_pixelization,
+            over_sampling=self.over_sampling,
+            over_sampling_pixelization=self.over_sampling_pixelization,
             pad_for_convolver=True,
         )
 

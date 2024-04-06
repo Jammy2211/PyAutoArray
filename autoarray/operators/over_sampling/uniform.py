@@ -3,14 +3,14 @@ import numpy as np
 from autoconf import conf
 from autoconf import cached_property
 
-from autoarray.operators.over_sample.abstract import AbstractOverSampling
-from autoarray.operators.over_sample.abstract import AbstractOverSampler
+from autoarray.mask.mask_2d import Mask2D
+from autoarray.operators.over_sampling.abstract import AbstractOverSampling
+from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray.structures.grids import grid_2d_util
 
-from autoarray.mask.mask_2d import Mask2D
 
 from autoarray.mask import mask_2d_util
 
@@ -144,7 +144,7 @@ class OverSamplerUniform(AbstractOverSampler):
         self.sub_size = sub_size
 
     @property
-    def over_sample(self):
+    def over_sampling(self):
         return OverSamplingUniform(sub_size=self.sub_size)
 
     @property
@@ -172,7 +172,7 @@ class OverSamplerUniform(AbstractOverSampler):
         """
         return self.sub_size**self.mask.dimensions * self.mask.pixels_in_mask
 
-    @property
+    @cached_property
     def oversampled_grid(self) -> Grid2D:
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=np.array(self.mask),
@@ -194,7 +194,7 @@ class OverSamplerUniform(AbstractOverSampler):
             mask=over_sample_mask, pixel_scales=pixel_scales, origin=self.mask.origin
         )
 
-        return Grid2D(values=sub_grid_1d, mask=mask, over_sampling=self.over_sample)
+        return Grid2D(values=sub_grid_1d, mask=mask, over_sampling=self.over_sampling)
 
     def binned_array_2d_from(self, array: Array2D) -> "Array2D":
         """

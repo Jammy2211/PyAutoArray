@@ -152,7 +152,7 @@ def make_imaging_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        over_sample=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -161,7 +161,7 @@ def make_imaging_covariance_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_covariance_matrix=make_noise_covariance_matrix_7x7(),
-        over_sample=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -170,7 +170,7 @@ def make_imaging_7x7_no_blur():
         data=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        over_sample=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -207,7 +207,7 @@ def make_interferometer_7():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sample_pixelization=aa.OverSamplingUniform(sub_size=1),
+        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -218,7 +218,7 @@ def make_interferometer_7_no_fft():
         uv_wavelengths=make_uv_wavelengths_7x2_no_fft(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sample_pixelization=aa.OverSamplingUniform(sub_size=1),
+        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -229,7 +229,7 @@ def make_interferometer_7_grid():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sample_pixelization=aa.OverSamplingUniform(sub_size=1),
+        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=1),
     )
 
 

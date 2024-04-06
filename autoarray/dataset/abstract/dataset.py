@@ -12,10 +12,8 @@ from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.operators.over_sample.abstract import AbstractOverSampling
-from autoarray.operators.over_sample.abstract import AbstractOverSampler
-from autoarray.operators.over_sample.uniform import OverSamplingUniform
-from autoarray.operators.over_sample.uniform import OverSamplerUniform
+from autoarray.operators.over_sampling.abstract import AbstractOverSampling
+from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoconf import cached_property
 
@@ -29,8 +27,8 @@ class AbstractDataset:
         data: Structure,
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sample: Optional[AbstractOverSampling] = None,
-        over_sample_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
@@ -55,7 +53,7 @@ class AbstractDataset:
         is specifically used for pixelizations computed via the `invserion` module, which often use different
         oversampling and sub-size values to the grid above.
 
-        The `over_sample` and `over_sample_pixelization` define how over sampling is performed for these grids.
+        The `over_sampling` and `over_sampling_pixelization` define how over sampling is performed for these grids.
 
         This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
         It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
@@ -71,17 +69,17 @@ class AbstractDataset:
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
-        over_sample
+        over_sampling
             How over sampling is performed for the grid which performs calculations not associated with a pixelization.
             In PyAutoGalaxy and PyAutoLens this is light profile calculations.
-        over_sample_pixelization
+        over_sampling_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
         """
 
         self.data = data
-        self.over_sample = over_sample
-        self.over_sample_pixelization = over_sample_pixelization
+        self.over_sampling = over_sampling
+        self.over_sampling_pixelization = over_sampling_pixelization
 
         self.noise_covariance_matrix = noise_covariance_matrix
 
@@ -126,7 +124,7 @@ class AbstractDataset:
 
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sample=self.over_sample,
+            over_sampling=self.over_sampling,
         )
 
     @cached_property
@@ -146,20 +144,14 @@ class AbstractDataset:
         The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
         """
 
-        over_sample = self.over_sample_pixelization
+        over_sampling = self.over_sampling_pixelization
 
-        if over_sample is None:
-            over_sample = OverSamplingUniform(sub_size=4)
+        if over_sampling is None:
+            over_sampling = OverSamplingUniform(sub_size=4)
 
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sample=over_sample,
-        )
-
-    @cached_property
-    def over_sampler_pixelization(self) -> AbstractOverSampler:
-        return OverSamplerUniform(
-            mask=self.mask, sub_size=self.grid_pixelization.over_sampling.sub_size
+            over_sampling=over_sampling,
         )
 
     @cached_property

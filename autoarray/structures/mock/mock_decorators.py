@@ -1,6 +1,7 @@
 import numpy as np
 
 from autoarray.structures import decorators
+from autoarray.operators.over_sampling.decorator import over_sample
 
 
 ### Grids ###
@@ -124,6 +125,7 @@ class MockGridLikeIteratorObj:
         cos_theta, sin_theta = self.angle_to_profile_grid_from(grid_angles=grid_angles)
         return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
+    @over_sample
     @decorators.to_array
     def ndarray_1d_from(self, grid, *args, **kwargs) -> np.ndarray:
         """
@@ -216,6 +218,7 @@ class MockGrid1DLikeObj:
         self.centre = centre
         self.angle = angle
 
+    @over_sample
     @decorators.project_grid
     def ndarray_1d_from(self, grid, *args, **kwargs):
         return np.ones(shape=grid.shape[0])
@@ -225,6 +228,7 @@ class MockGrid2DLikeObj:
     def __init__(self):
         pass
 
+    @over_sample
     @decorators.to_array
     def ndarray_1d_from(self, grid, *args, **kwargs):
         """

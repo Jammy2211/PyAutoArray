@@ -7,8 +7,8 @@ from autoconf import cached_property
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.operators.over_sample.abstract import AbstractOverSampling
-from autoarray.operators.over_sample.uniform import OverSamplingUniform
+from autoarray.operators.over_sampling.abstract import AbstractOverSampling
+from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
@@ -25,8 +25,8 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask,
         transformer_class=TransformerNUFFT,
-        over_sample: Optional[AbstractOverSampling] = None,
-        over_sample_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
@@ -57,7 +57,7 @@ class Interferometer(AbstractDataset):
         is specifically used for pixelizations computed via the `invserion` module, which often use different
         oversampling and sub-size values to the grid above.
 
-        The `over_sample` and `over_sample_pixelization` define how over sampling is performed for these grids.
+        The `over_sampling` and `over_sampling_pixelization` define how over sampling is performed for these grids.
 
         This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
         It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
@@ -78,10 +78,10 @@ class Interferometer(AbstractDataset):
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
-        over_sample
+        over_sampling
             How over sampling is performed for the grid which performs calculations not associated with a pixelization.
             In PyAutoGalaxy and PyAutoLens this is light profile calculations.
-        over_sample_pixelization
+        over_sampling_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
         transformer_class
@@ -93,8 +93,8 @@ class Interferometer(AbstractDataset):
         super().__init__(
             data=data,
             noise_map=noise_map,
-            over_sample=over_sample,
-            over_sample_pixelization=over_sample_pixelization,
+            over_sampling=over_sampling,
+            over_sampling_pixelization=over_sampling_pixelization,
         )
 
         self.uv_wavelengths = uv_wavelengths
@@ -114,8 +114,8 @@ class Interferometer(AbstractDataset):
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
         transformer_class=TransformerNUFFT,
-        over_sample: Optional[AbstractOverSampling] = None,
-        over_sample_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
     ):
         """
         Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
@@ -141,8 +141,8 @@ class Interferometer(AbstractDataset):
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
             transformer_class=transformer_class,
-            over_sample=over_sample,
-            over_sample_pixelization=over_sample_pixelization,
+            over_sampling=over_sampling,
+            over_sampling_pixelization=over_sampling_pixelization,
         )
 
     @cached_property
