@@ -54,7 +54,7 @@ class AbstractImageMesh:
         """
 
         mesh_pixels_per_image_pixels = grid_2d_util.grid_pixels_in_mask_pixels_from(
-            grid=mesh_grid,
+            grid=np.array(mesh_grid),
             shape_native=grid.shape_native,
             pixel_scales=grid.pixel_scales,
             origin=grid.origin,

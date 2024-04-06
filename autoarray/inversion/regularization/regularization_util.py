@@ -5,7 +5,7 @@ from autoarray import exc
 from autoarray import numba_util
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> np.ndarray:
     """
     Apply zeroth order regularization which penalizes every pixel's deviation from zero by addiing non-zero terms
@@ -38,7 +38,7 @@ def zeroth_regularization_matrix_from(coefficient: float, pixels: int) -> np.nda
     return regularization_matrix
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def constant_regularization_matrix_from(
     coefficient: float, neighbors: np.ndarray, neighbors_sizes: np.ndarray
 ) -> np.ndarray:
@@ -82,7 +82,7 @@ def constant_regularization_matrix_from(
     return regularization_matrix
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def constant_zeroth_regularization_matrix_from(
     coefficient: float,
     coefficient_zeroth: float,
@@ -203,7 +203,7 @@ def brightness_zeroth_regularization_weights_from(
     return coefficient * (1.0 - pixel_signals)
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def weighted_regularization_matrix_from(
     regularization_weights: np.ndarray,
     neighbors: np.ndarray,
@@ -262,7 +262,7 @@ def weighted_regularization_matrix_from(
     return regularization_matrix
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def brightness_zeroth_regularization_matrix_from(
     regularization_weights: np.ndarray,
 ) -> np.ndarray:
@@ -357,7 +357,7 @@ def reg_split_from(
     return splitted_mappings, splitted_sizes, splitted_weights
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def pixel_splitted_regularization_matrix_from(
     regularization_weights: np.ndarray,
     splitted_mappings: np.ndarray,

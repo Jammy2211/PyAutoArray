@@ -10,7 +10,7 @@ from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray import numba_util
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def exp_cov_matrix_from(
     scale: float,
     pixel_points: np.ndarray,
