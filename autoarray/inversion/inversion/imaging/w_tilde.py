@@ -47,7 +47,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
         noise_map
             The noise-map of the observed imaging data which values are solved for.
         convolver
-            The convolver used to include 2D convolution of the mapping matrix with the imaigng data's PSF.
+            The convolver used to perform 2D convolution of the imaigng data's PSF when computing the operated
+            mapping matrix.
         w_tilde
             An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
             the mapping matrix.

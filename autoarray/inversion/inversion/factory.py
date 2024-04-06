@@ -17,6 +17,7 @@ from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from autoarray.inversion.inversion.settings import SettingsInversion
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.preloads import Preloads
 
 
@@ -60,7 +61,7 @@ def inversion_from(
     -------
     An `Inversion` whose type is determined by the input `dataset` and `settings`.
     """
-    if isinstance(dataset, Imaging):
+    if isinstance(dataset.data, Array2D):
         return inversion_imaging_from(
             dataset=dataset,
             linear_obj_list=linear_obj_list,

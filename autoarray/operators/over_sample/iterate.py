@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Callable, Union, List, Optional
+from typing import Callable, List, Optional
 
 from autoarray import numba_util
 from autoarray.mask.mask_2d import Mask2D
@@ -7,9 +7,6 @@ from autoarray.operators.over_sample.abstract import AbstractOverSample
 from autoarray.operators.over_sample.abstract import AbstractOverSampleFunc
 from autoarray.operators.over_sample.uniform import OverSampleUniformFunc
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.uniform_2d import Grid2D
-
-from autoarray.structures.arrays import array_2d_util
 
 
 class OverSampleIterate(AbstractOverSample):

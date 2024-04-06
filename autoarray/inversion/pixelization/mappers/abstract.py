@@ -80,6 +80,9 @@ class AbstractMapper(LinearObj):
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
+        mapper_tools
+            Tools used for the mapper for performing tasks when setting up the pixelization, for example relocating
+            edge pixels to the border.
         run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
