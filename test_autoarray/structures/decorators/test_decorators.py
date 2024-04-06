@@ -23,7 +23,7 @@ pass
 #         pixel_scales=(1.0, 1.0),
 #     )
 #
-#     over_sample = aa.OverSampleUniform(sub_size=1)
+#     over_sample = aa.OverSamplingUniform(sub_size=1)
 #
 #     grid_2d = aa.Grid2D.from_mask(mask=mask, over_sample=over_sample)
 #
@@ -35,7 +35,7 @@ pass
 #     assert isinstance(ndarray_1d, aa.Array2D)
 #     assert (ndarray_1d == ndarray_1d_via_grid).all()
 #
-#     over_sample = aa.OverSampleUniform(sub_size=2)
+#     over_sample = aa.OverSamplingUniform(sub_size=2)
 #
 #     grid_2d = aa.Grid2D.from_mask(mask=mask, over_sample=over_sample)
 #
@@ -43,7 +43,7 @@ pass
 #
 #     ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
 #
-#     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+#     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
 #
 #     ndarray_1d_via_grid = obj.ndarray_1d_from(
 #         np.array(over_sample_uniform.oversampled_grid)
@@ -73,7 +73,7 @@ pass
 #         pixel_scales=(1.0, 1.0),
 #     )
 #
-#     over_sample = aa.OverSampleUniform(sub_size=1)
+#     over_sample = aa.OverSamplingUniform(sub_size=1)
 #
 #     grid_2d = aa.Grid2D.from_mask(mask=mask, over_sample=over_sample)
 #
@@ -85,7 +85,7 @@ pass
 #     assert isinstance(ndarray_1d[0], aa.Array2D)
 #     assert (ndarray_1d[0] == ndarray_1d_via_grid[0]).all()
 #
-#     over_sample = aa.OverSampleUniform(sub_size=2)
+#     over_sample = aa.OverSamplingUniform(sub_size=2)
 #
 #     grid_2d = aa.Grid2D.from_mask(mask=mask, over_sample=over_sample)
 #
@@ -93,7 +93,7 @@ pass
 #
 #     ndarray_1d = obj.ndarray_1d_list_from(grid=grid_2d)
 #
-#     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+#     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
 #     ndarray_1d_via_grid = obj.ndarray_1d_from(
 #         np.array(over_sample_uniform.oversampled_grid)
 #     )
@@ -124,7 +124,7 @@ pass
 #         origin=(0.001, 0.001),
 #     )
 #
-#     over_sample = aa.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2, 3])
+#     over_sample = aa.OverSamplingIterate(fractional_accuracy=1.0, sub_steps=[2, 3])
 #
 #     grid_2d = aa.Grid2D.from_mask(mask=mask, over_sample=over_sample)
 #
@@ -132,7 +132,7 @@ pass
 #
 #     ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
 #
-#     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
+#     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=3)
 #
 #     values_sub_3 = over_sample_uniform.array_via_func_from(
 #         func=ndarray_1d_from, cls=object
@@ -142,7 +142,7 @@ pass
 #
 #     grid_2d = aa.Grid2D.from_mask(
 #         mask=mask,
-#         over_sample=aa.OverSampleIterate(
+#         over_sample=aa.OverSamplingIterate(
 #             fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
 #         ),
 #     )
@@ -151,7 +151,7 @@ pass
 #
 #     ndarray_1d = obj.ndarray_1d_from(grid=grid_2d)
 #
-#     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+#     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
 #
 #     values_sub_2 = over_sample_uniform.array_via_func_from(
 #         func=ndarray_1d_from, cls=object
@@ -161,18 +161,18 @@ pass
 #
 #     grid_2d = aa.Grid2D.from_mask(
 #         mask=mask,
-#         over_sample=aa.OverSampleIterate(fractional_accuracy=0.5, sub_steps=[2, 4]),
+#         over_sample=aa.OverSamplingIterate(fractional_accuracy=0.5, sub_steps=[2, 4]),
 #     )
 #
 #     iterate_obj = aa.m.MockGridLikeIteratorObj()
 #
 #     ndarray_1d = iterate_obj.ndarray_1d_from(grid=grid_2d)
 #
-#     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+#     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
 #     values_sub_2 = over_sample_uniform.array_via_func_from(
 #         func=ndarray_1d_from, cls=object
 #     )
-#     over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=4)
+#     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=4)
 #     values_sub_4 = over_sample_uniform.array_via_func_from(
 #         func=ndarray_1d_from, cls=object
 #     )

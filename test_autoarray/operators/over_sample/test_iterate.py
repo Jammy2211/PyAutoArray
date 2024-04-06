@@ -30,7 +30,7 @@ def test__threshold_mask_from():
         mask=mask,
     )
 
-    over_sample = aa.OverSampleIterateFunc(mask=mask, fractional_accuracy=0.9999)
+    over_sample = aa.OverSamplerIterate(mask=mask, fractional_accuracy=0.9999)
 
     threshold_mask = over_sample.threshold_mask_from(
         array_lower_sub_2d=arr.native, array_higher_sub_2d=arr.native
@@ -68,7 +68,7 @@ def test__threshold_mask_from():
         pixel_scales=(1.0, 1.0),
     )
 
-    over_sample = aa.OverSampleIterateFunc(mask=mask, fractional_accuracy=0.5)
+    over_sample = aa.OverSamplerIterate(mask=mask, fractional_accuracy=0.5)
 
     array_lower_sub = aa.Array2D(
         [
@@ -121,7 +121,7 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSampleIterateFunc(
+    over_sample = aa.OverSamplerIterate(
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
@@ -130,7 +130,7 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
         cls=None,
     )
 
-    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
+    over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=3)
 
     values_sub_3 = over_sample_uniform.array_via_func_from(
         func=ndarray_1d_from, cls=object
@@ -149,7 +149,7 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
 
     assert (values == values_sub_3).all()
 
-    over_sample = aa.OverSampleIterateFunc(
+    over_sample = aa.OverSamplerIterate(
         mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
     )
 
@@ -158,7 +158,7 @@ def test__array_via_func_from__extreme_fractional_accuracies_uses_last_or_first_
         cls=None,
     )
 
-    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+    over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
     values_sub_2 = over_sample_uniform.array_via_func_from(
         func=ndarray_1d_from, cls=object
@@ -180,7 +180,7 @@ def test__array_via_func_from__check_values_computed_to_fractional_accuracy():
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSampleIterateFunc(
+    over_sample = aa.OverSamplerIterate(
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
@@ -189,11 +189,11 @@ def test__array_via_func_from__check_values_computed_to_fractional_accuracy():
         cls=None,
     )
 
-    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+    over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
     values_sub_2 = over_sample_uniform.array_via_func_from(
         func=ndarray_1d_from, cls=object
     )
-    over_sample_uniform = aa.OverSampleUniformFunc(mask=mask, sub_size=4)
+    over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=4)
     values_sub_4 = over_sample_uniform.array_via_func_from(
         func=ndarray_1d_from, cls=object
     )
@@ -218,7 +218,7 @@ def test__array_via_func_from__func_returns_all_zeros__iteration_terminated():
         origin=(0.001, 0.001),
     )
 
-    over_sample = aa.OverSampleIterateFunc(
+    over_sample = aa.OverSamplerIterate(
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 

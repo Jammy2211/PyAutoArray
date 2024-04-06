@@ -3,8 +3,8 @@ import numpy as np
 from autoconf import conf
 from autoconf import cached_property
 
-from autoarray.operators.over_sample.abstract import AbstractOverSample
-from autoarray.operators.over_sample.abstract import AbstractOverSampleFunc
+from autoarray.operators.over_sample.abstract import AbstractOverSampling
+from autoarray.operators.over_sample.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -17,7 +17,7 @@ from autoarray.mask import mask_2d_util
 from autoarray.numpy_wrapper import numpy as npw
 
 
-class OverSampleUniform(AbstractOverSample):
+class OverSamplingUniform(AbstractOverSampling):
     def __init__(self, sub_size: int = 1):
         """
         Over samples grid calculations using a uniform sub-grid that is the same size in every pixel.
@@ -131,15 +131,21 @@ class OverSampleUniform(AbstractOverSample):
 
         self.sub_size = sub_size
 
+    def over_sampler_from(self, mask: Mask2D) -> "OverSamplerUniform":
+        return OverSamplerUniform(
+            mask=mask,
+            sub_size=self.sub_size,
+        )
 
-class OverSampleUniformFunc(AbstractOverSampleFunc):
+
+class OverSamplerUniform(AbstractOverSampler):
     def __init__(self, mask: Mask2D, sub_size: int):
         self.mask = mask
         self.sub_size = sub_size
 
     @property
     def over_sample(self):
-        return OverSampleUniform(sub_size=self.sub_size)
+        return OverSamplingUniform(sub_size=self.sub_size)
 
     @property
     def sub_length(self) -> int:
@@ -188,7 +194,7 @@ class OverSampleUniformFunc(AbstractOverSampleFunc):
             mask=over_sample_mask, pixel_scales=pixel_scales, origin=self.mask.origin
         )
 
-        return Grid2D(values=sub_grid_1d, mask=mask, over_sample=self.over_sample)
+        return Grid2D(values=sub_grid_1d, mask=mask, over_sampling=self.over_sample)
 
     def binned_array_2d_from(self, array: Array2D) -> "Array2D":
         """

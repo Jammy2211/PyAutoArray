@@ -10,7 +10,8 @@ class MockMapper(AbstractMapper):
         self,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
-        mapper_tools=None,
+        over_sampler=None,
+        border_relocator=None,
         adapt_data=None,
         edge_pixel_list=None,
         regularization=None,
@@ -29,7 +30,8 @@ class MockMapper(AbstractMapper):
 
         super().__init__(
             mapper_grids=mapper_grids,
-            mapper_tools=mapper_tools,
+            over_sampler=over_sampler,
+            border_relocator=border_relocator,
             regularization=regularization,
         )
 

@@ -37,7 +37,7 @@ class MockMesh(AbstractMesh):
 
     def image_plane_mesh_grid_from(
         self,
-        mask : Mask2D,
+        mask: Mask2D,
         adapt_data,
         settings=None,
     ):

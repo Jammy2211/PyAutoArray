@@ -134,15 +134,13 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=1)
-
-    mapper_tools = aa.MapperTools(over_sample=over_sample)
+    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=1)
 
     mapper_0 = aa.Mapper(
-        mapper_grids=mapper_grids_0, mapper_tools=mapper_tools, regularization=reg
+        mapper_grids=mapper_grids_0, over_sampler=over_sampler, regularization=reg
     )
     mapper_1 = aa.Mapper(
-        mapper_grids=mapper_grids_1, mapper_tools=mapper_tools, regularization=reg
+        mapper_grids=mapper_grids_1, over_sampler=over_sampler, regularization=reg
     )
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
@@ -216,15 +214,13 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=1)
-
-    mapper_tools = aa.MapperTools(over_sample=over_sample)
+    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=1)
 
     mapper_0 = aa.Mapper(
-        mapper_grids=mapper_grids_0, mapper_tools=mapper_tools, regularization=reg
+        mapper_grids=mapper_grids_0, over_sampler=over_sampler, regularization=reg
     )
     mapper_1 = aa.Mapper(
-        mapper_grids=mapper_grids_1, mapper_tools=mapper_tools, regularization=reg
+        mapper_grids=mapper_grids_1, over_sampler=over_sampler, regularization=reg
     )
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)

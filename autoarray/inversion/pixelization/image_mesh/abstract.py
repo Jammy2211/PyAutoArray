@@ -26,7 +26,10 @@ class AbstractImageMesh:
         raise NotImplementedError
 
     def image_plane_mesh_grid_from(
-        self, mask: Mask2D, adapt_data: Optional[np.ndarray] = None, settings : SettingsInversion = None
+        self,
+        mask: Mask2D,
+        adapt_data: Optional[np.ndarray] = None,
+        settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
         raise NotImplementedError
 
@@ -63,7 +66,9 @@ class AbstractImageMesh:
 
         return Array2D(values=mesh_pixels_per_image_pixels, mask=mask)
 
-    def check_mesh_pixels_per_image_pixels(self, mask: Mask2D, mesh_grid: Grid2DIrregular, settings : SettingsInversion):
+    def check_mesh_pixels_per_image_pixels(
+        self, mask: Mask2D, mesh_grid: Grid2DIrregular, settings: SettingsInversion
+    ):
         """
         Checks the number of mesh pixels in every image pixel and raises an `InversionException` if there are fewer
         mesh pixels inside a certain number of image-pixels than the input settings.
@@ -117,7 +122,13 @@ class AbstractImageMesh:
 
         return mesh_grid
 
-    def check_adapt_background_pixels(self, mask: Mask2D, mesh_grid: Grid2DIrregular, adapt_data : Optional[np.ndarray], settings : SettingsInversion):
+    def check_adapt_background_pixels(
+        self,
+        mask: Mask2D,
+        mesh_grid: Grid2DIrregular,
+        adapt_data: Optional[np.ndarray],
+        settings: SettingsInversion,
+    ):
         """
         Checks the number of mesh pixels in the background of the image-mesh and raises an `InversionException` if
         there are fewer mesh pixels in the background than the input settings.

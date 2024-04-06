@@ -27,19 +27,19 @@ def make_indexes_2d_9x9():
 def test__sub_pixels_in_mask():
     mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
 
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=1)
+    over_sample = aa.OverSamplerUniform(mask=mask, sub_size=1)
 
     assert over_sample.sub_pixels_in_mask == 25
 
     mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
 
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+    over_sample = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
     assert over_sample.sub_pixels_in_mask == 100
 
     mask = aa.Mask2D.all_false(shape_native=(10, 10), pixel_scales=1.0)
 
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=3)
+    over_sample = aa.OverSamplerUniform(mask=mask, sub_size=3)
 
     assert over_sample.sub_pixels_in_mask == 900
 
@@ -51,7 +51,7 @@ def test__sub_mask_index_for_sub_mask_1d_index():
         sub_size=2,
     )
 
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+    over_sample = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
     sub_mask_index_for_sub_mask_1d_index = (
         aa.util.mask_2d.native_index_for_slim_index_2d_from(
@@ -71,7 +71,7 @@ def test__slim_index_for_sub_slim_index():
         sub_size=2,
     )
 
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
+    over_sample = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
     slim_index_for_sub_slim_index_util = (
         aa.util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(

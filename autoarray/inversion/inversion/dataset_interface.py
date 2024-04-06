@@ -3,7 +3,8 @@ class DatasetInterface:
         self,
         data,
         noise_map,
-        mapper_tools=None,
+        over_sampler=None,
+        border_relocator=None,
         convolver=None,
         transformer=None,
         w_tilde=None,
@@ -38,8 +39,12 @@ class DatasetInterface:
         noise_map
             An array describing the RMS standard deviation error in each pixel used for computing quantities like the
             chi-squared in a fit (in PyAutoGalaxy and PyAutoLens the recommended units are electrons per second).
-        mapper_tools
-            The
+        over_sampler
+            Performs over-sampling whereby the masked image pixels are split into sub-pixels, which are all
+            mapped via the mapper with sub-fractional values of flux.
+        border_relocator
+           The border relocator, which relocates coordinates outside the border of the source-plane data grid to its
+           edge.
         convolver
             Perform 2D convolution of the imaigng data's PSF when computing the operated mapping matrix.
         transformer
@@ -66,7 +71,8 @@ class DatasetInterface:
         """
         self.data = data
         self.noise_map = noise_map
-        self.mapper_tools = mapper_tools
+        self.over_sampler = over_sampler
+        self.border_relocator = border_relocator
         self.convolver = convolver
         self.transformer = transformer
         self.w_tilde = w_tilde

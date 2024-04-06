@@ -188,12 +188,12 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
     # TODO : Use pytest.parameterize
 
     for sub_size in range(1, 3):
-        over_sample = aa.OverSampleUniformFunc(
+        over_sampler = aa.OverSamplerUniform(
             mask=mask,
             sub_size=sub_size,
         )
 
-        grid = over_sample.oversampled_grid
+        grid = over_sampler.oversampled_grid
 
         mapper_grids = pixelization.mapper_grids_from(
             border_relocator=None, source_plane_data_grid=grid
@@ -201,7 +201,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
         mapper = aa.Mapper(
             mapper_grids=mapper_grids,
-            mapper_tools=aa.MapperTools(over_sample=over_sample),
+            over_sampler=over_sampler,
             regularization=None,
         )
 
@@ -270,15 +270,13 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
         border_relocator=None, source_plane_data_grid=mask.derive_grid.unmasked
     )
 
-    over_sample = aa.OverSampleUniformFunc(
+    over_sampler = aa.OverSamplerUniform(
         mask=mask,
         sub_size=1,
     )
 
-    mapper_tools = aa.MapperTools(over_sample=over_sample)
-
     mapper = aa.Mapper(
-        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
     )
 
     mapping_matrix = mapper.mapping_matrix
@@ -319,12 +317,12 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     for sub_size in range(1, 2, 3):
-        over_sample = aa.OverSampleUniformFunc(
+        over_sampler = aa.OverSamplerUniform(
             mask=mask,
             sub_size=sub_size,
         )
 
-        grid = over_sample.oversampled_grid
+        grid = over_sampler.oversampled_grid
 
         mapper_grids = pixelization.mapper_grids_from(
             border_relocator=None, source_plane_data_grid=grid
@@ -332,7 +330,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
 
         mapper = aa.Mapper(
             mapper_grids=mapper_grids,
-            mapper_tools=aa.MapperTools(over_sample=over_sample),
+            over_sampler=over_sampler,
             regularization=None,
         )
 

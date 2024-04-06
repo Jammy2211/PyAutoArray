@@ -9,7 +9,7 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
-from autoarray.operators.over_sample.uniform import OverSampleUniformFunc
+from autoarray.operators.over_sample.uniform import OverSamplerUniform
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -112,9 +112,9 @@ def super_resolution_grid_from(img_2d, mask, mask_radius, pixel_scales, sub_scal
         radius=mask_radius,
     )
 
-    over_sample = OverSampleUniformFunc(mask=new_mask, sub_size=sub_scale)
+    over_sampler = OverSamplerUniform(mask=new_mask, sub_size=sub_scale)
 
-    new_grid = over_sample.oversampled_grid
+    new_grid = over_sampler.oversampled_grid
 
     new_img = griddata(
         points=grid, values=img_2d.ravel(), xi=new_grid, fill_value=0.0, method="linear"

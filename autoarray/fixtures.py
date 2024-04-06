@@ -152,7 +152,7 @@ def make_imaging_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        over_sample=aa.OverSampleUniform(sub_size=1),
+        over_sample=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -161,7 +161,7 @@ def make_imaging_covariance_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_covariance_matrix=make_noise_covariance_matrix_7x7(),
-        over_sample=aa.OverSampleUniform(sub_size=1),
+        over_sample=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -170,7 +170,7 @@ def make_imaging_7x7_no_blur():
         data=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        over_sample=aa.OverSampleUniform(sub_size=1),
+        over_sample=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -207,7 +207,7 @@ def make_interferometer_7():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sample_pixelization=aa.OverSampleUniform(sub_size=1),
+        over_sample_pixelization=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -218,7 +218,7 @@ def make_interferometer_7_no_fft():
         uv_wavelengths=make_uv_wavelengths_7x2_no_fft(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sample_pixelization=aa.OverSampleUniform(sub_size=1),
+        over_sample_pixelization=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -229,7 +229,7 @@ def make_interferometer_7_grid():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sample_pixelization=aa.OverSampleUniform(sub_size=1),
+        over_sample_pixelization=aa.OverSamplingUniform(sub_size=1),
     )
 
 
@@ -329,10 +329,8 @@ def make_regularization_matern_kernel():
 
 
 def make_rectangular_mesh_grid_3x3():
-    mapper_tools = make_mapper_tools()
-
     return aa.Mesh2DRectangular.overlay_grid(
-        grid=mapper_tools.over_sample.oversampled_grid, shape_native=(3, 3)
+        grid=make_over_sampler_2d_7x7().oversampled_grid, shape_native=(3, 3)
     )
 
 
@@ -378,20 +376,17 @@ def make_voronoi_mesh_grid_9():
     )
 
 
-def make_mapper_tools():
-    grid = make_grid_2d_7x7()
+def make_over_sampler_2d_7x7():
+    return aa.OverSamplerUniform(mask=make_mask_2d_7x7(), sub_size=2)
 
-    return aa.MapperTools(
-        over_sample=aa.OverSampleUniformFunc(mask=grid.mask, sub_size=2),
-        border_relocator=aa.BorderRelocator(mask=grid.mask, sub_size=1),
-    )
+
+def make_border_relocator_2d_7x7():
+    return aa.BorderRelocator(mask=make_mask_2d_7x7(), sub_size=1)
 
 
 def make_rectangular_mapper_7x7_3x3():
-    mapper_tools = make_mapper_tools()
-
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=mapper_tools.over_sample.oversampled_grid,
+        source_plane_data_grid=make_over_sampler_2d_7x7().oversampled_grid,
         source_plane_mesh_grid=make_rectangular_mesh_grid_3x3(),
         image_plane_mesh_grid=None,
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
@@ -399,16 +394,15 @@ def make_rectangular_mapper_7x7_3x3():
 
     return aa.MapperRectangularNoInterp(
         mapper_grids=mapper_grids,
-        mapper_tools=mapper_tools,
+        over_sampler=make_over_sampler_2d_7x7(),
+        border_relocator=make_border_relocator_2d_7x7(),
         regularization=make_regularization_constant(),
     )
 
 
 def make_delaunay_mapper_9_3x3():
-    mapper_tools = make_mapper_tools()
-
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=mapper_tools.over_sample.oversampled_grid,
+        source_plane_data_grid=make_over_sampler_2d_7x7().oversampled_grid,
         source_plane_mesh_grid=make_delaunay_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
@@ -416,16 +410,15 @@ def make_delaunay_mapper_9_3x3():
 
     return aa.MapperDelaunay(
         mapper_grids=mapper_grids,
-        mapper_tools=mapper_tools,
+        over_sampler=make_over_sampler_2d_7x7(),
+        border_relocator=make_border_relocator_2d_7x7(),
         regularization=make_regularization_constant(),
     )
 
 
 def make_voronoi_mapper_9_3x3():
-    mapper_tools = make_mapper_tools()
-
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=mapper_tools.over_sample.oversampled_grid,
+        source_plane_data_grid=make_over_sampler_2d_7x7().oversampled_grid,
         source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
@@ -433,23 +426,25 @@ def make_voronoi_mapper_9_3x3():
 
     return aa.MapperVoronoiNoInterp(
         mapper_grids=mapper_grids,
-        mapper_tools=mapper_tools,
+        over_sampler=make_over_sampler_2d_7x7(),
+        border_relocator=make_border_relocator_2d_7x7(),
         regularization=make_regularization_constant(),
     )
 
 
 def make_voronoi_mapper_nn_9_3x3():
-    mapper_tools = make_mapper_tools()
-
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=mapper_tools.over_sample.oversampled_grid,
+        source_plane_data_grid=make_over_sampler_2d_7x7().oversampled_grid,
         source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
     return aa.MapperVoronoi(
-        mapper_grids=mapper_grids, mapper_tools=make_mapper_tools(), regularization=None
+        mapper_grids=mapper_grids,
+        over_sampler=make_over_sampler_2d_7x7(),
+        border_relocator=make_border_relocator_2d_7x7(),
+        regularization=None,
     )
 
 

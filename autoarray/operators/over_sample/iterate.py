@@ -3,13 +3,13 @@ from typing import Callable, List, Optional
 
 from autoarray import numba_util
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.operators.over_sample.abstract import AbstractOverSample
-from autoarray.operators.over_sample.abstract import AbstractOverSampleFunc
-from autoarray.operators.over_sample.uniform import OverSampleUniformFunc
+from autoarray.operators.over_sample.abstract import AbstractOverSampling
+from autoarray.operators.over_sample.abstract import AbstractOverSampler
+from autoarray.operators.over_sample.uniform import OverSamplerUniform
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 
-class OverSampleIterate(AbstractOverSample):
+class OverSamplingIterate(AbstractOverSampling):
     def __init__(
         self,
         fractional_accuracy: float = 0.9999,
@@ -54,6 +54,14 @@ class OverSampleIterate(AbstractOverSample):
         self.fractional_accuracy = fractional_accuracy
         self.relative_accuracy = relative_accuracy
         self.sub_steps = sub_steps
+
+    def over_sampler_from(self, mask: Mask2D) -> "OverSamplerIterate":
+        return OverSamplerIterate(
+            mask=mask,
+            sub_steps=self.sub_steps,
+            fractional_accuracy=self.fractional_accuracy,
+            relative_accuracy=self.relative_accuracy,
+        )
 
 
 @numba_util.jit()
@@ -127,7 +135,7 @@ def iterated_array_jit_from(
     return iterated_array
 
 
-class OverSampleIterateFunc(AbstractOverSampleFunc):
+class OverSamplerIterate(AbstractOverSampler):
     def __init__(
         self,
         mask: Mask2D,
@@ -142,12 +150,12 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
 
     @property
     def over_sample(self):
-        return OverSampleIterate()
+        return OverSamplingIterate()
 
     def array_at_sub_size_from(
         self, func: Callable, cls, mask: Mask2D, sub_size, *args, **kwargs
     ) -> Array2D:
-        over_sample_uniform = OverSampleUniformFunc(mask=mask, sub_size=sub_size)
+        over_sample_uniform = OverSamplerUniform(mask=mask, sub_size=sub_size)
 
         oversampled_grid = over_sample_uniform.oversampled_grid
 
@@ -160,7 +168,7 @@ class OverSampleIterateFunc(AbstractOverSampleFunc):
     ) -> Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
-        value in the result array is within the ``OverSampleIterate``'s specified fractional accuracy. The fractional mask thus
+        value in the result array is within the ``OverSamplingIterate``'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
         specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
 

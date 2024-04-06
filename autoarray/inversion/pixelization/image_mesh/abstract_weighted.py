@@ -2,6 +2,7 @@ import numpy as np
 
 from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 
+
 class AbstractImageMeshWeighted(AbstractImageMesh):
     def __init__(
         self,

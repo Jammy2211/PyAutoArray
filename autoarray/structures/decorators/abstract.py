@@ -2,7 +2,7 @@ from typing import List, Union
 
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
-from autoarray.operators.over_sample.abstract import AbstractOverSample
+from autoarray.operators.over_sample.abstract import AbstractOverSampling
 from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.arrays.uniform_1d import Array1D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -62,8 +62,8 @@ class AbstractMaker:
         return self.grid.mask
 
     @property
-    def over_sample(self) -> AbstractOverSample:
-        return self.grid.over_sample
+    def over_sample(self) -> AbstractOverSampling:
+        return self.grid.over_sampling
 
     def via_grid_2d(self, result):
         raise NotImplementedError

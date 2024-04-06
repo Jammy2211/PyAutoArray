@@ -20,8 +20,8 @@ def test__rectangular_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
-    oversampled_grid = over_sample.oversampled_grid
+    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
+    oversampled_grid = over_sampler.oversampled_grid
     oversampled_grid[0, 0] = -2.0
     oversampled_grid[0, 1] = 2.0
 
@@ -33,10 +33,8 @@ def test__rectangular_mapper():
         source_plane_mesh_grid=None,
     )
 
-    mapper_tools = aa.MapperTools(over_sample=over_sample)
-
     mapper = aa.Mapper(
-        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
     )
 
     assert isinstance(mapper, aa.MapperRectangularNoInterp)
@@ -75,8 +73,8 @@ def test__delaunay_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
-    oversampled_grid = over_sample.oversampled_grid
+    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
+    oversampled_grid = over_sampler.oversampled_grid
     oversampled_grid[0, 0] = -2.0
     oversampled_grid[0, 1] = 2.0
 
@@ -92,10 +90,8 @@ def test__delaunay_mapper():
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
 
-    mapper_tools = aa.MapperTools(over_sample=over_sample)
-
     mapper = aa.Mapper(
-        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
     )
 
     assert isinstance(mapper, aa.MapperDelaunay)
@@ -108,10 +104,10 @@ def test__delaunay_mapper():
     assert mapper.mapping_matrix == pytest.approx(
         np.array(
             [
-                [0.625, 0.0625, 0., 0.3125, 0.0],
+                [0.625, 0.0625, 0.0, 0.3125, 0.0],
                 [0.0625, 0.875, 0.0, 0.0, 0.0625],
                 [0.125, 0.125, 0.5, 0.125, 0.125],
-                [0.0625, 0., 0., 0.875, 0.0625],
+                [0.0625, 0.0, 0.0, 0.875, 0.0625],
                 [0.0, 0.0625, 0.0, 0.0625, 0.875],
             ]
         ),
@@ -133,8 +129,8 @@ def test__voronoi_mapper():
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
-    over_sample = aa.OverSampleUniformFunc(mask=mask, sub_size=2)
-    oversampled_grid = over_sample.oversampled_grid
+    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
+    oversampled_grid = over_sampler.oversampled_grid
     oversampled_grid[0, 0] = -2.0
     oversampled_grid[0, 1] = 2.0
 
@@ -150,10 +146,8 @@ def test__voronoi_mapper():
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
 
-    mapper_tools = aa.MapperTools(over_sample=over_sample)
-
     mapper = aa.Mapper(
-        mapper_grids=mapper_grids, mapper_tools=mapper_tools, regularization=None
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
     )
 
     assert isinstance(mapper, aa.MapperVoronoiNoInterp)

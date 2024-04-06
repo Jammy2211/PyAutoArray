@@ -23,7 +23,6 @@ def test__individual_attributes_are_output_for_all_mappers(
     plot_path,
     plot_patch,
 ):
-
     inversion_plotter = aplt.InversionPlotter(
         inversion=rectangular_inversion_7x7_3x3,
         visuals_2d=aplt.Visuals2D(indexes=[0], pix_indexes=[1]),
@@ -82,13 +81,13 @@ def test__individual_attributes_are_output_for_all_mappers(
     assert path.join(plot_path, "reconstruction.png") not in plot_patch.paths
     assert path.join(plot_path, "errors.png") in plot_patch.paths
 
+
 def test__inversion_subplot_of_mapper__is_output_for_all_inversions(
     imaging_7x7,
     voronoi_inversion_9_3x3,
     plot_path,
     plot_patch,
 ):
-
     inversion_plotter = aplt.InversionPlotter(
         inversion=voronoi_inversion_9_3x3,
         visuals_2d=aplt.Visuals2D(indexes=[0], pix_indexes=[1]),

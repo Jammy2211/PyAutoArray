@@ -121,7 +121,7 @@ class BorderRelocator:
                     border_grid=np.array(grid[self.sub_border_slim]),
                 ),
                 mask=grid.mask,
-                over_sample=grid.over_sample,
+                over_sampling=grid.over_sampling,
             )[2]
         )
 
@@ -131,7 +131,7 @@ class BorderRelocator:
                 border_grid=np.array(grid[self.sub_border_slim]),
             ),
             mask=grid.mask,
-            over_sample=grid.over_sample,
+            over_sampling=grid.over_sampling,
         )
 
     def relocated_mesh_grid_from(

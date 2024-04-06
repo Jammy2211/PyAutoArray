@@ -219,7 +219,7 @@ class MapperVoronoiNoInterp(AbstractMapperVoronoi):
         """
         mappings = mapper_util.pix_indexes_for_sub_slim_index_voronoi_from(
             grid=np.array(self.source_plane_data_grid),
-            slim_index_for_sub_slim_index=self.mapper_tools.over_sample.slim_for_sub_slim,
+            slim_index_for_sub_slim_index=self.over_sampler.slim_for_sub_slim,
             mesh_grid=np.array(self.source_plane_mesh_grid),
             neighbors=self.source_plane_mesh_grid.neighbors,
             neighbors_sizes=self.source_plane_mesh_grid.neighbors.sizes,

@@ -113,7 +113,7 @@ def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
     ).all()
     assert (
         visuals_2d_via.border
-        == rectangular_mapper_7x7_3x3.mapper_tools.border_relocator.sub_border_grid
+        == rectangular_mapper_7x7_3x3.border_relocator.sub_border_grid
     ).all()
     assert (
         visuals_2d_via.mesh_grid == rectangular_mapper_7x7_3x3.source_plane_mesh_grid
