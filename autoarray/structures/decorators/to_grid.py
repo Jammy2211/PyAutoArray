@@ -22,7 +22,9 @@ class GridMaker(AbstractMaker):
             The input result (e.g. of a decorated function) that is converted to a Grid2D or list of Grid2D objects.
         """
         if not isinstance(result, list):
-            return Grid2D(values=result, mask=self.mask, over_sampling=self.over_sampling)
+            return Grid2D(
+                values=result, mask=self.mask, over_sampling=self.over_sampling
+            )
         return [
             Grid2D(values=res, mask=self.mask, over_sampling=self.over_sampling)
             for res in result

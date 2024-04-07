@@ -54,7 +54,9 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     )
 
     try:
-        mapper = aa.Mapper(mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None)
+        mapper = aa.Mapper(
+            mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
+        )
 
         (
             pix_indexes_for_sub_slim_index_util,

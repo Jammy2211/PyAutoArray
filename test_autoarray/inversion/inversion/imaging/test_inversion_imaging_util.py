@@ -193,7 +193,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
             sub_size=sub_size,
         )
 
-        grid = over_sampler.oversampled_grid
+        grid = over_sampler.over_sampled_grid
 
         mapper_grids = pixelization.mapper_grids_from(
             border_relocator=None, source_plane_data_grid=grid
@@ -322,7 +322,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
             sub_size=sub_size,
         )
 
-        grid = over_sampler.oversampled_grid
+        grid = over_sampler.over_sampled_grid
 
         mapper_grids = pixelization.mapper_grids_from(
             border_relocator=None, source_plane_data_grid=grid

@@ -3,7 +3,6 @@ class DatasetInterface:
         self,
         data,
         noise_map,
-        over_sampler=None,
         border_relocator=None,
         convolver=None,
         transformer=None,
@@ -71,7 +70,6 @@ class DatasetInterface:
         """
         self.data = data
         self.noise_map = noise_map
-        self.over_sampler = over_sampler
         self.border_relocator = border_relocator
         self.convolver = convolver
         self.transformer = transformer

@@ -157,9 +157,9 @@ class OverSamplerIterate(AbstractOverSampler):
     ) -> Array2D:
         over_sample_uniform = OverSamplerUniform(mask=mask, sub_size=sub_size)
 
-        oversampled_grid = over_sample_uniform.oversampled_grid
+        over_sampled_grid = over_sample_uniform.over_sampled_grid
 
-        array_higher_sub = func(cls, oversampled_grid, *args, **kwargs)
+        array_higher_sub = func(cls, over_sampled_grid, *args, **kwargs)
 
         return over_sample_uniform.binned_array_2d_from(array=array_higher_sub).native
 

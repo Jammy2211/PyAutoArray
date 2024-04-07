@@ -674,10 +674,7 @@ class Grid2D(Structure):
 
     @cached_property
     def over_sampler(self) -> AbstractOverSampler:
-
-        return self.over_sampling.over_sampler_from(
-            mask=self.mask
-        )
+        return self.over_sampling.over_sampler_from(mask=self.mask)
 
     @property
     def flipped(self) -> "Grid2D":
@@ -733,7 +730,7 @@ class Grid2D(Structure):
         return Grid2D.blurring_grid_from(
             mask=self.mask,
             kernel_shape_native=kernel_shape_native,
-            over_sampling=self.over_sampling,
+            over_sampling=None,
         )
 
     def grid_with_coordinates_within_distance_removed_from(

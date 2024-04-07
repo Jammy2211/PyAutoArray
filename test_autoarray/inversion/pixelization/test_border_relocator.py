@@ -37,7 +37,7 @@ def test__relocated_grid_from__inside_border_no_relocations():
     )
 
     over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    grid = over_sampling.oversampled_grid
+    grid = over_sampling.over_sampled_grid
     grid[1, :] = [0.1, 0.1]
 
     border_relocator = aa.BorderRelocator(mask=mask, sub_size=2)
@@ -53,7 +53,7 @@ def test__relocated_grid_from__outside_border_includes_relocations():
     )
 
     over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    grid = over_sampling.oversampled_grid
+    grid = over_sampling.over_sampled_grid
     grid[1, :] = [10.1, 0.1]
 
     border_relocator = aa.BorderRelocator(mask=mask, sub_size=2)
@@ -72,7 +72,7 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
     )
 
     over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    grid = over_sampling.oversampled_grid
+    grid = over_sampling.over_sampled_grid
     grid[1, :] = [11.1, 1.0]
 
     border_relocator = aa.BorderRelocator(mask=mask, sub_size=2)

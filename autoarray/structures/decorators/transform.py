@@ -51,7 +51,6 @@ def transform(func):
         """
 
         if not kwargs.get("is_transformed"):
-
             kwargs = {"is_transformed": True}
 
             transformed_grid = obj.transformed_to_reference_frame_grid_from(

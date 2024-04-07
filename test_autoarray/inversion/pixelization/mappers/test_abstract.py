@@ -149,7 +149,9 @@ def test__interpolated_array_from(grid_2d_7x7):
         source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids,         over_sampler=None,regularization=None)
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, over_sampler=None, regularization=None
+    )
 
     interpolated_array_via_mapper = mapper.interpolated_array_from(
         values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),

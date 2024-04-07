@@ -64,6 +64,8 @@ from .structures.arrays.uniform_2d import Array2D
 from .structures.arrays.irregular import ArrayIrregular
 from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
+from .operators.over_sampling.decorator import perform_over_sampling_from
+from .operators.over_sampling.grid_oversampled import Grid2DOverSampled
 from .operators.over_sampling.uniform import OverSamplingUniform
 from .operators.over_sampling.iterate import OverSamplingIterate
 from .operators.over_sampling.uniform import OverSamplerUniform

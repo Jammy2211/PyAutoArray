@@ -282,8 +282,6 @@ def test__border_1d_grid():
 
     derive_grid = aa.DeriveGrid2D(mask=mask)
 
-    print(derive_grid.border)
-
     assert (
         derive_grid.border
         == np.array(

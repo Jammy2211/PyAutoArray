@@ -4,6 +4,7 @@ from functools import wraps
 
 from typing import List, Union
 
+from autoarray.operators.over_sampling.grid_oversampled import Grid2DOverSampled
 from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 
 from autoarray.structures.arrays.irregular import ArrayIrregular
@@ -15,7 +16,6 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 def perform_over_sampling_from(grid, **kwargs):
-
     if kwargs.get("over_sampling_being_performed"):
         return False
 
@@ -23,12 +23,10 @@ def perform_over_sampling_from(grid, **kwargs):
 
     if isinstance(grid, Grid2D):
         if grid.over_sampling is not None:
-
             perform_over_sampling = True
 
             if isinstance(grid.over_sampling, OverSamplingUniform):
                 if grid.over_sampling.sub_size == 1:
-
                     perform_over_sampling = False
 
     return perform_over_sampling
@@ -69,6 +67,12 @@ def over_sample(func):
         -------
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
+
+        if isinstance(grid, Grid2DOverSampled):
+            result = func(obj, grid.grid, *args, **kwargs)
+
+            return grid.over_sampler.binned_array_2d_from(array=result)
+
         perform_over_sampling = perform_over_sampling_from(grid=grid, kwargs=kwargs)
 
         if not perform_over_sampling:
@@ -76,6 +80,8 @@ def over_sample(func):
 
         kwargs["over_sampling_being_performed"] = True
 
-        return grid.over_sampler.array_via_func_from(func=func, obj=obj, *args, **kwargs)
+        return grid.over_sampler.array_via_func_from(
+            func=func, obj=obj, *args, **kwargs
+        )
 
     return wrapper

@@ -21,15 +21,15 @@ def test__rectangular_mapper():
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
     over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    oversampled_grid = over_sampler.oversampled_grid
-    oversampled_grid[0, 0] = -2.0
-    oversampled_grid[0, 1] = 2.0
+    over_sampled_grid = over_sampler.over_sampled_grid
+    over_sampled_grid[0, 0] = -2.0
+    over_sampled_grid[0, 1] = 2.0
 
     mesh = aa.mesh.Rectangular(shape=(3, 3))
 
     mapper_grids = mesh.mapper_grids_from(
         border_relocator=None,
-        source_plane_data_grid=oversampled_grid,
+        source_plane_data_grid=over_sampled_grid,
         source_plane_mesh_grid=None,
     )
 
@@ -74,9 +74,9 @@ def test__delaunay_mapper():
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
     over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    oversampled_grid = over_sampler.oversampled_grid
-    oversampled_grid[0, 0] = -2.0
-    oversampled_grid[0, 1] = 2.0
+    over_sampled_grid = over_sampler.over_sampled_grid
+    over_sampled_grid[0, 0] = -2.0
+    over_sampled_grid[0, 1] = 2.0
 
     mesh = aa.mesh.Delaunay()
     image_mesh = aa.image_mesh.Overlay(shape=(3, 3))
@@ -86,7 +86,7 @@ def test__delaunay_mapper():
 
     mapper_grids = mesh.mapper_grids_from(
         border_relocator=None,
-        source_plane_data_grid=oversampled_grid,
+        source_plane_data_grid=over_sampled_grid,
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
 
@@ -130,9 +130,9 @@ def test__voronoi_mapper():
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
     over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=2)
-    oversampled_grid = over_sampler.oversampled_grid
-    oversampled_grid[0, 0] = -2.0
-    oversampled_grid[0, 1] = 2.0
+    over_sampled_grid = over_sampler.over_sampled_grid
+    over_sampled_grid[0, 0] = -2.0
+    over_sampled_grid[0, 1] = 2.0
 
     mesh = aa.mesh.Voronoi()
     image_mesh = aa.image_mesh.Overlay(shape=(3, 3))
@@ -142,7 +142,7 @@ def test__voronoi_mapper():
 
     mapper_grids = mesh.mapper_grids_from(
         border_relocator=None,
-        source_plane_data_grid=oversampled_grid,
+        source_plane_data_grid=over_sampled_grid,
         source_plane_mesh_grid=image_plane_mesh_grid,
     )
 

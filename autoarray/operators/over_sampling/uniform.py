@@ -173,7 +173,7 @@ class OverSamplerUniform(AbstractOverSampler):
         return self.sub_size**self.mask.dimensions * self.mask.pixels_in_mask
 
     @cached_property
-    def oversampled_grid(self) -> Grid2D:
+    def over_sampled_grid(self) -> Grid2D:
         sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
@@ -230,14 +230,14 @@ class OverSamplerUniform(AbstractOverSampler):
         )
 
     def array_via_func_from(self, func, obj, *args, **kwargs):
-        oversampled_grid = self.oversampled_grid
+        over_sampled_grid = self.over_sampled_grid
 
         if obj is not None:
-            values = func(obj, oversampled_grid, *args, **kwargs)
+            values = func(obj, over_sampled_grid, *args, **kwargs)
         else:
-            values = func(oversampled_grid, *args, **kwargs)
+            values = func(over_sampled_grid, *args, **kwargs)
 
-#        values = Array2D(values=values, mask=oversampled_grid.mask, store_native=True)
+        #        values = Array2D(values=values, mask=over_sampled_grid.mask, store_native=True)
 
         return self.binned_array_2d_from(array=values)
 

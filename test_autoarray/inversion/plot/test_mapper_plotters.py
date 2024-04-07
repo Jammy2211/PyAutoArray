@@ -69,9 +69,10 @@ def test__get_2d__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
     assert get_2d.origin.in_list == [(0.0, 0.0)]
     assert (get_2d.grid == rectangular_mapper_7x7_3x3.source_plane_data_grid).all()
     assert (get_2d.mesh_grid == rectangular_mapper_7x7_3x3.source_plane_mesh_grid).all()
-    assert (
-        get_2d.border == rectangular_mapper_7x7_3x3.border_relocator.sub_border_grid
-    ).all()
+    border_grid = rectangular_mapper_7x7_3x3.mapper_grids.source_plane_data_grid[
+        rectangular_mapper_7x7_3x3.border_relocator.sub_border_slim
+    ]
+    assert (get_2d.border == border_grid).all()
 
     include = aplt.Include2D(
         origin=False,

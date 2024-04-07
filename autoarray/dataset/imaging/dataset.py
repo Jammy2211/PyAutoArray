@@ -11,7 +11,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.operators.over_sampling.abstract import AbstractOverSampling
-from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty

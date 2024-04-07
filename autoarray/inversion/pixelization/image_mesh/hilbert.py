@@ -114,7 +114,7 @@ def super_resolution_grid_from(img_2d, mask, mask_radius, pixel_scales, sub_scal
 
     over_sampler = OverSamplerUniform(mask=new_mask, sub_size=sub_scale)
 
-    new_grid = over_sampler.oversampled_grid
+    new_grid = over_sampler.over_sampled_grid
 
     new_img = griddata(
         points=grid, values=img_2d.ravel(), xi=new_grid, fill_value=0.0, method="linear"
