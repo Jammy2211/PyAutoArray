@@ -278,7 +278,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
 
         x2d = array_2d_util.array_2d_native_complex_via_indexes_from(
             array_2d_slim=x,
-            sub_shape_native=self.real_space_mask.shape_native,
+            shape_native=self.real_space_mask.shape_native,
             native_index_for_slim_index_2d=self.native_index_for_slim_index,
         )[::-1, :]
 
