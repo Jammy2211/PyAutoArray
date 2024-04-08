@@ -7,14 +7,11 @@ from .numba_util import profile_func
 from .preloads import Preloads
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
-from .dataset.abstract.settings import AbstractSettingsDataset
 from .dataset.abstract.w_tilde import AbstractWTilde
-from .dataset.imaging.settings import SettingsImaging
 from .dataset.imaging.dataset import Imaging
 from .dataset.imaging.simulator import SimulatorImaging
 from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer.dataset import Interferometer
-from .dataset.interferometer.settings import SettingsInterferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
 from .fit.fit_dataset import FitDataset
@@ -70,7 +67,7 @@ from .structures.arrays.uniform_2d import Array2D
 from .structures.arrays.irregular import ArrayIrregular
 from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
-from .structures.grids.iterate_2d import Grid2DIterate
+from .structures.grids.over_sample.iterate import OverSampleIterate
 from .structures.grids.irregular_2d import Grid2DIrregular
 from .structures.grids.irregular_2d import Grid2DIrregularUniform
 from .structures.mesh.rectangular_2d import Mesh2DRectangular

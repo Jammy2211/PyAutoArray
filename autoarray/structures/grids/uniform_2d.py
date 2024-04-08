@@ -1,6 +1,10 @@
+from __future__ import annotations
 import numpy as np
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+
+if TYPE_CHECKING:
+    from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 
 from autoconf import conf
 from autoconf import cached_property
@@ -24,8 +28,9 @@ class Grid2D(Structure):
         values: Union[np.ndarray, List],
         mask: Mask2D,
         store_native: bool = False,
+        over_sample: Optional[OverSampleIterate] = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -90,7 +95,7 @@ class Grid2D(Structure):
              x x x x x x x x x x      grid[9] = [-0.5,  1.5]
 
 
-        **Case 2 (sub-size>1, slim)**
+        **Case 1 (sub-size>1, slim)**
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (y,x)
         coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid2D is therefore stored as an ndarray
@@ -247,6 +252,8 @@ class Grid2D(Structure):
         self.mask = mask
         grid_2d_util.check_grid_2d(grid_2d=values)
 
+        self.over_sample = over_sample
+
     @classmethod
     def no_mask(
         cls,
@@ -255,6 +262,7 @@ class Grid2D(Structure):
         shape_native: Tuple[int, int] = None,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
+        over_sample: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D or 2D, automatically
@@ -302,7 +310,7 @@ class Grid2D(Structure):
             origin=origin,
         )
 
-        return Grid2D(values=values, mask=mask)
+        return Grid2D(values=values, mask=mask, over_sample=over_sample)
 
     @classmethod
     def from_yx_1d(
@@ -313,6 +321,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
+        over_sample: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values.
@@ -379,6 +388,7 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            over_sample=over_sample,
         )
 
     @classmethod
@@ -389,6 +399,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
+        over_sample: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values.
@@ -436,6 +447,7 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            over_sample=over_sample,
         )
 
     @classmethod
@@ -444,6 +456,7 @@ class Grid2D(Structure):
         extent: Tuple[float, float, float, float],
         shape_native: Tuple[int, int],
         sub_size: int = 1,
+        over_sample: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the extent of the (y,x) grid coordinates as an input
@@ -493,7 +506,9 @@ class Grid2D(Structure):
             abs(grid_2d[0, 0, 1] - grid_2d[0, 1, 1]),
         )
 
-        return Grid2D.no_mask(values=grid_2d, pixel_scales=pixel_scales)
+        return Grid2D.no_mask(
+            values=grid_2d, pixel_scales=pixel_scales, over_sample=over_sample
+        )
 
     @classmethod
     def uniform(
@@ -502,6 +517,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
+        over_sample: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a `Grid2D` (see *Grid2D.__new__*) as a uniform grid of (y,x) values given an input `shape_native` and
@@ -534,6 +550,7 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            over_sample=over_sample,
         )
 
     @classmethod
@@ -543,6 +560,7 @@ class Grid2D(Structure):
         shape_native: Tuple[int, int],
         sub_size: int = 1,
         buffer_around_corners: bool = False,
+        over_sample: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from an input bounding box with coordinates [y_min, y_max, x_min, x_max],
@@ -588,10 +606,13 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            over_sample=over_sample,
         )
 
     @classmethod
-    def from_mask(cls, mask: Mask2D) -> "Grid2D":
+    def from_mask(
+        cls, mask: Mask2D, over_sample: Optional[OverSampleIterate] = None
+    ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
         grid is represented in its native 2D masked values are (0.0, 0.0)).
@@ -611,7 +632,7 @@ class Grid2D(Structure):
             origin=mask.origin,
         )
 
-        return Grid2D(values=sub_grid_1d, mask=mask)
+        return Grid2D(values=sub_grid_1d, mask=mask, over_sample=over_sample)
 
     @classmethod
     def from_fits(
@@ -620,6 +641,7 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
+        over_sample: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
@@ -642,11 +664,15 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            over_sample=over_sample,
         )
 
     @classmethod
     def blurring_grid_from(
-        cls, mask: Mask2D, kernel_shape_native: Tuple[int, int]
+        cls,
+        mask: Mask2D,
+        kernel_shape_native: Tuple[int, int],
+        over_sample: Optional[OverSampleIterate] = None,
     ) -> "Grid2D":
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
@@ -732,7 +758,7 @@ class Grid2D(Structure):
             kernel_shape_native=kernel_shape_native
         )
 
-        return cls.from_mask(mask=blurring_mask)
+        return cls.from_mask(mask=blurring_mask, over_sample=over_sample)
 
     @property
     def slim(self) -> "Grid2D":
@@ -743,7 +769,7 @@ class Grid2D(Structure):
         If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
         `native` to `slim` and returned as a new `Grid2D`.
         """
-        return Grid2D(values=self, mask=self.mask)
+        return Grid2D(values=self, mask=self.mask, over_sample=self.over_sample)
 
     @property
     def native(self) -> "Grid2D":
@@ -756,7 +782,9 @@ class Grid2D(Structure):
 
         This method is used in the child `Grid2D` classes to create their `native` properties.
         """
-        return Grid2D(values=self, mask=self.mask, store_native=True)
+        return Grid2D(
+            values=self, mask=self.mask, over_sample=self.over_sample, store_native=True
+        )
 
     @property
     def binned(self) -> "Grid2D":
@@ -787,7 +815,11 @@ class Grid2D(Structure):
             (grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1
         )
 
-        return Grid2D(values=grid_2d_binned, mask=self.mask.derive_mask.sub_1)
+        return Grid2D(
+            values=grid_2d_binned,
+            mask=self.mask.derive_mask.sub_1,
+            over_sample=self.over_sample,
+        )
 
     @property
     def flipped(self) -> "Grid2D":
@@ -820,7 +852,9 @@ class Grid2D(Structure):
         deflection_grid
             The grid of (y,x) coordinates which is subtracted from this grid.
         """
-        return Grid2D(values=self - deflection_grid, mask=self.mask)
+        return Grid2D(
+            values=self - deflection_grid, mask=self.mask, over_sample=self.over_sample
+        )
 
     def blurring_grid_via_kernel_shape_from(
         self, kernel_shape_native: Tuple[int, int]
@@ -837,7 +871,9 @@ class Grid2D(Structure):
         """
 
         return Grid2D.blurring_grid_from(
-            mask=self.mask, kernel_shape_native=kernel_shape_native
+            mask=self.mask,
+            kernel_shape_native=kernel_shape_native,
+            over_sample=self.over_sample,
         )
 
     def grid_with_coordinates_within_distance_removed_from(
@@ -873,53 +909,7 @@ class Grid2D(Structure):
             origin=self.origin,
         )
 
-        return Grid2D.from_mask(mask=mask)
-
-    def structure_2d_from(self, result: np.ndarray) -> Union[Array2D, "Grid2D"]:
-        """
-        Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
-        type(result) as follows:
-
-        - 1D np.ndarray   -> aa.Array2D
-        - 2D np.ndarray   -> aa.Grid2D
-
-        This function is used by the grid_2d_to_structure decorator to convert the output result of a function
-        to an autoarray structure when a `Grid2D` instance is passed to the decorated function.
-
-        Parameters
-        ----------
-        result or [np.ndarray]
-            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
-        """
-        from autoarray.structures.grids.transformed_2d import Grid2DTransformed
-        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
-
-        if len(result.shape) == 1:
-            return Array2D(values=result, mask=self.mask)
-        else:
-            if isinstance(result, Grid2DTransformedNumpy):
-                return Grid2DTransformed(values=result, mask=self.mask)
-            return Grid2D(values=result, mask=self.mask)
-
-    def structure_2d_list_from(
-        self, result_list: List
-    ) -> List[Union[Array2D, "Grid2D"]]:
-        """
-        Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
-        depends on type(result) as follows:
-
-        - [1D np.ndarray] -> [aa.Array2D]
-        - [2D np.ndarray] -> [aa.Grid2D]
-
-        This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
-        function to a list of autoarray structure when a `Grid2D` instance is passed to the decorated function.
-
-        Parameters
-        ----------
-        result_list or [np.ndarray]
-            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
-        """
-        return [self.structure_2d_from(result=result) for result in result_list]
+        return Grid2D.from_mask(mask=mask, over_sample=self.over_sample)
 
     def values_from(self, array_slim: np.ndarray) -> ArrayIrregular:
         """
@@ -1184,7 +1174,7 @@ class Grid2D(Structure):
             sub_size=self.mask.sub_size,
         )
 
-        return Grid2D.from_mask(mask=padded_mask)
+        return Grid2D.from_mask(mask=padded_mask, over_sample=self.over_sample)
 
     def relocated_grid_from(self, grid: "Grid2D") -> "Grid2D":
         """
@@ -1220,6 +1210,7 @@ class Grid2D(Structure):
             ),
             mask=grid.mask,
             sub_size=grid.mask.sub_size,
+            over_sample=self.over_sample,
         )
 
     def relocated_mesh_grid_from(self, mesh_grid: Grid2DIrregular) -> Grid2DIrregular:
@@ -1242,3 +1233,51 @@ class Grid2D(Structure):
                 border_grid=np.array(self.sub_border_grid),
             ),
         )
+
+    def structure_2d_from(self, result: np.ndarray) -> Union[Array2D, "Grid2D"]:
+        """
+        Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
+        type(result) as follows:
+
+        - 1D np.ndarray   -> aa.Array2D
+        - 2D np.ndarray   -> aa.Grid2D
+
+        This function is used by the grid_2d_to_structure decorator to convert the output result of a function
+        to an autoarray structure when a `Grid2D` instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        from autoarray.structures.grids.transformed_2d import Grid2DTransformed
+        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
+
+        if len(result.shape) == 1:
+            return Array2D(values=result, mask=self.mask)
+        else:
+            if isinstance(result, Grid2DTransformedNumpy):
+                return Grid2DTransformed(
+                    values=result, mask=self.mask, over_sample=self.over_sample
+                )
+            return Grid2D(values=result, mask=self.mask, over_sample=self.over_sample)
+
+    def structure_2d_list_from(
+        self, result_list: List
+    ) -> List[Union[Array2D, "Grid2D"]]:
+        """
+        Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
+        depends on type(result) as follows:
+
+        - [1D np.ndarray] -> [aa.Array2D]
+        - [2D np.ndarray] -> [aa.Grid2D]
+
+        This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
+        function to a list of autoarray structure when a `Grid2D` instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result_list or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        return [self.structure_2d_from(result=result) for result in result_list]

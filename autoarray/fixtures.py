@@ -119,12 +119,6 @@ def make_sub_grid_2d_7x7():
     return aa.Grid2D.from_mask(mask=make_sub_mask_2d_7x7())
 
 
-def make_grid_2d_iterate_7x7():
-    return aa.Grid2DIterate.from_mask(
-        mask=make_mask_2d_7x7(), fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-    )
-
-
 def make_sub_grid_2d_7x7_simple():
     sub_grid_2d_7x7 = make_sub_grid_2d_7x7()
     sub_grid_2d_7x7[0] = np.array([1.0, 1.0])
@@ -188,6 +182,7 @@ def make_imaging_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
+        sub_size=1,
     )
 
 
@@ -196,6 +191,7 @@ def make_imaging_covariance_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_covariance_matrix=make_noise_covariance_matrix_7x7(),
+        sub_size=1,
     )
 
 
@@ -204,6 +200,7 @@ def make_imaging_7x7_no_blur():
         data=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
+        sub_size=1,
     )
 
 
@@ -239,9 +236,8 @@ def make_interferometer_7():
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_sub_mask_2d_7x7(),
-        settings=aa.SettingsInterferometer(
-            grid_class=aa.Grid2D, sub_size=1, transformer_class=aa.TransformerDFT
-        ),
+        transformer_class=aa.TransformerDFT,
+        sub_size_pixelization=1
     )
 
 
@@ -251,9 +247,7 @@ def make_interferometer_7_no_fft():
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2_no_fft(),
         real_space_mask=make_sub_mask_2d_7x7(),
-        settings=aa.SettingsInterferometer(
-            grid_class=aa.Grid2D, sub_size=1, transformer_class=aa.TransformerDFT
-        ),
+        transformer_class=aa.TransformerDFT,
     )
 
 
@@ -263,9 +257,8 @@ def make_interferometer_7_grid():
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_sub_mask_2d_7x7(),
-        settings=aa.SettingsInterferometer(
-            sub_size=1, transformer_class=aa.TransformerDFT
-        ),
+        transformer_class=aa.TransformerDFT,
+        sub_size_pixelization=1
     )
 
 
@@ -275,9 +268,7 @@ def make_interferometer_7_lop():
         noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
-        settings=aa.SettingsInterferometer(
-            sub_size_pixelization=1, transformer_class=aa.TransformerNUFFT
-        ),
+        transformer_class=aa.TransformerNUFFT,
     )
 
 

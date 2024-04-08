@@ -54,16 +54,7 @@ def test__grid__uses_mask_and_settings(
     sub_mask_2d_7x7,
     grid_2d_7x7,
     sub_grid_2d_7x7,
-    grid_2d_iterate_7x7,
 ):
-    dataset_1d = ds.AbstractDataset(
-        data=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
-        noise_map=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
-        settings=ds.AbstractSettingsDataset(),
-    )
-
-    assert isinstance(dataset_1d.grid, aa.Grid1D)
-
     masked_image_7x7 = aa.Array2D(
         values=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
@@ -75,7 +66,7 @@ def test__grid__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(sub_size=2),
+        sub_size=2,
     )
 
     assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
@@ -85,24 +76,16 @@ def test__grid__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(grid_class=aa.Grid2DIterate),
+        over_sample=aa.OverSampleIterate(),
     )
 
-    assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
-    assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
+    assert isinstance(masked_imaging_7x7.grid.over_sample, aa.OverSampleIterate)
+    assert (masked_imaging_7x7.grid.binned == sub_grid_2d_7x7.binned).all()
 
 
 def test__grid_pixelization__uses_mask_and_settings(
     image_7x7, noise_map_7x7, sub_mask_2d_7x7, grid_2d_7x7, sub_grid_2d_7x7
 ):
-    masked_dataset = ds.AbstractDataset(
-        data=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
-        noise_map=aa.Array1D.no_mask(values=[1.0], pixel_scales=1.0),
-        settings=ds.AbstractSettingsDataset(),
-    )
-
-    assert isinstance(masked_dataset.grid, aa.Grid1D)
-
     masked_image_7x7 = aa.Array2D(
         values=image_7x7.native, mask=sub_mask_2d_7x7.derive_mask.sub_1
     )
@@ -114,9 +97,8 @@ def test__grid_pixelization__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(
-            grid_pixelization_class=aa.Grid2D, sub_size_pixelization=2
-        ),
+        sub_size_pixelization=2,
+        over_sample_pixelization=aa.OverSampleIterate(),
     )
 
     assert masked_imaging_7x7.grid_pixelization.sub_size == 2
@@ -126,9 +108,8 @@ def test__grid_pixelization__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(
-            grid_pixelization_class=aa.Grid2D, sub_size=2, sub_size_pixelization=4
-        ),
+        sub_size=2,
+        sub_size_pixelization=4,
     )
 
     assert isinstance(masked_imaging_7x7.grid_pixelization, aa.Grid2D)
@@ -137,18 +118,7 @@ def test__grid_pixelization__uses_mask_and_settings(
 
 def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
     dataset_7x7 = ds.AbstractDataset(
-        data=image_7x7,
-        noise_map=noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(sub_size=1, sub_size_pixelization=1),
-    )
-
-    assert dataset_7x7.grid.mask.sub_size == 1
-    assert dataset_7x7.grid_pixelization.mask.sub_size == 1
-
-    dataset_7x7 = ds.AbstractDataset(
-        data=image_7x7,
-        noise_map=noise_map_7x7,
-        settings=ds.AbstractSettingsDataset(sub_size=2, sub_size_pixelization=2),
+        data=image_7x7, noise_map=noise_map_7x7, sub_size=2, sub_size_pixelization=2
     )
 
     assert dataset_7x7.grid.mask.sub_size == 2

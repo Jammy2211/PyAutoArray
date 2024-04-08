@@ -425,8 +425,9 @@ def test__in_grid_2d_iterate__out_ndarray_1d__values_use_iteration():
         origin=(0.001, 0.001),
     )
 
-    grid_2d_iterate = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
+    grid_2d_iterate = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2, 3]),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
@@ -440,8 +441,11 @@ def test__in_grid_2d_iterate__out_ndarray_1d__values_use_iteration():
 
     assert (ndarray_1d == values_sub_3.binned).all()
 
-    grid_2d_iterate = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+    grid_2d_iterate = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(
+            fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+        ),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
@@ -455,8 +459,9 @@ def test__in_grid_2d_iterate__out_ndarray_1d__values_use_iteration():
 
     assert (ndarray_1d == values_sub_2.binned).all()
 
-    grid_2d_iterate = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
+    grid_2d_iterate = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=0.5, sub_steps=[2, 4]),
     )
 
     iterate_obj = aa.m.MockGridLikeIteratorObj()
@@ -493,8 +498,9 @@ def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
         origin=(0.001, 0.001),
     )
 
-    grid_2d_iterate = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
+    grid_2d_iterate = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=1.0, sub_steps=[2, 3]),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
@@ -508,8 +514,11 @@ def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
 
     assert (ndarray_2d == values_sub_3.binned).all()
 
-    grid_2d_iterate = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+    grid_2d_iterate = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(
+            fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+        ),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
@@ -523,8 +532,9 @@ def test__in_grid_2d_iterate__out_ndarray_2d__values_use_iteration():
 
     assert (ndarray_2d == values_sub_2.binned).all()
 
-    grid_2d_iterate = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
+    grid_2d_iterate = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=0.5, sub_steps=[2, 4]),
     )
 
     iterate_obj = aa.m.MockGridLikeIteratorObj()
@@ -567,8 +577,9 @@ def test__in_grid_2d_iterate__out_ndarray_1d_list__values_use_iteration():
         origin=(0.001, 0.001),
     )
 
-    grid_2d = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
+    grid_2d = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=0.05, sub_steps=[2, 3]),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
@@ -596,8 +607,9 @@ def test__in_grid_2d_iterate__out_ndarray_2d_list__values_use_iteration():
         origin=(0.001, 0.001),
     )
 
-    grid_2d = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
+    grid_2d = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=0.05, sub_steps=[2, 3]),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
@@ -626,8 +638,11 @@ def test__in_grid_2d_iterate__out_ndarray_yx_2d__values_use_iteration():
         origin=(0.001, 0.001),
     )
 
-    grid_2d = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+    grid_2d = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(
+            fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+        ),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()
@@ -642,8 +657,9 @@ def test__in_grid_2d_iterate__out_ndarray_yx_2d__values_use_iteration():
     assert isinstance(ndarray_yx_2d, aa.VectorYX2D)
     assert (ndarray_yx_2d == values_sub_2.binned).all()
 
-    grid_2d = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
+    grid_2d = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=0.5, sub_steps=[2, 4]),
     )
 
     iterate_obj = aa.m.MockGridLikeIteratorObj()
@@ -688,8 +704,9 @@ def test__in_grid_2d_iterate__out_ndarray_yx_2d_list__values_use_iteration():
         origin=(0.001, 0.001),
     )
 
-    grid_2d = aa.Grid2DIterate.from_mask(
-        mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
+    grid_2d = aa.Grid2D.from_mask(
+        mask=mask,
+        over_sample=aa.OverSampleIterate(fractional_accuracy=0.05, sub_steps=[2, 3]),
     )
 
     grid_like_obj = aa.m.MockGridLikeIteratorObj()

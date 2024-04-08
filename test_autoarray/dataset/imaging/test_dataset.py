@@ -179,36 +179,6 @@ def test__apply_mask__noise_covariance_matrix():
     )
 
 
-def test__apply_mask__apply_settings__grids(
-    imaging_7x7,
-    sub_mask_2d_7x7,
-    grid_2d_7x7,
-    sub_grid_2d_7x7,
-    blurring_grid_2d_7x7,
-    grid_2d_iterate_7x7,
-):
-    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
-    masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-        settings=aa.SettingsImaging(grid_class=aa.Grid2D, sub_size=2)
-    )
-
-    assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
-    assert (masked_imaging_7x7.grid.binned == grid_2d_7x7).all()
-    assert (masked_imaging_7x7.grid.slim == sub_grid_2d_7x7).all()
-    assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2D)
-    assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_2d_7x7).all()
-
-    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
-    masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
-        settings=aa.SettingsImaging(grid_class=aa.Grid2DIterate)
-    )
-
-    assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
-    assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
-    assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DIterate)
-    assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_2d_7x7).all()
-
-
 def test__different_imaging_without_mock_objects__customize_constructor_inputs():
     psf = aa.Kernel2D.ones(shape_native=(7, 7), pixel_scales=3.0)
 

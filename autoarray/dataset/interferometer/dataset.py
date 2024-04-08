@@ -1,11 +1,13 @@
 import logging
 import numpy as np
+from typing import Optional
 
 from autoconf import cached_property
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
-from autoarray.dataset.interferometer.settings import SettingsInterferometer
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
+from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
@@ -21,33 +23,84 @@ class Interferometer(AbstractDataset):
         noise_map: VisibilitiesNoiseMap,
         uv_wavelengths: np.ndarray,
         real_space_mask,
-        settings: SettingsInterferometer = SettingsInterferometer(),
+        transformer_class=TransformerNUFFT,
+        sub_size_pixelization : int = 4,
+        over_sample: Optional[OverSampleIterate] = None,
+        over_sample_pixelization: Optional[OverSampleIterate] = None,
     ):
         """
-        A class containing an interferometer dataset, including the visibilities data, noise-map and the
-        uv-plane baseline wavelengths.
+        An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
+        associated quantities for calculations like the grid.
+
+        This object is the input to the `FitInterferometer` object, which fits the dataset with model visibilities
+        and quantifies the goodness-of-fit via a residual map, likelihood, chi-squared and other quantities.
+
+        The following quantities of the interferometer data are available and used for the following tasks:
+
+        - `data`: The visibilities data, which shows the signal that is analysed and fitted with model visibilities.
+
+        - `noise_map`: The RMS standard deviation error in every visibility, which is used to compute the chi-squared
+        value and likelihood of a fit.
+
+        - `uv_wavelengths`: The baselines of the interferometer which are used to Fourier transform a real space
+        image to the uv-plane.
+
+        `real_space_mask`: Defines in real space where the signal is present. This mask is used to transform images to
+        Fourier space via the Fourier transform. The grids contained in the settings are aligned with this mask.
+
+        Datasets also contains following properties:
+
+        - `grid`: A grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
+        the centre of an image pixel. This may be used in fits to calculate the model image of the imaging data.
+
+        - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
+        is specifically used for pixelizations computed via the `invserion` module, which often use different
+        oversampling and sub-size values to the grid above.
+
+        The `over_sample` and `over_sample_pixelization` define how over sampling is performed for these grids.
+
+        This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
+        It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
 
         Parameters
         ----------
         data
-            The array of the visibilities data, containing by real and complex values.
+            The array of the visibilities data containing the signal that is fitted.
         noise_map
-            An array describing the RMS standard deviation error in each visibility.
+            An array describing the RMS standard deviation error in each visibility used for computing quantities like the
+            chi-squared in a fit.
         uv_wavelengths
-            The uv-plane baseline wavelengths.
+            The baselines of the interferometer which are used to Fourier transform a real space
+            image to the uv-plane.
         real_space_mask
-            A 2D mask in real-space (e.g. not Fourier space like the visibilities) which defines in real space
-            how calculations are performed.
-        settings
-            Controls settings of how the dataset is set up (e.g. the types of grids used to perform calculations).
+            Defines in real space where the signal is present. This mask is used to transform images to
+            Fourier space via the Fourier transform. The grids contained in the settings are aligned with this mask.
+        noise_covariance_matrix
+            A noise-map covariance matrix representing the covariance between noise in every `data` value, which
+            can be used via a bespoke fit to account for correlated noise in the data.
+        over_sample
+            How over sampling is performed for the grid which performs calculations not associated with a pixelization.
+            In PyAutoGalaxy and PyAutoLens this is light profile calculations.
+        over_sample_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
+        transformer_class
+            The class of the Fourier Transform which maps images from real space to Fourier space visibilities and
+            the uv-plane.
         """
         self.real_space_mask = real_space_mask
 
-        super().__init__(data=data, noise_map=noise_map, settings=settings)
+        super().__init__(
+            data=data,
+            noise_map=noise_map,
+            sub_size_pixelization=sub_size_pixelization,
+            over_sample=over_sample,
+            over_sample_pixelization=over_sample_pixelization,
+        )
 
         self.uv_wavelengths = uv_wavelengths
 
-        self.transformer = self.settings.transformer_class(
+        self.transformer = transformer_class(
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
@@ -61,7 +114,9 @@ class Interferometer(AbstractDataset):
         visibilities_hdu=0,
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
-        settings: SettingsInterferometer = SettingsInterferometer(),
+        transformer_class=TransformerNUFFT,
+        over_sample: Optional[OverSampleIterate] = None,
+        over_sample_pixelization: Optional[OverSampleIterate] = None,
     ):
         """
         Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
@@ -86,16 +141,9 @@ class Interferometer(AbstractDataset):
             data=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
-            settings=settings,
-        )
-
-    def apply_settings(self, settings):
-        return Interferometer(
-            data=self.data,
-            noise_map=self.noise_map,
-            uv_wavelengths=self.uv_wavelengths,
-            real_space_mask=self.real_space_mask,
-            settings=settings,
+            transformer_class=transformer_class,
+            over_sample=over_sample,
+            over_sample_pixelization=over_sample_pixelization,
         )
 
     @cached_property

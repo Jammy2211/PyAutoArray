@@ -8,11 +8,11 @@ from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
 from autoarray import exc
-from autoarray.dataset.abstract.settings import AbstractSettingsDataset
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
+from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
 from autoconf import cached_property
 
 
@@ -25,22 +25,63 @@ class AbstractDataset:
         data: Structure,
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        settings: AbstractSettingsDataset = AbstractSettingsDataset(),
+        sub_size: int = 1,  # Temporary before refactor
+        sub_size_pixelization: int = 4,  # Temporary before refactor
+        over_sample: Optional[OverSampleIterate] = None,
+        over_sample_pixelization: Optional[OverSampleIterate] = None,
     ):
         """
-        A collection of abstract data structures for different types of data (an image, pixel-scale, noise-map, etc.)
+        An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
+        like the grid.
+
+        This object is extended with specific dataset types, such as an `Imaging` or `Interferometer` dataset,
+        and can be used for fitting data with model data and quantifying the goodness-of-fit.
+
+        The following quantities are abstract and used by any dataset type:
+
+        - `data`: The image data, which shows the signal that is analysed and fitted with a model image.
+
+        - `noise_map`: The RMS standard deviation error in every pixel, which is used to compute the chi-squared value
+        and likelihood of a fit.
+
+        Datasets also contains following properties:
+
+        - `grid`: A grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
+        the centre of an image pixel. This may be used in fits to calculate the model image of the imaging data.
+
+        - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
+        is specifically used for pixelizations computed via the `invserion` module, which often use different
+        oversampling and sub-size values to the grid above.
+
+        The `over_sample` and `over_sample_pixelization` define how over sampling is performed for these grids.
+
+        This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
+        It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
 
         Parameters
         ----------
-        dataucture
-            The array of the image data, in units of electrons per second.
-        noise_mapucture
-            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
-            second.
+        data
+            The array of the image data containing the signal that is fitted (in PyAutoGalaxy and PyAutoLens the
+            recommended units are electrons per second).
+        noise_map
+            An array describing the RMS standard deviation error in each pixel used for computing quantities like the
+            chi-squared in a fit (in PyAutoGalaxy and PyAutoLens the recommended units are electrons per second).
+        noise_covariance_matrix
+            A noise-map covariance matrix representing the covariance between noise in every `data` value, which
+            can be used via a bespoke fit to account for correlated noise in the data.
+        over_sample
+            How over sampling is performed for the grid which performs calculations not associated with a pixelization.
+            In PyAutoGalaxy and PyAutoLens this is light profile calculations.
+        over_sample_pixelization
+            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
+            passed into the calculations performed in the `inversion` module.
         """
 
         self.data = data
-        self.settings = settings
+        self.sub_size = sub_size
+        self.sub_size_pixelization = sub_size_pixelization
+        self.over_sample = over_sample
+        self.over_sample_pixelization = over_sample_pixelization
 
         self.noise_covariance_matrix = noise_covariance_matrix
 
@@ -82,11 +123,14 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure.
         """
+        # TODO : Use oversampling API will remove this hack
 
-        mask_grid = self.mask.mask_new_sub_size_from(
-            mask=self.mask, sub_size=self.settings.sub_size
+        mask = self.mask.mask_new_sub_size_from(mask=self.mask, sub_size=self.sub_size)
+
+        return Grid2D.from_mask(
+            mask=mask,
+            over_sample=self.over_sample,
         )
-        return self.settings.grid_from(mask=mask_grid)
 
     @cached_property
     def grid_pixelization(self) -> Grid2D:
@@ -104,11 +148,16 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
         """
-        mask_inversion = self.mask.mask_new_sub_size_from(
-            mask=self.mask, sub_size=self.settings.sub_size_pixelization
+        # TODO : Use oversampling API will remove this hack
+
+        mask = self.mask.mask_new_sub_size_from(
+            mask=self.mask, sub_size=self.sub_size_pixelization
         )
 
-        return self.settings.grid_pixelization_from(mask=mask_inversion)
+        return Grid2D.from_mask(
+            mask=mask,
+            over_sample=self.over_sample,
+        )
 
     @property
     def shape_native(self):
