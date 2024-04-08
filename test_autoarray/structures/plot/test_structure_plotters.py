@@ -70,7 +70,7 @@ def test__array(
     visuals_2d = aplt.Visuals2D(
         origin=grid_2d_irregular_7x7_list,
         mask=mask_2d_7x7,
-        border=mask_2d_7x7.derive_grid.border_sub_1.binned,
+        border=mask_2d_7x7.derive_grid.border,
         grid=grid_2d_7x7,
         positions=grid_2d_irregular_7x7_list,
         #       lines=grid_2d_irregular_7x7_list,
@@ -150,7 +150,7 @@ def test__grid(
     visuals_2d = aplt.Visuals2D(
         origin=grid_2d_irregular_7x7_list,
         mask=mask_2d_7x7,
-        border=mask_2d_7x7.derive_grid.border_sub_1.binned,
+        border=mask_2d_7x7.derive_grid.border,
         grid=grid_2d_7x7,
         positions=grid_2d_irregular_7x7_list,
         lines=grid_2d_irregular_7x7_list,

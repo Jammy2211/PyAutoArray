@@ -1,17 +1,17 @@
 import numpy as np
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Union, Type
 
 from autoconf import cached_property
 
 from autoarray.numba_util import profile_func
 
+from autoarray.dataset.imaging.dataset import Imaging
+from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.operators.convolver import Convolver
 
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
 
@@ -19,9 +19,7 @@ from autoarray.inversion.inversion.imaging import inversion_imaging_util
 class AbstractInversionImaging(AbstractInversion):
     def __init__(
         self,
-        data: Array2D,
-        noise_map: Array2D,
-        convolver: Convolver,
+        dataset: Union[Imaging, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads=None,
@@ -78,16 +76,17 @@ class AbstractInversionImaging(AbstractInversion):
 
         preloads = preloads or Preloads()
 
-        self.convolver = convolver
-
         super().__init__(
-            data=data,
-            noise_map=noise_map,
+            dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
             run_time_dict=run_time_dict,
         )
+
+    @property
+    def convolver(self):
+        return self.dataset.convolver
 
     @property
     def operated_mapping_matrix_list(self) -> List[np.ndarray]:

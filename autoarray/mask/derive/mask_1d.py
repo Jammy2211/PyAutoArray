@@ -50,58 +50,10 @@ class DeriveMask1D:
         self.mask = mask
 
     @property
-    def sub_1(self) -> Mask1D:
-        """
-        Returns the same ``Mask1D`` but with its geometry and (y,x) Cartesian coordinates reduced to a `sub_size=1`.
-
-        For example, for the following ``Mask1D``:
-
-        ::
-           [True, False, False, False, True]
-
-        The ``sub_1``` mask (given via ``mask_2d.derive_mask.sub_1``) returns the same mask but its ``sub_size``
-        parameter will be reduced to 1 if it was above 1 before.
-
-        ::
-           [True, False, False, False, True]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_1d = aa.Mask1D(
-                mask[True, False, False, False, True],
-                pixel_scales=1.0,
-                sub_size=2,
-            )
-
-            derive_mask_1d = aa.DeriveMask1D(mask=mask_1d)
-
-            mask_sub_1 = derive_mask_1d.sub_1
-
-            print(mask_sub_1)
-
-            # The sub_size of the mask is 1.
-            print(mask_sub_1.sub_size)
-        """
-
-        from autoarray.mask.mask_1d import Mask1D
-
-        return Mask1D(
-            mask=self.mask,
-            sub_size=1,
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.mask.origin,
-        )
-
-    @property
     def all_false(self) -> Mask1D:
         """
         Returns a ``Mask1D`` which has the same
-        geometry (``shape_native`` / ``sub_size`` / ``pixel_scales`` / ``origin``) as this ``Mask1D`` but all
+        geometry (``shape_native`` / ``pixel_scales`` / ``origin``) as this ``Mask1D`` but all
         entries are unmasked (given by``False``).
 
         For example, for the following ``Mask1D``:
@@ -124,7 +76,6 @@ class DeriveMask1D:
             mask_1d = aa.Mask1D(
                 mask[True, False, False, False, True],
                 pixel_scales=1.0,
-                sub_size=2,
             )
 
             derive_mask_1d = aa.DeriveMask1D(mask=mask_1d)
@@ -135,7 +86,6 @@ class DeriveMask1D:
 
         return Mask1D.all_false(
             shape_slim=self.mask.shape_slim,
-            sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
@@ -168,7 +118,6 @@ class DeriveMask1D:
             mask_1d = aa.Mask1D(
                 mask[True, False, False, False, True],
                 pixel_scales=1.0,
-                sub_size=2,
             )
 
             derive_mask_1d = aa.DeriveMask1D(mask=mask_1d)
@@ -181,6 +130,5 @@ class DeriveMask1D:
         return Mask2D(
             [self.mask],
             pixel_scales=(self.mask.pixel_scale, self.mask.pixel_scale),
-            sub_size=self.mask.sub_size,
             origin=(0.0, 0.0),
         )

@@ -125,19 +125,19 @@ def test__output_to_fits(imaging_7x7, test_data_path):
     assert dataset.pixel_scales == (0.1, 0.1)
 
 
-def test__apply_mask(imaging_7x7, sub_mask_2d_7x7, psf_3x3):
-    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
+def test__apply_mask(imaging_7x7, mask_2d_7x7, psf_3x3):
+    masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7)
 
     assert (masked_imaging_7x7.data.slim == np.ones(9)).all()
 
     assert (
-        masked_imaging_7x7.data.native == np.ones((7, 7)) * np.invert(sub_mask_2d_7x7)
+        masked_imaging_7x7.data.native == np.ones((7, 7)) * np.invert(mask_2d_7x7)
     ).all()
 
     assert (masked_imaging_7x7.noise_map.slim == 2.0 * np.ones(9)).all()
     assert (
         masked_imaging_7x7.noise_map.native
-        == 2.0 * np.ones((7, 7)) * np.invert(sub_mask_2d_7x7)
+        == 2.0 * np.ones((7, 7)) * np.invert(mask_2d_7x7)
     ).all()
 
     assert (masked_imaging_7x7.psf.slim == (1.0 / 3.0) * psf_3x3.slim).all()
@@ -190,7 +190,9 @@ def test__different_imaging_without_mock_objects__customize_constructor_inputs()
         ),
     )
     mask = aa.Mask2D.all_false(
-        shape_native=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
+        shape_native=(19, 19),
+        pixel_scales=1.0,
+        invert=True,
     )
     mask[9, 9] = False
 

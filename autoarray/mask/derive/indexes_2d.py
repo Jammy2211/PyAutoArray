@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from autoarray.mask.mask_2d import Mask2D
 
-from autoconf import cached_property
-
 from autoarray.mask import mask_2d_util
 
 logging.basicConfig()
@@ -28,9 +26,6 @@ class DeriveIndexes2D:
 
         The 2D mask has two data representations, ``slim`` and ``native``, which are described fully at ?.
         Derived indexes provides ``ndarrays`` which map between the two representations, for example:
-
-        - ``native_for_slim``: returns an array of shape [total_unmasked_pixels*sub_size] that
-        maps every unmasked sub-pixel to its corresponding native 2D pixel using its (y,x) pixel indexes.
 
         The ``DeriveIndexes2D`` class also contains methods for computing ``ndarrays`` with indexes
         of significant quantities of the ``Mask2D``, in both the ``slim`` and ``native`` data formats. For example:
@@ -76,174 +71,12 @@ class DeriveIndexes2D:
         return cls(mask=children[0])
 
     @property
-    def native_for_slim(self) -> np.ndarray:
-        """
-        Derives a 1D ``ndarray`` which maps every non-subgridded 1D ``slim`` index of the ``Mask2D`` to its
-        non-subgridded 2D ``native`` index.
-
-        For example, for the following ``Mask2D`` for ``sub_size=1``:
-
-        ::
-            [[True,  True,  True, True]
-             [True, False, False, True],
-             [True, False,  True, True],
-             [True,  True,  True, True]]
-
-        This has three unmasked (``False`` values) which have the ``slim`` indexes:
-
-        ::
-            [0, 1, 2]
-
-        The array ``native_for_slim`` is therefore:
-
-        ::
-            [[1,1], [1,2], [2,1]]
-
-        For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2.
-        However, this method ignores sub-gridding and therefore will still produce the same arrays above, as if
-        ``sub_size=1``.
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[[True,  True,  True, True]
-                      [True, False, False, True],
-                      [True, False,  True, True],
-                      [True,  True,  True, True]]
-                pixel_scales=1.0,
-            )
-
-            derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
-
-            print(derive_indexes_2d.native_for_slim)
-        """
-        return mask_2d_util.native_index_for_slim_index_2d_from(
-            mask_2d=np.array(self.mask), sub_size=1
-        ).astype("int")
-
-    @cached_property
-    def sub_mask_native_for_sub_mask_slim(self) -> np.ndarray:
-        """
-        Derives a 1D ``ndarray`` which maps every subgridded 1D ``slim`` index of the ``Mask2D`` to its
-        subgridded 2D ``native`` index.
-
-        For example, for the following ``Mask2D`` for ``sub_size=1``:
-
-        ::
-            [[True,  True,  True, True]
-             [True, False, False, True],
-             [True, False,  True, True],
-             [True,  True,  True, True]]
-
-        This has three unmasked (``False`` values) which have the ``slim`` indexes:
-
-        ::
-            [0, 1, 2]
-
-        The array ``sub_mask_native_for_sub_mask_slim`` is therefore:
-
-        ::
-            [[1,1], [1,2], [2,1]]
-
-        For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2 and
-        there are therefore 12 ``slim`` indexes:
-
-        ::
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-
-        The array ``native_for_slim`` is therefore:
-
-        ::
-            [[2,2], [2,3], [2,4], [2,5], [3,2], [3,3], [3,4], [3,5], [4,2], [4,3], [5,2], [5,3]]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[[True,  True,  True, True]
-                      [True, False, False, True],
-                      [True, False,  True, True],
-                      [True,  True,  True, True]]
-                pixel_scales=1.0,
-            )
-
-            derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
-
-            print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
-        """
-        return mask_2d_util.native_index_for_slim_index_2d_from(
-            mask_2d=self.mask.array, sub_size=self.mask.sub_size
-        ).astype("int")
-
-    @cached_property
-    def slim_for_sub_slim(self) -> np.ndarray:
-        """
-        Derives a 1D ``ndarray`` which maps every subgridded 1D ``slim`` index of the ``Mask2D`` to its
-        non-subgridded 1D ``slim`` index.
-
-        For example, for the following ``Mask2D`` for ``sub_size=1``:
-
-        ::
-            [[True,  True,  True, True]
-             [True, False, False, True],
-             [True, False,  True, True],
-             [True,  True,  True, True]]
-
-        This has three unmasked (``False`` values) which have the ``slim`` indexes:
-
-        ::
-            [0, 1, 2]
-
-        The array ``slim_for_sub_slim`` is therefore:
-
-        ::
-            [0, 1, 2]
-
-        For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2.
-        Therefore the array ``slim_for_sub_slim`` becomes:
-
-        ::
-            [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[[True,  True,  True, True]
-                      [True, False, False, True],
-                      [True, False,  True, True],
-                      [True,  True,  True, True]]
-                pixel_scales=1.0,
-            )
-
-            derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
-
-            print(derive_indexes_2d.slim_for_sub_slim)
-        """
-        return mask_2d_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=np.array(self.mask), sub_size=self.mask.sub_size
-        ).astype("int")
-
-    @property
     def unmasked_slim(self) -> np.ndarray:
         """
         Derives a 1D ``ndarray`` comprising the 1D ``slim`` indexes of the ``masks``'s
         unmasked pixels (e.g. ``value=False``).
 
-        For example, for the following ``Mask2D`` for ``sub_size=1``:
+        For example, for the following ``Mask2D``:
 
         ::
             [[True,  True,  True, True]
@@ -255,15 +88,6 @@ class DeriveIndexes2D:
 
         ::
             [0, 1, 2]
-
-        For a ``Mask2D`` with ``sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2.
-        Therefore the array ``unmasked_slim`` becomes:
-
-        ::
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-
-        The ``slim`` indexes are by definition the unmasked pixels, therefore this will always return an array of
-        ascending integers with size the total number of unmasked pixels multiplied by the ``sub_size**2``.
 
         Examples
         --------
@@ -294,7 +118,7 @@ class DeriveIndexes2D:
         Derives a 1D ``ndarray`` comprising the 1D ``slim`` indexes of the ``masks``'s
         masked pixels (e.g. ``value=True``).
 
-        For example, for the following ``Mask2D`` for ``sub_size=1``:
+        For example, for the following ``Mask2D``:
 
         ::
             [[False,  True,  False, False]
@@ -306,12 +130,6 @@ class DeriveIndexes2D:
 
         ::
             [0, 1, 2, 3]
-
-        For a ``Mask2D`` with ``sub_size=2`` each masked ``True`` entry is split into a sub-pixel of size 2x2.
-        Therefore the array ``masked_slim`` becomes:
-
-        ::
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
         Examples
         --------
@@ -339,7 +157,7 @@ class DeriveIndexes2D:
     @property
     def edge_slim(self) -> np.ndarray:
         """
-        Returns the non-subgridded 1D ``slim`` indexes of edge pixels in the ``Mask2D``, representing all unmasked pixels (given
+        Returns the 1D ``slim`` indexes of edge pixels in the ``Mask2D``, representing all unmasked pixels (given
         by ``False``) which neighbor any masked value (give by ``True``) and therefore are on the edge of the 2D mask.
 
         For example, for the following ``Mask2D``:
@@ -387,7 +205,7 @@ class DeriveIndexes2D:
     @property
     def edge_native(self) -> np.ndarray:
         """
-        Returns the non-subgridded 2D ``native`` indexes of edge pixels in the ``Mask2D``, representing all unmasked pixels (given
+        Returns the 2D ``native`` indexes of edge pixels in the ``Mask2D``, representing all unmasked pixels (given
         by ``False``) which neighbor any masked value (give by ``True``) and therefore are on the edge of the 2D mask.
 
         For example, for the following ``Mask2D``:
@@ -433,7 +251,7 @@ class DeriveIndexes2D:
     @property
     def border_slim(self) -> np.ndarray:
         """
-        Returns the non-subgridded 1D ``slim`` indexes of border pixels in the ``Mask2D``, representing all unmasked pixels (given
+        Returns the 1D ``slim`` indexes of border pixels in the ``Mask2D``, representing all unmasked pixels (given
         by ``False``) which neighbor any masked value (give by ``True``) and which are on the extreme exterior of the
         mask.
 
@@ -489,7 +307,7 @@ class DeriveIndexes2D:
     @property
     def border_native(self) -> np.ndarray:
         """
-        Returns the non-subgridded 2D ``native`` indexes of border pixels in the ``Mask2D``, representing all unmasked pixels (given
+        Returns the 2D ``native`` indexes of border pixels in the ``Mask2D``, representing all unmasked pixels (given
         by ``False``) which neighbor any masked value (give by ``True``) and which are on the extreme exterior of the
         mask.
 
@@ -544,17 +362,29 @@ class DeriveIndexes2D:
         """
         return self.native_for_slim[self.border_slim].astype("int")
 
-    @cached_property
-    def sub_border_slim(self) -> np.ndarray:
+    @property
+    def native_for_slim(self) -> np.ndarray:
         """
-        Returns the subgridded 1D ``slim`` indexes of border pixels in the ``Mask2D``, representing all unmasked
-        sub-pixels (given by ``False``) which neighbor any masked value (give by ``True``) and which are on the
-        extreme exterior of the mask.
+        Derives a 1D ``ndarray`` which maps every 1D ``slim`` index of the ``Mask2D`` to its
+        2D ``native`` index.
 
-        The indexes are the sub-gridded extension of the ``border_slim`` which is illustrated above.
+        For example, for the following ``Mask2D``:
 
-        This quantity is too complicated to write-out in a docstring, and it is recommended you print it in
-        Python code to understand it if anything is unclear.
+        ::
+            [[True,  True,  True, True]
+             [True, False, False, True],
+             [True, False,  True, True],
+             [True,  True,  True, True]]
+
+        This has three unmasked (``False`` values) which have the ``slim`` indexes:
+
+        ::
+            [0, 1, 2]
+
+        The array ``native_for_slim`` is therefore:
+
+        ::
+            [[1,1], [1,2], [2,1]]
 
         Examples
         --------
@@ -564,23 +394,17 @@ class DeriveIndexes2D:
             import autoarray as aa
 
             mask_2d = aa.Mask2D(
-                mask=[[True,  True,  True,  True,  True,  True,  True,  True, True],
-                     [True, False, False, False, False, False, False, False, True],
-                     [True, False,  True,  True,  True,  True,  True, False, True],
-                     [True, False,  True, False, False, False,  True, False, True],
-                     [True, False,  True, False,  True, False,  True, False, True],
-                     [True, False,  True, False, False, False,  True, False, True],
-                     [True, False,  True,  True,  True,  True,  True, False, True],
-                     [True, False, False, False, False, False, False, False, True],
-                     [True,  True,  True,  True,  True,  True,  True,  True, True]]
+                mask=[[True,  True,  True, True]
+                      [True, False, False, True],
+                      [True, False,  True, True],
+                      [True,  True,  True, True]]
                 pixel_scales=1.0,
-                sub_size=2,
             )
 
             derive_indexes_2d = aa.DeriveIndexes2D(mask=mask_2d)
 
-            print(derive_indexes_2d.sub_border_slim)
+            print(derive_indexes_2d.native_for_slim)
         """
-        return mask_2d_util.sub_border_pixel_slim_indexes_from(
-            mask_2d=np.array(self.mask), sub_size=self.mask.sub_size
+        return mask_2d_util.native_index_for_slim_index_2d_from(
+            mask_2d=np.array(self.mask),
         ).astype("int")

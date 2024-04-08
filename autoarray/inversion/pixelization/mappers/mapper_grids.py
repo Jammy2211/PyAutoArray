@@ -80,7 +80,7 @@ class MapperGrids:
     @property
     def mesh_pixels_per_image_pixels(self):
         mesh_pixels_per_image_pixels = grid_2d_util.grid_pixels_in_mask_pixels_from(
-            grid=self.image_plane_mesh_grid,
+            grid=np.array(self.image_plane_mesh_grid),
             shape_native=self.source_plane_data_grid.mask.shape_native,
             pixel_scales=self.source_plane_data_grid.mask.pixel_scales,
             origin=self.source_plane_data_grid.mask.origin,
@@ -88,5 +88,5 @@ class MapperGrids:
 
         return Array2D(
             values=mesh_pixels_per_image_pixels,
-            mask=self.source_plane_data_grid.derive_mask.sub_1,
+            mask=self.source_plane_data_grid.mask,
         )

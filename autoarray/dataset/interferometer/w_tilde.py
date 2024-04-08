@@ -24,7 +24,8 @@ class WTildeInterferometer(AbstractWTilde):
         Parameters
         ----------
         w_matrix
-            The w_tilde matrix used to construct the data vector during an inversion.
+            The w_tilde matrix used by the w-tilde formalism to construct the data vector and
+            curvature matrix during an inversion efficiently..
         curvature_preload
             A matrix which uses the interferometer `uv_wavelengths` to preload as much of the computation of the
             curvature matrix as possible.

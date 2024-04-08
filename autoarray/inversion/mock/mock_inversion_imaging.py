@@ -1,6 +1,7 @@
 import numpy as np
 from typing import Dict
 
+from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.mapping import InversionImagingMapping
 from autoarray.inversion.inversion.imaging.w_tilde import InversionImagingWTilde
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -20,10 +21,14 @@ class MockInversionImaging(InversionImagingMapping):
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-        super().__init__(
+        dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
             convolver=convolver,
+        )
+
+        super().__init__(
+            dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
@@ -75,10 +80,14 @@ class MockInversionImagingWTilde(InversionImagingWTilde):
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-        super().__init__(
+        dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
             convolver=convolver,
+        )
+
+        super().__init__(
+            dataset=dataset,
             w_tilde=w_tilde or MockWTildeImaging(),
             linear_obj_list=linear_obj_list,
             settings=settings,

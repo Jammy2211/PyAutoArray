@@ -80,7 +80,7 @@ class GetVisuals2D(AbstractGetVisuals):
         """
         origin = self.origin_via_mask_from(mask=mask)
         mask_visuals = self.get("mask", mask)
-        border = self.get("border", mask.derive_grid.border_sub_1.binned)
+        border = self.get("border", mask.derive_grid.border)
 
         return self.visuals + self.visuals.__class__(
             origin=origin, mask=mask_visuals, border=border
@@ -191,7 +191,14 @@ class GetVisuals2D(AbstractGetVisuals):
             "grid", mapper.source_plane_data_grid, "mapper_source_plane_data_grid"
         )
 
-        border = self.get("border", mapper.source_plane_data_grid.sub_border_grid)
+        try:
+            border_grid = mapper.mapper_grids.source_plane_data_grid[
+                mapper.border_relocator.sub_border_slim
+            ]
+            border = self.get("border", border_grid)
+
+        except AttributeError:
+            border = None
 
         mesh_grid = self.get(
             "mesh_grid", mapper.source_plane_mesh_grid, "mapper_source_plane_mesh_grid"

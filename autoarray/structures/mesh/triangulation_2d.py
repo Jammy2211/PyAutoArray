@@ -18,15 +18,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
     def slim(self) -> "Structure":
         raise NotImplementedError()
 
-    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
-        raise NotImplementedError()
-
-    def structure_2d_from(self, result: np.ndarray) -> "Structure":
-        raise NotImplementedError()
-
-    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
-        raise NotImplementedError()
-
     @property
     def native(self) -> Structure:
         raise NotImplementedError()
@@ -217,16 +208,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         region_areas[region_areas > max_area] = max_area
 
         return region_areas
-
-    @property
-    def sub_border_grid(self) -> np.ndarray:
-        """
-        The (y,x) grid of all sub-pixels which are at the border of the mask.
-
-        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border.
-        """
-        return self[self.mask.derive_indexes.sub_border_slim]
 
     @property
     def origin(self) -> Tuple[float, float]:

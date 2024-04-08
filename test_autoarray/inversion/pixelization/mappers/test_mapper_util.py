@@ -493,7 +493,11 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
         source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+    over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)
+
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
+    )
 
     assert (mapper.pix_indexes_for_sub_slim_index == sub_to_pix_nearest_neighbour).all()
 

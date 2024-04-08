@@ -21,7 +21,7 @@ def test__via_mask_from(mask_2d_7x7):
 
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert (visuals_2d_via.mask == mask_2d_7x7).all()
-    assert (visuals_2d_via.border == mask_2d_7x7.derive_grid.border_sub_1.binned).all()
+    assert (visuals_2d_via.border == mask_2d_7x7.derive_grid.border).all()
     assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(origin=False, mask=False, border=False)
@@ -71,7 +71,7 @@ def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
     ).all()
     assert (
         visuals_2d_via.border
-        == voronoi_mapper_9_3x3.source_plane_data_grid.mask.derive_grid.border_sub_1.binned
+        == voronoi_mapper_9_3x3.source_plane_data_grid.mask.derive_grid.border
     ).all()
 
     assert (
@@ -111,10 +111,10 @@ def test__via_mapper_for_source_from(rectangular_mapper_7x7_3x3):
     assert (
         visuals_2d_via.grid == rectangular_mapper_7x7_3x3.source_plane_data_grid
     ).all()
-    assert (
-        visuals_2d_via.border
-        == rectangular_mapper_7x7_3x3.source_plane_data_grid.sub_border_grid
-    ).all()
+    border_grid = rectangular_mapper_7x7_3x3.mapper_grids.source_plane_data_grid[
+        rectangular_mapper_7x7_3x3.border_relocator.sub_border_slim
+    ]
+    assert (visuals_2d_via.border == border_grid).all()
     assert (
         visuals_2d_via.mesh_grid == rectangular_mapper_7x7_3x3.source_plane_mesh_grid
     ).all()
@@ -148,9 +148,7 @@ def test__via_fit_imaging_from(fit_imaging_7x7):
 
     assert visuals_2d_via.origin == (1.0, 1.0)
     assert (visuals_2d_via.mask == fit_imaging_7x7.mask).all()
-    assert (
-        visuals_2d_via.border == fit_imaging_7x7.mask.derive_grid.border_sub_1.binned
-    ).all()
+    assert (visuals_2d_via.border == fit_imaging_7x7.mask.derive_grid.border).all()
     assert visuals_2d_via.vectors == 2
 
     include_2d = aplt.Include2D(origin=False, mask=False, border=False)

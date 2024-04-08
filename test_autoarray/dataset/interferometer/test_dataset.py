@@ -17,13 +17,13 @@ def test__dirty_properties(
     visibilities_7,
     visibilities_noise_map_7,
     uv_wavelengths_7x2,
-    sub_mask_2d_7x7,
+    mask_2d_7x7,
 ):
     dataset = aa.Interferometer(
         data=visibilities_7,
         noise_map=visibilities_noise_map_7,
         uv_wavelengths=uv_wavelengths_7x2,
-        real_space_mask=sub_mask_2d_7x7,
+        real_space_mask=mask_2d_7x7,
     )
 
     assert dataset.dirty_image.shape_native == (7, 7)
@@ -39,9 +39,9 @@ def test__dirty_properties(
     ).all()
 
 
-def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2d_7x7):
+def test__from_fits__all_files_in_one_fits__load_using_different_hdus(mask_2d_7x7):
     dataset = aa.Interferometer.from_fits(
-        real_space_mask=sub_mask_2d_7x7,
+        real_space_mask=mask_2d_7x7,
         data_path=path.join(test_data_path, "3x2_multiple_hdu.fits"),
         visibilities_hdu=0,
         noise_map_path=path.join(test_data_path, "3x2_multiple_hdu.fits"),
@@ -56,14 +56,14 @@ def test__from_fits__all_files_in_one_fits__load_using_different_hdus(sub_mask_2
     assert (dataset.uv_wavelengths[:, 1] == 3.0 * np.ones(3)).all()
 
 
-def test__output_all_arrays(sub_mask_2d_7x7):
+def test__output_all_arrays(mask_2d_7x7):
     test_data_path = path.join(
         "{}".format(path.dirname(path.realpath(__file__))),
         "files",
     )
 
     dataset = aa.Interferometer.from_fits(
-        real_space_mask=sub_mask_2d_7x7,
+        real_space_mask=mask_2d_7x7,
         data_path=path.join(test_data_path, "3x2_ones_twos.fits"),
         noise_map_path=path.join(test_data_path, "3x2_threes_fours.fits"),
         uv_wavelengths_path=path.join(test_data_path, "3x2_fives_sixes.fits"),
@@ -89,7 +89,7 @@ def test__output_all_arrays(sub_mask_2d_7x7):
     )
 
     dataset = aa.Interferometer.from_fits(
-        real_space_mask=sub_mask_2d_7x7,
+        real_space_mask=mask_2d_7x7,
         data_path=path.join(test_data_path, "data.fits"),
         noise_map_path=path.join(test_data_path, "noise_map.fits"),
         uv_wavelengths_path=path.join(test_data_path, "uv_wavelengths.fits"),
@@ -105,13 +105,13 @@ def test__transformer(
     visibilities_7,
     visibilities_noise_map_7,
     uv_wavelengths_7x2,
-    sub_mask_2d_7x7,
+    mask_2d_7x7,
 ):
     interferometer_7 = aa.Interferometer(
         data=visibilities_7,
         noise_map=visibilities_noise_map_7,
         uv_wavelengths=uv_wavelengths_7x2,
-        real_space_mask=sub_mask_2d_7x7,
+        real_space_mask=mask_2d_7x7,
         transformer_class=transformer.TransformerDFT,
     )
 
@@ -121,7 +121,7 @@ def test__transformer(
         data=visibilities_7,
         noise_map=visibilities_noise_map_7,
         uv_wavelengths=uv_wavelengths_7x2,
-        real_space_mask=sub_mask_2d_7x7,
+        real_space_mask=mask_2d_7x7,
         transformer_class=transformer.TransformerNUFFT,
     )
 
@@ -129,17 +129,19 @@ def test__transformer(
 
 
 def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
-    sub_mask_2d_7x7,
+    mask_2d_7x7,
 ):
     dataset = aa.Interferometer(
         data=aa.Visibilities.ones(shape_slim=(19,)),
         noise_map=2.0 * aa.Visibilities.ones(shape_slim=(19,)),
         uv_wavelengths=3.0 * np.ones((19, 2)),
-        real_space_mask=sub_mask_2d_7x7,
+        real_space_mask=mask_2d_7x7,
     )
 
     real_space_mask = aa.Mask2D.all_false(
-        shape_native=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
+        shape_native=(19, 19),
+        pixel_scales=1.0,
+        invert=True,
     )
     real_space_mask[9, 9] = False
 

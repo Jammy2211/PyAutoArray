@@ -8,11 +8,14 @@ from autoconf import cached_property
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.linear_obj.func_list import UniqueMappings
 from autoarray.inversion.linear_obj.neighbors import Neighbors
+from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 from autoarray.inversion.regularization.abstract import AbstractRegularization
+from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.mesh.abstract_2d import Abstract2DMesh
+
 
 from autoarray.numba_util import profile_func
 from autoarray.inversion.pixelization.mappers import mapper_util
@@ -23,6 +26,8 @@ class AbstractMapper(LinearObj):
         self,
         mapper_grids: MapperGrids,
         regularization: Optional[AbstractRegularization],
+        over_sampler: AbstractOverSampler,
+        border_relocator: BorderRelocator,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -77,12 +82,20 @@ class AbstractMapper(LinearObj):
         regularization
             The regularization scheme which may be applied to this linear object in order to smooth its solution,
             which for a mapper smooths neighboring pixels on the mesh.
+        over_sampler
+            Performs over-sampling whereby the masked image pixels are split into sub-pixels, which are all
+            mapped via the mapper with sub-fractional values of flux.
+        border_relocator
+           The border relocator, which relocates coordinates outside the border of the source-plane data grid to its
+           edge.
         run_time_dict
             A dictionary which contains timing of certain functions calls which is used for profiling.
         """
 
         super().__init__(regularization=regularization, run_time_dict=run_time_dict)
 
+        self.over_sampler = over_sampler
+        self.border_relocator = border_relocator
         self.mapper_grids = mapper_grids
 
     @property
@@ -176,7 +189,7 @@ class AbstractMapper(LinearObj):
         The mappings between every sub-pixel data point on the sub-gridded data and each data point for a grid which
         does not use sub gridding (e.g. `sub_size=1`).
         """
-        return self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim
+        return self.over_sampler.slim_for_sub_slim
 
     @property
     def sub_slim_indexes_for_pix_index(self) -> List[List]:
@@ -244,12 +257,12 @@ class AbstractMapper(LinearObj):
             data_weights,
             pix_lengths,
         ) = mapper_util.data_slim_to_pixelization_unique_from(
-            data_pixels=self.source_plane_data_grid.shape_slim,
+            data_pixels=self.over_sampler.mask.pixels_in_mask,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pix_pixels=self.params,
-            sub_size=self.source_plane_data_grid.sub_size,
+            sub_size=self.over_sampler.sub_size,
         )
 
         return UniqueMappings(
@@ -277,9 +290,9 @@ class AbstractMapper(LinearObj):
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pixels=self.pixels,
-            total_mask_pixels=self.source_plane_data_grid.mask.pixels_in_mask,
+            total_mask_pixels=self.over_sampler.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            sub_fraction=self.source_plane_data_grid.mask.sub_fraction,
+            sub_fraction=self.over_sampler.sub_fraction,
         )
 
     def pixel_signals_from(self, signal_scale: float) -> np.ndarray:
@@ -301,7 +314,7 @@ class AbstractMapper(LinearObj):
             pixel_weights=self.pix_weights_for_sub_slim_index,
             pix_indexes_for_sub_slim_index=self.pix_indexes_for_sub_slim_index,
             pix_size_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
-            slim_index_for_sub_slim_index=self.source_plane_data_grid.mask.derive_indexes.slim_for_sub_slim,
+            slim_index_for_sub_slim_index=self.over_sampler.slim_for_sub_slim,
             adapt_data=np.array(self.adapt_data),
         )
 
@@ -362,7 +375,7 @@ class AbstractMapper(LinearObj):
         """
         return mapper_util.mapped_to_source_via_mapping_matrix_from(
             mapping_matrix=self.mapping_matrix,
-            array_slim=np.array(array.binned.slim),
+            array_slim=np.array(array.slim),
         )
 
     def extent_from(

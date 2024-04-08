@@ -12,7 +12,9 @@ from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.over_sample.iterate import OverSampleIterate
+from autoarray.operators.over_sampling.abstract import AbstractOverSampling
+from autoarray.operators.over_sampling.uniform import OverSamplingUniform
+from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoconf import cached_property
 
 
@@ -25,10 +27,8 @@ class AbstractDataset:
         data: Structure,
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        sub_size: int = 1,  # Temporary before refactor
-        sub_size_pixelization: int = 4,  # Temporary before refactor
-        over_sample: Optional[OverSampleIterate] = None,
-        over_sample_pixelization: Optional[OverSampleIterate] = None,
+        over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
@@ -50,10 +50,10 @@ class AbstractDataset:
         the centre of an image pixel. This may be used in fits to calculate the model image of the imaging data.
 
         - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
-        is specifically used for pixelizations computed via the `invserion` module, which often use different
+        is specifically used for pixelizations computed via the `inversion` module, which often use different
         oversampling and sub-size values to the grid above.
 
-        The `over_sample` and `over_sample_pixelization` define how over sampling is performed for these grids.
+        The `over_sampling` and `over_sampling_pixelization` define how over sampling is performed for these grids.
 
         This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
         It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
@@ -69,19 +69,17 @@ class AbstractDataset:
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
-        over_sample
+        over_sampling
             How over sampling is performed for the grid which performs calculations not associated with a pixelization.
             In PyAutoGalaxy and PyAutoLens this is light profile calculations.
-        over_sample_pixelization
+        over_sampling_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
         """
 
         self.data = data
-        self.sub_size = sub_size
-        self.sub_size_pixelization = sub_size_pixelization
-        self.over_sample = over_sample
-        self.over_sample_pixelization = over_sample_pixelization
+        self.over_sampling = over_sampling
+        self.over_sampling_pixelization = over_sampling_pixelization
 
         self.noise_covariance_matrix = noise_covariance_matrix
 
@@ -123,13 +121,10 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure.
         """
-        # TODO : Use oversampling API will remove this hack
-
-        mask = self.mask.mask_new_sub_size_from(mask=self.mask, sub_size=self.sub_size)
 
         return Grid2D.from_mask(
-            mask=mask,
-            over_sample=self.over_sample,
+            mask=self.mask,
+            over_sampling=self.over_sampling,
         )
 
     @cached_property
@@ -148,15 +143,21 @@ class AbstractDataset:
         -------
         The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
         """
-        # TODO : Use oversampling API will remove this hack
 
-        mask = self.mask.mask_new_sub_size_from(
-            mask=self.mask, sub_size=self.sub_size_pixelization
-        )
+        over_sampling = self.over_sampling_pixelization
+
+        if over_sampling is None:
+            over_sampling = OverSamplingUniform(sub_size=4)
 
         return Grid2D.from_mask(
-            mask=mask,
-            over_sample=self.over_sample,
+            mask=self.mask,
+            over_sampling=over_sampling,
+        )
+
+    @cached_property
+    def border_relocator(self) -> BorderRelocator:
+        return BorderRelocator(
+            mask=self.mask, sub_size=self.grid_pixelization.over_sampling.sub_size
         )
 
     @property

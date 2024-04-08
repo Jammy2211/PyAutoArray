@@ -13,7 +13,7 @@ class SettingsInversion:
         use_w_tilde: bool = True,
         use_positive_only_solver: Optional[bool] = None,
         positive_only_uses_p_initial: Optional[bool] = None,
-        relocate_pix_border: Optional[bool] = None,
+        use_border_relocator: Optional[bool] = None,
         force_edge_pixels_to_zeros: bool = True,
         force_edge_image_pixels_to_zeros: bool = False,
         image_pixels_source_zero=None,
@@ -43,7 +43,7 @@ class SettingsInversion:
             Whether to use a positive-only linear system solver, which requires that every reconstructed value is
             positive but is computationally much slower than the default solver (which allows for positive and
             negative values).
-        relocate_pix_border
+        use_border_relocator
             If `True`, all coordinates of all pixelization source mesh grids have pixels outside their border
             relocated to their edge.
         no_regularization_add_to_curvature_diag_value
@@ -81,7 +81,7 @@ class SettingsInversion:
         self.use_w_tilde = use_w_tilde
         self._use_positive_only_solver = use_positive_only_solver
         self._positive_only_uses_p_initial = positive_only_uses_p_initial
-        self._relocate_pix_border = relocate_pix_border
+        self._use_border_relocator = use_border_relocator
         self.use_linear_operators = use_linear_operators
         self.force_edge_pixels_to_zeros = force_edge_pixels_to_zeros
         self.force_edge_image_pixels_to_zeros = force_edge_image_pixels_to_zeros
@@ -118,11 +118,11 @@ class SettingsInversion:
         return self._positive_only_uses_p_initial
 
     @property
-    def relocate_pix_border(self):
-        if self._relocate_pix_border is None:
-            return conf.instance["general"]["inversion"]["relocate_pix_border"]
+    def use_border_relocator(self):
+        if self._use_border_relocator is None:
+            return conf.instance["general"]["inversion"]["use_border_relocator"]
 
-        return self._relocate_pix_border
+        return self._use_border_relocator
 
     @property
     def no_regularization_add_to_curvature_diag_value(self):

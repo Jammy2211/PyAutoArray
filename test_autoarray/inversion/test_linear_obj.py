@@ -42,7 +42,13 @@ def test__data_to_pix_unique_from():
     assert (data_weights[1, :] == np.array([1.0, 0.0, 0.0, 0.0])).all()
     assert (pix_lengths == np.array([1, 1])).all()
 
-    grid = aa.Grid2D.uniform(shape_native=(1, 2), sub_size=2, pixel_scales=0.1)
+    mask = aa.Mask2D.all_false(shape_native=(1, 2), pixel_scales=0.1)
+
+    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
+
+    grid = aa.Grid2D.uniform(
+        shape_native=(1, 2), pixel_scales=0.1, over_sampling=over_sampling
+    )
 
     linear_obj = aa.AbstractLinearObjFuncList(grid=grid, regularization=None)
 

@@ -15,7 +15,11 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
         source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+    over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)
+
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
+    )
 
     simplex_index_for_sub_slim_index = mapper.delaunay.find_simplex(
         mapper.source_plane_data_grid

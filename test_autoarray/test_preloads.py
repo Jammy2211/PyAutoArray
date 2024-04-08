@@ -36,7 +36,7 @@ def test__set_w_tilde():
 
     # Noise maps of fits are the same so preload w_tilde and use it.
 
-    noise_map = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=0.1, sub_size=1)
+    noise_map = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=0.1)
 
     mask = aa.Mask2D(
         mask=np.array(

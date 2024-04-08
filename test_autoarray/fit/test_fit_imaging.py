@@ -4,9 +4,7 @@ import autoarray as aa
 
 
 def test__image_and_model_are_identical__no_masking__check_values_are_correct():
-    mask = aa.Mask2D(
-        mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
-    )
+    mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0))
 
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
     noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
@@ -53,9 +51,7 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
 
 def test__image_and_model_are_different__include_masking__check_values_are_correct():
-    mask = aa.Mask2D(
-        mask=[[False, False], [True, False]], sub_size=1, pixel_scales=(1.0, 1.0)
-    )
+    mask = aa.Mask2D(mask=[[False, False], [True, False]], pixel_scales=(1.0, 1.0))
 
     data = aa.Array2D(values=[1.0, 2.0, 4.0], mask=mask)
     noise_map = aa.Array2D(values=[2.0, 2.0, 2.0], mask=mask)
@@ -100,9 +96,7 @@ def test__image_and_model_are_different__include_masking__check_values_are_corre
 
 
 def test__image_and_model_are_identical__inversion_included__changes_certain_properties():
-    mask = aa.Mask2D(
-        mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
-    )
+    mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0))
 
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
     noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)
@@ -143,9 +137,7 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
 
 
 def test__run_time_dict__profiles_appropriate_functions():
-    mask = aa.Mask2D(
-        mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
-    )
+    mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0))
 
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
     noise_map = aa.Array2D(values=[2.0, 2.0, 2.0, 2.0], mask=mask)

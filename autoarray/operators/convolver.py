@@ -328,17 +328,17 @@ class Convolver:
             )
 
         convolved_image = self.convolve_jit(
-            image_1d_array=np.array(image.binned.slim),
+            image_1d_array=np.array(image.slim),
             image_frame_1d_indexes=self.image_frame_1d_indexes,
             image_frame_1d_kernels=self.image_frame_1d_kernels,
             image_frame_1d_lengths=self.image_frame_1d_lengths,
-            blurring_1d_array=np.array(blurring_image.binned.slim),
+            blurring_1d_array=np.array(blurring_image.slim),
             blurring_frame_1d_indexes=self.blurring_frame_1d_indexes,
             blurring_frame_1d_kernels=self.blurring_frame_1d_kernels,
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return Array2D(values=convolved_image, mask=self.mask.derive_mask.sub_1)
+        return Array2D(values=convolved_image, mask=self.mask)
 
     @staticmethod
     @numba_util.jit()
@@ -388,13 +388,13 @@ class Convolver:
         """
 
         convolved_image = self.convolve_no_blurring_jit(
-            image_1d_array=np.array(image.binned.slim),
+            image_1d_array=np.array(image.slim),
             image_frame_1d_indexes=self.image_frame_1d_indexes,
             image_frame_1d_kernels=self.image_frame_1d_kernels,
             image_frame_1d_lengths=self.image_frame_1d_lengths,
         )
 
-        return Array2D(values=convolved_image, mask=self.mask.derive_mask.sub_1)
+        return Array2D(values=convolved_image, mask=self.mask)
 
     def convolve_image_no_blurring_interpolation(self, image):
         """For a given 1D array and blurring array, convolve the two using this convolver.
@@ -412,7 +412,7 @@ class Convolver:
             image_frame_1d_lengths=self.image_frame_1d_lengths,
         )
 
-        return Array2D(values=convolved_image, mask=self.mask.derive_mask.sub_1)
+        return Array2D(values=convolved_image, mask=self.mask)
 
     @staticmethod
     @numba_util.jit()

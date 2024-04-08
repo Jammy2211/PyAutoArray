@@ -2,7 +2,6 @@ import logging
 import numpy as np
 from typing import List, Tuple, Union
 
-from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.vectors.abstract import AbstractVectorYX2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.arrays.irregular import ArrayIrregular
@@ -14,19 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class VectorYX2DIrregular(AbstractVectorYX2D):
-    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
-        raise NotImplementedError()
-
-    def structure_2d_from(self, result: np.ndarray) -> "Structure":
-        raise NotImplementedError()
-
-    def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
-        raise NotImplementedError()
-
-    @property
-    def native(self) -> Structure:
-        raise NotImplementedError()
-
     def __init__(
         self,
         values: Union[
@@ -58,9 +44,6 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
             The irregular grid of (y,x) coordinates where each vector is located.
         """
 
-        # if len(values) == 0:
-        #     return []
-
         if type(values) is list:
             values = np.asarray(values)
 
@@ -77,6 +60,10 @@ class VectorYX2DIrregular(AbstractVectorYX2D):
         """
         The vector-field in its 1D representation, an ndarray of shape [total_vectors, 2].
         """
+        return self
+
+    @property
+    def native(self) -> np.ndarray:
         return self
 
     @property

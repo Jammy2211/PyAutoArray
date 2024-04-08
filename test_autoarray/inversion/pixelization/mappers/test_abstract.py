@@ -111,8 +111,11 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
     )
     pix_weights_for_sub_slim_index = np.ones((9, 1), dtype="int")
 
+    over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)
+
     mapper = aa.m.MockMapper(
         source_plane_data_grid=grid_2d_7x7,
+        over_sampler=over_sampler,
         pix_sub_weights=pix_sub_weights,
         adapt_data=image_7x7,
         parameters=pixels,
@@ -126,7 +129,7 @@ def test__adaptive_pixel_signals_from___matches_util(grid_2d_7x7, image_7x7):
         signal_scale=signal_scale,
         pix_indexes_for_sub_slim_index=pix_sub_weights.mappings,
         pix_size_for_sub_slim_index=pix_sub_weights.sizes,
-        slim_index_for_sub_slim_index=grid_2d_7x7.mask.derive_indexes.slim_for_sub_slim,
+        slim_index_for_sub_slim_index=over_sampler.slim_for_sub_slim,
         adapt_data=np.array(image_7x7),
     )
 
@@ -146,7 +149,9 @@ def test__interpolated_array_from(grid_2d_7x7):
         source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, over_sampler=None, regularization=None
+    )
 
     interpolated_array_via_mapper = mapper.interpolated_array_from(
         values=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]),
@@ -176,7 +181,11 @@ def test__mapped_to_source_from(grid_2d_7x7):
         source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+    over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)
+
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
+    )
 
     array_slim = aa.Array2D.no_mask(
         [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0],

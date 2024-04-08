@@ -107,17 +107,14 @@ def test__from_shape_and_grid():
             [[True, False, True], [False, False, False], [True, False, True]]
         ),
         pixel_scales=(0.5, 0.5),
-        sub_size=1,
     )
-
-    grid = aa.Grid2D.from_mask(mask=mask)
 
     image_mesh = aa.image_mesh.Overlay(
         shape=(10, 10),
     )
 
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-        grid=grid, adapt_data=None
+        mask=mask, adapt_data=None
     )
 
     mesh = aa.Mesh2DVoronoi(

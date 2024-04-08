@@ -60,8 +60,8 @@ class TransformerDFT(PyLopsOperator):
         super().__init__()
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
-        self.real_space_mask = real_space_mask.derive_mask.sub_1
-        self.grid = self.real_space_mask.derive_grid.unmasked_sub_1.binned.in_radians
+        self.real_space_mask = real_space_mask
+        self.grid = self.real_space_mask.derive_grid.unmasked.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask
@@ -96,14 +96,14 @@ class TransformerDFT(PyLopsOperator):
     def visibilities_from(self, image):
         if self.preload_transform:
             visibilities = transformer_util.visibilities_via_preload_jit_from(
-                image_1d=np.array(image.binned),
+                image_1d=np.array(image),
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
             visibilities = transformer_util.visibilities_jit(
-                image_1d=np.array(image.binned),
+                image_1d=np.array(image.slim),
                 grid_radians=np.array(self.grid),
                 uv_wavelengths=self.uv_wavelengths,
             )
@@ -121,7 +121,6 @@ class TransformerDFT(PyLopsOperator):
         image_native = array_2d_util.array_2d_native_from(
             array_2d_slim=image_slim,
             mask_2d=self.real_space_mask,
-            sub_size=self.real_space_mask.sub_size,
         )
 
         return Array2D(values=image_native, mask=self.real_space_mask)
@@ -153,7 +152,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
         super(TransformerNUFFT, self).__init__()
 
         self.uv_wavelengths = uv_wavelengths
-        self.real_space_mask = real_space_mask.derive_mask.sub_1
+        self.real_space_mask = real_space_mask
         #        self.grid = self.real_space_mask.unmasked_grid.in_radians
         self.grid = Grid2D.from_mask(mask=self.real_space_mask).in_radians
         self.native_index_for_slim_index = copy.copy(
@@ -233,7 +232,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
 
         return Visibilities(
             visibilities=self.forward(
-                image.binned.native[::-1, :]
+                image.native[::-1, :]
             )  # flip due to PyNUFFT internal flip
         )
 
@@ -256,7 +255,6 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
             image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
-                sub_size=1,
             )
 
             image = Array2D(values=image_2d, mask=self.grid.mask)
@@ -280,7 +278,7 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
 
         x2d = array_2d_util.array_2d_native_complex_via_indexes_from(
             array_2d_slim=x,
-            sub_shape_native=self.real_space_mask.shape_native,
+            shape_native=self.real_space_mask.shape_native,
             native_index_for_slim_index_2d=self.native_index_for_slim_index,
         )[::-1, :]
 
@@ -310,7 +308,6 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
 
         x = array_2d_util.array_2d_slim_complex_from(
             array_2d_native=x2d[::-1, :],
-            sub_size=1,
             mask=np.array(self.real_space_mask),
         )
         x = x.real  # NOTE:

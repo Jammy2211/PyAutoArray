@@ -1,9 +1,5 @@
 import numpy as np
-import os
-from os import path
-from pathlib import Path
 from typing import List, Optional, Tuple, Union
-import json
 
 from autoarray.abstract_ndarray import AbstractNDArray
 from autoarray.geometry.geometry_2d_irregular import Geometry2DIrregular
@@ -53,6 +49,31 @@ class Grid2DIrregular(AbstractNDArray):
 
         super().__init__(values)
 
+    @classmethod
+    def from_yx_1d(cls, y: np.ndarray, x: np.ndarray) -> "Grid2DIrregular":
+        """
+        Create `Grid2DIrregular` from a list of y and x values.
+        """
+        return Grid2DIrregular(values=np.stack((y, x), axis=-1))
+
+    @classmethod
+    def from_pixels_and_mask(
+        cls, pixels: Union[np.ndarray, List], mask: Mask2D
+    ) -> "Grid2DIrregular":
+        """
+        Create `Grid2DIrregular` from a list of coordinates in pixel units and a mask which allows these
+        coordinates to be converted to scaled units.
+        """
+
+        coorindates = [
+            mask.geometry.scaled_coordinates_2d_from(
+                pixel_coordinates_2d=pixel_coordinates_2d
+            )
+            for pixel_coordinates_2d in pixels
+        ]
+
+        return Grid2DIrregular(values=coorindates)
+
     @property
     def values(self):
         return self._array
@@ -91,35 +112,6 @@ class Grid2DIrregular(AbstractNDArray):
     @property
     def native(self) -> "Grid2DIrregular":
         return self
-
-    @property
-    def sub_shape_slim(self) -> int:
-        return len(self.slim)
-
-    @classmethod
-    def from_yx_1d(cls, y: np.ndarray, x: np.ndarray) -> "Grid2DIrregular":
-        """
-        Create `Grid2DIrregular` from a list of y and x values.
-        """
-        return Grid2DIrregular(values=np.stack((y, x), axis=-1))
-
-    @classmethod
-    def from_pixels_and_mask(
-        cls, pixels: Union[np.ndarray, List], mask: Mask2D
-    ) -> "Grid2DIrregular":
-        """
-        Create `Grid2DIrregular` from a list of coordinates in pixel units and a mask which allows these
-        coordinates to be converted to scaled units.
-        """
-
-        coorindates = [
-            mask.geometry.scaled_coordinates_2d_from(
-                pixel_coordinates_2d=pixel_coordinates_2d
-            )
-            for pixel_coordinates_2d in pixels
-        ]
-
-        return Grid2DIrregular(values=coorindates)
 
     @property
     def in_list(self) -> List:
@@ -165,32 +157,6 @@ class Grid2DIrregular(AbstractNDArray):
             self.scaled_maxima[0] + buffer,
         ]
 
-    def values_from(self, array_slim: np.ndarray) -> ArrayIrregular:
-        """
-        Create a *ArrayIrregular* object from a 1D NumPy array of values of shape [total_coordinates], which
-        are structured following this `Grid2DIrregular` instance.
-        """
-        return ArrayIrregular(values=array_slim)
-
-    def values_via_value_from(self, value: float) -> ArrayIrregular:
-        return self.values_from(
-            array_slim=np.full(fill_value=value, shape=self.shape[0])
-        )
-
-    def grid_from(
-        self, grid_slim: np.ndarray
-    ) -> Union["Grid2DIrregular", "Grid2DIrregularTransformed"]:
-        """
-        Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2],
-        which are structured following this *Grid2DIrregular* instance.
-        """
-
-        from autoarray.structures.grids.transformed_2d import Grid2DTransformedNumpy
-
-        if isinstance(grid_slim, Grid2DTransformedNumpy):
-            return Grid2DIrregularTransformed(values=grid_slim)
-        return Grid2DIrregular(values=grid_slim)
-
     def grid_2d_via_deflection_grid_from(
         self, deflection_grid: np.ndarray
     ) -> "Grid2DIrregular":
@@ -208,63 +174,6 @@ class Grid2DIrregular(AbstractNDArray):
         """
         return Grid2DIrregular(values=self - deflection_grid)
 
-    def structure_2d_from(
-        self, result: Union[np.ndarray, List]
-    ) -> Union[ArrayIrregular, "Grid2DIrregular", "Grid2DIrregularTransformed", List]:
-        """
-        Convert a result from a non autoarray structure to an aa.ArrayIrregular or aa.Grid2DIrregular structure, where
-        the conversion depends on type(result) as follows:
-
-        - 1D np.ndarray   -> aa.ArrayIrregular
-        - 2D np.ndarray   -> aa.Grid2DIrregular
-        - [1D np.ndarray] -> [aa.ArrayIrregular]
-        - [2D np.ndarray] -> [aa.Grid2DIrregular]
-
-        This function is used by the grid_2d_to_structure decorator to convert the output result of a function
-        to an autoarray structure when a `Grid2DIrregular` instance is passed to the decorated function.
-
-        Parameters
-        ----------
-        result
-            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
-        """
-
-        if isinstance(result, (np.ndarray, AbstractNDArray)):
-            if len(result.shape) == 1:
-                return self.values_from(array_slim=result)
-            elif len(result.shape) == 2:
-                return self.grid_from(grid_slim=result)
-        elif isinstance(result, list):
-            if len(result[0].shape) == 1:
-                return [self.values_from(array_slim=value) for value in result]
-            elif len(result[0].shape) == 2:
-                return [self.grid_from(grid_slim=value) for value in result]
-
-    def structure_2d_list_from(
-        self, result_list: List
-    ) -> List[Union[ArrayIrregular, "Grid2DIrregular", "Grid2DIrregularTransformed"]]:
-        """
-        Convert a result from a list of non autoarray structures to a list of aa.ArrayIrregular or aa.Grid2DIrregular
-        structures, where the conversion depends on type(result) as follows:
-
-        ::
-
-            - [1D np.ndarray] -> [aa.ArrayIrregular]
-            - [2D np.ndarray] -> [aa.Grid2DIrregular]
-
-        This function is used by the grid_like_list_to_structure_list decorator to convert the output result of a
-        function to a list of autoarray structure when a `Grid2DIrregular` instance is passed to the decorated function.
-
-        Parameters
-        ----------
-        result_list
-            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
-        """
-        if len(result_list[0].shape) == 1:
-            return [self.values_from(array_slim=value) for value in result_list]
-        elif len(result_list[0].shape) == 2:
-            return [self.grid_from(grid_slim=value) for value in result_list]
-
     def squared_distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
     ) -> ArrayIrregular:
@@ -280,7 +189,7 @@ class Grid2DIrregular(AbstractNDArray):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return self.values_from(array_slim=squared_distances)
+        return ArrayIrregular(values=squared_distances)
 
     def distances_to_coordinate_from(
         self, coordinate: Tuple[float, float] = (0.0, 0.0)
@@ -296,7 +205,7 @@ class Grid2DIrregular(AbstractNDArray):
         distances = np.sqrt(
             self.squared_distances_to_coordinate_from(coordinate=coordinate)
         )
-        return self.values_from(array_slim=distances)
+        return ArrayIrregular(values=distances)
 
     @property
     def furthest_distances_to_other_coordinates(self) -> ArrayIrregular:
@@ -330,7 +239,7 @@ class Grid2DIrregular(AbstractNDArray):
 
             radial_distances_max[i] = np.sqrt(np.max(np.add(x_distances, y_distances)))
 
-        return self.values_from(array_slim=radial_distances_max)
+        return ArrayIrregular(values=radial_distances_max)
 
     def grid_of_closest_from(self, grid_pair: "Grid2DIrregular") -> "Grid2DIrregular":
         """
@@ -359,55 +268,6 @@ class Grid2DIrregular(AbstractNDArray):
             grid_of_closest[i, :] = self[np.argmin(radial_distances), :]
 
         return Grid2DIrregular(values=grid_of_closest)
-
-    @classmethod
-    def from_json(cls, file_path: Union[Path, str]) -> "Grid2DIrregular":
-        """
-        Returns a `Grid2DIrregular` object from a .json file, which stores the coordinates as a list of list of tuples.
-
-        Parameters
-        ----------
-        file_path
-            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        """
-
-        with open(file_path) as infile:
-            grid = json.load(infile)
-
-        return Grid2DIrregular(values=grid)
-
-    def output_to_json(self, file_path: Union[Path, str], overwrite: bool = False):
-        """
-        Output this instance of the `Grid2DIrregular` object to a .json file as a list of list of tuples.
-
-        Parameters
-        ----------
-        file_path
-            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        overwrite
-            If there is as exsiting file it will be overwritten if this is `True`.
-        """
-
-        file_dir = os.path.split(file_path)[0]
-
-        if not path.exists(file_dir):
-            os.makedirs(file_dir)
-
-        if overwrite and path.exists(file_path):
-            os.remove(file_path)
-        elif not overwrite and path.exists(file_path):
-            raise FileExistsError(
-                "The file ",
-                file_path,
-                " already exists. Set overwrite=True to overwrite this" "file",
-            )
-
-        with open(file_path, "w+") as f:
-            json.dump(self.in_list, f)
-
-
-class Grid2DIrregularTransformed(Grid2DIrregular):
-    pass
 
 
 class Grid2DIrregularUniform(Grid2DIrregular):

@@ -1,11 +1,14 @@
 import copy
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from autoconf import cached_property
 
 from autoarray.numba_util import profile_func
 
+from autoarray.dataset.imaging.dataset import Imaging
+from autoarray.dataset.imaging.w_tilde import WTildeImaging
+from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.imaging.abstract import AbstractInversionImaging
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
@@ -13,8 +16,6 @@ from autoarray.inversion.linear_obj.func_list import AbstractLinearObjFuncList
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.operators.convolver import Convolver
-from autoarray.dataset.imaging.w_tilde import WTildeImaging
 
 from autoarray.inversion.inversion import inversion_util
 from autoarray.inversion.inversion.imaging import inversion_imaging_util
@@ -23,9 +24,7 @@ from autoarray.inversion.inversion.imaging import inversion_imaging_util
 class InversionImagingWTilde(AbstractInversionImaging):
     def __init__(
         self,
-        data: Array2D,
-        noise_map: Array2D,
-        convolver: Convolver,
+        dataset: Union[Imaging, DatasetInterface],
         w_tilde: WTildeImaging,
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
@@ -48,7 +47,8 @@ class InversionImagingWTilde(AbstractInversionImaging):
         noise_map
             The noise-map of the observed imaging data which values are solved for.
         convolver
-            The convolver used to include 2D convolution of the mapping matrix with the imaigng data's PSF.
+            The convolver used to perform 2D convolution of the imaigng data's PSF when computing the operated
+            mapping matrix.
         w_tilde
             An object containing matrices that construct the linear equations via the w-tilde formalism which bypasses
             the mapping matrix.
@@ -60,9 +60,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
         """
 
         super().__init__(
-            data=data,
-            noise_map=noise_map,
-            convolver=convolver,
+            dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
@@ -71,7 +69,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
         if self.settings.use_w_tilde:
             self.w_tilde = w_tilde
-            self.w_tilde.check_noise_map(noise_map=noise_map)
+            self.w_tilde.check_noise_map(noise_map=dataset.noise_map)
         else:
             self.w_tilde = None
 
@@ -570,8 +568,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 )
 
                 mapped_reconstructed_image = Array2D(
-                    values=mapped_reconstructed_image,
-                    mask=self.mask.derive_mask.sub_1,
+                    values=mapped_reconstructed_image, mask=self.mask
                 )
 
                 mapped_reconstructed_image = self.convolver.convolve_image_no_blurring(
@@ -588,8 +585,7 @@ class InversionImagingWTilde(AbstractInversionImaging):
                 )
 
                 mapped_reconstructed_image = Array2D(
-                    values=mapped_reconstructed_image,
-                    mask=self.mask.derive_mask.sub_1,
+                    values=mapped_reconstructed_image, mask=self.mask
                 )
 
             mapped_reconstructed_data_dict[linear_obj] = mapped_reconstructed_image

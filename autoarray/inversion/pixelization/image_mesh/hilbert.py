@@ -3,11 +3,13 @@ import numpy as np
 from scipy.interpolate import interp1d, griddata
 from typing import Optional
 
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract_weighted import (
     AbstractImageMeshWeighted,
 )
+from autoarray.operators.over_sampling.uniform import OverSamplerUniform
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -99,18 +101,20 @@ def super_resolution_grid_from(img_2d, mask, mask_radius, pixel_scales, sub_scal
     shape_nnn = np.shape(mask)[0]
 
     grid = Grid2D.uniform(
-        shape_native=(shape_nnn, shape_nnn), pixel_scales=pixel_scales, sub_size=1
+        shape_native=(shape_nnn, shape_nnn),
+        pixel_scales=pixel_scales,
     )
 
     new_mask = Mask2D.circular(
         shape_native=(shape_nnn, shape_nnn),
         pixel_scales=pixel_scales,
-        sub_size=sub_scale,
         centre=mask.origin,
         radius=mask_radius,
     )
 
-    new_grid = Grid2D.from_mask(new_mask)
+    over_sampler = OverSamplerUniform(mask=new_mask, sub_size=sub_scale)
+
+    new_grid = over_sampler.over_sampled_grid
 
     new_img = griddata(
         points=grid, values=img_2d.ravel(), xi=new_grid, fill_value=0.0, method="linear"
@@ -160,7 +164,8 @@ def image_and_grid_from(image, mask, mask_radius, pixel_scales, hilbert_length):
     shape_nnn = np.shape(mask)[0]
 
     grid = Grid2D.uniform(
-        shape_native=(shape_nnn, shape_nnn), pixel_scales=pixel_scales, sub_size=1
+        shape_native=(shape_nnn, shape_nnn),
+        pixel_scales=pixel_scales,
     )
 
     x1d_hb, y1d_hb = grid_hilbert_order_from(
@@ -247,7 +252,7 @@ class Hilbert(AbstractImageMeshWeighted):
 
     def image_plane_mesh_grid_from(
         self,
-        grid: Grid2D,
+        mask: Mask2D,
         adapt_data: Optional[np.ndarray],
         settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
@@ -268,7 +273,7 @@ class Hilbert(AbstractImageMeshWeighted):
 
         """
 
-        if not grid.mask.is_circular:
+        if not mask.is_circular:
             raise exc.PixelizationException(
                 """
                 Hilbert image-mesh has been called but the input grid does not use a circular mask.
@@ -279,9 +284,9 @@ class Hilbert(AbstractImageMeshWeighted):
 
         adapt_data_hb, grid_hb = image_and_grid_from(
             image=adapt_data,
-            mask=grid.mask,
-            mask_radius=grid.mask.circular_radius,
-            pixel_scales=grid.mask.pixel_scales,
+            mask=mask,
+            mask_radius=mask.circular_radius,
+            pixel_scales=mask.pixel_scales,
             hilbert_length=193,
         )
 
@@ -303,11 +308,11 @@ class Hilbert(AbstractImageMeshWeighted):
         mesh_grid = Grid2DIrregular(values=np.stack((drawn_y, drawn_x), axis=-1))
 
         self.check_mesh_pixels_per_image_pixels(
-            grid=grid, mesh_grid=mesh_grid, settings=settings
+            mask=mask, mesh_grid=mesh_grid, settings=settings
         )
 
         self.check_adapt_background_pixels(
-            grid=grid, mesh_grid=mesh_grid, adapt_data=adapt_data, settings=settings
+            mask=mask, mesh_grid=mesh_grid, adapt_data=adapt_data, settings=settings
         )
 
         return mesh_grid

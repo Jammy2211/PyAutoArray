@@ -1,5 +1,6 @@
 from __future__ import annotations
 from astropy.io import fits
+import copy
 import logging
 import numpy as np
 from pathlib import Path
@@ -31,16 +32,11 @@ logger = logging.getLogger(__name__)
 
 
 class Mask2D(Mask):
-    @property
-    def native(self) -> Structure:
-        return self
-
     # noinspection PyUnusedLocal
     def __init__(
         self,
         mask: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
         *args,
@@ -57,17 +53,15 @@ class Mask2D(Mask):
         - Maps data structures between two data representations: `slim`` (all unmasked ``False`` values in
           a 1D ``ndarray``) and ``native`` (all unmasked values in a 2D or 3D ``ndarray``).
 
-        - Has a ``Geometry2D`` object (defined by its (y,x) ``pixel scales``, (y,x) ``origin`` and ``sub_size``)
+        - Has a ``Geometry2D`` object (defined by its (y,x) ``pixel scales`` and (y,x) ``origin``)
           which defines how coordinates are converted from pixel units to scaled units.
 
         - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
-          a (y,x) grid of all unmasked pixels) via the ``DeriveGrid2D`` object.
-
-        - This includes sub-grids, which perform calculations higher resolutions which are then binned up.
+          a (y,x) grid of all unmasked pixels).
 
         A detailed description of the 2D mask API is provided below.
 
-        **SLIM DATA REPRESENTATION (sub-size=1)**
+        __Slim__
 
         Below is a visual illustration of a ``Mask2D``, where a total of 10 pixels are unmasked (values are ``False``):
 
@@ -113,10 +107,10 @@ class Mask2D(Mask):
             mask[6] = the 7th unmasked pixel's value.
 
         A Cartesian grid of (y,x) coordinates, corresponding to all ``slim`` values (e.g. unmasked pixels) is given
-        by ``mask.derive_grid.masked.slim``.
+        by:
 
 
-        **NATIVE DATA REPRESENTATION (sub_size=1)**
+        __native__
 
         Masked data represented as an an ``ndarray`` of shape [total_y_values, total_x_values], where all masked
         entries have values of 0.0.
@@ -169,7 +163,7 @@ class Mask2D(Mask):
 
         The ``Mask2D`` has functionality which maps data between the ``slim`` and ``native`` data representations.
 
-        For the example mask above, the 1D ``ndarray`` given by ``mask.derive_indexes.slim_to_native`` is:
+        For the example mask above, the 1D ``ndarray`` given by ``derive_indexes.slim_to_native`` is:
 
         ::
 
@@ -183,92 +177,6 @@ class Mask2D(Mask):
             slim_to_native[7] = [5,4]
             slim_to_native[8] = [5,5]
             slim_to_native[9] = [5,6]
-
-        **SUB GRIDDING**
-
-        If the ``Mask2D`` ``sub_size`` is > 1, its ``slim`` and ``native`` data representations have entries
-        corresponding to the values at the centre of every sub-pixel of each unmasked pixel.
-
-        The sub-array indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first
-        unmasked pixel. Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel.
-
-        Therefore, the shapes of the sub-array are as follows:
-
-        - ``slim`` representation: an ``ndarray`` of shape [total_unmasked_pixels*sub_size**2].
-        - ``native`` representation: an ``ndarray`` of shape [total_y_values*sub_size, total_x_values*sub_size].
-
-        Below is a visual illustration of a sub array. Indexing of each sub-pixel goes from the top-left corner. In
-        contrast to the array above, our illustration below restricts the mask to just 2 pixels, to keep the
-        illustration brief.
-
-        ::
-
-             x x x x x x x x x x
-             x x x x x x x x x x     This is an example ``Mask2D``, where:
-             x x x x x x x x x x
-             x x x x x x x x x x     x = `True` (Pixel is masked and excluded from lens)
-             x 0 0 x x x x x x x     O = `False` (Pixel is not masked and included in lens)
-             x x x x x x x x x x
-             x x x x x x x x x x
-             x x x x x x x x x x
-             x x x x x x x x x x
-             x x x x x x x x x x
-
-        If ``sub_size=2``, each unmasked pixel has 4 (2x2) sub-pixel values. For the example above, pixels 0 and 1
-        each have 4 values which map to ``slim`` representation as follows:
-
-        ::
-
-            Pixel 0 - (2x2):
-
-                   slim[0] = value of first sub-pixel in pixel 0.
-             0 1   slim[1] = value of first sub-pixel in pixel 1.
-             2 3   slim[2] = value of first sub-pixel in pixel 2.
-                   slim[3] = value of first sub-pixel in pixel 3.
-
-            Pixel 1 - (2x2):
-
-                   slim[4] = value of first sub-pixel in pixel 0.
-             4 5   slim[5] = value of first sub-pixel in pixel 1.
-             6 7   slim[6] = value of first sub-pixel in pixel 2.
-                   slim[7] = value of first sub-pixel in pixel 3.
-
-        For the ``native`` data representation we get the following mappings:
-
-        ::
-
-            Pixel 0 - (2x2):
-
-                   native[8, 2] = value of first sub-pixel in pixel 0.
-             0 1   native[8, 3] = value of first sub-pixel in pixel 1.
-             2 3   native[9, 2] = value of first sub-pixel in pixel 2.
-                   native[9, 3] = value of first sub-pixel in pixel 3.
-
-            Pixel 1 - (2x2):
-
-                   native[10, 4] = value of first sub-pixel in pixel 0.
-             4 5   native[10, 5] = value of first sub-pixel in pixel 1.
-             6 7   native[11, 4] = value of first sub-pixel in pixel 2.
-                   native[11, 5] = value of first sub-pixel in pixel 3.
-
-            Other entries (all masked sub-pixels are zero):
-
-                   native[0, 0] = 0.0 (it is masked, thus zero)
-                   native[15, 12] = 0.0 (it is masked, thus zero)
-
-        If we used a sub_size of 3, for pixel 0 we we would create a 3x3 sub-array:
-
-        ::
-
-                     slim[0] = value of first sub-pixel in pixel 0.
-                     slim[1] = value of first sub-pixel in pixel 1.
-                     slim[2] = value of first sub-pixel in pixel 2.
-             0 1 2   slim[3] = value of first sub-pixel in pixel 3.
-             3 4 5   slim[4] = value of first sub-pixel in pixel 4.
-             6 7 8   slim[5] = value of first sub-pixel in pixel 5.
-                     slim[6] = value of first sub-pixel in pixel 6.
-                     slim[7] = value of first sub-pixel in pixel 7.
-                     slim[8] = value of first sub-pixel in pixel 8.
 
         Parameters
         ----------
@@ -300,7 +208,6 @@ class Mask2D(Mask):
             mask=mask,
             origin=origin,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
         )
 
     __no_flatten__ = ("derive_indexes",)
@@ -310,6 +217,10 @@ class Mask2D(Mask):
 
         if not isinstance(obj, Mask2D):
             self.origin = (0.0, 0.0)
+
+    @property
+    def native(self) -> Structure:
+        return self
 
     @property
     def geometry(self) -> Geometry2D:
@@ -340,7 +251,6 @@ class Mask2D(Mask):
         cls,
         shape_native: Tuple[int, int],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
     ) -> "Mask2D":
@@ -354,8 +264,6 @@ class Mask2D(Mask):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         invert
@@ -365,7 +273,6 @@ class Mask2D(Mask):
         return cls(
             mask=np.full(shape=shape_native, fill_value=False),
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
@@ -376,7 +283,6 @@ class Mask2D(Mask):
         shape_native: Tuple[int, int],
         radius: float,
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -395,8 +301,6 @@ class Mask2D(Mask):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
@@ -418,7 +322,6 @@ class Mask2D(Mask):
         return cls(
             mask=mask,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
@@ -430,7 +333,6 @@ class Mask2D(Mask):
         inner_radius: float,
         outer_radius: float,
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -452,8 +354,6 @@ class Mask2D(Mask):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
@@ -476,7 +376,6 @@ class Mask2D(Mask):
         return cls(
             mask=mask,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
@@ -489,7 +388,6 @@ class Mask2D(Mask):
         outer_radius: float,
         outer_radius_2: float,
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -514,8 +412,6 @@ class Mask2D(Mask):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
@@ -539,7 +435,6 @@ class Mask2D(Mask):
         return cls(
             mask=mask,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
@@ -552,7 +447,6 @@ class Mask2D(Mask):
         axis_ratio: float,
         angle: float,
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -576,8 +470,6 @@ class Mask2D(Mask):
         pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
             it is converted to a (float, float) structure.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
@@ -600,7 +492,6 @@ class Mask2D(Mask):
         return cls(
             mask=mask,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
@@ -616,7 +507,6 @@ class Mask2D(Mask):
         outer_axis_ratio: float,
         outer_phi: float,
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         centre: Tuple[float, float] = (0.0, 0.0),
         invert: bool = False,
@@ -647,8 +537,6 @@ class Mask2D(Mask):
         outer_phi
             The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
             positive x-axis).
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         centre
@@ -674,7 +562,6 @@ class Mask2D(Mask):
         return cls(
             mask=mask,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
@@ -685,7 +572,6 @@ class Mask2D(Mask):
         shape_native: Tuple[int, int],
         pixel_coordinates: [[int, int]],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         buffer: int = 0,
         invert: bool = False,
@@ -705,8 +591,6 @@ class Mask2D(Mask):
             The input lists of 2D pixel coordinates where `False` entries are created.
         pixel_scales
             The scaled units to pixel units conversion factor of each pixel.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         buffer
@@ -726,7 +610,6 @@ class Mask2D(Mask):
         return cls(
             mask=mask,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
@@ -737,7 +620,6 @@ class Mask2D(Mask):
         file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
         hdu: int = 0,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
         resized_mask_shape: Tuple[int, int] = None,
     ) -> "Mask2D":
@@ -752,8 +634,6 @@ class Mask2D(Mask):
             The HDU number in the fits file containing the image image.
         pixel_scales or (float, float)
             The scaled units to pixel units conversion factor of each pixel.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the mask's coordinate system.
         """
@@ -764,12 +644,11 @@ class Mask2D(Mask):
                 file_path=file_path, hdu=hdu
             ),
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
         )
 
         if resized_mask_shape is not None:
-            mask = mask.derive_mask.resized_from(new_shape=resized_mask_shape)
+            mask = mask.resized_from(new_shape=resized_mask_shape)
 
         return mask
 
@@ -777,7 +656,6 @@ class Mask2D(Mask):
     def from_primary_hdu(
         cls,
         primary_hdu: fits.PrimaryHDU,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Mask2D":
         """
@@ -795,8 +673,6 @@ class Mask2D(Mask):
         primary_hdu
             The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
             the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the coordinate system.
 
@@ -808,47 +684,21 @@ class Mask2D(Mask):
             from astropy.io import fits
             import autoarray as aa
 
-            # Make Mask2D with sub_size 1.
-
             primary_hdu = fits.open("path/to/file.fits")
 
             array_2d = aa.Mask2D.from_primary_hdu(
                 primary_hdu=primary_hdu,
-                sub_size=1
-            )
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Mask2D with sub_size 2.
-            # (It is uncommon that a sub-gridded array would be loaded from
-            # a .fits, but the API support its).
-
-             primary_hdu = fits.open("path/to/file.fits")
-
-            array_2d = aa.Mask2D.from_primary_hdu(
-                primary_hdu=primary_hdu,
-                sub_size=2
             )
         """
         return cls(
             mask=cls.flip_hdu_for_ds9(primary_hdu.data.astype("float")),
             pixel_scales=primary_hdu.header["PIXSCALE"],
-            sub_size=sub_size,
             origin=origin,
         )
 
     @property
     def shape_native(self) -> Tuple[int, ...]:
         return self.shape
-
-    @property
-    def sub_shape_native(self) -> Tuple[int, int]:
-        try:
-            return (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
-        except AttributeError:
-            print("bleh")
 
     def trimmed_array_from(self, padded_array, image_shape) -> Array2D:
         """
@@ -864,14 +714,13 @@ class Mask2D(Mask):
 
         pad_size_0 = self.shape[0] - image_shape[0]
         pad_size_1 = self.shape[1] - image_shape[1]
-        trimmed_array = padded_array.binned.native[
+        trimmed_array = padded_array.native[
             pad_size_0 // 2 : self.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.shape[1] - pad_size_1 // 2,
         ]
         return Array2D.no_mask(
             values=trimmed_array,
             pixel_scales=self.pixel_scales,
-            sub_size=1,
             origin=self.origin,
         )
 
@@ -948,9 +797,13 @@ class Mask2D(Mask):
 
     @property
     def mask_centre(self) -> Tuple[float, float]:
-        return grid_2d_util.grid_2d_centre_from(
-            grid_2d_slim=np.array(self.derive_grid.unmasked_sub_1)
+        grid = grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=np.array(self),
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
+
+        return grid_2d_util.grid_2d_centre_from(grid_2d_slim=grid)
 
     @property
     def shape_native_masked_pixels(self) -> Tuple[int, int]:
@@ -968,11 +821,133 @@ class Mask2D(Mask):
 
         return (y1 - y0 + 1, x1 - x0 + 1)
 
+    def rescaled_from(self, rescale_factor) -> Mask2D:
+        """
+        Returns the ``Mask2D`` rescaled to a bigger or small shape via input ``rescale_factor``.
+
+        For example, for a ``rescale_factor=2.0`` the following mask:
+
+        ::
+           [[ True,  True],
+            [False, False]]
+
+        Will double in size and become:
+
+        ::
+            [[True,   True,  True,  True],
+             [True,   True,  True,  True],
+             [False, False, False, False],
+             [False, False, False, False]]
+
+        Parameters
+        ----------
+        rescale_factor
+            The factor by which the ``Mask2D`` is rescaled (less than 1.0 produces a smaller mask, greater than 1.0
+            produces a bigger mask).
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            mask_2d = aa.Mask2D(
+                mask=[
+                     [ True,  True],
+                     [False, False]
+                ],
+                pixel_scales=1.0,
+            )
+
+            print(mask_2d.rescaled_from(rescale_factor=2.0)
+        """
+        from autoarray.mask.mask_2d import Mask2D
+
+        rescaled_mask = mask_2d_util.rescaled_mask_2d_from(
+            mask_2d=np.array(self),
+            rescale_factor=rescale_factor,
+        )
+
+        return Mask2D(
+            mask=rescaled_mask,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
+    def resized_from(self, new_shape, pad_value: int = 0.0) -> Mask2D:
+        """
+        Returns the ``Mask2D`` resized to a small or bigger ``ndarraay``, but with the same distribution of
+         ``False`` and ``True`` entries.
+
+        Resizing which increases the ``Mask2D`` shape pads it with values on its edge.
+
+        Resizing which reduces the ``Mask2D`` shape removes entries on its edge.
+
+        For example, for a ``new_shape=(4,4)`` the following mask:
+
+        ::
+           [[ True,  True],
+            [False, False]]
+
+        Will be padded with zeros (``False`` values) and become:
+
+        ::
+          [[True,  True,  True, True]
+           [True,  True,  True, True],
+           [True, False, False, True],
+           [True,  True,  True, True]]
+
+        Parameters
+        ----------
+        new_shape
+            The new two-dimensional shape of the resized ``Mask2D``.
+        pad_value
+            The value new values are padded using if the resized ``Mask2D`` is bigger.
+
+        Examples
+        --------
+
+        .. code-block:: python
+
+            import autoarray as aa
+
+            mask_2d = aa.Mask2D(
+                mask=[
+                     [ True,  True],
+                     [False, False]
+                ],
+                pixel_scales=1.0,
+            )
+
+            print(mask_2d.resized_from(new_shape=(4,4))
+        """
+
+        resized_mask = array_2d_util.resized_array_2d_from(
+            array_2d=np.array(self),
+            resized_shape=new_shape,
+            pad_value=pad_value,
+        ).astype("bool")
+
+        return Mask2D(
+            mask=resized_mask,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
     @property
     def zoom_centre(self) -> Tuple[float, float]:
-        extraction_grid_1d = self.geometry.grid_pixels_2d_from(
-            grid_scaled_2d=self.derive_grid.unmasked_sub_1.slim
+        from autoarray.structures.grids.uniform_2d import Grid2D
+
+        grid = grid_2d_util.grid_2d_slim_via_mask_from(
+            mask_2d=np.array(self),
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
+
+        grid = Grid2D(values=grid, mask=self)
+
+        extraction_grid_1d = self.geometry.grid_pixels_2d_from(grid_scaled_2d=grid)
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])
         x_pixels_max = np.max(extraction_grid_1d[:, 1])
@@ -1046,7 +1021,6 @@ class Mask2D(Mask):
         return Mask2D.all_false(
             shape_native=self.zoom_shape_native,
             pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
             origin=self.zoom_offset_scaled,
         )
 

@@ -3,9 +3,10 @@ from typing import Optional
 import numpy as np
 import os
 
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray.structures.grids import grid_2d_util
 
@@ -25,12 +26,15 @@ class AbstractImageMesh:
         raise NotImplementedError
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None, settings=None
+        self,
+        mask: Mask2D,
+        adapt_data: Optional[np.ndarray] = None,
+        settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
         raise NotImplementedError
 
     def mesh_pixels_per_image_pixels_from(
-        self, grid: Grid2D, mesh_grid: Grid2DIrregular
+        self, mask: Mask2D, mesh_grid: Grid2DIrregular
     ) -> Array2D:
         """
         Returns an array containing the number of mesh pixels in every pixel of the data's mask.
@@ -41,9 +45,9 @@ class AbstractImageMesh:
 
         Parameters
         ----------
-        grid
-            The masked (y,x) grid of the data coordinates, corresponding to the mask applied to the data. The number of
-            mesh pixels mapped inside each of this grid's image-pixels is returned.
+        mask
+            The mask of the dataset being analysed, which the pixelization grid maps too. The number of
+            mesh pixels mapped inside each of this mask's image-pixels is returned.
         mesh_grid
             The image mesh-grid computed by the class which adapts to the data's mask. The number of image mesh pixels
             that fall within each of the data's mask pixels is returned.
@@ -54,15 +58,17 @@ class AbstractImageMesh:
         """
 
         mesh_pixels_per_image_pixels = grid_2d_util.grid_pixels_in_mask_pixels_from(
-            grid=mesh_grid,
-            shape_native=grid.shape_native,
-            pixel_scales=grid.pixel_scales,
-            origin=grid.origin,
+            grid=np.array(mesh_grid),
+            shape_native=mask.shape_native,
+            pixel_scales=mask.pixel_scales,
+            origin=mask.origin,
         )
 
-        return Array2D(values=mesh_pixels_per_image_pixels, mask=grid.mask)
+        return Array2D(values=mesh_pixels_per_image_pixels, mask=mask)
 
-    def check_mesh_pixels_per_image_pixels(self, grid, mesh_grid, settings):
+    def check_mesh_pixels_per_image_pixels(
+        self, mask: Mask2D, mesh_grid: Grid2DIrregular, settings: SettingsInversion
+    ):
         """
         Checks the number of mesh pixels in every image pixel and raises an `InversionException` if there are fewer
         mesh pixels inside a certain number of image-pixels than the input settings.
@@ -84,9 +90,9 @@ class AbstractImageMesh:
 
         Parameters
         ----------
-        grid
-            The masked (y,x) grid of the data coordinates, corresponding to the mask applied to the data. The number of
-            mesh pixels mapped inside each of this grid's image-pixels is returned.
+        mask
+            The mask of the dataset being analysed, which the pixelization grid maps too. The number of
+            mesh pixels mapped inside each of this mask's image-pixels is returned.
         mesh_grid
             The image mesh-grid computed by the class which adapts to the data's mask. The number of image mesh pixels
             that fall within each of the data's mask pixels is returned.
@@ -101,7 +107,7 @@ class AbstractImageMesh:
         if settings is not None:
             if settings.image_mesh_min_mesh_pixels_per_pixel is not None:
                 mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
-                    grid=grid, mesh_grid=mesh_grid
+                    mask=mask, mesh_grid=mesh_grid
                 )
 
                 indices_of_highest_values = np.argsort(mesh_pixels_per_image_pixels)[
@@ -116,7 +122,13 @@ class AbstractImageMesh:
 
         return mesh_grid
 
-    def check_adapt_background_pixels(self, grid, mesh_grid, adapt_data, settings):
+    def check_adapt_background_pixels(
+        self,
+        mask: Mask2D,
+        mesh_grid: Grid2DIrregular,
+        adapt_data: Optional[np.ndarray],
+        settings: SettingsInversion,
+    ):
         """
         Checks the number of mesh pixels in the background of the image-mesh and raises an `InversionException` if
         there are fewer mesh pixels in the background than the input settings.
@@ -141,9 +153,9 @@ class AbstractImageMesh:
 
         Parameters
         ----------
-        grid
-            The masked (y,x) grid of the data coordinates, corresponding to the mask applied to the data. The number of
-            mesh pixels mapped inside each of this grid's image-pixels is returned.
+        mask
+            The mask of the dataset being analysed, which the pixelization grid maps too. The number of
+            mesh pixels mapped inside each of this mask's image-pixels is returned.
         mesh_grid
             The image mesh-grid computed by the class which adapts to the data's mask. The number of image mesh pixels
             that fall within each of the data's mask pixels is returned.
@@ -162,7 +174,7 @@ class AbstractImageMesh:
                 pixels = mesh_grid.shape[0]
 
                 pixels_in_background = int(
-                    grid.shape[0] * settings.image_mesh_adapt_background_percent_check
+                    mask.shape_slim * settings.image_mesh_adapt_background_percent_check
                 )
 
                 indices_of_lowest_values = np.argsort(adapt_data)[:pixels_in_background]
@@ -170,7 +182,7 @@ class AbstractImageMesh:
                 mask_background[indices_of_lowest_values] = True
 
                 mesh_pixels_per_image_pixels = self.mesh_pixels_per_image_pixels_from(
-                    grid=grid, mesh_grid=mesh_grid
+                    mask=mask, mesh_grid=mesh_grid
                 )
 
                 mesh_pixels_in_background = sum(

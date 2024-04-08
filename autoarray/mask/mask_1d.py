@@ -23,15 +23,10 @@ logger = logging.getLogger(__name__)
 
 
 class Mask1D(Mask):
-    @property
-    def native(self) -> Structure:
-        raise NotImplemented()
-
     def __init__(
         self,
         mask: Union[np.ndarray, List],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float,] = (0.0,),
         invert: bool = False,
     ):
@@ -43,7 +38,7 @@ class Mask1D(Mask):
 
         The mask also defines the geometry of the 1D data structure it is paired to, for example how every pixel
         coordinate on the 1D line of data converts to physical units via the `pixel_scales` and `origin`
-        parameters and a sub-grid which is used for performing calculations via super-sampling.
+        parameters and a grid which is used for performing calculations.
 
         Parameters
         ----------
@@ -72,7 +67,6 @@ class Mask1D(Mask):
         super().__init__(
             mask=mask,
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
         )
 
@@ -83,6 +77,10 @@ class Mask1D(Mask):
             pass
         else:
             self.origin = (0.0,)
+
+    @property
+    def native(self) -> Structure:
+        raise NotImplemented()
 
     @property
     def geometry(self) -> Geometry1D:
@@ -109,7 +107,6 @@ class Mask1D(Mask):
         cls,
         shape_slim,
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         origin: Tuple[float] = (0.0,),
         invert: bool = False,
     ) -> "Mask1D":
@@ -127,7 +124,6 @@ class Mask1D(Mask):
             mask=np.full(shape=shape_slim, fill_value=False),
             pixel_scales=pixel_scales,
             origin=origin,
-            sub_size=sub_size,
             invert=invert,
         )
 
@@ -136,7 +132,6 @@ class Mask1D(Mask):
         cls,
         file_path: Union[Path, str],
         pixel_scales: ty.PixelScales,
-        sub_size: int = 1,
         hdu: int = 0,
         origin: Tuple[float] = (0.0,),
     ) -> "Mask1D":
@@ -156,7 +151,6 @@ class Mask1D(Mask):
         return cls(
             array_1d_util.numpy_array_1d_via_fits_from(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
-            sub_size=sub_size,
             origin=origin,
         )
 
@@ -164,7 +158,6 @@ class Mask1D(Mask):
     def from_primary_hdu(
         cls,
         primary_hdu: fits.PrimaryHDU,
-        sub_size: int = 1,
         origin: Tuple[float, float] = (0.0, 0.0),
     ) -> "Mask1D":
         """
@@ -182,8 +175,6 @@ class Mask1D(Mask):
         primary_hdu
             The `PrimaryHDU` object which has already been loaded from a .fits file via `astropy.fits` and contains
             the array data and the pixel-scale in the header with an entry named `PIXSCALE`.
-        sub_size
-            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin
             The (y,x) scaled units origin of the coordinate system.
 
@@ -195,44 +186,21 @@ class Mask1D(Mask):
             from astropy.io import fits
             import autoarray as aa
 
-            # Make Mask1D with sub_size 1.
-
             primary_hdu = fits.open("path/to/file.fits")
 
             array_1d = aa.Mask1D.from_primary_hdu(
                 primary_hdu=primary_hdu,
-                sub_size=1
-            )
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            # Make Mask1D with sub_size 2.
-            # (It is uncommon that a sub-gridded array would be loaded from
-            # a .fits, but the API support its).
-
-             primary_hdu = fits.open("path/to/file.fits")
-
-            array_1d = aa.Mask1D.from_primary_hdu(
-                primary_hdu=primary_hdu,
-                sub_size=2
             )
         """
         return cls(
             mask=primary_hdu.data.astype("bool"),
             pixel_scales=primary_hdu.header["PIXSCALE"],
-            sub_size=sub_size,
             origin=origin,
         )
 
     @property
     def shape_native(self) -> Tuple[int]:
         return self.shape
-
-    @property
-    def sub_shape_native(self) -> Tuple[int]:
-        return (self.shape[0] * self.sub_size,)
 
     @property
     def shape_slim(self) -> Tuple[int]:

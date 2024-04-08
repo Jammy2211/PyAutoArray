@@ -1,15 +1,14 @@
 import numpy as np
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
+from autoarray.dataset.interferometer.dataset import Interferometer
+from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.inversion.settings import SettingsInversion
-from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.preloads import Preloads
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.visibilities import Visibilities
-from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
 from autoarray.inversion.inversion import inversion_util
 
@@ -19,9 +18,7 @@ from autoarray.numba_util import profile_func
 class AbstractInversionInterferometer(AbstractInversion):
     def __init__(
         self,
-        data: Visibilities,
-        noise_map: VisibilitiesNoiseMap,
-        transformer: TransformerNUFFT,
+        dataset: Union[Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
@@ -51,15 +48,16 @@ class AbstractInversionInterferometer(AbstractInversion):
         """
 
         super().__init__(
-            data=data,
-            noise_map=noise_map,
+            dataset=dataset,
             linear_obj_list=linear_obj_list,
             settings=settings,
             preloads=preloads,
             run_time_dict=run_time_dict,
         )
 
-        self.transformer = transformer
+    @property
+    def transformer(self):
+        return self.dataset.transformer
 
     @property
     def mask(self) -> Mask2D:
@@ -127,8 +125,7 @@ class AbstractInversionInterferometer(AbstractInversion):
             )
 
             mapped_reconstructed_image = Array2D(
-                values=mapped_reconstructed_image,
-                mask=self.mask.derive_mask.sub_1,
+                values=mapped_reconstructed_image, mask=self.mask
             )
 
             mapped_reconstructed_image_dict[linear_obj] = mapped_reconstructed_image

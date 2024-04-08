@@ -1,8 +1,7 @@
 from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
-import numpy as np
-from typing import TYPE_CHECKING, Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Dict, Tuple, Union
 
 if TYPE_CHECKING:
     from autoarray.structures.grids.uniform_1d import Grid1D
@@ -49,16 +48,8 @@ class Structure(AbstractNDArray, ABC):
         return self.mask.shape_slim
 
     @property
-    def sub_shape_slim(self) -> int:
-        return self.mask.sub_shape_slim
-
-    @property
     def shape_native(self) -> Tuple[int, ...]:
         return self.mask.shape
-
-    @property
-    def sub_shape_native(self) -> Tuple[int, ...]:
-        return self.mask.sub_shape_native
 
     @property
     def pixel_scales(self) -> Tuple[float, ...]:
@@ -88,22 +79,12 @@ class Structure(AbstractNDArray, ABC):
         return self.mask.origin
 
     @property
-    def sub_size(self) -> int:
-        return self.mask.sub_size
-
-    @property
     def unmasked_grid(self) -> Union[Grid1D, Grid2D]:
-        return self.mask.derive_grid.all_false_sub_1
+        return self.mask.derive_grid.all_false
 
     @property
     def total_pixels(self) -> int:
         return self.shape[0]
-
-    def structure_2d_list_from(self, result_list: list) -> List["Structure"]:
-        raise NotImplementedError
-
-    def structure_2d_from(self, result: np.ndarray) -> "Structure":
-        raise NotImplementedError
 
     def trimmed_after_convolution_from(self, kernel_shape) -> "Structure":
         raise NotImplementedError

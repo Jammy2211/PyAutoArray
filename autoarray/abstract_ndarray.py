@@ -63,6 +63,8 @@ def unwrap_array(func):
 
 class AbstractNDArray(ABC):
     def __init__(self, array):
+        self._is_transformed = False
+
         while isinstance(array, AbstractNDArray):
             array = array.array
         self._array = array

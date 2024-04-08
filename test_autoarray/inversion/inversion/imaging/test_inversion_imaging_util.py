@@ -169,9 +169,7 @@ def test__data_vector_via_blurred_mapping_matrix_from():
 
 
 def test__data_vector_via_w_tilde_data_two_methods_agree():
-    mask = aa.Mask2D.circular(
-        shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
-    )
+    mask = aa.Mask2D.circular(shape_native=(51, 51), pixel_scales=0.1, radius=2.0)
 
     image = np.random.uniform(size=mask.shape_native)
     image = aa.Array2D(values=image, mask=mask)
@@ -190,13 +188,22 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
     # TODO : Use pytest.parameterize
 
     for sub_size in range(1, 3):
-        mask_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
+        over_sampler = aa.OverSamplerUniform(
+            mask=mask,
+            sub_size=sub_size,
+        )
 
-        grid = aa.Grid2D.from_mask(mask=mask_sub)
+        grid = over_sampler.over_sampled_grid
 
-        mapper_grids = pixelization.mapper_grids_from(source_plane_data_grid=grid)
+        mapper_grids = pixelization.mapper_grids_from(
+            border_relocator=None, source_plane_data_grid=grid
+        )
 
-        mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+        mapper = aa.Mapper(
+            mapper_grids=mapper_grids,
+            over_sampler=over_sampler,
+            regularization=None,
+        )
 
         mapping_matrix = mapper.mapping_matrix
 
@@ -246,9 +253,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
 
 
 def test__curvature_matrix_via_w_tilde_two_methods_agree():
-    mask = aa.Mask2D.circular(
-        shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
-    )
+    mask = aa.Mask2D.circular(shape_native=(51, 51), pixel_scales=0.1, radius=2.0)
 
     noise_map = np.random.uniform(size=mask.shape_native)
     noise_map = aa.Array2D(values=noise_map, mask=mask)
@@ -262,10 +267,17 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     mapper_grids = pixelization.mapper_grids_from(
-        source_plane_data_grid=mask.derive_grid.unmasked_sub_1
+        border_relocator=None, source_plane_data_grid=mask.derive_grid.unmasked
     )
 
-    mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+    over_sampler = aa.OverSamplerUniform(
+        mask=mask,
+        sub_size=1,
+    )
+
+    mapper = aa.Mapper(
+        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
+    )
 
     mapping_matrix = mapper.mapping_matrix
 
@@ -291,9 +303,7 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
 
 
 def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
-    mask = aa.Mask2D.circular(
-        shape_native=(51, 51), pixel_scales=0.1, sub_size=1, radius=2.0
-    )
+    mask = aa.Mask2D.circular(shape_native=(51, 51), pixel_scales=0.1, radius=2.0)
 
     noise_map = np.random.uniform(size=mask.shape_native)
     noise_map = aa.Array2D(values=noise_map, mask=mask)
@@ -307,13 +317,22 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     for sub_size in range(1, 2, 3):
-        mask_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
+        over_sampler = aa.OverSamplerUniform(
+            mask=mask,
+            sub_size=sub_size,
+        )
 
-        grid = aa.Grid2D.from_mask(mask=mask_sub)
+        grid = over_sampler.over_sampled_grid
 
-        mapper_grids = pixelization.mapper_grids_from(source_plane_data_grid=grid)
+        mapper_grids = pixelization.mapper_grids_from(
+            border_relocator=None, source_plane_data_grid=grid
+        )
 
-        mapper = aa.Mapper(mapper_grids=mapper_grids, regularization=None)
+        mapper = aa.Mapper(
+            mapper_grids=mapper_grids,
+            over_sampler=over_sampler,
+            regularization=None,
+        )
 
         mapping_matrix = mapper.mapping_matrix
 

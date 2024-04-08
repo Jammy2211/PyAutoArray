@@ -1,12 +1,10 @@
-from __future__ import annotations
 import numpy as np
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
-if TYPE_CHECKING:
-    from autoarray.structures.grids.uniform_2d import Grid2D
-
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.inversion.inversion.settings import SettingsInversion
 
 from autoarray.geometry import geometry_util
 from autoarray.structures.grids import grid_2d_util
@@ -185,7 +183,10 @@ class Overlay(AbstractImageMesh):
         self.shape = (int(shape[0]), int(shape[1]))
 
     def image_plane_mesh_grid_from(
-        self, grid: Grid2D, adapt_data: Optional[np.ndarray] = None, settings=None
+        self,
+        mask: Mask2D,
+        adapt_data: Optional[np.ndarray] = None,
+        settings: SettingsInversion = None,
     ) -> Grid2DIrregular:
         """
         Returns an image-mesh by overlaying a uniform grid of (y,x) coordinates over the masked image that the
@@ -202,36 +203,37 @@ class Overlay(AbstractImageMesh):
             Not used by this image mesh.
         """
 
-        pixel_scales = grid.mask.pixel_scales
+        pixel_scales = mask.pixel_scales
+
+        grid = mask.derive_grid.unmasked
 
         pixel_scales = (
             (grid.shape_native_scaled_interior[0] + pixel_scales[0]) / (self.shape[0]),
             (grid.shape_native_scaled_interior[1] + pixel_scales[1]) / (self.shape[1]),
         )
 
-        origin = grid.mask.mask_centre
+        origin = mask.mask_centre
 
         unmasked_overlay_grid = grid_2d_util.grid_2d_slim_via_shape_native_from(
             shape_native=self.shape,
             pixel_scales=pixel_scales,
-            sub_size=1,
             origin=origin,
         )
 
         overlaid_centres = geometry_util.grid_pixel_centres_2d_slim_from(
             grid_scaled_2d_slim=unmasked_overlay_grid,
-            shape_native=grid.mask.shape_native,
-            pixel_scales=grid.mask.pixel_scales,
+            shape_native=mask.shape_native,
+            pixel_scales=mask.pixel_scales,
         ).astype("int")
 
         total_pixels = total_pixels_2d_from(
-            mask_2d=grid.mask.array,
+            mask_2d=mask.array,
             overlaid_centres=overlaid_centres,
         )
 
         overlay_for_mask = overlay_for_mask_from(
             total_pixels=total_pixels,
-            mask=grid.mask.array,
+            mask=mask.array,
             overlaid_centres=overlaid_centres,
         ).astype("int")
 

@@ -24,8 +24,8 @@ class GridScatter(AbstractMatWrap2D):
     on every figure:
 
     - `OriginScatter`: plots the (y,x) coordinates of the origin of a data structure (e.g. as a black cross).
-    - `MaskScatter`: plots a mask over an image, using the `Mask2d` object's (y,x)  `edge_sub_1` property.
-    - `BorderScatter: plots a border over an image, using the `Mask2d` object's (y,x) `border_sub_1` property.
+    - `MaskScatter`: plots a mask over an image, using the `Mask2d` object's (y,x)  `edge` property.
+    - `BorderScatter: plots a border over an image, using the `Mask2d` object's (y,x) `border` property.
     - `PositionsScatter`: plots the (y,x) coordinates that are input in a plotter via the `positions` input.
     - `IndexScatter`: plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
     - `MeshGridScatter`: plots the grid of a `Mesh` object (see `autoarray.inversion`).

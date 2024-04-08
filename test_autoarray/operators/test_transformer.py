@@ -8,15 +8,10 @@ class MockDeriveMask2D:
     def __init__(self, grid):
         self.mask = grid.derive_mask.all_false
         self.grid = grid
-        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
 
     @property
     def sub_1(self):
         return self
-
-    @property
-    def pixels_in_mask(self):
-        return self.unmasked_sub_1.binned.slim.in_radians.shape[0]
 
     @property
     def derive_grid(self):
@@ -27,12 +22,17 @@ class MockDeriveMask2D:
 
 class MockDeriveGrid2D:
     def __init__(self, grid):
-        self.unmasked_sub_1 = MockMaskedGrid(grid=grid)
+        self.unmasked = MockMaskedGrid(grid=grid)
 
 
 class MockRealSpaceMask:
     def __init__(self, grid):
         self.grid = grid
+        self.unmasked = MockMaskedGrid(grid=grid)
+
+    @property
+    def pixels_in_mask(self):
+        return self.unmasked.slim.in_radians.shape[0]
 
     @property
     def derive_mask(self):
@@ -51,28 +51,14 @@ class MockRealSpaceMask:
         return self.grid.pixel_scales
 
     @property
-    def sub_size(self):
-        return self.grid.sub_size
-
-    @property
     def origin(self):
         return self.grid.origin
 
 
 class MockMaskedGrid:
     def __init__(self, grid):
-        self.binned = MockMaskedGrid2(grid=grid)
-
-
-class MockMaskedGrid2:
-    def __init__(self, grid):
-        self.slim = MockMaskedGrid3(grid=grid)
         self.in_radians = grid
-
-
-class MockMaskedGrid3:
-    def __init__(self, grid):
-        self.in_radians = grid
+        self.slim = grid
 
 
 def test__dft__visibilities_from():

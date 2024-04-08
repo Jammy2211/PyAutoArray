@@ -26,12 +26,8 @@ from .inversion.inversion.settings import SettingsInversion
 from .inversion.inversion.abstract import AbstractInversion
 from .inversion.regularization.abstract import AbstractRegularization
 from .inversion.inversion.factory import inversion_from as Inversion
-from .inversion.inversion.factory import (
-    inversion_imaging_unpacked_from as InversionImaging,
-)
-from .inversion.inversion.factory import (
-    inversion_interferometer_unpacked_from as InversionInterferometer,
-)
+from .inversion.inversion.dataset_interface import DatasetInterface
+from .inversion.pixelization.border_relocator import BorderRelocator
 from .inversion.pixelization.pixelization import Pixelization
 from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization.mappers.mapper_grids import MapperGrids
@@ -60,6 +56,7 @@ from .operators.convolver import Convolver
 from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
+from .operators.over_sampling.decorator import over_sample
 from .layout.layout import Layout1D
 from .layout.layout import Layout2D
 from .structures.arrays.uniform_1d import Array1D
@@ -67,7 +64,12 @@ from .structures.arrays.uniform_2d import Array2D
 from .structures.arrays.irregular import ArrayIrregular
 from .structures.grids.uniform_1d import Grid1D
 from .structures.grids.uniform_2d import Grid2D
-from .structures.grids.over_sample.iterate import OverSampleIterate
+from .operators.over_sampling.decorator import perform_over_sampling_from
+from .operators.over_sampling.grid_oversampled import Grid2DOverSampled
+from .operators.over_sampling.uniform import OverSamplingUniform
+from .operators.over_sampling.iterate import OverSamplingIterate
+from .operators.over_sampling.uniform import OverSamplerUniform
+from .operators.over_sampling.iterate import OverSamplerIterate
 from .structures.grids.irregular_2d import Grid2DIrregular
 from .structures.grids.irregular_2d import Grid2DIrregularUniform
 from .structures.mesh.rectangular_2d import Mesh2DRectangular
@@ -76,7 +78,7 @@ from .structures.mesh.delaunay_2d import Mesh2DDelaunay
 from .structures.arrays.kernel_2d import Kernel2D
 from .structures.vectors.uniform import VectorYX2D
 from .structures.vectors.irregular import VectorYX2DIrregular
-from .structures import structure_decorators as grid_dec
+from .structures import decorators as grid_dec
 from .structures.header import Header
 from .layout.region import Region1D
 from .layout.region import Region2D

@@ -64,48 +64,6 @@ def test__from_pixels_and_mask():
     assert grid.in_list == [(1.0, -1.0), (1.0, 1.0)]
 
 
-def test__values_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
-
-    values_from_1d = grid.values_from(array_slim=np.array([1.0, 2.0]))
-
-    assert isinstance(values_from_1d, aa.ArrayIrregular)
-    assert values_from_1d.in_list == [1.0, 2.0]
-
-    grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
-
-    values_from_1d = grid.values_from(array_slim=np.array([1.0, 2.0, 3.0]))
-
-    assert isinstance(values_from_1d, aa.ArrayIrregular)
-    assert values_from_1d.in_list == [1.0, 2.0, 3.0]
-
-
-def test__values_via_value_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
-
-    values_via_value_from = grid.values_via_value_from(value=1.0)
-
-    assert values_via_value_from.in_list == [1.0, 1.0]
-
-
-def test__grid_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
-
-    grid_from_1d = grid.grid_from(grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]]))
-
-    assert type(grid_from_1d) == aa.Grid2DIrregular
-    assert grid_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0)]
-
-    grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
-
-    grid_from_1d = grid.grid_from(
-        grid_slim=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
-    )
-
-    assert type(grid_from_1d) == aa.Grid2DIrregular
-    assert grid_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
-
-
 def test__grid_2d_via_deflection_grid_from():
     grid = aa.Grid2DIrregular(values=[(1.0, 1.0), (2.0, 2.0)])
 
@@ -154,65 +112,6 @@ def test__grid_of_closest_from():
     assert (
         grid_of_closest == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 1.0], [0.0, 0.0]])
     ).all()
-
-
-def test__structure_2d_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, -1.0), (1.0, 1.0)])
-
-    result = grid.structure_2d_from(result=np.array([1.0, 2.0]))
-
-    assert isinstance(result, aa.ArrayIrregular)
-    assert result.in_list == [1.0, 2.0]
-
-    result = grid.structure_2d_from(result=np.array([[1.0, 1.0], [2.0, 2.0]]))
-
-    assert isinstance(result, aa.Grid2DIrregular)
-    assert result.in_list == [(1.0, 1.0), (2.0, 2.0)]
-
-
-def test__structure_2d_list_from():
-    grid = aa.Grid2DIrregular(values=[(1.0, -1.0), (1.0, 1.0)])
-
-    result = grid.structure_2d_list_from(result_list=[np.array([1.0, 2.0])])
-
-    assert isinstance(result[0], aa.ArrayIrregular)
-    assert result[0].in_list == [1.0, 2.0]
-
-    result = grid.structure_2d_list_from(
-        result_list=[np.array([[1.0, 1.0], [2.0, 2.0]])]
-    )
-
-    assert isinstance(result[0], aa.Grid2DIrregular)
-    assert result[0].in_list == [(1.0, 1.0), (2.0, 2.0)]
-
-
-def test__from_and_to_file_json():
-    grid = aa.Grid2DIrregular(values=[(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)])
-
-    output_grid_dir = path.join(
-        "{}".format(os.path.dirname(os.path.realpath(__file__))),
-        "files",
-        "grid",
-        "output_test",
-    )
-
-    file_path = path.join(output_grid_dir, "grid_test.json")
-
-    if os.path.exists(output_grid_dir):
-        shutil.rmtree(output_grid_dir)
-
-    os.makedirs(output_grid_dir)
-
-    grid.output_to_json(file_path=file_path)
-
-    grid = aa.Grid2DIrregular.from_json(file_path=file_path)
-
-    assert grid.in_list == [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]
-
-    with pytest.raises(FileExistsError):
-        grid.output_to_json(file_path=file_path)
-
-    grid.output_to_json(file_path=file_path, overwrite=True)
 
 
 def test__uniform__from_grid_sparse_uniform_upscale():

@@ -1,6 +1,7 @@
 import numpy as np
 from typing import List
 
+from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.inversion.settings import SettingsInversion
 from autoarray.preloads import Preloads
@@ -32,9 +33,13 @@ class MockInversion(AbstractInversion):
         settings: SettingsInversion = SettingsInversion(),
         preloads: Preloads = Preloads(),
     ):
-        super().__init__(
+        dataset = DatasetInterface(
             data=data,
             noise_map=noise_map,
+        )
+
+        super().__init__(
+            dataset=dataset,
             linear_obj_list=linear_obj_list or [],
             settings=settings,
             preloads=preloads,

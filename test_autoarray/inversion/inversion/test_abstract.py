@@ -112,7 +112,6 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
             [True, True, True, True, True, True, True],
         ],
         pixel_scales=2.0,
-        sub_size=1,
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -121,19 +120,27 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     mesh_1 = aa.mesh.Rectangular(shape=(4, 4))
 
     mapper_grids_0 = mesh_0.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
     mapper_grids_1 = mesh_1.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
-    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
+    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=1)
+
+    mapper_0 = aa.Mapper(
+        mapper_grids=mapper_grids_0, over_sampler=over_sampler, regularization=reg
+    )
+    mapper_1 = aa.Mapper(
+        mapper_grids=mapper_grids_1, over_sampler=over_sampler, regularization=reg
+    )
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
@@ -173,7 +180,6 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
             [True, True, True, True, True, True, True],
         ],
         pixel_scales=2.0,
-        sub_size=1,
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -185,27 +191,35 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     image_mesh_1 = aa.image_mesh.Overlay(shape=(4, 4))
 
     image_mesh_grid_0 = image_mesh_0.image_plane_mesh_grid_from(
-        grid=grid, adapt_data=None
+        mask=mask, adapt_data=None
     )
 
     image_mesh_grid_1 = image_mesh_1.image_plane_mesh_grid_from(
-        grid=grid, adapt_data=None
+        mask=mask, adapt_data=None
     )
 
     mapper_grids_0 = mesh_0.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_0,
     )
 
     mapper_grids_1 = mesh_1.mapper_grids_from(
+        border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_1,
     )
 
     reg = aa.reg.Constant(coefficient=1.0)
 
-    mapper_0 = aa.Mapper(mapper_grids=mapper_grids_0, regularization=reg)
-    mapper_1 = aa.Mapper(mapper_grids=mapper_grids_1, regularization=reg)
+    over_sampler = aa.OverSamplerUniform(mask=mask, sub_size=1)
+
+    mapper_0 = aa.Mapper(
+        mapper_grids=mapper_grids_0, over_sampler=over_sampler, regularization=reg
+    )
+    mapper_1 = aa.Mapper(
+        mapper_grids=mapper_grids_1, over_sampler=over_sampler, regularization=reg
+    )
 
     image = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)
     noise_map = aa.Array2D.no_mask(values=np.random.random((7, 7)), pixel_scales=1.0)

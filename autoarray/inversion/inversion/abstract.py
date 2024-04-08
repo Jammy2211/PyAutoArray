@@ -9,6 +9,9 @@ from typing import Dict, List, Optional, Tuple, Type, Union
 from autoconf import cached_property
 from autoarray.numba_util import profile_func
 
+from autoarray.dataset.imaging.dataset import Imaging
+from autoarray.dataset.interferometer.dataset import Interferometer
+from autoarray.inversion.inversion.dataset_interface import DatasetInterface
 from autoarray.inversion.linear_obj.linear_obj import LinearObj
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.regularization.abstract import AbstractRegularization
@@ -25,8 +28,7 @@ from autoarray.inversion.inversion import inversion_util
 class AbstractInversion:
     def __init__(
         self,
-        data: Union[Visibilities, Array2D],
-        noise_map: Union[Visibilities, Array2D],
+        dataset: Union[Imaging, Interferometer, DatasetInterface],
         linear_obj_list: List[LinearObj],
         settings: SettingsInversion = SettingsInversion(),
         preloads: Optional["Preloads"] = None,
@@ -90,8 +92,7 @@ class AbstractInversion:
         #         "https://pyautolens.readthedocs.io/en/latest/installation/overview.html"
         #     )
 
-        self.data = data
-        self.noise_map = noise_map
+        self.dataset = dataset
 
         self.linear_obj_list = linear_obj_list
 
@@ -99,6 +100,14 @@ class AbstractInversion:
 
         self.preloads = preloads
         self.run_time_dict = run_time_dict
+
+    @property
+    def data(self):
+        return self.dataset.data
+
+    @property
+    def noise_map(self):
+        return self.dataset.noise_map
 
     def has(self, cls: Type) -> bool:
         """
