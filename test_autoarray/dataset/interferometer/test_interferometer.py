@@ -27,6 +27,7 @@ def test__dirty_properties(
     )
 
     assert dataset.dirty_image.shape_native == (7, 7)
+
     assert (dataset.transformer.image_from(visibilities=dataset.data)).all()
 
     assert dataset.dirty_noise_map.shape_native == (7, 7)
