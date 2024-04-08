@@ -50,7 +50,7 @@ class AbstractDataset:
         the centre of an image pixel. This may be used in fits to calculate the model image of the imaging data.
 
         - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
-        is specifically used for pixelizations computed via the `invserion` module, which often use different
+        is specifically used for pixelizations computed via the `inversion` module, which often use different
         oversampling and sub-size values to the grid above.
 
         The `over_sampling` and `over_sampling_pixelization` define how over sampling is performed for these grids.

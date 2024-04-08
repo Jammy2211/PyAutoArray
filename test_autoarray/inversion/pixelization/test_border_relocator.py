@@ -3,6 +3,205 @@ import pytest
 
 import autoarray as aa
 
+from autoarray.inversion.pixelization.border_relocator import (
+    sub_border_pixel_slim_indexes_from,
+)
+
+
+def test__sub_border_pixel_slim_indexes_from():
+    mask = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, False, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
+
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=1)
+
+    assert (sub_border_pixels == np.array([0])).all()
+
+    mask = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, False, False, True, True, True, True],
+            [True, True, True, True, False, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
+
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=1)
+
+    assert (sub_border_pixels == np.array([0, 1, 2])).all()
+
+    mask = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
+
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=1)
+
+    assert (sub_border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
+
+    mask = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, False, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
+
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
+
+    assert (sub_border_pixels == np.array([3])).all()
+
+    mask = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
+
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
+
+    assert (sub_border_pixels == np.array([0, 5, 9, 14, 23, 26, 31, 35])).all()
+
+    mask = np.array(
+        [
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, False, False, False, True, True],
+            [True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True],
+        ]
+    )
+
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=3)
+
+    assert (sub_border_pixels == np.array([0, 11, 20, 33, 53, 60, 71, 80])).all()
+
+    mask = np.array(
+        [
+            [True, True, True, True, True, True, True, True, True],
+            [True, False, False, False, False, False, False, False, True],
+            [True, False, True, True, True, True, True, False, True],
+            [True, False, True, False, False, False, True, False, True],
+            [True, False, True, False, True, False, True, False, True],
+            [True, False, True, False, False, False, True, False, True],
+            [True, False, True, True, True, True, True, False, True],
+            [True, False, False, False, False, False, False, False, True],
+            [True, True, True, True, True, True, True, True, True],
+            [True, True, True, True, True, True, True, True, True],
+        ]
+    )
+
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
+
+    assert (
+        sub_border_pixels
+        == np.array(
+            [
+                0,
+                4,
+                8,
+                13,
+                17,
+                21,
+                25,
+                28,
+                33,
+                36,
+                53,
+                58,
+                71,
+                74,
+                91,
+                94,
+                99,
+                102,
+                106,
+                110,
+                115,
+                119,
+                123,
+                127,
+            ]
+        )
+    ).all()
+
+    mask = np.array(
+        [
+            [True, True, True, True, True, True, True, True, True, True],
+            [True, False, False, False, False, False, False, False, True, True],
+            [True, False, True, True, True, True, True, False, True, True],
+            [True, False, True, False, False, False, True, False, True, True],
+            [True, False, True, False, True, False, True, False, True, True],
+            [True, False, True, False, False, False, True, False, True, True],
+            [True, False, True, True, True, True, True, False, True, True],
+            [True, False, False, False, False, False, False, False, True, True],
+            [True, True, True, True, True, True, True, True, True, True],
+        ]
+    )
+
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
+
+    assert (
+        sub_border_pixels
+        == np.array(
+            [
+                0,
+                4,
+                8,
+                13,
+                17,
+                21,
+                25,
+                28,
+                33,
+                36,
+                53,
+                58,
+                71,
+                74,
+                91,
+                94,
+                99,
+                102,
+                106,
+                110,
+                115,
+                119,
+                123,
+                127,
+            ]
+        )
+    ).all()
+
 
 def test__sub_border_slim():
     mask = np.array(
@@ -19,7 +218,7 @@ def test__sub_border_slim():
 
     mask = aa.Mask2D(mask=mask, pixel_scales=(2.0, 2.0))
 
-    sub_border_flat_indexes_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
+    sub_border_flat_indexes_util = sub_border_pixel_slim_indexes_from(
         mask_2d=np.array(mask),
         sub_size=2,
     )

@@ -34,7 +34,7 @@ class Mask(AbstractNDArray, ABC):
         that are (`False` or 0).
 
         The mask also defines the geometry of the data structure it is paired with, for example how its pixels convert
-        to physical units via the pixel_scales and origin parameters and a sub-grid which is used for
+        to physical units via the pixel_scales and origin parameters and a grid which is used for
         perform calculations via super-sampling.
 
         Parameters

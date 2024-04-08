@@ -74,7 +74,6 @@ def test__overlay_for_mask_from():
             [[False, False, False], [False, False, False], [False, False, False]]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlaid_centres = np.array(
@@ -116,7 +115,6 @@ def test__overlay_for_mask_from():
             [[True, False, True], [False, False, False], [True, False, True]]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlaid_centres = np.array(
@@ -145,7 +143,6 @@ def test__overlay_for_mask_from():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlaid_centres = np.array(
@@ -172,7 +169,6 @@ def test__mask_for_overlay_from():
             [[False, False, False], [False, False, False], [False, False, False]]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlaid_centres = np.array(
@@ -204,7 +200,6 @@ def test__mask_for_overlay_from():
             [[False, False, True], [False, False, False], [True, False, False]]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlaid_centres = np.array([[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1]])
@@ -226,7 +221,6 @@ def test__mask_for_overlay_from():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlaid_centres = np.array(
@@ -310,7 +304,6 @@ def test__image_plane_mesh_grid_from__simple():
             [[True, False, True], [False, False, False], [True, False, True]]
         ),
         pixel_scales=(0.5, 0.5),
-        sub_size=1,
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -319,7 +312,7 @@ def test__image_plane_mesh_grid_from__simple():
     image_mesh = overlay.image_plane_mesh_grid_from(mask=mask, adapt_data=None)
 
     unmasked_overlay_grid_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
-        shape_native=(10, 10), pixel_scales=(0.15, 0.15), sub_size=1, origin=(0.0, 0.0)
+        shape_native=(10, 10), pixel_scales=(0.15, 0.15), origin=(0.0, 0.0)
     )
 
     overlaid_centres = aa.util.geometry.grid_pixel_centres_2d_slim_from(
@@ -353,7 +346,6 @@ def test__image_plane_mesh_grid_from__image_mesh_overlaps_mask_perfectly():
             [[True, False, True], [False, False, False], [True, False, True]]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlay = aa.image_mesh.Overlay(shape=(3, 3))
@@ -374,7 +366,6 @@ def test__image_plane_mesh_grid_from__image_mesh_overlaps_mask_perfectly():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlay = aa.image_mesh.Overlay(shape=(4, 3))
@@ -409,7 +400,6 @@ def test__image_plane_mesh_grid_from__mask_with_offset_centre():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
@@ -434,7 +424,6 @@ def test__image_plane_mesh_grid_from__mask_with_offset_centre():
             ]
         ),
         pixel_scales=(2.0, 2.0),
-        sub_size=1,
     )
 
     # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
@@ -461,7 +450,6 @@ def test__image_plane_mesh_grid_from__sets_up_with_correct_shape_and_pixel_scale
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlay = aa.image_mesh.Overlay(shape=(4, 3))
@@ -495,7 +483,6 @@ def test__image_plane_mesh_grid_from__offset_mask__origin_shift_corrects():
             ]
         ),
         pixel_scales=(1.0, 1.0),
-        sub_size=1,
     )
 
     overlay = aa.image_mesh.Overlay(shape=(3, 3))

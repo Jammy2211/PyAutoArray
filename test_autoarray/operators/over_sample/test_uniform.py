@@ -54,7 +54,7 @@ def test__sub_mask_index_for_sub_mask_1d_index():
     over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
     sub_mask_index_for_sub_mask_1d_index = (
-        aa.util.mask_2d.native_index_for_slim_index_2d_from(
+        aa.util.over_sample.native_sub_index_for_slim_sub_index_2d_from(
             mask_2d=np.array(mask), sub_size=2
         )
     )
@@ -74,7 +74,7 @@ def test__slim_index_for_sub_slim_index():
     over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
     slim_index_for_sub_slim_index_util = (
-        aa.util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
+        aa.util.over_sample.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask_2d=np.array(mask), sub_size=2
         )
     )

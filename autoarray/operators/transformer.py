@@ -255,7 +255,6 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
             image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
-                sub_size=1,
             )
 
             image = Array2D(values=image_2d, mask=self.grid.mask)
@@ -309,7 +308,6 @@ class TransformerNUFFT(NUFFT_cpu, PyLopsOperator):
 
         x = array_2d_util.array_2d_slim_complex_from(
             array_2d_native=x2d[::-1, :],
-            sub_size=1,
             mask=np.array(self.real_space_mask),
         )
         x = x.real  # NOTE:

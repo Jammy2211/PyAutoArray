@@ -107,7 +107,6 @@ def test__from_shape_and_grid():
             [[True, False, True], [False, False, False], [True, False, True]]
         ),
         pixel_scales=(0.5, 0.5),
-        sub_size=1,
     )
 
     image_mesh = aa.image_mesh.Overlay(

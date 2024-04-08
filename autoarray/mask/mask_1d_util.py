@@ -38,60 +38,27 @@ def total_pixels_1d_from(mask_1d: np.ndarray) -> int:
 
 
 @numba_util.jit()
-def total_sub_pixels_1d_from(mask_1d: np.ndarray, sub_size: int) -> int:
-    """
-    Returns the total number of sub-pixels in unmasked pixels in a mask.
-
-    Parameters
-    ----------
-    mask_1d
-        A 2D array of bools, where `False` values are unmasked and included when counting sub pixels.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
-
-    Returns
-    -------
-    int
-        The total number of sub pixels that are unmasked.
-
-    Examples
-    --------
-
-    mask = np.array([[True, False, True],
-                     [False, False, False]
-                     [True, False, True]])
-
-    total_sub_pixels = total_sub_pixels_from(mask=mask, sub_size=2)
-    """
-    return total_pixels_1d_from(mask_1d) * sub_size
-
-
-@numba_util.jit()
 def native_index_for_slim_index_1d_from(
-    mask_1d: np.ndarray, sub_size: int
+    mask_1d: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns an array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its
+    Returns an array of shape [total_unmasked_pixels] that maps every unmasked pixel to its
     corresponding native 2D pixel using its (y,x) pixel indexes.
 
-    For example, for a sub-grid size of 2x2, if pixel [2,5] corresponds to the first pixel in the masked slim array:
+    For example, for a grid size of 3x3, if pixel [0,1] corresponds to the first pixel in the masked slim array:
 
-    - The first sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[4] = [2,5]
-    - The second sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [2,6]
-    - The third sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [3,5]
+    - The first pixel in this pixel on the 1D array is native_index_for_slim_index_2d[0] = [0,1]
 
     Parameters
     ----------
     mask_2d
         A 2D array of bools, where `False` values are unmasked.
-    sub_size
-        The size of the sub-grid in each mask pixel.
 
     Returns
     -------
     ndarray
-        An array that maps pixels from a slimmed array of shape [total_unmasked_pixels*sub_size] to its native array
-        of shape [total_pixels*sub_size, total_pixels*sub_size].
+        An array that maps pixels from a slimmed array of shape [total_unmasked_pixels] to its native array
+        of shape [total_pixels, total_pixels].
 
     Examples
     --------
@@ -99,21 +66,18 @@ def native_index_for_slim_index_1d_from(
                      [True, False, True]
                      [True, True, True]])
 
-    sub_native_index_for_sub_slim_index_2d = sub_native_index_for_sub_slim_index_via_mask_2d_from(mask_2d=mask_2d, sub_size=1)
+    native_index_for_slim_index_1d =  native_index_for_slim_index_1d_from(mask_2d=mask_2d)
 
     """
 
-    total_sub_pixels = total_sub_pixels_1d_from(mask_1d=mask_1d, sub_size=sub_size)
-    sub_native_index_for_sub_slim_index_1d = np.zeros(shape=total_sub_pixels)
+    total_pixels = total_pixels_1d_from(mask_1d=mask_1d)
+    native_index_for_slim_index_1d = np.zeros(shape=total_pixels)
 
-    sub_slim_index = 0
+    slim_index = 0
 
     for x in range(mask_1d.shape[0]):
         if not mask_1d[x]:
-            for x1 in range(sub_size):
-                sub_native_index_for_sub_slim_index_1d[sub_slim_index] = (
-                    x * sub_size
-                ) + x1
-                sub_slim_index += 1
+            native_index_for_slim_index_1d[slim_index] = x
+            slim_index += 1
 
-    return sub_native_index_for_sub_slim_index_1d
+    return native_index_for_slim_index_1d

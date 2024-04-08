@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @register_pytree_node_class
 class DeriveIndexes2D:
-    def __init__(self, mask: Mask2D, sub_size: int = 1):
+    def __init__(self, mask: Mask2D):
         """
         Derives 1D and 2D indexes of significance from a ``Mask2D``.
 
@@ -62,7 +62,6 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.edge_native)
         """
         self.mask = mask
-        self.sub_size = sub_size
 
     def tree_flatten(self):
         return (self.mask,), ()
@@ -158,7 +157,7 @@ class DeriveIndexes2D:
     @property
     def edge_slim(self) -> np.ndarray:
         """
-        Returns the non-subgridded 1D ``slim`` indexes of edge pixels in the ``Mask2D``, representing all unmasked pixels (given
+        Returns the 1D ``slim`` indexes of edge pixels in the ``Mask2D``, representing all unmasked pixels (given
         by ``False``) which neighbor any masked value (give by ``True``) and therefore are on the edge of the 2D mask.
 
         For example, for the following ``Mask2D``:
@@ -206,7 +205,7 @@ class DeriveIndexes2D:
     @property
     def edge_native(self) -> np.ndarray:
         """
-        Returns the non-subgridded 2D ``native`` indexes of edge pixels in the ``Mask2D``, representing all unmasked pixels (given
+        Returns the 2D ``native`` indexes of edge pixels in the ``Mask2D``, representing all unmasked pixels (given
         by ``False``) which neighbor any masked value (give by ``True``) and therefore are on the edge of the 2D mask.
 
         For example, for the following ``Mask2D``:
@@ -252,7 +251,7 @@ class DeriveIndexes2D:
     @property
     def border_slim(self) -> np.ndarray:
         """
-        Returns the non-subgridded 1D ``slim`` indexes of border pixels in the ``Mask2D``, representing all unmasked pixels (given
+        Returns the 1D ``slim`` indexes of border pixels in the ``Mask2D``, representing all unmasked pixels (given
         by ``False``) which neighbor any masked value (give by ``True``) and which are on the extreme exterior of the
         mask.
 
@@ -308,7 +307,7 @@ class DeriveIndexes2D:
     @property
     def border_native(self) -> np.ndarray:
         """
-        Returns the non-subgridded 2D ``native`` indexes of border pixels in the ``Mask2D``, representing all unmasked pixels (given
+        Returns the 2D ``native`` indexes of border pixels in the ``Mask2D``, representing all unmasked pixels (given
         by ``False``) which neighbor any masked value (give by ``True``) and which are on the extreme exterior of the
         mask.
 
@@ -366,8 +365,8 @@ class DeriveIndexes2D:
     @property
     def native_for_slim(self) -> np.ndarray:
         """
-        Derives a 1D ``ndarray`` which maps every non-subgridded 1D ``slim`` index of the ``Mask2D`` to its
-        non-subgridded 2D ``native`` index.
+        Derives a 1D ``ndarray`` which maps every 1D ``slim`` index of the ``Mask2D`` to its
+        2D ``native`` index.
 
         For example, for the following ``Mask2D``:
 
@@ -386,10 +385,6 @@ class DeriveIndexes2D:
 
         ::
             [[1,1], [1,2], [2,1]]
-
-        For `sub_size=2`` each unmasked ``False`` entry is split into a sub-pixel of size 2x2.
-        However, this method ignores sub-gridding and therefore will still produce the same arrays above, as if
-        ``sub_size=1``.
 
         Examples
         --------
@@ -411,5 +406,5 @@ class DeriveIndexes2D:
             print(derive_indexes_2d.native_for_slim)
         """
         return mask_2d_util.native_index_for_slim_index_2d_from(
-            mask_2d=np.array(self.mask), sub_size=1
+            mask_2d=np.array(self.mask),
         ).astype("int")

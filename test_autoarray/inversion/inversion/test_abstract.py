@@ -112,7 +112,6 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
             [True, True, True, True, True, True, True],
         ],
         pixel_scales=2.0,
-        sub_size=1,
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)
@@ -181,7 +180,6 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
             [True, True, True, True, True, True, True],
         ],
         pixel_scales=2.0,
-        sub_size=1,
     )
 
     grid = aa.Grid2D.from_mask(mask=mask)

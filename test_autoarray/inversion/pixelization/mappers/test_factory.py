@@ -69,7 +69,6 @@ def test__delaunay_mapper():
             [True, True, True, True, True],
         ],
         pixel_scales=1.0,
-        sub_size=2,
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.
@@ -125,7 +124,6 @@ def test__voronoi_mapper():
             [True, True, True, True, True],
         ],
         pixel_scales=1.0,
-        sub_size=2,
     )
 
     # Slightly manipulate input grid so sub gridding is evidence in first source pixel.

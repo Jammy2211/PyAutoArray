@@ -201,79 +201,58 @@ def grid_2d_centre_from(grid_2d_slim: np.ndarray) -> Tuple[float, float]:
 def grid_2d_slim_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
-    sub_size: int = 1,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
-    a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
-    scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
+    For a grid, every unmasked pixel is on a 2D mask with shape (total_y_pixels, total_x_pixels). This routine
+    computes the (y,x) scaled coordinates a the centre of every pixel defined by this 2D mask array.
 
-    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
-    stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
-    removed and not included in the slimmed grid.
+    The grid is returned on an array of shape (total_unmasked_pixels, 2). y coordinates are stored in the 0 index of
+    the second dimension, x coordinates in the 1 index. Masked coordinates are therefore removed and not included in
+    the slimmed grid.
 
-    Grid2D are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
-    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
-    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+    Grid2D are defined from the top-left corner, where the first unmasked pixel corresponds to index 0.
 
     Parameters
     ----------
     mask_2d
         A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
-        sub-grid.
+        grid.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin
-        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+        The (y,x) origin of the 2D array, which the grid is shifted around.
 
     Returns
     -------
     ndarray
-        A slimmed sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
-        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
+        A slimmed grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+        array. The grid array has dimensions (total_unmasked_pixels, 2).
 
     Examples
     --------
     mask = np.array([[True, False, True],
                      [False, False, False]
                      [True, False, True]])
-    grid_slim = grid_2d_slim_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
+    grid_slim = grid_2d_slim_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    total_sub_pixels = mask_2d_util.total_sub_pixels_2d_from(mask_2d, sub_size)
+    total_pixels = mask_2d_util.total_pixels_2d_from(mask_2d)
 
-    grid_slim = np.zeros(shape=(total_sub_pixels, 2))
+    grid_slim = np.zeros(shape=(total_pixels, 2))
 
     centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_native=mask_2d.shape, pixel_scales=pixel_scales, origin=origin
     )
 
-    sub_index = 0
-
-    y_sub_half = pixel_scales[0] / 2
-    y_sub_step = pixel_scales[0] / (sub_size)
-
-    x_sub_half = pixel_scales[1] / 2
-    x_sub_step = pixel_scales[1] / (sub_size)
+    index = 0
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
-                y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
-                x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
-
-                for y1 in range(sub_size):
-                    for x1 in range(sub_size):
-                        grid_slim[sub_index, 0] = -(
-                            y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
-                        )
-                        grid_slim[sub_index, 1] = (
-                            x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
-                        )
-                        sub_index += 1
+                grid_slim[index, 0] = -(y - centres_scaled[0]) * pixel_scales[0]
+                grid_slim[index, 1] = (x - centres_scaled[1]) * pixel_scales[1]
+                index += 1
 
     return grid_slim
 
@@ -281,103 +260,91 @@ def grid_2d_slim_via_mask_from(
 def grid_2d_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
-    sub_size: int,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into a
-    finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
-    scaled coordinates at the centre of every sub-pixel defined by this 2D mask array.
+    For a grid, every unmasked pixel is on a 2D mask with shape (total_y_pixels, total_x_pixels). This routine computes
+    the (y,x) scaled coordinates at the centre of every pixel defined by this 2D mask array.
 
-    The sub-grid is returned in its native dimensions with shape (total_y_pixels*sub_size, total_x_pixels*sub_size).
-    y coordinates are stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked pixels are
-    given values (0.0, 0.0).
+    The grid is returned in its native dimensions with shape (total_y_pixels, total_x_pixels). y coordinates are
+    stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked pixels are given
+    values (0.0, 0.0).
 
-    Grids are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
-    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
-    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+    Grids are defined from the top-left corner, where the first unmasked pixel corresponds to index 0.
 
     Parameters
     ----------
     mask_2d
         A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
-        sub-grid.
+        grid.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin
-        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+        The (y,x) origin of the 2D array, which the grid is shifted around.
 
     Returns
     -------
     ndarray
-        A sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
-        array. The sub grid array has dimensions (total_y_pixels*sub_size, total_x_pixels*sub_size).
+        A grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+        array. The grid array has dimensions (total_y_pixels, total_x_pixels).
 
     Examples
     --------
     mask = np.array([[True, False, True],
                      [False, False, False]
                      [True, False, True]])
-    grid_2d = grid_2d_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
+    grid_2d = grid_2d_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
     grid_2d_slim = grid_2d_slim_via_mask_from(
-        mask_2d=mask_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        mask_2d=mask_2d, pixel_scales=pixel_scales, origin=origin
     )
 
     return grid_2d_native_from(
-        grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=sub_size
+        grid_2d_slim=grid_2d_slim,
+        mask_2d=mask_2d,
     )
 
 
 def grid_2d_slim_via_shape_native_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
-    sub_size: int = 1,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into a
-    finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
-    scaled coordinates at the centre of every sub-pixel defined by this 2D mask array.
+    For a grid, every unmasked pixel is in a 2D mask with shape (total_y_pixels, total_x_pixels). This routine computes
+    the (y,x) scaled coordinates at the centre of every pixel defined by this 2D mask array.
 
-    The sub-grid is returned in its slimmed dimensions with shape (total_pixels**2*sub_size**2, 2). y coordinates are
+    The grid is returned in its slimmed dimensions with shape (total_pixels, 2). y coordinates are
     stored in the 0 index of the second dimension, x coordinates in the 1 index.
 
-    Grid2D are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0].
-    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
-    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+    Grid2D are defined from the top-left corner, where the first pixel corresponds to index [0,0].
 
     Parameters
     ----------
     shape_native
-        The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
+        The (y,x) shape of the 2D array the grid of coordinates is computed for.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin
-        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+        The (y,x) origin of the 2D array, which the grid is shifted around.
 
     Returns
     -------
     ndarray
-        A sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
-        array. The sub grid is slimmed and has dimensions (total_unmasked_pixels*sub_size**2, 2).
+        A grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+        array. The grid is slimmed and has dimensions (total_unmasked_pixels, 2).
 
     Examples
     --------
     mask = np.array([[True, False, True],
                      [False, False, False]
                      [True, False, True]])
-    grid_2d_slim = grid_2d_slim_via_shape_native_from(shape_native=(3,3), pixel_scales=(0.5, 0.5), sub_size=2, origin=(0.0, 0.0))
+    grid_2d_slim = grid_2d_slim_via_shape_native_from(shape_native=(3,3), pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
     return grid_2d_slim_via_mask_from(
         mask_2d=np.full(fill_value=False, shape=shape_native),
         pixel_scales=pixel_scales,
-        sub_size=sub_size,
         origin=origin,
     )
 
@@ -385,46 +352,39 @@ def grid_2d_slim_via_shape_native_from(
 def grid_2d_via_shape_native_from(
     shape_native: Tuple[int, int],
     pixel_scales: ty.PixelScales,
-    sub_size: int = 1,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided
-    into a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes
-    the (y,x) scaled coordinates at the centre of every sub-pixel defined by this 2D mask array.
+    For a grid, every unmasked pixel is in a 2D mask with shape (total_y_pixels, total_x_pixels). This routine computes
+    the (y,x) scaled coordinates at the centre of every pixel defined by this 2D mask array.
 
-    The sub-grid is returned in its native dimensions with shape (total_y_pixels*sub_size, total_x_pixels*sub_size).
+    The grid is returned in its native dimensions with shape (total_y_pixels, total_x_pixels).
     y coordinates are stored in the 0 index of the second dimension, x coordinates in the 1 index.
 
-    Grids are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0].
-    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
-    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+    Grids are defined from the top-left corner, where the first pixel corresponds to index [0,0].
 
     Parameters
     ----------
     shape_native
-        The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
+        The (y,x) shape of the 2D array the grid of coordinates is computed for.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin
-        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+        The (y,x) origin of the 2D array, which the grid is shifted around.
 
     Returns
     -------
     ndarray
-        A sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
-        array. The sub grid array has dimensions (total_y_pixels*sub_size, total_x_pixels*sub_size).
+        A grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+        array. The grid array has dimensions (total_y_pixels, total_x_pixels).
 
     Examples
     --------
-    grid_2d = grid_2d_via_shape_native_from(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=2, origin=(0.0, 0.0))
+    grid_2d = grid_2d_via_shape_native_from(shape_native=(3, 3), pixel_scales=(1.0, 1.0), origin=(0.0, 0.0))
     """
     return grid_2d_via_mask_from(
         mask_2d=np.full(fill_value=False, shape=shape_native),
         pixel_scales=pixel_scales,
-        sub_size=sub_size,
         origin=origin,
     )
 
@@ -434,7 +394,6 @@ def _radial_projected_shape_slim_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
     pixel_scales: ty.PixelScales,
-    sub_size: int = 1,
 ) -> int:
     """
     The function `grid_scaled_2d_slim_radial_projected_from()` determines a projected radial grid of points from a 2D
@@ -473,8 +432,6 @@ def _radial_projected_shape_slim_from(
         The (y,x) central coordinate which the radial grid is traced outwards from.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
 
     Returns
     -------
@@ -504,7 +461,7 @@ def _radial_projected_shape_slim_from(
     else:
         pixel_scale = pixel_scales[1]
 
-    return sub_size * int((scaled_distance / pixel_scale)) + 1
+    return int((scaled_distance / pixel_scale)) + 1
 
 
 @numba_util.jit()
@@ -512,7 +469,6 @@ def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: Tuple[float, float],
     pixel_scales: ty.PixelScales,
-    sub_size: int = 1,
     shape_slim: Optional[int] = 0,
 ) -> np.ndarray:
     """
@@ -558,8 +514,6 @@ def grid_scaled_2d_slim_radial_projected_from(
         The (y,x) central coordinate which the radial grid is traced outwards from.
     pixel_scales
         The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
-    sub_size
-        The size of the sub-grid that each pixel of the 2D mask array is divided into.
     shape_slim
         Manually choose the shape of the 1D projected grid that is returned. If 0, the border based on the 2D grid is
         used (due to numba None cannot be used as a default value).
@@ -593,7 +547,7 @@ def grid_scaled_2d_slim_radial_projected_from(
         pixel_scale = pixel_scales[1]
 
     if shape_slim == 0:
-        shape_slim = sub_size * int((scaled_distance / pixel_scale)) + 1
+        shape_slim = int((scaled_distance / pixel_scale)) + 1
 
     grid_scaled_2d_slim_radii = np.zeros((shape_slim, 2))
 
@@ -603,7 +557,7 @@ def grid_scaled_2d_slim_radial_projected_from(
 
     for slim_index in range(shape_slim):
         grid_scaled_2d_slim_radii[slim_index, 1] = radii
-        radii += pixel_scale / sub_size
+        radii += pixel_scale
 
     return grid_scaled_2d_slim_radii
 
@@ -695,7 +649,8 @@ def furthest_grid_2d_slim_index_from(
 
 
 def grid_2d_slim_from(
-    grid_2d_native: np.ndarray, mask: np.ndarray, sub_size: int = 1
+    grid_2d_native: np.ndarray,
+    mask: np.ndarray,
 ) -> np.ndarray:
     """
     For a native 2D grid and mask of shape [total_y_pixels, total_x_pixels, 2], map the values of all unmasked
@@ -714,8 +669,6 @@ def grid_2d_slim_from(
         The native grid of (y,x) values which are mapped to the slimmed grid.
     mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    sub_size
-        The size (sub_size x sub_size) of each unmasked pixels sub-array.
 
     Returns
     -------
@@ -726,20 +679,19 @@ def grid_2d_slim_from(
     grid_1d_slim_y = array_2d_util.array_2d_slim_from(
         array_2d_native=np.array(grid_2d_native[:, :, 0]),
         mask_2d=np.array(mask),
-        sub_size=sub_size,
     )
 
     grid_1d_slim_x = array_2d_util.array_2d_slim_from(
         array_2d_native=np.array(grid_2d_native[:, :, 1]),
         mask_2d=np.array(mask),
-        sub_size=sub_size,
     )
 
     return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
 
 
 def grid_2d_native_from(
-    grid_2d_slim: np.ndarray, mask_2d: np.ndarray, sub_size: int = 1
+    grid_2d_slim: np.ndarray,
+    mask_2d: np.ndarray,
 ) -> np.ndarray:
     """
     For a slimmed 2D grid of shape [total_unmasked_pixels, 2], that was computed by extracting the unmasked values
@@ -759,8 +711,6 @@ def grid_2d_native_from(
         The (y,x) values of the slimmed 2D grid which are mapped to the native 2D grid.
     mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    sub_size
-        The size (sub_size x sub_size) of each unmasked pixels sub-array.
 
     Returns
     -------
@@ -770,11 +720,13 @@ def grid_2d_native_from(
     """
 
     grid_2d_native_y = array_2d_util.array_2d_native_from(
-        array_2d_slim=grid_2d_slim[:, 0], mask_2d=mask_2d, sub_size=sub_size
+        array_2d_slim=grid_2d_slim[:, 0],
+        mask_2d=mask_2d,
     )
 
     grid_2d_native_x = array_2d_util.array_2d_native_from(
-        array_2d_slim=grid_2d_slim[:, 1], mask_2d=mask_2d, sub_size=sub_size
+        array_2d_slim=grid_2d_slim[:, 1],
+        mask_2d=mask_2d,
     )
 
     return np.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
@@ -786,7 +738,7 @@ def grid_2d_slim_upscaled_from(
 ) -> np.ndarray:
     """
     From an input slimmed 2D grid, return an upscaled slimmed 2D grid where (y,x) coordinates are added at an
-    upscaled resolution to each grid coordinate, analogous to a sub-grid.
+    upscaled resolution to each grid coordinate.
 
     Parameters
     ----------

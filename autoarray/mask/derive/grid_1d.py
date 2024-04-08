@@ -63,7 +63,7 @@ class DeriveGrid1D:
     @property
     def all_false(self) -> Grid1D:
         """
-        Returns a non-subgridded ``Grid1D`` which uses the ``Mask1D``
+        Returns a ``Grid1D`` which uses the ``Mask1D``
         geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and every pixel in the ``Mask2D``
         irrespective of whether pixels are masked or unmasked (given by ``True`` or``False``).
 

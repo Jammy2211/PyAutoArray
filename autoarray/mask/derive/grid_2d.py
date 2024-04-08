@@ -64,7 +64,7 @@ class DeriveGrid2D:
     @property
     def all_false(self) -> Grid2D:
         """
-        Returns a non-subgridded ``Grid2D`` which uses the ``Mask2D``
+        Returns a ``Grid2D`` which uses the ``Mask2D``
         geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and every pixel in the ``Mask2D``
         irrespective of whether pixels are masked or unmasked (given by ``True`` or``False``).
 
@@ -117,7 +117,7 @@ class DeriveGrid2D:
     @property
     def unmasked(self) -> Grid2D:
         """
-        Returns a subgridded ``Grid2D`` which uses the ``Mask2D``
+        Returns a ``Grid2D`` which uses the ``Mask2D``
         geometry (``shape_native`` / ``pixel_scales`` / ``origin``) and every unmasked
         pixel (given by ``False``), such that all masked entries (given by ``True``) are removed.
 
@@ -168,7 +168,7 @@ class DeriveGrid2D:
     @property
     def edge(self) -> Grid2D:
         """
-        Returns a non-subgridded edge ``Grid2D``, which uses all unmasked pixels (given by ``False``) which neighbor
+        Returns an edge ``Grid2D``, which uses all unmasked pixels (given by ``False``) which neighbor
         any masked value (give by ``True``) and therefore are on the edge of the 2D mask.
 
         For example, for the following ``Mask2D``:
@@ -225,7 +225,7 @@ class DeriveGrid2D:
     @property
     def border(self) -> Grid2D:
         """
-        Returns a non-subgridded edge ``Grid2D``, which uses all unmasked pixels (given by ``False``) which neighbor
+        Returns a border ``Grid2D``, which uses all unmasked pixels (given by ``False``) which neighbor
         any masked value (give by ``True``) and which are on the extreme exterior of the mask.
 
         For example, for the following ``Mask2D``:

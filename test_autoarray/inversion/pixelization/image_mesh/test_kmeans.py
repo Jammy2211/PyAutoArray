@@ -15,7 +15,6 @@ def test__image_plane_mesh_grid_from():
             ]
         ),
         pixel_scales=(0.5, 0.5),
-        sub_size=1,
     )
 
     weight_map = np.ones(mask.pixels_in_mask)

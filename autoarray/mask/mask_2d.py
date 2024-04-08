@@ -59,8 +59,6 @@ class Mask2D(Mask):
         - Associates Cartesian ``Grid2D`` objects of (y,x) coordinates with the data structure (e.g.
           a (y,x) grid of all unmasked pixels).
 
-        - This includes sub-grids, which perform calculations higher resolutions which are then binned up.
-
         A detailed description of the 2D mask API is provided below.
 
         __Slim__

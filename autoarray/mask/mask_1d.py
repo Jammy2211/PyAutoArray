@@ -38,7 +38,7 @@ class Mask1D(Mask):
 
         The mask also defines the geometry of the 1D data structure it is paired to, for example how every pixel
         coordinate on the 1D line of data converts to physical units via the `pixel_scales` and `origin`
-        parameters and a sub-grid which is used for performing calculations via super-sampling.
+        parameters and a grid which is used for performing calculations.
 
         Parameters
         ----------

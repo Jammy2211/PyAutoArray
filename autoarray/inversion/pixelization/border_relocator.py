@@ -8,7 +8,118 @@ from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.mask import mask_2d_util
+
+from autoarray.operators.over_sampling import over_sample_util
 from autoarray.structures.grids import grid_2d_util
+
+
+def sub_slim_indexes_for_slim_index_via_mask_2d_from(
+    mask_2d: np.ndarray, sub_size: int
+) -> [list]:
+    """ "
+    For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), compute a list of lists which, for every
+    unmasked pixel giving its slim pixel indexes of its corresponding sub-pixels.
+
+    For example, for a sub-grid size of 2, the following mappings from sub-pixels to 2D array pixels are:
+
+    - sub_slim_indexes_for_slim_index[0] = [0, 1, 2, 3] -> The first pixel maps to the first 4 subpixels in 1D.
+    - sub_slim_indexes_for_slim_index[1] = [4, 5, 6, 7] -> The seond pixel maps to the next 4 subpixels in 1D.
+
+    Parameters
+    ----------
+    mask_2d
+        The mask whose indexes are mapped.
+    sub_size
+        The sub-size of the grid on the mask, so that the sub-mask indexes can be computed correctly.
+
+    Returns
+    -------
+    [list]
+        The lists of the 1D sub-pixel indexes in every unmasked pixel in the mask.
+    The term 'grid' is used because the grid is defined as the grid of coordinates on the centre of every
+    pixel on the 2D array. Thus, this array maps sub-pixels on a sub-grid to pixels on a grid.
+
+    Examples
+    --------
+    mask = ([[True, False, True]])
+    sub_mask_1d_indexes_for_mask_1d_index = sub_mask_1d_indexes_for_mask_1d_index_from(mask=mask, sub_size=2)
+    """
+
+    total_pixels = mask_2d_util.total_pixels_2d_from(mask_2d=mask_2d)
+
+    sub_slim_indexes_for_slim_index = [[] for _ in range(total_pixels)]
+
+    slim_index_for_sub_slim_indexes = (
+        over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
+            mask_2d=mask_2d, sub_size=sub_size
+        ).astype("int")
+    )
+
+    for sub_slim_index, slim_index in enumerate(slim_index_for_sub_slim_indexes):
+        sub_slim_indexes_for_slim_index[slim_index].append(sub_slim_index)
+
+    return sub_slim_indexes_for_slim_index
+
+
+def sub_border_pixel_slim_indexes_from(
+    mask_2d: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """
+    Returns a slim array of shape [total_unmasked_border_pixels] listing all sub-borders pixel indexes in
+    the mask.
+
+    A borders pixel is a pixel which:
+
+    1) is not fully surrounding by `False` mask values.
+    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
+       left, right).
+
+    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of
+    edge pixels in an annular mask are edge pixels but not borders pixels.
+
+    A sub-border pixel is, for a border-pixel, the pixel within that border pixel which is furthest from the origin
+    of the mask.
+
+    Parameters
+    ----------
+    mask_2d
+        The mask for which the 1D border pixel indexes are calculated.
+    sub_size
+        The size of the sub-grid in each mask pixel.
+
+    Returns
+    -------
+    np.ndarray
+        The 1D indexes of all border sub-pixels on the mask.
+    """
+
+    border_pixels = mask_2d_util.border_slim_indexes_from(mask_2d=mask_2d)
+
+    sub_border_pixels = np.zeros(shape=border_pixels.shape[0])
+
+    sub_slim_indexes_for_slim_index = sub_slim_indexes_for_slim_index_via_mask_2d_from(
+        mask_2d=mask_2d, sub_size=sub_size
+    )
+
+    sub_grid_2d_slim = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+        mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=sub_size, origin=(0.0, 0.0)
+    )
+    mask_centre = grid_2d_util.grid_2d_centre_from(grid_2d_slim=sub_grid_2d_slim)
+
+    for border_1d_index, border_pixel in enumerate(border_pixels):
+        sub_border_pixels_of_border_pixel = sub_slim_indexes_for_slim_index[
+            int(border_pixel)
+        ]
+
+        sub_border_pixels[
+            border_1d_index
+        ] = grid_2d_util.furthest_grid_2d_slim_index_from(
+            grid_2d_slim=sub_grid_2d_slim,
+            slim_indexes=sub_border_pixels_of_border_pixel,
+            coordinate=mask_centre,
+        )
+
+    return sub_border_pixels
 
 
 class BorderRelocator:
@@ -52,13 +163,13 @@ class BorderRelocator:
 
             print(derive_indexes_2d.sub_border_slim)
         """
-        return mask_2d_util.sub_border_pixel_slim_indexes_from(
+        return sub_border_pixel_slim_indexes_from(
             mask_2d=np.array(self.mask), sub_size=self.sub_size
         ).astype("int")
 
     @property
     def sub_grid(self):
-        return grid_2d_util.grid_2d_slim_via_mask_from(
+        return over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.sub_size,

@@ -251,13 +251,13 @@ def test__output_to_fits():
     assert array_from_fits.header.header_sci_obj["PIXSCALE"] == 1.0
 
 
-def test__manual_native__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask():
+def test__manual_native__exception_raised_if_input_array_is_2d_and_not_shape_of_mask():
     with pytest.raises(aa.exc.ArrayException):
         mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
         aa.Array2D(values=[[1.0], [3.0]], mask=mask)
 
 
-def test__manual_mask__exception_raised_if_input_array_is_1d_and_not_number_of_masked_sub_pixels():
+def test__manual_mask__exception_raised_if_input_array_is_1d_and_not_number_of_masked_pixels():
     with pytest.raises(aa.exc.ArrayException):
         mask = aa.Mask2D(
             mask=[[False, False], [True, False]],

@@ -9,10 +9,9 @@ from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
-from autoarray.structures.grids import grid_2d_util
-
-
 from autoarray.mask import mask_2d_util
+
+from autoarray.operators.over_sampling import over_sample_util
 
 from autoarray.numpy_wrapper import numpy as npw
 
@@ -174,14 +173,14 @@ class OverSamplerUniform(AbstractOverSampler):
 
     @cached_property
     def over_sampled_grid(self) -> Grid2D:
-        sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
+        sub_grid_1d = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.sub_size,
             origin=self.mask.origin,
         )
 
-        over_sample_mask = mask_2d_util.oversample_mask_2d_from(
+        over_sample_mask = over_sample_util.oversample_mask_2d_from(
             mask=np.array(self.mask), sub_size=self.sub_size
         )
 
@@ -295,7 +294,7 @@ class OverSamplerUniform(AbstractOverSampler):
 
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
-        return mask_2d_util.native_index_for_slim_index_2d_from(
+        return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
             mask_2d=self.mask.array, sub_size=self.sub_size
         ).astype("int")
 
@@ -348,7 +347,7 @@ class OverSamplerUniform(AbstractOverSampler):
 
             print(derive_indexes_2d.slim_for_sub_slim)
         """
-        return mask_2d_util.slim_index_for_sub_slim_index_via_mask_2d_from(
+        return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask_2d=np.array(self.mask), sub_size=self.sub_size
         ).astype("int")
 

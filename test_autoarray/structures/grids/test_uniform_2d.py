@@ -26,13 +26,13 @@ def test__constructor():
     assert grid_2d.origin == (0.0, 0.0)
 
 
-def test__constructor__exception_raised_if_input_grid_is_2d_and_not_sub_shape_of_mask():
+def test__constructor__exception_raised_if_input_grid_is_2d_and_not_shape_of_mask():
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D.all_false(shape_native=(2, 2), pixel_scales=1.0)
         aa.Grid2D(values=[[[1.0, 1.0], [3.0, 3.0]]], mask=mask)
 
 
-def test__constructor__exception_raised_if_input_grid_is_not_number_of_masked_sub_pixels():
+def test__constructor__exception_raised_if_input_grid_is_not_number_of_masked_pixels():
     with pytest.raises(exc.GridException):
         mask = aa.Mask2D(mask=[[False, False], [True, False]], pixel_scales=1.0)
         aa.Grid2D(values=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask)
@@ -159,6 +159,8 @@ def test__from_extent():
 
 def test__uniform():
     grid_2d = aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=2.0)
+
+    print(grid_2d.native)
 
     assert type(grid_2d) == aa.Grid2D
     assert (

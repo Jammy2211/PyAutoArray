@@ -30,7 +30,7 @@ def test__in_grid_2d__over_sample_uniform__out_ndarray_1d():
 
     over_sample_uniform = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
-    mask_sub_2 = aa.util.mask_2d.oversample_mask_2d_from(
+    mask_sub_2 = aa.util.over_sample.oversample_mask_2d_from(
         mask=np.array(mask), sub_size=2
     )
 

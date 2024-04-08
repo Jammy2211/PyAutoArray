@@ -490,29 +490,25 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
 
 @numba_util.jit()
 def array_2d_slim_from(
-    array_2d_native: np.ndarray, mask_2d: np.ndarray, sub_size: int = 1
+    array_2d_native: np.ndarray,
+    mask_2d: np.ndarray,
 ) -> np.ndarray:
     """
-    For a 2D sub array and mask, map the values of all unmasked pixels to its slimmed 1D sub-array.
+    For a 2D array and mask, map the values of all unmasked pixels to its slimmed 1D array.
 
-    A sub-array is an array whose native dimensions correspond to the normal array multiplied by the sub_size. For
-    example if an array is shape [total_y_pixels, total_x_pixels] and the ``sub_size=2``, the sub_array is shape
-    [total_y_pixels*sub_size, total_x_pixels*sub_size].
+    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards.
 
-    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
-    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a
-    sub-grid size of 2 where all pixels are unmasked:
+    For example, for an array of shape (3,3) where all pixels are unmasked:
 
     - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
     - pixel [0,1] of the 2D array will correspond to index 1 of the 1D array.
-    - pixel [1,0] of the 2D array will correspond to index 2 of the 1D array.
-    - pixel [2,0] of the 2D array will correspond to index 4 of the 1D array.
-    - pixel [1,0] of the 2D array will correspond to index 12 of the 1D array.
+    - pixel [1,0] of the 2D array will correspond to index 3 of the 1D array.
+    - pixel [2,0] of the 2D array will correspond to index 6 of the 1D array.
 
     Parameters
     ----------
     array_2d_native
-        A 2D array of values on the dimensions of the sub-grid.
+        A 2D array of values on the dimensions of the grid.
     mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
     array_2d_native
@@ -526,7 +522,7 @@ def array_2d_slim_from(
     Examples
     --------
 
-    sub_array_2d = np.array([[ 1.0,  2.0,  5.0,  6.0],
+    array_2d = np.array([[ 1.0,  2.0,  5.0,  6.0],
                              [ 3.0,  4.0,  7.0,  8.0],
                              [ 9.0, 10.0, 13.0, 14.0],
                              [11.0, 12.0, 15.0, 16.0])
@@ -534,44 +530,41 @@ def array_2d_slim_from(
     mask = np.array([[True, False],
                      [False, False]])
 
-    sub_array_2d_slim = array_2d_slim_from(mask=mask, array_2d=array_2d, sub_size=2)
+    array_2d_slim = array_2d_slim_from(mask=mask, array_2d=array_2d)
     """
 
-    total_sub_pixels = mask_2d_util.total_sub_pixels_2d_from(
-        mask_2d=mask_2d, sub_size=sub_size
+    total_pixels = mask_2d_util.total_pixels_2d_from(
+        mask_2d=mask_2d,
     )
 
-    array_2d_slim = np.zeros(shape=total_sub_pixels)
+    array_2d_slim = np.zeros(shape=total_pixels)
     index = 0
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
-                for y1 in range(sub_size):
-                    for x1 in range(sub_size):
-                        array_2d_slim[index] = array_2d_native[
-                            y * sub_size + y1, x * sub_size + x1
-                        ]
-                        index += 1
+                array_2d_slim[index] = array_2d_native[y, x]
+                index += 1
 
     return array_2d_slim
 
 
 def array_2d_native_from(
-    array_2d_slim: np.ndarray, mask_2d: np.ndarray, sub_size: int = 1
+    array_2d_slim: np.ndarray,
+    mask_2d: np.ndarray,
 ) -> np.ndarray:
     """
     For a slimmed 2D array that was computed by mapping unmasked values from a native 2D array of shape
     [total_y_pixels, total_x_pixels], map its values back to the original 2D array where masked values are set to zero.
 
-    This uses the array ``slim_to_native`` where each index gives the 2D sub pixel indexes of the 1D array's
+    This uses the array ``slim_to_native`` where each index gives the 2D pixel indexes of the 1D array's
     unmasked pixels, for example:
 
     - If ``slim_to_native[0] = [0,0]``, the first value of the 1D array maps to the pixel [0,0] of the 2D array.
     - If ``slim_to_native[1] = [0,1]``, the second value of the 1D array maps to the pixel [0,1] of the 2D array.
     - If ``slim_to_native[4] = [1,1]``, the fifth value of the 1D array maps to the pixel [1,1] of the 2D array.
 
-    This example uses an array `sub_slim_to_native` which includes sub-gridding in the mapping.
+    This example uses an array `slim_to_native`.
 
     Parameters
     ----------
@@ -579,8 +572,6 @@ def array_2d_native_from(
         The slimmed array of values which are mapped to a 2D array.
     mask_2d
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    sub_size
-        The size (sub_size x sub_size) of each unmasked pixels sub-array.
 
     Returns
     -------
@@ -597,16 +588,15 @@ def array_2d_native_from(
         array_1d=array_1d, shape=(3,3), slim_to_native=slim_to_native)
     """
 
-    sub_shape = (mask_2d.shape[0] * sub_size, mask_2d.shape[1] * sub_size)
+    shape = (mask_2d.shape[0], mask_2d.shape[1])
 
     native_index_for_slim_index_2d = mask_2d_util.native_index_for_slim_index_2d_from(
         mask_2d=np.array(mask_2d),
-        sub_size=sub_size,
     ).astype("int")
 
     return array_2d_via_indexes_from(
         array_2d_slim=array_2d_slim,
-        sub_shape=sub_shape,
+        shape=shape,
         native_index_for_slim_index_2d=native_index_for_slim_index_2d,
     )
 
@@ -614,33 +604,28 @@ def array_2d_native_from(
 @numba_util.jit()
 def array_2d_via_indexes_from(
     array_2d_slim: np.ndarray,
-    sub_shape: Tuple[int, int],
+    shape: Tuple[int, int],
     native_index_for_slim_index_2d: np.ndarray,
 ) -> np.ndarray:
     """
-    For a slimmed sub array with sub-indexes mapping the slimmed sub-array values to their native sub-array,
-    return the native 2D sub-array.
+    For a slimmed array with indexes mapping the slimmed array values to their native array, return the native 2D
+    array.
 
-    A sub-array is an array whose dimensions correspond to the normal array multiplied by the sub_size. For example
-    if an array is shape [total_y_pixels, total_x_pixels] and the ``sub_size=2``, the sub_array is shape
-    [total_y_pixels*sub_size, total_x_pixels*sub_size].
+    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards.
 
-    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
-    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a
-    sub-grid size of 2 where all pixels are unmasked:
+    For example, for an array of shape (3,3) and where all pixels are unmasked:
 
     - pixel [0,0] of the native 2D array will correspond to index 0 of the slim array.
     - pixel [0,1] of the native 2D array will correspond to index 1 of the slim array.
-    - pixel [1,0] of the native 2D array will correspond to index 2 of the slim array.
-    - pixel [2,0] of the native 2D array will correspond to index 4 of the slim array.
-    - pixel [1,0] of the native 2D array will correspond to index 12 of the slim array.
+    - pixel [1,0] of the native 2D array will correspond to index 3 of the slim array.
+    - pixel [2,0] of the native 2D array will correspond to index 6 of the slim array.
 
     Parameters
     ----------
     array_2d_slim
         The slimmed array of shape [total_values] which are mapped to the native array..
-    sub_shape
-        The 2D dimensions of the native 2D sub-array.
+    shape
+        The 2D dimensions of the native 2D array.
     native_index_for_slim_index_2d : np.narray
         An array of shape [total_values] that maps from the slimmed array to the native array.
 
@@ -649,42 +634,38 @@ def array_2d_via_indexes_from(
     ndarray
         The native 2D array of values mapped from the slimmed array with dimensions (total_values, total_values).
     """
-    sub_array_native_2d = np.zeros(sub_shape)
+    array_native_2d = np.zeros(shape)
 
     for slim_index in range(len(native_index_for_slim_index_2d)):
-        sub_array_native_2d[
+        array_native_2d[
             native_index_for_slim_index_2d[slim_index, 0],
             native_index_for_slim_index_2d[slim_index, 1],
         ] = array_2d_slim[slim_index]
 
-    return sub_array_native_2d
+    return array_native_2d
 
 
 @numba_util.jit()
 def array_2d_slim_complex_from(
-    array_2d_native: np.ndarray, mask: np.ndarray, sub_size: int
+    array_2d_native: np.ndarray,
+    mask: np.ndarray,
 ) -> np.ndarray:
     """
-    For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
+    For a 2D array and mask, map the values of all unmasked pixels to a 1D array.
 
-    A sub-array is an array whose dimensions correspond to the normal array (e.g. used to make the grid)
-    multiplied by the sub_size. E.g., it is an array that would be generated using the sub-grid and not binning
-    up values in sub-pixels back to the grid.
+    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards.
 
-    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
-    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a
-    sub-grid size of 2 where all pixels are unmasked:
+    For example, for an array of shape (3,3) and where all pixels are unmasked:
 
     - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
     - pixel [0,1] of the 2D array will correspond to index 1 of the 1D array.
-    - pixel [1,0] of the 2D array will correspond to index 2 of the 1D array.
-    - pixel [2,0] of the 2D array will correspond to index 4 of the 1D array.
-    - pixel [1,0] of the 2D array will correspond to index 12 of the 1D array.
+    - pixel [1,0] of the 2D array will correspond to index 3 of the 1D array.
+    - pixel [2,0] of the 2D array will correspond to index 6 of the 1D array.
 
     Parameters
     ----------
     array_2d_native
-        A 2D array of values on the dimensions of the sub-grid.
+        A 2D array of values on the dimensions of the grid.
     mask
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
     array_2d
@@ -694,57 +675,39 @@ def array_2d_slim_complex_from(
     -------
     ndarray
         A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
-
-    Examples
-    --------
-
-    sub_array_2d = np.array([[ 1.0,  2.0,  5.0,  6.0],
-                             [ 3.0,  4.0,  7.0,  8.0],
-                             [ 9.0, 10.0, 13.0, 14.0],
-                             [11.0, 12.0, 15.0, 16.0])
-
-    mask = np.array([[True, False],
-                     [False, False]])
-
-    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from(
-        mask=mask, array_2d=array_2d)
     """
 
-    total_sub_pixels = mask_2d_util.total_sub_pixels_2d_from(
-        mask_2d=mask, sub_size=sub_size
+    total_pixels = mask_2d_util.total_pixels_2d_from(
+        mask_2d=mask,
     )
 
-    sub_array_1d = 0 + 0j * np.zeros(shape=total_sub_pixels)
+    array_1d = 0 + 0j * np.zeros(shape=total_pixels)
     index = 0
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
-                for y1 in range(sub_size):
-                    for x1 in range(sub_size):
-                        sub_array_1d[index] = array_2d_native[
-                            y * sub_size + y1, x * sub_size + x1
-                        ]
-                        index += 1
+                array_1d[index] = array_2d_native[y, x]
+                index += 1
 
-    return sub_array_1d
+    return array_1d
 
 
 @numba_util.jit()
 def array_2d_native_complex_via_indexes_from(
     array_2d_slim: np.ndarray,
-    sub_shape_native: Tuple[int, int],
+    shape_native: Tuple[int, int],
     native_index_for_slim_index_2d: np.ndarray,
 ) -> np.ndarray:
-    sub_array_2d = 0 + 0j * np.zeros(sub_shape_native)
+    array_2d = 0 + 0j * np.zeros(shape_native)
 
     for slim_index in range(len(native_index_for_slim_index_2d)):
-        sub_array_2d[
+        array_2d[
             native_index_for_slim_index_2d[slim_index, 0],
             native_index_for_slim_index_2d[slim_index, 1],
         ] = array_2d_slim[slim_index]
 
-    return sub_array_2d
+    return array_2d
 
 
 def hdu_for_output_from(
