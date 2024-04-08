@@ -1,17 +1,7 @@
-from __future__ import annotations
-import json
 import logging
-from pathlib import Path
 
 import numpy as np
-import os
-from os import path
 from typing import List, Union
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.structures.abstract_structure import Structure
 
