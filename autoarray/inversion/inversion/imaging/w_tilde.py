@@ -282,6 +282,22 @@ class InversionImagingWTilde(AbstractInversionImaging):
 
     @property
     @profile_func
+    def pix_high_noise_fraction(self):
+
+        mapper_list = self.cls_list_from(cls=AbstractMapper)
+
+        for i in range(len(mapper_list)):
+            mapper_i = mapper_list[i]
+
+            return inversion_imaging_util.pix_high_noise_fraction_from(
+                noise_map=np.array(self.noise_map),
+                data_to_pix_unique=mapper_i.unique_mappings.data_to_pix_unique,
+                pix_lengths=mapper_i.unique_mappings.pix_lengths,
+                pix_pixels=mapper_i.params,
+            )
+
+    @property
+    @profile_func
     def _curvature_matrix_mapper_diag(self) -> Optional[np.ndarray]:
         """
         Returns the diagonal regions of the `curvature_matrix`, a 2D matrix which uses the mappings between the data

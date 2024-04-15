@@ -425,6 +425,34 @@ def data_vector_via_blurred_mapping_matrix_from(
 
 
 @numba_util.jit()
+def pix_high_noise_fraction_from(
+    noise_map: np.ndarray,
+    data_to_pix_unique: np.ndarray,
+    pix_lengths: np.ndarray,
+    pix_pixels: int,
+) -> np.ndarray:
+
+    pix_total = np.zeros(pix_pixels)
+    pix_high_noise = np.zeros(pix_pixels)
+    pix_high_noise_fraction = np.zeros(pix_pixels)
+
+    for data_i in range(data_to_pix_unique.shape[0]):
+        for pix_i in range(pix_lengths[data_i]):
+
+            pix_map = data_to_pix_unique[data_i, pix_i]
+
+            pix_total[pix_map] += 1
+
+            if noise_map[data_i] > 1e7:
+                pix_high_noise[pix_map] += 1
+
+    for pix_i in range(pix_total.shape[0]):
+
+        pix_high_noise_fraction[pix_i] = pix_high_noise[pix_i] / pix_total[pix_i]
+
+    return pix_high_noise_fraction
+
+@numba_util.jit()
 def curvature_matrix_via_w_tilde_curvature_preload_imaging_from(
     curvature_preload: np.ndarray,
     curvature_indexes: np.ndarray,

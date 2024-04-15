@@ -501,6 +501,26 @@ class AbstractInversion:
                 )
                 values_to_solve[ids_zeros] = False
 
+                try:
+                    pix_high_noise_fraction_ids = []
+
+                    pix_high_noise_fraction = self.pix_high_noise_fraction
+
+                    param_range_list = self.param_range_list_from(cls=LinearObj)
+
+                    for param_range, linear_obj in zip(param_range_list, self.linear_obj_list):
+                        if isinstance(linear_obj, AbstractMapper):
+                            for pix_i in range(pix_high_noise_fraction.shape[0]):
+                                if pix_high_noise_fraction[pix_i] == 1:
+
+                                    pix_high_noise_fraction_ids.append(
+                                        pix_i + param_range[0]
+                                    )
+
+                    values_to_solve[pix_high_noise_fraction_ids] = False
+                except AttributeError:
+                    pass
+
                 data_vector_input = self.data_vector[values_to_solve]
 
                 curvature_reg_matrix_input = self.curvature_reg_matrix[

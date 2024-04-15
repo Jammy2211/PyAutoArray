@@ -307,6 +307,7 @@ class Imaging(AbstractDataset):
             noise_covariance_matrix=noise_covariance_matrix,
             over_sampling=over_sampling,
             over_sampling_pixelization=over_sampling_pixelization,
+            check_noise_map=False
         )
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
