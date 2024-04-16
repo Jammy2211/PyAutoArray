@@ -281,7 +281,7 @@ class OverSamplerUniform(AbstractOverSampler):
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
         return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=self.mask.array, sub_size=self.sub_size
+            mask_2d=self.mask.array, sub_size=self.sub_size[0]
         ).astype("int")
 
     @cached_property
@@ -334,54 +334,5 @@ class OverSamplerUniform(AbstractOverSampler):
             print(derive_indexes_2d.slim_for_sub_slim)
         """
         return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=np.array(self.mask), sub_size=self.sub_size
+            mask_2d=np.array(self.mask), sub_size=self.sub_size[0]
         ).astype("int")
-
-    @property
-    def sub(self) -> np.ndarray:
-        """
-        Returns the sub-mask of the ``Mask2D``, which is the mask on the sub-grid which has ``False``  / ``True``
-        entries where the original mask is ``False`` / ``True``.
-
-        For example, for the following ``Mask2D``:
-
-        ::
-           [[ True,  True],
-            [False, False]]
-
-        The sub-mask (given via ``mask_2d.derive_mask.sub``) for a ``sub_size=2`` is:
-
-        ::
-            [[True,   True,  True,  True],
-             [True,   True,  True,  True],
-             [False, False, False, False],
-             [False, False, False, False]]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[
-                     [ True,  True],
-                     [False, False]
-                ],
-                pixel_scales=1.0,
-            )
-
-            derive_mask_2d = aa.DeriveMask2D(mask=mask_2d)
-
-            print(derive_mask_2d.sub)
-        """
-        sub_shape = (
-            self.mask.shape[0] * self.sub_size,
-            self.mask.shape[1] * self.sub_size,
-        )
-
-        return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
-            shape_native=sub_shape,
-            native_for_slim=self.derive_indexes.sub_mask_native_for_sub_mask_slim,
-        ).astype("bool")
