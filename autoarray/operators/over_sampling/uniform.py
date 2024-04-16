@@ -138,9 +138,17 @@ class OverSamplingUniform(AbstractOverSampling):
 
 
 class OverSamplerUniform(AbstractOverSampler):
-    def __init__(self, mask: Mask2D, sub_size: int):
+    def __init__(self, mask: Mask2D, sub_size: Array2D):
+
         self.mask = mask
         self.sub_size = sub_size
+
+    @classmethod
+    def from_sub_size_int(cls, mask: Mask2D, sub_size: int):
+
+        sub_size = Array2D(values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask)
+
+        return OverSamplerUniform(mask=mask, sub_size=sub_size)
 
     @property
     def over_sampling(self):
