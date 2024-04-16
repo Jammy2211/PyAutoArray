@@ -269,7 +269,7 @@ class Convolver:
                     mask_1d_index += 1
 
     @staticmethod
-    @numba_util.jit()
+    #@numba_util.jit()
     def frame_at_coordinates_jit(coordinates, mask, mask_index_array, kernel_2d):
         """
         Returns the frame (indexes of pixels light is blurred into) and kernel_frame (kernel kernel values of those \
@@ -341,7 +341,7 @@ class Convolver:
         return Array2D(values=convolved_image, mask=self.mask)
 
     @staticmethod
-    @numba_util.jit()
+    #@numba_util.jit()
     def convolve_jit(
         image_1d_array,
         image_frame_1d_indexes,
@@ -415,7 +415,7 @@ class Convolver:
         return Array2D(values=convolved_image, mask=self.mask)
 
     @staticmethod
-    @numba_util.jit()
+    #@numba_util.jit()
     def convolve_no_blurring_jit(
         image_1d_array,
         image_frame_1d_indexes,
@@ -516,7 +516,7 @@ class Convolver:
         )
 
     @staticmethod
-    @numba_util.jit()
+    #@numba_util.jit()
     def convolve_matrix_jit(
         mapping_matrix,
         image_frame_1d_indexes,

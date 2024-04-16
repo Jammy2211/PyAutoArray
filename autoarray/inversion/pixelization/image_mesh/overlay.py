@@ -11,7 +11,7 @@ from autoarray.structures.grids import grid_2d_util
 from autoarray import numba_util
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def total_pixels_2d_from(mask_2d: np.ndarray, overlaid_centres: np.ndarray) -> int:
     """
     Returns the total number of pixels on the overlaid grid which are within the mask.
@@ -36,7 +36,7 @@ def total_pixels_2d_from(mask_2d: np.ndarray, overlaid_centres: np.ndarray) -> i
     return total_pixels
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def overlay_for_mask_from(
     total_pixels: int,
     mask: np.ndarray,
@@ -76,7 +76,7 @@ def overlay_for_mask_from(
     return overlay_for_mask
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def mask_for_overlay_from(
     mask: np.ndarray,
     overlaid_centres: np.ndarray,
@@ -122,7 +122,7 @@ def mask_for_overlay_from(
     return mask_for_overlay
 
 
-@numba_util.jit()
+#@numba_util.jit()
 def overlay_via_unmasked_overlaid_from(
     unmasked_overlay_grid: np.ndarray, overlay_for_mask: np.ndarray
 ) -> np.ndarray:
