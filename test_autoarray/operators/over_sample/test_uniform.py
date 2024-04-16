@@ -48,26 +48,6 @@ def test__sub_fraction():
 
     assert over_sampling.sub_fraction.slim == pytest.approx([1.0, 0.25], 1.0e-4)
 
-def test__sub_pixels_in_mask():
-    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
-
-    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=1)
-
-    assert over_sampling.sub_pixels_in_mask == 25
-
-    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
-
-    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
-
-    assert over_sampling.sub_pixels_in_mask == 100
-
-    mask = aa.Mask2D.all_false(shape_native=(10, 10), pixel_scales=1.0)
-
-    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=3)
-
-    assert over_sampling.sub_pixels_in_mask == 900
-
-
 def test__sub_mask_index_for_sub_mask_1d_index():
     mask = aa.Mask2D(
         mask=[[True, True, True], [True, False, False], [True, True, False]],

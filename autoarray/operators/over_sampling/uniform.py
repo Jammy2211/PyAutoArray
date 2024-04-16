@@ -158,13 +158,6 @@ class OverSamplerUniform(AbstractOverSampler):
 
         return 1.0 / self.sub_size**self.mask.dimensions
 
-    @property
-    def sub_pixels_in_mask(self) -> int:
-        """
-        The total number of unmasked sub-pixels (values are `False`) in the mask.
-        """
-        return self.sub_size**self.mask.dimensions * self.mask.pixels_in_mask
-
     @cached_property
     def over_sampled_grid(self) -> Grid2D:
         sub_grid_1d = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
