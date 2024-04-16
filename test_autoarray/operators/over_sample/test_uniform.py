@@ -62,6 +62,24 @@ def test__over_sampled_grid():
         np.array([[0.5, -0.5], [0.75, 0.25], [0.75, 0.75], [0.25, 0.25], [0.25, 0.75]]), 1.0e-4
     )
 
+def test__binned_array_2d_from():
+
+    mask = aa.Mask2D(
+        mask=[[False, False], [True, True]],
+        pixel_scales=1.0,
+    )
+
+    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=aa.Array2D(values=[1, 2], mask=mask))
+
+    arr = np.array([1.0, 5.0, 7.0, 10.0, 10.0])
+
+    binned_array_2d = over_sampling.binned_array_2d_from(array=arr)
+
+    print(binned_array_2d.slim)
+
+    assert binned_array_2d.slim == pytest.approx(np.array([1.0, 8.0]), 1.0e-4)
+
+
 def test__sub_mask_index_for_sub_mask_1d_index():
     mask = aa.Mask2D(
         mask=[[True, True, True], [True, False, False], [True, True, False]],

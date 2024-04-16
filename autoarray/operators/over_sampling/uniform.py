@@ -150,6 +150,15 @@ class OverSamplerUniform(AbstractOverSampler):
         self.sub_size = sub_size
 
     @property
+    def sub_length(self) -> Array2D:
+        """
+        The total number of sub-pixels in a give pixel,
+
+        For example, a sub-size of 3x3 means every pixel has 9 sub-pixels.
+        """
+        return self.sub_size**self.mask.dimensions
+
+    @property
     def sub_fraction(self) -> Array2D:
         """
         The fraction of the area of a pixel every sub-pixel contains.
@@ -157,7 +166,7 @@ class OverSamplerUniform(AbstractOverSampler):
         For example, a sub-size of 3x3 mean every pixel contains 1/9 the area.
         """
 
-        return 1.0 / self.sub_size**self.mask.dimensions
+        return 1.0 / self.sub_length
 
     @cached_property
     def over_sampled_grid(self) -> Grid2DIrregular:
@@ -194,13 +203,14 @@ class OverSamplerUniform(AbstractOverSampler):
         except AttributeError:
             pass
 
-        binned_array_1d = npw.multiply(
-            self.sub_fraction,
-            array.reshape(-1, self.sub_length).sum(axis=1),
+        binned_array_2d = over_sample_util.binned_array_2d_from(
+            array_2d=np.array(array),
+            mask_2d=np.array(self.mask),
+            sub_size=np.array(self.sub_size),
         )
 
         return Array2D(
-            values=binned_array_1d,
+            values=binned_array_2d,
             mask=self.mask,
         )
 

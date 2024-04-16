@@ -273,7 +273,7 @@ def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     return oversample_mask
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def grid_2d_slim_over_sampled_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
@@ -355,3 +355,77 @@ def grid_2d_slim_over_sampled_via_mask_from(
                         sub_index += 1
 
     return grid_slim
+
+
+@numba_util.jit()
+def binned_array_2d_from(
+    array_2d: np.ndarray,
+    mask_2d : np.ndarray,
+    sub_size: np.ndarray,
+) -> np.ndarray:
+    """
+    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
+    a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
+    scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
+
+    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
+    stored in the 0 index of the second dimension, x coordinates in the 1 index. Masked coordinates are therefore
+    removed and not included in the slimmed grid.
+
+    Grid2D are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
+    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
+    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+
+    Parameters
+    ----------
+    mask_2d
+        A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
+        sub-grid.
+    pixel_scales
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+    sub_size
+        The size of the sub-grid that each pixel of the 2D mask array is divided into.
+    origin
+        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+
+    Returns
+    -------
+    ndarray
+        A slimmed sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
+
+    Examples
+    --------
+    mask = np.array([[True, False, True],
+                     [False, False, False]
+                     [True, False, True]])
+    grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
+    """
+
+    total_pixels = mask_2d_util.total_pixels_2d_from(
+        mask_2d=mask_2d,
+    )
+
+    binned_array_2d_slim = np.zeros(shape=total_pixels)
+
+    index = 0
+    sub_index = 0
+
+    for y in range(mask_2d.shape[0]):
+        for x in range(mask_2d.shape[1]):
+            if not mask_2d[y, x]:
+
+                sub = sub_size[sub_index]
+
+                sub_length = sub**2
+                sub_fraction = 1.0 / sub_length
+
+                for y1 in range(sub):
+                    for x1 in range(sub):
+
+                        binned_array_2d_slim[index] += array_2d[sub_index] * sub_fraction
+                        sub_index += 1
+
+                index += 1
+
+    return binned_array_2d_slim
