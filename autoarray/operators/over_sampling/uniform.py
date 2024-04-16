@@ -151,10 +151,6 @@ class OverSamplerUniform(AbstractOverSampler):
         return OverSamplerUniform(mask=mask, sub_size=sub_size)
 
     @property
-    def over_sampling(self):
-        return OverSamplingUniform(sub_size=self.sub_size)
-
-    @property
     def sub_length(self) -> int:
         """
         The total number of sub-pixels in a give pixel,
@@ -201,7 +197,7 @@ class OverSamplerUniform(AbstractOverSampler):
             mask=over_sample_mask, pixel_scales=pixel_scales, origin=self.mask.origin
         )
 
-        return Grid2D(values=sub_grid_1d, mask=mask, over_sampling=self.over_sampling)
+        return Grid2D(values=sub_grid_1d, mask=mask)
 
     def binned_array_2d_from(self, array: Array2D) -> "Array2D":
         """

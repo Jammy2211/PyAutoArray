@@ -148,10 +148,6 @@ class OverSamplerIterate(AbstractOverSampler):
         self.relative_accuracy = relative_accuracy
         self.sub_steps = sub_steps
 
-    @property
-    def over_sampling(self):
-        return OverSamplingIterate()
-
     def array_at_sub_size_from(
         self, func: Callable, cls, mask: Mask2D, sub_size, *args, **kwargs
     ) -> Array2D:
