@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union
 
 from autoconf import conf
 from autoconf import cached_property
@@ -138,35 +139,24 @@ class OverSamplingUniform(AbstractOverSampling):
 
 
 class OverSamplerUniform(AbstractOverSampler):
-    def __init__(self, mask: Mask2D, sub_size: Array2D):
+    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
 
         self.mask = mask
+
+        if isinstance(sub_size, int):
+            sub_size = Array2D(values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask)
+
         self.sub_size = sub_size
 
-    @classmethod
-    def from_sub_size_int(cls, mask: Mask2D, sub_size: int):
-
-        sub_size = Array2D(values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask)
-
-        return OverSamplerUniform(mask=mask, sub_size=sub_size)
-
     @property
-    def sub_length(self) -> int:
-        """
-        The total number of sub-pixels in a give pixel,
-
-        For example, a sub-size of 3x3 means every pixel has 9 sub-pixels.
-        """
-        return int(self.sub_size**self.mask.dimensions)
-
-    @property
-    def sub_fraction(self) -> float:
+    def sub_fraction(self) -> Array2D:
         """
         The fraction of the area of a pixel every sub-pixel contains.
 
         For example, a sub-size of 3x3 mean every pixel contains 1/9 the area.
         """
-        return 1.0 / self.sub_length
+
+        return 1.0 / self.sub_size**self.mask.dimensions
 
     @property
     def sub_pixels_in_mask(self) -> int:

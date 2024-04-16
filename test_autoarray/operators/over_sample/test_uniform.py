@@ -31,11 +31,22 @@ def test__from_sub_size_int():
         pixel_scales=1.0,
     )
 
-    over_sampling = aa.OverSamplerUniform.from_sub_size_int(mask=mask, sub_size=2)
+    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
     assert over_sampling.sub_size.slim == pytest.approx([2, 2, 2], 1.0e-4)
     assert over_sampling.sub_size.native == pytest.approx(np.array([[0, 0, 0], [0, 2, 2], [0, 0, 2]]), 1.0e-4)
 
+
+def test__sub_fraction():
+
+    mask = aa.Mask2D(
+        mask=[[False, False], [True, True]],
+        pixel_scales=1.0,
+    )
+
+    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=aa.Array2D(values=[1, 2], mask=mask))
+
+    assert over_sampling.sub_fraction.slim == pytest.approx([1.0, 0.25], 1.0e-4)
 
 def test__sub_pixels_in_mask():
     mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
