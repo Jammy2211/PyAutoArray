@@ -9,6 +9,7 @@ from autoarray.operators.over_sampling.abstract import AbstractOverSampling
 from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
 from autoarray.mask import mask_2d_util
 
@@ -159,28 +160,16 @@ class OverSamplerUniform(AbstractOverSampler):
         return 1.0 / self.sub_size**self.mask.dimensions
 
     @cached_property
-    def over_sampled_grid(self) -> Grid2D:
-        sub_grid_1d = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+    def over_sampled_grid(self) -> Grid2DIrregular:
+
+        grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.sub_size,
+            sub_size=np.array(self.sub_size).astype("int"),
             origin=self.mask.origin,
         )
 
-        over_sample_mask = over_sample_util.oversample_mask_2d_from(
-            mask=np.array(self.mask), sub_size=self.sub_size
-        )
-
-        pixel_scales = (
-            self.mask.pixel_scales[0] / self.sub_size,
-            self.mask.pixel_scales[1] / self.sub_size,
-        )
-
-        mask = Mask2D(
-            mask=over_sample_mask, pixel_scales=pixel_scales, origin=self.mask.origin
-        )
-
-        return Grid2D(values=sub_grid_1d, mask=mask)
+        return Grid2DIrregular(values=grid)
 
     def binned_array_2d_from(self, array: Array2D) -> "Array2D":
         """

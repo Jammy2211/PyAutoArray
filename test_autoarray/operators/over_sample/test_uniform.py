@@ -48,6 +48,20 @@ def test__sub_fraction():
 
     assert over_sampling.sub_fraction.slim == pytest.approx([1.0, 0.25], 1.0e-4)
 
+
+def test__over_sampled_grid():
+
+    mask = aa.Mask2D(
+        mask=[[False, False], [True, True]],
+        pixel_scales=1.0,
+    )
+
+    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=aa.Array2D(values=[1, 2], mask=mask))
+
+    assert over_sampling.over_sampled_grid.native == pytest.approx(
+        np.array([[0.5, -0.5], [0.75, 0.25], [0.75, 0.75], [0.25, 0.25], [0.25, 0.75]]), 1.0e-4
+    )
+
 def test__sub_mask_index_for_sub_mask_1d_index():
     mask = aa.Mask2D(
         mask=[[True, True, True], [True, False, False], [True, True, False]],

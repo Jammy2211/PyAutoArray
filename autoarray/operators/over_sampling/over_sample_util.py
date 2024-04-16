@@ -273,11 +273,11 @@ def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     return oversample_mask
 
 
-@numba_util.jit()
+# @numba_util.jit()
 def grid_2d_slim_over_sampled_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
-    sub_size: int = 1,
+    sub_size: np.ndarray,
     origin: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
@@ -319,7 +319,7 @@ def grid_2d_slim_over_sampled_via_mask_from(
     grid_slim = grid_2d_slim_over_sampled_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
     """
 
-    total_sub_pixels = total_sub_pixels_2d_from(mask_2d, sub_size)
+    total_sub_pixels = np.sum(sub_size**2)
 
     grid_slim = np.zeros(shape=(total_sub_pixels, 2))
 
@@ -329,20 +329,23 @@ def grid_2d_slim_over_sampled_via_mask_from(
 
     sub_index = 0
 
-    y_sub_half = pixel_scales[0] / 2
-    y_sub_step = pixel_scales[0] / (sub_size)
-
-    x_sub_half = pixel_scales[1] / 2
-    x_sub_step = pixel_scales[1] / (sub_size)
-
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
+
+                sub = sub_size[sub_index]
+
+                y_sub_half = pixel_scales[0] / 2
+                y_sub_step = pixel_scales[0] / (sub)
+
+                x_sub_half = pixel_scales[1] / 2
+                x_sub_step = pixel_scales[1] / (sub)
+
                 y_scaled = (y - centres_scaled[0]) * pixel_scales[0]
                 x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
-                for y1 in range(sub_size):
-                    for x1 in range(sub_size):
+                for y1 in range(sub):
+                    for x1 in range(sub):
                         grid_slim[sub_index, 0] = -(
                             y_scaled - y_sub_half + y1 * y_sub_step + (y_sub_step / 2.0)
                         )
