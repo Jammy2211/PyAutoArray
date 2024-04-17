@@ -38,7 +38,7 @@ def total_sub_pixels_2d_from(mask_2d: np.ndarray, sub_size: int) -> int:
 
     total_sub_pixels = total_sub_pixels_from(mask=mask, sub_size=2)
     """
-    return mask_2d_util.total_pixels_2d_from(mask_2d) * sub_size**2
+    return int(np.sum(sub_size**2))
 
 
 #@numba_util.jit()
@@ -102,18 +102,25 @@ def native_sub_index_for_slim_sub_index_2d_from(
 
     total_sub_pixels = total_sub_pixels_2d_from(mask_2d=mask_2d, sub_size=sub_size)
     sub_native_index_for_sub_slim_index_2d = np.zeros(shape=(total_sub_pixels, 2))
+
+    slim_index = 0
     sub_slim_index = 0
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
+
+            sub = sub_size[slim_index]
+
             if not mask_2d[y, x]:
-                for y1 in range(sub_size):
-                    for x1 in range(sub_size):
+                for y1 in range(sub):
+                    for x1 in range(sub):
                         sub_native_index_for_sub_slim_index_2d[sub_slim_index, :] = (
-                            (y * sub_size) + y1,
-                            (x * sub_size) + x1,
+                            (y * sub) + y1,
+                            (x * sub) + x1,
                         )
                         sub_slim_index += 1
+
+            slim_index += 1
 
     return sub_native_index_for_sub_slim_index_2d
 
@@ -160,8 +167,11 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
-                for y1 in range(sub_size):
-                    for x1 in range(sub_size):
+
+                sub = sub_size[slim_index]
+
+                for y1 in range(sub):
+                    for x1 in range(sub):
                         slim_index_for_sub_slim_index[sub_slim_index] = slim_index
                         sub_slim_index += 1
 
