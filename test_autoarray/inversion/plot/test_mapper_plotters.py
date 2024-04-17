@@ -159,7 +159,7 @@ def test__subplot_image_and_mapper(
     plot_patch,
 ):
     visuals_2d = aplt.Visuals2D(
-        indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
+        indexes=[0, 1, 2], pix_indexes=[[0, 1], [2]]
     )
 
     mapper_plotter = aplt.MapperPlotter(

@@ -108,7 +108,7 @@ class GridScatter(AbstractMatWrap2D):
         plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap, **config_dict)
 
     def scatter_grid_indexes(
-        self, grid: Union[np.ndarray, Grid2D], indexes: np.ndarray
+        self, grid: Union[np.ndarray, Grid2D, Grid2DIrregular], indexes: np.ndarray
     ):
         """
         Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
@@ -123,7 +123,8 @@ class GridScatter(AbstractMatWrap2D):
         indexes
             The 1D indexes of the grid that are colored in when plotted.
         """
-        if not isinstance(grid, (np.ndarray, Grid2D)):
+        if not isinstance(grid, (np.ndarray, Grid2D, Grid2DIrregular)):
+
             raise exc.PlottingException(
                 "The grid passed into scatter_grid_indexes is not a ndarray and thus its"
                 "1D indexes cannot be marked and plotted."
@@ -144,30 +145,12 @@ class GridScatter(AbstractMatWrap2D):
         config_dict.pop("c")
 
         for index_list in indexes:
-            if all([isinstance(index, float) for index in index_list]) or all(
-                [isinstance(index, int) for index in index_list]
-            ):
-                plt.scatter(
-                    y=grid[index_list, 0],
-                    x=grid[index_list, 1],
-                    color=next(color),
-                    **config_dict,
-                )
 
-            elif all([isinstance(index, tuple) for index in index_list]) or all(
-                [isinstance(index, list) for index in index_list]
-            ):
-                ys, xs = map(list, zip(*index_list))
+            plt.scatter(
+                y=grid[index_list, 0],
+                x=grid[index_list, 1],
+                color=next(color),
+                **config_dict,
+            )
 
-                plt.scatter(
-                    y=grid.native[ys, xs, 0],
-                    x=grid.native[ys, xs, 1],
-                    color=next(color),
-                    **config_dict,
-                )
 
-            else:
-                raise exc.PlottingException(
-                    "The indexes input into the grid_scatter_index method do not conform to a "
-                    "useable type"
-                )
