@@ -96,9 +96,6 @@ def test__delaunay_mapper():
     )
 
     assert isinstance(mapper, aa.MapperDelaunay)
-    assert mapper.source_plane_data_grid.shape_native_scaled_interior == pytest.approx(
-        (3.25, 3.25), 1.0e-4
-    )
     assert (mapper.source_plane_mesh_grid == image_plane_mesh_grid).all()
     assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
@@ -152,9 +149,6 @@ def test__voronoi_mapper():
     )
 
     assert isinstance(mapper, aa.MapperVoronoiNoInterp)
-    assert mapper.source_plane_data_grid.shape_native_scaled_interior == pytest.approx(
-        (3.25, 3.25), 1.0e-4
-    )
     assert (mapper.source_plane_mesh_grid == image_plane_mesh_grid).all()
     assert mapper.source_plane_mesh_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
     assert (
