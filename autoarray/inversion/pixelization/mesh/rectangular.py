@@ -63,6 +63,7 @@ class Rectangular(AbstractMesh):
 
     def mapper_grids_from(
         self,
+        mask,
         border_relocator: Optional[BorderRelocator],
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Grid2D = None,
@@ -118,6 +119,7 @@ class Rectangular(AbstractMesh):
         mesh_grid = self.mesh_grid_from(source_plane_data_grid=relocated_grid)
 
         return MapperGrids(
+            mask=mask,
             source_plane_data_grid=relocated_grid,
             source_plane_mesh_grid=mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,

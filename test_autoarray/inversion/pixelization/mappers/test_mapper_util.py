@@ -106,7 +106,7 @@ def test__mapping_matrix(three_pixels, five_pixels):
         pixels=6,
         total_mask_pixels=3,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_fraction=1.0,
+        sub_fraction=np.array([1.0, 1.0, 1.0]),
     )
 
     assert (
@@ -130,7 +130,7 @@ def test__mapping_matrix(three_pixels, five_pixels):
         pixels=8,
         total_mask_pixels=5,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_fraction=1.0,
+        sub_fraction=np.array([1.0, 1.0, 1.0, 1.0, 1.0]),
     )
 
     assert (
@@ -159,7 +159,7 @@ def test__mapping_matrix(three_pixels, five_pixels):
         pixels=8,
         total_mask_pixels=5,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_fraction=0.25,
+        sub_fraction=np.array([0.25, 0.25, 0.25, 0.25, 0.25]),
     )
 
     assert (
@@ -189,7 +189,7 @@ def test__mapping_matrix(three_pixels, five_pixels):
         pixels=8,
         total_mask_pixels=5,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_fraction=0.25,
+        sub_fraction=np.array([0.25, 0.25, 0.25, 0.25, 0.25]),
     )
 
     assert (
@@ -320,7 +320,7 @@ def test__mapping_matrix(three_pixels, five_pixels):
         pixels=6,
         total_mask_pixels=3,
         slim_index_for_sub_slim_index=slim_index_for_sub_slim_index,
-        sub_fraction=1.0 / 16.0,
+        sub_fraction=np.array([1.0 / 16.0, 1.0 / 16.0, 1.0 / 16.0]),
     )
 
     assert (
@@ -337,7 +337,7 @@ def test__mapping_matrix(three_pixels, five_pixels):
 
 def test__data_to_pix_unique_from():
     image_pixels = 2
-    sub_size = 2
+    sub_size = np.array([2, 2])
 
     pix_indexes_for_sub_slim_index = np.array(
         [[0, -1], [0, -1], [0, -1], [1, -1], [2, -1], [1, -1], [0, -1], [2, -1]]
@@ -490,7 +490,9 @@ def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
     )
 
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
+        mask=grid_2d_7x7.mask,
+        source_plane_data_grid=grid_2d_7x7,
+        source_plane_mesh_grid=mesh_grid,
     )
 
     over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)

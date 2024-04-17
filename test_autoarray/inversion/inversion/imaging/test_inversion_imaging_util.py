@@ -196,7 +196,7 @@ def test__data_vector_via_w_tilde_data_two_methods_agree():
         grid = over_sampler.over_sampled_grid
 
         mapper_grids = pixelization.mapper_grids_from(
-            border_relocator=None, source_plane_data_grid=grid
+            mask=mask, border_relocator=None, source_plane_data_grid=grid
         )
 
         mapper = aa.Mapper(
@@ -267,7 +267,9 @@ def test__curvature_matrix_via_w_tilde_two_methods_agree():
     pixelization = aa.mesh.Rectangular(shape=(20, 20))
 
     mapper_grids = pixelization.mapper_grids_from(
-        border_relocator=None, source_plane_data_grid=mask.derive_grid.unmasked
+        mask=mask,
+        border_relocator=None,
+        source_plane_data_grid=mask.derive_grid.unmasked,
     )
 
     over_sampler = aa.OverSamplerUniform(
@@ -325,7 +327,7 @@ def test__curvature_matrix_via_w_tilde_preload_two_methods_agree():
         grid = over_sampler.over_sampled_grid
 
         mapper_grids = pixelization.mapper_grids_from(
-            border_relocator=None, source_plane_data_grid=grid
+            mask=mask, border_relocator=None, source_plane_data_grid=grid
         )
 
         mapper = aa.Mapper(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 import numpy as np
+from typing import Union
 
 from autoconf import cached_property
 
@@ -125,8 +126,14 @@ def sub_border_pixel_slim_indexes_from(
 
 
 class BorderRelocator:
-    def __init__(self, mask: Mask2D, sub_size: Array2D):
+    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
         self.mask = mask
+
+        if isinstance(sub_size, int):
+            sub_size = Array2D(
+                values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask
+            )
+
         self.sub_size = sub_size
 
     @cached_property

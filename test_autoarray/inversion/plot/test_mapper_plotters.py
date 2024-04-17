@@ -158,9 +158,7 @@ def test__subplot_image_and_mapper(
     plot_path,
     plot_patch,
 ):
-    visuals_2d = aplt.Visuals2D(
-        indexes=[0, 1, 2], pix_indexes=[[0, 1], [2]]
-    )
+    visuals_2d = aplt.Visuals2D(indexes=[0, 1, 2], pix_indexes=[[0, 1], [2]])
 
     mapper_plotter = aplt.MapperPlotter(
         mapper=rectangular_mapper_7x7_3x3,

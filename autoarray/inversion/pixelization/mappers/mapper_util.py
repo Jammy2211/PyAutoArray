@@ -603,7 +603,7 @@ def mapping_matrix_from(
     pixels: int,
     total_mask_pixels: int,
     slim_index_for_sub_slim_index: np.ndarray,
-    sub_fraction: float,
+    sub_fraction: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the mapping matrix, which is a matrix representing the mapping between every unmasked sub-pixel of the data
