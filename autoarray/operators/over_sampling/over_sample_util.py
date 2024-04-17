@@ -43,7 +43,7 @@ def total_sub_pixels_2d_from(mask_2d: np.ndarray, sub_size: int) -> int:
 
 #@numba_util.jit()
 def native_sub_index_for_slim_sub_index_2d_from(
-    mask_2d: np.ndarray, sub_size: int = 1
+    mask_2d: np.ndarray, sub_size: np.ndarray
 ) -> np.ndarray:
     """
     Returns an array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its
@@ -109,9 +109,10 @@ def native_sub_index_for_slim_sub_index_2d_from(
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
 
-            sub = sub_size[slim_index]
-
             if not mask_2d[y, x]:
+
+                sub = sub_size[slim_index]
+
                 for y1 in range(sub):
                     for x1 in range(sub):
                         sub_native_index_for_sub_slim_index_2d[sub_slim_index, :] = (
@@ -120,14 +121,14 @@ def native_sub_index_for_slim_sub_index_2d_from(
                         )
                         sub_slim_index += 1
 
-            slim_index += 1
+                slim_index += 1
 
     return sub_native_index_for_sub_slim_index_2d
 
 
 #@numba_util.jit()
 def slim_index_for_sub_slim_index_via_mask_2d_from(
-    mask_2d: np.ndarray, sub_size: int
+    mask_2d: np.ndarray, sub_size: np.ndarray
 ) -> np.ndarray:
     """ "
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), compute a slimmed array which, for

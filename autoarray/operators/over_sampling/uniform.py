@@ -281,7 +281,7 @@ class OverSamplerUniform(AbstractOverSampler):
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
         return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=self.mask.array, sub_size=self.sub_size[0]
+            mask_2d=self.mask.array, sub_size=self.sub_size
         ).astype("int")
 
     @cached_property
@@ -334,5 +334,5 @@ class OverSamplerUniform(AbstractOverSampler):
             print(derive_indexes_2d.slim_for_sub_slim)
         """
         return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=np.array(self.mask), sub_size=self.sub_size[0]
+            mask_2d=np.array(self.mask), sub_size=self.sub_size
         ).astype("int")

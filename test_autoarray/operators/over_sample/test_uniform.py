@@ -91,7 +91,7 @@ def test__sub_mask_index_for_sub_mask_1d_index():
 
     sub_mask_index_for_sub_mask_1d_index = (
         aa.util.over_sample.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=np.array(mask), sub_size=2
+            mask_2d=np.array(mask), sub_size=np.array([2, 2, 2])
         )
     )
 
@@ -111,7 +111,7 @@ def test__slim_index_for_sub_slim_index():
 
     slim_index_for_sub_slim_index_util = (
         aa.util.over_sample.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=np.array(mask), sub_size=2
+            mask_2d=np.array(mask), sub_size=np.array([2, 2, 2, 2, 2, 2])
         )
     )
 
