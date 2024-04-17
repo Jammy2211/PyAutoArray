@@ -205,7 +205,7 @@ class BorderRelocator:
         """
         return self.sub_grid[self.sub_border_slim]
 
-    def relocated_grid_from(self, grid: "Grid2D") -> "Grid2D":
+    def relocated_grid_from(self, grid: Grid2DIrregular) -> Grid2DIrregular:
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
         border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
@@ -232,13 +232,11 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
-        return Grid2D(
+        return Grid2DIrregular(
             values=grid_2d_util.relocated_grid_via_jit_from(
                 grid=np.array(grid),
                 border_grid=np.array(grid[self.sub_border_slim]),
             ),
-            mask=grid.mask,
-            over_sampling=grid.over_sampling,
         )
 
     def relocated_mesh_grid_from(
