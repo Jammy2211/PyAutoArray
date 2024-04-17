@@ -120,9 +120,9 @@ class MapperPlotter(Plotter):
             from autoarray.operators.over_sampling import over_sample_util
 
             grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
-                mask_2d=self.mapper.mapper_grids.mask,
+                mask_2d=np.array(self.mapper.mapper_grids.mask),
                 pixel_scales=self.mapper.mapper_grids.mask.pixel_scales,
-                sub_size=self.mapper.over_sampler.sub_size,
+                sub_size=np.array(self.mapper.over_sampler.sub_size),
                 origin=self.mapper.mapper_grids.mask.origin,
             )
 

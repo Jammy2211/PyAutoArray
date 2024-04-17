@@ -95,7 +95,7 @@ def grid_1d_slim_via_shape_slim_from(
     )
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def grid_1d_slim_via_mask_from(
     mask_1d: np.ndarray,
     pixel_scales: ty.PixelScales,

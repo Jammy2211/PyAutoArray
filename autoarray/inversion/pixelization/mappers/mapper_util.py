@@ -9,7 +9,7 @@ from autoarray import exc
 from autoarray.inversion.pixelization.mesh import mesh_util
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def sub_slim_indexes_for_pix_index(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_weights_for_sub_slim_index: np.ndarray,
@@ -48,7 +48,7 @@ def sub_slim_indexes_for_pix_index(
     )
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def data_slim_to_pixelization_unique_from(
     data_pixels,
     pix_indexes_for_sub_slim_index: np.ndarray,
@@ -141,7 +141,7 @@ def data_slim_to_pixelization_unique_from(
     return data_to_pix_unique, data_weights, pix_lengths
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def pix_indexes_for_sub_slim_index_delaunay_from(
     source_plane_data_grid,
     simplex_index_for_sub_slim_index,
@@ -192,7 +192,7 @@ def nearest_pixelization_index_for_slim_index_from_kdtree(grid, mesh_grid):
     return sparse_index_for_slim_index
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def nearest_pixelization_index_for_slim_index_from(grid, mesh_grid):
     """
     Uses a nearest neighbor search to determine for each data pixel its nearest pixelization pixel.
@@ -230,7 +230,7 @@ def nearest_pixelization_index_for_slim_index_from(grid, mesh_grid):
     return nearest_pixelization_index_for_slim_index
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def pix_indexes_for_sub_slim_index_voronoi_from(
     grid: np.ndarray,
     slim_index_for_sub_slim_index: np.ndarray,
@@ -321,7 +321,7 @@ def pix_indexes_for_sub_slim_index_voronoi_from(
     return pix_indexes_for_sub_slim_index
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def pixel_weights_delaunay_from(
     source_plane_data_grid,
     source_plane_mesh_grid,
@@ -488,7 +488,7 @@ def pix_size_weights_voronoi_nn_from(
     )
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def remove_bad_entries_voronoi_nn(
     bad_indexes,
     pix_weights_for_sub_slim_index,
@@ -531,7 +531,7 @@ def remove_bad_entries_voronoi_nn(
     return pix_weights_for_sub_slim_index, pix_indexes_for_sub_slim_index
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def adaptive_pixel_signals_from(
     pixels: int,
     pixel_weights: np.ndarray,
@@ -595,7 +595,7 @@ def adaptive_pixel_signals_from(
     return pixel_signals**signal_scale
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def mapping_matrix_from(
     pix_indexes_for_sub_slim_index: np.ndarray,
     pix_size_for_sub_slim_index: np.ndarray,
@@ -693,7 +693,7 @@ def mapping_matrix_from(
     return mapping_matrix
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def mapped_to_source_via_mapping_matrix_from(
     mapping_matrix: np.ndarray, array_slim: np.ndarray
 ) -> np.ndarray:

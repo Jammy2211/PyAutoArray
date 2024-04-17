@@ -54,7 +54,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
 
     slim_index_for_sub_slim_indexes = (
         over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=mask_2d, sub_size=sub_size
+            mask_2d=mask_2d, sub_size=np.array(sub_size)
         ).astype("int")
     )
 
@@ -105,7 +105,7 @@ def sub_border_pixel_slim_indexes_from(
     )
 
     sub_grid_2d_slim = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=sub_size, origin=(0.0, 0.0)
+        mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=np.array(sub_size), origin=(0.0, 0.0)
     )
     mask_centre = grid_2d_util.grid_2d_centre_from(grid_2d_slim=sub_grid_2d_slim)
 
@@ -181,7 +181,7 @@ class BorderRelocator:
         return over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.sub_size,
+            sub_size=np.array(self.sub_size),
             origin=self.mask.origin,
         )
 

@@ -12,7 +12,7 @@ from autoarray.mask import mask_2d_util
 from autoarray import type as ty
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def total_sub_pixels_2d_from(sub_size: np.ndarray) -> int:
     """
     Returns the total number of sub-pixels in unmasked pixels in a mask.
@@ -41,7 +41,7 @@ def total_sub_pixels_2d_from(sub_size: np.ndarray) -> int:
     return int(np.sum(sub_size**2))
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def native_sub_index_for_slim_sub_index_2d_from(
     mask_2d: np.ndarray, sub_size: np.ndarray
 ) -> np.ndarray:
@@ -124,7 +124,7 @@ def native_sub_index_for_slim_sub_index_2d_from(
     return sub_native_index_for_sub_slim_index_2d
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def slim_index_for_sub_slim_index_via_mask_2d_from(
     mask_2d: np.ndarray, sub_size: np.ndarray
 ) -> np.ndarray:
@@ -178,7 +178,7 @@ def slim_index_for_sub_slim_index_via_mask_2d_from(
     return slim_index_for_sub_slim_index
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     """
     Returns a 2D array which maps every `False` entry of a 2D mask to its sub slim mask array. Every
@@ -229,7 +229,7 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
     return sub_slim_index_for_sub_native_index
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     """
     Returns a new mask of shape (mask.shape[0] * sub_size, mask.shape[1] * sub_size) where all boolean values are
@@ -281,7 +281,7 @@ def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     return oversample_mask
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def grid_2d_slim_over_sampled_via_mask_from(
     mask_2d: np.ndarray,
     pixel_scales: ty.PixelScales,
@@ -367,7 +367,7 @@ def grid_2d_slim_over_sampled_via_mask_from(
     return grid_slim
 
 
-# @numba_util.jit()
+@numba_util.jit()
 def binned_array_2d_from(
     array_2d: np.ndarray,
     mask_2d: np.ndarray,
