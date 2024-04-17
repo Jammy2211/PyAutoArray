@@ -337,8 +337,6 @@ class AbstractMapper(LinearObj):
         """
         image_for_source = self.sub_slim_indexes_for_pix_index
 
-        print(image_for_source)
-
         if not any(isinstance(i, list) for i in pix_indexes):
             return list(
                 itertools.chain.from_iterable(
