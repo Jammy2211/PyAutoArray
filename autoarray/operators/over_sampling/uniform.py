@@ -148,6 +148,13 @@ class OverSamplerUniform(AbstractOverSampler):
         self.sub_size = sub_size
 
     @property
+    def sub_total(self):
+        """
+        The total number of sub-pixels in the entire mask.
+        """
+        return int(np.sum(self.sub_size**2))
+
+    @property
     def sub_length(self) -> Array2D:
         """
         The total number of sub-pixels in a give pixel,

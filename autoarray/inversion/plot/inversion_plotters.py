@@ -8,6 +8,7 @@ from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 
@@ -223,8 +224,10 @@ class InversionPlotter(Plotter):
 
         if sub_pixels_per_image_pixels:
 
+            sub_size = Array2D(values=mapper_plotter.mapper.over_sampler.sub_size, mask=self.inversion.dataset.mask)
+
             self.mat_plot_2d.plot_array(
-                array=mapper_plotter.mapper.over_sampler.sub_size,
+                array=sub_size,
                 visuals_2d=self.get_visuals_2d_for_data(),
                 auto_labels=AutoLabels(
                     title="Sub Pixels Per Image Pixels",

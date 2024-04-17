@@ -112,15 +112,17 @@ def data_slim_to_pixelization_unique_from(
     pix_lengths = np.zeros(data_pixels)
     pix_check = -1 * np.ones(shape=pix_pixels)
 
+    ip_sub_start = 0
+
     for ip in range(data_pixels):
         pix_check[:] = -1
 
         pix_size = 0
 
-        ip_sub_start = ip * sub_size[ip] ** 2
         ip_sub_end = ip_sub_start + sub_size[ip] ** 2
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
+
             for pix_interp_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
                 pix = pix_indexes_for_sub_slim_index[ip_sub, pix_interp_index]
                 pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_interp_index]
@@ -135,6 +137,8 @@ def data_slim_to_pixelization_unique_from(
                     data_weights[ip, pix_size] += sub_fraction[ip] * pixel_weight
                     pix_check[pix] = pix_size
                     pix_size += 1
+
+        ip_sub_start = ip_sub_end
 
         pix_lengths[ip] = pix_size
 
