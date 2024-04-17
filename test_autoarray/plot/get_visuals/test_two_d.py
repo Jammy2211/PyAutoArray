@@ -67,11 +67,11 @@ def test__via_mapper_for_data_from(voronoi_mapper_9_3x3):
 
     assert visuals_2d.origin == (1.0, 1.0)
     assert (
-        visuals_2d_via.mask == voronoi_mapper_9_3x3.source_plane_data_grid.mask
+        visuals_2d_via.mask == voronoi_mapper_9_3x3.mapper_grids.mask
     ).all()
     assert (
         visuals_2d_via.border
-        == voronoi_mapper_9_3x3.source_plane_data_grid.mask.derive_grid.border
+        == voronoi_mapper_9_3x3.mapper_grids.mask.derive_grid.border
     ).all()
 
     assert (

@@ -28,7 +28,7 @@ def test__get_2d__via_mapper_for_data_from(rectangular_mapper_7x7_3x3):
     )
 
     assert get_2d.origin.in_list == [(0.0, 0.0)]
-    assert (get_2d.mask == rectangular_mapper_7x7_3x3.source_plane_data_grid.mask).all()
+    assert (get_2d.mask == rectangular_mapper_7x7_3x3.mapper_grids.mask).all()
     assert get_2d.grid == None
 
     include = aplt.Include2D(

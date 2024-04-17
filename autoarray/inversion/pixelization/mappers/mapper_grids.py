@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Dict, Optional
 if TYPE_CHECKING:
     from autoarray import Preloads
 
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -16,6 +17,7 @@ from autoarray.structures.grids import grid_2d_util
 class MapperGrids:
     def __init__(
         self,
+        mask : Mask2D,
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
@@ -66,6 +68,7 @@ class MapperGrids:
 
         from autoarray.preloads import Preloads
 
+        self.mask = mask
         self.source_plane_data_grid = source_plane_data_grid
         self.source_plane_mesh_grid = source_plane_mesh_grid
         self.image_plane_mesh_grid = image_plane_mesh_grid
@@ -75,7 +78,7 @@ class MapperGrids:
 
     @property
     def image_plane_data_grid(self):
-        return self.source_plane_data_grid.derive_grid.unmasked
+        return self.mask.derive_grid.unmasked
 
     @property
     def mesh_pixels_per_image_pixels(self):

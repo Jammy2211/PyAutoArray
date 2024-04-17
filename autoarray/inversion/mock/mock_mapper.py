@@ -8,6 +8,7 @@ from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
 class MockMapper(AbstractMapper):
     def __init__(
         self,
+        mask=None,
         source_plane_data_grid=None,
         source_plane_mesh_grid=None,
         over_sampler=None,
@@ -23,6 +24,7 @@ class MockMapper(AbstractMapper):
         interpolated_array=None,
     ):
         mapper_grids = MapperGrids(
+            mask=mask,
             source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
             adapt_data=adapt_data,

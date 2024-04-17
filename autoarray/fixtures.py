@@ -410,6 +410,7 @@ def make_border_relocator_2d_7x7():
 
 def make_rectangular_mapper_7x7_3x3():
     mapper_grids = aa.MapperGrids(
+        mask=make_mask_2d_7x7(),
         source_plane_data_grid=make_over_sampler_2d_7x7().over_sampled_grid,
         source_plane_mesh_grid=make_rectangular_mesh_grid_3x3(),
         image_plane_mesh_grid=None,
@@ -426,6 +427,7 @@ def make_rectangular_mapper_7x7_3x3():
 
 def make_delaunay_mapper_9_3x3():
     mapper_grids = aa.MapperGrids(
+        mask=make_mask_2d_7x7(),
         source_plane_data_grid=make_over_sampler_2d_7x7().over_sampled_grid,
         source_plane_mesh_grid=make_delaunay_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
@@ -442,6 +444,7 @@ def make_delaunay_mapper_9_3x3():
 
 def make_voronoi_mapper_9_3x3():
     mapper_grids = aa.MapperGrids(
+        mask=make_mask_2d_7x7(),
         source_plane_data_grid=make_over_sampler_2d_7x7().over_sampled_grid,
         source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
@@ -458,6 +461,7 @@ def make_voronoi_mapper_9_3x3():
 
 def make_voronoi_mapper_nn_9_3x3():
     mapper_grids = aa.MapperGrids(
+        mask=make_mask_2d_7x7(),
         source_plane_data_grid=make_over_sampler_2d_7x7().over_sampled_grid,
         source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
         image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),

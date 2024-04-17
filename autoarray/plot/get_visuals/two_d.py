@@ -142,7 +142,7 @@ class GetVisuals2D(AbstractGetVisuals):
             The collection of attributes that can be plotted by a `Plotter` object.
         """
 
-        visuals_via_mask = self.via_mask_from(mask=mapper.source_plane_data_grid.mask)
+        visuals_via_mask = self.via_mask_from(mask=mapper.mapper_grids.mask)
 
         mesh_grid = self.get(
             "mesh_grid", mapper.image_plane_mesh_grid, "mapper_image_plane_mesh_grid"
