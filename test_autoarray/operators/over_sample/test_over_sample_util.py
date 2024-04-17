@@ -6,11 +6,10 @@ import pytest
 
 
 def test__total_sub_pixels_2d_from():
-    mask_2d = np.array(
-        [[True, False, True], [False, False, False], [True, False, True]]
+    assert (
+        util.over_sample.total_sub_pixels_2d_from(sub_size=np.array([2, 2, 2, 2, 2]))
+        == 20
     )
-
-    assert util.over_sample.total_sub_pixels_2d_from(mask_2d, sub_size=2) == 20
 
 
 def test__native_sub_index_for_slim_sub_index_2d_from():
@@ -18,7 +17,7 @@ def test__native_sub_index_for_slim_sub_index_2d_from():
 
     sub_mask_index_for_sub_mask_1d_index = (
         util.over_sample.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=mask, sub_size=2
+            mask_2d=mask, sub_size=np.array([2])
         )
     )
 
@@ -31,7 +30,7 @@ def test__native_sub_index_for_slim_sub_index_2d_from():
 
     sub_mask_index_for_sub_mask_1d_index = (
         util.over_sample.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=mask, sub_size=2
+            mask_2d=mask, sub_size=np.array([2, 2, 2, 2, 2])
         )
     )
 
@@ -74,7 +73,7 @@ def test__native_sub_index_for_slim_sub_index_2d_from():
 
     sub_mask_index_for_sub_mask_1d_index = (
         util.over_sample.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=mask, sub_size=2
+            mask_2d=mask, sub_size=np.array([2, 2])
         )
     )
 
@@ -89,7 +88,7 @@ def test__slim_index_for_sub_slim_index_via_mask_2d_from():
 
     slim_index_for_sub_slim_index = (
         util.over_sample.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask, sub_size=2
+            mask, sub_size=np.array([2])
         )
     )
 
@@ -99,7 +98,7 @@ def test__slim_index_for_sub_slim_index_via_mask_2d_from():
 
     slim_index_for_sub_slim_index = (
         util.over_sample.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask, sub_size=2
+            mask, sub_size=np.array([2, 2, 2])
         )
     )
 
@@ -111,7 +110,7 @@ def test__slim_index_for_sub_slim_index_via_mask_2d_from():
 
     slim_index_for_sub_slim_index = (
         util.over_sample.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask, sub_size=3
+            mask, sub_size=np.array([3, 3, 3])
         )
     )
 
@@ -263,7 +262,7 @@ def test__grid_2d_slim_over_sampled_via_mask_from():
     mask = np.array([[True, True, False], [False, False, False], [True, True, False]])
 
     grid = aa.util.over_sample.grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2
+        mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=np.array([2, 2, 2, 2, 2])
     )
 
     assert (
@@ -297,7 +296,7 @@ def test__grid_2d_slim_over_sampled_via_mask_from():
     mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
     grid = aa.util.over_sample.grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=3
+        mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=np.array([3])
     )
 
     assert (
@@ -328,7 +327,7 @@ def test__grid_2d_slim_over_sampled_via_mask_from():
     )
 
     grid = aa.util.over_sample.grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2
+        mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=np.array([2, 2, 2, 2, 2])
     )
 
     assert (
@@ -362,7 +361,7 @@ def test__grid_2d_slim_over_sampled_via_mask_from():
     mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
     grid = aa.util.over_sample.grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d=mask, pixel_scales=(3.0, 6.0), sub_size=2, origin=(1.0, 1.0)
+        mask_2d=mask, pixel_scales=(3.0, 6.0), sub_size=np.array([2]), origin=(1.0, 1.0)
     )
 
     assert grid[0:4] == pytest.approx(

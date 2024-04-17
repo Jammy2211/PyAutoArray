@@ -17,7 +17,7 @@ from autoarray.structures.grids import grid_2d_util
 class MapperGrids:
     def __init__(
         self,
-        mask : Mask2D,
+        mask: Mask2D,
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,

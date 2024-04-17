@@ -141,11 +141,12 @@ class OverSamplingUniform(AbstractOverSampling):
 
 class OverSamplerUniform(AbstractOverSampler):
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
-
         self.mask = mask
 
         if isinstance(sub_size, int):
-            sub_size = Array2D(values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask)
+            sub_size = Array2D(
+                values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask
+            )
 
         self.sub_size = sub_size
 
@@ -170,7 +171,6 @@ class OverSamplerUniform(AbstractOverSampler):
 
     @cached_property
     def over_sampled_grid(self) -> Grid2DIrregular:
-
         grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,

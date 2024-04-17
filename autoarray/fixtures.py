@@ -405,7 +405,9 @@ def make_over_sampler_2d_7x7():
 
 
 def make_border_relocator_2d_7x7():
-    return aa.BorderRelocator(mask=make_mask_2d_7x7(), sub_size=np.array([2, 2, 2, 2, 2, 2, 2, 2, 2]))
+    return aa.BorderRelocator(
+        mask=make_mask_2d_7x7(), sub_size=np.array([2, 2, 2, 2, 2, 2, 2, 2, 2])
+    )
 
 
 def make_rectangular_mapper_7x7_3x3():

@@ -15,7 +15,7 @@ from autoarray.structures.grids import grid_2d_util
 
 
 def sub_slim_indexes_for_slim_index_via_mask_2d_from(
-    mask_2d: np.ndarray, sub_size : Array2D
+    mask_2d: np.ndarray, sub_size: Array2D
 ) -> [list]:
     """ "
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), compute a list of lists which, for every

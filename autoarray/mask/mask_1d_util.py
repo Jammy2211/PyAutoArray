@@ -3,7 +3,7 @@ import numpy as np
 from autoarray import numba_util
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def total_pixels_1d_from(mask_1d: np.ndarray) -> int:
     """
     Returns the total number of unmasked pixels in a mask.
@@ -37,7 +37,7 @@ def total_pixels_1d_from(mask_1d: np.ndarray) -> int:
     return total_regular_pixels
 
 
-#@numba_util.jit()
+# @numba_util.jit()
 def native_index_for_slim_index_1d_from(
     mask_1d: np.ndarray,
 ) -> np.ndarray:
