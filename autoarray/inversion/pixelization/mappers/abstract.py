@@ -262,7 +262,7 @@ class AbstractMapper(LinearObj):
             pix_sizes_for_sub_slim_index=self.pix_sizes_for_sub_slim_index,
             pix_weights_for_sub_slim_index=self.pix_weights_for_sub_slim_index,
             pix_pixels=self.params,
-            sub_size=self.over_sampler.sub_size,
+            sub_size=np.array(self.over_sampler.sub_size),
         )
 
         return UniqueMappings(
@@ -292,7 +292,7 @@ class AbstractMapper(LinearObj):
             pixels=self.pixels,
             total_mask_pixels=self.over_sampler.mask.pixels_in_mask,
             slim_index_for_sub_slim_index=self.slim_index_for_sub_slim_index,
-            sub_fraction=self.over_sampler.sub_fraction,
+            sub_fraction=np.array(self.over_sampler.sub_fraction),
         )
 
     def pixel_signals_from(self, signal_scale: float) -> np.ndarray:

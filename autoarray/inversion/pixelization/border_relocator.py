@@ -1,9 +1,11 @@
 from __future__ import annotations
 import numpy as np
+from typing import Union
 
 from autoconf import cached_property
 
 from autoarray.mask.mask_2d import Mask2D
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -14,7 +16,7 @@ from autoarray.structures.grids import grid_2d_util
 
 
 def sub_slim_indexes_for_slim_index_via_mask_2d_from(
-    mask_2d: np.ndarray, sub_size: int
+    mask_2d: np.ndarray, sub_size: Array2D
 ) -> [list]:
     """ "
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), compute a list of lists which, for every
@@ -30,7 +32,8 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
     mask_2d
         The mask whose indexes are mapped.
     sub_size
-        The sub-size of the grid on the mask, so that the sub-mask indexes can be computed correctly.
+        The size of the sub-grid in each mask pixel.
+
 
     Returns
     -------
@@ -51,7 +54,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
 
     slim_index_for_sub_slim_indexes = (
         over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=mask_2d, sub_size=sub_size
+            mask_2d=mask_2d, sub_size=np.array(sub_size)
         ).astype("int")
     )
 
@@ -62,7 +65,7 @@ def sub_slim_indexes_for_slim_index_via_mask_2d_from(
 
 
 def sub_border_pixel_slim_indexes_from(
-    mask_2d: np.ndarray, sub_size: int
+    mask_2d: np.ndarray, sub_size: Array2D
 ) -> np.ndarray:
     """
     Returns a slim array of shape [total_unmasked_border_pixels] listing all sub-borders pixel indexes in
@@ -102,7 +105,10 @@ def sub_border_pixel_slim_indexes_from(
     )
 
     sub_grid_2d_slim = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=sub_size, origin=(0.0, 0.0)
+        mask_2d=mask_2d,
+        pixel_scales=(1.0, 1.0),
+        sub_size=np.array(sub_size),
+        origin=(0.0, 0.0),
     )
     mask_centre = grid_2d_util.grid_2d_centre_from(grid_2d_slim=sub_grid_2d_slim)
 
@@ -123,8 +129,14 @@ def sub_border_pixel_slim_indexes_from(
 
 
 class BorderRelocator:
-    def __init__(self, mask: Mask2D, sub_size: int):
+    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
         self.mask = mask
+
+        if isinstance(sub_size, int):
+            sub_size = Array2D(
+                values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask
+            )
+
         self.sub_size = sub_size
 
     @cached_property
@@ -172,7 +184,7 @@ class BorderRelocator:
         return over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.sub_size,
+            sub_size=np.array(self.sub_size),
             origin=self.mask.origin,
         )
 
@@ -196,7 +208,7 @@ class BorderRelocator:
         """
         return self.sub_grid[self.sub_border_slim]
 
-    def relocated_grid_from(self, grid: "Grid2D") -> "Grid2D":
+    def relocated_grid_from(self, grid: Grid2DIrregular) -> Grid2DIrregular:
         """
         Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
         border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
@@ -223,13 +235,11 @@ class BorderRelocator:
         if len(self.sub_border_grid) == 0:
             return grid
 
-        return Grid2D(
+        return Grid2DIrregular(
             values=grid_2d_util.relocated_grid_via_jit_from(
                 grid=np.array(grid),
                 border_grid=np.array(grid[self.sub_border_slim]),
             ),
-            mask=grid.mask,
-            over_sampling=grid.over_sampling,
         )
 
     def relocated_mesh_grid_from(

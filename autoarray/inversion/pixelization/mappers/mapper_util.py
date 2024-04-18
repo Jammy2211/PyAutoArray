@@ -55,7 +55,7 @@ def data_slim_to_pixelization_unique_from(
     pix_sizes_for_sub_slim_index: np.ndarray,
     pix_weights_for_sub_slim_index,
     pix_pixels: int,
-    sub_size: int,
+    sub_size: np.ndarray,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Create an array describing the unique mappings between the sub-pixels of every slim data pixel and the pixelization
@@ -103,18 +103,23 @@ def data_slim_to_pixelization_unique_from(
 
     max_pix_mappings = int(np.max(pix_sizes_for_sub_slim_index))
 
-    data_to_pix_unique = -1 * np.ones((data_pixels, max_pix_mappings * sub_size**2))
-    data_weights = np.zeros((data_pixels, max_pix_mappings * sub_size**2))
+    # TODO : Work out if we can reduce size from np.max(sub_size) using sub_size of max_pix_mappings.
+
+    data_to_pix_unique = -1 * np.ones(
+        (data_pixels, max_pix_mappings * np.max(sub_size) ** 2)
+    )
+    data_weights = np.zeros((data_pixels, max_pix_mappings * np.max(sub_size) ** 2))
     pix_lengths = np.zeros(data_pixels)
     pix_check = -1 * np.ones(shape=pix_pixels)
+
+    ip_sub_start = 0
 
     for ip in range(data_pixels):
         pix_check[:] = -1
 
         pix_size = 0
 
-        ip_sub_start = ip * sub_size**2
-        ip_sub_end = ip_sub_start + sub_size**2
+        ip_sub_end = ip_sub_start + sub_size[ip] ** 2
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
             for pix_interp_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
@@ -122,13 +127,17 @@ def data_slim_to_pixelization_unique_from(
                 pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_interp_index]
 
                 if pix_check[pix] > -0.5:
-                    data_weights[ip, int(pix_check[pix])] += sub_fraction * pixel_weight
+                    data_weights[ip, int(pix_check[pix])] += (
+                        sub_fraction[ip] * pixel_weight
+                    )
 
                 else:
                     data_to_pix_unique[ip, pix_size] = pix
-                    data_weights[ip, pix_size] += sub_fraction * pixel_weight
+                    data_weights[ip, pix_size] += sub_fraction[ip] * pixel_weight
                     pix_check[pix] = pix_size
                     pix_size += 1
+
+        ip_sub_start = ip_sub_end
 
         pix_lengths[ip] = pix_size
 
@@ -597,7 +606,7 @@ def mapping_matrix_from(
     pixels: int,
     total_mask_pixels: int,
     slim_index_for_sub_slim_index: np.ndarray,
-    sub_fraction: float,
+    sub_fraction: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the mapping matrix, which is a matrix representing the mapping between every unmasked sub-pixel of the data
@@ -680,7 +689,9 @@ def mapping_matrix_from(
             pix_index = pix_indexes_for_sub_slim_index[sub_slim_index, pix_count]
             pix_weight = pix_weights_for_sub_slim_index[sub_slim_index, pix_count]
 
-            mapping_matrix[slim_index][pix_index] += sub_fraction * pix_weight
+            mapping_matrix[slim_index][pix_index] += (
+                sub_fraction[slim_index] * pix_weight
+            )
 
     return mapping_matrix
 

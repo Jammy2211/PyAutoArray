@@ -4,7 +4,7 @@ import numpy as np
 
 def test__data_to_pix_unique_from():
     image_pixels = 2
-    sub_size = 2
+    sub_size = np.array([2, 2])
 
     pix_index_for_sub_slim_index = np.array(
         [[0, -1], [0, -1], [0, -1], [0, -1], [0, -1], [0, -1], [0, -1], [0, -1]]

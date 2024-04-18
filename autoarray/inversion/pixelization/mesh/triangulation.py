@@ -12,6 +12,7 @@ from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 class Triangulation(AbstractMesh):
     def mapper_grids_from(
         self,
+        mask,
         border_relocator: Optional[BorderRelocator],
         source_plane_data_grid: Grid2D,
         source_plane_mesh_grid: Optional[Grid2DIrregular] = None,
@@ -90,6 +91,7 @@ class Triangulation(AbstractMesh):
             raise e
 
         return MapperGrids(
+            mask=mask,
             source_plane_data_grid=source_plane_data_grid,
             source_plane_mesh_grid=source_plane_mesh_grid,
             image_plane_mesh_grid=image_plane_mesh_grid,

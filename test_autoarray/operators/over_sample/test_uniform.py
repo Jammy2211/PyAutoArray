@@ -24,24 +24,96 @@ def make_indexes_2d_9x9():
     return aa.DeriveIndexes2D(mask=mask_2d)
 
 
-def test__sub_pixels_in_mask():
-    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
-
-    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=1)
-
-    assert over_sampling.sub_pixels_in_mask == 25
-
-    mask = aa.Mask2D.all_false(shape_native=(5, 5), pixel_scales=1.0)
+def test__from_sub_size_int():
+    mask = aa.Mask2D(
+        mask=[[True, True, True], [True, False, False], [True, True, False]],
+        pixel_scales=1.0,
+    )
 
     over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
 
-    assert over_sampling.sub_pixels_in_mask == 100
+    assert over_sampling.sub_size.slim == pytest.approx([2, 2, 2], 1.0e-4)
+    assert over_sampling.sub_size.native == pytest.approx(
+        np.array([[0, 0, 0], [0, 2, 2], [0, 0, 2]]), 1.0e-4
+    )
 
-    mask = aa.Mask2D.all_false(shape_native=(10, 10), pixel_scales=1.0)
 
-    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=3)
+def test__from_adapt():
+    mask = aa.Mask2D(
+        mask=[[True, True, True], [True, False, False], [True, True, False]],
+        pixel_scales=1.0,
+    )
 
-    assert over_sampling.sub_pixels_in_mask == 900
+    data = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
+    noise_map = aa.Array2D(values=[1.0, 2.0, 1.0], mask=mask)
+
+    over_sampling = aa.OverSamplingUniform.from_adapt(
+        data=data,
+        noise_map=noise_map,
+        signal_to_noise_cut=1.5,
+        sub_size_lower=2,
+        sub_size_upper=4,
+    )
+
+    assert over_sampling.sub_size == pytest.approx([2, 2, 4], 1.0e-4)
+
+    over_sampling = aa.OverSamplingUniform.from_adapt(
+        data=data,
+        noise_map=noise_map,
+        signal_to_noise_cut=0.5,
+        sub_size_lower=2,
+        sub_size_upper=4,
+    )
+
+    assert over_sampling.sub_size == pytest.approx([4, 4, 4], 1.0e-4)
+
+
+def test__sub_fraction():
+    mask = aa.Mask2D(
+        mask=[[False, False], [True, True]],
+        pixel_scales=1.0,
+    )
+
+    over_sampling = aa.OverSamplerUniform(
+        mask=mask, sub_size=aa.Array2D(values=[1, 2], mask=mask)
+    )
+
+    assert over_sampling.sub_fraction.slim == pytest.approx([1.0, 0.25], 1.0e-4)
+
+
+def test__over_sampled_grid():
+    mask = aa.Mask2D(
+        mask=[[False, False], [True, True]],
+        pixel_scales=1.0,
+    )
+
+    over_sampling = aa.OverSamplerUniform(
+        mask=mask, sub_size=aa.Array2D(values=[1, 2], mask=mask)
+    )
+
+    assert over_sampling.over_sampled_grid.native == pytest.approx(
+        np.array([[0.5, -0.5], [0.75, 0.25], [0.75, 0.75], [0.25, 0.25], [0.25, 0.75]]),
+        1.0e-4,
+    )
+
+
+def test__binned_array_2d_from():
+    mask = aa.Mask2D(
+        mask=[[False, False], [True, True]],
+        pixel_scales=1.0,
+    )
+
+    over_sampling = aa.OverSamplerUniform(
+        mask=mask, sub_size=aa.Array2D(values=[1, 2], mask=mask)
+    )
+
+    arr = np.array([1.0, 5.0, 7.0, 10.0, 10.0])
+
+    binned_array_2d = over_sampling.binned_array_2d_from(array=arr)
+
+    print(binned_array_2d.slim)
+
+    assert binned_array_2d.slim == pytest.approx(np.array([1.0, 8.0]), 1.0e-4)
 
 
 def test__sub_mask_index_for_sub_mask_1d_index():
@@ -55,7 +127,7 @@ def test__sub_mask_index_for_sub_mask_1d_index():
 
     sub_mask_index_for_sub_mask_1d_index = (
         aa.util.over_sample.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=np.array(mask), sub_size=2
+            mask_2d=np.array(mask), sub_size=np.array([2, 2, 2])
         )
     )
 
@@ -75,7 +147,7 @@ def test__slim_index_for_sub_slim_index():
 
     slim_index_for_sub_slim_index_util = (
         aa.util.over_sample.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=np.array(mask), sub_size=2
+            mask_2d=np.array(mask), sub_size=np.array([2, 2, 2, 2, 2, 2])
         )
     )
 

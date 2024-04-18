@@ -23,7 +23,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util():
     mesh_grid = aa.Mesh2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
 
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=grid, source_plane_mesh_grid=mesh_grid
+        mask=grid.mask, source_plane_data_grid=grid, source_plane_mesh_grid=mesh_grid
     )
 
     over_sampler = aa.OverSamplerUniform(mask=grid.mask, sub_size=1)
@@ -54,6 +54,7 @@ def test__pixel_signals_from__matches_util(grid_2d_7x7, image_7x7):
     over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)
 
     mapper_grids = aa.MapperGrids(
+        mask=grid_2d_7x7.mask,
         source_plane_data_grid=grid_2d_7x7,
         source_plane_mesh_grid=mesh_grid,
         adapt_data=image_7x7,

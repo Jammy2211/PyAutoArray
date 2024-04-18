@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union
 
 from autoconf import conf
 from autoconf import cached_property
@@ -7,19 +8,16 @@ from autoarray.mask.mask_2d import Mask2D
 from autoarray.operators.over_sampling.abstract import AbstractOverSampling
 from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
-from autoarray.mask import mask_2d_util
 
 from autoarray.operators.over_sampling import over_sample_util
 
-from autoarray.numpy_wrapper import numpy as npw
-
 
 class OverSamplingUniform(AbstractOverSampling):
-    def __init__(self, sub_size: int = 1):
+    def __init__(self, sub_size: Union[int, Array2D]):
         """
-        Over samples grid calculations using a uniform sub-grid that is the same size in every pixel.
+        Over samples grid calculations using a uniform sub-grid.
 
         When a 2D grid of (y,x) coordinates is input into a function, the result is evaluated at every coordinate
         on the grid. When the grid is paired to a 2D image (e.g. an `Array2D`) the solution needs to approximate
@@ -27,16 +25,13 @@ class OverSamplingUniform(AbstractOverSampling):
 
         This object inputs a uniform sub-grid, where every image-pixel is split into a uniform grid of sub-pixels. The
         function is evaluated at every sub-pixel, and the final value in each pixel is computed by summing the
-        contribution from all sub-pixels. The sub-grid is the same size in every pixel.
+        contribution from all sub-pixels.
 
         This is the simplest over-sampling method, but may not provide precise solutions for functions that vary
         significantly within a pixel. To achieve precision in these pixels a high `sub_size` is required, which can
         be computationally expensive as it is applied to every pixel.
 
-        - ``native_for_slim``: returns an array of shape [total_unmasked_pixels*sub_size] that
-        maps every unmasked sub-pixel to its corresponding native 2D pixel using its (y,x) pixel indexes.
-
-        **Case 2 (sub-size>1, slim)**
+        **Example**
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (y,x)
         coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid2D is therefore stored as an ndarray
@@ -115,12 +110,25 @@ class OverSamplingUniform(AbstractOverSampling):
                      grid[7] = [0.25, -0.5]
                      grid[8] = [0.25, -0.25]
 
-        **Case 4 (sub_size>1 native)**
-
-        The properties of this grid can be derived by combining Case's 2 and 3 above, whereby the grid is stored as
-        an ndarray of shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
-
         All sub-pixels in masked pixels have values (0.0, 0.0).
+
+        __Adaptive Oversampling__
+
+        By default, the sub-grid is the same size in every pixel (e.g. the value of `sub_size` is an integer that
+        defines the size of the sub-grid for every pixel).
+
+        However, the `sub_size` can also be input as an `Array2D`, with varying integer values for each pixel.
+        This is called adaptive over-sampling and is used to adapt the over-sampling to the bright regions of the
+        data, saving computational time.
+
+        __Pixelization__
+
+        For pixelizations performed in the inversion module, over sampling is equally important. Now, the over
+        sampling maps multiple data sub-pixels to pixels in the pixelization, where mappings are performed fractionally
+        based on the sub-grid sizes.
+
+        The over sampling class has functions dedicated to mapping between the sub-grid and pixel-grid, for example
+        `sub_mask_native_for_sub_mask_slim` and `slim_for_sub_slim`.
 
         Parameters
         ----------
@@ -130,6 +138,60 @@ class OverSamplingUniform(AbstractOverSampling):
 
         self.sub_size = sub_size
 
+    @classmethod
+    def from_adapt(
+        cls,
+        data: Array2D,
+        noise_map: Array2D,
+        signal_to_noise_cut: float = 5.0,
+        sub_size_lower: int = 2,
+        sub_size_upper: int = 4,
+    ):
+        """
+        Returns an adaptive sub-grid size based on the signal-to-noise of the data.
+
+        The adaptive sub-grid size is computed as follows:
+
+        1) The signal-to-noise of every pixel is computed as the data divided by the noise-map.
+        2) For all pixels with signal-to-noise above the signal-to-noise cut, the sub-grid size is set to the upper
+          value. For all other pixels, the sub-grid size is set to the lower value.
+
+        This scheme can produce low sub-size values over entire datasets if the data has a low signal-to-noise. However,
+        just because the data has a low signal-to-noise does not mean that the sub-grid size should be low.
+
+        To mitigate this, the signal-to-noise cut is set to the maximum signal-to-noise of the data divided by 2.0 if
+        it this value is below the signal-to-noise cut.
+
+        Parameters
+        ----------
+        data
+            The data which is to be fitted via a calculation using this over-sampling sub-grid.
+        noise_map
+            The noise-map of the data.
+        signal_to_noise_cut
+            The signal-to-noise cut which defines whether the sub-grid size is the upper or lower value.
+        sub_size_lower
+            The sub-grid size for pixels with signal-to-noise below the signal-to-noise cut.
+        sub_size_upper
+            The sub-grid size for pixels with signal-to-noise above the signal-to-noise cut.
+
+        Returns
+        -------
+        The adaptive sub-grid sizes.
+        """
+        signal_to_noise = data / noise_map
+
+        if np.max(signal_to_noise) < (2.0 * signal_to_noise_cut):
+            signal_to_noise_cut = np.max(signal_to_noise) / 2.0
+
+        sub_size = np.where(
+            signal_to_noise > signal_to_noise_cut, sub_size_upper, sub_size_lower
+        )
+
+        sub_size = Array2D(values=sub_size, mask=data.mask)
+
+        return cls(sub_size=sub_size)
+
     def over_sampler_from(self, mask: Mask2D) -> "OverSamplerUniform":
         return OverSamplerUniform(
             mask=mask,
@@ -138,62 +200,68 @@ class OverSamplingUniform(AbstractOverSampling):
 
 
 class OverSamplerUniform(AbstractOverSampler):
-    def __init__(self, mask: Mask2D, sub_size: int):
+    def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
+        """
+         Over samples grid calculations using a uniform sub-grid.
+
+         See the class `OverSamplingUniform` for a description of how the over-sampling works in full.
+
+         The class `OverSamplingUniform` is used for the high level API, whereby this is where users input their
+         preferred over-sampling configuration. This class, `OverSamplerUniform`, contains the functionality
+         which actually performs the over-sampling calculations, but is hidden from the user.
+
+        Parameters
+        ----------
+        mask
+            The mask defining the 2D region where the over-sampled grid is computed.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        """
         self.mask = mask
+
+        if isinstance(sub_size, int):
+            sub_size = Array2D(
+                values=np.full(fill_value=sub_size, shape=mask.shape_slim), mask=mask
+            )
+
         self.sub_size = sub_size
 
     @property
-    def over_sampling(self):
-        return OverSamplingUniform(sub_size=self.sub_size)
+    def sub_total(self):
+        """
+        The total number of sub-pixels in the entire mask.
+        """
+        return int(np.sum(self.sub_size**2))
 
     @property
-    def sub_length(self) -> int:
+    def sub_length(self) -> Array2D:
         """
         The total number of sub-pixels in a give pixel,
 
         For example, a sub-size of 3x3 means every pixel has 9 sub-pixels.
         """
-        return int(self.sub_size**self.mask.dimensions)
+        return self.sub_size**self.mask.dimensions
 
     @property
-    def sub_fraction(self) -> float:
+    def sub_fraction(self) -> Array2D:
         """
         The fraction of the area of a pixel every sub-pixel contains.
 
         For example, a sub-size of 3x3 mean every pixel contains 1/9 the area.
         """
+
         return 1.0 / self.sub_length
 
-    @property
-    def sub_pixels_in_mask(self) -> int:
-        """
-        The total number of unmasked sub-pixels (values are `False`) in the mask.
-        """
-        return self.sub_size**self.mask.dimensions * self.mask.pixels_in_mask
-
     @cached_property
-    def over_sampled_grid(self) -> Grid2D:
-        sub_grid_1d = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+    def over_sampled_grid(self) -> Grid2DIrregular:
+        grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
             mask_2d=np.array(self.mask),
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.sub_size,
+            sub_size=np.array(self.sub_size).astype("int"),
             origin=self.mask.origin,
         )
 
-        over_sample_mask = over_sample_util.oversample_mask_2d_from(
-            mask=np.array(self.mask), sub_size=self.sub_size
-        )
-
-        pixel_scales = (
-            self.mask.pixel_scales[0] / self.sub_size,
-            self.mask.pixel_scales[1] / self.sub_size,
-        )
-
-        mask = Mask2D(
-            mask=over_sample_mask, pixel_scales=pixel_scales, origin=self.mask.origin
-        )
-
-        return Grid2D(values=sub_grid_1d, mask=mask, over_sampling=self.over_sampling)
+        return Grid2DIrregular(values=grid)
 
     def binned_array_2d_from(self, array: Array2D) -> "Array2D":
         """
@@ -218,13 +286,14 @@ class OverSamplerUniform(AbstractOverSampler):
         except AttributeError:
             pass
 
-        binned_array_1d = npw.multiply(
-            self.sub_fraction,
-            array.reshape(-1, self.sub_length).sum(axis=1),
+        binned_array_2d = over_sample_util.binned_array_2d_from(
+            array_2d=np.array(array),
+            mask_2d=np.array(self.mask),
+            sub_size=np.array(self.sub_size),
         )
 
         return Array2D(
-            values=binned_array_1d,
+            values=binned_array_2d,
             mask=self.mask,
         )
 
@@ -235,8 +304,6 @@ class OverSamplerUniform(AbstractOverSampler):
             values = func(obj, over_sampled_grid, *args, **kwargs)
         else:
             values = func(over_sampled_grid, *args, **kwargs)
-
-        #        values = Array2D(values=values, mask=over_sampled_grid.mask, store_native=True)
 
         return self.binned_array_2d_from(array=values)
 
@@ -295,7 +362,7 @@ class OverSamplerUniform(AbstractOverSampler):
             print(derive_indexes_2d.sub_mask_native_for_sub_mask_slim)
         """
         return over_sample_util.native_sub_index_for_slim_sub_index_2d_from(
-            mask_2d=self.mask.array, sub_size=self.sub_size
+            mask_2d=self.mask.array, sub_size=np.array(self.sub_size)
         ).astype("int")
 
     @cached_property
@@ -348,54 +415,5 @@ class OverSamplerUniform(AbstractOverSampler):
             print(derive_indexes_2d.slim_for_sub_slim)
         """
         return over_sample_util.slim_index_for_sub_slim_index_via_mask_2d_from(
-            mask_2d=np.array(self.mask), sub_size=self.sub_size
+            mask_2d=np.array(self.mask), sub_size=np.array(self.sub_size)
         ).astype("int")
-
-    @property
-    def sub(self) -> np.ndarray:
-        """
-        Returns the sub-mask of the ``Mask2D``, which is the mask on the sub-grid which has ``False``  / ``True``
-        entries where the original mask is ``False`` / ``True``.
-
-        For example, for the following ``Mask2D``:
-
-        ::
-           [[ True,  True],
-            [False, False]]
-
-        The sub-mask (given via ``mask_2d.derive_mask.sub``) for a ``sub_size=2`` is:
-
-        ::
-            [[True,   True,  True,  True],
-             [True,   True,  True,  True],
-             [False, False, False, False],
-             [False, False, False, False]]
-
-        Examples
-        --------
-
-        .. code-block:: python
-
-            import autoarray as aa
-
-            mask_2d = aa.Mask2D(
-                mask=[
-                     [ True,  True],
-                     [False, False]
-                ],
-                pixel_scales=1.0,
-            )
-
-            derive_mask_2d = aa.DeriveMask2D(mask=mask_2d)
-
-            print(derive_mask_2d.sub)
-        """
-        sub_shape = (
-            self.mask.shape[0] * self.sub_size,
-            self.mask.shape[1] * self.sub_size,
-        )
-
-        return mask_2d_util.mask_2d_via_shape_native_and_native_for_slim(
-            shape_native=sub_shape,
-            native_for_slim=self.derive_indexes.sub_mask_native_for_sub_mask_slim,
-        ).astype("bool")

@@ -8,6 +8,7 @@ from autoarray.plot.visuals.two_d import Visuals2D
 from autoarray.plot.include.two_d import Include2D
 from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
+from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.inversion.plot.mapper_plotters import MapperPlotter
 
@@ -111,6 +112,7 @@ class InversionPlotter(Plotter):
         reconstruction: bool = False,
         errors: bool = False,
         regularization_weights: bool = False,
+        sub_pixels_per_image_pixels: bool = False,
         mesh_pixels_per_image_pixels: bool = False,
         zoom_to_brightest: bool = True,
         interpolate_to_uniform: bool = False,
@@ -131,6 +133,9 @@ class InversionPlotter(Plotter):
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane reconstruction.
         errors
             Whether to make a 2D plot (via `imshow` or `fill`) of the mapper's source-plane errors.
+        sub_pixels_per_image_pixels
+            Whether to make a 2D plot (via `imshow`) of the number of sub pixels per image pixels in the 2D
+            data's mask.
         mesh_pixels_per_image_pixels
             Whether to make a 2D plot (via `imshow`) of the number of image-mesh pixels per image pixels in the 2D
             data's mask (only valid for pixelizations which use an `image_mesh`, e.g. Hilbert, KMeans).
@@ -216,6 +221,21 @@ class InversionPlotter(Plotter):
 
             except TypeError:
                 pass
+
+        if sub_pixels_per_image_pixels:
+            sub_size = Array2D(
+                values=mapper_plotter.mapper.over_sampler.sub_size,
+                mask=self.inversion.dataset.mask,
+            )
+
+            self.mat_plot_2d.plot_array(
+                array=sub_size,
+                visuals_2d=self.get_visuals_2d_for_data(),
+                auto_labels=AutoLabels(
+                    title="Sub Pixels Per Image Pixels",
+                    filename="sub_pixels_per_image_pixels",
+                ),
+            )
 
         if mesh_pixels_per_image_pixels:
             try:
@@ -340,21 +360,25 @@ class InversionPlotter(Plotter):
 
         self.include_2d._mapper_image_plane_mesh_grid = mapper_image_plane_mesh_grid
 
+        self.figures_2d_of_pixelization(
+            pixelization_index=mapper_index, sub_pixels_per_image_pixels=True
+        )
+
         self.set_title(label="Errors (Unzoomed)")
         self.figures_2d_of_pixelization(
             pixelization_index=mapper_index, errors=True, zoom_to_brightest=False
         )
 
-        self.set_title(label="Regularization Weights (Unzoomed)")
-        try:
-            self.figures_2d_of_pixelization(
-                pixelization_index=mapper_index,
-                regularization_weights=True,
-                zoom_to_brightest=False,
-            )
-        except IndexError:
-            pass
-        self.set_title(label=None)
+        # self.set_title(label="Regularization Weights (Unzoomed)")
+        # try:
+        #     self.figures_2d_of_pixelization(
+        #         pixelization_index=mapper_index,
+        #         regularization_weights=True,
+        #         zoom_to_brightest=False,
+        #     )
+        # except IndexError:
+        #     pass
+        # self.set_title(label=None)
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{mapper_index}"

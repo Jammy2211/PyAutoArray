@@ -23,6 +23,7 @@ class MockPixelization(Pixelization):
     # noinspection PyUnusedLocal,PyShadowingNames
     def mapper_grids_from(
         self,
+        mask,
         source_plane_data_grid,
         source_plane_mesh_grid,
         image_plane_mesh_grid=None,

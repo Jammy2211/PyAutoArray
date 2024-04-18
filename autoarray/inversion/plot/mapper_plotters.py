@@ -117,8 +117,17 @@ class MapperPlotter(Plotter):
                 pix_indexes=self.visuals_2d.pix_indexes
             )
 
+            from autoarray.operators.over_sampling import over_sample_util
+
+            grid = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
+                mask_2d=np.array(self.mapper.mapper_grids.mask),
+                pixel_scales=self.mapper.mapper_grids.mask.pixel_scales,
+                sub_size=np.array(self.mapper.over_sampler.sub_size),
+                origin=self.mapper.mapper_grids.mask.origin,
+            )
+
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.source_plane_data_grid.mask.derive_grid.unmasked,
+                grid=np.array(grid),
                 indexes=indexes,
             )
 

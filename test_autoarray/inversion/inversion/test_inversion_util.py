@@ -144,7 +144,7 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
         pix_sizes_for_sub_slim_index=pix_indexes_for_sub_slim_index_sizes,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_pixels=3,
-        sub_size=1,
+        sub_size=np.array([1, 1, 1]),
     )
 
     reconstruction = np.array([1.0, 1.0, 2.0])
@@ -176,7 +176,7 @@ def test__mapped_reconstructed_data_via_image_to_pix_unique_from():
         pix_sizes_for_sub_slim_index=pix_indexes_for_sub_slim_index_sizes,
         pix_weights_for_sub_slim_index=pix_weights_for_sub_slim_index,
         pix_pixels=3,
-        sub_size=2,
+        sub_size=np.array([2, 2, 2]),
     )
 
     reconstruction = np.array([1.0, 1.0, 2.0])

@@ -120,12 +120,14 @@ def test__curvature_matrix__via_w_tilde__identical_to_mapping():
     mesh_1 = aa.mesh.Rectangular(shape=(4, 4))
 
     mapper_grids_0 = mesh_0.mapper_grids_from(
+        mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
     )
 
     mapper_grids_1 = mesh_1.mapper_grids_from(
+        mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=None,
@@ -199,12 +201,14 @@ def test__curvature_matrix_via_w_tilde__includes_source_interpolation__identical
     )
 
     mapper_grids_0 = mesh_0.mapper_grids_from(
+        mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_0,
     )
 
     mapper_grids_1 = mesh_1.mapper_grids_from(
+        mask=mask,
         border_relocator=None,
         source_plane_data_grid=grid,
         source_plane_mesh_grid=image_mesh_grid_1,

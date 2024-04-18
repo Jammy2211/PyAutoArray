@@ -146,7 +146,9 @@ def test__interpolated_array_from(grid_2d_7x7):
     mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid_ndarray)
 
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
+        mask=grid_2d_7x7.mask,
+        source_plane_data_grid=grid_2d_7x7,
+        source_plane_mesh_grid=mesh_grid,
     )
 
     mapper = aa.Mapper(
@@ -178,7 +180,9 @@ def test__mapped_to_source_from(grid_2d_7x7):
     mesh_grid = aa.Mesh2DDelaunay(values=mesh_grid)
 
     mapper_grids = aa.MapperGrids(
-        source_plane_data_grid=grid_2d_7x7, source_plane_mesh_grid=mesh_grid
+        mask=grid_2d_7x7.mask,
+        source_plane_data_grid=grid_2d_7x7,
+        source_plane_mesh_grid=mesh_grid,
     )
 
     over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)

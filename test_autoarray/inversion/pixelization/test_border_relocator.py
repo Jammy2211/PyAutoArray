@@ -21,7 +21,9 @@ def test__sub_border_pixel_slim_indexes_from():
         ]
     )
 
-    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=1)
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(
+        mask_2d=mask, sub_size=np.array([1])
+    )
 
     assert (sub_border_pixels == np.array([0])).all()
 
@@ -37,7 +39,9 @@ def test__sub_border_pixel_slim_indexes_from():
         ]
     )
 
-    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=1)
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(
+        mask_2d=mask, sub_size=np.array([1, 1, 1])
+    )
 
     assert (sub_border_pixels == np.array([0, 1, 2])).all()
 
@@ -53,7 +57,9 @@ def test__sub_border_pixel_slim_indexes_from():
         ]
     )
 
-    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=1)
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(
+        mask_2d=mask, sub_size=np.array([1, 1, 1, 1, 1, 1, 1, 1, 1])
+    )
 
     assert (sub_border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -69,7 +75,9 @@ def test__sub_border_pixel_slim_indexes_from():
         ]
     )
 
-    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(
+        mask_2d=mask, sub_size=np.array([2])
+    )
 
     assert (sub_border_pixels == np.array([3])).all()
 
@@ -85,7 +93,9 @@ def test__sub_border_pixel_slim_indexes_from():
         ]
     )
 
-    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(
+        mask_2d=mask, sub_size=np.array([2, 2, 2, 2, 2, 2, 2, 2, 2])
+    )
 
     assert (sub_border_pixels == np.array([0, 5, 9, 14, 23, 26, 31, 35])).all()
 
@@ -101,7 +111,9 @@ def test__sub_border_pixel_slim_indexes_from():
         ]
     )
 
-    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=3)
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(
+        mask_2d=mask, sub_size=np.array([3, 3, 3, 3, 3, 3, 3, 3, 3])
+    )
 
     assert (sub_border_pixels == np.array([0, 11, 20, 33, 53, 60, 71, 80])).all()
 
@@ -120,7 +132,45 @@ def test__sub_border_pixel_slim_indexes_from():
         ]
     )
 
-    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(
+        mask_2d=mask,
+        sub_size=np.array(
+            [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+            ]
+        ),
+    )
 
     assert (
         sub_border_pixels
@@ -168,7 +218,45 @@ def test__sub_border_pixel_slim_indexes_from():
         ]
     )
 
-    sub_border_pixels = sub_border_pixel_slim_indexes_from(mask_2d=mask, sub_size=2)
+    sub_border_pixels = sub_border_pixel_slim_indexes_from(
+        mask_2d=mask,
+        sub_size=np.array(
+            [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+            ]
+        ),
+    )
 
     assert (
         sub_border_pixels
@@ -220,10 +308,12 @@ def test__sub_border_slim():
 
     sub_border_flat_indexes_util = sub_border_pixel_slim_indexes_from(
         mask_2d=np.array(mask),
-        sub_size=2,
+        sub_size=np.array(mask.pixels_in_mask * [2]),
     )
 
-    border_relocator = aa.BorderRelocator(mask=mask, sub_size=2)
+    border_relocator = aa.BorderRelocator(
+        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    )
 
     assert border_relocator.sub_border_slim == pytest.approx(
         sub_border_flat_indexes_util, 1e-4
@@ -235,11 +325,15 @@ def test__relocated_grid_from__inside_border_no_relocations():
         shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1)
     )
 
-    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
+    over_sampling = aa.OverSamplerUniform(
+        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    )
     grid = over_sampling.over_sampled_grid
     grid[1, :] = [0.1, 0.1]
 
-    border_relocator = aa.BorderRelocator(mask=mask, sub_size=2)
+    border_relocator = aa.BorderRelocator(
+        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    )
 
     relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 
@@ -251,11 +345,15 @@ def test__relocated_grid_from__outside_border_includes_relocations():
         shape_native=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1)
     )
 
-    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
+    over_sampling = aa.OverSamplerUniform(
+        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    )
     grid = over_sampling.over_sampled_grid
     grid[1, :] = [10.1, 0.1]
 
-    border_relocator = aa.BorderRelocator(mask=mask, sub_size=2)
+    border_relocator = aa.BorderRelocator(
+        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    )
 
     relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 
@@ -270,11 +368,15 @@ def test__relocated_grid_from__positive_origin_included_in_relocate():
         centre=(1.0, 1.0),
     )
 
-    over_sampling = aa.OverSamplerUniform(mask=mask, sub_size=2)
+    over_sampling = aa.OverSamplerUniform(
+        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    )
     grid = over_sampling.over_sampled_grid
     grid[1, :] = [11.1, 1.0]
 
-    border_relocator = aa.BorderRelocator(mask=mask, sub_size=2)
+    border_relocator = aa.BorderRelocator(
+        mask=mask, sub_size=np.array(mask.pixels_in_mask * [2])
+    )
 
     relocated_grid = border_relocator.relocated_grid_from(grid=grid)
 

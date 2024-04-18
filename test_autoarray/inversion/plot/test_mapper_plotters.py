@@ -28,7 +28,7 @@ def test__get_2d__via_mapper_for_data_from(rectangular_mapper_7x7_3x3):
     )
 
     assert get_2d.origin.in_list == [(0.0, 0.0)]
-    assert (get_2d.mask == rectangular_mapper_7x7_3x3.source_plane_data_grid.mask).all()
+    assert (get_2d.mask == rectangular_mapper_7x7_3x3.mapper_grids.mask).all()
     assert get_2d.grid == None
 
     include = aplt.Include2D(
@@ -158,9 +158,7 @@ def test__subplot_image_and_mapper(
     plot_path,
     plot_patch,
 ):
-    visuals_2d = aplt.Visuals2D(
-        indexes=[[(0, 0), (0, 1)], [(1, 2)]], pix_indexes=[[0, 1], [2]]
-    )
+    visuals_2d = aplt.Visuals2D(indexes=[0, 1, 2], pix_indexes=[[0, 1], [2]])
 
     mapper_plotter = aplt.MapperPlotter(
         mapper=rectangular_mapper_7x7_3x3,

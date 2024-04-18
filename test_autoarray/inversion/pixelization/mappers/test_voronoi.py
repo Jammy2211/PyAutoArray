@@ -15,6 +15,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     )
 
     mapper_grids = aa.MapperGrids(
+        mask=grid_2d_7x7.mask,
         source_plane_data_grid=grid_2d_7x7,
         source_plane_mesh_grid=source_plane_mesh_grid,
     )
@@ -49,6 +50,7 @@ def test__pix_indexes_for_sub_slim_index__matches_util(grid_2d_7x7):
     )
 
     mapper_grids = aa.MapperGrids(
+        mask=grid_2d_7x7.mask,
         source_plane_data_grid=grid_2d_7x7,
         source_plane_mesh_grid=source_plane_mesh_grid,
     )
