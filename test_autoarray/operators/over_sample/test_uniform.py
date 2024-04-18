@@ -24,6 +24,7 @@ def make_indexes_2d_9x9():
     return aa.DeriveIndexes2D(mask=mask_2d)
 
 
+
 def test__from_sub_size_int():
     mask = aa.Mask2D(
         mask=[[True, True, True], [True, False, False], [True, True, False]],
@@ -36,6 +37,37 @@ def test__from_sub_size_int():
     assert over_sampling.sub_size.native == pytest.approx(
         np.array([[0, 0, 0], [0, 2, 2], [0, 0, 2]]), 1.0e-4
     )
+
+
+def test__from_adapt():
+
+    mask = aa.Mask2D(
+        mask=[[True, True, True], [True, False, False], [True, True, False]],
+        pixel_scales=1.0,
+    )
+
+    data = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
+    noise_map = aa.Array2D(values=[1.0, 2.0, 1.0], mask=mask)
+
+    over_sampling = aa.OverSamplingUniform.from_adapt(
+        data=data,
+        noise_map=noise_map,
+        signal_to_noise_cut=1.5,
+        sub_size_lower=2,
+        sub_size_upper=4,
+    )
+
+    assert over_sampling.sub_size == pytest.approx([2, 2, 4], 1.0e-4)
+
+    over_sampling = aa.OverSamplingUniform.from_adapt(
+        data=data,
+        noise_map=noise_map,
+        signal_to_noise_cut=0.5,
+        sub_size_lower=2,
+        sub_size_upper=4,
+    )
+
+    assert over_sampling.sub_size == pytest.approx([4, 4, 4], 1.0e-4)
 
 
 def test__sub_fraction():

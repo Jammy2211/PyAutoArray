@@ -16,7 +16,7 @@ from autoarray.operators.over_sampling import over_sample_util
 
 
 class OverSamplingUniform(AbstractOverSampling):
-    def __init__(self, sub_size: int = 1):
+    def __init__(self, sub_size: Union[int, Array2D]):
         """
         Over samples grid calculations using a uniform sub-grid that is the same size in every pixel.
 
@@ -128,6 +128,20 @@ class OverSamplingUniform(AbstractOverSampling):
         """
 
         self.sub_size = sub_size
+
+    @classmethod
+    def from_adapt(cls, data : Array2D, noise_map : Array2D, signal_to_noise_cut : float = 5.0, sub_size_lower : int = 2, sub_size_upper : int = 4):
+
+        signal_to_noise = data / noise_map
+
+        if np.max(signal_to_noise) < (2.0 * signal_to_noise_cut):
+            signal_to_noise_cut = np.max(signal_to_noise) / 2.0
+
+        sub_size = np.where(signal_to_noise > signal_to_noise_cut, sub_size_upper, sub_size_lower)
+
+        sub_size = Array2D(values=sub_size, mask=data.mask)
+
+        return cls(sub_size=sub_size)
 
     def over_sampler_from(self, mask: Mask2D) -> "OverSamplerUniform":
         return OverSamplerUniform(
