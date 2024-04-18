@@ -17,7 +17,7 @@ from autoarray.operators.over_sampling import over_sample_util
 class OverSamplingUniform(AbstractOverSampling):
     def __init__(self, sub_size: Union[int, Array2D]):
         """
-        Over samples grid calculations using a uniform sub-grid that is the same size in every pixel.
+        Over samples grid calculations using a uniform sub-grid.
 
         When a 2D grid of (y,x) coordinates is input into a function, the result is evaluated at every coordinate
         on the grid. When the grid is paired to a 2D image (e.g. an `Array2D`) the solution needs to approximate
@@ -25,16 +25,13 @@ class OverSamplingUniform(AbstractOverSampling):
 
         This object inputs a uniform sub-grid, where every image-pixel is split into a uniform grid of sub-pixels. The
         function is evaluated at every sub-pixel, and the final value in each pixel is computed by summing the
-        contribution from all sub-pixels. The sub-grid is the same size in every pixel.
+        contribution from all sub-pixels.
 
         This is the simplest over-sampling method, but may not provide precise solutions for functions that vary
         significantly within a pixel. To achieve precision in these pixels a high `sub_size` is required, which can
         be computationally expensive as it is applied to every pixel.
 
-        - ``native_for_slim``: returns an array of shape [total_unmasked_pixels*sub_size] that
-        maps every unmasked sub-pixel to its corresponding native 2D pixel using its (y,x) pixel indexes.
-
-        **Case 2 (sub-size>1, slim)**
+        **Example**
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (y,x)
         coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid2D is therefore stored as an ndarray
@@ -113,12 +110,25 @@ class OverSamplingUniform(AbstractOverSampling):
                      grid[7] = [0.25, -0.5]
                      grid[8] = [0.25, -0.25]
 
-        **Case 4 (sub_size>1 native)**
-
-        The properties of this grid can be derived by combining Case's 2 and 3 above, whereby the grid is stored as
-        an ndarray of shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
-
         All sub-pixels in masked pixels have values (0.0, 0.0).
+
+        __Adaptive Oversampling__
+
+        By default, the sub-grid is the same size in every pixel (e.g. the value of `sub_size` is an integer that
+        defines the size of the sub-grid for every pixel).
+
+        However, the `sub_size` can also be input as an `Array2D`, with varying integer values for each pixel.
+        This is called adaptive over-sampling and is used to adapt the over-sampling to the bright regions of the
+        data, saving computational time.
+
+        __Pixelization__
+
+        For pixelizations performed in the inversion module, over sampling is equally important. Now, the over
+        sampling maps multiple data sub-pixels to pixels in the pixelization, where mappings are performed fractionally
+        based on the sub-grid sizes.
+
+        The over sampling class has functions dedicated to mapping between the sub-grid and pixel-grid, for example
+        `sub_mask_native_for_sub_mask_slim` and `slim_for_sub_slim`.
 
         Parameters
         ----------
@@ -191,6 +201,22 @@ class OverSamplingUniform(AbstractOverSampling):
 
 class OverSamplerUniform(AbstractOverSampler):
     def __init__(self, mask: Mask2D, sub_size: Union[int, Array2D]):
+        """
+         Over samples grid calculations using a uniform sub-grid.
+
+         See the class `OverSamplingUniform` for a description of how the over-sampling works in full.
+
+         The class `OverSamplingUniform` is used for the high level API, whereby this is where users input their
+         preferred over-sampling configuration. This class, `OverSamplerUniform`, contains the functionality
+         which actually performs the over-sampling calculations, but is hidden from the user.
+
+        Parameters
+        ----------
+        mask
+            The mask defining the 2D region where the over-sampled grid is computed.
+        sub_size
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        """
         self.mask = mask
 
         if isinstance(sub_size, int):
