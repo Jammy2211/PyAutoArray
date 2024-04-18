@@ -105,7 +105,10 @@ def sub_border_pixel_slim_indexes_from(
     )
 
     sub_grid_2d_slim = over_sample_util.grid_2d_slim_over_sampled_via_mask_from(
-        mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=np.array(sub_size), origin=(0.0, 0.0)
+        mask_2d=mask_2d,
+        pixel_scales=(1.0, 1.0),
+        sub_size=np.array(sub_size),
+        origin=(0.0, 0.0),
     )
     mask_centre = grid_2d_util.grid_2d_centre_from(grid_2d_slim=sub_grid_2d_slim)
 

@@ -223,8 +223,10 @@ class InversionPlotter(Plotter):
                 pass
 
         if sub_pixels_per_image_pixels:
-
-            sub_size = Array2D(values=mapper_plotter.mapper.over_sampler.sub_size, mask=self.inversion.dataset.mask)
+            sub_size = Array2D(
+                values=mapper_plotter.mapper.over_sampler.sub_size,
+                mask=self.inversion.dataset.mask,
+            )
 
             self.mat_plot_2d.plot_array(
                 array=sub_size,

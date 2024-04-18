@@ -14,7 +14,6 @@ from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.operators.over_sampling import over_sample_util
 
 
-
 class OverSamplingUniform(AbstractOverSampling):
     def __init__(self, sub_size: Union[int, Array2D]):
         """
@@ -130,14 +129,54 @@ class OverSamplingUniform(AbstractOverSampling):
         self.sub_size = sub_size
 
     @classmethod
-    def from_adapt(cls, data : Array2D, noise_map : Array2D, signal_to_noise_cut : float = 5.0, sub_size_lower : int = 2, sub_size_upper : int = 4):
+    def from_adapt(
+        cls,
+        data: Array2D,
+        noise_map: Array2D,
+        signal_to_noise_cut: float = 5.0,
+        sub_size_lower: int = 2,
+        sub_size_upper: int = 4,
+    ):
+        """
+        Returns an adaptive sub-grid size based on the signal-to-noise of the data.
 
+        The adaptive sub-grid size is computed as follows:
+
+        1) The signal-to-noise of every pixel is computed as the data divided by the noise-map.
+        2) For all pixels with signal-to-noise above the signal-to-noise cut, the sub-grid size is set to the upper
+          value. For all other pixels, the sub-grid size is set to the lower value.
+
+        This scheme can produce low sub-size values over entire datasets if the data has a low signal-to-noise. However,
+        just because the data has a low signal-to-noise does not mean that the sub-grid size should be low.
+
+        To mitigate this, the signal-to-noise cut is set to the maximum signal-to-noise of the data divided by 2.0 if
+        it this value is below the signal-to-noise cut.
+
+        Parameters
+        ----------
+        data
+            The data which is to be fitted via a calculation using this over-sampling sub-grid.
+        noise_map
+            The noise-map of the data.
+        signal_to_noise_cut
+            The signal-to-noise cut which defines whether the sub-grid size is the upper or lower value.
+        sub_size_lower
+            The sub-grid size for pixels with signal-to-noise below the signal-to-noise cut.
+        sub_size_upper
+            The sub-grid size for pixels with signal-to-noise above the signal-to-noise cut.
+
+        Returns
+        -------
+        The adaptive sub-grid sizes.
+        """
         signal_to_noise = data / noise_map
 
         if np.max(signal_to_noise) < (2.0 * signal_to_noise_cut):
             signal_to_noise_cut = np.max(signal_to_noise) / 2.0
 
-        sub_size = np.where(signal_to_noise > signal_to_noise_cut, sub_size_upper, sub_size_lower)
+        sub_size = np.where(
+            signal_to_noise > signal_to_noise_cut, sub_size_upper, sub_size_lower
+        )
 
         sub_size = Array2D(values=sub_size, mask=data.mask)
 

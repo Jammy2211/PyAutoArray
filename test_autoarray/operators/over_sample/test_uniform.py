@@ -24,7 +24,6 @@ def make_indexes_2d_9x9():
     return aa.DeriveIndexes2D(mask=mask_2d)
 
 
-
 def test__from_sub_size_int():
     mask = aa.Mask2D(
         mask=[[True, True, True], [True, False, False], [True, True, False]],
@@ -40,7 +39,6 @@ def test__from_sub_size_int():
 
 
 def test__from_adapt():
-
     mask = aa.Mask2D(
         mask=[[True, True, True], [True, False, False], [True, True, False]],
         pixel_scales=1.0,

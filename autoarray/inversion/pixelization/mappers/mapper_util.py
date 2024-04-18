@@ -122,7 +122,6 @@ def data_slim_to_pixelization_unique_from(
         ip_sub_end = ip_sub_start + sub_size[ip] ** 2
 
         for ip_sub in range(ip_sub_start, ip_sub_end):
-
             for pix_interp_index in range(pix_sizes_for_sub_slim_index[ip_sub]):
                 pix = pix_indexes_for_sub_slim_index[ip_sub, pix_interp_index]
                 pixel_weight = pix_weights_for_sub_slim_index[ip_sub, pix_interp_index]
