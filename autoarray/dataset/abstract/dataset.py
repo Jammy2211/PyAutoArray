@@ -216,3 +216,36 @@ class AbstractDataset:
         )
 
         return dataset
+
+    def apply_over_sampling(
+        self,
+        over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
+    ) -> "AbstractDataset":
+        """
+        Apply new over sampling objects to the grid and grid pixelization of the dataset.
+
+        This method is used to change the over sampling of the grid and grid pixelization, for example when the
+        user wishes to perform over sampling with a higher sub grid size or with an iterative over sampling strategy.
+
+        The `grid` and grid_pixelization` are cached properties which after use are stored in memory for efficiency.
+        This function resets the cached properties so that the new over sampling is used in the grid and grid
+        pixelization.
+
+        Parameters
+        ----------
+        over_sampling
+            The new over sampling object to apply to the grid.
+        over_sampling_pixelization
+            The new over sampling object to apply to the grid pixelization.
+        """
+
+        if over_sampling is not None:
+            self.over_sampling = over_sampling
+            del self.__dict__["grid"]
+
+        if over_sampling_pixelization is not None:
+            self.over_sampling_pixelization = over_sampling_pixelization
+            del self.__dict__["grid_pixelization"]
+
+        return self

@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import pytest
 
 import autoarray as aa
 from autoarray.dataset.abstract import dataset as ds
@@ -140,3 +141,35 @@ def test__new_imaging_with_arrays_trimmed_via_kernel_shape():
     assert (dataset_trimmed.data.native == np.array([[5.0]])).all()
 
     assert (dataset_trimmed.noise_map.native == np.array([[2.0]])).all()
+
+
+def test__apply_over_sampling(image_7x7, noise_map_7x7):
+    dataset_7x7 = ds.AbstractDataset(
+        data=image_7x7,
+        noise_map=noise_map_7x7,
+        over_sampling=aa.OverSamplingUniform(sub_size=2),
+        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=2),
+    )
+
+    # The grid and grid_pixelizaiton are a cached_property which needs to be reset,
+    # Which the code below tests.
+
+    grid_sub_2 = dataset_7x7.grid
+    grid_pixelization_sub_2 = dataset_7x7.grid_pixelization
+
+    dataset_7x7.__dict__["grid"][0][0] = 100.0
+    dataset_7x7.__dict__["grid_pixelization"][0][0] = 100.0
+
+    assert dataset_7x7.grid[0][0] == pytest.approx(100.0, 1.0e-4)
+    assert dataset_7x7.grid_pixelization[0][0] == pytest.approx(100.0, 1.0e-4)
+
+    dataset_7x7 = dataset_7x7.apply_over_sampling(
+        over_sampling=aa.OverSamplingUniform(sub_size=4),
+        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=4),
+    )
+
+    assert dataset_7x7.over_sampling.sub_size == 4
+    assert dataset_7x7.over_sampling_pixelization.sub_size == 4
+
+    assert dataset_7x7.grid[0][0] == pytest.approx(3.0, 1.0e-4)
+    assert dataset_7x7.grid_pixelization[0][0] == pytest.approx(3.0, 1.0e-4)

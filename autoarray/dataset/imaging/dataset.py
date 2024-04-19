@@ -171,7 +171,7 @@ class Imaging(AbstractDataset):
         """
 
         return self.grid.blurring_grid_via_kernel_shape_from(
-            kernel_shape_native=self.psf.shape_native
+            kernel_shape_native=self.psf.shape_native,
         )
 
     @cached_property
