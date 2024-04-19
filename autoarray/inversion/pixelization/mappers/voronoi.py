@@ -1,12 +1,10 @@
 import numpy as np
-from typing import Dict, Optional, Tuple
+from typing import Optional, Tuple
 
 from autoconf import cached_property
 
 from autoarray.inversion.pixelization.mappers.abstract import AbstractMapper
 from autoarray.inversion.pixelization.mappers.abstract import PixSubWeights
-from autoarray.inversion.pixelization.mappers.mapper_grids import MapperGrids
-from autoarray.inversion.regularization.abstract import AbstractRegularization
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 from autoarray.numba_util import profile_func
