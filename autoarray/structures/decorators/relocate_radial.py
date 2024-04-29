@@ -1,4 +1,6 @@
-import numpy as np
+import os
+
+from autofit.jax_wrapper import numpy as np
 from functools import wraps
 
 from typing import Union
@@ -57,6 +59,8 @@ def relocate_to_radial_minimum(func):
         -------
             The grid_like object whose coordinates are radially moved from (0.0, 0.0).
         """
+        if os.environ.get("USE_JAX", "0") == "1":
+            return grid
 
         try:
             grid_radial_minimum = conf.instance["grids"]["radial_minimum"][

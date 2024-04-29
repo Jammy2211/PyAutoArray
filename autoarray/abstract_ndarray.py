@@ -6,6 +6,10 @@ from abc import ABC
 from abc import abstractmethod
 import numpy as np
 
+import os
+if os.environ.get("USE_JAX") == "1":
+    from jax import numpy as np
+
 from autoarray.numpy_wrapper import numpy as npw, register_pytree_node, Array
 
 from typing import TYPE_CHECKING
