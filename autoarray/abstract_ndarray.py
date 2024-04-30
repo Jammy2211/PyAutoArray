@@ -7,6 +7,7 @@ from abc import abstractmethod
 import numpy as np
 
 import os
+
 if os.environ.get("USE_JAX") == "1":
     from jax import numpy as np
 
