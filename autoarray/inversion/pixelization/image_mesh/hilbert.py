@@ -161,7 +161,12 @@ def image_and_grid_from(image, mask, mask_radius, pixel_scales, hilbert_length):
     image associated to that grid.
     """
 
-    shape_nnn = np.shape(mask)[0]
+    # For multi wavelength fits the input image may be a different resolution than the mask.
+
+    try:
+        shape_nnn = np.shape(image.native)[0]
+    except AttributeError:
+        shape_nnn = np.shape(mask)[0]
 
     grid = Grid2D.uniform(
         shape_native=(shape_nnn, shape_nnn),
