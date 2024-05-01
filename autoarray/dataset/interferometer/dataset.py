@@ -262,3 +262,11 @@ class Interferometer(AbstractDataset):
                 file_path=uv_wavelengths_path,
                 overwrite=overwrite,
             )
+
+    @property
+    def blurring_grid(self):
+        return None
+
+    @property
+    def convolver(self):
+        return None

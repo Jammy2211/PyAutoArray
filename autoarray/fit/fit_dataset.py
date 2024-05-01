@@ -153,6 +153,10 @@ class FitDataset(AbstractFitInversion):
         return self.dataset.mask
 
     @property
+    def data(self) -> ty.DataLike:
+        return self.dataset.data
+
+    @property
     def noise_map(self) -> ty.DataLike:
         return self.dataset.noise_map
 

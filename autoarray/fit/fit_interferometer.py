@@ -66,9 +66,6 @@ class FitInterferometer(FitDataset):
     def mask(self) -> np.ndarray:
         return np.full(shape=self.data.shape, fill_value=False)
 
-    @property
-    def data(self) -> Visibilities:
-        return self.dataset.data
 
     @property
     def transformer(self) -> ty.Transformer:
