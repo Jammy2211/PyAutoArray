@@ -21,7 +21,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
 
     model_data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
 
-    fit = aa.m.MockFitInterferometer(
+    fit = aa.m.MockFitDataset(
         dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
@@ -66,7 +66,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
 
     model_data = aa.Visibilities(visibilities=[1.0 + 2.0j, 3.0 + 3.0j])
 
-    fit = aa.m.MockFitInterferometer(
+    fit = aa.m.MockFitDataset(
         dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
@@ -119,7 +119,7 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
         log_det_regularization_matrix_term=4.0,
     )
 
-    fit = aa.m.MockFitInterferometer(
+    fit = aa.m.MockFitDataset(
         dataset=dataset,
         use_mask_in_fit=False,
         model_data=model_data,

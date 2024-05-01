@@ -4,10 +4,10 @@ from autoarray.dataset.mock.mock_dataset import MockDataset
 from autoarray.fit.fit_dataset import FitDataset
 
 
-class MockFitImaging(FitDataset):
+class MockFitDataset(FitDataset):
     def __init__(
         self,
-        dataset=MockDataset(),
+        dataset =MockDataset(),
         use_mask_in_fit: bool = False,
         noise_map=None,
         model_data=None,
@@ -27,12 +27,12 @@ class MockFitImaging(FitDataset):
         self._blurred_image = blurred_image
 
     @property
-    def noise_map(self):
-        return self._noise_map if self._noise_map is not None else super().noise_map
-
-    @property
     def model_data(self):
         return self._model_data
+
+    @property
+    def noise_map(self):
+        return self._noise_map if self._noise_map is not None else super().noise_map
 
     @property
     def inversion(self):
