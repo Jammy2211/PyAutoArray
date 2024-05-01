@@ -15,7 +15,7 @@ class DatasetModel:
 
         Parameters
         ----------
-        level
+        background_sky_level
             Overall normalisation of the sky which is added or subtracted from the data. Units are dimensionless and
             derived from the data, which is expected to be electrons per second in Astronomy analyses.
         """

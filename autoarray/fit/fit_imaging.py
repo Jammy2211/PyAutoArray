@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 
 from autoarray.dataset.imaging.dataset import Imaging
+from autoarray.dataset.model import DatasetModel
 from autoarray.fit.fit_dataset import FitDataset
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -11,6 +12,7 @@ class FitImaging(FitDataset):
         self,
         dataset: Imaging,
         use_mask_in_fit: bool = False,
+        dataset_model: DatasetModel = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -49,6 +51,7 @@ class FitImaging(FitDataset):
         super().__init__(
             dataset=dataset,
             use_mask_in_fit=use_mask_in_fit,
+            dataset_model=dataset_model,
             run_time_dict=run_time_dict,
         )
 

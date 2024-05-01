@@ -7,6 +7,7 @@ import numpy as np
 
 from autoarray import type as ty
 from autoarray.dataset.abstract.dataset import AbstractDataset
+from autoarray.dataset.model import DatasetModel
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.abstract_mask import Mask
@@ -18,12 +19,16 @@ class AbstractFitInversion(ABC):
     @property
     @abstractmethod
     def data(self) -> ty.DataLike:
-        pass
+        """
+        Overwrite this method to returns the data of the dataset.
+        """
 
     @property
     @abstractmethod
     def noise_map(self) -> ty.NoiseMapLike:
-        pass
+        """
+        Overwrite this method to returns the noise-map of the dataset.
+        """
 
     @property
     @abstractmethod
@@ -102,47 +107,26 @@ class AbstractFitInversion(ABC):
         )
 
 
-class SimpleFit(AbstractFitInversion):
-    def __init__(self, data, model_data, noise_map):
-        self._data = data
-        self._model_data = model_data
-        self._noise_map = noise_map
-
-    @property
-    def data(self) -> ty.DataLike:
-        return self._data
-
-    @property
-    def noise_map(self) -> ty.NoiseMapLike:
-        return self._noise_map
-
-    @property
-    def model_data(self) -> ty.DataLike:
-        return self._model_data
-
-
 class FitDataset(AbstractFitInversion):
     # noinspection PyUnresolvedReferences
     def __init__(
         self,
         dataset: AbstractDataset,
         use_mask_in_fit: bool = False,
+        dataset_model : DatasetModel = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
         Parameters
         ----------
-        dataset : MaskedDataset
+        dataset
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
-        model_data
-            The model data the masked dataset is fitted with.
-        inversion : Inversion
-            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
-            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
             `dataset` will have been processed to remove masked points, for example the `slim` representation).
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
 
         Attributes
         -----------
@@ -162,8 +146,14 @@ class FitDataset(AbstractFitInversion):
         """
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
-
+        self.dataset_model = dataset_model
         self.run_time_dict = run_time_dict
+
+    @property
+    def background_sky_level(self) -> float:
+        if self.dataset_model is not None:
+            return self.dataset_model.background_sky_level
+        return 0.0
 
     @property
     @abstractmethod
@@ -174,7 +164,7 @@ class FitDataset(AbstractFitInversion):
 
     @property
     def data(self) -> ty.DataLike:
-        return self.dataset.data
+        return self.dataset.data - self.background_sky_level
 
     @property
     def noise_map(self) -> ty.NoiseMapLike:
