@@ -3,6 +3,7 @@ from typing import Dict, Optional
 
 from autoarray.dataset.interferometer.dataset import Interferometer
 
+from autoarray.dataset.model import DatasetModel
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.fit.fit_dataset import FitDataset
@@ -15,6 +16,7 @@ class FitInterferometer(FitDataset):
     def __init__(
         self,
         dataset: Interferometer,
+        dataset_model: DatasetModel = None,
         use_mask_in_fit: bool = False,
         run_time_dict: Optional[Dict] = None,
     ):
@@ -25,6 +27,8 @@ class FitInterferometer(FitDataset):
         ----------
         dataset : MaskedInterferometer
             The masked interferometer dataset that is fitted.
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
         model_data : Visibilities
             The model visibilities the masked imaging is fitted with.
         inversion : Inversion
@@ -53,6 +57,7 @@ class FitInterferometer(FitDataset):
 
         super().__init__(
             dataset=dataset,
+            dataset_model=dataset_model,
             use_mask_in_fit=use_mask_in_fit,
             run_time_dict=run_time_dict,
         )
