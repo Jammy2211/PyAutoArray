@@ -8,7 +8,7 @@ from autoarray.fit.fit_imaging import FitImaging
 class MockFitImaging(FitImaging):
     def __init__(
         self,
-        dataset = MockDataset(),
+        dataset=MockDataset(),
         dataset_model: DatasetModel = None,
         use_mask_in_fit: bool = False,
         noise_map=None,

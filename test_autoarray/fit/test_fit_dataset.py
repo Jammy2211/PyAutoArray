@@ -65,7 +65,6 @@ def test__figure_of_merit__with_noise_covariance_matrix_in_dataset(
 
 
 def test__grid_offset_via_data_model(masked_imaging_7x7, model_image_7x7):
-
     fit = aa.m.MockFitImaging(
         dataset=masked_imaging_7x7,
         use_mask_in_fit=False,

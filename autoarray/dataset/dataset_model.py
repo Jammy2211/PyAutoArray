@@ -1,7 +1,12 @@
 from typing import Tuple
 
+
 class DatasetModel:
-    def __init__(self, background_sky_level: float = 0.0, grid_offset : Tuple[float, float] = (0.0, 0.0)):
+    def __init__(
+        self,
+        background_sky_level: float = 0.0,
+        grid_offset: Tuple[float, float] = (0.0, 0.0),
+    ):
         """
         Attributes which allow for parts of a dataset to be treated as a model, meaning they can be fitted
         for in the `fit` module.

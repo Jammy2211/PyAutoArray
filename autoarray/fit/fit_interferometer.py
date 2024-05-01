@@ -66,7 +66,6 @@ class FitInterferometer(FitDataset):
     def mask(self) -> np.ndarray:
         return np.full(shape=self.data.shape, fill_value=False)
 
-
     @property
     def transformer(self) -> ty.Transformer:
         return self.dataset.transformer
@@ -91,7 +90,8 @@ class FitInterferometer(FitDataset):
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
         return fit_util.chi_squared_map_complex_from(
-            residual_map=self.residual_map, noise_map=self.noise_map,
+            residual_map=self.residual_map,
+            noise_map=self.noise_map,
         )
 
     @property
