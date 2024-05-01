@@ -5,7 +5,7 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from autoarray.dataset.model import DatasetModel
+from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D

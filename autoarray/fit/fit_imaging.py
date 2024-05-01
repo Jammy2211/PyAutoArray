@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
 from autoarray.dataset.imaging.dataset import Imaging
-from autoarray.dataset.model import DatasetModel
+from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.fit.fit_dataset import FitDataset
 from autoarray.structures.arrays.uniform_2d import Array2D
 

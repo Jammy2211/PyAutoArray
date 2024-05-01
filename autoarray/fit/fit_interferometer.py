@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 from autoarray.dataset.interferometer.dataset import Interferometer
 
-from autoarray.dataset.model import DatasetModel
+from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.fit.fit_dataset import FitDataset
