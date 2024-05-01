@@ -14,6 +14,7 @@ from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
+from .dataset.model import DatasetModel
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
