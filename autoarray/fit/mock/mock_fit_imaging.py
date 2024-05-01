@@ -1,10 +1,10 @@
 from typing import Dict, Optional
 
 from autoarray.dataset.mock.mock_dataset import MockDataset
-from autoarray.fit.fit_dataset import FitDataset
+from autoarray.fit.fit_imaging import FitImaging
 
 
-class MockFitDataset(FitDataset):
+class MockFitImaging(FitImaging):
     def __init__(
         self,
         dataset =MockDataset(),

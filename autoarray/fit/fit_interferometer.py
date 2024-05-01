@@ -58,6 +58,14 @@ class FitInterferometer(FitDataset):
         )
 
     @property
+    def mask(self) -> np.ndarray:
+        return np.full(shape=self.data.shape, fill_value=False)
+
+    @property
+    def data(self) -> Visibilities:
+        return self.dataset.data
+
+    @property
     def transformer(self) -> ty.Transformer:
         return self.dataset.transformer
 
@@ -80,8 +88,8 @@ class FitInterferometer(FitDataset):
 
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
-        return fit_util.chi_squared_map_complex_with_mask_from(
-            residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+        return fit_util.chi_squared_map_complex_from(
+            residual_map=self.residual_map, noise_map=self.noise_map,
         )
 
     @property
@@ -102,8 +110,8 @@ class FitInterferometer(FitDataset):
         """
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
-        return fit_util.chi_squared_complex_with_mask_from(
-            chi_squared_map=self.chi_squared_map, mask=self.mask
+        return fit_util.chi_squared_complex_from(
+            chi_squared_map=self.chi_squared_map,
         )
 
     @property
@@ -113,8 +121,8 @@ class FitInterferometer(FitDataset):
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
-        return fit_util.noise_normalization_complex_with_mask_from(
-            noise_map=self.noise_map, mask=self.mask
+        return fit_util.noise_normalization_complex_from(
+            noise_map=self.noise_map,
         )
 
     @property

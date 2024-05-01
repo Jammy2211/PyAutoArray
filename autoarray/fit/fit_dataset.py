@@ -149,18 +149,8 @@ class FitDataset(AbstractFitInversion):
         self.run_time_dict = run_time_dict
 
     @property
-    def background_sky_level(self) -> float:
-        if self.dataset_model is not None:
-            return self.dataset_model.background_sky_level
-        return 0.0
-
-    @property
     def mask(self) -> Mask2D:
         return self.dataset.mask
-
-    @property
-    def data(self) -> ty.DataLike:
-        return self.dataset.data - self.background_sky_level
 
     @property
     def noise_map(self) -> ty.DataLike:

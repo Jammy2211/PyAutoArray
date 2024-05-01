@@ -15,7 +15,7 @@ def test__data_and_model_are_identical__no_masking__check_values_are_correct():
 
     model_data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-    fit = aa.m.MockFitDataset(
+    fit = aa.m.MockFitImaging(
         dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
@@ -44,7 +44,7 @@ def test__data_and_model_are_different__include_masking__check_values_are_correc
 
     model_data = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
 
-    fit = aa.m.MockFitDataset(
+    fit = aa.m.MockFitImaging(
         dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
@@ -83,7 +83,7 @@ def test__data_and_model_are_identical__inversion_included__changes_certain_prop
         log_det_regularization_matrix_term=4.0,
     )
 
-    fit = aa.m.MockFitDataset(
+    fit = aa.m.MockFitImaging(
         dataset=dataset,
         use_mask_in_fit=False,
         model_data=model_data,
@@ -118,7 +118,7 @@ def test__run_time_dict__profiles_appropriate_functions():
 
     run_time_dict = {}
 
-    fit = aa.m.MockFitDataset(
+    fit = aa.m.MockFitImaging(
         dataset=dataset,
         use_mask_in_fit=False,
         model_data=model_data,

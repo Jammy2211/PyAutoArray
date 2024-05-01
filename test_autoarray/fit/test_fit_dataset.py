@@ -12,7 +12,7 @@ def test__figure_of_merit__with_inversion(masked_imaging_7x7, model_image_7x7):
         log_det_regularization_matrix_term=4.0,
     )
 
-    fit = aa.m.MockFitDataset(
+    fit = aa.m.MockFitImaging(
         dataset=masked_imaging_7x7,
         use_mask_in_fit=False,
         model_data=model_image_7x7,
@@ -25,7 +25,7 @@ def test__figure_of_merit__with_inversion(masked_imaging_7x7, model_image_7x7):
         linear_obj_list=[aa.m.MockLinearObj(regularization=None)], data_vector=1
     )
 
-    fit = aa.m.MockFitDataset(
+    fit = aa.m.MockFitImaging(
         dataset=masked_imaging_7x7,
         use_mask_in_fit=False,
         model_data=model_image_7x7,
@@ -38,7 +38,7 @@ def test__figure_of_merit__with_inversion(masked_imaging_7x7, model_image_7x7):
 def test__figure_of_merit__with_noise_covariance_matrix_in_dataset(
     masked_imaging_covariance_7x7, model_image_7x7, masked_imaging_7x7
 ):
-    fit = aa.m.MockFitDataset(
+    fit = aa.m.MockFitImaging(
         dataset=masked_imaging_covariance_7x7,
         use_mask_in_fit=False,
         model_data=model_image_7x7,
@@ -55,7 +55,7 @@ def test__figure_of_merit__with_noise_covariance_matrix_in_dataset(
         -0.5 * (fit.chi_squared + fit.noise_normalization), 1.0e-4
     )
 
-    fit = aa.m.MockFitDataset(
+    fit = aa.m.MockFitImaging(
         dataset=masked_imaging_7x7,
         use_mask_in_fit=False,
         model_data=model_image_7x7,

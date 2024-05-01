@@ -305,7 +305,7 @@ def make_imaging_fit_x1_plane_7x7():
 
     model_data = 5.0 * imaging_7x7.data
 
-    return aa.m.MockFitDataset(
+    return aa.m.MockFitImaging(
         dataset=imaging_7x7, use_mask_in_fit=False, model_data=model_data
     )
 
@@ -315,7 +315,7 @@ def make_fit_interferometer_7():
 
     model_data = 5.0 * interferometer_7.visibilities
 
-    return aa.m.MockFitDataset(
+    return aa.m.MockFitInterferometer(
         dataset=interferometer_7, use_mask_in_fit=False, model_data=model_data
     )
 

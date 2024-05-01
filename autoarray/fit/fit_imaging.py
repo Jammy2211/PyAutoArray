@@ -5,6 +5,7 @@ from autoarray.dataset.model import DatasetModel
 from autoarray.fit.fit_dataset import FitDataset
 from autoarray.structures.arrays.uniform_2d import Array2D
 
+from autoarray import type as ty
 
 class FitImaging(FitDataset):
     def __init__(
@@ -50,6 +51,12 @@ class FitImaging(FitDataset):
             dataset_model=dataset_model,
             run_time_dict=run_time_dict,
         )
+
+    @property
+    def data(self) -> ty.DataLike:
+        if self.dataset_model.background_sky_level != 0.0:
+            return self.dataset.data - self.dataset_model.background_sky_level
+        return self.dataset.data
 
     @property
     def blurred_image(self) -> Array2D:
