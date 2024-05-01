@@ -1,8 +1,6 @@
 import numpy as np
 from typing import Dict, Optional
 
-from autoarray.structures.abstract_structure import Structure
-
 from autoarray.dataset.interferometer.dataset import Interferometer
 
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -20,7 +18,8 @@ class FitInterferometer(FitDataset):
         use_mask_in_fit: bool = False,
         run_time_dict: Optional[Dict] = None,
     ):
-        """Class to fit a masked interferometer dataset.
+        """
+        Class to fit a masked interferometer dataset.
 
         Parameters
         ----------
@@ -59,34 +58,19 @@ class FitInterferometer(FitDataset):
         )
 
     @property
-    def mask(self) -> np.ndarray:
-        return np.full(shape=self.data.shape, fill_value=False)
-
-    @property
-    def interferometer(self) -> Interferometer:
-        return self.dataset
-
-    @property
     def transformer(self) -> ty.Transformer:
         return self.dataset.transformer
 
     @property
-    def visibilities(self) -> Visibilities:
-        return self.data
-
-    @property
-    def model_visibilities(self) -> Visibilities:
-        return self.model_data
-
-    @property
-    def normalized_residual_map(self) -> Structure:
+    def normalized_residual_map(self) -> np.ndarray:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
         Normalized_Residual = (Data - Model_Data) / Noise
         """
-        return fit_util.normalized_residual_map_complex_with_mask_from(
-            residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+        return fit_util.normalized_residual_map_complex_from(
+            residual_map=self.residual_map,
+            noise_map=self.noise_map,
         )
 
     @property
@@ -102,7 +86,8 @@ class FitInterferometer(FitDataset):
 
     @property
     def signal_to_noise_map(self) -> np.ndarray:
-        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
+        """
+        The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map_real = self.data.real / self.noise_map.real
 
         signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0

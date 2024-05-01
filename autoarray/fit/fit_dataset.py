@@ -5,17 +5,16 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from autoarray import type as ty
 from autoarray.dataset.model import DatasetModel
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
+
 from autoarray.numba_util import profile_func
-from autoarray.structures.abstract_structure import Structure
+from autoarray import type as ty
 
 
 class AbstractFitInversion(ABC):
-
     @property
     @abstractmethod
     def data(self) -> ty.DataLike:
@@ -25,7 +24,7 @@ class AbstractFitInversion(ABC):
 
     @property
     @abstractmethod
-    def noise_map(self) -> ty.NoiseMapLike:
+    def noise_map(self) -> ty.DataLike:
         """
         Overwrite this method to returns the noise-map of the dataset.
         """
@@ -49,7 +48,7 @@ class AbstractFitInversion(ABC):
         return signal_to_noise_map
 
     @property
-    def residual_map(self) -> Structure:
+    def residual_map(self) -> ty.DataLike:
         """
         Returns the residual-map between the masked dataset and model data, where:
 
@@ -58,7 +57,7 @@ class AbstractFitInversion(ABC):
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
-    def normalized_residual_map(self) -> Structure:
+    def normalized_residual_map(self) -> ty.DataLike:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -69,7 +68,7 @@ class AbstractFitInversion(ABC):
         )
 
     @property
-    def chi_squared_map(self) -> Structure:
+    def chi_squared_map(self) -> ty.DataLike:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
@@ -113,7 +112,7 @@ class FitDataset(AbstractFitInversion):
         self,
         dataset,
         use_mask_in_fit: bool = False,
-        dataset_model : DatasetModel = None,
+        dataset_model: DatasetModel = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
@@ -164,11 +163,11 @@ class FitDataset(AbstractFitInversion):
         return self.dataset.data - self.background_sky_level
 
     @property
-    def noise_map(self) -> ty.NoiseMapLike:
+    def noise_map(self) -> ty.DataLike:
         return self.dataset.noise_map
 
     @property
-    def residual_map(self) -> Structure:
+    def residual_map(self) -> ty.DataLike:
         """
         Returns the residual-map between the masked dataset and model data, where:
 
@@ -182,7 +181,7 @@ class FitDataset(AbstractFitInversion):
         return super().residual_map
 
     @property
-    def normalized_residual_map(self) -> Structure:
+    def normalized_residual_map(self) -> ty.DataLike:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -195,7 +194,7 @@ class FitDataset(AbstractFitInversion):
         return super().normalized_residual_map
 
     @property
-    def chi_squared_map(self) -> Structure:
+    def chi_squared_map(self) -> ty.DataLike:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
@@ -300,7 +299,7 @@ class FitDataset(AbstractFitInversion):
             return self.log_likelihood
 
     @property
-    def residual_flux_fraction_map(self) -> Structure:
+    def residual_flux_fraction_map(self) -> ty.DataLike:
         """
         Returns the residual flux fraction map, which shows the fraction of signal in each pixel that is not fitted
         by the model, therefore where:
