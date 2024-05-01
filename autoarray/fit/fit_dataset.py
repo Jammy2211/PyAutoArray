@@ -153,6 +153,22 @@ class FitDataset(AbstractFitInversion):
         return self.dataset.mask
 
     @property
+    def grid(self) -> ty.Grid2DLike:
+
+        if self.dataset_model.grid_offset[0] != 0.0 or self.dataset_model.grid_offset[1] != 0.0:
+            return self.dataset.grid - np.array(self.dataset_model.grid_offset)
+
+        return self.dataset.grid
+
+    @property
+    def grid_pixelization(self) -> ty.Grid2DLike:
+
+        if self.dataset_model.grid_offset[0] != 0.0 or self.dataset_model.grid_offset[1] != 0.0:
+            return self.dataset.grid_pixelization - np.array(self.dataset_model.grid_offset)
+
+        return self.dataset.grid_pixelization
+
+    @property
     def data(self) -> ty.DataLike:
         return self.dataset.data
 
