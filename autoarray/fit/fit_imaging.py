@@ -3,7 +3,6 @@ from typing import Dict, Optional
 from autoarray.dataset.imaging.dataset import Imaging
 from autoarray.dataset.model import DatasetModel
 from autoarray.fit.fit_dataset import FitDataset
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
 
@@ -51,22 +50,6 @@ class FitImaging(FitDataset):
             dataset_model=dataset_model,
             run_time_dict=run_time_dict,
         )
-
-    @property
-    def imaging(self) -> Imaging:
-        return self.dataset
-
-    @property
-    def image(self) -> Array2D:
-        return self.data
-
-    @property
-    def model_image(self) -> Array2D:
-        return self.model_data
-
-    @property
-    def mask(self) -> Mask2D:
-        return self.dataset.mask
 
     @property
     def blurred_image(self) -> Array2D:

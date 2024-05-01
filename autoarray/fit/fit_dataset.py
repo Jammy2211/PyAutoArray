@@ -6,16 +6,16 @@ from typing import Dict, Optional
 import numpy as np
 
 from autoarray import type as ty
-from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.model import DatasetModel
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.mask.abstract_mask import Mask
+from autoarray.mask.mask_2d import Mask2D
 from autoarray.numba_util import profile_func
 from autoarray.structures.abstract_structure import Structure
 
 
 class AbstractFitInversion(ABC):
+
     @property
     @abstractmethod
     def data(self) -> ty.DataLike:
@@ -111,7 +111,7 @@ class FitDataset(AbstractFitInversion):
     # noinspection PyUnresolvedReferences
     def __init__(
         self,
-        dataset: AbstractDataset,
+        dataset,
         use_mask_in_fit: bool = False,
         dataset_model : DatasetModel = None,
         run_time_dict: Optional[Dict] = None,
@@ -156,11 +156,8 @@ class FitDataset(AbstractFitInversion):
         return 0.0
 
     @property
-    @abstractmethod
-    def mask(self) -> Mask:
-        """
-        Overwrite this method so it returns the mask of the dataset which is fitted to the input data.
-        """
+    def mask(self) -> Mask2D:
+        return self.dataset.mask
 
     @property
     def data(self) -> ty.DataLike:

@@ -1,10 +1,10 @@
 from typing import Dict, Optional
 
 from autoarray.dataset.mock.mock_dataset import MockDataset
-from autoarray.fit.fit_imaging import FitImaging
+from autoarray.fit.fit_dataset import FitDataset
 
 
-class MockFitImaging(FitImaging):
+class MockFitImaging(FitDataset):
     def __init__(
         self,
         dataset=MockDataset(),
@@ -40,8 +40,4 @@ class MockFitImaging(FitImaging):
 
     @property
     def blurred_image(self):
-        return (
-            self._blurred_image
-            if self._blurred_image is not None
-            else super().blurred_image
-        )
+        return self._blurred_image if self._blurred_image is not None else None
