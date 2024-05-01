@@ -146,7 +146,7 @@ class FitDataset(AbstractFitInversion):
         """
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
-        self.dataset_model = dataset_model
+        self.dataset_model = dataset_model or DatasetModel()
         self.run_time_dict = run_time_dict
 
     @property

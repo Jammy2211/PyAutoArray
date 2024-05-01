@@ -20,13 +20,10 @@ class FitImaging(FitDataset):
 
         Parameters
         ----------
-        dataset : MaskedImaging
-            The masked imaging dataset that is fitted.
-        model_image
-            The model image the masked imaging is fitted with.
-        inversion : Inversion
-            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
-            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
+        dataset
+            The masked dataset that is fitted.
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
         use_mask_in_fit
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
             `dataset` will have been processed to remove masked points, for example the `slim` representation).
