@@ -85,7 +85,7 @@ def chi_squared_from(*, chi_squared_map: ty.DataLike) -> float:
     chi_squared_map
         The chi-squared-map of values of the model-data fit to the dataset.
     """
-    return np.float(np.sum(chi_squared_map))
+    return float(np.sum(chi_squared_map))
 
 
 def noise_normalization_from(*, noise_map: ty.DataLike) -> float:
@@ -277,7 +277,7 @@ def chi_squared_with_mask_from(*, chi_squared_map: ty.DataLike, mask: Mask) -> f
     mask
         The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
-    return np.float(np.sum(chi_squared_map[np.asarray(mask) == 0]))
+    return float(np.sum(chi_squared_map[np.asarray(mask) == 0]))
 
 
 def chi_squared_with_mask_fast_from(
@@ -333,7 +333,7 @@ def noise_normalization_with_mask_from(*, noise_map: ty.DataLike, mask: Mask) ->
     mask
         The mask applied to the noise-map, where `False` entries are included in the calculation.
     """
-    return np.float(np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0] ** 2.0)))
+    return float(np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0] ** 2.0)))
 
 
 def chi_squared_with_noise_covariance_from(

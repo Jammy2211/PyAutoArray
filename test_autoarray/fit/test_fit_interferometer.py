@@ -139,7 +139,7 @@ def test__dirty_quantities(transformer_7x7_7, interferometer_7, fit_interferomet
     fit_interferometer_7.dataset.transformer = transformer_7x7_7
 
     dirty_image = transformer_7x7_7.image_from(
-        visibilities=interferometer_7.visibilities
+        visibilities=interferometer_7.data
     )
     assert (fit_interferometer_7.dirty_image == dirty_image).all()
 
