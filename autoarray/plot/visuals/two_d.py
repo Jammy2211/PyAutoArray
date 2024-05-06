@@ -75,7 +75,7 @@ class Visuals2D(AbstractVisuals):
         if self.lines is not None:
             plotter.grid_plot.plot_grid(grid=self.lines)
 
-        if self.indexes is not None:
+        if self.indexes is not None and grid_indexes is not None:
             plotter.index_scatter.scatter_grid_indexes(
                 grid=grid_indexes, indexes=self.indexes
             )

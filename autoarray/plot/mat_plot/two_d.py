@@ -219,6 +219,7 @@ class MatPlot2D(AbstractMatPlot):
         array: Array2D,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
+        grid_indexes=None,
         bypass: bool = False,
     ):
         """
@@ -359,11 +360,6 @@ class MatPlot2D(AbstractMatPlot):
                 self.contour.set(array=array, extent=extent, use_log10=self.use_log10)
             except ValueError:
                 pass
-
-        grid_indexes = None
-
-        if visuals_2d.indexes is not None or visuals_2d.pix_indexes is not None:
-            grid_indexes = array.mask.derive_grid.unmasked
 
         visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid_indexes)
 
