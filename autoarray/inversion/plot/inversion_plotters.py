@@ -55,15 +55,11 @@ class InversionPlotter(Plotter):
 
     def get_visuals_2d_for_data(self) -> Visuals2D:
         try:
-
             mapper = self.inversion.cls_list_from(cls=AbstractMapper)[0]
 
-            visuals = self.get_2d.via_mapper_for_data_from(
-                mapper=mapper
-            )
+            visuals = self.get_2d.via_mapper_for_data_from(mapper=mapper)
 
             if self.visuals_2d.pix_indexes is not None:
-
                 indexes = mapper.pix_indexes_for_slim_indexes(
                     pix_indexes=self.visuals_2d.pix_indexes
                 )
@@ -176,7 +172,9 @@ class InversionPlotter(Plotter):
                 self.mat_plot_2d.plot_array(
                     array=array,
                     visuals_2d=self.get_visuals_2d_for_data(),
-                    grid_indexes=np.array(mapper_plotter.mapper.over_sampler.over_sampled_grid),
+                    grid_indexes=np.array(
+                        mapper_plotter.mapper.over_sampler.over_sampled_grid
+                    ),
                     auto_labels=AutoLabels(
                         title="Data Subtracted", filename="data_subtracted"
                     ),
@@ -192,7 +190,9 @@ class InversionPlotter(Plotter):
             self.mat_plot_2d.plot_array(
                 array=array,
                 visuals_2d=self.get_visuals_2d_for_data(),
-                grid_indexes=np.array(mapper_plotter.mapper.over_sampler.over_sampled_grid),
+                grid_indexes=np.array(
+                    mapper_plotter.mapper.over_sampler.over_sampled_grid
+                ),
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
@@ -402,11 +402,10 @@ class InversionPlotter(Plotter):
 
         self.close_subplot_figure()
 
-    def subplot_mappings(self, pixelization_index: int = 0, auto_filename: str = "subplot_mappings"):
-
+    def subplot_mappings(
+        self, pixelization_index: int = 0, auto_filename: str = "subplot_mappings"
+    ):
         self.open_subplot_figure(number_subplots=8, subplot_shape=(2, 4))
-
-        mapper_image_plane_mesh_grid = self.include_2d._mapper_image_plane_mesh_grid
 
         self.include_2d._mapper_image_plane_mesh_grid = False
 
@@ -430,9 +429,17 @@ class InversionPlotter(Plotter):
         )
         self.set_title(label=None)
 
-        pix_indexes = self.inversion.brightest_reconstruction_pixel_list
+        total_pixels = conf.instance["visualize"]["general"]["inversion"][
+            "total_mappings_pixels"
+        ]
 
-        self.visuals_2d.pix_indexes = pix_indexes
+        pix_indexes = self.inversion.brightest_reconstruction_pixel_list_from(
+            total_pixels=total_pixels
+        )
+
+        self.visuals_2d.pix_indexes = [
+            [index] for index in pix_indexes[pixelization_index]
+        ]
 
         self.figures_2d_of_pixelization(
             pixelization_index=pixelization_index, data_subtracted=True

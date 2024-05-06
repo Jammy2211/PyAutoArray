@@ -655,7 +655,10 @@ def test__brightest_reconstruction_pixel_and_centre():
 
     print(inversion.brightest_reconstruction_pixel_list_from(total_pixels=2))
 
-    assert inversion.brightest_reconstruction_pixel_list_from(total_pixels=2)[0] == [2, 1]
+    assert inversion.brightest_reconstruction_pixel_list_from(total_pixels=2)[0] == [
+        2,
+        1,
+    ]
 
     assert inversion.brightest_reconstruction_pixel_centre_list[0].in_list == [
         (5.0, 6.0)
