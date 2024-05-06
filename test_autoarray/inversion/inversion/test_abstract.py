@@ -653,7 +653,9 @@ def test__brightest_reconstruction_pixel_and_centre():
         linear_obj_list=[mapper], reconstruction=np.array([2.0, 3.0, 5.0, 0.0])
     )
 
-    assert inversion.brightest_reconstruction_pixel_list[0] == 2
+    print(inversion.brightest_reconstruction_pixel_list_from(total_pixels=2))
+
+    assert inversion.brightest_reconstruction_pixel_list_from(total_pixels=2)[0] == [2, 1]
 
     assert inversion.brightest_reconstruction_pixel_centre_list[0].in_list == [
         (5.0, 6.0)

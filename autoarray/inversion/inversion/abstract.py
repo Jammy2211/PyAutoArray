@@ -854,13 +854,13 @@ class AbstractInversion:
 
         return magnification_list
 
-    @property
-    def brightest_reconstruction_pixel_list(self):
+    def brightest_reconstruction_pixel_list_from(self, total_pixels : int = 1) -> List[List[int]]:
         brightest_reconstruction_pixel_list = []
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
+
             brightest_reconstruction_pixel_list.append(
-                np.argmax(self.reconstruction_dict[mapper])
+                list(reversed(np.argsort(self.reconstruction_dict[mapper])))[:total_pixels]
             )
 
         return brightest_reconstruction_pixel_list
