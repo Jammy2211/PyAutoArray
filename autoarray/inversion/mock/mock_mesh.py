@@ -20,6 +20,7 @@ class MockMesh(AbstractMesh):
         self,
         mask=None,
         source_plane_data_grid: Grid2D = None,
+        border_relocator=None,
         source_plane_mesh_grid: Optional[Abstract2DMesh] = None,
         image_plane_mesh_grid: Optional[Grid2DIrregular] = None,
         adapt_data: Optional[np.ndarray] = None,
@@ -29,6 +30,7 @@ class MockMesh(AbstractMesh):
         return MapperGrids(
             mask=mask,
             source_plane_data_grid=source_plane_data_grid,
+            border_relocator=border_relocator,
             source_plane_mesh_grid=source_plane_mesh_grid,
             image_plane_mesh_grid=self.image_plane_mesh_grid,
             adapt_data=adapt_data,
