@@ -127,7 +127,7 @@ class GridPlot(AbstractMatWrap2D):
 
             if grid_hull is not None:
                 plt.plot(
-                    grid_hull[:, 1], grid_hull[:, 0], linewidth=2, color=next(color)
+                    grid_hull[:, 1], grid_hull[:, 0], color=next(color), **config_dict
                 )
 
     def plot_grid_indexes_multi(
@@ -158,4 +158,5 @@ class GridPlot(AbstractMatWrap2D):
             color_plot = next(color)
 
             for contour in grid_contour.contour_list:
-                plt.plot(contour[:, 1], contour[:, 0], linewidth=2, color=color_plot)
+
+                plt.plot(contour[:, 1], contour[:, 0], color=color_plot, **config_dict)

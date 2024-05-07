@@ -78,7 +78,9 @@ class Visuals2D(AbstractVisuals):
             plotter.grid_plot.plot_grid(grid=self.lines)
 
         if self.indexes is not None and grid_indexes is not None:
+
             if not self.indexes_via_scatter:
+
                 plotter.index_plot.plot_grid_indexes_multi(
                     grid=grid_indexes, indexes=self.indexes, geometry=geometry
                 )
