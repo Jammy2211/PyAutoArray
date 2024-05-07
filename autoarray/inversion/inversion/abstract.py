@@ -854,23 +854,46 @@ class AbstractInversion:
 
         return magnification_list
 
-    def brightest_reconstruction_pixel_list_from(
-        self, total_pixels: int = 1
+    def brightest_pixel_list_from(
+        self, total_pixels: int = 1, filter_neighbors : bool = False
     ) -> List[List[int]]:
-        brightest_reconstruction_pixel_list = []
+
+        brightest_pixel_list = []
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-            brightest_reconstruction_pixel_list.append(
-                list(reversed(np.argsort(self.reconstruction_dict[mapper])))[
-                    :total_pixels
-                ]
-            )
 
-        return brightest_reconstruction_pixel_list
+            pixel_list = []
+
+            pixels_ascending_list = list(reversed(np.argsort(self.reconstruction_dict[mapper])))
+
+            for pixel in range(total_pixels):
+
+                pixel_index = pixels_ascending_list[pixel]
+
+                add_pixel = True
+
+                if filter_neighbors:
+
+                    pixel_neighbors = mapper.neighbors[pixel_index]
+                    pixel_neighbors = pixel_neighbors[pixel_neighbors >= 0]
+
+                    brightness = self.reconstruction_dict[mapper][pixel_index]
+                    brightness_neighbors = self.reconstruction_dict[mapper][pixel_neighbors]
+
+                    if brightness < np.max(brightness_neighbors):
+                        add_pixel = False
+
+                if add_pixel:
+
+                   pixel_list.append(pixel_index)
+
+            brightest_pixel_list.append(pixel_list)
+
+        return brightest_pixel_list
 
     @property
-    def brightest_reconstruction_pixel_centre_list(self):
-        brightest_reconstruction_pixel_centre_list = []
+    def brightest_pixel_centre_list(self):
+        brightest_pixel_centre_list = []
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
             brightest_reconstruction_pixel = np.argmax(self.reconstruction_dict[mapper])
@@ -879,9 +902,9 @@ class AbstractInversion:
                 values=[mapper.source_plane_mesh_grid[brightest_reconstruction_pixel]]
             )
 
-            brightest_reconstruction_pixel_centre_list.append(centre)
+            brightest_pixel_centre_list.append(centre)
 
-        return brightest_reconstruction_pixel_centre_list
+        return brightest_pixel_centre_list
 
     def regularization_weights_from(self, index: int) -> np.ndarray:
         linear_obj = self.linear_obj_list[index]

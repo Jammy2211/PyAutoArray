@@ -58,6 +58,7 @@ from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
 from .operators.over_sampling.decorator import over_sample
+from .operators.contour import Grid2DContour
 from .layout.layout import Layout1D
 from .layout.layout import Layout2D
 from .structures.arrays.uniform_1d import Array1D

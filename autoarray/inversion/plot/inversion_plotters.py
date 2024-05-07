@@ -401,7 +401,7 @@ class InversionPlotter(Plotter):
     def subplot_mappings(
         self, pixelization_index: int = 0, auto_filename: str = "subplot_mappings"
     ):
-        self.open_subplot_figure(number_subplots=8, subplot_shape=(2, 4))
+        self.open_subplot_figure(number_subplots=4)
 
         self.include_2d._mapper_image_plane_mesh_grid = False
 
@@ -409,37 +409,17 @@ class InversionPlotter(Plotter):
             pixelization_index=pixelization_index, data_subtracted=True
         )
 
-        self.figures_2d_of_pixelization(
-            pixelization_index=pixelization_index, reconstructed_image=True
-        )
-
-        self.figures_2d_of_pixelization(
-            pixelization_index=pixelization_index, reconstruction=True
-        )
-
-        self.set_title(label="Source Reconstruction (Unzoomed)")
-        self.figures_2d_of_pixelization(
-            pixelization_index=pixelization_index,
-            reconstruction=True,
-            zoom_to_brightest=False,
-        )
-        self.set_title(label=None)
-
         total_pixels = conf.instance["visualize"]["general"]["inversion"][
             "total_mappings_pixels"
         ]
 
-        pix_indexes = self.inversion.brightest_reconstruction_pixel_list_from(
-            total_pixels=total_pixels
+        pix_indexes = self.inversion.brightest_pixel_list_from(
+            total_pixels=total_pixels, filter_neighbors=True
         )
 
         self.visuals_2d.pix_indexes = [
             [index] for index in pix_indexes[pixelization_index]
         ]
-
-        self.figures_2d_of_pixelization(
-            pixelization_index=pixelization_index, data_subtracted=True
-        )
 
         self.figures_2d_of_pixelization(
             pixelization_index=pixelization_index, reconstructed_image=True
