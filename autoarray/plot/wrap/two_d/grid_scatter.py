@@ -4,13 +4,10 @@ import itertools
 from scipy.spatial import ConvexHull
 from typing import List, Union
 
-from autoarray.geometry.geometry_2d import Geometry2D
+
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-
-from autoarray.structures.grids import grid_2d_util
-from autoarray import exc
 
 
 class GridScatter(AbstractMatWrap2D):
@@ -110,57 +107,10 @@ class GridScatter(AbstractMatWrap2D):
 
         plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap, **config_dict)
 
-    def grid_contour_from(
-        self,
-        grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
-        indexes: np.ndarray,
-        geometry: Geometry2D,
-    ):
-        grid_contour_list = []
-
-        for index_list in indexes:
-            contour_list = grid_2d_util.grid_2d_to_contours_from(
-                grid_2d=grid[index_list, :],
-                pixel_scales=geometry.pixel_scales,
-                shape_native=geometry.shape_native,
-            )
-
-            grid_contour_list.append(contour_list)
-
-        return grid_contour_list
-
-    def grid_hull_from(
-        self, grid: Union[np.ndarray, Grid2D, Grid2DIrregular], indexes: np.ndarray
-    ):
-        grid_hull_list = []
-
-        for index_list in indexes:
-            grid_convex = np.zeros((len(index_list), 2))
-
-            grid_convex[:, 0] = grid[index_list, 1]
-            grid_convex[:, 1] = grid[index_list, 0]
-
-            hull = ConvexHull(grid_convex)
-
-            hull_vertices = hull.vertices
-
-            hull_x = grid_convex[hull_vertices, 0]
-            hull_y = grid_convex[hull_vertices, 1]
-
-            grid_hull = np.zeros((len(hull_vertices), 2))
-
-            grid_hull[:, 1] = hull_x
-            grid_hull[:, 0] = hull_y
-
-            grid_hull_list.append(grid_hull)
-
-        return grid_hull_list
-
     def scatter_grid_indexes(
         self,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
         indexes: np.ndarray,
-        geometry: Geometry2D,
     ):
         """
         Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
@@ -175,51 +125,9 @@ class GridScatter(AbstractMatWrap2D):
         indexes
             The 1D indexes of the grid that are colored in when plotted.
         """
-        if not isinstance(grid, (np.ndarray, Grid2D, Grid2DIrregular)):
-            raise exc.PlottingException(
-                "The grid passed into scatter_grid_indexes is not a ndarray and thus its"
-                "1D indexes cannot be marked and plotted."
-            )
-
-        if len(grid.shape) != 2:
-            raise exc.PlottingException(
-                "The grid passed into scatter_grid_indexes is not 2D (e.g. a flattened 1D"
-                "grid) and thus its 1D indexes cannot be marked."
-            )
-
-        if isinstance(indexes, list):
-            if not any(isinstance(i, list) for i in indexes):
-                indexes = [indexes]
-
         color = itertools.cycle(self.config_dict["c"])
         config_dict = self.config_dict
         config_dict.pop("c")
-
-        # try:
-        #
-        #     grid_contour = Grid2DContour(
-        #         grid=grid,
-        #         pixel_scales=geometry.pixel_scales,
-        #         shape_native=geometry.shape_native
-        #     )
-        #
-        #     grid_contour_list = self.grid_contour_from(grid=grid, indexes=indexes, geometry=geometry)
-        #
-        #     for index in range(len(grid_contour.contour_list)):
-        #
-        #         color_plot = next(color)
-        #
-        #         for grid_contour in grid_contour_list[index]:
-        #
-        #             plt.plot(grid_contour[:, 1], grid_contour[:, 0], linewidth=2, color=color_plot)
-        #
-        # except AttributeError:
-        #
-        #     grid_hull_list = self.grid_hull_from(grid=grid, indexes=indexes)
-        #
-        #     for grid_hull in grid_hull_list:
-        #
-        #         plt.plot(grid_hull[:, 1], grid_hull[:, 0], linewidth=2, color=next(color))
 
         for index_list in indexes:
             plt.scatter(

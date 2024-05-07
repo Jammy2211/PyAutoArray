@@ -461,7 +461,9 @@ class MatPlot2D(AbstractMatPlot):
         if self.contour is not False:
             self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
 
-        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid)
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=grid, geometry=grid.geometry
+        )
 
         if not self.is_for_subplot:
             self.output.to_figure(structure=grid, auto_filename=auto_labels.filename)
@@ -573,7 +575,10 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
+            plotter=self,
+            grid_indexes=mapper.source_plane_data_grid,
+            mapper=mapper,
+            geometry=mapper.mapper_grids.mask.geometry,
         )
 
         if not self.is_for_subplot:
@@ -635,7 +640,10 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
+            plotter=self,
+            grid_indexes=mapper.source_plane_data_grid,
+            mapper=mapper,
+            geometry=mapper.mapper_grids.mask.geometry,
         )
 
         if not self.is_for_subplot:
@@ -715,7 +723,10 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
+            plotter=self,
+            grid_indexes=mapper.source_plane_data_grid,
+            mapper=mapper,
+            geometry=mapper.mapper_grids.mask.geometry,
         )
 
         if pixel_values is not None:

@@ -104,7 +104,33 @@ class GridPlot(AbstractMatWrap2D):
         except IndexError:
             pass
 
-    def plot_grid_indexes(
+    def plot_grid_indexes_x1(
+        self,
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
+        indexes: np.ndarray,
+    ):
+        color = itertools.cycle(self.config_dict["c"])
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
+        if isinstance(indexes[0], int):
+            indexes = [indexes]
+
+        for index_list in indexes:
+            grid_contour = Grid2DContour(
+                grid=grid[index_list, :],
+                pixel_scales=None,
+                shape_native=None,
+            )
+
+            grid_hull = grid_contour.hull
+
+            if grid_hull is not None:
+                plt.plot(
+                    grid_hull[:, 1], grid_hull[:, 0], linewidth=2, color=next(color)
+                )
+
+    def plot_grid_indexes_multi(
         self,
         grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
         indexes: np.ndarray,
@@ -114,9 +140,17 @@ class GridPlot(AbstractMatWrap2D):
         config_dict = self.config_dict
         config_dict.pop("c")
 
+        if isinstance(indexes[0], int):
+            indexes = [indexes]
+
         for index_list in indexes:
+            grid_in = grid[index_list, :]
+
+            if isinstance(index_list[0], tuple):
+                grid_in = grid_in[0]
+
             grid_contour = Grid2DContour(
-                grid=grid[index_list, :],
+                grid=grid_in,
                 pixel_scales=geometry.pixel_scales,
                 shape_native=geometry.shape_native,
             )

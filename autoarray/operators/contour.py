@@ -1,7 +1,8 @@
 from __future__ import annotations
 import numpy as np
 from skimage import measure
-from typing import TYPE_CHECKING
+from scipy.spatial import ConvexHull
+from scipy.spatial.qhull import QhullError
 
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 
@@ -9,7 +10,7 @@ from autoarray.geometry import geometry_util
 
 
 class Grid2DContour:
-    def __init__(self, grid, pixel_scales=None, shape_native=None):
+    def __init__(self, grid, pixel_scales, shape_native):
         """
         Returns the contours surrounding grids of points as a 2D grid of (y,x) coordinates.
 
@@ -30,35 +31,8 @@ class Grid2DContour:
 
         """
         self.grid = grid
-        self._pixel_scales = pixel_scales
-        self._shape_native = shape_native
-
-    @property
-    def pixel_scales(self):
-        if self._pixel_scales is not None:
-            return self._pixel_scales
-
-    @property
-    def shape_native(self):
-        if self._shape_native is not None:
-            return self._shape_native
-
-        shape_y = (
-            int(
-                (np.amax(self.grid[:, 0]) - np.amin(self.grid[:, 0]))
-                / self.pixel_scales[0]
-            )
-            + 1
-        )
-        shape_x = (
-            int(
-                (np.amax(self.grid[:, 1]) - np.amin(self.grid[:, 1]))
-                / self.pixel_scales[1]
-            )
-            + 1
-        )
-
-        return (shape_y, shape_x)
+        self.pixel_scales = pixel_scales
+        self.shape_native = shape_native
 
     @property
     def contour_array(self):
@@ -69,12 +43,7 @@ class Grid2DContour:
         ).astype("int")
 
         arr = np.zeros(self.shape_native)
-
-        for cen in pixel_centres:
-            arr[cen[0], cen[1]] = 1
-
-        # arr = np.zeros(self.shape_native)
-        # arr[tuple(np.array(pixel_centres).T)] = 1
+        arr[tuple(np.array(pixel_centres).T)] = 1
 
         return arr
 
@@ -97,3 +66,32 @@ class Grid2DContour:
             contour_list.append(Grid2DIrregular(values=grid_scaled_1d))
 
         return contour_list
+
+    @property
+    def hull(
+        self,
+    ):
+        if self.grid.shape[0] < 3:
+            return None
+
+        grid_convex = np.zeros((len(self.grid), 2))
+
+        grid_convex[:, 0] = self.grid[:, 1]
+        grid_convex[:, 1] = self.grid[:, 0]
+
+        try:
+            hull = ConvexHull(grid_convex)
+        except QhullError:
+            return None
+
+        hull_vertices = hull.vertices
+
+        hull_x = grid_convex[hull_vertices, 0]
+        hull_y = grid_convex[hull_vertices, 1]
+
+        grid_hull = np.zeros((len(hull_vertices), 2))
+
+        grid_hull[:, 1] = hull_x
+        grid_hull[:, 0] = hull_y
+
+        return grid_hull
