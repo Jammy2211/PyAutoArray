@@ -3,6 +3,8 @@ import numpy as np
 import itertools
 from typing import List, Union, Tuple
 
+from autoarray.geometry.geometry_2d import Geometry2D
+from autoarray.operators.contour import Grid2DContour
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
@@ -101,3 +103,25 @@ class GridPlot(AbstractMatWrap2D):
                 plt.plot(grid[:, 1], grid[:, 0], c=next(color), **config_dict)
         except IndexError:
             pass
+
+    def plot_grid_indexes(
+        self,
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
+        indexes: np.ndarray,
+        geometry: Geometry2D,
+    ):
+        color = itertools.cycle(self.config_dict["c"])
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
+        for index_list in indexes:
+            grid_contour = Grid2DContour(
+                grid=grid[index_list, :],
+                pixel_scales=geometry.pixel_scales,
+                shape_native=geometry.shape_native,
+            )
+
+            color_plot = next(color)
+
+            for contour in grid_contour.contour_list:
+                plt.plot(contour[:, 1], contour[:, 0], linewidth=2, color=color_plot)

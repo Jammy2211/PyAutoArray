@@ -14,6 +14,7 @@ from .mask_scatter import MaskScatter
 from .border_scatter import BorderScatter
 from .positions_scatter import PositionsScatter
 from .index_scatter import IndexScatter
+from .index_plot import IndexPlot
 from .mesh_grid_scatter import MeshGridScatter
 from .parallel_overscan_plot import ParallelOverscanPlot
 from .serial_prescan_plot import SerialPrescanPlot

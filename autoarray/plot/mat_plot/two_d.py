@@ -54,6 +54,7 @@ class MatPlot2D(AbstractMatPlot):
         border_scatter: Optional[w2d.BorderScatter] = None,
         positions_scatter: Optional[w2d.PositionsScatter] = None,
         index_scatter: Optional[w2d.IndexScatter] = None,
+        index_plot: Optional[w2d.IndexPlot] = None,
         mesh_grid_scatter: Optional[w2d.MeshGridScatter] = None,
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
@@ -196,6 +197,7 @@ class MatPlot2D(AbstractMatPlot):
             is_default=True
         )
         self.index_scatter = index_scatter or w2d.IndexScatter(is_default=True)
+        self.index_plot = index_plot or w2d.IndexPlot(is_default=True)
         self.mesh_grid_scatter = mesh_grid_scatter or w2d.MeshGridScatter(
             is_default=True
         )
@@ -361,7 +363,9 @@ class MatPlot2D(AbstractMatPlot):
             except ValueError:
                 pass
 
-        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid_indexes)
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=grid_indexes, geometry=array.geometry
+        )
 
         if not self.is_for_subplot and not bypass:
             self.output.to_figure(structure=array, auto_filename=auto_labels.filename)
