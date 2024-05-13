@@ -35,9 +35,7 @@ def test__data_and_model_are_identical__no_masking__check_values_are_correct():
 
     assert (fit.residual_map == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
-    assert (
-        fit.normalized_residual_map == np.array([0.0 + 0.0j, 0.0 + 0.0j])
-    ).all()
+    assert (fit.normalized_residual_map == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
     assert (fit.chi_squared_map == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
@@ -75,9 +73,7 @@ def test__data_and_model_are_different__no_masking__check_values_are_correct():
     assert (fit.signal_to_noise_map == np.array([0.5 + 1.0j, 1.5 + 2.0j])).all()
     assert (fit.model_data == np.array([1.0 + 2.0j, 3.0 + 3.0j])).all()
     assert (fit.residual_map == np.array([0.0 + 0.0j, 0.0 + 1.0j])).all()
-    assert (
-        fit.normalized_residual_map == np.array([0.0 + 0.0j, 0.0 + 0.5j])
-    ).all()
+    assert (fit.normalized_residual_map == np.array([0.0 + 0.0j, 0.0 + 0.5j])).all()
     assert (fit.chi_squared_map == np.array([0.0 + 0.0j, 0.0 + 0.25j])).all()
     assert fit.chi_squared == 0.25
     assert fit.reduced_chi_squared == 0.25 / 2.0
@@ -138,9 +134,7 @@ def test__data_and_model_are_identical__inversion_included__changes_certain_prop
 def test__dirty_quantities(transformer_7x7_7, interferometer_7, fit_interferometer_7):
     fit_interferometer_7.dataset.transformer = transformer_7x7_7
 
-    dirty_image = transformer_7x7_7.image_from(
-        visibilities=interferometer_7.data
-    )
+    dirty_image = transformer_7x7_7.image_from(visibilities=interferometer_7.data)
     assert (fit_interferometer_7.dirty_image == dirty_image).all()
 
     dirty_noise_map = transformer_7x7_7.image_from(

@@ -5,7 +5,7 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from autoarray.dataset.model import DatasetModel
+from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
 from autoarray.mask.mask_2d import Mask2D
@@ -151,6 +151,22 @@ class FitDataset(AbstractFitInversion):
     @property
     def mask(self) -> Mask2D:
         return self.dataset.mask
+
+    @property
+    def grid(self) -> ty.Grid2DLike:
+        return self.dataset.grid.subtracted_from(offset=self.dataset_model.grid_offset)
+
+    @property
+    def grid_pixelization(self) -> ty.Grid2DLike:
+        return self.dataset.grid_pixelization.subtracted_from(
+            offset=self.dataset_model.grid_offset
+        )
+
+    @property
+    def blurring_grid(self) -> ty.Grid2DLike:
+        return self.dataset.blurring_grid.subtracted_from(
+            offset=self.dataset_model.grid_offset
+        )
 
     @property
     def data(self) -> ty.DataLike:
