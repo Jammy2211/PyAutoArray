@@ -14,14 +14,32 @@ class Triangles(AbstractTriangles):
         self,
         rows: List[List[Tuple[float, float]]],
     ):
+        """
+        Represents a grid of equilateral triangles in the image plane.
+
+        Rows are offset by half a pixel width. Every other row is one pixel shorter.
+        Rows are spaced such that if all points are joined by lines, equilateral triangles are formed.
+
+        Parameters
+        ----------
+        rows
+            A list of rows, each containing a list of points.
+            These rows are offset by half a pixel width.
+        """
         self.rows = rows
 
     @cached_property
-    def long(self):
+    def long(self) -> int:
+        """
+        The length of the longest row of points.
+        """
         return max(map(len, self.rows))
 
     @cached_property
-    def triangles(self):
+    def triangles(self) -> List[Triangle]:
+        """
+        A list of triangles in the image plane.
+        """
         triangles = []
 
         for i, row in enumerate(self.rows):
@@ -42,12 +60,27 @@ class Triangles(AbstractTriangles):
 
     @cached_property
     def grid_2d(self) -> Grid2DIrregular:
+        """
+        A 2D grid comprising the coordinates of the vertices of the triangles.
+        """
         return Grid2DIrregular(
             values=[pair for row in self.rows for pair in row],
         )
 
     @classmethod
-    def for_grid(cls, grid: Grid2D):
+    def for_grid(cls, grid: Grid2D) -> "Triangles":
+        """
+        Create a grid of equilateral triangles from a regular grid.
+
+        Parameters
+        ----------
+        grid
+            The regular grid to convert to a grid of triangles.
+
+        Returns
+        -------
+        The grid of triangles.
+        """
         scale = grid.pixel_scale
         y = grid[:, 0]
         x = grid[:, 1]
@@ -73,7 +106,24 @@ class Triangles(AbstractTriangles):
         return Triangles(rows)
 
 
-def make_triangles(short_row, long_row):
+def make_triangles(
+    short_row: List[Tuple[float, float]],
+    long_row: List[Tuple[float, float]],
+) -> List[Triangle]:
+    """
+    Create a list of triangles from two rows of points.
+
+    Parameters
+    ----------
+    short_row
+        The row of points with the shorter length.
+    long_row
+        The row of points with the longer length.
+
+    Returns
+    -------
+    A list of triangles.
+    """
     return [
         Triangle(point, long_row[i], long_row[i + 1])
         for i, point in enumerate(short_row)
