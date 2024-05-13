@@ -44,4 +44,18 @@ class SubsampleTriangles(AbstractTriangles):
         )
 
     def with_updated_grid(self, grid: Grid2DIrregular):
-        pass
+        triangles = []
+        points_per_group = 6
+        for start in range(0, len(grid), points_per_group):
+            finish = start + points_per_group
+            points = grid[start:finish]
+            mid_1, mid_2, mid_3, *points = points
+            triangles.extend(
+                (
+                    Triangle(points[0], mid_1, mid_3),
+                    Triangle(mid_1, points[1], mid_2),
+                    Triangle(mid_3, mid_2, points[2]),
+                    Triangle(mid_1, mid_2, mid_3),
+                )
+            )
+        return triangles
