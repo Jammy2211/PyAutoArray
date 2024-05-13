@@ -37,6 +37,27 @@ class Triangles:
         return rows
 
     @cached_property
+    def triangles(self):
+        triangles = []
+        long = max(map(len, self.rows))
+
+        for i, row in enumerate(self.rows):
+            row = self.rows[i]
+
+            if len(row) == long:
+                row = row[1:-1]
+
+            if i != 0:
+                triangles.extend(make_triangles(row, self.rows[i - 1]))
+
+            try:
+                triangles.extend(make_triangles(row, self.rows[i + 1]))
+            except IndexError:
+                pass
+
+        return triangles
+
+    @cached_property
     def height(self):
         return HEIGHT_FACTOR * self.scale
 
@@ -53,3 +74,7 @@ class Triangles:
         x_max = x.max()
 
         return Triangles(y_min, y_max, x_min, x_max, scale)
+
+
+def make_triangles(short_row, long_row):
+    return [(point, long_row[i], long_row[i + 1]) for i, point in enumerate(short_row)]

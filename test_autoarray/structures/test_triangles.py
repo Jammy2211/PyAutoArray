@@ -52,3 +52,7 @@ def test_extremes(rows, triangles):
     assert last_row[0][1] <= triangles.x_min
     assert last_row[-1][0] >= triangles.y_max
     assert last_row[-1][1] >= triangles.x_max
+
+
+def test_triangles(triangles):
+    assert len(triangles.triangles) == 15
