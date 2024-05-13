@@ -9,7 +9,7 @@ class MockFitImaging(FitImaging):
     def __init__(
         self,
         dataset=MockDataset(),
-        dataset_model: DatasetModel = None,
+        dataset_model: Optional[DatasetModel] = None,
         use_mask_in_fit: bool = False,
         noise_map=None,
         model_data=None,
