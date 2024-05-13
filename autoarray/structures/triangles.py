@@ -61,6 +61,9 @@ class Triangles:
     def long(self):
         return max(map(len, self.rows))
 
+    def containing(self, point: Tuple[float, float]):
+        return [triangle for triangle in self.triangles if triangle.contains(point)]
+
     @cached_property
     def triangles(self):
         triangles = []

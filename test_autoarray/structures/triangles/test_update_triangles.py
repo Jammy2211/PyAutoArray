@@ -41,3 +41,7 @@ def test_subgrid():
     )
     subsample = triangle.subsample()
     assert len(subsample) == 4
+
+
+def test_containing(triangles):
+    assert len(triangles.containing((0.5, 0.5))) == 1
