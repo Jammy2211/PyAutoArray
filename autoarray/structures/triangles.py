@@ -1,4 +1,4 @@
-from autoarray import Grid2D
+from autoarray import Grid2D, Grid2DIrregular
 from autoconf import cached_property
 import numpy as np
 
@@ -37,14 +37,17 @@ class Triangles:
         return rows
 
     @cached_property
+    def long(self):
+        return max(map(len, self.rows))
+
+    @cached_property
     def triangles(self):
         triangles = []
-        long = max(map(len, self.rows))
 
         for i, row in enumerate(self.rows):
             row = self.rows[i]
 
-            if len(row) == long:
+            if len(row) == self.long:
                 row = row[1:-1]
 
             if i != 0:
@@ -56,6 +59,12 @@ class Triangles:
                 pass
 
         return triangles
+
+    @cached_property
+    def grid_2d(self):
+        return Grid2DIrregular(
+            values=[pair for row in self.rows for pair in row],
+        )
 
     @cached_property
     def height(self):

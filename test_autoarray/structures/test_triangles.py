@@ -56,3 +56,7 @@ def test_extremes(rows, triangles):
 
 def test_triangles(triangles):
     assert len(triangles.triangles) == 15
+
+
+def test_grid_2d(triangles):
+    assert triangles.grid_2d
