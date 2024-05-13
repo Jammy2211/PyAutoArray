@@ -1,10 +1,9 @@
 import numpy as np
 from typing import Dict, Optional
 
-from autoarray.structures.abstract_structure import Structure
-
 from autoarray.dataset.interferometer.dataset import Interferometer
 
+from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.visibilities import Visibilities
 from autoarray.fit.fit_dataset import FitDataset
@@ -17,15 +16,19 @@ class FitInterferometer(FitDataset):
     def __init__(
         self,
         dataset: Interferometer,
+        dataset_model: DatasetModel = None,
         use_mask_in_fit: bool = False,
         run_time_dict: Optional[Dict] = None,
     ):
-        """Class to fit a masked interferometer dataset.
+        """
+        Class to fit a masked interferometer dataset.
 
         Parameters
         ----------
         dataset : MaskedInterferometer
             The masked interferometer dataset that is fitted.
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
         model_data : Visibilities
             The model visibilities the masked imaging is fitted with.
         inversion : Inversion
@@ -54,6 +57,7 @@ class FitInterferometer(FitDataset):
 
         super().__init__(
             dataset=dataset,
+            dataset_model=dataset_model,
             use_mask_in_fit=use_mask_in_fit,
             run_time_dict=run_time_dict,
         )
@@ -63,30 +67,19 @@ class FitInterferometer(FitDataset):
         return np.full(shape=self.data.shape, fill_value=False)
 
     @property
-    def interferometer(self) -> Interferometer:
-        return self.dataset
-
-    @property
     def transformer(self) -> ty.Transformer:
         return self.dataset.transformer
 
     @property
-    def visibilities(self) -> Visibilities:
-        return self.data
-
-    @property
-    def model_visibilities(self) -> Visibilities:
-        return self.model_data
-
-    @property
-    def normalized_residual_map(self) -> Structure:
+    def normalized_residual_map(self) -> np.ndarray:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
         Normalized_Residual = (Data - Model_Data) / Noise
         """
-        return fit_util.normalized_residual_map_complex_with_mask_from(
-            residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+        return fit_util.normalized_residual_map_complex_from(
+            residual_map=self.residual_map,
+            noise_map=self.noise_map,
         )
 
     @property
@@ -96,13 +89,15 @@ class FitInterferometer(FitDataset):
 
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
-        return fit_util.chi_squared_map_complex_with_mask_from(
-            residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+        return fit_util.chi_squared_map_complex_from(
+            residual_map=self.residual_map,
+            noise_map=self.noise_map,
         )
 
     @property
     def signal_to_noise_map(self) -> np.ndarray:
-        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
+        """
+        The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map_real = self.data.real / self.noise_map.real
 
         signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0
@@ -117,8 +112,8 @@ class FitInterferometer(FitDataset):
         """
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
-        return fit_util.chi_squared_complex_with_mask_from(
-            chi_squared_map=self.chi_squared_map, mask=self.mask
+        return fit_util.chi_squared_complex_from(
+            chi_squared_map=self.chi_squared_map,
         )
 
     @property
@@ -128,8 +123,8 @@ class FitInterferometer(FitDataset):
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
-        return fit_util.noise_normalization_complex_with_mask_from(
-            noise_map=self.noise_map, mask=self.mask
+        return fit_util.noise_normalization_complex_from(
+            noise_map=self.noise_map,
         )
 
     @property

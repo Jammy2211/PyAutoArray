@@ -54,6 +54,7 @@ class MatPlot2D(AbstractMatPlot):
         border_scatter: Optional[w2d.BorderScatter] = None,
         positions_scatter: Optional[w2d.PositionsScatter] = None,
         index_scatter: Optional[w2d.IndexScatter] = None,
+        index_plot: Optional[w2d.IndexPlot] = None,
         mesh_grid_scatter: Optional[w2d.MeshGridScatter] = None,
         parallel_overscan_plot: Optional[w2d.ParallelOverscanPlot] = None,
         serial_prescan_plot: Optional[w2d.SerialPrescanPlot] = None,
@@ -196,6 +197,7 @@ class MatPlot2D(AbstractMatPlot):
             is_default=True
         )
         self.index_scatter = index_scatter or w2d.IndexScatter(is_default=True)
+        self.index_plot = index_plot or w2d.IndexPlot(is_default=True)
         self.mesh_grid_scatter = mesh_grid_scatter or w2d.MeshGridScatter(
             is_default=True
         )
@@ -219,6 +221,7 @@ class MatPlot2D(AbstractMatPlot):
         array: Array2D,
         visuals_2d: Visuals2D,
         auto_labels: AutoLabels,
+        grid_indexes=None,
         bypass: bool = False,
     ):
         """
@@ -360,12 +363,9 @@ class MatPlot2D(AbstractMatPlot):
             except ValueError:
                 pass
 
-        grid_indexes = None
-
-        if visuals_2d.indexes is not None or visuals_2d.pix_indexes is not None:
-            grid_indexes = array.mask.derive_grid.unmasked
-
-        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid_indexes)
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=grid_indexes, geometry=array.geometry
+        )
 
         if not self.is_for_subplot and not bypass:
             self.output.to_figure(structure=array, auto_filename=auto_labels.filename)
@@ -461,7 +461,9 @@ class MatPlot2D(AbstractMatPlot):
         if self.contour is not False:
             self.contour.set(array=color_array, extent=extent, use_log10=self.use_log10)
 
-        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid)
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=grid, geometry=grid.geometry
+        )
 
         if not self.is_for_subplot:
             self.output.to_figure(structure=grid, auto_filename=auto_labels.filename)
@@ -573,7 +575,10 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
+            plotter=self,
+            grid_indexes=mapper.source_plane_data_grid,
+            mapper=mapper,
+            geometry=mapper.mapper_grids.mask.geometry,
         )
 
         if not self.is_for_subplot:
@@ -635,7 +640,10 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
+            plotter=self,
+            grid_indexes=mapper.source_plane_data_grid,
+            mapper=mapper,
+            geometry=mapper.mapper_grids.mask.geometry,
         )
 
         if not self.is_for_subplot:
@@ -715,7 +723,10 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set()
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_plane_data_grid, mapper=mapper
+            plotter=self,
+            grid_indexes=mapper.source_plane_data_grid,
+            mapper=mapper,
+            geometry=mapper.mapper_grids.mask.geometry,
         )
 
         if pixel_values is not None:

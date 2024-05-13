@@ -4,7 +4,7 @@ import pytest
 import autoarray as aa
 
 
-def test__visibilities_and_model_are_identical__no_masking__check_values_are_correct():
+def test__data_and_model_are_identical__no_masking__check_values_are_correct():
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0)
     )
@@ -25,21 +25,19 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
         dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
-    assert (fit.visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
+    assert (fit.data == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
 
-    assert (fit.noise_map.slim == np.array([2.0 + 2.0j, 2.0 + 2.0j])).all()
+    assert (fit.noise_map == np.array([2.0 + 2.0j, 2.0 + 2.0j])).all()
 
-    assert (fit.signal_to_noise_map.slim == np.array([0.5 + 1.0j, 1.5 + 2.0j])).all()
+    assert (fit.signal_to_noise_map == np.array([0.5 + 1.0j, 1.5 + 2.0j])).all()
 
-    assert (fit.model_data.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
+    assert (fit.model_data == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
 
-    assert (fit.residual_map.slim == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
+    assert (fit.residual_map == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
-    assert (
-        fit.normalized_residual_map.slim == np.array([0.0 + 0.0j, 0.0 + 0.0j])
-    ).all()
+    assert (fit.normalized_residual_map == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
-    assert (fit.chi_squared_map.slim == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
+    assert (fit.chi_squared_map == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
     assert fit.chi_squared == 0.0
     assert fit.reduced_chi_squared == 0.0
@@ -49,7 +47,7 @@ def test__visibilities_and_model_are_identical__no_masking__check_values_are_cor
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
 
-def test__visibilities_and_model_are_different__no_masking__check_values_are_correct():
+def test__data_and_model_are_different__no_masking__check_values_are_correct():
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0)
     )
@@ -70,22 +68,13 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
         dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
-    assert (fit.visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
-
-    assert (fit.noise_map.slim == np.array([2.0 + 2.0j, 2.0 + 2.0j])).all()
-
-    assert (fit.signal_to_noise_map.slim == np.array([0.5 + 1.0j, 1.5 + 2.0j])).all()
-
-    assert (fit.model_data.slim == np.array([1.0 + 2.0j, 3.0 + 3.0j])).all()
-
-    assert (fit.residual_map.slim == np.array([0.0 + 0.0j, 0.0 + 1.0j])).all()
-
-    assert (
-        fit.normalized_residual_map.slim == np.array([0.0 + 0.0j, 0.0 + 0.5j])
-    ).all()
-
-    assert (fit.chi_squared_map.slim == np.array([0.0 + 0.0j, 0.0 + 0.25j])).all()
-
+    assert (fit.data == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
+    assert (fit.noise_map == np.array([2.0 + 2.0j, 2.0 + 2.0j])).all()
+    assert (fit.signal_to_noise_map == np.array([0.5 + 1.0j, 1.5 + 2.0j])).all()
+    assert (fit.model_data == np.array([1.0 + 2.0j, 3.0 + 3.0j])).all()
+    assert (fit.residual_map == np.array([0.0 + 0.0j, 0.0 + 1.0j])).all()
+    assert (fit.normalized_residual_map == np.array([0.0 + 0.0j, 0.0 + 0.5j])).all()
+    assert (fit.chi_squared_map == np.array([0.0 + 0.0j, 0.0 + 0.25j])).all()
     assert fit.chi_squared == 0.25
     assert fit.reduced_chi_squared == 0.25 / 2.0
     assert fit.noise_normalization == pytest.approx(
@@ -94,7 +83,7 @@ def test__visibilities_and_model_are_different__no_masking__check_values_are_cor
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
 
-def test__visibilities_and_model_are_identical__inversion_included__changes_certain_properties():
+def test__data_and_model_are_identical__inversion_included__changes_certain_properties():
     real_space_mask = aa.Mask2D(
         mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0)
     )
@@ -145,9 +134,7 @@ def test__visibilities_and_model_are_identical__inversion_included__changes_cert
 def test__dirty_quantities(transformer_7x7_7, interferometer_7, fit_interferometer_7):
     fit_interferometer_7.dataset.transformer = transformer_7x7_7
 
-    dirty_image = transformer_7x7_7.image_from(
-        visibilities=interferometer_7.visibilities
-    )
+    dirty_image = transformer_7x7_7.image_from(visibilities=interferometer_7.data)
     assert (fit_interferometer_7.dirty_image == dirty_image).all()
 
     dirty_noise_map = transformer_7x7_7.image_from(

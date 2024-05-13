@@ -7,6 +7,7 @@ general:
   disable_zoom_for_fits: true           # If True, the zoom-in around the masked region is disabled when outputting .fits files, which is useful to retain the same dimensions as the input data.
 inversion:
   reconstruction_vmax_factor: 0.5
+  total_mappings_pixels : 8                 # The number of source pixels used when plotting the subplot_mappings of a pixelization.
 zoom:
   plane_percent: 0.01
   inversion_percent: 0.01               # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.

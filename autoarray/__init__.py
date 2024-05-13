@@ -14,6 +14,7 @@ from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
+from .dataset.dataset_model import DatasetModel
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
 from .fit.fit_interferometer import FitInterferometer
@@ -57,6 +58,7 @@ from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
 from .operators.over_sampling.decorator import over_sample
+from .operators.contour import Grid2DContour
 from .layout.layout import Layout1D
 from .layout.layout import Layout2D
 from .structures.arrays.uniform_1d import Array1D

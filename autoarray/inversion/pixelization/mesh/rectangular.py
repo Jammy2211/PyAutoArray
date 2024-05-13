@@ -64,8 +64,8 @@ class Rectangular(AbstractMesh):
     def mapper_grids_from(
         self,
         mask,
-        border_relocator: Optional[BorderRelocator],
         source_plane_data_grid: Grid2D,
+        border_relocator: Optional[BorderRelocator] = None,
         source_plane_mesh_grid: Grid2D = None,
         image_plane_mesh_grid: Grid2D = None,
         adapt_data: np.ndarray = None,

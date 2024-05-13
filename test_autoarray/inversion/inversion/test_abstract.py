@@ -653,11 +653,35 @@ def test__brightest_reconstruction_pixel_and_centre():
         linear_obj_list=[mapper], reconstruction=np.array([2.0, 3.0, 5.0, 0.0])
     )
 
-    assert inversion.brightest_reconstruction_pixel_list[0] == 2
+    assert inversion.brightest_pixel_list_from(total_pixels=2)[0] == [
+        2,
+        1,
+    ]
 
-    assert inversion.brightest_reconstruction_pixel_centre_list[0].in_list == [
+    assert inversion.brightest_pixel_centre_list[0].in_list == [
         (5.0, 6.0)
     ]
+
+def test__brightest_reconstruction_pixel__filter_neighbors():
+    mapper = aa.m.MockMapper(
+        source_plane_mesh_grid=aa.Mesh2DVoronoi(
+            [[1.0, 1.0], [1.0, 2.0], [1.0, 3.0], [2.0, 1.0], [2.0, 2.0], [2.0, 3.0], [3.0, 1.0], [3.0, 2.0], [3.0, 3.0]]
+        )
+    )
+
+    inversion = aa.m.MockInversion(
+        linear_obj_list=[mapper], reconstruction=np.array([5.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
+    )
+
+    pixel_list = inversion.brightest_pixel_list_from(total_pixels=9, filter_neighbors=True)
+
+    assert pixel_list[0] == [
+        0,
+        8,
+    ]
+
+
+
 
 
 def test__interpolated_reconstruction_list_from():
