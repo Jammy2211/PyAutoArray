@@ -4,7 +4,6 @@ from autoarray import Grid2D, Grid2DIrregular
 from autoconf import cached_property
 import numpy as np
 
-
 HEIGHT_FACTOR = 3**0.5 / 2
 
 
@@ -40,10 +39,21 @@ class Triangles:
         return triangles
 
     @cached_property
-    def grid_2d(self):
+    def grid_2d(self) -> Grid2DIrregular:
         return Grid2DIrregular(
             values=[pair for row in self.rows for pair in row],
         )
+
+    def with_updated_grid(self, grid: Grid2DIrregular):
+        assert len(grid) == len(self.grid_2d)
+
+        rows = []
+        start = 0
+        for row in self.rows:
+            rows.append(grid[start : start + len(row)])
+            start += len(row)
+
+        return Triangles(rows)
 
     @classmethod
     def for_grid(cls, grid: Grid2D):
@@ -56,8 +66,6 @@ class Triangles:
 
         x_min = x.min()
         x_max = x.max()
-
-        print(y_min, y_max, x_min, x_max)
 
         height = scale * HEIGHT_FACTOR
 
