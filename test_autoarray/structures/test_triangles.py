@@ -37,3 +37,18 @@ def test_alternation(rows):
 
     third_row = rows[2]
     assert len(third_row) == 3
+
+
+def test_extremes(rows, triangles):
+    first_row = rows[0]
+    assert first_row[0] == (-0.5, -0.5)
+    assert first_row[-1] == (-0.5, 0.5)
+
+    second_row = rows[1]
+    assert second_row[0][1] == -0.75
+
+    last_row = rows[-1]
+    assert last_row[0][0] >= triangles.y_max
+    assert last_row[0][1] <= triangles.x_min
+    assert last_row[-1][0] >= triangles.y_max
+    assert last_row[-1][1] >= triangles.x_max
