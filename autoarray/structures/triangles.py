@@ -103,4 +103,7 @@ class Triangles:
 
 
 def make_triangles(short_row, long_row):
-    return [(point, long_row[i], long_row[i + 1]) for i, point in enumerate(short_row)]
+    return [
+        Triangle(point, long_row[i], long_row[i + 1])
+        for i, point in enumerate(short_row)
+    ]
