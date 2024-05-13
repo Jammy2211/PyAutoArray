@@ -7,6 +7,26 @@ import numpy as np
 HEIGHT_FACTOR = 3**0.5 / 2
 
 
+class Triangle:
+    def __init__(self, *points: Tuple[float, float]):
+        assert len(points) == 3
+        self.points = points
+
+    def contains(self, point: Tuple[float, float]) -> bool:
+        y1, x1 = self.points[0]
+        y2, x2 = self.points[1]
+        y3, x3 = self.points[2]
+        y, x = point
+
+        denominator = (y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3)
+
+        a = ((y2 - y3) * (x - x3) + (x3 - x2) * (y - y3)) / denominator
+        b = ((y3 - y1) * (x - x3) + (x1 - x3) * (y - y3)) / denominator
+        c = 1 - a - b
+
+        return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
+
+
 class Triangles:
     def __init__(
         self,
