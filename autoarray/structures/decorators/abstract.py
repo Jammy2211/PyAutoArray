@@ -92,7 +92,6 @@ class AbstractMaker:
         if isinstance(self.grid, Grid1D):
             grid = self.grid.grid_2d_radial_projected_from()
             return self.func(self.obj, grid, *self.args, **self.kwargs)
-
         return self.func(self.obj, self.grid, *self.args, **self.kwargs)
 
     @property

@@ -60,7 +60,7 @@ def relocate_to_radial_minimum(func):
             The grid_like object whose coordinates are radially moved from (0.0, 0.0).
         """
         if os.environ.get("USE_JAX", "0") == "1":
-            return grid
+            return func(obj, grid, *args, **kwargs)
 
         try:
             grid_radial_minimum = conf.instance["grids"]["radial_minimum"][
