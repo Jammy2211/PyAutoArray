@@ -46,17 +46,6 @@ class Triangles(AbstractTriangles):
             values=[pair for row in self.rows for pair in row],
         )
 
-    def with_updated_grid(self, grid: Grid2DIrregular):
-        assert len(grid) == len(self.grid_2d)
-
-        rows = []
-        start = 0
-        for row in self.rows:
-            rows.append(grid[start : start + len(row)])
-            start += len(row)
-
-        return Triangles(rows)
-
     @classmethod
     def for_grid(cls, grid: Grid2D):
         scale = grid.pixel_scale
