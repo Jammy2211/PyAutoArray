@@ -5,3 +5,4 @@ def test_update(triangles):
     assert len(new.rows) == len(triangles.rows)
     assert len(new.grid_2d) == len(triangles.grid_2d)
     assert (new.grid_2d == transformed).all()
+    assert len(new.triangles) == 15
