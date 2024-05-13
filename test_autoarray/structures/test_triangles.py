@@ -1,15 +1,39 @@
 import pytest
 
 from autoarray import Grid2D
-from autoarray.geometry.geometry_util import central_scaled_coordinate_2d_from
 from autoarray.structures.triangles import Triangles
 
 
-def test_triangles():
+@pytest.fixture(name="triangles")
+def make_triangles():
     grid = Grid2D.uniform(
-        shape_native=(100, 100),
-        pixel_scales=0.05,
+        shape_native=(3, 3),
+        pixel_scales=0.5,
     )
-    triangles = Triangles.for_grid(grid=grid)
+    return Triangles.for_grid(grid=grid)
 
-    assert triangles.height == pytest.approx(0.04330127)
+
+def test_height(triangles):
+    assert triangles.height == pytest.approx(0.4330127)
+
+
+@pytest.fixture
+def rows(triangles):
+    return triangles.rows
+
+
+def test_rows(triangles):
+    rows = triangles.rows
+
+    assert len(rows) == 4
+
+
+def test_alternation(rows):
+    first_row = rows[0]
+    assert len(first_row) == 3
+
+    second_row = rows[1]
+    assert len(second_row) == 4
+
+    third_row = rows[2]
+    assert len(third_row) == 3

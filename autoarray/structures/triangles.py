@@ -1,5 +1,6 @@
 from autoarray import Grid2D
 from autoconf import cached_property
+import numpy as np
 
 
 HEIGHT_FACTOR = 3**0.5 / 2
@@ -19,6 +20,21 @@ class Triangles:
         self.y_max = y_max
         self.x_max = x_max
         self.scale = scale
+
+    @cached_property
+    def rows(self):
+        rows = []
+        for y in np.arange(self.y_min, self.y_max + self.height, self.height):
+            row = []
+            offset = (len(rows) % 2) * self.scale / 2
+            for x in np.arange(
+                self.x_min - offset, self.x_max + self.scale, self.scale
+            ):
+                row.append(
+                    (y, x),
+                )
+            rows.append(row)
+        return rows
 
     @cached_property
     def height(self):
