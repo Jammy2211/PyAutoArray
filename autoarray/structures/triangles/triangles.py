@@ -1,6 +1,7 @@
 from typing import List, Tuple
 
 from autoarray import Grid2D, Grid2DIrregular
+from autoarray.structures.triangles.abstract_triangles import AbstractTriangles
 from autoarray.structures.triangles.triangle import Triangle
 from autoconf import cached_property
 import numpy as np
@@ -8,7 +9,7 @@ import numpy as np
 HEIGHT_FACTOR = 3**0.5 / 2
 
 
-class Triangles:
+class Triangles(AbstractTriangles):
     def __init__(
         self,
         rows: List[List[Tuple[float, float]]],
@@ -18,9 +19,6 @@ class Triangles:
     @cached_property
     def long(self):
         return max(map(len, self.rows))
-
-    def containing(self, point: Tuple[float, float]):
-        return [triangle for triangle in self.triangles if triangle.contains(point)]
 
     @cached_property
     def triangles(self):

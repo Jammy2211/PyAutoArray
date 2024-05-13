@@ -33,13 +33,8 @@ def test_contains(point, expected):
     assert triangle.contains(point) is expected
 
 
-def test_subgrid():
-    triangle = Triangle(
-        (0.0, 0.0),
-        (1.0, 0.0),
-        (0.5, 3**0.5 / 2),
-    )
-    subsample = triangle.subsample()
+def test_subgrid(triangle):
+    subsample = triangle.subdivide()
     assert len(subsample) == 4
 
 

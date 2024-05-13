@@ -26,7 +26,7 @@ class Triangle:
 
         return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
 
-    def subsample(self):
+    def subdivide(self):
         mid_1 = self.midpoint(0, 1)
         mid_2 = self.midpoint(1, 2)
         mid_3 = self.midpoint(2, 0)
