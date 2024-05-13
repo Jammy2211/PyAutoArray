@@ -1,7 +1,7 @@
 import pytest
 
 from autoarray import Grid2D
-from autoarray.structures.triangles import Triangles
+from autoarray.structures.triangles.triangles import Triangles
 
 
 @pytest.fixture(name="triangles")

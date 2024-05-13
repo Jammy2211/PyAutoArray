@@ -1,6 +1,6 @@
 import pytest
 
-from autoarray.structures.triangles import Triangle
+from autoarray.structures.triangles.triangles import Triangle
 
 
 def test_update(triangles):
