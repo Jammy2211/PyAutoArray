@@ -42,3 +42,6 @@ class SubsampleTriangles(AbstractTriangles):
                 for point in (triangle.subdivision_points + triangle.points)
             ]
         )
+
+    def with_updated_grid(self, grid: Grid2DIrregular):
+        pass

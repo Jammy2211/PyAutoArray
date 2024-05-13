@@ -12,9 +12,17 @@ class AbstractTriangles(ABC):
     def triangles(self) -> List[Triangle]:
         """A list of triangles in the image plane."""
 
+    def containing(self, point: Tuple[float, float]):
+        return [triangle for triangle in self.triangles if triangle.contains(point)]
+
     @cached_property
     @abstractmethod
     def grid_2d(self) -> Grid2DIrregular:
         """
         A 2D grid comprising the coordinates of the vertices of the triangles
         """
+        pass
+
+    @abstractmethod
+    def with_updated_grid(self, grid: Grid2DIrregular) -> List[Triangle]:
+        pass
