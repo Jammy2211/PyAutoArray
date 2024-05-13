@@ -27,8 +27,7 @@ from autoarray.structures.arrays.irregular import ArrayIrregular
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
-DataLike = Union[Array1D, Array2D, ArrayIrregular, Visibilities]
-NoiseMapLike = Union[Array1D, Array2D, ArrayIrregular, VisibilitiesNoiseMap]
+DataLike = Union[np.ndarray, Array1D, Array2D, ArrayIrregular, Visibilities, VisibilitiesNoiseMap]
 
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerNUFFT

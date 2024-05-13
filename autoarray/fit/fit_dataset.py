@@ -5,25 +5,29 @@ from typing import Dict, Optional
 
 import numpy as np
 
-from autoarray import type as ty
-from autoarray.dataset.abstract.dataset import AbstractDataset
+from autoarray.dataset.model import DatasetModel
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
-from autoarray.mask.abstract_mask import Mask
+from autoarray.mask.mask_2d import Mask2D
+
 from autoarray.numba_util import profile_func
-from autoarray.structures.abstract_structure import Structure
+from autoarray import type as ty
 
 
 class AbstractFitInversion(ABC):
     @property
     @abstractmethod
     def data(self) -> ty.DataLike:
-        pass
+        """
+        Overwrite this method to returns the data of the dataset.
+        """
 
     @property
     @abstractmethod
-    def noise_map(self) -> ty.NoiseMapLike:
-        pass
+    def noise_map(self) -> ty.DataLike:
+        """
+        Overwrite this method to returns the noise-map of the dataset.
+        """
 
     @property
     @abstractmethod
@@ -44,7 +48,7 @@ class AbstractFitInversion(ABC):
         return signal_to_noise_map
 
     @property
-    def residual_map(self) -> Structure:
+    def residual_map(self) -> ty.DataLike:
         """
         Returns the residual-map between the masked dataset and model data, where:
 
@@ -53,7 +57,7 @@ class AbstractFitInversion(ABC):
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
-    def normalized_residual_map(self) -> Structure:
+    def normalized_residual_map(self) -> ty.DataLike:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -64,7 +68,7 @@ class AbstractFitInversion(ABC):
         )
 
     @property
-    def chi_squared_map(self) -> Structure:
+    def chi_squared_map(self) -> ty.DataLike:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
@@ -102,47 +106,26 @@ class AbstractFitInversion(ABC):
         )
 
 
-class SimpleFit(AbstractFitInversion):
-    def __init__(self, data, model_data, noise_map):
-        self._data = data
-        self._model_data = model_data
-        self._noise_map = noise_map
-
-    @property
-    def data(self) -> ty.DataLike:
-        return self._data
-
-    @property
-    def noise_map(self) -> ty.NoiseMapLike:
-        return self._noise_map
-
-    @property
-    def model_data(self) -> ty.DataLike:
-        return self._model_data
-
-
 class FitDataset(AbstractFitInversion):
     # noinspection PyUnresolvedReferences
     def __init__(
         self,
-        dataset: AbstractDataset,
+        dataset,
         use_mask_in_fit: bool = False,
+        dataset_model: DatasetModel = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
         Parameters
         ----------
-        dataset : MaskedDataset
+        dataset
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
-        model_data
-            The model data the masked dataset is fitted with.
-        inversion : Inversion
-            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
-            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
             `dataset` will have been processed to remove masked points, for example the `slim` representation).
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
 
         Attributes
         -----------
@@ -162,26 +145,23 @@ class FitDataset(AbstractFitInversion):
         """
         self.dataset = dataset
         self.use_mask_in_fit = use_mask_in_fit
-
+        self.dataset_model = dataset_model or DatasetModel()
         self.run_time_dict = run_time_dict
 
     @property
-    @abstractmethod
-    def mask(self) -> Mask:
-        """
-        Overwrite this method so it returns the mask of the dataset which is fitted to the input data.
-        """
+    def mask(self) -> Mask2D:
+        return self.dataset.mask
 
     @property
     def data(self) -> ty.DataLike:
         return self.dataset.data
 
     @property
-    def noise_map(self) -> ty.NoiseMapLike:
+    def noise_map(self) -> ty.DataLike:
         return self.dataset.noise_map
 
     @property
-    def residual_map(self) -> Structure:
+    def residual_map(self) -> ty.DataLike:
         """
         Returns the residual-map between the masked dataset and model data, where:
 
@@ -195,7 +175,7 @@ class FitDataset(AbstractFitInversion):
         return super().residual_map
 
     @property
-    def normalized_residual_map(self) -> Structure:
+    def normalized_residual_map(self) -> ty.DataLike:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -208,7 +188,7 @@ class FitDataset(AbstractFitInversion):
         return super().normalized_residual_map
 
     @property
-    def chi_squared_map(self) -> Structure:
+    def chi_squared_map(self) -> ty.DataLike:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
@@ -313,7 +293,7 @@ class FitDataset(AbstractFitInversion):
             return self.log_likelihood
 
     @property
-    def residual_flux_fraction_map(self) -> Structure:
+    def residual_flux_fraction_map(self) -> ty.DataLike:
         """
         Returns the residual flux fraction map, which shows the fraction of signal in each pixel that is not fitted
         by the model, therefore where:

@@ -8,7 +8,6 @@ from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.over_sampling.abstract import AbstractOverSampling
-from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
@@ -204,10 +203,6 @@ class Interferometer(AbstractDataset):
         return self.real_space_mask
 
     @property
-    def visibilities(self):
-        return self.data
-
-    @property
     def amplitudes(self):
         return self.data.amplitudes
 
@@ -248,14 +243,6 @@ class Interferometer(AbstractDataset):
             signal_to_noise_map_real + 1j * signal_to_noise_map_imag
         )
 
-    @property
-    def blurring_grid(self):
-        return None
-
-    @property
-    def convolver(self):
-        return None
-
     def output_to_fits(
         self,
         data_path=None,
@@ -275,3 +262,11 @@ class Interferometer(AbstractDataset):
                 file_path=uv_wavelengths_path,
                 overwrite=overwrite,
             )
+
+    @property
+    def blurring_grid(self):
+        return None
+
+    @property
+    def convolver(self):
+        return None

@@ -3,7 +3,7 @@ import numpy as np
 import autoarray as aa
 
 
-def test__image_and_model_are_identical__no_masking__check_values_are_correct():
+def test__data_and_model_are_identical__no_masking__check_values_are_correct():
     mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0))
 
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
@@ -11,38 +11,22 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
 
     dataset = aa.Imaging(data=data, noise_map=noise_map)
 
-    masked_dataset = dataset.apply_mask(mask=mask)
+    dataset = dataset.apply_mask(mask=mask)
 
-    model_image = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    model_data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     fit = aa.m.MockFitImaging(
-        dataset=masked_dataset, use_mask_in_fit=False, model_data=model_image
+        dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
     assert (fit.mask == np.array([[False, False], [False, False]])).all()
-
-    assert (fit.image.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (fit.image.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
-
-    assert (fit.noise_map.slim == np.array([2.0, 2.0, 2.0, 2.0])).all()
-    assert (fit.noise_map.native == np.array([[2.0, 2.0], [2.0, 2.0]])).all()
-
-    assert (fit.signal_to_noise_map.slim == np.array([0.5, 1.0, 1.5, 2.0])).all()
-    assert (fit.signal_to_noise_map.native == np.array([[0.5, 1.0], [1.5, 2.0]])).all()
-
-    assert (fit.model_image.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-    assert (fit.model_image.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
-
-    assert (fit.residual_map.slim == np.array([0.0, 0.0, 0.0, 0.0])).all()
-    assert (fit.residual_map.native == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
-
-    assert (fit.normalized_residual_map.slim == np.array([0.0, 0.0, 0.0, 0.0])).all()
-    assert (
-        fit.normalized_residual_map.native == np.array([[0.0, 0.0], [0.0, 0.0]])
-    ).all()
-
-    assert (fit.chi_squared_map.slim == np.array([0.0, 0.0, 0.0, 0.0])).all()
-    assert (fit.chi_squared_map.native == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
+    assert (fit.data == np.array([1.0, 2.0, 3.0, 4.0])).all()
+    assert (fit.noise_map == np.array([2.0, 2.0, 2.0, 2.0])).all()
+    assert (fit.signal_to_noise_map == np.array([0.5, 1.0, 1.5, 2.0])).all()
+    assert (fit.model_data == np.array([1.0, 2.0, 3.0, 4.0])).all()
+    assert (fit.residual_map == np.array([0.0, 0.0, 0.0, 0.0])).all()
+    assert (fit.normalized_residual_map == np.array([0.0, 0.0, 0.0, 0.0])).all()
+    assert (fit.chi_squared_map == np.array([0.0, 0.0, 0.0, 0.0])).all()
 
     assert fit.chi_squared == 0.0
     assert fit.reduced_chi_squared == 0.0
@@ -50,7 +34,7 @@ def test__image_and_model_are_identical__no_masking__check_values_are_correct():
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
 
-def test__image_and_model_are_different__include_masking__check_values_are_correct():
+def test__data_and_model_are_different__include_masking__check_values_are_correct():
     mask = aa.Mask2D(mask=[[False, False], [True, False]], pixel_scales=(1.0, 1.0))
 
     data = aa.Array2D(values=[1.0, 2.0, 4.0], mask=mask)
@@ -58,36 +42,20 @@ def test__image_and_model_are_different__include_masking__check_values_are_corre
 
     dataset = aa.Imaging(data=data, noise_map=noise_map)
 
-    model_image = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
+    model_data = aa.Array2D(values=[1.0, 2.0, 3.0], mask=mask)
 
     fit = aa.m.MockFitImaging(
-        dataset=dataset, use_mask_in_fit=False, model_data=model_image
+        dataset=dataset, use_mask_in_fit=False, model_data=model_data
     )
 
     assert (fit.mask == np.array([[False, False], [True, False]])).all()
-
-    assert (fit.image.slim == np.array([1.0, 2.0, 4.0])).all()
-    assert (fit.image.native == np.array([[1.0, 2.0], [0.0, 4.0]])).all()
-
+    assert (fit.data.slim == np.array([1.0, 2.0, 4.0])).all()
     assert (fit.noise_map.slim == np.array([2.0, 2.0, 2.0])).all()
-    assert (fit.noise_map.native == np.array([[2.0, 2.0], [0.0, 2.0]])).all()
-
     assert (fit.signal_to_noise_map.slim == np.array([0.5, 1.0, 2.0])).all()
-    assert (fit.signal_to_noise_map.native == np.array([[0.5, 1.0], [0.0, 2.0]])).all()
-
-    assert (fit.model_image.slim == np.array([1.0, 2.0, 3.0])).all()
-    assert (fit.model_image.native == np.array([[1.0, 2.0], [0.0, 3.0]])).all()
-
+    assert (fit.model_data.slim == np.array([1.0, 2.0, 3.0])).all()
     assert (fit.residual_map.slim == np.array([0.0, 0.0, 1.0])).all()
-    assert (fit.residual_map.native == np.array([[0.0, 0.0], [0.0, 1.0]])).all()
-
     assert (fit.normalized_residual_map.slim == np.array([0.0, 0.0, 0.5])).all()
-    assert (
-        fit.normalized_residual_map.native == np.array([[0.0, 0.0], [0.0, 0.5]])
-    ).all()
-
     assert (fit.chi_squared_map.slim == np.array([0.0, 0.0, 0.25])).all()
-    assert (fit.chi_squared_map.native == np.array([[0.0, 0.0], [0.0, 0.25]])).all()
 
     assert fit.chi_squared == 0.25
     assert fit.reduced_chi_squared == 0.25 / 3.0
@@ -95,7 +63,7 @@ def test__image_and_model_are_different__include_masking__check_values_are_corre
     assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
 
-def test__image_and_model_are_identical__inversion_included__changes_certain_properties():
+def test__data_and_model_are_identical__inversion_included__changes_certain_properties():
     mask = aa.Mask2D(mask=[[False, False], [False, False]], pixel_scales=(1.0, 1.0))
 
     data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
@@ -103,9 +71,9 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
 
     dataset = aa.Imaging(data=data, noise_map=noise_map)
 
-    masked_dataset = dataset.apply_mask(mask=mask)
+    dataset = dataset.apply_mask(mask=mask)
 
-    model_image = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    model_data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     inversion = aa.m.MockInversion(
         linear_obj_list=[aa.m.MockMapper()],
@@ -116,9 +84,9 @@ def test__image_and_model_are_identical__inversion_included__changes_certain_pro
     )
 
     fit = aa.m.MockFitImaging(
-        dataset=masked_dataset,
+        dataset=dataset,
         use_mask_in_fit=False,
-        model_data=model_image,
+        model_data=model_data,
         inversion=inversion,
     )
 
@@ -144,16 +112,16 @@ def test__run_time_dict__profiles_appropriate_functions():
 
     dataset = aa.Imaging(data=data, noise_map=noise_map)
 
-    masked_dataset = dataset.apply_mask(mask=mask)
+    dataset = dataset.apply_mask(mask=mask)
 
-    model_image = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
+    model_data = aa.Array2D(values=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
     run_time_dict = {}
 
     fit = aa.m.MockFitImaging(
-        dataset=masked_dataset,
+        dataset=dataset,
         use_mask_in_fit=False,
-        model_data=model_image,
+        model_data=model_data,
         run_time_dict=run_time_dict,
     )
     fit.figure_of_merit

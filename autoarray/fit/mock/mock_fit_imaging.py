@@ -7,7 +7,7 @@ from autoarray.fit.fit_imaging import FitImaging
 class MockFitImaging(FitImaging):
     def __init__(
         self,
-        dataset=MockDataset(),
+        dataset =MockDataset(),
         use_mask_in_fit: bool = False,
         noise_map=None,
         model_data=None,
@@ -27,12 +27,12 @@ class MockFitImaging(FitImaging):
         self._blurred_image = blurred_image
 
     @property
-    def noise_map(self):
-        return self._noise_map if self._noise_map is not None else super().noise_map
-
-    @property
     def model_data(self):
         return self._model_data
+
+    @property
+    def noise_map(self):
+        return self._noise_map if self._noise_map is not None else super().noise_map
 
     @property
     def inversion(self):
@@ -40,8 +40,4 @@ class MockFitImaging(FitImaging):
 
     @property
     def blurred_image(self):
-        return (
-            self._blurred_image
-            if self._blurred_image is not None
-            else super().blurred_image
-        )
+        return self._blurred_image if self._blurred_image is not None else None

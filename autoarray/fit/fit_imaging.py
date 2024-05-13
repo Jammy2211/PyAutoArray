@@ -1,16 +1,18 @@
 from typing import Dict, Optional
 
 from autoarray.dataset.imaging.dataset import Imaging
+from autoarray.dataset.model import DatasetModel
 from autoarray.fit.fit_dataset import FitDataset
-from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.arrays.uniform_2d import Array2D
 
+from autoarray import type as ty
 
 class FitImaging(FitDataset):
     def __init__(
         self,
         dataset: Imaging,
         use_mask_in_fit: bool = False,
+        dataset_model: DatasetModel = None,
         run_time_dict: Optional[Dict] = None,
     ):
         """
@@ -18,13 +20,10 @@ class FitImaging(FitDataset):
 
         Parameters
         ----------
-        dataset : MaskedImaging
-            The masked imaging dataset that is fitted.
-        model_image
-            The model image the masked imaging is fitted with.
-        inversion : Inversion
-            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
-            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
+        dataset
+            The masked dataset that is fitted.
+        dataset_model
+            Attributes which allow for parts of a dataset to be treated as a model (e.g. the background sky level).
         use_mask_in_fit
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
             `dataset` will have been processed to remove masked points, for example the `slim` representation).
@@ -49,24 +48,15 @@ class FitImaging(FitDataset):
         super().__init__(
             dataset=dataset,
             use_mask_in_fit=use_mask_in_fit,
+            dataset_model=dataset_model,
             run_time_dict=run_time_dict,
         )
 
     @property
-    def imaging(self) -> Imaging:
-        return self.dataset
-
-    @property
-    def image(self) -> Array2D:
-        return self.data
-
-    @property
-    def model_image(self) -> Array2D:
-        return self.model_data
-
-    @property
-    def mask(self) -> Mask2D:
-        return self.dataset.mask
+    def data(self) -> ty.DataLike:
+        if self.dataset_model.background_sky_level != 0.0:
+            return self.dataset.data - self.dataset_model.background_sky_level
+        return self.dataset.data
 
     @property
     def blurred_image(self) -> Array2D:
