@@ -55,9 +55,19 @@ class InversionPlotter(Plotter):
 
     def get_visuals_2d_for_data(self) -> Visuals2D:
         try:
-            return self.get_2d.via_mapper_for_data_from(
-                mapper=self.inversion.cls_list_from(cls=AbstractMapper)[0]
-            )
+            mapper = self.inversion.cls_list_from(cls=AbstractMapper)[0]
+
+            visuals = self.get_2d.via_mapper_for_data_from(mapper=mapper)
+
+            if self.visuals_2d.pix_indexes is not None:
+                indexes = mapper.pix_indexes_for_slim_indexes(
+                    pix_indexes=self.visuals_2d.pix_indexes
+                )
+
+                visuals.indexes = indexes
+
+            return visuals
+
         except (AttributeError, IndexError):
             return self.visuals_2d
 
@@ -162,6 +172,7 @@ class InversionPlotter(Plotter):
                 self.mat_plot_2d.plot_array(
                     array=array,
                     visuals_2d=self.get_visuals_2d_for_data(),
+                    grid_indexes=mapper_plotter.mapper.over_sampler.over_sampled_grid,
                     auto_labels=AutoLabels(
                         title="Data Subtracted", filename="data_subtracted"
                     ),
@@ -177,6 +188,7 @@ class InversionPlotter(Plotter):
             self.mat_plot_2d.plot_array(
                 array=array,
                 visuals_2d=self.get_visuals_2d_for_data(),
+                grid_indexes=mapper_plotter.mapper.over_sampler.over_sampled_grid,
                 auto_labels=AutoLabels(
                     title="Reconstructed Image", filename="reconstructed_image"
                 ),
@@ -382,6 +394,51 @@ class InversionPlotter(Plotter):
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=f"{auto_filename}_{mapper_index}"
+        )
+
+        self.close_subplot_figure()
+
+    def subplot_mappings(
+        self, pixelization_index: int = 0, auto_filename: str = "subplot_mappings"
+    ):
+        self.open_subplot_figure(number_subplots=4)
+
+        self.include_2d._mapper_image_plane_mesh_grid = False
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=pixelization_index, data_subtracted=True
+        )
+
+        total_pixels = conf.instance["visualize"]["general"]["inversion"][
+            "total_mappings_pixels"
+        ]
+
+        pix_indexes = self.inversion.brightest_pixel_list_from(
+            total_pixels=total_pixels, filter_neighbors=True
+        )
+
+        self.visuals_2d.pix_indexes = [
+            [index] for index in pix_indexes[pixelization_index]
+        ]
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=pixelization_index, reconstructed_image=True
+        )
+
+        self.figures_2d_of_pixelization(
+            pixelization_index=pixelization_index, reconstruction=True
+        )
+
+        self.set_title(label="Source Reconstruction (Unzoomed)")
+        self.figures_2d_of_pixelization(
+            pixelization_index=pixelization_index,
+            reconstruction=True,
+            zoom_to_brightest=False,
+        )
+        self.set_title(label=None)
+
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename=f"{auto_filename}_{pixelization_index}"
         )
 
         self.close_subplot_figure()

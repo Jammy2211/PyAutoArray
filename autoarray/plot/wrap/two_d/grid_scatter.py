@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import itertools
+from scipy.spatial import ConvexHull
 from typing import List, Union
+
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
-
-from autoarray import exc
 
 
 class GridScatter(AbstractMatWrap2D):
@@ -108,7 +108,9 @@ class GridScatter(AbstractMatWrap2D):
         plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap, **config_dict)
 
     def scatter_grid_indexes(
-        self, grid: Union[np.ndarray, Grid2D, Grid2DIrregular], indexes: np.ndarray
+        self,
+        grid: Union[np.ndarray, Grid2D, Grid2DIrregular],
+        indexes: np.ndarray,
     ):
         """
         Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
@@ -123,22 +125,6 @@ class GridScatter(AbstractMatWrap2D):
         indexes
             The 1D indexes of the grid that are colored in when plotted.
         """
-        if not isinstance(grid, (np.ndarray, Grid2D, Grid2DIrregular)):
-            raise exc.PlottingException(
-                "The grid passed into scatter_grid_indexes is not a ndarray and thus its"
-                "1D indexes cannot be marked and plotted."
-            )
-
-        if len(grid.shape) != 2:
-            raise exc.PlottingException(
-                "The grid passed into scatter_grid_indexes is not 2D (e.g. a flattened 1D"
-                "grid) and thus its 1D indexes cannot be marked."
-            )
-
-        if isinstance(indexes, list):
-            if not any(isinstance(i, list) for i in indexes):
-                indexes = [indexes]
-
         color = itertools.cycle(self.config_dict["c"])
         config_dict = self.config_dict
         config_dict.pop("c")
