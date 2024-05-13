@@ -10,9 +10,11 @@ class AbstractTriangles(ABC):
     @cached_property
     @abstractmethod
     def triangles(self) -> List[Triangle]:
-        pass
+        """A list of triangles in the image plane."""
 
     @cached_property
     @abstractmethod
     def grid_2d(self) -> Grid2DIrregular:
-        pass
+        """
+        A 2D grid comprising the coordinates of the vertices of the triangles
+        """
