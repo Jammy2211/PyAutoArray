@@ -1,10 +1,6 @@
 import pytest
 
 
-def test_height(triangles):
-    assert triangles.height == pytest.approx(0.4330127)
-
-
 @pytest.fixture
 def rows(triangles):
     return triangles.rows
@@ -36,10 +32,10 @@ def test_extremes(rows, triangles):
     assert second_row[0][1] == -0.75
 
     last_row = rows[-1]
-    assert last_row[0][0] >= triangles.y_max
-    assert last_row[0][1] <= triangles.x_min
-    assert last_row[-1][0] >= triangles.y_max
-    assert last_row[-1][1] >= triangles.x_max
+    assert last_row[0][0] >= 0.5
+    assert last_row[0][1] <= -0.5
+    assert last_row[-1][0] >= 0.5
+    assert last_row[-1][1] >= 0.5
 
 
 def test_triangles(triangles):

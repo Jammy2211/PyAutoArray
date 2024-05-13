@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from autoarray import Grid2D, Grid2DIrregular
 from autoconf import cached_property
 import numpy as np
@@ -9,32 +11,9 @@ HEIGHT_FACTOR = 3**0.5 / 2
 class Triangles:
     def __init__(
         self,
-        y_min,
-        y_max,
-        x_min,
-        x_max,
-        scale,
+        rows: List[List[Tuple[float, float]]],
     ):
-        self.y_min = y_min
-        self.x_min = x_min
-        self.y_max = y_max
-        self.x_max = x_max
-        self.scale = scale
-
-    @cached_property
-    def rows(self):
-        rows = []
-        for y in np.arange(self.y_min, self.y_max + self.height, self.height):
-            row = []
-            offset = (len(rows) % 2) * self.scale / 2
-            for x in np.arange(
-                self.x_min - offset, self.x_max + self.scale, self.scale
-            ):
-                row.append(
-                    (y, x),
-                )
-            rows.append(row)
-        return rows
+        self.rows = rows
 
     @cached_property
     def long(self):
@@ -66,10 +45,6 @@ class Triangles:
             values=[pair for row in self.rows for pair in row],
         )
 
-    @cached_property
-    def height(self):
-        return HEIGHT_FACTOR * self.scale
-
     @classmethod
     def for_grid(cls, grid: Grid2D):
         scale = grid.pixel_scale
@@ -82,7 +57,21 @@ class Triangles:
         x_min = x.min()
         x_max = x.max()
 
-        return Triangles(y_min, y_max, x_min, x_max, scale)
+        print(y_min, y_max, x_min, x_max)
+
+        height = scale * HEIGHT_FACTOR
+
+        rows = []
+        for y in np.arange(y_min, y_max + height, height):
+            row = []
+            offset = (len(rows) % 2) * scale / 2
+            for x in np.arange(x_min - offset, x_max + scale, scale):
+                row.append(
+                    (y, x),
+                )
+            rows.append(row)
+
+        return Triangles(rows)
 
 
 def make_triangles(short_row, long_row):
