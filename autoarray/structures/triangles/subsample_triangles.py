@@ -20,7 +20,13 @@ class SubsampleTriangles(AbstractTriangles):
 
     @cached_property
     def grid_2d(self) -> Grid2DIrregular:
-        pass
+        return Grid2DIrregular(
+            [
+                point
+                for triangle in self.parent_triangles
+                for point in (triangle.subdivision_points + triangle.points)
+            ]
+        )
 
     def with_updated_grid(self, grid: Grid2DIrregular):
         pass

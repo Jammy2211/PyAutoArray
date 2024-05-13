@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import Tuple
 
 
@@ -26,17 +27,29 @@ class Triangle:
 
         return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
 
-    def subdivide(self):
-        mid_1 = self.midpoint(0, 1)
-        mid_2 = self.midpoint(1, 2)
-        mid_3 = self.midpoint(2, 0)
+    @cached_property
+    def mid_1(self):
+        return self.midpoint(0, 1)
 
+    @cached_property
+    def mid_2(self):
+        return self.midpoint(1, 2)
+
+    @cached_property
+    def mid_3(self):
+        return self.midpoint(2, 0)
+
+    def subdivide(self):
         return (
-            Triangle(self.points[0], mid_1, mid_3),
-            Triangle(mid_1, self.points[1], mid_2),
-            Triangle(mid_3, mid_2, self.points[2]),
-            Triangle(mid_1, mid_2, mid_3),
+            Triangle(self.points[0], self.mid_1, self.mid_3),
+            Triangle(self.mid_1, self.points[1], self.mid_2),
+            Triangle(self.mid_3, self.mid_2, self.points[2]),
+            Triangle(self.mid_1, self.mid_2, self.mid_3),
         )
+
+    @cached_property
+    def subdivision_points(self):
+        return self.mid_1, self.mid_2, self.mid_3
 
     def midpoint(self, i, j):
         y0, x0 = self.points[i]
