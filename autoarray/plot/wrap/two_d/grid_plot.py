@@ -158,5 +158,4 @@ class GridPlot(AbstractMatWrap2D):
             color_plot = next(color)
 
             for contour in grid_contour.contour_list:
-
                 plt.plot(contour[:, 1], contour[:, 0], color=color_plot, **config_dict)

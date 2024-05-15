@@ -10,7 +10,7 @@ from autoarray.geometry import geometry_util
 
 
 class Grid2DContour:
-    def __init__(self, grid, pixel_scales, shape_native, contour_array = None):
+    def __init__(self, grid, pixel_scales, shape_native, contour_array=None):
         """
         Returns the contours surrounding grids of points as a 2D grid of (y,x) coordinates.
 
@@ -37,7 +37,6 @@ class Grid2DContour:
 
     @property
     def contour_array(self):
-
         if self._contour_array is not None:
             return self._contour_array
 
