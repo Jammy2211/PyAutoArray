@@ -242,11 +242,17 @@ class AbstractDataset:
 
         if over_sampling is not None:
             self.over_sampling = over_sampling
-            del self.__dict__["grid"]
+            try:
+                del self.__dict__["grid"]
+            except KeyError:
+                pass
 
         if over_sampling_pixelization is not None:
             self.over_sampling_pixelization = over_sampling_pixelization
-            del self.__dict__["grid_pixelization"]
+            try:
+                del self.__dict__["grid_pixelization"]
+            except KeyError:
+                pass
             try:
                 del self.__dict__["border_relocator"]
             except KeyError:
