@@ -1,3 +1,4 @@
+test_autoarray/mask/files/array/
 test_autoarray/dataset/imaging/files/array/
 test_autoarray/dataset/interferometer/files/array/
 test_autoarray/mask/files/mask/array_out.fits
