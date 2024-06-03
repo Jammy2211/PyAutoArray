@@ -88,3 +88,10 @@ class Triangle:
         y0, x0 = self.points[i]
         y1, x1 = self.points[j]
         return (y0 + y1) / 2, (x0 + x1) / 2
+
+    @property
+    def mean(self):
+        return (
+            sum(point[0] for point in self.points) / 3,
+            sum(point[1] for point in self.points) / 3,
+        )
