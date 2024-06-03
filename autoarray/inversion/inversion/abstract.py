@@ -855,37 +855,36 @@ class AbstractInversion:
         return magnification_list
 
     def brightest_pixel_list_from(
-        self, total_pixels: int = 1, filter_neighbors : bool = False
+        self, total_pixels: int = 1, filter_neighbors: bool = False
     ) -> List[List[int]]:
-
         brightest_pixel_list = []
 
         for mapper in self.cls_list_from(cls=AbstractMapper):
-
             pixel_list = []
 
-            pixels_ascending_list = list(reversed(np.argsort(self.reconstruction_dict[mapper])))
+            pixels_ascending_list = list(
+                reversed(np.argsort(self.reconstruction_dict[mapper]))
+            )
 
             for pixel in range(total_pixels):
-
                 pixel_index = pixels_ascending_list[pixel]
 
                 add_pixel = True
 
                 if filter_neighbors:
-
                     pixel_neighbors = mapper.neighbors[pixel_index]
                     pixel_neighbors = pixel_neighbors[pixel_neighbors >= 0]
 
                     brightness = self.reconstruction_dict[mapper][pixel_index]
-                    brightness_neighbors = self.reconstruction_dict[mapper][pixel_neighbors]
+                    brightness_neighbors = self.reconstruction_dict[mapper][
+                        pixel_neighbors
+                    ]
 
                     if brightness < np.max(brightness_neighbors):
                         add_pixel = False
 
                 if add_pixel:
-
-                   pixel_list.append(pixel_index)
+                    pixel_list.append(pixel_index)
 
             brightest_pixel_list.append(pixel_list)
 
