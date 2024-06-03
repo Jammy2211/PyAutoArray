@@ -10,6 +10,15 @@ def test_update(triangles):
     assert len(new) == len(triangles.triangles)
 
 
+@pytest.fixture
+def triangle():
+    return Triangle(
+        (0.0, 0.0),
+        (1.0, 0.0),
+        (0.0, 1.0),
+    )
+
+
 @pytest.mark.parametrize(
     "point, expected",
     [
@@ -20,14 +29,30 @@ def test_update(triangles):
         ((0.0, 2.0), False),
     ],
 )
-def test_contains(point, expected):
-    triangle = Triangle(
-        (0.0, 0.0),
-        (1.0, 0.0),
-        (0.0, 1.0),
-    )
-
+def test_contains(
+    point,
+    expected,
+    triangle,
+):
     assert triangle.contains(point) is expected
+
+
+@pytest.mark.parametrize(
+    "point, buffer, expected",
+    [
+        ((0.6, 0.5), 0.1, True),
+        ((0.6, 0.5), 0.01, False),
+        ((0.0, -0.1), 0.2, True),
+        ((0.0, -0.3), 0.2, False),
+    ],
+)
+def test_buffer(
+    triangle,
+    point,
+    buffer,
+    expected,
+):
+    assert triangle.contains(point, buffer=buffer) is expected
 
 
 def test_subgrid(triangle):

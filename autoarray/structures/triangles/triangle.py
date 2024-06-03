@@ -21,7 +21,7 @@ class Triangle:
     def __repr__(self):
         return str(self)
 
-    def contains(self, point: Tuple[float, float]) -> bool:
+    def contains(self, point: Tuple[float, float], buffer: float = 0.0) -> bool:
         """
         Determine if a point is contained within the triangle.
         """
@@ -36,7 +36,10 @@ class Triangle:
         b = ((y3 - y1) * (x - x3) + (x1 - x3) * (y - y3)) / denominator
         c = 1 - a - b
 
-        return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
+        lower = -buffer
+        upper = 1 + buffer
+
+        return lower <= a <= upper and lower <= b <= upper and lower <= c <= upper
 
     @cached_property
     def mid_1(self):
