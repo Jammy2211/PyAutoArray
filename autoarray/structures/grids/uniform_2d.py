@@ -643,6 +643,20 @@ class Grid2D(Structure):
 
         return cls.from_mask(mask=blurring_mask, over_sampling=over_sampling)
 
+    def subtracted_from(self, offset: Tuple[(float, float), np.ndarray]) -> "Grid2D":
+        if offset[0] == 0.0 and offset[1] != 0.0:
+            return self
+
+        mask = Mask2D(
+            mask=self.mask,
+            pixel_scales=self.pixel_scales,
+            origin=(self.origin[0] - offset[0], self.origin[1] - offset[1]),
+        )
+
+        return Grid2D(
+            values=self - np.array(offset), mask=mask, over_sampling=self.over_sampling
+        )
+
     @property
     def slim(self) -> "Grid2D":
         """

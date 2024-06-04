@@ -112,14 +112,14 @@ class InterferometerPlotter(Plotter):
 
         if data:
             self.mat_plot_2d.plot_grid(
-                grid=self.dataset.visibilities.in_grid,
+                grid=self.dataset.data.in_grid,
                 visuals_2d=self.visuals_2d,
                 auto_labels=AutoLabels(title="Visibilities", filename="data"),
             )
 
         if noise_map:
             self.mat_plot_2d.plot_grid(
-                grid=self.dataset.visibilities.in_grid,
+                grid=self.dataset.data.in_grid,
                 visuals_2d=self.visuals_2d,
                 color_array=self.dataset.noise_map.real,
                 auto_labels=AutoLabels(title="Noise-Map", filename="noise_map"),

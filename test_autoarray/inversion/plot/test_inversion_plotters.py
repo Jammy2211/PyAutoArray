@@ -98,3 +98,6 @@ def test__inversion_subplot_of_mapper__is_output_for_all_inversions(
 
     inversion_plotter.subplot_of_mapper(mapper_index=0)
     assert path.join(plot_path, "subplot_inversion_0.png") in plot_patch.paths
+
+    inversion_plotter.subplot_mappings(pixelization_index=0)
+    assert path.join(plot_path, "subplot_mappings_0.png") in plot_patch.paths

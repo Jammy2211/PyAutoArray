@@ -1,9 +1,12 @@
+import logging
 import matplotlib.pyplot as plt
 from os import path
 import os
 from typing import Union, List, Optional
 
 from autoarray.structures.abstract_structure import Structure
+
+logger = logging.getLogger(__name__)
 
 
 class Output:
@@ -97,6 +100,21 @@ class Output:
 
         return filename
 
+    def savefig(self, filename: str, output_path: str, format: str):
+        try:
+            plt.savefig(
+                path.join(output_path, f"{filename}.{format}"),
+                bbox_inches=self.bbox_inches,
+            )
+        except ValueError as e:
+            logger.info(
+                f"""
+                Failed to output figure as a .{format} or .fits due to the following error:
+
+                {e}
+            """
+            )
+
     def to_figure(
         self, structure: Optional[Structure], auto_filename: Optional[str] = None
     ):
@@ -125,16 +143,8 @@ class Output:
 
                 if format == "show":
                     plt.show()
-                elif format == "png":
-                    plt.savefig(
-                        path.join(output_path, f"{filename}.png"),
-                        bbox_inches=self.bbox_inches,
-                    )
-                elif format == "pdf":
-                    plt.savefig(
-                        path.join(output_path, f"{filename}.pdf"),
-                        bbox_inches=self.bbox_inches,
-                    )
+                elif format == "png" or format == "pdf":
+                    self.savefig(filename, output_path, format)
                 elif format == "fits":
                     if structure is not None:
                         structure.output_to_fits(
@@ -165,16 +175,8 @@ class Output:
 
             if format == "show":
                 plt.show()
-            elif format == "png":
-                plt.savefig(
-                    path.join(output_path, f"{filename}.png"),
-                    bbox_inches=self.bbox_inches,
-                )
-            elif format == "pdf":
-                plt.savefig(
-                    path.join(output_path, f"{filename}.pdf"),
-                    bbox_inches=self.bbox_inches,
-                )
+            elif format == "png" or format == "pdf":
+                self.savefig(filename, output_path, format)
 
     def to_figure_output_mode(self, filename: str):
         global COUNT
@@ -191,7 +193,4 @@ class Output:
         output_path = path.join(os.getcwd(), "output_mode", script_name)
         os.makedirs(output_path, exist_ok=True)
 
-        plt.savefig(
-            path.join(output_path, f"{COUNT}_{filename}.png"),
-            bbox_inches=self.bbox_inches,
-        )
+        self.savefig(f"{COUNT}_{filename}", output_path, "png")

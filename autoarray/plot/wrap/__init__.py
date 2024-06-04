@@ -34,6 +34,7 @@ from autoarray.plot.wrap.two_d.mask_scatter import MaskScatter
 from autoarray.plot.wrap.two_d.border_scatter import BorderScatter
 from autoarray.plot.wrap.two_d.positions_scatter import PositionsScatter
 from autoarray.plot.wrap.two_d.index_scatter import IndexScatter
+from autoarray.plot.wrap.two_d.index_plot import IndexPlot
 from autoarray.plot.wrap.two_d.mesh_grid_scatter import MeshGridScatter
 from autoarray.plot.wrap.two_d.parallel_overscan_plot import ParallelOverscanPlot
 from autoarray.plot.wrap.two_d.serial_prescan_plot import SerialPrescanPlot

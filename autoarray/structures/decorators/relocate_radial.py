@@ -66,6 +66,7 @@ def relocate_to_radial_minimum(func):
             grid_radial_minimum = conf.instance["grids"]["radial_minimum"][
                 "radial_minimum"
             ][obj.__class__.__name__]
+
         except KeyError as e:
             raise ConfigException(
                 rf"""

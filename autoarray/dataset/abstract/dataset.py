@@ -155,6 +155,10 @@ class AbstractDataset:
         )
 
     @cached_property
+    def over_sampler_pixelization(self):
+        return self.grid_pixelization.over_sampling.over_sampler_from(mask=self.mask)
+
+    @cached_property
     def border_relocator(self) -> BorderRelocator:
         return BorderRelocator(
             mask=self.mask, sub_size=self.grid_pixelization.over_sampling.sub_size
@@ -249,7 +253,14 @@ class AbstractDataset:
 
         if over_sampling_pixelization is not None:
             self.over_sampling_pixelization = over_sampling_pixelization
-            del self.__dict__["grid_pixelization"]
+            try:
+                del self.__dict__["grid_pixelization"]
+            except KeyError:
+                pass
+            try:
+                del self.__dict__["over_sampler_pixelization"]
+            except KeyError:
+                pass
             try:
                 del self.__dict__["border_relocator"]
             except KeyError:
