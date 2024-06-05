@@ -2,7 +2,7 @@ from autoarray.numpy_wrapper import register_pytree_node_class
 
 
 import numpy as np
-from typing import Tuple
+from typing import List, Tuple
 
 from autoarray.mask.mask_2d import Mask2D
 
@@ -279,6 +279,56 @@ def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
                 ] = False
 
     return oversample_mask
+
+@numba_util.jit()
+def sub_size_radial_bins_from(
+    mask: np.ndarray, radial_grid : np.ndarray, sub_size_list: np.ndarray, radial_list: np.ndarray
+) -> np.ndarray:
+    """
+    Returns an adaptive sub-grid size based on the radial distance of every pixel from the centre of the mask.
+
+    The adaptive sub-grid size is computed as follows:
+
+    1) Compute the radial distance of every pixel in the mask from the centre of the mask.
+    2) For every pixel, determine the sub-grid size based on the radial distance of that pixel. For example, if
+    the first entry in `radial_list` is 0.5 and the first entry in `sub_size_list` 8, all pixels with a radial
+    distance less than 0.5 will have a sub-grid size of 8x8.
+
+    This scheme can produce high sub-size values towards the centre of the mask, where the galaxy is brightest and
+    has the most rapidly changing light profile which requires a high sub-grid size to resolve accurately.
+
+    Parameters
+    ----------
+    mask
+        The mask defining the 2D region where the over-sampled grid is computed.
+    radial_grid
+        The radial distance of every pixel from the centre of the mask.
+    sub_size_list
+        The sub-grid size for every radial bin.
+    radial_list
+        The radial distance defining each bin, which are refeneced based on the previous entry. For example, if
+        the first entry is 0.5, the second 1.0 and the third 1.5, the adaptive sub-grid size will be between 0.5
+        and 1.0 for the first sub-grid size, between 1.0 and 1.5 for the second sub-grid size, etc.
+
+    Returns
+    -------
+    A uniform over-sampling object with an adaptive sub-grid size based on the radial distance of every pixel from
+    the centre of the mask.
+    """
+
+    sub_size = sub_size_list[-1] * np.ones(radial_grid.shape)
+
+    for y in range(radial_grid.shape[0]):
+        for x in range(radial_grid.shape[1]):
+            if not mask[y, x]:
+                radial = radial_grid[y, x]
+
+                for i in range(len(radial_list)):
+                    if radial < radial_list[i]:
+                        sub_size[y, x] = sub_size_list[i]
+                        break
+
+    return sub_size
 
 
 @numba_util.jit()

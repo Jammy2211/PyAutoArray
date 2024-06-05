@@ -178,16 +178,12 @@ class OverSamplingUniform(AbstractOverSampling):
             coordinate=mask.mask_centre
         ).native
 
-        sub_size = sub_size_list[-1] * np.ones(mask.shape_native)
-
-        for y in range(mask.shape[0]):
-            for x in range(mask.shape[1]):
-                radial = radial_grid[y, x]
-
-                for i in range(len(radial_list)):
-                    if radial < radial_list[i]:
-                        sub_size[y, x] = sub_size_list[i]
-                        break
+        sub_size = over_sample_util.sub_size_radial_bins_from(
+            mask=np.array(mask),
+            radial_grid=np.array(radial_grid),
+            sub_size_list=np.array(sub_size_list),
+            radial_list=np.array(radial_list),
+        )
 
         sub_size = Array2D(values=sub_size, mask=mask)
 
