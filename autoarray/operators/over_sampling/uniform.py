@@ -187,7 +187,7 @@ class OverSamplingUniform(AbstractOverSampling):
 
         sub_size = Array2D(values=sub_size, mask=mask)
 
-        return OverSamplingUniform(sub_size=sub_size)
+        return cls(sub_size=sub_size)
 
     @classmethod
     def from_adapt(

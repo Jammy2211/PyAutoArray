@@ -26,8 +26,12 @@ def perform_over_sampling_from(grid, **kwargs):
             perform_over_sampling = True
 
             if isinstance(grid.over_sampling, OverSamplingUniform):
-                if grid.over_sampling.sub_size == 1:
-                    perform_over_sampling = False
+                try:
+                    if grid.over_sampling.sub_size == 1:
+                        perform_over_sampling = False
+                except ValueError:
+                    if grid.over_sampling.sub_size.all() == 1:
+                        perform_over_sampling = False
 
     return perform_over_sampling
 
