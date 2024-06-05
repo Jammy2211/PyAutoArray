@@ -39,22 +39,23 @@ def test__from_sub_size_int():
 
 
 def test__from_manual_adapt_radial_bin():
-
     mask = aa.Mask2D.circular(shape_native=(5, 5), pixel_scales=2.0, radius=3.0)
 
     over_sampling = aa.OverSamplingUniform.from_radial_bins(
-        mask=mask,
-        sub_size_list=[8, 4, 2],
-        radial_list=[1.5, 2.5]
+        mask=mask, sub_size_list=[8, 4, 2], radial_list=[1.5, 2.5]
     )
-    assert over_sampling.sub_size.native == pytest.approx(np.array([
-        [0, 0, 0, 0, 0],
-        [0, 2, 4, 2, 0],
-        [0, 4, 8, 4, 0],
-        [0, 2, 4, 2, 0],
-        [0, 0, 0, 0, 0]
-    ]), 1.0e-4)
-
+    assert over_sampling.sub_size.native == pytest.approx(
+        np.array(
+            [
+                [0, 0, 0, 0, 0],
+                [0, 2, 4, 2, 0],
+                [0, 4, 8, 4, 0],
+                [0, 2, 4, 2, 0],
+                [0, 0, 0, 0, 0],
+            ]
+        ),
+        1.0e-4,
+    )
 
 
 def test__from_adapt():

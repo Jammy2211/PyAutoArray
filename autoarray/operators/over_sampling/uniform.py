@@ -139,9 +139,37 @@ class OverSamplingUniform(AbstractOverSampling):
         self.sub_size = sub_size
 
     @classmethod
-    def from_radial_bins(cls, mask : Mask2D, sub_size_list : List[int] = [24, 4, 2], radial_list : List[float] = [0.3, 0.6]) -> "OverSamplingUniform":
+    def from_radial_bins(
+        cls, mask: Mask2D, sub_size_list: List[int], radial_list: List[float]
+    ) -> "OverSamplingUniform":
         """
-        The radial bin of the grid that is used to adaptively over-sample the grid.
+        Returns an adaptive sub-grid size based on the radial distance of every pixel from the centre of the mask.
+
+        The adaptive sub-grid size is computed as follows:
+
+        1) Compute the radial distance of every pixel in the mask from the centre of the mask.
+        2) For every pixel, determine the sub-grid size based on the radial distance of that pixel. For example, if
+        the first entry in `radial_list` is 0.5 and the first entry in `sub_size_list` 8, all pixels with a radial
+        distance less than 0.5 will have a sub-grid size of 8x8.
+
+        This scheme can produce high sub-size values towards the centre of the mask, where the galaxy is brightest and
+        has the most rapidly changing light profile which requires a high sub-grid size to resolve accurately.
+
+        Parameters
+        ----------
+        mask
+            The mask defining the 2D region where the over-sampled grid is computed.
+        sub_size_list
+            The sub-grid size for every radial bin.
+        radial_list
+            The radial distance defining each bin, which are refeneced based on the previous entry. For example, if
+            the first entry is 0.5, the second 1.0 and the third 1.5, the adaptive sub-grid size will be between 0.5
+            and 1.0 for the first sub-grid size, between 1.0 and 1.5 for the second sub-grid size, etc.
+
+        Returns
+        -------
+        A uniform over-sampling object with an adaptive sub-grid size based on the radial distance of every pixel from
+        the centre of the mask.
         """
 
         grid = mask.derive_grid.unmasked
@@ -154,7 +182,6 @@ class OverSamplingUniform(AbstractOverSampling):
 
         for y in range(mask.shape[0]):
             for x in range(mask.shape[1]):
-
                 radial = radial_grid[y, x]
 
                 for i in range(len(radial_list)):
