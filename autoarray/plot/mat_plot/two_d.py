@@ -379,6 +379,7 @@ class MatPlot2D(AbstractMatPlot):
         color_array=None,
         y_errors=None,
         x_errors=None,
+        plot_grid_lines=False,
         buffer=0.1,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
@@ -449,6 +450,13 @@ class MatPlot2D(AbstractMatPlot):
 
         if extent is None:
             extent = grid.extent_with_buffer_from(buffer=buffer)
+
+        if plot_grid_lines:
+
+            self.grid_plot.plot_rectangular_grid_lines(
+                extent=grid.geometry.extent,
+                shape_native=grid.shape_native,
+            )
 
         self.axis.set(extent=extent, grid=grid)
 

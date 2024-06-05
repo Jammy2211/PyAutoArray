@@ -106,7 +106,7 @@ class Grid2DPlotter(Plotter):
     def get_visuals_2d(self) -> Visuals2D:
         return self.get_2d.via_grid_from(grid=self.grid)
 
-    def figure_2d(self, color_array: np.ndarray = None):
+    def figure_2d(self, color_array: np.ndarray = None, plot_grid_lines : bool = False):
         """
         Plots the plotter's `Grid2D` object in 2D.
 
@@ -114,12 +114,16 @@ class Grid2DPlotter(Plotter):
         ----------
         color_array
             An array of RGB color values which can be used to give the plotted 2D grid a colorscale (w/ colorbar).
+        plot_grid_lines
+            If True, a rectangular grid of lines is plotted on the figure showing the pixels which the grid coordinates
+            are centred on.
         """
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
             visuals_2d=self.get_visuals_2d(),
             auto_labels=AutoLabels(title="Grid2D", filename="grid"),
             color_array=color_array,
+            plot_grid_lines=plot_grid_lines
         )
 
 
