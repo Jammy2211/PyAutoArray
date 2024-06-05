@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Union
+from typing import List, Union
 
 from autoconf import conf
 from autoconf import cached_property
@@ -137,6 +137,34 @@ class OverSamplingUniform(AbstractOverSampling):
         """
 
         self.sub_size = sub_size
+
+    @classmethod
+    def from_radial_bins(cls, mask : Mask2D, sub_size_list : List[int] = [24, 4, 2], radial_list : List[float] = [0.3, 0.6]) -> "OverSamplingUniform":
+        """
+        The radial bin of the grid that is used to adaptively over-sample the grid.
+        """
+
+        grid = mask.derive_grid.unmasked
+
+        radial_grid = grid.distances_to_coordinate_from(
+            coordinate=mask.mask_centre
+        ).native
+
+        sub_size = sub_size_list[-1] * np.ones(mask.shape_native)
+
+        for y in range(mask.shape[0]):
+            for x in range(mask.shape[1]):
+
+                radial = radial_grid[y, x]
+
+                for i in range(len(radial_list)):
+                    if radial < radial_list[i]:
+                        sub_size[y, x] = sub_size_list[i]
+                        break
+
+        sub_size = Array2D(values=sub_size, mask=mask)
+
+        return OverSamplingUniform(sub_size=sub_size)
 
     @classmethod
     def from_adapt(
