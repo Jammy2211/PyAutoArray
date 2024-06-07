@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Union
+from typing import List, Tuple, Union
 
 from autoconf import conf
 from autoconf import cached_property
@@ -140,20 +140,27 @@ class OverSamplingUniform(AbstractOverSampling):
 
     @classmethod
     def from_radial_bins(
-        cls, mask: Mask2D, sub_size_list: List[int], radial_list: List[float]
+        cls,
+        mask: Mask2D,
+        sub_size_list: List[int],
+        radial_list: List[float],
+        centre_list: List[Tuple] = None,
     ) -> "OverSamplingUniform":
         """
         Returns an adaptive sub-grid size based on the radial distance of every pixel from the centre of the mask.
 
         The adaptive sub-grid size is computed as follows:
 
-        1) Compute the radial distance of every pixel in the mask from the centre of the mask.
+        1) Compute the radial distance of every pixel in the mask from the centre of the mask (or input centres).
         2) For every pixel, determine the sub-grid size based on the radial distance of that pixel. For example, if
         the first entry in `radial_list` is 0.5 and the first entry in `sub_size_list` 8, all pixels with a radial
         distance less than 0.5 will have a sub-grid size of 8x8.
 
         This scheme can produce high sub-size values towards the centre of the mask, where the galaxy is brightest and
         has the most rapidly changing light profile which requires a high sub-grid size to resolve accurately.
+
+        If the data has multiple galaxies, the `centre_list` can be used to define the centre of each galaxy
+        and therefore increase the sub-grid size based on the light profile of each individual galaxy.
 
         Parameters
         ----------
@@ -165,6 +172,8 @@ class OverSamplingUniform(AbstractOverSampling):
             The radial distance defining each bin, which are refeneced based on the previous entry. For example, if
             the first entry is 0.5, the second 1.0 and the third 1.5, the adaptive sub-grid size will be between 0.5
             and 1.0 for the first sub-grid size, between 1.0 and 1.5 for the second sub-grid size, etc.
+        centre_list
+            A list of centres for each galaxy whose centres require higher sub-grid sizes.
 
         Returns
         -------
@@ -174,16 +183,24 @@ class OverSamplingUniform(AbstractOverSampling):
 
         grid = mask.derive_grid.unmasked
 
-        radial_grid = grid.distances_to_coordinate_from(
-            coordinate=mask.mask_centre
-        ).native
+        if centre_list is None:
+            centre_list = [mask.mask_centre]
 
-        sub_size = over_sample_util.sub_size_radial_bins_from(
-            mask=np.array(mask),
-            radial_grid=np.array(radial_grid),
-            sub_size_list=np.array(sub_size_list),
-            radial_list=np.array(radial_list),
-        )
+        sub_size = np.zeros(mask.shape_native)
+
+        for centre in centre_list:
+            radial_grid = grid.distances_to_coordinate_from(coordinate=centre).native
+
+            sub_size_of_centre = over_sample_util.sub_size_radial_bins_from(
+                mask=np.array(mask),
+                radial_grid=np.array(radial_grid),
+                sub_size_list=np.array(sub_size_list),
+                radial_list=np.array(radial_list),
+            )
+
+            sub_size = np.where(
+                sub_size_of_centre > sub_size, sub_size_of_centre, sub_size
+            )
 
         sub_size = Array2D(values=sub_size, mask=mask)
 

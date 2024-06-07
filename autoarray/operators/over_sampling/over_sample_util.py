@@ -280,9 +280,13 @@ def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
 
     return oversample_mask
 
+
 @numba_util.jit()
 def sub_size_radial_bins_from(
-    mask: np.ndarray, radial_grid : np.ndarray, sub_size_list: np.ndarray, radial_list: np.ndarray
+    mask: np.ndarray,
+    radial_grid: np.ndarray,
+    sub_size_list: np.ndarray,
+    radial_list: np.ndarray,
 ) -> np.ndarray:
     """
     Returns an adaptive sub-grid size based on the radial distance of every pixel from the centre of the mask.
