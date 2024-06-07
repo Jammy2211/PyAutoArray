@@ -31,7 +31,7 @@ def perform_over_sampling_from(grid, **kwargs):
                     if grid.over_sampling.sub_size == 1:
                         perform_over_sampling = False
                 except ValueError:
-                    if grid.over_sampling.sub_size.all() == 1:
+                    if sum(grid.over_sampling.sub_size) == grid.mask.pixels_in_mask:
                         perform_over_sampling = False
 
     return perform_over_sampling
@@ -78,7 +78,15 @@ def over_sample(func):
 
             return grid.over_sampler.binned_array_2d_from(array=result)
 
-
+        # if isinstance(grid, Grid2D):
+        #     if grid.over_sampling is None:
+        #         if grid.is_uniform:
+        #             over_sampling = OverSamplingUniform.from_radial_bins(
+        #                 mask=grid.mask,
+        #                 sub_size_list=[32, 4, 2],
+        #                 radial_list=[min(grid.pixel_scales) * 3.0, min(grid.pixel_scales) * 10.0],
+        #             )
+        #             grid = Grid2D(values=grid, mask=grid.mask, over_sampling=over_sampling)
 
         perform_over_sampling = perform_over_sampling_from(grid=grid, kwargs=kwargs)
 
