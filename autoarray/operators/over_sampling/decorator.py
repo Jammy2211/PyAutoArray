@@ -22,6 +22,7 @@ def perform_over_sampling_from(grid, **kwargs):
     perform_over_sampling = False
 
     if isinstance(grid, Grid2D):
+
         if grid.over_sampling is not None:
             perform_over_sampling = True
 
@@ -76,6 +77,8 @@ def over_sample(func):
             result = func(obj, grid.grid, *args, **kwargs)
 
             return grid.over_sampler.binned_array_2d_from(array=result)
+
+
 
         perform_over_sampling = perform_over_sampling_from(grid=grid, kwargs=kwargs)
 

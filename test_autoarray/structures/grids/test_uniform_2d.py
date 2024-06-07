@@ -840,3 +840,16 @@ def test__recursive_shape_storage():
         grid_2d.slim.native.slim
         == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
     ).all()
+
+def test__is_uniform():
+
+    grid_2d = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
+
+    assert grid_2d.is_uniform == True
+
+    grid_2d = aa.Grid2D.no_mask(
+        values=[[[10.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+        pixel_scales=1.0,
+    )
+
+    assert grid_2d.is_uniform == False

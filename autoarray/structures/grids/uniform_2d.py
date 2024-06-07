@@ -1029,3 +1029,27 @@ class Grid2D(Structure):
         )
 
         return Grid2D.from_mask(mask=padded_mask, over_sampling=self.over_sampling)
+
+    @cached_property
+    def is_uniform(self) -> bool:
+        """
+        Returns if the grid is uniform, where a uniform grid is defined as a grid where all pixels are separated by
+        the same pixel-scale in both the y and x directions.
+
+        The method does not check if the x coordinates are uniformly spaced, only the y coordinates, under the
+        assumption that no calculation will be performed on a grid where the y coordinates are uniformly spaced but the
+        x coordinates are not. If such a case arises, the method should be updated to check both the y and x coordinates.
+
+        Returns
+        -------
+        Whether the grid is uniform.
+        """
+
+
+        y_diff = self[:, 0][:-1] - self[:, 0][1:]
+        y_diff = y_diff[y_diff != 0]
+
+        if any(y_diff - self.pixel_scales[0] > 1.0e-8):
+            return False
+
+        return True
