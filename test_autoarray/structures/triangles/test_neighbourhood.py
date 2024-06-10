@@ -16,28 +16,25 @@ def test_neighbourhood(
     assert right_triangle in neighbourhood
 
 
-def test_reflection(neighbourhood):
-    assert (
+@pytest.mark.parametrize(
+    "triangle",
+    [
         Triangle(
             (1.0, 1.0),
             (1.0, 0.0),
             (0.0, 1.0),
-        )
-        in neighbourhood
-    )
-    assert (
+        ),
         Triangle(
             (0.0, 0.0),
             (-1.0, 1.0),
             (0.0, 1.0),
-        )
-        in neighbourhood
-    )
-    assert (
+        ),
         Triangle(
             (0.0, 0.0),
             (1.0, -1.0),
             (1.0, 0.0),
-        )
-        in neighbourhood
-    )
+        ),
+    ],
+)
+def test_reflection(triangle, neighbourhood):
+    assert triangle in neighbourhood
