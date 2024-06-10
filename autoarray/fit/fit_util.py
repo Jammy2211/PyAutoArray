@@ -85,7 +85,7 @@ def chi_squared_from(*, chi_squared_map: ty.DataLike) -> float:
     chi_squared_map
         The chi-squared-map of values of the model-data fit to the dataset.
     """
-    return float(np.sum(chi_squared_map))
+    return np.sum(chi_squared_map)
 
 
 def noise_normalization_from(*, noise_map: ty.DataLike) -> float:
