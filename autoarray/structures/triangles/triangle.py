@@ -121,8 +121,13 @@ class Triangle:
         )
 
     @property
-    def neighbourhood(self):
-        return [
+    def neighbourhood(self) -> Tuple["Triangle", "Triangle", "Triangle", "Triangle"]:
+        """
+        The four triangles that share an edge with the triangle (including this triangle).
+
+        This is the opposite of the subdivide method.
+        """
+        return (
             self,
             Triangle(
                 self.points[1] + self.points[2] - self.points[0],
@@ -139,7 +144,7 @@ class Triangle:
                 self.points[0],
                 self.points[1],
             ),
-        ]
+        )
 
     def __eq__(self, other):
         return set(self.points) == set(other.points)
