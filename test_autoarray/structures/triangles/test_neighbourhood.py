@@ -38,3 +38,10 @@ def test_neighbourhood(
 )
 def test_reflection(triangle, neighbourhood):
     assert triangle in neighbourhood
+
+
+def test_subdivide(triangle):
+    triangles = triangle.subdivide()
+    neighbourhood = triangles[-1].neighbourhood
+
+    assert all(triangle in neighbourhood for triangle in triangles)

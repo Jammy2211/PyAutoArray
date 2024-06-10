@@ -125,7 +125,8 @@ class Triangle:
         """
         The four triangles that share an edge with the triangle (including this triangle).
 
-        This is the opposite of the subdivide method.
+        Related to the subdivide method in that the central triangle in a subdivided set of triangles has
+        neighbours equivalent to the full subdivision of the parent triangle.
         """
         return (
             self,
