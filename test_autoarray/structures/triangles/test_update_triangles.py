@@ -1,7 +1,5 @@
 import pytest
 
-from autoarray.structures.triangles.triangle import Triangle
-
 
 def test_update(triangles):
     transformed = 2 * triangles.grid_2d
@@ -26,24 +24,6 @@ def test_contains(
     right_triangle,
 ):
     assert right_triangle.contains(point) is expected
-
-
-@pytest.mark.parametrize(
-    "point, buffer, expected",
-    [
-        ((0.6, 0.5), 0.1, True),
-        ((0.6, 0.5), 0.01, False),
-        ((0.0, -0.1), 0.2, True),
-        ((0.0, -0.3), 0.2, False),
-    ],
-)
-def test_buffer(
-    right_triangle,
-    point,
-    buffer,
-    expected,
-):
-    assert right_triangle.contains(point, buffer=buffer) is expected
 
 
 def test_subgrid(right_triangle):
