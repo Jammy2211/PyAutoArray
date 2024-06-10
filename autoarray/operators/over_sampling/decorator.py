@@ -78,6 +78,8 @@ def over_sample(func):
 
             return grid.over_sampler.binned_array_2d_from(array=result)
 
+        # TODO : Need to incorporate centres
+
         # if isinstance(grid, Grid2D):
         #     if grid.over_sampling is None:
         #         if grid.is_uniform:
