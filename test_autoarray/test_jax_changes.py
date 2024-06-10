@@ -32,4 +32,5 @@ def test_boolean_issue():
     grid = Grid2D.from_mask(
         mask=Mask2D.all_false((10, 10), pixel_scales=1.0),
     )
-    print(np.array(grid))
+    values, keys = Grid2D.instance_flatten(grid)
+    np.array(Grid2D.instance_unflatten(keys, values))

@@ -117,7 +117,7 @@ class AbstractNDArray(ABC):
         Unflatten a tuple of attributes (i.e. a pytree) into an instance of an autoarray class
         """
         instance = cls.__new__(cls)
-        for key, value in zip(aux_data, children[1:]):
+        for key, value in zip(aux_data, children):
             setattr(instance, key, value)
         return instance
 
