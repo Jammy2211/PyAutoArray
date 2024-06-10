@@ -2,6 +2,29 @@ from functools import cached_property
 from typing import Tuple
 
 
+class Point(Tuple[float, float]):
+    def __new__(cls, y: float, x: float):
+        return super().__new__(cls, (y, x))
+
+    def __str__(self):
+        return f"<Point({self[0]}, {self[1]})>"
+
+    def __repr__(self):
+        return str(self)
+
+    def __add__(self, other):
+        return Point(self[0] + other[0], self[1] + other[1])
+
+    def __sub__(self, other):
+        return Point(self[0] - other[0], self[1] - other[1])
+
+    def __mul__(self, other):
+        return Point(self[0] * other, self[1] * other)
+
+    def __truediv__(self, other):
+        return Point(self[0] / other, self[1] / other)
+
+
 class Triangle:
     def __init__(self, *points: Tuple[float, float]):
         """
@@ -13,7 +36,7 @@ class Triangle:
             The three vertices of the triangle.
         """
         assert len(points) == 3
-        self.points = points
+        self.points = tuple(Point(*point) for point in points)
 
     def __str__(self):
         return f"<Triangle({self.points})>"
@@ -73,7 +96,7 @@ class Triangle:
         """
         return self.mid_1, self.mid_2, self.mid_3
 
-    def midpoint(self, i: int, j: int) -> Tuple[float, float]:
+    def midpoint(self, i: int, j: int) -> Point:
         """
         Compute the midpoint of the line segment between two vertices of the triangle.
 
@@ -88,9 +111,7 @@ class Triangle:
         -------
         The midpoint of the line segment.
         """
-        y0, x0 = self.points[i]
-        y1, x1 = self.points[j]
-        return (y0 + y1) / 2, (x0 + x1) / 2
+        return self.points[i] + (self.points[j] - self.points[i]) / 2
 
     @property
     def mean(self):
@@ -98,3 +119,24 @@ class Triangle:
             sum(point[0] for point in self.points) / 3,
             sum(point[1] for point in self.points) / 3,
         )
+
+    @property
+    def neighbourhood(self):
+        return [
+            self,
+            Triangle(
+                self.mid_2 + self.mid_3 - self.points[0], self.points[1], self.points[2]
+            ),
+            Triangle(
+                self.mid_1 + self.mid_3 - self.points[1], self.points[2], self.points[0]
+            ),
+            Triangle(
+                self.mid_1 + self.mid_2 - self.points[2], self.points[0], self.points[1]
+            ),
+        ]
+
+    def __eq__(self, other):
+        return set(self.points) == set(other.points)
+
+    def __hash__(self):
+        return hash(tuple(self.points))
