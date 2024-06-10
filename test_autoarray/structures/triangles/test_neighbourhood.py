@@ -1,5 +1,7 @@
 import pytest
 
+from autoarray.structures.triangles.triangle import Triangle
+
 
 @pytest.fixture
 def neighbourhood(right_triangle):
@@ -12,3 +14,30 @@ def test_neighbourhood(
 ):
     assert len(neighbourhood) == 4
     assert right_triangle in neighbourhood
+
+
+def test_reflection(neighbourhood):
+    assert (
+        Triangle(
+            (1.0, 1.0),
+            (1.0, 0.0),
+            (0.0, 1.0),
+        )
+        in neighbourhood
+    )
+    assert (
+        Triangle(
+            (0.0, 0.0),
+            (-1.0, 1.0),
+            (0.0, 1.0),
+        )
+        in neighbourhood
+    )
+    assert (
+        Triangle(
+            (0.0, 0.0),
+            (1.0, -1.0),
+            (1.0, 0.0),
+        )
+        in neighbourhood
+    )

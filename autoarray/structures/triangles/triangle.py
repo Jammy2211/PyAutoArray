@@ -125,13 +125,19 @@ class Triangle:
         return [
             self,
             Triangle(
-                self.mid_2 + self.mid_3 - self.points[0], self.points[1], self.points[2]
+                self.points[1] + self.points[2] - self.points[0],
+                self.points[1],
+                self.points[2],
             ),
             Triangle(
-                self.mid_1 + self.mid_3 - self.points[1], self.points[2], self.points[0]
+                self.points[0] + self.points[2] - self.points[1],
+                self.points[0],
+                self.points[2],
             ),
             Triangle(
-                self.mid_1 + self.mid_2 - self.points[2], self.points[0], self.points[1]
+                self.points[0] + self.points[1] - self.points[2],
+                self.points[0],
+                self.points[1],
             ),
         ]
 
