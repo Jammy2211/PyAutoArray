@@ -80,15 +80,17 @@ def over_sample(func):
 
         # TODO : Need to incorporate centres
 
-        # if isinstance(grid, Grid2D):
-        #     if grid.over_sampling is None:
-        #         if grid.is_uniform:
-        #             over_sampling = OverSamplingUniform.from_radial_bins(
-        #                 mask=grid.mask,
-        #                 sub_size_list=[32, 4, 2],
-        #                 radial_list=[min(grid.pixel_scales) * 3.0, min(grid.pixel_scales) * 10.0],
-        #             )
-        #             grid = Grid2D(values=grid, mask=grid.mask, over_sampling=over_sampling)
+        if isinstance(grid, Grid2D):
+            if grid.over_sampling is None:
+                if grid.is_uniform:
+
+                    over_sampling = OverSamplingUniform.from_radial_bins(
+                        mask=grid.mask,
+                        sub_size_list=[32, 4, 2],
+                        radial_list=[min(grid.pixel_scales) * 3.0, min(grid.pixel_scales) * 10.0],
+                        centre_list=[obj.centre],
+                    )
+                    grid = Grid2D(values=grid, mask=grid.mask, over_sampling=over_sampling)
 
         perform_over_sampling = perform_over_sampling_from(grid=grid, kwargs=kwargs)
 
