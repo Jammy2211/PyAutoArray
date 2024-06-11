@@ -185,6 +185,8 @@ class OverSamplingUniform(AbstractOverSampling):
         if centre_list is None:
             centre_list = [grid.mask.mask_centre]
 
+        sub_size = np.zeros(grid.shape_slim)
+
         for centre in centre_list:
             radial_grid = grid.distances_to_coordinate_from(coordinate=centre)
 
@@ -194,7 +196,11 @@ class OverSamplingUniform(AbstractOverSampling):
                 radial_list=np.array(radial_list),
             )
 
-        sub_size = Array2D(values=sub_size_of_centre, mask=grid.mask)
+            sub_size = np.where(
+                sub_size_of_centre > sub_size, sub_size_of_centre, sub_size
+            )
+
+        sub_size = Array2D(values=sub_size, mask=grid.mask)
 
         return cls(sub_size=sub_size)
 

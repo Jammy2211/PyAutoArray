@@ -41,8 +41,10 @@ def test__from_sub_size_int():
 def test__from_manual_adapt_radial_bin():
     mask = aa.Mask2D.circular(shape_native=(5, 5), pixel_scales=2.0, radius=3.0)
 
+    grid = aa.Grid2D.from_mask(mask=mask)
+
     over_sampling = aa.OverSamplingUniform.from_radial_bins(
-        mask=mask, sub_size_list=[8, 4, 2], radial_list=[1.5, 2.5]
+        grid=grid, sub_size_list=[8, 4, 2], radial_list=[1.5, 2.5]
     )
     assert over_sampling.sub_size.native == pytest.approx(
         np.array(
@@ -61,12 +63,16 @@ def test__from_manual_adapt_radial_bin():
 def test__from_manual_adapt_radial_bin__centre_list_input():
     mask = aa.Mask2D.circular(shape_native=(5, 5), pixel_scales=2.0, radius=3.0)
 
+    grid = aa.Grid2D.from_mask(mask=mask)
+
     over_sampling = aa.OverSamplingUniform.from_radial_bins(
-        mask=mask,
+        grid=grid,
         sub_size_list=[8, 4, 2],
         radial_list=[1.5, 2.5],
         centre_list=[(0.0, -2.0), (0.0, 2.0)],
     )
+
+    print(over_sampling.sub_size.native)
 
     assert over_sampling.sub_size.native == pytest.approx(
         np.array(

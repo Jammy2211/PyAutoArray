@@ -82,9 +82,12 @@ def over_sample(func):
         if isinstance(grid, Grid2D):
             if grid.over_sampling is None:
                 if grid.is_uniform:
-
-                    sub_size_list = conf.instance["grids"]["over_sampling"]["sub_size_list"][obj.__class__.__name__]
-                    radial_factor_list = conf.instance["grids"]["over_sampling"]["radial_factor_list"][obj.__class__.__name__]
+                    sub_size_list = conf.instance["grids"]["over_sampling"][
+                        "sub_size_list"
+                    ][obj.__class__.__name__]
+                    radial_factor_list = conf.instance["grids"]["over_sampling"][
+                        "radial_factor_list"
+                    ][obj.__class__.__name__]
 
                     centre = grid.geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
                         scaled_coordinate_2d=obj.centre
