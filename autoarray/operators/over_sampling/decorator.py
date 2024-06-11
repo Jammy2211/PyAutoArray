@@ -22,7 +22,6 @@ def perform_over_sampling_from(grid, **kwargs):
     perform_over_sampling = False
 
     if isinstance(grid, Grid2D):
-
         if grid.over_sampling is not None:
             perform_over_sampling = True
 
@@ -78,19 +77,25 @@ def over_sample(func):
 
             return grid.over_sampler.binned_array_2d_from(array=result)
 
-        # TODO : Need to incorporate centres
-
         if isinstance(grid, Grid2D):
             if grid.over_sampling is None:
                 if grid.is_uniform:
+                    centre = grid.geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
+                        scaled_coordinate_2d=obj.centre
+                    )
 
                     over_sampling = OverSamplingUniform.from_radial_bins(
-                        mask=grid.mask,
+                        grid=grid,
                         sub_size_list=[32, 4, 2],
-                        radial_list=[min(grid.pixel_scales) * 3.0, min(grid.pixel_scales) * 10.0],
-                        centre_list=[obj.centre],
+                        radial_list=[
+                            min(grid.pixel_scales) * 3.01,
+                            min(grid.pixel_scales) * 10.01,
+                        ],
+                        centre_list=[centre],
                     )
-                    grid = Grid2D(values=grid, mask=grid.mask, over_sampling=over_sampling)
+                    grid = Grid2D(
+                        values=grid, mask=grid.mask, over_sampling=over_sampling
+                    )
 
         perform_over_sampling = perform_over_sampling_from(grid=grid, kwargs=kwargs)
 

@@ -283,7 +283,6 @@ def oversample_mask_2d_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
 
 @numba_util.jit()
 def sub_size_radial_bins_from(
-    mask: np.ndarray,
     radial_grid: np.ndarray,
     sub_size_list: np.ndarray,
     radial_list: np.ndarray,
@@ -322,15 +321,11 @@ def sub_size_radial_bins_from(
 
     sub_size = sub_size_list[-1] * np.ones(radial_grid.shape)
 
-    for y in range(radial_grid.shape[0]):
-        for x in range(radial_grid.shape[1]):
-            if not mask[y, x]:
-                radial = radial_grid[y, x]
-
-                for i in range(len(radial_list)):
-                    if radial < radial_list[i]:
-                        sub_size[y, x] = sub_size_list[i]
-                        break
+    for i in range(radial_grid.shape[0]):
+        for j in range(len(radial_list)):
+            if radial_grid[i] < radial_list[j]:
+                sub_size[i] = sub_size_list[j]
+                break
 
     return sub_size
 

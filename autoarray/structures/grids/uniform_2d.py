@@ -1045,7 +1045,6 @@ class Grid2D(Structure):
         Whether the grid is uniform.
         """
 
-
         y_diff = self[:, 0][:-1] - self[:, 0][1:]
         y_diff = y_diff[y_diff != 0]
 

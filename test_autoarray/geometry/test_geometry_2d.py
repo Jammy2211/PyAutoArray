@@ -59,9 +59,9 @@ def test__scaled_coordinates_2d_from():
 
 
 def test__scaled_coordinate_2d_to_scaled_at_pixel_centre_from():
-
     geometry = aa.Geometry2D(
-        shape_native=(5, 5), pixel_scales=(0.1, 0.1),
+        shape_native=(5, 5),
+        pixel_scales=(0.1, 0.1),
     )
 
     scaled_coordinate = (0.0, 0.0)
@@ -81,7 +81,8 @@ def test__scaled_coordinate_2d_to_scaled_at_pixel_centre_from():
     assert pixel_centre == pytest.approx((0.1, 0.2), 1.0e-4)
 
     geometry = aa.Geometry2D(
-        shape_native=(6, 6), pixel_scales=(0.2, 0.2),
+        shape_native=(6, 6),
+        pixel_scales=(0.2, 0.2),
     )
 
     scaled_coordinate = (-0.0001, -0.2001)
@@ -103,6 +104,7 @@ def test__scaled_coordinate_2d_to_scaled_at_pixel_centre_from():
     )
 
     assert pixel_centre == pytest.approx((1.1, 1.3), 1.0e-4)
+
 
 def test__grid_pixels_2d_slim_from():
     geometry = aa.Geometry2D(shape_native=(2, 2), pixel_scales=(2.0, 4.0))

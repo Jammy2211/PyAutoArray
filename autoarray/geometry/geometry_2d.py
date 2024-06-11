@@ -189,7 +189,9 @@ class Geometry2D(AbstractGeometry2D):
             origins=self.origin,
         )
 
-    def scaled_coordinate_2d_to_scaled_at_pixel_centre_from(self, scaled_coordinate_2d: Tuple[float, float]) -> Tuple[float, float]:
+    def scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
+        self, scaled_coordinate_2d: Tuple[float, float]
+    ) -> Tuple[float, float]:
         """
         Convert a 2D (y,x) scaled coordinate to a 2D scaled coordinate at the centre of the pixel it is located in.
 
@@ -208,7 +210,9 @@ class Geometry2D(AbstractGeometry2D):
         The 2D (y,x) pixel-value coordinate at the centre of the pixel the input scaled coordinate is located in.
         """
 
-        pixel_coordinate_2d = self.pixel_coordinates_2d_from(scaled_coordinates_2d=scaled_coordinate_2d)
+        pixel_coordinate_2d = self.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=scaled_coordinate_2d
+        )
         return self.scaled_coordinates_2d_from(pixel_coordinates_2d=pixel_coordinate_2d)
 
     def grid_pixels_2d_from(self, grid_scaled_2d: Grid2D) -> Grid2D:

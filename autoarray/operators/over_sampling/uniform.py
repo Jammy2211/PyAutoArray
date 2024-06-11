@@ -9,6 +9,7 @@ from autoarray.operators.over_sampling.abstract import AbstractOverSampling
 from autoarray.operators.over_sampling.abstract import AbstractOverSampler
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
+from autoarray.structures.grids.uniform_2d import Grid2D
 
 
 from autoarray.operators.over_sampling import over_sample_util
@@ -141,7 +142,7 @@ class OverSamplingUniform(AbstractOverSampling):
     @classmethod
     def from_radial_bins(
         cls,
-        mask: Mask2D,
+        grid: Grid2D,
         sub_size_list: List[int],
         radial_list: List[float],
         centre_list: List[Tuple] = None,
@@ -181,28 +182,19 @@ class OverSamplingUniform(AbstractOverSampling):
         the centre of the mask.
         """
 
-        grid = mask.derive_grid.unmasked
-
         if centre_list is None:
-            centre_list = [mask.mask_centre]
-
-        sub_size = np.zeros(mask.shape_native)
+            centre_list = [grid.mask.mask_centre]
 
         for centre in centre_list:
-            radial_grid = grid.distances_to_coordinate_from(coordinate=centre).native
+            radial_grid = grid.distances_to_coordinate_from(coordinate=centre)
 
             sub_size_of_centre = over_sample_util.sub_size_radial_bins_from(
-                mask=np.array(mask),
                 radial_grid=np.array(radial_grid),
                 sub_size_list=np.array(sub_size_list),
                 radial_list=np.array(radial_list),
             )
 
-            sub_size = np.where(
-                sub_size_of_centre > sub_size, sub_size_of_centre, sub_size
-            )
-
-        sub_size = Array2D(values=sub_size, mask=mask)
+        sub_size = Array2D(values=sub_size_of_centre, mask=grid.mask)
 
         return cls(sub_size=sub_size)
 
