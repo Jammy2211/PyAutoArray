@@ -83,7 +83,8 @@ def ndarray_2d_yx_from(profile, grid, *args, **kwargs):
 
 class MockGridLikeIteratorObj:
     def __init__(self):
-        pass
+
+        self.centre = (0.0, 0.0)
 
     @property
     def sersic_constant(self):
@@ -226,6 +227,9 @@ class MockGrid1DLikeObj:
 
 class MockGrid2DLikeObj:
     def __init__(self):
+
+        self.centre = (0.0, 0.0)
+
         pass
 
     @over_sample

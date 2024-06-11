@@ -741,10 +741,12 @@ class Grid2D(Structure):
                 The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
+        from autoarray.operators.over_sampling.uniform import OverSamplingUniform
+
         return Grid2D.blurring_grid_from(
             mask=self.mask,
             kernel_shape_native=kernel_shape_native,
-            over_sampling=None,
+            over_sampling=OverSamplingUniform(sub_size=1),
         )
 
     def grid_with_coordinates_within_distance_removed_from(
