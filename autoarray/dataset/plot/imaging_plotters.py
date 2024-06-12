@@ -61,6 +61,7 @@ class ImagingPlotterMeta(Plotter):
         noise_map: bool = False,
         psf: bool = False,
         signal_to_noise_map: bool = False,
+        over_sampling_sub_size : bool = False,
         title_str: Optional[str] = None,
     ):
         """
@@ -113,6 +114,34 @@ class ImagingPlotterMeta(Plotter):
                 auto_labels=AutoLabels(
                     title=title_str or f"Signal-To-Noise Map",
                     filename="signal_to_noise_map",
+                    cb_unit="",
+                ),
+            )
+
+        if over_sampling_sub_size:
+
+            if self.dataset.over_sampling is None:
+
+                from autoarray.operators.over_sampling.uniform import OverSamplingUniform
+
+                over_sampling = OverSamplingUniform.from_adaptive_scheme(
+                    grid=self.dataset.grid,
+                    name="PlotExample",
+                    centre=(0.0, 0.0)
+                )
+                title = title_str or f"Over Sampling Adaptive Sub Size (Centre Moves)"
+
+            else:
+
+                over_sampling = self.dataset.over_sampling
+                title = title_str or f"Over Sampling Sub Size",
+
+            self.mat_plot_2d.plot_array(
+                array=over_sampling.sub_size,
+                visuals_2d=self.get_visuals_2d(),
+                auto_labels=AutoLabels(
+                    title=title,
+                    filename="over_sampling_sub_size",
                     cb_unit="",
                 ),
             )

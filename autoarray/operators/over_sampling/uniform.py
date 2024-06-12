@@ -11,7 +11,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.structures.grids.irregular_2d import Grid2DIrregular
 from autoarray.structures.grids.uniform_2d import Grid2D
 
-
+from autoarray import exc
 from autoarray.operators.over_sampling import over_sample_util
 
 
@@ -203,6 +203,62 @@ class OverSamplingUniform(AbstractOverSampling):
         sub_size = Array2D(values=sub_size, mask=grid.mask)
 
         return cls(sub_size=sub_size)
+
+    @classmethod
+    def from_adaptive_scheme(cls, grid : Grid2D, name : str, centre : Tuple[float, float]) -> "OverSamplingUniform":
+        """
+        Returns a 2D grid whose over sampling is adaptive, placing a high number of sub-pixels in the regions of the
+        grid closest to the centre input (y,x) coordinates.
+
+        This adaptive over sampling is primarily used in PyAutoGalaxy, to evaluate the image of a light profile
+        (e.g. a Sersic function) with high levels of sub gridding in its centre and lower levels of sub gridding
+        further away from the centre (saving computational time).
+
+        The `autogalaxy_workspace` and `autolens_workspace` packages have guides called `over_sampling.ipynb`
+        which describe over sampling in more detail.
+
+        The inputs `name` and `centre` typically correspond to the name of the light profile (e.g. `Sersic`) and
+        its `centre`, so that the adaptive over sampling parameters for that light profile are loaded from config
+        files and used to setup the grid.
+
+        Parameters
+        ----------
+        name
+            The name of the light profile, which is used to load the adaptive over sampling parameters from config files.
+        centre
+            The (y,x) centre of the adaptive over sampled grid, around which the highest sub-pixel resolution is placed.
+
+        Returns
+        -------
+        A new Grid2D with adaptive over sampling.
+
+        """
+
+        if not grid.is_uniform:
+            raise exc.GridException(
+                "You cannot make an adaptive over-sampled grid from a non-uniform grid."
+            )
+
+        sub_size_list = conf.instance["grids"]["over_sampling"][
+            "sub_size_list"
+        ][name]
+        radial_factor_list = conf.instance["grids"]["over_sampling"][
+            "radial_factor_list"
+        ][name]
+
+        centre = grid.geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
+            scaled_coordinate_2d=centre
+        )
+
+        return OverSamplingUniform.from_radial_bins(
+            grid=grid,
+            sub_size_list=sub_size_list,
+            radial_list=[
+                min(grid.pixel_scales) * radial_factor
+                for radial_factor in radial_factor_list
+            ],
+            centre_list=[centre],
+        )
 
     @classmethod
     def from_adapt(
