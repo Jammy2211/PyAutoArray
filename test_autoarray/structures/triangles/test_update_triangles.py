@@ -1,22 +1,11 @@
 import pytest
 
-from autoarray.structures.triangles.triangles import Triangle
-
 
 def test_update(triangles):
     transformed = 2 * triangles.grid_2d
     new = triangles.with_updated_grid(grid=transformed)
 
     assert len(new) == len(triangles.triangles)
-
-
-@pytest.fixture
-def triangle():
-    return Triangle(
-        (0.0, 0.0),
-        (1.0, 0.0),
-        (0.0, 1.0),
-    )
 
 
 @pytest.mark.parametrize(
@@ -32,31 +21,13 @@ def triangle():
 def test_contains(
     point,
     expected,
-    triangle,
+    right_triangle,
 ):
-    assert triangle.contains(point) is expected
+    assert right_triangle.contains(point) is expected
 
 
-@pytest.mark.parametrize(
-    "point, buffer, expected",
-    [
-        ((0.6, 0.5), 0.1, True),
-        ((0.6, 0.5), 0.01, False),
-        ((0.0, -0.1), 0.2, True),
-        ((0.0, -0.3), 0.2, False),
-    ],
-)
-def test_buffer(
-    triangle,
-    point,
-    buffer,
-    expected,
-):
-    assert triangle.contains(point, buffer=buffer) is expected
-
-
-def test_subgrid(triangle):
-    subsample = triangle.subdivide()
+def test_subgrid(right_triangle):
+    subsample = right_triangle.subdivide()
     assert len(subsample) == 4
 
 

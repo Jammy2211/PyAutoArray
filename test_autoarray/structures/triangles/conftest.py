@@ -5,6 +5,15 @@ from autoarray.structures.triangles.triangle import Triangle
 from autoarray.structures.triangles.triangles import Triangles
 
 
+@pytest.fixture
+def right_triangle():
+    return Triangle(
+        (0.0, 0.0),
+        (1.0, 0.0),
+        (0.0, 1.0),
+    )
+
+
 @pytest.fixture(name="triangles")
 def make_triangles():
     grid = Grid2D.uniform(
