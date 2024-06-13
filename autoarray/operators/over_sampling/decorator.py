@@ -82,7 +82,6 @@ def over_sample(func):
         if isinstance(grid, Grid2D):
             if grid.over_sampling is None:
                 if grid.is_uniform:
-
                     over_sampling = OverSamplingUniform.from_adaptive_scheme(
                         grid=grid,
                         name=obj.__class__.__name__,

@@ -205,7 +205,9 @@ class OverSamplingUniform(AbstractOverSampling):
         return cls(sub_size=sub_size)
 
     @classmethod
-    def from_adaptive_scheme(cls, grid : Grid2D, name : str, centre : Tuple[float, float]) -> "OverSamplingUniform":
+    def from_adaptive_scheme(
+        cls, grid: Grid2D, name: str, centre: Tuple[float, float]
+    ) -> "OverSamplingUniform":
         """
         Returns a 2D grid whose over sampling is adaptive, placing a high number of sub-pixels in the regions of the
         grid closest to the centre input (y,x) coordinates.
@@ -239,9 +241,7 @@ class OverSamplingUniform(AbstractOverSampling):
                 "You cannot make an adaptive over-sampled grid from a non-uniform grid."
             )
 
-        sub_size_list = conf.instance["grids"]["over_sampling"][
-            "sub_size_list"
-        ][name]
+        sub_size_list = conf.instance["grids"]["over_sampling"]["sub_size_list"][name]
         radial_factor_list = conf.instance["grids"]["over_sampling"][
             "radial_factor_list"
         ][name]
