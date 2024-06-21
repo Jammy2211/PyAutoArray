@@ -28,6 +28,7 @@ class AbstractDataset:
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
         over_sampling_pixelization: Optional[AbstractOverSampling] = None,
     ):
         """
@@ -70,8 +71,13 @@ class AbstractDataset:
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
         over_sampling
-            How over sampling is performed for the grid which performs calculations not associated with a pixelization.
-            In PyAutoGalaxy and PyAutoLens this is light profile calculations.
+            The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
+            (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        over_sampling_non_uniform
+            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
+            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
+            over sampling schemes are not appropriate.
         over_sampling_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
@@ -79,6 +85,7 @@ class AbstractDataset:
 
         self.data = data
         self.over_sampling = over_sampling
+        self.over_sampling_non_uniform = over_sampling_non_uniform
         self.over_sampling_pixelization = over_sampling_pixelization
 
         self.noise_covariance_matrix = noise_covariance_matrix
@@ -125,6 +132,7 @@ class AbstractDataset:
         return Grid2D.from_mask(
             mask=self.mask,
             over_sampling=self.over_sampling,
+            over_sampling_non_uniform=self.over_sampling_non_uniform,
         )
 
     @cached_property
