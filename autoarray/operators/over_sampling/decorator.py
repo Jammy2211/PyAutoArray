@@ -4,8 +4,6 @@ from functools import wraps
 
 from typing import List, Union
 
-from autoconf import conf
-
 from autoarray.operators.over_sampling.grid_oversampled import Grid2DOverSampled
 from autoarray.operators.over_sampling.uniform import OverSamplingUniform
 
