@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import autoarray as aa
 
@@ -55,6 +56,54 @@ def test__scaled_coordinates_2d_from():
         geometry.scaled_coordinates_2d_from(pixel_coordinates_2d=(5, 4))
         == pixel_coordinates_util
     )
+
+
+def test__scaled_coordinate_2d_to_scaled_at_pixel_centre_from():
+    geometry = aa.Geometry2D(
+        shape_native=(5, 5),
+        pixel_scales=(0.1, 0.1),
+    )
+
+    scaled_coordinate = (0.0, 0.0)
+
+    pixel_centre = geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
+        scaled_coordinate_2d=scaled_coordinate,
+    )
+
+    assert pixel_centre == pytest.approx((0.0, 0.0), 1.0e-4)
+
+    scaled_coordinate = (0.12, 0.22)
+
+    pixel_centre = geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
+        scaled_coordinate_2d=scaled_coordinate,
+    )
+
+    assert pixel_centre == pytest.approx((0.1, 0.2), 1.0e-4)
+
+    geometry = aa.Geometry2D(
+        shape_native=(6, 6),
+        pixel_scales=(0.2, 0.2),
+    )
+
+    scaled_coordinate = (-0.0001, -0.2001)
+
+    pixel_centre = geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
+        scaled_coordinate_2d=scaled_coordinate,
+    )
+
+    assert pixel_centre == pytest.approx((-0.1, -0.3), 1.0e-4)
+
+    geometry = aa.Geometry2D(
+        shape_native=(6, 6), pixel_scales=(0.2, 0.2), origin=(1.0, 1.0)
+    )
+
+    scaled_coordinate = (1.0001, 1.2001)
+
+    pixel_centre = geometry.scaled_coordinate_2d_to_scaled_at_pixel_centre_from(
+        scaled_coordinate_2d=scaled_coordinate,
+    )
+
+    assert pixel_centre == pytest.approx((1.1, 1.3), 1.0e-4)
 
 
 def test__grid_pixels_2d_slim_from():

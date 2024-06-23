@@ -61,6 +61,8 @@ class ImagingPlotterMeta(Plotter):
         noise_map: bool = False,
         psf: bool = False,
         signal_to_noise_map: bool = False,
+        over_sampling_sub_size: bool = False,
+        over_sampling_sub_size_pixelization: bool = False,
         title_str: Optional[str] = None,
     ):
         """
@@ -79,6 +81,11 @@ class ImagingPlotterMeta(Plotter):
             Whether to make a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
             Whether to make a 2D plot (via `imshow`) of the signal-to-noise map.
+        over_sampling_sub_size
+            Whether to make a 2D plot (via `imshow`) of the over sampling sub size for input light profiles. If
+            adaptive sub size is used, the sub size grid for a centre of (0.0, 0.0) is used.
+        over_sampling_sub_size_pixelization
+            Whether to make a 2D plot (via `imshow`) of the over sampling sub size for pixelizations.
         """
 
         if data:
@@ -117,12 +124,54 @@ class ImagingPlotterMeta(Plotter):
                 ),
             )
 
+        if over_sampling_sub_size:
+            if self.dataset.over_sampling is None:
+                from autoarray.operators.over_sampling.uniform import (
+                    OverSamplingUniform,
+                )
+
+                over_sampling = OverSamplingUniform.from_adaptive_scheme(
+                    grid=self.dataset.grid, name="PlotExample", centre=(0.0, 0.0)
+                )
+                title = title_str or f"Over Sampling Sub Size (Adaptive)"
+
+            else:
+                over_sampling = self.dataset.over_sampling
+                title = (title_str or f"Over Sampling Sub Size",)
+
+            over_sampler = over_sampling.over_sampler_from(
+                mask=self.dataset.mask,
+            )
+
+            self.mat_plot_2d.plot_array(
+                array=over_sampler.sub_size,
+                visuals_2d=self.get_visuals_2d(),
+                auto_labels=AutoLabels(
+                    title=title,
+                    filename="over_sampling_sub_size",
+                    cb_unit="",
+                ),
+            )
+
+        if over_sampling_sub_size_pixelization:
+            self.mat_plot_2d.plot_array(
+                array=self.dataset.over_sampler_pixelization.sub_size,
+                visuals_2d=self.get_visuals_2d(),
+                auto_labels=AutoLabels(
+                    title=title_str or f"Over Sampling Sub Size Pixelization",
+                    filename="over_sampling_sub_size_pixelization",
+                    cb_unit="",
+                ),
+            )
+
     def subplot(
         self,
         data: bool = False,
         noise_map: bool = False,
         psf: bool = False,
         signal_to_noise_map: bool = False,
+        over_sampling_sub_size: bool = False,
+        over_sampling_sub_size_pixelization: bool = False,
         auto_filename: str = "subplot_dataset",
     ):
         """
@@ -141,6 +190,11 @@ class ImagingPlotterMeta(Plotter):
             Whether to include a 2D plot (via `imshow`) of the psf.
         signal_to_noise_map
             Whether to include a 2D plot (via `imshow`) of the signal-to-noise map.
+        over_sampling_sub_size
+            Whether to include a 2D plot (via `imshow`) of the over sampling sub size. If adaptive sub size is used, the
+            sub size grid for a centre of (0.0, 0.0) is used.
+        over_sampling_sub_size_pixelization
+            Whether to include a 2D plot (via `imshow`) of the over sampling sub size for pixelizations.
         auto_filename
             The default filename of the output subplot if written to hard-disk.
         """
@@ -149,6 +203,8 @@ class ImagingPlotterMeta(Plotter):
             noise_map=noise_map,
             psf=psf,
             signal_to_noise_map=signal_to_noise_map,
+            over_sampling_sub_size=over_sampling_sub_size,
+            over_sampling_sub_size_pixelization=over_sampling_sub_size_pixelization,
             auto_labels=AutoLabels(filename=auto_filename),
         )
 
@@ -158,7 +214,7 @@ class ImagingPlotterMeta(Plotter):
         """
         use_log10_original = self.mat_plot_2d.use_log10
 
-        self.open_subplot_figure(number_subplots=6)
+        self.open_subplot_figure(number_subplots=9)
 
         self.figures_2d(data=True)
 
@@ -179,6 +235,9 @@ class ImagingPlotterMeta(Plotter):
         self.mat_plot_2d.use_log10 = False
 
         self.figures_2d(signal_to_noise_map=True)
+
+        self.figures_2d(over_sampling_sub_size=True)
+        self.figures_2d(over_sampling_sub_size_pixelization=True)
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_dataset")
         self.close_subplot_figure()

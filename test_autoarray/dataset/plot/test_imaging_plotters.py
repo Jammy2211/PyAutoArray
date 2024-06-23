@@ -30,12 +30,19 @@ def test__individual_attributes_are_output(
         noise_map=True,
         psf=True,
         signal_to_noise_map=True,
+        over_sampling_sub_size=True,
+        over_sampling_sub_size_pixelization=True,
     )
 
     assert path.join(plot_path, "data.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "psf.png") in plot_patch.paths
     assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
+    assert path.join(plot_path, "over_sampling_sub_size.png") in plot_patch.paths
+    assert (
+        path.join(plot_path, "over_sampling_sub_size_pixelization.png")
+        in plot_patch.paths
+    )
 
     plot_patch.paths = []
 

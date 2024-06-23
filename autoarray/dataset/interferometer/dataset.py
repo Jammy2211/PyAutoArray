@@ -25,6 +25,7 @@ class Interferometer(AbstractDataset):
         real_space_mask,
         transformer_class=TransformerNUFFT,
         over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
         over_sampling_pixelization: Optional[AbstractOverSampling] = None,
     ):
         """
@@ -80,6 +81,10 @@ class Interferometer(AbstractDataset):
         over_sampling
             How over sampling is performed for the grid which performs calculations not associated with a pixelization.
             In PyAutoGalaxy and PyAutoLens this is light profile calculations.
+        over_sampling_non_uniform
+            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
+            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
+            over sampling schemes are not appropriate.
         over_sampling_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
@@ -93,6 +98,7 @@ class Interferometer(AbstractDataset):
             data=data,
             noise_map=noise_map,
             over_sampling=over_sampling,
+            over_sampling_non_uniform=over_sampling_non_uniform,
             over_sampling_pixelization=over_sampling_pixelization,
         )
 
