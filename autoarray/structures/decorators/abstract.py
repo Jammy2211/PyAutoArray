@@ -62,6 +62,10 @@ class AbstractMaker:
     def over_sampling(self) -> AbstractOverSampling:
         return self.grid.over_sampling
 
+    @property
+    def over_sampling_non_uniform(self) -> AbstractOverSampling:
+        return self.grid.over_sampling_non_uniform
+
     def via_grid_2d(self, result):
         raise NotImplementedError
 

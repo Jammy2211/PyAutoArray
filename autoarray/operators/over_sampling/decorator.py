@@ -26,8 +26,12 @@ def perform_over_sampling_from(grid, **kwargs):
             perform_over_sampling = True
 
             if isinstance(grid.over_sampling, OverSamplingUniform):
-                if grid.over_sampling.sub_size == 1:
-                    perform_over_sampling = False
+                try:
+                    if grid.over_sampling.sub_size == 1:
+                        perform_over_sampling = False
+                except ValueError:
+                    if sum(grid.over_sampling.sub_size) == grid.mask.pixels_in_mask:
+                        perform_over_sampling = False
 
     return perform_over_sampling
 
@@ -72,6 +76,19 @@ def over_sample(func):
             result = func(obj, grid.grid, *args, **kwargs)
 
             return grid.over_sampler.binned_array_2d_from(array=result)
+
+        if isinstance(grid, Grid2D):
+            if grid.over_sampling is None:
+                if grid.is_uniform:
+                    over_sampling = OverSamplingUniform.from_adaptive_scheme(
+                        grid=grid,
+                        name=obj.__class__.__name__,
+                        centre=obj.centre,
+                    )
+
+                    grid = Grid2D(
+                        values=grid, mask=grid.mask, over_sampling=over_sampling
+                    )
 
         perform_over_sampling = perform_over_sampling_from(grid=grid, kwargs=kwargs)
 

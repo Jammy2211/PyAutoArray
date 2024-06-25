@@ -29,6 +29,7 @@ class Imaging(AbstractDataset):
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
         over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
         over_sampling_pixelization: Optional[AbstractOverSampling] = None,
         pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
@@ -80,8 +81,13 @@ class Imaging(AbstractDataset):
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
         over_sampling
-            How over sampling is performed for the grid which performs calculations not associated with a pixelization.
-            In PyAutoGalaxy and PyAutoLens this is light profile calculations.
+            The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
+            (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
+            into each pixel.
+        over_sampling_non_uniform
+            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
+            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
+            over sampling schemes are not appropriate.
         over_sampling_pixelization
             How over sampling is performed for the grid which is associated with a pixelization, which is therefore
             passed into the calculations performed in the `inversion` module.
@@ -127,6 +133,7 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             noise_covariance_matrix=noise_covariance_matrix,
             over_sampling=over_sampling,
+            over_sampling_non_uniform=over_sampling_non_uniform,
             over_sampling_pixelization=over_sampling_pixelization,
         )
 
