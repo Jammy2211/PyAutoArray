@@ -132,7 +132,8 @@ class AbstractDataset:
         return Grid2D.from_mask(
             mask=self.mask,
             over_sampling=self.over_sampling,
-            over_sampling_non_uniform=self.over_sampling_non_uniform,
+            over_sampling_non_uniform=self.over_sampling_non_uniform
+            or OverSamplingUniform(sub_size=1),
         )
 
     @cached_property
@@ -274,9 +275,16 @@ class AbstractDataset:
             except KeyError:
                 pass
 
-
         if over_sampling_non_uniform is not None:
             self.over_sampling_non_uniform = over_sampling_non_uniform
+            try:
+                del self.__dict__["grid"]
+            except KeyError:
+                pass
+            try:
+                del self.__dict__["over_sampler_non_uniform"]
+            except KeyError:
+                pass
 
         if over_sampling_pixelization is not None:
             self.over_sampling_pixelization = over_sampling_pixelization

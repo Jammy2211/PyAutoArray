@@ -138,7 +138,7 @@ class ImagingPlotterMeta(Plotter):
 
             else:
                 over_sampling = self.dataset.over_sampling
-                title = (title_str or f"Over Sampling Sub Size")
+                title = title_str or f"Over Sampling Sub Size"
 
             over_sampler = over_sampling.over_sampler_from(
                 mask=self.dataset.mask,
@@ -155,9 +155,7 @@ class ImagingPlotterMeta(Plotter):
             )
 
         if over_sampling_sub_size_non_uniform:
-
             if self.dataset.over_sampler_non_uniform is not None:
-
                 self.mat_plot_2d.plot_array(
                     array=self.dataset.over_sampler_non_uniform.sub_size,
                     visuals_2d=self.get_visuals_2d(),
@@ -167,7 +165,6 @@ class ImagingPlotterMeta(Plotter):
                         cb_unit="",
                     ),
                 )
-
 
         if over_sampling_sub_size_pixelization:
             self.mat_plot_2d.plot_array(
@@ -253,6 +250,7 @@ class ImagingPlotterMeta(Plotter):
         self.figures_2d(signal_to_noise_map=True)
 
         self.figures_2d(over_sampling_sub_size=True)
+        self.figures_2d(over_sampling_sub_size_non_uniform=True)
         self.figures_2d(over_sampling_sub_size_pixelization=True)
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename="subplot_dataset")
