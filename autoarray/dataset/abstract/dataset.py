@@ -163,6 +163,10 @@ class AbstractDataset:
         )
 
     @cached_property
+    def over_sampler_non_uniform(self):
+        return self.grid.over_sampling_non_uniform.over_sampler_from(mask=self.mask)
+
+    @cached_property
     def over_sampler_pixelization(self):
         return self.grid_pixelization.over_sampling.over_sampler_from(mask=self.mask)
 
@@ -232,6 +236,7 @@ class AbstractDataset:
     def apply_over_sampling(
         self,
         over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
         over_sampling_pixelization: Optional[AbstractOverSampling] = None,
     ) -> "AbstractDataset":
         """
@@ -254,6 +259,10 @@ class AbstractDataset:
         ----------
         over_sampling
             The new over sampling object to apply to the grid.
+        over_sampling_non_uniform
+            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
+            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
+            over sampling schemes are not appropriate.
         over_sampling_pixelization
             The new over sampling object to apply to the grid pixelization.
         """
@@ -264,6 +273,10 @@ class AbstractDataset:
                 del self.__dict__["grid"]
             except KeyError:
                 pass
+
+
+        if over_sampling_non_uniform is not None:
+            self.over_sampling_non_uniform = over_sampling_non_uniform
 
         if over_sampling_pixelization is not None:
             self.over_sampling_pixelization = over_sampling_pixelization
