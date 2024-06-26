@@ -5,16 +5,13 @@ import warnings
 from typing import Optional, Union
 
 from autoarray.dataset.over_sampling import OverSamplingDataset
-from autoarray.structures.grids.uniform_1d import Grid1D
-from autoarray.structures.grids.uniform_2d import Grid2D
+from autoarray.dataset.grids import GridsDataset
 
 from autoarray import exc
 from autoarray.mask.mask_1d import Mask1D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray.structures.abstract_structure import Structure
 from autoarray.structures.arrays.uniform_2d import Array2D
-from autoarray.operators.over_sampling.uniform import OverSamplingUniform
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoconf import cached_property
 
 
@@ -106,83 +103,7 @@ class AbstractDataset:
 
         self.noise_map = noise_map
 
-    @cached_property
-    def grid(self) -> Union[Grid1D, Grid2D]:
-        """
-        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data structure.
-
-        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
-
-        Returns
-        -------
-        The (y,x) coordinates of every pixel in the data structure.
-        """
-
-        return Grid2D.from_mask(
-            mask=self.mask,
-            over_sampling=self.over_sampling.uniform,
-        )
-
-    @cached_property
-    def grid_non_uniform(self) -> Optional[Union[Grid1D, Grid2D]]:
-        """
-        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data structure.
-
-        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
-
-        Returns
-        -------
-        The (y,x) coordinates of every pixel in the data structure.
-        """
-
-        if self.over_sampling.non_uniform is None:
-            return None
-
-        return Grid2D.from_mask(
-            mask=self.mask,
-            over_sampling=self.over_sampling.non_uniform,
-        )
-
-    @cached_property
-    def grid_pixelization(self) -> Grid2D:
-        """
-        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data structure which is used
-        specifically for pixelization reconstructions (e.g. an `inversion`).
-
-        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
-
-        A pixelization often uses a different grid of coordinates compared to the main `grid` of the data structure.
-        A common example is that a pixelization may use a higher `sub_size` than the main grid, in order to better
-        prevent aliasing effects.
-
-        Returns
-        -------
-        The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
-        """
-
-        over_sampling = self.over_sampling.pixelization
-
-        if over_sampling is None:
-            over_sampling = OverSamplingUniform(sub_size=4)
-
-        return Grid2D.from_mask(
-            mask=self.mask,
-            over_sampling=over_sampling,
-        )
-
-    @cached_property
-    def over_sampler_non_uniform(self):
-        return self.grid_non_uniform.over_sampling.over_sampler_from(mask=self.mask)
-
-    @cached_property
-    def over_sampler_pixelization(self):
-        return self.grid_pixelization.over_sampling.over_sampler_from(mask=self.mask)
-
-    @cached_property
-    def border_relocator(self) -> BorderRelocator:
-        return BorderRelocator(
-            mask=self.mask, sub_size=self.grid_pixelization.over_sampling.sub_size
-        )
+        self.grids = GridsDataset(mask=data.mask, over_sampling=over_sampling)
 
     @property
     def shape_native(self):
@@ -243,7 +164,7 @@ class AbstractDataset:
 
     def apply_over_sampling(
         self,
-        over_sampling: Optional[OverSamplingDataset] = None,
+        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
     ) -> "AbstractDataset":
         """
         Apply new over sampling objects to the grid and grid pixelization of the dataset.

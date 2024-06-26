@@ -241,7 +241,7 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sampling: Optional[OverSamplingDataset] = None,
+        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
     ) -> "Imaging":
         """
         Load an imaging dataset from multiple .fits file.

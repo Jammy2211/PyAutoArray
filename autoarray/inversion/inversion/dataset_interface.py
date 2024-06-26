@@ -7,8 +7,7 @@ class DatasetInterface:
         convolver=None,
         transformer=None,
         w_tilde=None,
-        grid=None,
-        grid_pixelization=None,
+        grids=None,
         blurring_grid=None,
         noise_covariance_matrix=None,
     ):
@@ -74,11 +73,10 @@ class DatasetInterface:
         self.convolver = convolver
         self.transformer = transformer
         self.w_tilde = w_tilde
-        self.grid = grid
-        self.grid_pixelization = grid_pixelization
+        self.grids = grids
         self.blurring_grid = blurring_grid
         self.noise_covariance_matrix = noise_covariance_matrix
 
     @property
     def mask(self):
-        return self.grid.mask
+        return self.grids.uniform.mask

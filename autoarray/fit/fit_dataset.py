@@ -154,11 +154,11 @@ class FitDataset(AbstractFitInversion):
 
     @property
     def grid(self) -> ty.Grid2DLike:
-        return self.dataset.grid.subtracted_from(offset=self.dataset_model.grid_offset)
+        return self.dataset.grids.uniform.subtracted_from(offset=self.dataset_model.grid_offset)
 
     @property
     def grid_pixelization(self) -> ty.Grid2DLike:
-        return self.dataset.grid_pixelization.subtracted_from(
+        return self.dataset.grids.pixelization.subtracted_from(
             offset=self.dataset_model.grid_offset
         )
 

@@ -109,7 +109,7 @@ class Interferometer(AbstractDataset):
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
         transformer_class=TransformerNUFFT,
-        over_sampling: Optional[OverSamplingDataset] = None,
+        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
     ):
         """
         Factory for loading the interferometer data_type from .fits files, as well as computing properties like the

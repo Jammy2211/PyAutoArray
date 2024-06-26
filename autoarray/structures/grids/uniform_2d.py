@@ -29,6 +29,7 @@ class Grid2D(Structure):
         mask: Mask2D,
         store_native: bool = False,
         over_sampling: Optional[AbstractOverSampling] = None,
+        over_sampling_non_uniform : Optional[AbstractOverSampling] = None,
         *args,
         **kwargs,
     ):
@@ -172,6 +173,7 @@ class Grid2D(Structure):
         grid_2d_util.check_grid_2d(grid_2d=values)
 
         self.over_sampling = over_sampling
+        self.over_sampling_non_uniform = over_sampling_non_uniform
 
     @classmethod
     def no_mask(

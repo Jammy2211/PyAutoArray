@@ -157,7 +157,7 @@ class ImagingPlotterMeta(Plotter):
         if over_sampling_non_uniform:
             if self.dataset.over_sampling.non_uniform is not None:
                 self.mat_plot_2d.plot_array(
-                    array=self.dataset.over_sampler_non_uniform.sub_size,
+                    array=self.dataset.grids.over_sampler_non_uniform.sub_size,
                     visuals_2d=self.get_visuals_2d(),
                     auto_labels=AutoLabels(
                         title=title_str or f"Over Sampling (Non Uniform)",
@@ -168,7 +168,7 @@ class ImagingPlotterMeta(Plotter):
 
         if over_sampling_pixelization:
             self.mat_plot_2d.plot_array(
-                array=self.dataset.over_sampler_pixelization.sub_size,
+                array=self.dataset.grids.over_sampler_pixelization.sub_size,
                 visuals_2d=self.get_visuals_2d(),
                 auto_labels=AutoLabels(
                     title=title_str or f"Over Sampling (Pixelization)",
