@@ -4,6 +4,7 @@ import numpy as np
 import warnings
 from typing import Optional, Union
 
+from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.structures.grids.uniform_1d import Grid1D
 from autoarray.structures.grids.uniform_2d import Grid2D
 
@@ -27,9 +28,7 @@ class AbstractDataset:
         data: Structure,
         noise_map: Structure,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
-        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[OverSamplingDataset] = None,
     ):
         """
         An abstract dataset, containing the image data, noise-map, PSF and associated quantities for calculations
@@ -71,22 +70,13 @@ class AbstractDataset:
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
         over_sampling
-            The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
-            (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
-            into each pixel.
-        over_sampling_non_uniform
-            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
-            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
-            over sampling schemes are not appropriate.
-        over_sampling_pixelization
-            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
-            passed into the calculations performed in the `inversion` module.
+            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
+            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
+            This class controls over sampling for all the different grids (e.g. `grid`, `grid_pixelization).
         """
 
         self.data = data
         self.over_sampling = over_sampling
-        self.over_sampling_non_uniform = over_sampling_non_uniform
-        self.over_sampling_pixelization = over_sampling_pixelization
 
         self.noise_covariance_matrix = noise_covariance_matrix
 
@@ -131,7 +121,7 @@ class AbstractDataset:
 
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=self.over_sampling,
+            over_sampling=self.over_sampling.uniform,
         )
 
     @cached_property
@@ -146,12 +136,12 @@ class AbstractDataset:
         The (y,x) coordinates of every pixel in the data structure.
         """
 
-        if self.over_sampling_non_uniform is None:
+        if self.over_sampling.non_uniform is None:
             return None
 
         return Grid2D.from_mask(
             mask=self.mask,
-            over_sampling=self.over_sampling_non_uniform,
+            over_sampling=self.over_sampling.non_uniform,
         )
 
     @cached_property
@@ -171,7 +161,7 @@ class AbstractDataset:
         The (y,x) coordinates of every pixel in the data structure, used for pixelization / inversion calculations.
         """
 
-        over_sampling = self.over_sampling_pixelization
+        over_sampling = self.over_sampling.pixelization
 
         if over_sampling is None:
             over_sampling = OverSamplingUniform(sub_size=4)
@@ -254,9 +244,7 @@ class AbstractDataset:
 
     def apply_over_sampling(
         self,
-        over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
-        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[OverSamplingDataset] = None,
     ) -> "AbstractDataset":
         """
         Apply new over sampling objects to the grid and grid pixelization of the dataset.
@@ -277,24 +265,20 @@ class AbstractDataset:
         Parameters
         ----------
         over_sampling
-            The new over sampling object to apply to the grid.
-        over_sampling_non_uniform
-            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
-            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
-            over sampling schemes are not appropriate.
-        over_sampling_pixelization
-            The new over sampling object to apply to the grid pixelization.
+            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
+            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
+            This class controls over sampling for all the different grids (e.g. `grid`, `grid_pixelization).
         """
 
-        if over_sampling is not None:
+        if over_sampling.uniform is not None:
             self.over_sampling = over_sampling
             try:
                 del self.__dict__["grid"]
             except KeyError:
                 pass
 
-        if over_sampling_non_uniform is not None:
-            self.over_sampling_non_uniform = over_sampling_non_uniform
+        if over_sampling.non_uniform is not None:
+            self.over_sampling.non_uniform = over_sampling.non_uniform
             try:
                 del self.__dict__["grid_non_uniform"]
             except KeyError:
@@ -304,8 +288,8 @@ class AbstractDataset:
             except KeyError:
                 pass
 
-        if over_sampling_pixelization is not None:
-            self.over_sampling_pixelization = over_sampling_pixelization
+        if over_sampling.pixelization is not None:
+            self.over_sampling.pixelization = over_sampling.pixelization
             try:
                 del self.__dict__["grid_pixelization"]
             except KeyError:

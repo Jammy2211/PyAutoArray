@@ -6,6 +6,7 @@ from autoconf import cached_property
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
+from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.operators.over_sampling.abstract import AbstractOverSampling
 from autoarray.structures.visibilities import Visibilities
@@ -24,9 +25,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask,
         transformer_class=TransformerNUFFT,
-        over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
-        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[OverSamplingDataset] = None,
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
@@ -79,15 +78,9 @@ class Interferometer(AbstractDataset):
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
         over_sampling
-            How over sampling is performed for the grid which performs calculations not associated with a pixelization.
-            In PyAutoGalaxy and PyAutoLens this is light profile calculations.
-        over_sampling_non_uniform
-            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
-            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
-            over sampling schemes are not appropriate.
-        over_sampling_pixelization
-            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
-            passed into the calculations performed in the `inversion` module.
+            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
+            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
+            This class controls over sampling for all the different grids (e.g. `grid`, `grid_pixelization).
         transformer_class
             The class of the Fourier Transform which maps images from real space to Fourier space visibilities and
             the uv-plane.
@@ -98,8 +91,6 @@ class Interferometer(AbstractDataset):
             data=data,
             noise_map=noise_map,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
-            over_sampling_pixelization=over_sampling_pixelization,
         )
 
         self.uv_wavelengths = uv_wavelengths
@@ -119,8 +110,7 @@ class Interferometer(AbstractDataset):
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
         transformer_class=TransformerNUFFT,
-        over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[OverSamplingDataset] = None,
     ):
         """
         Factory for loading the interferometer data_type from .fits files, as well as computing properties like the
@@ -147,7 +137,6 @@ class Interferometer(AbstractDataset):
             uv_wavelengths=uv_wavelengths,
             transformer_class=transformer_class,
             over_sampling=over_sampling,
-            over_sampling_pixelization=over_sampling_pixelization,
         )
 
     @cached_property

@@ -713,7 +713,7 @@ class Grid2D(Structure):
 
     @cached_property
     def over_sampler(self) -> AbstractOverSampler:
-        return self.over_sampling.over_sampler_from(mask=self.mask)
+        return self.over_sampling.uniform.over_sampler_from(mask=self.mask)
 
     @property
     def flipped(self) -> "Grid2D":

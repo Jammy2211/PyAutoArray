@@ -126,7 +126,7 @@ class ImagingPlotterMeta(Plotter):
             )
 
         if over_sampling:
-            if self.dataset.over_sampling is None:
+            if self.dataset.over_sampling.uniform is None:
                 from autoarray.operators.over_sampling.uniform import (
                     OverSamplingUniform,
                 )
@@ -140,7 +140,7 @@ class ImagingPlotterMeta(Plotter):
                 over_sampling = self.dataset.over_sampling
                 title = title_str or f"Over Sampling"
 
-            over_sampler = over_sampling.over_sampler_from(
+            over_sampler = over_sampling.uniform.over_sampler_from(
                 mask=self.dataset.mask,
             )
 
@@ -155,7 +155,7 @@ class ImagingPlotterMeta(Plotter):
             )
 
         if over_sampling_non_uniform:
-            if self.dataset.over_sampling_non_uniform is not None:
+            if self.dataset.over_sampling.non_uniform is not None:
                 self.mat_plot_2d.plot_array(
                     array=self.dataset.over_sampler_non_uniform.sub_size,
                     visuals_2d=self.get_visuals_2d(),

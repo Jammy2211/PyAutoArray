@@ -65,7 +65,9 @@ def test__grid__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        over_sampling=aa.OverSamplingUniform(sub_size=2),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=2)
+        ),
     )
 
     assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
@@ -75,7 +77,7 @@ def test__grid__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        over_sampling=aa.OverSamplingIterate(),
+        over_sampling=aa.OverSamplingDataset(uniform=aa.OverSamplingIterate()),
     )
 
     assert isinstance(masked_imaging_7x7.grid.over_sampling, aa.OverSamplingIterate)
@@ -95,7 +97,9 @@ def test__grid_pixelization__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        over_sampling_pixelization=aa.OverSamplingIterate(sub_steps=[2, 4]),
+        over_sampling=aa.OverSamplingDataset(
+            pixelization=aa.OverSamplingIterate(sub_steps=[2, 4])
+        ),
     )
 
     assert masked_imaging_7x7.grid_pixelization.over_sampling.sub_steps == [2, 4]
@@ -105,8 +109,10 @@ def test__grid_pixelization__uses_mask_and_settings(
     masked_imaging_7x7 = ds.AbstractDataset(
         data=masked_image_7x7,
         noise_map=masked_noise_map_7x7,
-        over_sampling=aa.OverSamplingUniform(sub_size=2),
-        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=4),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=2),
+            pixelization=aa.OverSamplingUniform(sub_size=4),
+        ),
     )
 
     assert isinstance(masked_imaging_7x7.grid_pixelization, aa.Grid2D)
@@ -117,8 +123,10 @@ def test__grid_settings__sub_size(image_7x7, noise_map_7x7):
     dataset_7x7 = ds.AbstractDataset(
         data=image_7x7,
         noise_map=noise_map_7x7,
-        over_sampling=aa.OverSamplingUniform(sub_size=2),
-        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=4),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=2),
+            pixelization=aa.OverSamplingUniform(sub_size=4),
+        ),
     )
 
     assert dataset_7x7.grid.over_sampling.sub_size == 2
@@ -147,8 +155,10 @@ def test__apply_over_sampling(image_7x7, noise_map_7x7):
     dataset_7x7 = ds.AbstractDataset(
         data=image_7x7,
         noise_map=noise_map_7x7,
-        over_sampling=aa.OverSamplingUniform(sub_size=2),
-        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=2),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=2),
+            pixelization=aa.OverSamplingUniform(sub_size=2),
+        ),
     )
 
     # The grid and grid_pixelizaiton are a cached_property which needs to be reset,
@@ -164,12 +174,14 @@ def test__apply_over_sampling(image_7x7, noise_map_7x7):
     assert dataset_7x7.grid_pixelization[0][0] == pytest.approx(100.0, 1.0e-4)
 
     dataset_7x7 = dataset_7x7.apply_over_sampling(
-        over_sampling=aa.OverSamplingUniform(sub_size=4),
-        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=4),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=4),
+            pixelization=aa.OverSamplingUniform(sub_size=4),
+        )
     )
 
-    assert dataset_7x7.over_sampling.sub_size == 4
-    assert dataset_7x7.over_sampling_pixelization.sub_size == 4
+    assert dataset_7x7.over_sampling.uniform.sub_size == 4
+    assert dataset_7x7.over_sampling.pixelization.sub_size == 4
 
     assert dataset_7x7.grid[0][0] == pytest.approx(3.0, 1.0e-4)
     assert dataset_7x7.grid_pixelization[0][0] == pytest.approx(3.0, 1.0e-4)

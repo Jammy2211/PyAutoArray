@@ -7,6 +7,7 @@ from autoconf import cached_property
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
+from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
 from autoarray.structures.grids.uniform_2d import Grid2D
@@ -28,9 +29,7 @@ class Imaging(AbstractDataset):
         noise_map: Optional[Array2D] = None,
         psf: Optional[Kernel2D] = None,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
-        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[OverSamplingDataset] = None,
         pad_for_convolver: bool = False,
         use_normalized_psf: Optional[bool] = True,
         check_noise_map: bool = True,
@@ -54,14 +53,18 @@ class Imaging(AbstractDataset):
 
         Datasets also contains following properties:
 
-        - `grid`: A grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
-        the centre of an image pixel. This may be used in fits to calculate the model image of the imaging data.
+        - `grid`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data.
 
-        - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
-        is specifically used for pixelizations computed via the `invserion` module, which often use different
-        oversampling and sub-size values to the grid above.
+        - `grid_pixelization`: A grid of (y,x) coordinates which again align with the centre of every image pixel of
+        the image data. This grid is used specifically for pixelizations computed via the `inversion` module, which
+        can benefit from using different oversampling schemes than the normal grid.
 
-        The `over_sampling` and `over_sampling_pixelization` define how over sampling is performed for these grids.
+        - `grid_non_uniform`: A grid of (y,x) coordinates which are mapped from the image pixel centres but have had
+        their values deflected to become non-uniform. This is used to compute over sampled light profiles of lensed
+        sources in PyAutoLens.
+
+        The `over_sampling` class defines how over sampling is performed for these grids and is described in the
+        corresponding `over_sampling.py` module.
 
         This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
         It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
@@ -81,16 +84,9 @@ class Imaging(AbstractDataset):
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
         over_sampling
-            The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
-            (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
-            into each pixel.
-        over_sampling_non_uniform
-            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
-            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
-            over sampling schemes are not appropriate.
-        over_sampling_pixelization
-            How over sampling is performed for the grid which is associated with a pixelization, which is therefore
-            passed into the calculations performed in the `inversion` module.
+            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
+            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
+            This class controls over sampling for all the different grids (e.g. `grid`, `grid_pixelization).
         pad_for_convolver
             The PSF convolution may extend beyond the edges of the image mask, which can lead to edge effects in the
             convolved image. If `True`, the image and noise-map are padded to ensure the PSF convolution does not
@@ -133,8 +129,6 @@ class Imaging(AbstractDataset):
             noise_map=noise_map,
             noise_covariance_matrix=noise_covariance_matrix,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
-            over_sampling_pixelization=over_sampling_pixelization,
         )
 
         self.use_normalized_psf = use_normalized_psf
@@ -248,8 +242,7 @@ class Imaging(AbstractDataset):
         psf_path: Optional[Union[Path, str]] = None,
         psf_hdu: int = 0,
         noise_covariance_matrix: Optional[np.ndarray] = None,
-        over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_pixelization: Optional[AbstractOverSampling] = None,
+        over_sampling: Optional[OverSamplingDataset] = None,
     ) -> "Imaging":
         """
         Load an imaging dataset from multiple .fits file.
@@ -286,6 +279,10 @@ class Imaging(AbstractDataset):
             The hdu the noise map is contained in the .fits file specified by `noise_map_path`.
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value.
+        over_sampling
+            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
+            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
+            This class controls over sampling for all the different grids (e.g. `grid`, `grid_pixelization).
         """
 
         data = Array2D.from_fits(
@@ -313,7 +310,6 @@ class Imaging(AbstractDataset):
             psf=psf,
             noise_covariance_matrix=noise_covariance_matrix,
             over_sampling=over_sampling,
-            over_sampling_pixelization=over_sampling_pixelization,
         )
 
     def apply_mask(self, mask: Mask2D) -> "Imaging":
@@ -358,7 +354,6 @@ class Imaging(AbstractDataset):
             psf=self.psf,
             noise_covariance_matrix=noise_covariance_matrix,
             over_sampling=self.over_sampling,
-            over_sampling_pixelization=self.over_sampling_pixelization,
             pad_for_convolver=True,
         )
 
