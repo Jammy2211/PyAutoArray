@@ -72,7 +72,6 @@ class AbstractDataset:
         """
 
         self.data = data
-        self.over_sampling = over_sampling
 
         self.noise_covariance_matrix = noise_covariance_matrix
 
@@ -104,6 +103,10 @@ class AbstractDataset:
         self.noise_map = noise_map
 
         self.grids = GridsDataset(mask=data.mask, over_sampling=over_sampling)
+
+    @property
+    def over_sampling(self):
+        return self.grids.over_sampling
 
     @property
     def shape_native(self):
@@ -190,37 +193,25 @@ class AbstractDataset:
             This class controls over sampling for all the different grids (e.g. `grid`, `grid_pixelization).
         """
 
-        if over_sampling.uniform is not None:
-            self.over_sampling = over_sampling
-            try:
-                del self.__dict__["grid"]
-            except KeyError:
-                pass
-
-        if over_sampling.non_uniform is not None:
-            self.over_sampling.non_uniform = over_sampling.non_uniform
-            try:
-                del self.__dict__["grid_non_uniform"]
-            except KeyError:
-                pass
-            try:
-                del self.__dict__["over_sampler_non_uniform"]
-            except KeyError:
-                pass
+        uniform = over_sampling.uniform or self.over_sampling.uniform
+        non_uniform = over_sampling.non_uniform or self.over_sampling.non_uniform
+        pixelization = over_sampling.pixelization or self.over_sampling.pixelization
 
         if over_sampling.pixelization is not None:
-            self.over_sampling.pixelization = over_sampling.pixelization
-            try:
-                del self.__dict__["grid_pixelization"]
-            except KeyError:
-                pass
-            try:
-                del self.__dict__["over_sampler_pixelization"]
-            except KeyError:
-                pass
+
             try:
                 del self.__dict__["border_relocator"]
             except KeyError:
                 pass
+
+        over_sampling = OverSamplingDataset(
+            uniform=uniform,
+            non_uniform=non_uniform,
+            pixelization=pixelization,
+        )
+
+        self.grids = GridsDataset(
+            mask=self.mask, over_sampling=over_sampling
+        )
 
         return self
