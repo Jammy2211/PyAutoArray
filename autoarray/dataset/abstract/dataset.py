@@ -132,8 +132,26 @@ class AbstractDataset:
         return Grid2D.from_mask(
             mask=self.mask,
             over_sampling=self.over_sampling,
-            over_sampling_non_uniform=self.over_sampling_non_uniform
-            or OverSamplingUniform(sub_size=1),
+        )
+
+    @cached_property
+    def grid_non_uniform(self) -> Optional[Union[Grid1D, Grid2D]]:
+        """
+        Returns the grid of (y,x) Cartesian coordinates of every pixel in the masked data structure.
+
+        This grid is computed based on the mask, in particular its pixel-scale and sub-grid size.
+
+        Returns
+        -------
+        The (y,x) coordinates of every pixel in the data structure.
+        """
+
+        if self.over_sampling_non_uniform is None:
+            return None
+
+        return Grid2D.from_mask(
+            mask=self.mask,
+            over_sampling=self.over_sampling_non_uniform,
         )
 
     @cached_property
@@ -165,7 +183,7 @@ class AbstractDataset:
 
     @cached_property
     def over_sampler_non_uniform(self):
-        return self.grid.over_sampling_non_uniform.over_sampler_from(mask=self.mask)
+        return self.grid_non_uniform.over_sampling.over_sampler_from(mask=self.mask)
 
     @cached_property
     def over_sampler_pixelization(self):
@@ -278,7 +296,7 @@ class AbstractDataset:
         if over_sampling_non_uniform is not None:
             self.over_sampling_non_uniform = over_sampling_non_uniform
             try:
-                del self.__dict__["grid"]
+                del self.__dict__["grid_non_uniform"]
             except KeyError:
                 pass
             try:
