@@ -258,9 +258,5 @@ class Interferometer(AbstractDataset):
             )
 
     @property
-    def blurring_grid(self):
-        return None
-
-    @property
     def convolver(self):
         return None

@@ -29,7 +29,7 @@ class Grid2D(Structure):
         mask: Mask2D,
         store_native: bool = False,
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform : Optional[AbstractOverSampling] = None,
+        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
         *args,
         **kwargs,
     ):

@@ -198,7 +198,6 @@ class AbstractDataset:
         pixelization = over_sampling.pixelization or self.over_sampling.pixelization
 
         if over_sampling.pixelization is not None:
-
             try:
                 del self.__dict__["border_relocator"]
             except KeyError:
@@ -210,8 +209,6 @@ class AbstractDataset:
             pixelization=pixelization,
         )
 
-        self.grids = GridsDataset(
-            mask=self.mask, over_sampling=over_sampling
-        )
+        self.grids = GridsDataset(mask=self.mask, over_sampling=over_sampling)
 
         return self

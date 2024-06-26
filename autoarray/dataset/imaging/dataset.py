@@ -154,27 +154,6 @@ class Imaging(AbstractDataset):
         self.psf = psf
 
     @cached_property
-    def blurring_grid(self) -> Grid2D:
-        """
-        Returns a blurring-grid from a mask and the 2D shape of the PSF kernel.
-
-        A blurring grid consists of all pixels that are masked (and therefore have their values set to (0.0, 0.0)),
-        but are close enough to the unmasked pixels that their values will be convolved into the unmasked those pixels.
-        This when computing images from light profile objects.
-
-        This uses lazy allocation such that the calculation is only performed when the blurring grid is used, ensuring
-        efficient set up of the `Imaging` class.
-
-        Returns
-        -------
-        The blurring grid given the mask of the imaging data.
-        """
-
-        return self.grid.blurring_grid_via_kernel_shape_from(
-            kernel_shape_native=self.psf.shape_native,
-        )
-
-    @cached_property
     def convolver(self):
         """
         Returns a `Convolver` from a mask and 2D PSF kernel.

@@ -8,11 +8,8 @@ from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 from autoconf import cached_property
 
 
-
 class GridsDataset:
-
     def __init__(self, mask, over_sampling):
-
         self.mask = mask
         self.over_sampling = over_sampling
 
@@ -78,6 +75,27 @@ class GridsDataset:
         return Grid2D.from_mask(
             mask=self.mask,
             over_sampling=over_sampling,
+        )
+
+    @cached_property
+    def blurring(self) -> Grid2D:
+        """
+        Returns a blurring-grid from a mask and the 2D shape of the PSF kernel.
+
+        A blurring grid consists of all pixels that are masked (and therefore have their values set to (0.0, 0.0)),
+        but are close enough to the unmasked pixels that their values will be convolved into the unmasked those pixels.
+        This when computing images from light profile objects.
+
+        This uses lazy allocation such that the calculation is only performed when the blurring grid is used, ensuring
+        efficient set up of the `Imaging` class.
+
+        Returns
+        -------
+        The blurring grid given the mask of the imaging data.
+        """
+
+        return self.grid.blurring_grid_via_kernel_shape_from(
+            kernel_shape_native=self.psf.shape_native,
         )
 
     @cached_property

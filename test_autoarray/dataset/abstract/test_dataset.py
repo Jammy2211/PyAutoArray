@@ -80,7 +80,9 @@ def test__grid__uses_mask_and_settings(
         over_sampling=aa.OverSamplingDataset(uniform=aa.OverSamplingIterate()),
     )
 
-    assert isinstance(masked_imaging_7x7.grids.uniform.over_sampling, aa.OverSamplingIterate)
+    assert isinstance(
+        masked_imaging_7x7.grids.uniform.over_sampling, aa.OverSamplingIterate
+    )
     assert (masked_imaging_7x7.grids.uniform == grid_2d_7x7).all()
 
 
