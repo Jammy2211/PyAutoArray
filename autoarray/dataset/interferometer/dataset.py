@@ -8,7 +8,6 @@ from autoarray.dataset.abstract.dataset import AbstractDataset
 from autoarray.dataset.interferometer.w_tilde import WTildeInterferometer
 from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.operators.over_sampling.abstract import AbstractOverSampling
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.visibilities import VisibilitiesNoiseMap
 
@@ -25,7 +24,7 @@ class Interferometer(AbstractDataset):
         uv_wavelengths: np.ndarray,
         real_space_mask,
         transformer_class=TransformerNUFFT,
-        over_sampling: Optional[OverSamplingDataset] = None,
+        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
     ):
         """
         An interferometer dataset, containing the visibilities data, noise-map, real-space msk, Fourier transformer and
