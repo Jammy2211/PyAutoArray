@@ -6,6 +6,7 @@ from typing import Optional, Union
 from autoconf import cached_property
 
 from autoarray.dataset.abstract.dataset import AbstractDataset
+from autoarray.dataset.grids import GridsDataset
 from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.structures.arrays.uniform_2d import Array2D
@@ -152,6 +153,8 @@ class Imaging(AbstractDataset):
             )
 
         self.psf = psf
+
+        self.grids = GridsDataset(mask=data.mask, over_sampling=over_sampling, psf=self.psf)
 
     @cached_property
     def convolver(self):

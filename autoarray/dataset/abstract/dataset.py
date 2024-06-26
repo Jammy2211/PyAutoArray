@@ -197,12 +197,6 @@ class AbstractDataset:
         non_uniform = over_sampling.non_uniform or self.over_sampling.non_uniform
         pixelization = over_sampling.pixelization or self.over_sampling.pixelization
 
-        if over_sampling.pixelization is not None:
-            try:
-                del self.__dict__["border_relocator"]
-            except KeyError:
-                pass
-
         over_sampling = OverSamplingDataset(
             uniform=uniform,
             non_uniform=non_uniform,

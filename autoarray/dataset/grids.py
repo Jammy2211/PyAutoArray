@@ -9,9 +9,10 @@ from autoconf import cached_property
 
 
 class GridsDataset:
-    def __init__(self, mask, over_sampling):
+    def __init__(self, mask, over_sampling, psf = None):
         self.mask = mask
         self.over_sampling = over_sampling
+        self.psf = psf
 
     @cached_property
     def uniform(self) -> Union[Grid1D, Grid2D]:
@@ -94,7 +95,7 @@ class GridsDataset:
         The blurring grid given the mask of the imaging data.
         """
 
-        return self.grid.blurring_grid_via_kernel_shape_from(
+        return self.uniform.blurring_grid_via_kernel_shape_from(
             kernel_shape_native=self.psf.shape_native,
         )
 

@@ -153,22 +153,11 @@ class FitDataset(AbstractFitInversion):
         return self.dataset.mask
 
     @property
-    def grid(self) -> ty.Grid2DLike:
-        return self.dataset.grids.uniform.subtracted_from(
-            offset=self.dataset_model.grid_offset
-        )
-
-    @property
-    def grid_pixelization(self) -> ty.Grid2DLike:
-        return self.dataset.grids.pixelization.subtracted_from(
-            offset=self.dataset_model.grid_offset
-        )
-
-    @property
-    def blurring_grid(self) -> ty.Grid2DLike:
-        return self.dataset.grids.blurring.subtracted_from(
-            offset=self.dataset_model.grid_offset
-        )
+    def grids(self) -> ty.Grid2DLike:
+        return self.dataset.grids
+        # return self.dataset.grids.uniform.subtracted_from(
+        #     offset=self.dataset_model.grid_offset
+        # )
 
     @property
     def data(self) -> ty.DataLike:
