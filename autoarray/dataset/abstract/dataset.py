@@ -119,6 +119,9 @@ class AbstractDataset:
     def mask(self) -> Union[Mask1D, Mask2D]:
         return self.data.mask
 
+    def apply_over_sampling(self):
+        raise NotImplementedError
+
     @property
     def signal_to_noise_map(self) -> Structure:
         """

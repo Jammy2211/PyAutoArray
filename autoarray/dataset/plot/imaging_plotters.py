@@ -139,7 +139,7 @@ class ImagingPlotterMeta(Plotter):
                 title = title_str or f"Over Sampling (Adaptive)"
 
             else:
-                over_sampling = self.dataset.over_sampling
+                over_sampling = self.dataset.over_sampling.uniform
                 title = title_str or f"Over Sampling"
 
             over_sampler = over_sampling.over_sampler_from(
