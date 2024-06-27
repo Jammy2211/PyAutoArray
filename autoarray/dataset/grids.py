@@ -9,7 +9,7 @@ from autoconf import cached_property
 
 
 class GridsDataset:
-    def __init__(self, mask, over_sampling, psf = None):
+    def __init__(self, mask, over_sampling, psf=None):
         self.mask = mask
         self.over_sampling = over_sampling
         self.psf = psf
@@ -79,7 +79,7 @@ class GridsDataset:
         )
 
     @cached_property
-    def blurring(self) -> Grid2D:
+    def blurring(self) -> Optional[Grid2D]:
         """
         Returns a blurring-grid from a mask and the 2D shape of the PSF kernel.
 
@@ -94,6 +94,9 @@ class GridsDataset:
         -------
         The blurring grid given the mask of the imaging data.
         """
+
+        if self.psf is None:
+            return None
 
         return self.uniform.blurring_grid_via_kernel_shape_from(
             kernel_shape_native=self.psf.shape_native,
@@ -112,3 +115,19 @@ class GridsDataset:
         return BorderRelocator(
             mask=self.mask, sub_size=self.pixelization.over_sampling.sub_size
         )
+
+
+class GridsInterface:
+    def __init__(
+        self,
+        uniform=None,
+        non_uniform=None,
+        pixelization=None,
+        blurring=None,
+        border_relocator=None,
+    ):
+        self.uniform = uniform
+        self.non_uniform = non_uniform
+        self.pixelization = pixelization
+        self.blurring = blurring
+        self.border_relocator = border_relocator

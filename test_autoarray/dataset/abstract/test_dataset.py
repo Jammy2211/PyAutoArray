@@ -154,7 +154,7 @@ def test__new_imaging_with_arrays_trimmed_via_kernel_shape():
 
 
 def test__apply_over_sampling(image_7x7, noise_map_7x7):
-    dataset_7x7 = ds.AbstractDataset(
+    dataset_7x7 = aa.Imaging(
         data=image_7x7,
         noise_map=noise_map_7x7,
         over_sampling=aa.OverSamplingDataset(

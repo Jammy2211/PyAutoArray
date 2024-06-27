@@ -5,6 +5,7 @@ from typing import Dict, Optional
 
 import numpy as np
 
+from autoarray.dataset.grids import GridsInterface
 from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
@@ -153,11 +154,32 @@ class FitDataset(AbstractFitInversion):
         return self.dataset.mask
 
     @property
-    def grids(self) -> ty.Grid2DLike:
-        return self.dataset.grids
-        # return self.dataset.grids.uniform.subtracted_from(
-        #     offset=self.dataset_model.grid_offset
-        # )
+    def grids(self) -> GridsInterface:
+        def subtracted_from(grid, offset):
+            if grid is None:
+                return None
+
+            return grid.subtracted_from(offset=offset)
+
+        uniform = subtracted_from(
+            grid=self.dataset.grids.uniform, offset=self.dataset_model.grid_offset
+        )
+        non_uniform = subtracted_from(
+            grid=self.dataset.grids.non_uniform, offset=self.dataset_model.grid_offset
+        )
+        pixelization = subtracted_from(
+            grid=self.dataset.grids.pixelization, offset=self.dataset_model.grid_offset
+        )
+        blurring = subtracted_from(
+            grid=self.dataset.grids.blurring, offset=self.dataset_model.grid_offset
+        )
+
+        return GridsInterface(
+            uniform=uniform,
+            non_uniform=non_uniform,
+            pixelization=pixelization,
+            blurring=blurring,
+        )
 
     @property
     def data(self) -> ty.DataLike:

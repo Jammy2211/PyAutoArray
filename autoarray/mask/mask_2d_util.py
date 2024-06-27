@@ -1,10 +1,9 @@
 import numpy as np
-from typing import Tuple, Union
+from typing import Tuple
 import warnings
 
 from autoarray import exc
 from autoarray import numba_util
-from autoarray.structures.grids import grid_2d_util
 from autoarray import type as ty
 
 

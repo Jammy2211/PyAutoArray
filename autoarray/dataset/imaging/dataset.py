@@ -154,7 +154,11 @@ class Imaging(AbstractDataset):
 
         self.psf = psf
 
-        self.grids = GridsDataset(mask=data.mask, over_sampling=over_sampling, psf=self.psf)
+    @cached_property
+    def grids(self):
+        return GridsDataset(
+            mask=self.data.mask, over_sampling=self.over_sampling, psf=self.psf
+        )
 
     @cached_property
     def convolver(self):
@@ -345,6 +349,52 @@ class Imaging(AbstractDataset):
         )
 
         return dataset
+
+    def apply_over_sampling(
+        self,
+        over_sampling: Optional[OverSamplingDataset] = OverSamplingDataset(),
+    ) -> "AbstractDataset":
+        """
+        Apply new over sampling objects to the grid and grid pixelization of the dataset.
+
+        This method is used to change the over sampling of the grid and grid pixelization, for example when the
+        user wishes to perform over sampling with a higher sub grid size or with an iterative over sampling strategy.
+
+        The `grid` and grid_pixelization` are cached properties which after use are stored in memory for efficiency.
+        This function resets the cached properties so that the new over sampling is used in the grid and grid
+        pixelization.
+
+        The `default_galaxy_mode` parameter is used to set up default over sampling for galaxy light profiles in
+        the project PyAutoGalaxy. This sets up the over sampling such that there is high over sampling in the centre
+        of the mask, where the galaxy is located, and lower over sampling in the outer regions of the mask. It
+        does this based on the pixel scale, which gives a good estimate of how large the central region
+        requiring over sampling is.
+
+        Parameters
+        ----------
+        over_sampling
+            The over sampling schemes which divide the grids into sub grids of smaller pixels within their host image
+            pixels when using the grid to evaluate a function (e.g. images) to better approximate the 2D line integral
+            This class controls over sampling for all the different grids (e.g. `grid`, `grid_pixelization).
+        """
+
+        uniform = over_sampling.uniform or self.over_sampling.uniform
+        non_uniform = over_sampling.non_uniform or self.over_sampling.non_uniform
+        pixelization = over_sampling.pixelization or self.over_sampling.pixelization
+
+        over_sampling = OverSamplingDataset(
+            uniform=uniform,
+            non_uniform=non_uniform,
+            pixelization=pixelization,
+        )
+
+        return Imaging(
+            data=self.data,
+            noise_map=self.noise_map,
+            psf=self.psf,
+            over_sampling=over_sampling,
+            pad_for_convolver=True,
+        )
 
     def output_to_fits(
         self,
