@@ -8,12 +8,14 @@ from .preloads import Preloads
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.abstract.w_tilde import AbstractWTilde
+from .dataset.grids import GridsInterface
 from .dataset.imaging.dataset import Imaging
 from .dataset.imaging.simulator import SimulatorImaging
 from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
+from .dataset.over_sampling import OverSamplingDataset
 from .dataset.dataset_model import DatasetModel
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging

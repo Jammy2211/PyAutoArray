@@ -74,5 +74,5 @@ def test__grid_offset_via_data_model(masked_imaging_7x7, model_image_7x7):
 
     assert fit.dataset_model.grid_offset == (1.0, 2.0)
 
-    assert fit.grid[0] == pytest.approx((0.0, -3.0), 1.0e-4)
-    assert fit.grid_pixelization[0] == pytest.approx((0.0, -3.0), 1.0e-4)
+    assert fit.grids.uniform[0] == pytest.approx((0.0, -3.0), 1.0e-4)
+    assert fit.grids.pixelization[0] == pytest.approx((0.0, -3.0), 1.0e-4)

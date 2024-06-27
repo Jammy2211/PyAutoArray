@@ -3,13 +3,10 @@ class DatasetInterface:
         self,
         data,
         noise_map,
-        border_relocator=None,
+        grids=None,
         convolver=None,
         transformer=None,
         w_tilde=None,
-        grid=None,
-        grid_pixelization=None,
-        blurring_grid=None,
         noise_covariance_matrix=None,
     ):
         """
@@ -52,33 +49,21 @@ class DatasetInterface:
         w_tilde
             The w_tilde matrix used by the w-tilde formalism to construct the data vector and
             curvature matrix during an inversion efficiently..
-        grid
-            The grid of (y,x) Cartesian coordinates that the image data is paired with, which is used for calculations
-            not associated with a pixelization (e.g. linear func objects which in PyAutoGalaxy and PyAutooLens represent
-            linear light profiles).
-        grid_pixelization
-            The grid of (y,x) Cartesian coordinates that the image data is paired with, which is used for calculations
-            associated with a pixelization.
-        blurring_grid
-            The grid of (y,x) Cartesian coordinates of every pixel in the image data which is outside the masked
-            region fitted but that is close enough to the masked region that its light is blurred into the mask
-            after PSF convolution. The blurring grid is used for linear func calculations and not pixelization
-            calculations.
+        grids
+            The grids of (y,x) Cartesian coordinates that the image data is paired with, which are used for evaluting
+            light profiles and calculations associated with a pixelization.
         noise_covariance_matrix
             A noise-map covariance matrix representing the covariance between noise in every `data` value, which
             can be used via a bespoke fit to account for correlated noise in the data.
         """
         self.data = data
         self.noise_map = noise_map
-        self.border_relocator = border_relocator
+        self.grids = grids
         self.convolver = convolver
         self.transformer = transformer
         self.w_tilde = w_tilde
-        self.grid = grid
-        self.grid_pixelization = grid_pixelization
-        self.blurring_grid = blurring_grid
         self.noise_covariance_matrix = noise_covariance_matrix
 
     @property
     def mask(self):
-        return self.grid.mask
+        return self.grids.uniform.mask

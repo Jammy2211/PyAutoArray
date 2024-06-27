@@ -5,6 +5,9 @@ from typing import Dict, Optional
 
 import numpy as np
 
+from autoconf import cached_property
+
+from autoarray.dataset.grids import GridsInterface
 from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.fit import fit_util
 from autoarray.inversion.inversion.abstract import AbstractInversion
@@ -152,20 +155,44 @@ class FitDataset(AbstractFitInversion):
     def mask(self) -> Mask2D:
         return self.dataset.mask
 
-    @property
-    def grid(self) -> ty.Grid2DLike:
-        return self.dataset.grid.subtracted_from(offset=self.dataset_model.grid_offset)
+    @cached_property
+    def grids(self) -> GridsInterface:
+        offset = self.dataset_model.grid_offset
 
-    @property
-    def grid_pixelization(self) -> ty.Grid2DLike:
-        return self.dataset.grid_pixelization.subtracted_from(
-            offset=self.dataset_model.grid_offset
+        if offset[0] == 0.0 and offset[1] == 0.0:
+            return GridsInterface(
+                uniform=self.dataset.grids.uniform,
+                non_uniform=self.dataset.grids.non_uniform,
+                pixelization=self.dataset.grids.pixelization,
+                blurring=self.dataset.grids.blurring,
+                border_relocator=self.dataset.grids.border_relocator,
+            )
+
+        def subtracted_from(grid, offset):
+            if grid is None:
+                return None
+
+            return grid.subtracted_from(offset=offset)
+
+        uniform = subtracted_from(
+            grid=self.dataset.grids.uniform, offset=self.dataset_model.grid_offset
+        )
+        non_uniform = subtracted_from(
+            grid=self.dataset.grids.non_uniform, offset=self.dataset_model.grid_offset
+        )
+        pixelization = subtracted_from(
+            grid=self.dataset.grids.pixelization, offset=self.dataset_model.grid_offset
+        )
+        blurring = subtracted_from(
+            grid=self.dataset.grids.blurring, offset=self.dataset_model.grid_offset
         )
 
-    @property
-    def blurring_grid(self) -> ty.Grid2DLike:
-        return self.dataset.blurring_grid.subtracted_from(
-            offset=self.dataset_model.grid_offset
+        return GridsInterface(
+            uniform=uniform,
+            non_uniform=non_uniform,
+            pixelization=pixelization,
+            blurring=blurring,
+            border_relocator=self.dataset.grids.border_relocator,
         )
 
     @property
