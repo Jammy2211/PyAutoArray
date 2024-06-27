@@ -5,6 +5,8 @@ from typing import Dict, Optional
 
 import numpy as np
 
+from autoconf import cached_property
+
 from autoarray.dataset.grids import GridsInterface
 from autoarray.dataset.dataset_model import DatasetModel
 from autoarray.fit import fit_util
@@ -153,8 +155,19 @@ class FitDataset(AbstractFitInversion):
     def mask(self) -> Mask2D:
         return self.dataset.mask
 
-    @property
+    @cached_property
     def grids(self) -> GridsInterface:
+        offset = self.dataset_model.grid_offset
+
+        if offset[0] == 0.0 and offset[1] == 0.0:
+            return GridsInterface(
+                uniform=self.dataset.grids.uniform,
+                non_uniform=self.dataset.grids.non_uniform,
+                pixelization=self.dataset.grids.pixelization,
+                blurring=self.dataset.grids.blurring,
+                border_relocator=self.dataset.grids.border_relocator,
+            )
+
         def subtracted_from(grid, offset):
             if grid is None:
                 return None
@@ -179,6 +192,7 @@ class FitDataset(AbstractFitInversion):
             non_uniform=non_uniform,
             pixelization=pixelization,
             blurring=blurring,
+            border_relocator=self.dataset.grids.border_relocator,
         )
 
     @property

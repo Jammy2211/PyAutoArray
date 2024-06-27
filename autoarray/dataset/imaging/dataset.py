@@ -11,7 +11,6 @@ from autoarray.dataset.imaging.w_tilde import WTildeImaging
 from autoarray.dataset.over_sampling import OverSamplingDataset
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.operators.convolver import Convolver
-from autoarray.structures.grids.uniform_2d import Grid2D
 from autoarray.structures.arrays.kernel_2d import Kernel2D
 from autoarray.mask.mask_2d import Mask2D
 from autoarray import type as ty
@@ -51,23 +50,10 @@ class Imaging(AbstractDataset):
         - `psf`: The Point Spread Function of the data, used to perform 2D convolution on images to produce a model
         image which is compared to the data.
 
-        Datasets also contains following properties:
-
-        - `grid`: A grids of (y,x) coordinates which aligns with the centre of every image pixel of the image data.
-
-        - `grid_pixelization`: A grid of (y,x) coordinates which again align with the centre of every image pixel of
-        the image data. This grid is used specifically for pixelizations computed via the `inversion` module, which
-        can benefit from using different oversampling schemes than the normal grid.
-
-        - `grid_non_uniform`: A grid of (y,x) coordinates which are mapped from the image pixel centres but have had
-        their values deflected to become non-uniform. This is used to compute over sampled light profiles of lensed
-        sources in PyAutoLens.
-
-        The `over_sampling` class defines how over sampling is performed for these grids and is described in the
-        corresponding `over_sampling.py` module.
-
-        This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
-        It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
+        The dataset also has a number of (y,x) grids of coordinates associated with it, which map to the centres
+        of its image pixels. They are used for performing calculations which map directly to the data and have
+        over sampling calculations built in which approximate the 2D line integral of these calculations within a
+        pixel. This is explained in more detail in the `GridsDataset` class.
 
         Parameters
         ----------

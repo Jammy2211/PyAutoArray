@@ -47,19 +47,10 @@ class Interferometer(AbstractDataset):
         `real_space_mask`: Defines in real space where the signal is present. This mask is used to transform images to
         Fourier space via the Fourier transform. The grids contained in the settings are aligned with this mask.
 
-        Datasets also contains following properties:
-
-        - `grid`: A grids of (y,x) coordinates which align with the image pixels, whereby each coordinate corresponds to
-        the centre of an image pixel. This may be used in fits to calculate the model image of the imaging data.
-
-        - `grid_pixelization`: A grid of (y,x) coordinates which align with the pixels of a pixelization. This grid
-        is specifically used for pixelizations computed via the `invserion` module, which often use different
-        oversampling and sub-size values to the grid above.
-
-        The `over_sampling` and `over_sampling_pixelization` define how over sampling is performed for these grids.
-
-        This is used in the project PyAutoGalaxy to load imaging data of a galaxy and fit it with galaxy light profiles.
-        It is used in PyAutoLens to load imaging data of a strong lens and fit it with a lens model.
+        The dataset also has a number of (y,x) grids of coordinates associated with it, which map to the centres
+        of its image pixels. They are used for performing calculations which map directly to the data and have
+        over sampling calculations built in which approximate the 2D line integral of these calculations within a
+        pixel. This is explained in more detail in the `GridsDataset` class.
 
         Parameters
         ----------

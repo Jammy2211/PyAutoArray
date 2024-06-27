@@ -132,7 +132,9 @@ class ImagingPlotterMeta(Plotter):
                 )
 
                 over_sampling = OverSamplingUniform.from_adaptive_scheme(
-                    grid=self.dataset.grid, name="PlotExample", centre=(0.0, 0.0)
+                    grid=self.dataset.grids.uniform,
+                    name="PlotExample",
+                    centre=(0.0, 0.0),
                 )
                 title = title_str or f"Over Sampling (Adaptive)"
 
@@ -140,7 +142,7 @@ class ImagingPlotterMeta(Plotter):
                 over_sampling = self.dataset.over_sampling
                 title = title_str or f"Over Sampling"
 
-            over_sampler = over_sampling.uniform.over_sampler_from(
+            over_sampler = over_sampling.over_sampler_from(
                 mask=self.dataset.mask,
             )
 
