@@ -95,6 +95,10 @@ class AbstractDataset:
 
         self.over_sampling = over_sampling
 
+    @property
+    def grid(self):
+        return self.grids.uniform
+
     @cached_property
     def grids(self):
         return GridsDataset(mask=self.data.mask, over_sampling=self.over_sampling)
