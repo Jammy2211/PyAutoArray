@@ -319,20 +319,20 @@ class Convolver:
 
     def jax_convolve(self, image, blurring_image, method='auto'):
         slim_to_2D_index_image = jnp.nonzero(
-            np.logical_not(self.mask.array),
+            jnp.logical_not(self.mask.array),
             size=image.shape[0]
         )
         slim_to_2D_index_blurring = jnp.nonzero(
-            np.logical_not(self.blurring_mask),
+            jnp.logical_not(self.blurring_mask),
             size=blurring_image.shape[0]
         )
         expanded_image_native = jnp.zeros(self.mask.shape)
         expanded_image_native = expanded_image_native.at[
             slim_to_2D_index_image
-        ].set(image)
+        ].set(image.array)
         expanded_image_native = expanded_image_native.at[
             slim_to_2D_index_blurring
-        ].set(blurring_image)
+        ].set(blurring_image.array)
         kernel = np.array(self.kernel.native.array)
         convolve_native = jax.scipy.signal.convolve(
             expanded_image_native,
