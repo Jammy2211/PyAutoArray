@@ -6,6 +6,14 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray import exc
 from autoarray.mask import mask_2d_util
 
+from os import environ
+
+use_jax = environ.get("USE_JAX", "0") == "1"
+
+if use_jax:
+    import jax
+    import jax.numpy as jnp
+
 
 class Convolver:
     def __init__(self, mask, kernel):
@@ -309,7 +317,33 @@ class Convolver:
 
         return frame, kernel_frame
 
-    def convolve_image(self, image, blurring_image):
+    def jax_convolve(self, image, blurring_image, method='auto'):
+        slim_to_2D_index_image = jnp.nonzero(
+            np.logical_not(self.mask.array),
+            size=image.shape[0]
+        )
+        slim_to_2D_index_blurring = jnp.nonzero(
+            np.logical_not(self.blurring_mask),
+            size=blurring_image.shape[0]
+        )
+        expanded_image_native = jnp.zeros(self.mask.shape)
+        expanded_image_native = expanded_image_native.at[
+            slim_to_2D_index_image
+        ].set(image)
+        expanded_image_native = expanded_image_native.at[
+            slim_to_2D_index_blurring
+        ].set(blurring_image)
+        kernel = np.array(self.kernel.native.array)
+        convolve_native = jax.scipy.signal.convolve(
+            expanded_image_native,
+            kernel,
+            mode='same',
+            method=method
+        )
+        convolve_slim = convolve_native[slim_to_2D_index_image]
+        return convolve_slim
+
+    def convolve_image(self, image, blurring_image, jax_method='fft'):
         """
         For a given 1D array and blurring array, convolve the two using this convolver.
 
@@ -319,26 +353,49 @@ class Convolver:
             1D array of the values which are to be blurred with the convolver's PSF.
         blurring_image
             1D array of the blurring values which blur into the array after PSF convolution.
+        jax_method
+            If JAX is enabled this keyword will indicate what method is used for the PSF
+            convolution. Can be either `direct` to calculate it in real space or `fft`
+            to calculated it via a fast Fourier transform. `fft` is typically faster for
+            kernels that are more than about 5x5. Default is `fft`.
         """
 
-        if self.blurring_mask is None:
+        def exception_message():
             raise exc.KernelException(
                 "You cannot use the convolve_image function of a Convolver if the Convolver was"
                 "not created with a blurring_mask."
             )
 
-        convolved_image = self.convolve_jit(
-            image_1d_array=np.array(image.slim),
-            image_frame_1d_indexes=self.image_frame_1d_indexes,
-            image_frame_1d_kernels=self.image_frame_1d_kernels,
-            image_frame_1d_lengths=self.image_frame_1d_lengths,
-            blurring_1d_array=np.array(blurring_image.slim),
-            blurring_frame_1d_indexes=self.blurring_frame_1d_indexes,
-            blurring_frame_1d_kernels=self.blurring_frame_1d_kernels,
-            blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
-        )
+        if use_jax:
+            jax.lax.cond(
+                self.blurring_mask is None,
+                lambda _: jax.debug.callback(exception_message),
+                lambda _: None,
+                None
+            )
 
-        return Array2D(values=convolved_image, mask=self.mask)
+            return self.jax_convolve(
+                image,
+                blurring_image,
+                method=jax_method
+            )
+
+        else:
+            if self.blurring_mask is None:
+                exception_message()
+
+            convolved_image = self.convolve_jit(
+                image_1d_array=np.array(image.slim),
+                image_frame_1d_indexes=self.image_frame_1d_indexes,
+                image_frame_1d_kernels=self.image_frame_1d_kernels,
+                image_frame_1d_lengths=self.image_frame_1d_lengths,
+                blurring_1d_array=np.array(blurring_image.slim),
+                blurring_frame_1d_indexes=self.blurring_frame_1d_indexes,
+                blurring_frame_1d_kernels=self.blurring_frame_1d_kernels,
+                blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
+            )
+
+            return Array2D(values=convolved_image, mask=self.mask)
 
     @staticmethod
     @numba_util.jit()
