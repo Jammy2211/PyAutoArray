@@ -9,6 +9,17 @@ class ArrayTriangles:
         indices: np.ndarray,
         vertices: np.ndarray,
     ):
+        """
+        Represents a set of triangles in efficient NumPy arrays.
+
+        Parameters
+        ----------
+        indices
+            The indices of the vertices of the triangles. This is a 2D array where each row is a triangle
+            with the three indices of the vertices.
+        vertices
+            The vertices of the triangles.
+        """
         self.indices = indices
         self.vertices = vertices
 
@@ -16,7 +27,19 @@ class ArrayTriangles:
     def triangles(self):
         return self.vertices[self.indices]
 
-    def containing(self, point: Tuple[float, float]):
+    def containing(self, point: Tuple[float, float]) -> "ArrayTriangles":
+        """
+        Find the triangles that contain a given point.
+
+        Parameters
+        ----------
+        point
+            The point to find the containing triangles for.
+
+        Returns
+        -------
+        The triangles that contain the point.
+        """
         y, x = point
 
         triangles = self.triangles
@@ -44,7 +67,12 @@ class ArrayTriangles:
             vertices=unique_vertices,
         )
 
-    def up_sample(self):
+    def up_sample(self) -> "ArrayTriangles":
+        """
+        Up-sample the triangles by adding a new vertex at the midpoint of each edge.
+
+        This means each triangle becomes four smaller triangles.
+        """
         triangles = self.triangles
 
         m01 = (triangles[:, 0] + triangles[:, 1]) / 2
@@ -72,7 +100,12 @@ class ArrayTriangles:
             vertices=unique_vertices,
         )
 
-    def neighborhood(self):
+    def neighborhood(self) -> "ArrayTriangles":
+        """
+        Create a new set of triangles that are the neighborhood of the current triangles.
+
+        Includes the current triangles and the triangles that share an edge with the current triangles.
+        """
         triangles = self.triangles
 
         new_v0 = triangles[:, 1] + triangles[:, 2] - triangles[:, 0]
