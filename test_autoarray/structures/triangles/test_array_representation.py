@@ -123,3 +123,40 @@ def test_up_sample(triangles):
             ]
         )
     ).all()
+
+
+def test_neighborhood(triangles):
+    neighborhood = triangles.neighborhood()
+
+    assert (
+        neighborhood.vertices
+        == np.array(
+            [
+                [-1.0, 0.0],
+                [0.0, -1.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [1.0, 2.0],
+                [2.0, 1.0],
+            ]
+        )
+    ).all()
+
+    assert (
+        neighborhood.indices
+        == np.array(
+            [
+                [0, 3, 3],
+                [1, 4, 4],
+                [2, 2, 5],
+                [2, 5, 5],
+                [3, 3, 6],
+                [4, 4, 7],
+            ]
+        )
+    ).all()
+
+    for triangle in neighborhood.triangles:
+        print(triangle)

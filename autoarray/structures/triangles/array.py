@@ -71,3 +71,38 @@ class ArrayTriangles:
             indices=new_indices,
             vertices=unique_vertices,
         )
+
+    def neighborhood(self):
+        triangles = self.triangles
+
+        new_v0 = triangles[:, 1] + triangles[:, 2] - triangles[:, 0]
+        new_v1 = triangles[:, 0] + triangles[:, 2] - triangles[:, 1]
+        new_v2 = triangles[:, 0] + triangles[:, 1] - triangles[:, 2]
+
+        new_triangles = np.concatenate(
+            [
+                np.stack([new_v0, triangles[:, 1], triangles[:, 2]], axis=1),
+                np.stack([triangles[:, 0], new_v1, triangles[:, 2]], axis=1),
+                np.stack([triangles[:, 0], triangles[:, 1], new_v2], axis=1),
+                triangles,
+            ],
+            axis=0,
+        )
+
+        new_triangles_sorted = np.sort(new_triangles, axis=1)
+
+        unique_vertices, inverse_indices = np.unique(
+            new_triangles_sorted.reshape(-1, 2), axis=0, return_inverse=True
+        )
+        new_indices = inverse_indices.reshape(-1, 3)
+
+        new_indices_sorted = np.sort(new_indices, axis=1)
+
+        unique_triangles_indices, unique_index_positions = np.unique(
+            new_indices_sorted, axis=0, return_index=True
+        )
+
+        return ArrayTriangles(
+            indices=unique_triangles_indices,
+            vertices=unique_vertices,
+        )
