@@ -1,5 +1,6 @@
 from typing import Tuple
 
+from autoarray import Grid2D
 from autofit.jax_wrapper import numpy as np
 
 
@@ -155,5 +156,89 @@ class ArrayTriangles:
         """
         return ArrayTriangles(
             indices=self.indices,
+            vertices=vertices,
+        )
+
+    @classmethod
+    def for_grid(cls, grid: Grid2D) -> "ArrayTriangles":
+        """
+        Create a grid of equilateral triangles from a regular grid.
+
+        Parameters
+        ----------
+        grid
+            The regular grid to convert to a grid of triangles.
+
+        Returns
+        -------
+        The grid of triangles.
+        """
+
+        scale = grid.pixel_scale
+
+        HEIGHT_FACTOR = 3**0.5 / 2
+
+        y = grid[:, 0]
+        x = grid[:, 1]
+
+        y_min = y.min()
+        y_max = y.max()
+        x_min = x.min()
+        x_max = x.max()
+
+        height = scale * HEIGHT_FACTOR
+
+        vertices = []
+        indices = []
+        vertex_dict = {}
+
+        def add_vertex(v):
+            if v not in vertex_dict:
+                vertex_dict[v] = len(vertices)
+                vertices.append(v)
+            return vertex_dict[v]
+
+        rows = []
+        for row_y in np.arange(y_min, y_max + height, height):
+            row = []
+            offset = (len(rows) % 2) * scale / 2
+            for col_x in np.arange(x_min - offset, x_max + scale, scale):
+                row.append((row_y, col_x))
+            rows.append(row)
+
+        for i in range(len(rows) - 1):
+            row = rows[i]
+            next_row = rows[i + 1]
+            for j in range(len(row) - 1):
+                if i % 2 == 0:
+                    t1 = [
+                        add_vertex(row[j]),
+                        add_vertex(next_row[j]),
+                        add_vertex(next_row[j + 1]),
+                    ]
+                    t2 = [
+                        add_vertex(row[j]),
+                        add_vertex(row[j + 1]),
+                        add_vertex(next_row[j + 1]),
+                    ]
+                else:
+                    t1 = [
+                        add_vertex(row[j]),
+                        add_vertex(next_row[j]),
+                        add_vertex(row[j + 1]),
+                    ]
+                    t2 = [
+                        add_vertex(next_row[j]),
+                        add_vertex(next_row[j + 1]),
+                        add_vertex(row[j + 1]),
+                    ]
+                indices.append(t1)
+                indices.append(t2)
+
+        vertices = np.array(vertices)
+        indices = np.array(indices)
+
+        return ArrayTriangles(
+            indices=indices,
             vertices=vertices,
         )
