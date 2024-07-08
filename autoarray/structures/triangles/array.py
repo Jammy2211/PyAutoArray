@@ -139,3 +139,21 @@ class ArrayTriangles:
             indices=unique_triangles_indices,
             vertices=unique_vertices,
         )
+
+    def with_vertices(self, vertices: np.ndarray) -> "ArrayTriangles":
+        """
+        Create a new set of triangles with the vertices replaced.
+
+        Parameters
+        ----------
+        vertices
+            The new vertices to use.
+
+        Returns
+        -------
+        The new set of triangles with the new vertices.
+        """
+        return ArrayTriangles(
+            indices=self.indices,
+            vertices=vertices,
+        )
