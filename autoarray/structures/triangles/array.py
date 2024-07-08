@@ -28,6 +28,10 @@ class ArrayTriangles:
     def triangles(self):
         return self.vertices[self.indices]
 
+    @property
+    def means(self):
+        return np.mean(self.triangles, axis=1)
+
     def containing(self, point: Tuple[float, float]) -> "ArrayTriangles":
         """
         Find the triangles that contain a given point.

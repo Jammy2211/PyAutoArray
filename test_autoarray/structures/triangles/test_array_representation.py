@@ -158,5 +158,14 @@ def test_neighborhood(triangles):
         )
     ).all()
 
-    for triangle in neighborhood.triangles:
-        print(triangle)
+
+def test_means(triangles):
+    means = triangles.means
+    assert means == pytest.approx(
+        np.array(
+            [
+                [0.33333333, 0.33333333],
+                [0.66666667, 0.66666667],
+            ]
+        )
+    )
