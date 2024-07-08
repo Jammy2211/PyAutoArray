@@ -12,10 +12,14 @@ class ArrayTriangles:
         self.indices = indices
         self.vertices = vertices
 
+    @property
+    def triangles(self):
+        return self.vertices[self.indices]
+
     def containing(self, point: Tuple[float, float]):
         y, x = point
 
-        triangles = self.vertices[self.indices]
+        triangles = self.triangles
 
         y1, x1 = triangles[:, 0, 1], triangles[:, 0, 0]
         y2, x2 = triangles[:, 1, 1], triangles[:, 1, 0]
@@ -32,6 +36,34 @@ class ArrayTriangles:
         containing_triangles = triangles[inside]
         unique_vertices, inverse_indices = np.unique(
             containing_triangles.reshape(-1, 2), axis=0, return_inverse=True
+        )
+        new_indices = inverse_indices.reshape(-1, 3)
+
+        return ArrayTriangles(
+            indices=new_indices,
+            vertices=unique_vertices,
+        )
+
+    def up_sample(self):
+        triangles = self.triangles
+
+        m01 = (triangles[:, 0] + triangles[:, 1]) / 2
+        m12 = (triangles[:, 1] + triangles[:, 2]) / 2
+        m20 = (triangles[:, 2] + triangles[:, 0]) / 2
+
+        new_triangles = np.concatenate(
+            [
+                np.stack([triangles[:, 0], m01, m20], axis=1),
+                np.stack([triangles[:, 1], m12, m01], axis=1),
+                np.stack([triangles[:, 2], m20, m12], axis=1),
+                np.stack([m01, m12, m20], axis=1),
+            ],
+            axis=0,
+        )
+
+        # Make vertices unique
+        unique_vertices, inverse_indices = np.unique(
+            new_triangles.reshape(-1, 2), axis=0, return_inverse=True
         )
         new_indices = inverse_indices.reshape(-1, 3)
 
