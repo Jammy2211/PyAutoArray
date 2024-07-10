@@ -213,31 +213,37 @@ class ArrayTriangles:
         for i in range(len(rows) - 1):
             row = rows[i]
             next_row = rows[i + 1]
-            for j in range(len(row) - 1):
-                if i % 2 == 0:
+            for j in range(len(row)):
+                if i % 2 == 0 and j < len(next_row) - 1:
                     t1 = [
                         add_vertex(row[j]),
                         add_vertex(next_row[j]),
                         add_vertex(next_row[j + 1]),
                     ]
-                    t2 = [
+                    if j < len(row) - 1:
+                        t2 = [
+                            add_vertex(row[j]),
+                            add_vertex(row[j + 1]),
+                            add_vertex(next_row[j + 1]),
+                        ]
+                        indices.append(t2)
+                elif i % 2 == 1 and j < len(next_row) - 1:
+                    t1 = [
                         add_vertex(row[j]),
+                        add_vertex(next_row[j]),
                         add_vertex(row[j + 1]),
-                        add_vertex(next_row[j + 1]),
                     ]
+                    indices.append(t1)
+                    if j < len(next_row) - 1:
+                        t2 = [
+                            add_vertex(next_row[j]),
+                            add_vertex(next_row[j + 1]),
+                            add_vertex(row[j + 1]),
+                        ]
+                        indices.append(t2)
                 else:
-                    t1 = [
-                        add_vertex(row[j]),
-                        add_vertex(next_row[j]),
-                        add_vertex(row[j + 1]),
-                    ]
-                    t2 = [
-                        add_vertex(next_row[j]),
-                        add_vertex(next_row[j + 1]),
-                        add_vertex(row[j + 1]),
-                    ]
+                    continue
                 indices.append(t1)
-                indices.append(t2)
 
         vertices = np.array(vertices)
         indices = np.array(indices)
