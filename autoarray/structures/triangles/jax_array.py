@@ -91,6 +91,7 @@ class ArrayTriangles:
             self.vertices[flat_indices],
             axis=0,
             return_inverse=True,
+            size=3 * indexes.size,
         )
 
         new_indices = inverse_indices.reshape(selected_indices.shape)
