@@ -143,23 +143,13 @@ class ArrayTriangles:
             axis=0,
         )
 
-        new_triangles_sorted = np.sort(new_triangles, axis=1)
-
+        # Ensure that all vertices are unique
         unique_vertices, inverse_indices = np.unique(
-            new_triangles_sorted.reshape(-1, 2), axis=0, return_inverse=True
+            new_triangles.reshape(-1, 2), axis=0, return_inverse=True
         )
         new_indices = inverse_indices.reshape(-1, 3)
 
-        new_indices_sorted = np.sort(new_indices, axis=1)
-
-        unique_triangles_indices, unique_index_positions = np.unique(
-            new_indices_sorted, axis=0, return_index=True
-        )
-
-        return ArrayTriangles(
-            indices=unique_triangles_indices,
-            vertices=unique_vertices,
-        )
+        return ArrayTriangles(indices=new_indices, vertices=unique_vertices)
 
     def with_vertices(self, vertices: np.ndarray) -> "ArrayTriangles":
         """
