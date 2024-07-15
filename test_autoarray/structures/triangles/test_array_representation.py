@@ -1,7 +1,27 @@
-from autoarray.numpy_wrapper import numpy as np
+import numpy as np
 import pytest
 
 from autoarray.structures.triangles.array import ArrayTriangles
+
+
+@pytest.fixture
+def triangles():
+    return ArrayTriangles(
+        indices=np.array(
+            [
+                [0, 1, 2],
+                [1, 2, 3],
+            ]
+        ),
+        vertices=np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 0.0],
+                [0.0, 1.0],
+                [1.0, 1.0],
+            ]
+        ),
+    )
 
 
 @pytest.mark.parametrize(
@@ -16,7 +36,7 @@ from autoarray.structures.triangles.array import ArrayTriangles
                     [1.0, 0.0],
                 ]
             ),
-            np.array([0, -1, -1, -1, -1]),
+            np.array([0]),
         ),
         (
             (0.6, 0.6),
@@ -27,7 +47,7 @@ from autoarray.structures.triangles.array import ArrayTriangles
                     [1.0, 1.0],
                 ]
             ),
-            np.array([1, -1, -1, -1, -1]),
+            np.array([1]),
         ),
         (
             (0.5, 0.5),
@@ -39,7 +59,7 @@ from autoarray.structures.triangles.array import ArrayTriangles
                     [1.0, 1.0],
                 ]
             ),
-            np.array([0, 1, -1, -1, -1]),
+            np.array([0, 1]),
         ),
     ],
 )
