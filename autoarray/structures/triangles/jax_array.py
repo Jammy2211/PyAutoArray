@@ -88,7 +88,9 @@ class ArrayTriangles:
 
         flat_indices = selected_indices.flatten()
         unique_vertices, inverse_indices = np.unique(
-            self.vertices[flat_indices], axis=0, return_inverse=True
+            self.vertices[flat_indices],
+            axis=0,
+            return_inverse=True,
         )
 
         new_indices = inverse_indices.reshape(selected_indices.shape)
