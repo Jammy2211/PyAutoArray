@@ -16,7 +16,7 @@ from autoarray.structures.triangles.array import ArrayTriangles
                     [1.0, 0.0],
                 ]
             ),
-            np.array([0]),
+            np.array([0, -1, -1, -1, -1]),
         ),
         (
             (0.6, 0.6),
@@ -27,7 +27,7 @@ from autoarray.structures.triangles.array import ArrayTriangles
                     [1.0, 1.0],
                 ]
             ),
-            np.array([1]),
+            np.array([1, -1, -1, -1, -1]),
         ),
         (
             (0.5, 0.5),
@@ -39,7 +39,7 @@ from autoarray.structures.triangles.array import ArrayTriangles
                     [1.0, 1.0],
                 ]
             ),
-            np.array([0, 1]),
+            np.array([0, 1, -1, -1, -1]),
         ),
     ],
 )

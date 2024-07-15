@@ -1,7 +1,9 @@
 from typing import Tuple
 
 from autoarray import Grid2D
-from autoarray.numpy_wrapper import numpy as np, register_pytree_node_class
+from jax import numpy as np
+from jax.tree_util import register_pytree_node_class
+from jax import jit
 
 
 @register_pytree_node_class
@@ -26,13 +28,16 @@ class ArrayTriangles:
         self.vertices = vertices
 
     @property
+    @jit
     def triangles(self):
         return self.vertices[self.indices]
 
     @property
+    @jit
     def means(self):
         return np.mean(self.triangles, axis=1)
 
+    @jit
     def containing_indices(self, point: Tuple[float, float]) -> np.ndarray:
         """
         Find the triangles that contain a given point.
@@ -62,8 +67,9 @@ class ArrayTriangles:
 
         inside = (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
 
-        return np.where(inside)[0]
+        return np.where(inside, size=5, fill_value=-1)[0]
 
+    @jit
     def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
         """
         Create a new ArrayTriangles containing indices and vertices corresponding to the given indexes
@@ -89,6 +95,7 @@ class ArrayTriangles:
 
         return ArrayTriangles(indices=new_indices, vertices=unique_vertices)
 
+    @jit
     def up_sample(self) -> "ArrayTriangles":
         """
         Up-sample the triangles by adding a new vertex at the midpoint of each edge.
@@ -121,6 +128,7 @@ class ArrayTriangles:
             vertices=unique_vertices,
         )
 
+    @jit
     def neighborhood(self) -> "ArrayTriangles":
         """
         Create a new set of triangles that are the neighborhood of the current triangles.
@@ -158,6 +166,7 @@ class ArrayTriangles:
             vertices=unique_vertices,
         )
 
+    @jit
     def with_vertices(self, vertices: np.ndarray) -> "ArrayTriangles":
         """
         Create a new set of triangles with the vertices replaced.
@@ -177,6 +186,7 @@ class ArrayTriangles:
         )
 
     @classmethod
+    @jit
     def for_grid(cls, grid: Grid2D) -> "ArrayTriangles":
         """
         Create a grid of equilateral triangles from a regular grid.
