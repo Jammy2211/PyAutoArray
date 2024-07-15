@@ -110,7 +110,6 @@ class ArrayTriangles:
             axis=0,
         )
 
-        # Make vertices unique
         unique_vertices, inverse_indices = np.unique(
             new_triangles.reshape(-1, 2), axis=0, return_inverse=True
         )
