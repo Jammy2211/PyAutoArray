@@ -179,7 +179,7 @@ def test_up_sample(triangles):
     "offset",
     [-1, 0, 1],
 )
-def test_simple_neighborhood(triangles, offset):
+def test_simple_neighborhood(offset):
     triangles = ArrayTriangles(
         indices=np.array(
             [

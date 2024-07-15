@@ -156,15 +156,24 @@ class ArrayTriangles:
             ],
             axis=0,
         )
+
+        max_new_triangles = 6 * triangles.shape[0]
+
         unique_vertices, inverse_indices = np.unique(
-            new_triangles.reshape(-1, 2), axis=0, return_inverse=True
+            new_triangles.reshape(-1, 2),
+            axis=0,
+            return_inverse=True,
+            size=max_new_triangles,
         )
         new_indices = inverse_indices.reshape(-1, 3)
 
         new_indices_sorted = np.sort(new_indices, axis=1)
 
         unique_triangles_indices, unique_index_positions = np.unique(
-            new_indices_sorted, axis=0, return_index=True
+            new_indices_sorted,
+            axis=0,
+            return_index=True,
+            size=max_new_triangles,
         )
 
         return ArrayTriangles(
