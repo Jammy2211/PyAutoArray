@@ -268,3 +268,6 @@ class ArrayTriangles:
             indices=indices,
             vertices=vertices,
         )
+
+    def __iter__(self):
+        return iter(self.triangles)
