@@ -71,8 +71,6 @@ def test_contains_vertices(
 ):
     containing_indices = triangles.containing_indices(point)
 
-    print(containing_indices)
-
     assert (containing_indices == indices).all()
 
 
