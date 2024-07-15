@@ -36,11 +36,7 @@ def triangles():
                     [1.0, 0.0],
                 ]
             ),
-            np.array(
-                [
-                    [0, 2, 1],
-                ]
-            ),
+            np.array([0]),
         ),
         (
             (0.6, 0.6),
@@ -51,11 +47,7 @@ def triangles():
                     [1.0, 1.0],
                 ]
             ),
-            np.array(
-                [
-                    [1, 0, 2],
-                ]
-            ),
+            np.array([1]),
         ),
         (
             (0.5, 0.5),
@@ -67,12 +59,7 @@ def triangles():
                     [1.0, 1.0],
                 ]
             ),
-            np.array(
-                [
-                    [0, 2, 1],
-                    [2, 1, 3],
-                ]
-            ),
+            np.array([0, 1]),
         ),
     ],
 )
@@ -82,10 +69,11 @@ def test_contains_vertices(
     vertices,
     indices,
 ):
-    containing = triangles.containing(point)
+    containing_indices = triangles.containing_indices(point)
 
-    assert (containing.indices == indices).all()
-    assert (containing.vertices == vertices).all()
+    print(containing_indices)
+
+    assert (containing_indices == indices).all()
 
 
 def test_up_sample(triangles):

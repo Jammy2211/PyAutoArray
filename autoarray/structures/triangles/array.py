@@ -32,7 +32,7 @@ class ArrayTriangles:
     def means(self):
         return np.mean(self.triangles, axis=1)
 
-    def containing(self, point: Tuple[float, float]) -> "ArrayTriangles":
+    def containing_indices(self, point: Tuple[float, float]) -> "ArrayTriangles":
         """
         Find the triangles that contain a given point.
 
@@ -61,16 +61,18 @@ class ArrayTriangles:
 
         inside = (0 <= a) & (a <= 1) & (0 <= b) & (b <= 1) & (0 <= c) & (c <= 1)
 
-        containing_triangles = triangles[inside]
-        unique_vertices, inverse_indices = np.unique(
-            containing_triangles.reshape(-1, 2), axis=0, return_inverse=True
-        )
-        new_indices = inverse_indices.reshape(-1, 3)
+        return np.where(inside)[0]
 
-        return ArrayTriangles(
-            indices=new_indices,
-            vertices=unique_vertices,
-        )
+        # containing_triangles = triangles[inside]
+        # unique_vertices, inverse_indices = np.unique(
+        #     containing_triangles.reshape(-1, 2), axis=0, return_inverse=True
+        # )
+        # new_indices = inverse_indices.reshape(-1, 3)
+        #
+        # return ArrayTriangles(
+        #     indices=new_indices,
+        #     vertices=unique_vertices,
+        # )
 
     def up_sample(self) -> "ArrayTriangles":
         """
