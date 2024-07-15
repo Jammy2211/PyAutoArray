@@ -45,7 +45,7 @@ class ArrayTriangles:
         -------
         The triangles that contain the point.
         """
-        y, x = point
+        x, y = point
 
         triangles = self.triangles
 
