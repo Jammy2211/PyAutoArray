@@ -175,6 +175,42 @@ def test_up_sample(triangles):
     ).all()
 
 
+@pytest.mark.parametrize(
+    "offset",
+    [-1, 0, 1],
+)
+def test_simple_neighborhood(triangles, offset):
+    triangles = ArrayTriangles(
+        indices=np.array(
+            [
+                [0, 1, 2],
+            ]
+        ),
+        vertices=np.array(
+            [
+                [0.0, 0.0],
+                [1.0, 0.0],
+                [0.0, 1.0],
+            ]
+        )
+        + offset,
+    )
+    assert (
+        triangles.neighborhood().triangles
+        == (
+            np.array(
+                [
+                    [[-1.0, 1.0], [0.0, 0.0], [0.0, 1.0]],
+                    [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0]],
+                    [[0.0, 0.0], [1.0, -1.0], [1.0, 0.0]],
+                    [[0.0, 1.0], [1.0, 0.0], [1.0, 1.0]],
+                ]
+            )
+            + offset
+        )
+    ).all()
+
+
 def test_neighborhood(triangles):
     neighborhood = triangles.neighborhood()
 
