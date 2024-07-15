@@ -1,9 +1,10 @@
 from typing import Tuple
 
 from autoarray import Grid2D
-import numpy as np
+from autoarray.numpy_wrapper import numpy as np, register_pytree_node_class
 
 
+@register_pytree_node_class
 class ArrayTriangles:
     def __init__(
         self,
@@ -267,3 +268,19 @@ class ArrayTriangles:
 
     def __iter__(self):
         return iter(self.triangles)
+
+    def tree_flatten(self):
+        """
+        Flatten this model as a PyTree.
+        """
+        return (self.indices, self.vertices), ()
+
+    @classmethod
+    def tree_unflatten(cls, aux_data, children):
+        """
+        Unflatten a PyTree into a model.
+        """
+        return cls(
+            indices=children[0],
+            vertices=children[1],
+        )
