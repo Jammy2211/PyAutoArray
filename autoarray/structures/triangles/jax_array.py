@@ -122,7 +122,10 @@ class ArrayTriangles:
         )
 
         unique_vertices, inverse_indices = np.unique(
-            new_triangles.reshape(-1, 2), axis=0, return_inverse=True
+            new_triangles.reshape(-1, 2),
+            axis=0,
+            return_inverse=True,
+            size=6 * triangles.shape[0],
         )
         new_indices = inverse_indices.reshape(-1, 3)
 
