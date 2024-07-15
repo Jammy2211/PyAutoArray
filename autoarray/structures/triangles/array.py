@@ -63,16 +63,30 @@ class ArrayTriangles:
 
         return np.where(inside)[0]
 
-        # containing_triangles = triangles[inside]
-        # unique_vertices, inverse_indices = np.unique(
-        #     containing_triangles.reshape(-1, 2), axis=0, return_inverse=True
-        # )
-        # new_indices = inverse_indices.reshape(-1, 3)
-        #
-        # return ArrayTriangles(
-        #     indices=new_indices,
-        #     vertices=unique_vertices,
-        # )
+    def for_indexes(self, indexes: np.ndarray) -> "ArrayTriangles":
+        """
+        Create a new ArrayTriangles containing indices and vertices corresponding to the given indexes
+        but without duplicate vertices.
+
+        Parameters
+        ----------
+        indexes
+            The indexes of the triangles to include in the new ArrayTriangles.
+
+        Returns
+        -------
+        The new ArrayTriangles instance.
+        """
+        selected_indices = self.indices[indexes]
+
+        flat_indices = selected_indices.flatten()
+        unique_vertices, inverse_indices = np.unique(
+            self.vertices[flat_indices], axis=0, return_inverse=True
+        )
+
+        new_indices = inverse_indices.reshape(selected_indices.shape)
+
+        return ArrayTriangles(indices=new_indices, vertices=unique_vertices)
 
     def up_sample(self) -> "ArrayTriangles":
         """

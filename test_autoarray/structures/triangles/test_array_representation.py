@@ -74,6 +74,70 @@ def test_contains_vertices(
     assert (containing_indices == indices).all()
 
 
+@pytest.mark.parametrize(
+    "indexes, vertices, indices",
+    [
+        (
+            np.array([0]),
+            np.array(
+                [
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [1.0, 0.0],
+                ]
+            ),
+            np.array(
+                [
+                    [0, 2, 1],
+                ]
+            ),
+        ),
+        (
+            np.array([1]),
+            np.array(
+                [
+                    [0.0, 1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                ]
+            ),
+            np.array(
+                [
+                    [1, 0, 2],
+                ]
+            ),
+        ),
+        (
+            np.array([0, 1]),
+            np.array(
+                [
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                ]
+            ),
+            np.array(
+                [
+                    [0, 2, 1],
+                    [2, 1, 3],
+                ]
+            ),
+        ),
+    ],
+)
+def test_for_indexes(
+    triangles,
+    indexes,
+    vertices,
+    indices,
+):
+    containing = triangles.for_indexes(indexes)
+
+    assert (containing.indices == indices).all()
+    assert (containing.vertices == vertices).all()
+
+
 def test_up_sample(triangles):
     up_sampled = triangles.up_sample()
 
