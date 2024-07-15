@@ -32,7 +32,7 @@ class ArrayTriangles:
     def means(self):
         return np.mean(self.triangles, axis=1)
 
-    def containing_indices(self, point: Tuple[float, float]) -> "ArrayTriangles":
+    def containing_indices(self, point: Tuple[float, float]) -> np.ndarray:
         """
         Find the triangles that contain a given point.
 
