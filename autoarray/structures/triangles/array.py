@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from autoarray import Grid2D
-from autofit.jax_wrapper import numpy as np
+import numpy as np
 
 
 class ArrayTriangles:
