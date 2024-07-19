@@ -1,6 +1,5 @@
 from autoarray.structures.mesh.voronoi_2d import Mesh2DVoronoi
 from autoarray.inversion.pixelization.mesh.triangulation import Triangulation
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
 from autoarray.numba_util import profile_func
 
@@ -34,10 +33,6 @@ class Voronoi(Triangulation):
         """
         super().__init__()
 
-    @property
-    def uses_interpolation(self):
-        return False
-
     @profile_func
     def mesh_grid_from(
         self,
@@ -63,5 +58,4 @@ class Voronoi(Triangulation):
 
         return Mesh2DVoronoi(
             values=source_plane_mesh_grid,
-            uses_interpolation=self.uses_interpolation,
         )
