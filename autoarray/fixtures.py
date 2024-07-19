@@ -460,7 +460,6 @@ def make_delaunay_mapper_9_3x3():
     )
 
 
-
 def make_voronoi_mapper_9_3x3():
     mapper_grids = aa.MapperGrids(
         mask=make_mask_2d_7x7(),
@@ -474,7 +473,7 @@ def make_voronoi_mapper_9_3x3():
         mapper_grids=mapper_grids,
         over_sampler=make_over_sampler_2d_7x7(),
         border_relocator=make_border_relocator_2d_7x7(),
-        regularization=None,
+        regularization=make_regularization_constant(),
     )
 
 

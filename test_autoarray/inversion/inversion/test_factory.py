@@ -111,7 +111,6 @@ def test__inversion_imaging__via_regularizations(
     masked_imaging_7x7_no_blur,
     delaunay_mapper_9_3x3,
     voronoi_mapper_9_3x3,
-    voronoi_mapper_nn_9_3x3,
     regularization_constant,
     regularization_constant_split,
     regularization_adaptive_brightness,
@@ -152,8 +151,7 @@ def test__inversion_imaging__via_regularizations(
     # Have to do this because NN library is optional.
 
     try:
-
-        mapper = copy.copy(voronoi_mapper_nn_9_3x3)
+        mapper = copy.copy(voronoi_mapper_9_3x3)
         mapper.regularization = regularization_constant
 
         inversion = aa.Inversion(
@@ -168,7 +166,7 @@ def test__inversion_imaging__via_regularizations(
         )
         assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
 
-        mapper = copy.copy(voronoi_mapper_nn_9_3x3)
+        mapper = copy.copy(voronoi_mapper_9_3x3)
         mapper.regularization = regularization_constant_split
 
         inversion = aa.Inversion(
@@ -663,6 +661,7 @@ def test__inversion_matrices__x2_mappers(
     assert (
         inversion.regularization_matrix[0:9, 0:9] == regularization_matrix_of_reg_0
     ).all()
+
     assert (
         inversion.regularization_matrix[9:18, 9:18] == regularization_matrix_of_reg_1
     ).all()

@@ -113,9 +113,7 @@ class GetVisuals2D(AbstractGetVisuals):
 
         return self.visuals + self.visuals.__class__(origin=origin)
 
-    def via_mapper_for_data_from(
-        self, mapper:MapperRectangularNoInterp
-    ) -> Visuals2D:
+    def via_mapper_for_data_from(self, mapper: MapperRectangularNoInterp) -> Visuals2D:
         """
         From a `Mapper` get its attributes that can be plotted in the mapper's data-plane  (e.g. the reconstructed
         data) and return them in a `Visuals2D` object.
@@ -154,7 +152,7 @@ class GetVisuals2D(AbstractGetVisuals):
         )
 
     def via_mapper_for_source_from(
-        self, mapper : MapperRectangularNoInterp
+        self, mapper: MapperRectangularNoInterp
     ) -> Visuals2D:
         """
         From a `Mapper` get its attributes that can be plotted in the mapper's source-plane  (e.g. the reconstruction)

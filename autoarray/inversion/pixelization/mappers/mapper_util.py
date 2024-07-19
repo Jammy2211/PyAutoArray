@@ -194,6 +194,7 @@ def nearest_pixelization_index_for_slim_index_from_kdtree(grid, mesh_grid):
 
     return sparse_index_for_slim_index
 
+
 @numba_util.jit()
 def pixel_weights_delaunay_from(
     source_plane_data_grid,
