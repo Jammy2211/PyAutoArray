@@ -10,6 +10,7 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.numba_util import profile_func
 from autoarray.inversion.pixelization.mappers import mapper_util
 
+
 class MapperVoronoi(AbstractMapper):
     """
     To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
@@ -59,6 +60,7 @@ class MapperVoronoi(AbstractMapper):
     run_time_dict
         A dictionary which contains timing of certain functions calls which is used for profiling.
     """
+
     @property
     def voronoi(self):
         return self.source_plane_mesh_grid.voronoi
@@ -171,5 +173,3 @@ class MapperVoronoi(AbstractMapper):
         return self.source_plane_mesh_grid.interpolated_array_from(
             values=values, shape_native=shape_native, extent=extent, use_nn=True
         )
-
-

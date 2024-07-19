@@ -54,13 +54,6 @@ class Rectangular(AbstractMesh):
 
         self.run_time_dict = {}
 
-    @property
-    def uses_interpolation(self) -> bool:
-        """
-        Does this ``Mesh`` object use interpolation when pairing with another 2D grid?
-        """
-        return False
-
     def mapper_grids_from(
         self,
         mask,
