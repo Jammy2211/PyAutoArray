@@ -3,7 +3,7 @@ Natural Neighbour
 
 (Natural Neighbours interpolation for PyAutoLens)
 
-If you want to use the `VoronoiNN` pixelization, which applies natural neighbor 
+If you want to use the `Voronoi` pixelization, which applies natural neighbor 
 interpolation (https://en.wikipedia.org/wiki/Natural_neighbor_interpolation) to a Voronoi mesh you must 
 install this C package. 
 

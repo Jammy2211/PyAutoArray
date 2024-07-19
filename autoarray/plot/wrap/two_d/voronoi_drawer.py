@@ -4,7 +4,8 @@ from typing import Optional
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.plot.wrap.base.units import Units
-from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
+from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
+
 from autoarray.inversion.pixelization.mesh import mesh_util
 
 from autoarray.plot.wrap import base as wb
@@ -12,7 +13,7 @@ from autoarray.plot.wrap import base as wb
 
 class VoronoiDrawer(AbstractMatWrap2D):
     """
-    Draws Voronoi pixels from a `MapperVoronoiNoInterp` object (see `inversions.mapper`). This includes both drawing
+    Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
     each Voronoi cell and coloring it according to a color value.
 
     The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
@@ -24,7 +25,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
     def draw_voronoi_pixels(
         self,
-        mapper: MapperVoronoiNoInterp,
+        mapper: MapperVoronoi,
         pixel_values: Optional[np.ndarray],
         units: Units,
         cmap: Optional[wb.Cmap],

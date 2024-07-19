@@ -7,8 +7,8 @@ from autoarray.numba_util import profile_func
 class Voronoi(Triangulation):
     def __init__(self):
         """
-        An irregular mesh of Voronoi pixels, which using no interpolation are paired with a 2D grid of (y,x)
-        coordinates.
+        An irregular mesh of Voronoi pixels, which using natural neighbor interpolation are paired with a 2D
+        grid of (y,x) coordinates.
 
         For a full description of how a mesh is paired with another grid,
         see the :meth:`Pixelization API documentation <autoarray.inversion.pixelization.pixelization.Pixelization>`.
@@ -29,7 +29,7 @@ class Voronoi(Triangulation):
           (the ``image_plane_mesh_grid`` maps to this after gravitational lensing).
 
         Each (y,x) coordinate in the ``source_plane_data_grid`` is paired with all Voronoi cells it falls within,
-        without using an interpolation scheme.
+        using a natural neighbor interpolation scheme.
         """
         super().__init__()
 

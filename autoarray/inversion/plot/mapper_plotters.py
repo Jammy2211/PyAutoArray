@@ -10,7 +10,6 @@ from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.pixelization.mappers.rectangular import (
     MapperRectangularNoInterp,
 )
-from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 
 import logging
 
@@ -20,7 +19,7 @@ logger = logging.getLogger(__name__)
 class MapperPlotter(Plotter):
     def __init__(
         self,
-        mapper: Union[MapperRectangularNoInterp, MapperVoronoiNoInterp],
+        mapper: MapperRectangularNoInterp,
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
