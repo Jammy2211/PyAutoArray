@@ -13,32 +13,6 @@ def make_five_pixels():
     return np.array([[0, 0], [0, 1], [1, 0], [1, 1], [1, 2]])
 
 
-def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
-    def compute_squared_separation(coordinate1, coordinate2):
-        """
-        Returns the squared separation of two grid (no square root for efficiency).
-        """
-        return (coordinate1[0] - coordinate2[0]) ** 2 + (
-            coordinate1[1] - coordinate2[1]
-        ) ** 2
-
-    image_pixels = grid.shape[0]
-
-    image_to_pixelization = np.zeros((image_pixels,))
-
-    for image_index, image_coordinate in enumerate(grid):
-        distances = list(
-            map(
-                lambda centers: compute_squared_separation(image_coordinate, centers),
-                pixel_centers,
-            )
-        )
-
-        image_to_pixelization[image_index] = np.argmin(distances)
-
-    return image_to_pixelization
-
-
 def _test__sub_slim_indexes_for_pix_index():
     pix_indexes_for_sub_slim_index = np.array(
         [[0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [3, 4], [0, 4], [3, 4]]
@@ -433,75 +407,6 @@ def test__weights():
     )
 
     assert (pixel_weights == np.array([[0.25, 0.5, 0.25], [1.0, 0.0, 0.0]])).all()
-
-
-def test__grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7):
-    pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
-    grid = aa.Grid2D.no_mask(
-        values=[[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]],
-        shape_native=(2, 2),
-        pixel_scales=1.0,
-    )
-
-    sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
-
-    assert sub_to_pix[0] == 0
-    assert sub_to_pix[1] == 1
-    assert sub_to_pix[2] == 2
-    assert sub_to_pix[3] == 3
-
-    pixel_centers = np.array(
-        [[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]]
-    )
-    grid = aa.Grid2D.no_mask(
-        [
-            [0.1, 0.1],
-            [-0.1, -0.1],
-            [0.49, 0.49],
-            [0.51, 0.51],
-            [1.01, 1.01],
-            [1.51, 1.51],
-        ],
-        shape_native=(3, 2),
-        pixel_scales=1.0,
-    )
-
-    sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers)
-
-    assert sub_to_pix[0] == 4
-    assert sub_to_pix[1] == 4
-    assert sub_to_pix[2] == 4
-    assert sub_to_pix[3] == 0
-    assert sub_to_pix[4] == 0
-    assert sub_to_pix[5] == 5
-
-    mesh_grid = aa.Grid2D.no_mask(
-        [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]],
-        shape_native=(3, 2),
-        pixel_scales=1.0,
-    )
-
-    sub_to_pix_nearest_neighbour = np.array(
-        [grid_to_pixel_pixels_via_nearest_neighbour(grid_2d_7x7, mesh_grid)]
-    ).T
-
-    mesh_grid = aa.Mesh2DVoronoi(
-        values=mesh_grid,
-    )
-
-    mapper_grids = aa.MapperGrids(
-        mask=grid_2d_7x7.mask,
-        source_plane_data_grid=grid_2d_7x7,
-        source_plane_mesh_grid=mesh_grid,
-    )
-
-    over_sampler = aa.OverSamplerUniform(mask=grid_2d_7x7.mask, sub_size=1)
-
-    mapper = aa.Mapper(
-        mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
-    )
-
-    assert (mapper.pix_indexes_for_sub_slim_index == sub_to_pix_nearest_neighbour).all()
 
 
 def test__adaptive_pixel_signals_from():

@@ -25,7 +25,7 @@ class Triangulation(AbstractMesh):
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a mesh,
         in both the `data` and `source` frames.
 
-        This function returns a `MapperVoronoiNoInterp` as follows:
+        This function returns a `MapperVoronoi` as follows:
 
         1) Before this routine is called, a sparse grid of (y,x) coordinates are computed from the 2D masked data,
            the `image_plane_mesh_grid`, which acts as the Voronoi pixel centres of the mesh and mapper.
@@ -42,7 +42,7 @@ class Triangulation(AbstractMesh):
 
         5) Use the transformed `source_plane_mesh_grid`'s (y,x) coordinates as the centres of the Voronoi mesh.
 
-        6) Return the `MapperVoronoiNoInterp`.
+        6) Return the `MapperVoronoi`.
 
         Parameters
         ----------

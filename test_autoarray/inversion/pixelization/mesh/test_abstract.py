@@ -2,7 +2,7 @@ import autoarray as aa
 
 
 def test__grid_is_relocated_via_border(grid_2d_7x7):
-    mesh = aa.mesh.Voronoi()
+    mesh = aa.mesh.Delaunay()
 
     mask = aa.Mask2D.circular(
         shape_native=(60, 60),
@@ -52,11 +52,11 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
         mapper_grids=mapper_grids, over_sampler=None, regularization=None
     )
 
-    assert isinstance(mapper, aa.MapperVoronoiNoInterp)
+    assert isinstance(mapper, aa.MapperDelaunay)
     assert image_mesh[0, 0] != mapper.source_plane_mesh_grid[0, 0]
     assert mapper.source_plane_mesh_grid[0, 0] < 5.0
 
-    mesh = aa.mesh.VoronoiNN()
+    mesh = aa.mesh.Delaunay()
 
     border_relocator = aa.BorderRelocator(mask=mask, sub_size=1)
 
@@ -71,6 +71,6 @@ def test__grid_is_relocated_via_border(grid_2d_7x7):
         mapper_grids=mapper_grids, over_sampler=None, regularization=None
     )
 
-    assert isinstance(mapper, aa.MapperVoronoi)
+    assert isinstance(mapper, aa.MapperDelaunay)
     assert image_mesh[0, 0] != mapper.source_plane_mesh_grid[0, 0]
     assert mapper.source_plane_mesh_grid[0, 0] < 5.0

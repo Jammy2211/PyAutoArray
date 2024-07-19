@@ -8,12 +8,14 @@ from .preloads import Preloads
 from .dataset import preprocess
 from .dataset.abstract.dataset import AbstractDataset
 from .dataset.abstract.w_tilde import AbstractWTilde
+from .dataset.grids import GridsInterface
 from .dataset.imaging.dataset import Imaging
 from .dataset.imaging.simulator import SimulatorImaging
 from .dataset.imaging.w_tilde import WTildeImaging
 from .dataset.interferometer.dataset import Interferometer
 from .dataset.interferometer.simulator import SimulatorInterferometer
 from .dataset.interferometer.w_tilde import WTildeInterferometer
+from .dataset.over_sampling import OverSamplingDataset
 from .dataset.dataset_model import DatasetModel
 from .fit.fit_dataset import FitDataset
 from .fit.fit_imaging import FitImaging
@@ -33,9 +35,8 @@ from .inversion.pixelization.pixelization import Pixelization
 from .inversion.pixelization.mappers.abstract import AbstractMapper
 from .inversion.pixelization.mappers.mapper_grids import MapperGrids
 from .inversion.pixelization.mappers.factory import mapper_from as Mapper
-from .inversion.pixelization.mappers.rectangular import MapperRectangularNoInterp
+from .inversion.pixelization.mappers.rectangular import MapperRectangular
 from .inversion.pixelization.mappers.delaunay import MapperDelaunay
-from .inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from .inversion.pixelization.mappers.voronoi import MapperVoronoi
 from .inversion.pixelization.image_mesh.abstract import AbstractImageMesh
 from .inversion.pixelization.mesh.abstract import AbstractMesh

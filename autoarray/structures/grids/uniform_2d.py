@@ -159,10 +159,6 @@ class Grid2D(Structure):
             The over sampling scheme, which divides the grid into a sub grid of smaller pixels when computing values
             (e.g. images) from the grid so as to approximate the 2D line integral of the amount of light that falls
             into each pixel.
-        over_sampling_non_uniform
-            The over sampling scheme when the grid input into a function is not a uniform grid. This is used
-            by **PyAutoLens** when the grid has been deflected and ray-traced and therefore some of the default
-            over sampling schemes are not appropriate.
         """
         values = grid_2d_util.convert_grid_2d(
             grid_2d=values,
@@ -187,7 +183,6 @@ class Grid2D(Structure):
         shape_native: Tuple[int, int] = None,
         origin: Tuple[float, float] = (0.0, 0.0),
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D or 2D, automatically
@@ -235,7 +230,6 @@ class Grid2D(Structure):
             values=values,
             mask=mask,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     @classmethod
@@ -247,7 +241,6 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values.
@@ -312,7 +305,6 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             origin=origin,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     @classmethod
@@ -323,7 +315,6 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values.
@@ -369,7 +360,6 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             origin=origin,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     @classmethod
@@ -378,7 +368,6 @@ class Grid2D(Structure):
         extent: Tuple[float, float, float, float],
         shape_native: Tuple[int, int],
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) by inputting the extent of the (y,x) grid coordinates as an input
@@ -428,7 +417,6 @@ class Grid2D(Structure):
             values=grid_2d,
             pixel_scales=pixel_scales,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     @classmethod
@@ -438,7 +426,6 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Create a `Grid2D` (see *Grid2D.__new__*) as a uniform grid of (y,x) values given an input `shape_native` and
@@ -468,7 +455,6 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             origin=origin,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     @classmethod
@@ -478,7 +464,6 @@ class Grid2D(Structure):
         shape_native: Tuple[int, int],
         buffer_around_corners: bool = False,
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from an input bounding box with coordinates [y_min, y_max, x_min, x_max],
@@ -522,7 +507,6 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             origin=origin,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     @classmethod
@@ -530,7 +514,6 @@ class Grid2D(Structure):
         cls,
         mask: Mask2D,
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
@@ -554,7 +537,6 @@ class Grid2D(Structure):
             values=grid_1d,
             mask=mask,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     @classmethod
@@ -564,7 +546,6 @@ class Grid2D(Structure):
         pixel_scales: ty.PixelScales,
         origin: Tuple[float, float] = (0.0, 0.0),
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
@@ -585,7 +566,6 @@ class Grid2D(Structure):
             pixel_scales=pixel_scales,
             origin=origin,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     @classmethod
@@ -594,7 +574,6 @@ class Grid2D(Structure):
         mask: Mask2D,
         kernel_shape_native: Tuple[int, int],
         over_sampling: Optional[AbstractOverSampling] = None,
-        over_sampling_non_uniform: Optional[AbstractOverSampling] = None,
     ) -> "Grid2D":
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
@@ -683,11 +662,10 @@ class Grid2D(Structure):
         return cls.from_mask(
             mask=blurring_mask,
             over_sampling=over_sampling,
-            over_sampling_non_uniform=over_sampling_non_uniform,
         )
 
     def subtracted_from(self, offset: Tuple[(float, float), np.ndarray]) -> "Grid2D":
-        if offset[0] == 0.0 and offset[1] != 0.0:
+        if offset[0] == 0.0 and offset[1] == 0.0:
             return self
 
         mask = Mask2D(
@@ -700,7 +678,6 @@ class Grid2D(Structure):
             values=self - np.array(offset),
             mask=mask,
             over_sampling=self.over_sampling,
-            over_sampling_non_uniform=self.over_sampling_non_uniform,
         )
 
     @property
@@ -716,7 +693,6 @@ class Grid2D(Structure):
             values=self,
             mask=self.mask,
             over_sampling=self.over_sampling,
-            over_sampling_non_uniform=self.over_sampling_non_uniform,
         )
 
     @property
@@ -734,7 +710,6 @@ class Grid2D(Structure):
             values=self,
             mask=self.mask,
             over_sampling=self.over_sampling,
-            over_sampling_non_uniform=self.over_sampling_non_uniform,
             store_native=True,
         )
 
@@ -777,7 +752,6 @@ class Grid2D(Structure):
             values=self - deflection_grid,
             mask=self.mask,
             over_sampling=self.over_sampling,
-            over_sampling_non_uniform=self.over_sampling_non_uniform,
         )
 
     def blurring_grid_via_kernel_shape_from(
@@ -837,7 +811,6 @@ class Grid2D(Structure):
         return Grid2D.from_mask(
             mask=mask,
             over_sampling=self.over_sampling,
-            over_sampling_non_uniform=self.over_sampling_non_uniform,
         )
 
     def squared_distances_to_coordinate_from(
@@ -1090,7 +1063,6 @@ class Grid2D(Structure):
         return Grid2D.from_mask(
             mask=padded_mask,
             over_sampling=self.over_sampling,
-            over_sampling_non_uniform=self.over_sampling_non_uniform,
         )
 
     @cached_property
@@ -1111,7 +1083,7 @@ class Grid2D(Structure):
         y_diff = self[:, 0][:-1] - self[:, 0][1:]
         y_diff = y_diff[y_diff != 0]
 
-        if any(y_diff - self.pixel_scales[0] > 1.0e-8):
+        if any(abs(y_diff - self.pixel_scales[0]) > 1.0e-8):
             return False
 
         return True

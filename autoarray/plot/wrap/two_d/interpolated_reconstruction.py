@@ -4,7 +4,6 @@ from typing import Union
 
 from autoarray.plot.wrap.two_d.abstract import AbstractMatWrap2D
 from autoarray.plot.wrap.base.units import Units
-from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
 from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
 
@@ -31,7 +30,7 @@ class InterpolatedReconstruction(AbstractMatWrap2D):
 
     def imshow_reconstruction(
         self,
-        mapper: Union[MapperDelaunay, MapperVoronoiNoInterp, MapperVoronoi],
+        mapper: Union[MapperDelaunay, MapperVoronoi],
         pixel_values: np.ndarray,
         units: Units,
         cmap: wb.Cmap,

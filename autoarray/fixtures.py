@@ -152,7 +152,9 @@ def make_imaging_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        over_sampling=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=1)
+        ),
     )
 
 
@@ -161,7 +163,9 @@ def make_imaging_7x7_sub_2():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_map=make_noise_map_7x7(),
-        over_sampling=aa.OverSamplingUniform(sub_size=2),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=2)
+        ),
     )
 
 
@@ -170,7 +174,9 @@ def make_imaging_covariance_7x7():
         data=make_image_7x7(),
         psf=make_psf_3x3(),
         noise_covariance_matrix=make_noise_covariance_matrix_7x7(),
-        over_sampling=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=1)
+        ),
     )
 
 
@@ -179,7 +185,9 @@ def make_imaging_7x7_no_blur():
         data=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        over_sampling=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=1)
+        ),
     )
 
 
@@ -188,7 +196,9 @@ def make_imaging_7x7_no_blur_sub_2():
         data=make_image_7x7(),
         psf=make_psf_3x3_no_blur(),
         noise_map=make_noise_map_7x7(),
-        over_sampling=aa.OverSamplingUniform(sub_size=2),
+        over_sampling=aa.OverSamplingDataset(
+            uniform=aa.OverSamplingUniform(sub_size=2)
+        ),
     )
 
 
@@ -225,7 +235,9 @@ def make_interferometer_7():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingDataset(
+            pixelization=aa.OverSamplingUniform(sub_size=1)
+        ),
     )
 
 
@@ -236,7 +248,9 @@ def make_interferometer_7_no_fft():
         uv_wavelengths=make_uv_wavelengths_7x2_no_fft(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingDataset(
+            pixelization=aa.OverSamplingUniform(sub_size=1)
+        ),
     )
 
 
@@ -247,7 +261,9 @@ def make_interferometer_7_grid():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_mask_2d_7x7(),
         transformer_class=aa.TransformerDFT,
-        over_sampling_pixelization=aa.OverSamplingUniform(sub_size=1),
+        over_sampling=aa.OverSamplingDataset(
+            pixelization=aa.OverSamplingUniform(sub_size=1)
+        ),
     )
 
 
@@ -419,7 +435,7 @@ def make_rectangular_mapper_7x7_3x3():
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
-    return aa.MapperRectangularNoInterp(
+    return aa.MapperRectangular(
         mapper_grids=mapper_grids,
         over_sampler=make_over_sampler_2d_7x7(),
         border_relocator=make_border_relocator_2d_7x7(),
@@ -453,28 +469,11 @@ def make_voronoi_mapper_9_3x3():
         adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
     )
 
-    return aa.MapperVoronoiNoInterp(
-        mapper_grids=mapper_grids,
-        over_sampler=make_over_sampler_2d_7x7(),
-        border_relocator=make_border_relocator_2d_7x7(),
-        regularization=make_regularization_constant(),
-    )
-
-
-def make_voronoi_mapper_nn_9_3x3():
-    mapper_grids = aa.MapperGrids(
-        mask=make_mask_2d_7x7(),
-        source_plane_data_grid=make_over_sampler_2d_7x7().over_sampled_grid,
-        source_plane_mesh_grid=make_voronoi_mesh_grid_9(),
-        image_plane_mesh_grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1),
-        adapt_data=aa.Array2D.ones(shape_native=(3, 3), pixel_scales=0.1),
-    )
-
     return aa.MapperVoronoi(
         mapper_grids=mapper_grids,
         over_sampler=make_over_sampler_2d_7x7(),
         border_relocator=make_border_relocator_2d_7x7(),
-        regularization=None,
+        regularization=make_regularization_constant(),
     )
 
 
