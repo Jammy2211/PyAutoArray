@@ -1,3 +1,5 @@
+fits:
+  flip_for_ds9: false                 # If True, the image is flipped before output to a .fits file, which is useful for viewing in DS9.
 inversion:
   check_reconstruction: true          # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
   use_positive_only_solver: true      # If True, inversion's use a positive-only linear algebra solver by default, which is slower but prevents unphysical negative values in the reconstructed solutuion.
