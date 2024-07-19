@@ -73,10 +73,6 @@ class Constant(AbstractRegularization):
         The regularization matrix.
         """
 
-        print()
-        print(linear_obj.neighbors)
-        print(linear_obj.neighbors.sizes)
-
         return regularization_util.constant_regularization_matrix_from(
             coefficient=self.coefficient,
             neighbors=linear_obj.neighbors,
