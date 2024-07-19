@@ -69,7 +69,7 @@ class Rectangular(AbstractMesh):
         Mapper objects describe the mappings between pixels in the masked 2D data and the pixels in a pixelization,
         in both the `data` and `source` frames.
 
-        This function returns a `MapperRectangularNoInterp` as follows:
+        This function returns a `MapperRectangular` as follows:
 
         1) If the bordr relocator is input, the border of the input `source_plane_data_grid` is used to relocate all of the
            grid's (y,x) coordinates beyond the border to the edge of the border.
@@ -78,7 +78,7 @@ class Rectangular(AbstractMesh):
            over the 2D grid of relocated (y,x) coordinates computed in step 1 (or the input `source_plane_data_grid` if step 1
            is bypassed).
 
-        3) Return the `MapperRectangularNoInterp`.
+        3) Return the `MapperRectangular`.
 
         Parameters
         ----------

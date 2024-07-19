@@ -38,7 +38,7 @@ def test__rectangular_mapper():
         mapper_grids=mapper_grids, over_sampler=over_sampler, regularization=None
     )
 
-    assert isinstance(mapper, aa.MapperRectangularNoInterp)
+    assert isinstance(mapper, aa.MapperRectangular)
     assert mapper.image_plane_mesh_grid == None
 
     assert mapper.source_plane_mesh_grid.geometry.shape_native_scaled == pytest.approx(

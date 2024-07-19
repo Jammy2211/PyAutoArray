@@ -8,7 +8,7 @@ from autoarray.plot.mat_plot.two_d import MatPlot2D
 from autoarray.plot.auto_labels import AutoLabels
 from autoarray.structures.arrays.uniform_2d import Array2D
 from autoarray.inversion.pixelization.mappers.rectangular import (
-    MapperRectangularNoInterp,
+    MapperRectangular,
 )
 
 import logging
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class MapperPlotter(Plotter):
     def __init__(
         self,
-        mapper: MapperRectangularNoInterp,
+        mapper: MapperRectangular,
         mat_plot_2d: MatPlot2D = MatPlot2D(),
         visuals_2d: Visuals2D = Visuals2D(),
         include_2d: Include2D = Include2D(),
