@@ -11,7 +11,7 @@ from autoarray.numba_util import profile_func
 from autoarray.inversion.pixelization.mappers import mapper_util
 
 
-class AbstractMapperVoronoi(AbstractMapper):
+class MapperVoronoi(AbstractMapper):
     """
     To understand a `Mapper` one must be familiar `Mesh` objects and the `mesh` and `pixelization` packages, where
     the four grids grouped in a `MapperGrids` object are explained (`image_plane_data_grid`, `source_plane_data_grid`,
@@ -85,8 +85,6 @@ class AbstractMapperVoronoi(AbstractMapper):
 
         return PixSubWeights(mappings=mappings, sizes=sizes, weights=weights)
 
-
-class MapperVoronoi(AbstractMapperVoronoi):
     @cached_property
     @profile_func
     def pix_sub_weights(self) -> PixSubWeights:
@@ -174,57 +172,4 @@ class MapperVoronoi(AbstractMapperVoronoi):
         """
         return self.source_plane_mesh_grid.interpolated_array_from(
             values=values, shape_native=shape_native, extent=extent, use_nn=True
-        )
-
-
-class MapperVoronoiNoInterp(AbstractMapperVoronoi):
-    @cached_property
-    @profile_func
-    def pix_sub_weights(self) -> PixSubWeights:
-        """
-        Computes the following three quantities describing the mappings between of every sub-pixel in the masked data
-        and pixel in the `Voronoi` pixelization.
-
-        - `pix_indexes_for_sub_slim_index`: the mapping of every data pixel (given its `sub_slim_index`)
-        to pixelization pixels (given their `pix_indexes`).
-
-        - `pix_sizes_for_sub_slim_index`: the number of mappings of every data pixel to pixelization pixels.
-
-        - `pix_weights_for_sub_slim_index`: the interpolation weights of every data pixel's pixelization
-        pixel mapping
-
-        These are packaged into the class `PixSubWeights` with attributes `mappings`, `sizes` and `weights`.
-
-        The `sub_slim_index` refers to the masked data sub-pixels and `pix_indexes` the pixelization pixel indexes,
-        for example:
-
-        - `pix_indexes_for_sub_slim_index[0, 0] = 2`: The data's first (index 0) sub-pixel maps to the Rectangular
-        pixelization's third (index 2) pixel.
-
-        - `pix_indexes_for_sub_slim_index[2, 0] = 4`: The data's third (index 2) sub-pixel maps to the Rectangular
-        pixelization's fifth (index 4) pixel.
-
-        The second dimension of the array `pix_indexes_for_sub_slim_index`, which is 0 in both examples above, is used
-        for cases where a data pixel maps to more than one pixelization pixel (for example a `Delaunay` triangulation
-        where each data pixel maps to 3 Delaunay triangles with interpolation weights). The weights of multiple mappings
-        are stored in the array `pix_weights_for_sub_slim_index`.
-
-        For this Voronoi mesh each data sub-pixel maps to a single pixelization pixel, thus the second
-        dimension of the array `pix_indexes_for_sub_slim_index` 1 and all entries in `pix_weights_for_sub_slim_index`
-        are equal to 1.0.
-
-        The weights are used when creating the `mapping_matrix` and `pixel_signals_from`.
-        """
-        mappings = mapper_util.pix_indexes_for_sub_slim_index_voronoi_from(
-            grid=np.array(self.source_plane_data_grid),
-            slim_index_for_sub_slim_index=self.over_sampler.slim_for_sub_slim,
-            mesh_grid=np.array(self.source_plane_mesh_grid),
-            neighbors=self.source_plane_mesh_grid.neighbors,
-            neighbors_sizes=self.source_plane_mesh_grid.neighbors.sizes,
-        ).astype("int")
-
-        return PixSubWeights(
-            mappings=mappings,
-            sizes=np.ones(self.source_plane_data_grid.shape[0], dtype="int"),
-            weights=np.ones((self.source_plane_data_grid.shape[0], 1), dtype="int"),
         )

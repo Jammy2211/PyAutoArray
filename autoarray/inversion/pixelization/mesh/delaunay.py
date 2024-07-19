@@ -31,10 +31,6 @@ class Delaunay(Triangulation):
         """
         super().__init__()
 
-    @property
-    def uses_interpolation(self):
-        return False
-
     @profile_func
     def mesh_grid_from(
         self,
@@ -59,5 +55,5 @@ class Delaunay(Triangulation):
         """
 
         return Mesh2DDelaunay(
-            values=source_plane_mesh_grid, uses_interpolation=self.uses_interpolation
+            values=source_plane_mesh_grid,
         )

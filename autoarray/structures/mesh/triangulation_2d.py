@@ -25,7 +25,6 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
     def __init__(
         self,
         values: Union[np.ndarray, List],
-        uses_interpolation: bool = False,
     ):
         """
         An irregular 2D grid of (y,x) coordinates which represents both a Delaunay triangulation and Voronoi mesh.
@@ -57,17 +56,7 @@ class Abstract2DMeshTriangulation(Abstract2DMesh):
         if type(values) is list:
             values = np.asarray(values)
 
-        self.uses_interpolation = uses_interpolation
-
         super().__init__(values)
-
-    def __array_finalize__(self, obj: object):
-        """
-        Ensures that the attribute `uses_interpolation` are retained when numpy array calculations are performed.
-        """
-
-        if hasattr(obj, "uses_interpolation"):
-            self.uses_interpolation = obj.uses_interpolation
 
     @property
     def geometry(self):

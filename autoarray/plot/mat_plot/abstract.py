@@ -46,7 +46,7 @@ class AbstractMatPlot:
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
-        - `MapperVoronoiNoInterp`: using `plt.fill`.
+        - `MapperVorono`: using `plt.fill`.
 
         Parameters
         ----------

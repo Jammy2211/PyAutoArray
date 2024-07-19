@@ -196,135 +196,6 @@ def nearest_pixelization_index_for_slim_index_from_kdtree(grid, mesh_grid):
 
 
 @numba_util.jit()
-def nearest_pixelization_index_for_slim_index_from(grid, mesh_grid):
-    """
-    Uses a nearest neighbor search to determine for each data pixel its nearest pixelization pixel.
-
-    This is used to speed up the `pix_indexes_for_sub_slim_index_voronoi_from` function, which otherwise would
-    have to loop over every pixelization pixel to determine the nearest pixelization pixel to each data pixel.
-
-    This is only used for a regular `Voronoi` mesh, not a `Delaunay` or `VoronoiNN`, and therefore has limited
-    use in general given the `VoronoiNN` is a superior mesh because it uses natural neighbor interpolation.
-
-
-    Parameters
-    ----------
-    grid
-        The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
-        to an irgrid via lens.
-    mesh_grid
-        The (y,x) centre of every Voronoi pixel in arc-seconds.
-
-    Returns
-    -------
-    A 1D array of length (total_unmasked_pixels) where each entry corresponds to the index of the nearest
-    pixelization pixel to each data pixel.
-    """
-
-    nearest_pixelization_index_for_slim_index = np.zeros((grid.shape[0],))
-
-    for image_index in range(grid.shape[0]):
-        distances = (grid[image_index, 0] - mesh_grid[:, 0]) ** 2 + (
-            grid[image_index, 1] - mesh_grid[:, 1]
-        ) ** 2
-
-        nearest_pixelization_index_for_slim_index[image_index] = np.argmin(distances)
-
-    return nearest_pixelization_index_for_slim_index
-
-
-@numba_util.jit()
-def pix_indexes_for_sub_slim_index_voronoi_from(
-    grid: np.ndarray,
-    slim_index_for_sub_slim_index: np.ndarray,
-    mesh_grid: np.ndarray,
-    neighbors: np.ndarray,
-    neighbors_sizes: np.ndarray,
-) -> np.ndarray:
-    """
-    Returns the mappings between a set of slimmed sub-grid pixels and pixelization pixels, using information on
-    how the pixels hosting each sub-pixel map to their closest pixelization pixel on the slim grid in the data-plane
-    and the pixelization's pixel centres.
-
-    To determine the complete set of slim sub-pixel to pixelization pixel mappings, we must pair every sub-pixel to
-    its nearest pixel. Using a full nearest neighbor search to do this is slow, thus the pixel neighbors (derived via
-    the Voronoi grid) are used to localize each nearest neighbor search by using a graph search.
-
-    Parameters
-    ----------
-    grid
-        The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
-        to an irgrid via lens.
-    slim_index_for_sub_slim_index
-        The mappings between the data slimmed sub-pixels and their regular pixels.
-    mesh_grid
-        The (y,x) centre of every Voronoi pixel in arc-seconds.
-    neighbors
-        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
-        the Voronoi grid (entries of -1 correspond to no neighbor).
-    neighbors_sizes
-        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
-        Voronoi grid.
-    """
-
-    nearest_pixelization_index_for_slim_index = (
-        nearest_pixelization_index_for_slim_index_from(
-            grid=grid, mesh_grid=mesh_grid
-        ).astype("int")
-    )
-
-    pix_indexes_for_sub_slim_index = np.zeros(shape=(grid.shape[0], 1))
-
-    for sub_slim_index in range(grid.shape[0]):
-        nearest_pix_index = nearest_pixelization_index_for_slim_index[
-            slim_index_for_sub_slim_index[sub_slim_index]
-        ]
-
-        whiletime = 0
-
-        while True:
-            if whiletime > 1000000:
-                raise exc.MeshException
-
-            nearest_pix_center = mesh_grid[nearest_pix_index]
-
-            sub_pixel_to_nearest_pix_distance = (
-                grid[sub_slim_index, 0] - nearest_pix_center[0]
-            ) ** 2 + (grid[sub_slim_index, 1] - nearest_pix_center[1]) ** 2
-
-            closest_separation_pix_to_neighbor = 1.0e8
-
-            for neighbor_pix_index in range(neighbors_sizes[nearest_pix_index]):
-                neighbor = neighbors[nearest_pix_index, neighbor_pix_index]
-
-                distance_to_neighbor = (
-                    grid[sub_slim_index, 0] - mesh_grid[neighbor, 0]
-                ) ** 2 + (grid[sub_slim_index, 1] - mesh_grid[neighbor, 1]) ** 2
-
-                if distance_to_neighbor < closest_separation_pix_to_neighbor:
-                    closest_separation_pix_to_neighbor = distance_to_neighbor
-                    closest_neighbor_pix_index = neighbor_pix_index
-
-            neighboring_pix_index = neighbors[
-                nearest_pix_index, closest_neighbor_pix_index
-            ]
-            sub_pixel_to_neighboring_pix_distance = closest_separation_pix_to_neighbor
-
-            whiletime += 1
-
-            if (
-                sub_pixel_to_nearest_pix_distance
-                <= sub_pixel_to_neighboring_pix_distance
-            ):
-                pix_indexes_for_sub_slim_index[sub_slim_index, 0] = nearest_pix_index
-                break
-            else:
-                nearest_pix_index = neighboring_pix_index
-
-    return pix_indexes_for_sub_slim_index
-
-
-@numba_util.jit()
 def pixel_weights_delaunay_from(
     source_plane_data_grid,
     source_plane_mesh_grid,
@@ -422,7 +293,7 @@ def pix_size_weights_voronoi_nn_from(
         from autoarray.util.nn import nn_py
     except ImportError as e:
         raise ImportError(
-            "In order to use the VoronoiNN pixelization you must install the "
+            "In order to use the Voronoi pixelization you must install the "
             "Natural Neighbor Interpolation c package.\n\n"
             ""
             "See: https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/util/nn"

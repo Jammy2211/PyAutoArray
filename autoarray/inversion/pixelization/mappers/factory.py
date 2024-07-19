@@ -42,14 +42,13 @@ def mapper_from(
     A mapper whose type is determined by the input `mapper_grids` mesh type.
     """
     from autoarray.inversion.pixelization.mappers.rectangular import (
-        MapperRectangularNoInterp,
+        MapperRectangular,
     )
     from autoarray.inversion.pixelization.mappers.delaunay import MapperDelaunay
     from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoi
-    from autoarray.inversion.pixelization.mappers.voronoi import MapperVoronoiNoInterp
 
     if isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DRectangular):
-        return MapperRectangularNoInterp(
+        return MapperRectangular(
             mapper_grids=mapper_grids,
             over_sampler=over_sampler,
             border_relocator=border_relocator,
@@ -65,16 +64,7 @@ def mapper_from(
             run_time_dict=run_time_dict,
         )
     elif isinstance(mapper_grids.source_plane_mesh_grid, Mesh2DVoronoi):
-        if mapper_grids.source_plane_mesh_grid.uses_interpolation:
-            return MapperVoronoi(
-                mapper_grids=mapper_grids,
-                over_sampler=over_sampler,
-                border_relocator=border_relocator,
-                regularization=regularization,
-                run_time_dict=run_time_dict,
-            )
-
-        return MapperVoronoiNoInterp(
+        return MapperVoronoi(
             mapper_grids=mapper_grids,
             over_sampler=over_sampler,
             border_relocator=border_relocator,
