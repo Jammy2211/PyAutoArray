@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from typing import Tuple
 
 import numpy as np
 
@@ -155,4 +156,19 @@ class AbstractTriangles(ABC):
         Returns
         -------
         The new ArrayTriangles instance.
+        """
+
+    @abstractmethod
+    def containing_indices(self, point: Tuple[float, float]) -> np.ndarray:
+        """
+        Find the triangles that contain a given point.
+
+        Parameters
+        ----------
+        point
+            The point to find the containing triangles for.
+
+        Returns
+        -------
+        The triangles that contain the point.
         """
