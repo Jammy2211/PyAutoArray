@@ -5,28 +5,11 @@ from jax import numpy as np
 from jax.tree_util import register_pytree_node_class
 from jax import jit
 
+from autoarray.structures.triangles.abstract import AbstractTriangles
+
 
 @register_pytree_node_class
-class ArrayTriangles:
-    def __init__(
-        self,
-        indices: np.ndarray,
-        vertices: np.ndarray,
-    ):
-        """
-        Represents a set of triangles in efficient NumPy arrays.
-
-        Parameters
-        ----------
-        indices
-            The indices of the vertices of the triangles. This is a 2D array where each row is a triangle
-            with the three indices of the vertices.
-        vertices
-            The vertices of the triangles.
-        """
-        self.indices = indices
-        self.vertices = vertices
-
+class ArrayTriangles(AbstractTriangles):
     @property
     @jit
     def triangles(self):
