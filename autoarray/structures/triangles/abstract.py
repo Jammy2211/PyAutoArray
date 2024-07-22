@@ -1,3 +1,5 @@
+from abc import abstractmethod, ABC
+
 import numpy as np
 
 from autoarray import Grid2D
@@ -5,7 +7,7 @@ from autoarray import Grid2D
 HEIGHT_FACTOR = 3**0.5 / 2
 
 
-class AbstractTriangles:
+class AbstractTriangles(ABC):
     def __init__(
         self,
         indices: np.ndarray,
@@ -123,3 +125,34 @@ class AbstractTriangles:
         x_max = x.max()
 
         return cls.for_limits_and_scale(y_min, y_max, x_min, x_max, scale)
+
+    @abstractmethod
+    def with_vertices(self, vertices: np.ndarray) -> "AbstractTriangles":
+        """
+        Create a new set of triangles with the vertices replaced.
+
+        Parameters
+        ----------
+        vertices
+            The new vertices to use.
+
+        Returns
+        -------
+        The new set of triangles with the new vertices.
+        """
+
+    @abstractmethod
+    def for_indexes(self, indexes: np.ndarray) -> "AbstractTriangles":
+        """
+        Create a new ArrayTriangles containing indices and vertices corresponding to the given indexes
+        but without duplicate vertices.
+
+        Parameters
+        ----------
+        indexes
+            The indexes of the triangles to include in the new ArrayTriangles.
+
+        Returns
+        -------
+        The new ArrayTriangles instance.
+        """

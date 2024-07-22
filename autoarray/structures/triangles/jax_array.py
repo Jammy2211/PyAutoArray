@@ -1,6 +1,5 @@
 from typing import Tuple
 
-from autoarray import Grid2D
 from jax import numpy as np
 from jax.tree_util import register_pytree_node_class
 from jax import jit
