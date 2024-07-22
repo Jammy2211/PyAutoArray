@@ -71,7 +71,7 @@ def test_contains_vertices(
 ):
     containing_indices = triangles.containing_indices(point)
 
-    assert (np.nan_to_num(containing_indices, nan=-1) == indices).all()
+    assert (containing_indices == indices).all()
 
 
 @pytest.mark.parametrize(
